@@ -94,7 +94,9 @@ HEADERS += base/AudioLevel.h \
            base/Window.h \
            base/XmlExportable.h \
            base/ZoomConstraint.h \
-    data/model/NoteData.h
+    data/model/NoteData.h \
+    base/DataExportOptions.h \
+    base/FrameTimer.h
 SOURCES += base/AudioLevel.cpp \
            base/Clipboard.cpp \
            base/Command.cpp \
