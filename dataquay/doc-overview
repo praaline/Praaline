@@ -1,0 +1,80 @@
+namespace Dataquay {
+
+/** \mainpage Dataquay
+
+\section about About Dataquay
+
+%Dataquay is a free open source library that provides a friendly C++
+API for the Redland and Sord RDF data stores using Qt4 classes and
+containers.
+
+%Dataquay is intended to be simple to use and easy to integrate. It is
+principally intended for use in Qt-based applications that would like
+to use an RDF datastore as backing for in-memory project data, to
+avoid having to provide application data-specific file formats and to
+make it easy to augment the data with descriptive metadata pulled in
+from external sources. %Dataquay is also intended to be useful for
+applications whose primary purpose is not related to RDF but that have
+ad-hoc RDF needs for metadata management.
+
+\section contents What's in Dataquay?
+
+%Dataquay contains C++ abstractions for the RDF Node and Triple
+(or statement), and for the RDF Store.  The standard BasicStore offers
+simple add, remove, matching, and querying functions and file I/O.
+
+Also provided is TransactionalStore, a transactional interface to the
+store that offers per-thread isolation, atomic commit, and a
+Connection class in the style of a traditional relational database
+interface.
+
+%Dataquay also offers ObjectMapper, a facility which can take care of
+a complete object hierarchy, map it to the RDF store, and synchronise
+in both directions any changes to the hierarchy or the store.
+Arbitrary mappings between C++ class and property names and RDF URIs
+can be specified using TypeMapping.  The mapping is flexible enough to
+allow you to load many publicly generated Linked Data sources directly
+into object class hierarchies, if you wish (although this is not
+usually an ideal way to handle unpredictable data sources).  The
+classes that manage the object-to-store and store-to-object mapping
+can also be used separately, as ObjectStorer and ObjectLoader.
+
+\section start Start Here...
+
+If you want your application to have access to RDF metadata but you
+are not intending to make RDF data the core of the application, then
+you probably want to focus on BasicStore.  This can load and save RDF
+and perform queries, matches, and updates in a simple form.
+
+If you need to carry out updates to RDF data, particularly in a
+multi-threaded application, then you should look at TransactionalStore
+and its related Connection class.
+
+If you would like to use an RDF store as a "hibernation" mechanism for
+store and recall of an object hierarchy in an open and portable
+manner, then you could consider using a BasicStore, wrapping that in a
+TransactionalStore, and using ObjectMapper to deal with the
+hibernation side of things.
+
+In any of these cases you'll also want to look closely at the Uri,
+Node, and Triple classes.
+
+\section status Development Status
+
+Certain aspects of %Dataquay are still somewhat provisional, and the
+API may continue to change until the 1.0 release.  However, most of
+the API design is likely to remain as it is now and the library has
+been reasonably well tested.  The main focus for 1.0 is to expand the
+test suite and produce some more example code.  Those activities might
+show up other things that need doing too, though.
+
+\section licence Licence
+
+%Dataquay is published under a liberal BSD-style licence, similar to
+(and of course compatible with) the Apache licence used by Redland.
+You can use it without fee in open-source or proprietary applications.
+See the COPYING file for details.
+
+*/
+
+}

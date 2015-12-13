@@ -1,0 +1,280 @@
+/****************************************************************************
+** Meta object code from reading C++ file 'qteditorfactory.cpp'
+**
+** Created: Sun 7. Oct 20:28:05 2012
+**      by: The Qt Meta Object Compiler version 63 (Qt 4.8.1)
+**
+** WARNING! All changes made in this file will be lost!
+*****************************************************************************/
+
+#if !defined(Q_MOC_OUTPUT_REVISION)
+#error "The header file 'qteditorfactory.cpp' doesn't include <QObject>."
+#elif Q_MOC_OUTPUT_REVISION != 63
+#error "This file was generated using the moc from 4.8.1. It"
+#error "cannot be used with the include files from this version of Qt."
+#error "(The moc has changed too much.)"
+#endif
+
+QT_BEGIN_MOC_NAMESPACE
+static const uint qt_meta_data_QtCharEdit[] = {
+
+ // content:
+       6,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   14, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      18,   12,   11,   11, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      38,   12,   11,   11, 0x0a,
+      54,   11,   11,   11, 0x08,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_QtCharEdit[] = {
+    "QtCharEdit\0\0value\0valueChanged(QChar)\0"
+    "setValue(QChar)\0slotClearChar()\0"
+};
+
+void QtCharEdit::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        Q_ASSERT(staticMetaObject.cast(_o));
+        QtCharEdit *_t = static_cast<QtCharEdit *>(_o);
+        switch (_id) {
+        case 0: _t->valueChanged((*reinterpret_cast< const QChar(*)>(_a[1]))); break;
+        case 1: _t->setValue((*reinterpret_cast< const QChar(*)>(_a[1]))); break;
+        case 2: _t->slotClearChar(); break;
+        default: ;
+        }
+    }
+}
+
+const QMetaObjectExtraData QtCharEdit::staticMetaObjectExtraData = {
+    0,  qt_static_metacall 
+};
+
+const QMetaObject QtCharEdit::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_QtCharEdit,
+      qt_meta_data_QtCharEdit, &staticMetaObjectExtraData }
+};
+
+#ifdef Q_NO_DATA_RELOCATION
+const QMetaObject &QtCharEdit::getStaticMetaObject() { return staticMetaObject; }
+#endif //Q_NO_DATA_RELOCATION
+
+const QMetaObject *QtCharEdit::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
+}
+
+void *QtCharEdit::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_QtCharEdit))
+        return static_cast<void*>(const_cast< QtCharEdit*>(this));
+    return QWidget::qt_metacast(_clname);
+}
+
+int QtCharEdit::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 3)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 3;
+    }
+    return _id;
+}
+
+// SIGNAL 0
+void QtCharEdit::valueChanged(const QChar & _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+static const uint qt_meta_data_QtColorEditWidget[] = {
+
+ // content:
+       6,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   14, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      25,   19,   18,   18, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      46,   19,   18,   18, 0x0a,
+      63,   18,   18,   18, 0x08,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_QtColorEditWidget[] = {
+    "QtColorEditWidget\0\0value\0valueChanged(QColor)\0"
+    "setValue(QColor)\0buttonClicked()\0"
+};
+
+void QtColorEditWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        Q_ASSERT(staticMetaObject.cast(_o));
+        QtColorEditWidget *_t = static_cast<QtColorEditWidget *>(_o);
+        switch (_id) {
+        case 0: _t->valueChanged((*reinterpret_cast< const QColor(*)>(_a[1]))); break;
+        case 1: _t->setValue((*reinterpret_cast< const QColor(*)>(_a[1]))); break;
+        case 2: _t->buttonClicked(); break;
+        default: ;
+        }
+    }
+}
+
+const QMetaObjectExtraData QtColorEditWidget::staticMetaObjectExtraData = {
+    0,  qt_static_metacall 
+};
+
+const QMetaObject QtColorEditWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_QtColorEditWidget,
+      qt_meta_data_QtColorEditWidget, &staticMetaObjectExtraData }
+};
+
+#ifdef Q_NO_DATA_RELOCATION
+const QMetaObject &QtColorEditWidget::getStaticMetaObject() { return staticMetaObject; }
+#endif //Q_NO_DATA_RELOCATION
+
+const QMetaObject *QtColorEditWidget::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
+}
+
+void *QtColorEditWidget::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_QtColorEditWidget))
+        return static_cast<void*>(const_cast< QtColorEditWidget*>(this));
+    return QWidget::qt_metacast(_clname);
+}
+
+int QtColorEditWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 3)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 3;
+    }
+    return _id;
+}
+
+// SIGNAL 0
+void QtColorEditWidget::valueChanged(const QColor & _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+static const uint qt_meta_data_QtFontEditWidget[] = {
+
+ // content:
+       6,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       3,   14, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       1,       // signalCount
+
+ // signals: signature, parameters, type, tag, flags
+      24,   18,   17,   17, 0x05,
+
+ // slots: signature, parameters, type, tag, flags
+      44,   18,   17,   17, 0x0a,
+      60,   17,   17,   17, 0x08,
+
+       0        // eod
+};
+
+static const char qt_meta_stringdata_QtFontEditWidget[] = {
+    "QtFontEditWidget\0\0value\0valueChanged(QFont)\0"
+    "setValue(QFont)\0buttonClicked()\0"
+};
+
+void QtFontEditWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        Q_ASSERT(staticMetaObject.cast(_o));
+        QtFontEditWidget *_t = static_cast<QtFontEditWidget *>(_o);
+        switch (_id) {
+        case 0: _t->valueChanged((*reinterpret_cast< const QFont(*)>(_a[1]))); break;
+        case 1: _t->setValue((*reinterpret_cast< const QFont(*)>(_a[1]))); break;
+        case 2: _t->buttonClicked(); break;
+        default: ;
+        }
+    }
+}
+
+const QMetaObjectExtraData QtFontEditWidget::staticMetaObjectExtraData = {
+    0,  qt_static_metacall 
+};
+
+const QMetaObject QtFontEditWidget::staticMetaObject = {
+    { &QWidget::staticMetaObject, qt_meta_stringdata_QtFontEditWidget,
+      qt_meta_data_QtFontEditWidget, &staticMetaObjectExtraData }
+};
+
+#ifdef Q_NO_DATA_RELOCATION
+const QMetaObject &QtFontEditWidget::getStaticMetaObject() { return staticMetaObject; }
+#endif //Q_NO_DATA_RELOCATION
+
+const QMetaObject *QtFontEditWidget::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
+}
+
+void *QtFontEditWidget::qt_metacast(const char *_clname)
+{
+    if (!_clname) return 0;
+    if (!strcmp(_clname, qt_meta_stringdata_QtFontEditWidget))
+        return static_cast<void*>(const_cast< QtFontEditWidget*>(this));
+    return QWidget::qt_metacast(_clname);
+}
+
+int QtFontEditWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QWidget::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 3)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 3;
+    }
+    return _id;
+}
+
+// SIGNAL 0
+void QtFontEditWidget::valueChanged(const QFont & _t1)
+{
+    void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&_t1)) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+QT_END_MOC_NAMESPACE

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ProjectManagementConfig</class>
+ <widget class="QWidget" name="ProjectManagementConfig">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>559</width>
+    <height>525</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <widget class="QGroupBox" name="chkOpenLastProject">
+     <property name="title">
+      <string>Open last project when application starts:</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="chkCreateNewOnStartup">
+        <property name="text">
+         <string>Create empty project if no last project is available</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnClearRecentProjectList">
+        <property name="text">
+         <string>Clear Recent Project List</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="chkSaveModifiedProjects">
+     <property name="title">
+      <string>Check for modified open projects when application closes:</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="radioPromptUserToSave">
+        <property name="text">
+         <string>Ask if projects must be saved</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioSaveAutomatically">
+        <property name="text">
+         <string>Automatically save projects</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="chkUseCustomProjectsPath">
+     <property name="toolTip">
+      <string>If a custom projects path is not used, projects will be saved in a folder called Projects in your session path.</string>
+     </property>
+     <property name="title">
+      <string>Use custom projects paths:</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0" colspan="3">
+       <widget class="QTableWidget" name="tableCustomPaths">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="showGrid">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="btnRemove">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="btnAdd">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>356</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>chkOpenLastProject</tabstop>
+  <tabstop>chkCreateNewOnStartup</tabstop>
+  <tabstop>chkSaveModifiedProjects</tabstop>
+  <tabstop>radioPromptUserToSave</tabstop>
+  <tabstop>radioSaveAutomatically</tabstop>
+  <tabstop>chkUseCustomProjectsPath</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>chkSaveModifiedProjects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>radioPromptUserToSave</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>53</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>73</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chkSaveModifiedProjects</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>radioSaveAutomatically</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>279</x>
+     <y>75</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>169</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chkOpenLastProject</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>chkCreateNewOnStartup</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>12</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>46</x>
+     <y>37</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

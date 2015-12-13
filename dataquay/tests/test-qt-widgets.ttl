@@ -1,0 +1,49 @@
+@base <http://uh.i.dunno.breakfastquay.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix : <> .
+@prefix qtype: <http://breakfastquay.com/rdf/dataquay/qtype/> .
+@prefix dq: <http://breakfastquay.com/rdf/dataquay/common/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:mainwindow
+	qtype:objectName "My Main Window" ;
+	a qtype:QMainWindow .
+
+:menu
+	dq:parent :mainwindow ;
+	a qtype:QMenu ;
+	qtype:title "File" .
+
+:exit
+	dq:parent :menu ;
+	a qtype:QAction ;
+	qtype:text "Exit" .
+
+:exit_connection
+	a dq:Connection ;
+	dq:source [ dq:object :exit ; dq:signal "triggered" ] ;
+	dq:target [ dq:object :mainwindow ; dq:slot "close" ] .
+
+:frame
+	dq:parent :mainwindow ;
+	dq:central_widget_of :mainwindow ;
+	a qtype:QFrame .
+
+:vbox
+	dq:parent :frame ;
+	dq:layout_of :frame ;
+	a qtype:QVBoxLayout .
+
+:label_1
+	a qtype:QLabel ;
+	dq:parent :frame ;
+	dq:follows :label_2 ;
+	dq:layout :vbox ;
+	qtype:text "Hello! I am the first label (but I go second)." .
+
+:label_2
+	a qtype:QLabel ;
+	dq:parent :frame ;
+	dq:layout :vbox ;
+	qtype:text "Hello! I am the second label (but I go first)." .
+

@@ -1,0 +1,12 @@
+INPUT(
+./release\qtpropertybrowser.o
+./release\qtpropertymanager.o
+./release\qteditorfactory.o
+./release\qtvariantproperty.o
+./release\qttreepropertybrowser.o
+./release\qtbuttonpropertybrowser.o
+./release\qtgroupboxpropertybrowser.o
+./release\qtpropertybrowserutils.o
+./release\moc_qtpropertybrowserutils_p.o
+./release\qrc_qtpropertybrowser.o
+);

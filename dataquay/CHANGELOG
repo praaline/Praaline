@@ -1,0 +1,84 @@
+
+Changes in Dataquay 0.9 since the previous version 0.8:
+
+ * Rework Uri, Node, and Triple constructors. Now Uri is to be used
+   only for absolute URIs; Node demands that Uri be used when
+   constructing URI nodes, treating a string as a literal type; and
+   Triple demands three Nodes, losing the short-circuiting
+   constructors that used to take relative URIs as strings.  This
+   simplifies the rules for type usage: an absolute URI is a Uri, a
+   literal is a string, and a relative URI must be expanded before it
+   can be used. It also makes Triple construction patterns more
+   consistent and easier to remember.
+
+ * Add "slice" methods subjects(), predicates(), objects() to Triples
+
+ * Rename matchFirst to matchOnce and queryFirst to queryOnce in Store
+   API. There was no ordering by which the result could meaningfully
+   be described as the first
+
+ * Add Store::complete() to return a Node that completes a Triple with
+   only one wildcard Node in it
+
+ * Ensure store always has a base URI, and some fixes to base URI
+   management for file loading (this will be reviewed again before
+   1.0 though)
+
+ * Fix lack of predicate-index in Sord backend
+
+ * Formalise ObjectStorer in the same way as the formalisation of
+   the ObjectMapper and ObjectLoader for 0.8
+
+ * Replace ad-hoc unit tests with QtTest-based tests
+
+
+Changes in Dataquay 0.8 since the previous version 0.3:
+
+ * Add support for David Robillard's lightweight Sord datastore as an
+   alternative to the existing Redland support.  The Dataquay Store
+   now has a getSupportedFeatures() method to return capabilities of
+   the underlying datastore.
+
+ * Many fixes to ObjectMapper API, including a more formal approach
+   to circular dependencies and formalising the object loading order
+
+ * Add method to commit a transaction on a connection and
+   simultaneously receive the set of changes
+
+ * Hoist save() and import() to the Store interface from the
+   BasicStore concrete class, and provide transactional
+   implementations in TransactionalStore
+
+
+Changes in Dataquay 0.3 since the previous version 0.2:
+
+ * Add the entire ObjectMapper API and implementation
+
+ * Add the ability to extend Node with new converters between QVariant
+   types and RDF literal types
+
+ * Replace QUrl with a new, very thin Uri class throughout for
+   representation of RDF URIs.  QUrl turned out to be very costly for
+   this and most of its facilities are not needed here
+
+ * Change the Transaction interface so as to require an explicit
+   commit() call rather than committing on delete (it's more work to
+   use this way, but code written to use the old interface just didn't
+   read well)
+
+ * Change Node so as to use an untyped literal for string types rather
+   than using xsd:string (necessary for practical interoperability)
+
+ * Some very substantial performance improvements and further fixes
+
+
+Changes in Dataquay 0.2 since the initial version 0.1:
+
+ * Add the ability to control how duplicate triples are handled on
+   import
+
+ * Make the transactional store emit a signal when a transaction is
+   committed
+
+ * A small number of other fixes
+
