@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExtractSoundBitesWidget</class>
+ <widget class="QMainWindow" name="ExtractSoundBitesWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>936</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayoutCentral">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item row="1" column="1" colspan="3">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="4">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabManualEntry">
+       <attribute name="title">
+        <string>Manual Selection</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayoutManualSelection"/>
+      </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCommandLinkButton" name="commandExtract">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Extract sound bites</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>222</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="0" column="2">
+     <widget class="QGroupBox" name="groupCopyAnnotations">
+      <property name="title">
+       <string>Copy annotations to a new corpus</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0" colspan="2">
+        <widget class="QCheckBox" name="checkCreateCorpus">
+         <property name="text">
+          <string>Create a new corpus with the samples extracted</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelCorpusName">
+         <property name="text">
+          <string>Corpus name:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="editNewCorpusName"/>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="labelLevelsToCopy">
+         <property name="text">
+          <string>Select annotation levels to copy over:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="CheckBoxList" name="comboBoxLevelsToCopy">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="2">
+     <widget class="QGroupBox" name="groupBoxOptions">
+      <property name="title">
+       <string>Sound file extraction parameters</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayoutOptions">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelOutputFolder">
+         <property name="text">
+          <string>Output folder:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="3">
+        <widget class="QLineEdit" name="editOutputFolder"/>
+       </item>
+       <item row="0" column="4">
+        <widget class="QPushButton" name="commandBrowseForOutputFolder">
+         <property name="text">
+          <string>Browse...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupBoxPadding">
+         <property name="title">
+          <string>Padding</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayoutPadding">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelBeforeStart">
+            <property name="text">
+             <string>Before start:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSpinBox" name="spinBoxPaddingBeforeStart">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string> ms</string>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelAfterEnd">
+            <property name="text">
+             <string>After end:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBoxPaddingAfterEnd">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string> ms</string>
+            </property>
+            <property name="maximum">
+             <number>10000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QGroupBox" name="groupBoxSamplingRate">
+         <property name="title">
+          <string>Sampling Rate</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayoutSamplingRate">
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="optionSamplingRateResample">
+            <property name="text">
+             <string>Resample to</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBoxSamplingRate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string> Hz</string>
+            </property>
+            <property name="maximum">
+             <number>256000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="optionSamplingRateOriginal">
+            <property name="text">
+             <string>Original</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QCheckBox" name="checkNormalise">
+         <property name="text">
+          <string>Normalise sound levels</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBoxList</class>
+   <extends>QComboBox</extends>
+   <header>pngui/widgets/checkboxlist.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>editOutputFolder</tabstop>
+  <tabstop>commandBrowseForOutputFolder</tabstop>
+  <tabstop>spinBoxPaddingBeforeStart</tabstop>
+  <tabstop>spinBoxPaddingAfterEnd</tabstop>
+  <tabstop>optionSamplingRateOriginal</tabstop>
+  <tabstop>optionSamplingRateResample</tabstop>
+  <tabstop>spinBoxSamplingRate</tabstop>
+  <tabstop>checkNormalise</tabstop>
+  <tabstop>commandExtract</tabstop>
+  <tabstop>tabWidget</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImportCorpusItemsWizardSelectionPage</class>
+ <widget class="QWizardPage" name="ImportCorpusItemsWizardSelectionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>946</width>
+    <height>594</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>WizardPage</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QWidget" name="pageSelection">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupRecordings">
+         <property name="title">
+          <string>Recording Files</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelRecordingsFormat">
+            <property name="text">
+             <string>Formats:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboRecordingsFilter"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="editRecordingsFilter"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QTreeView" name="treeviewRecordingsFormat"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelRecordingsFilter">
+            <property name="text">
+             <string>Filename filter:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupCommunicationName">
+         <property name="title">
+          <string>Communication ID</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="3" column="1">
+           <layout class="QGridLayout" name="gridLayoutTakeRight">
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="optionTakeRight">
+              <property name="text">
+               <string>Retain only or</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QSpinBox" name="spinBoxRightChars"/>
+            </item>
+            <item row="0" column="0">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="0" column="4">
+             <widget class="QLabel" name="labelTakeRightChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QRadioButton" name="optionRemoveRight">
+              <property name="text">
+               <string>Remove the rightmost</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="3" column="0">
+           <layout class="QGridLayout" name="gridLayoutTakeLeft">
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelTakeLeftChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="optionRemoveLeft">
+              <property name="text">
+               <string>Remove the leftmost</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="optionTakeLeft">
+              <property name="text">
+               <string>Retain only or</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QSpinBox" name="spinBoxLeftChars"/>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="optionEntireFilename">
+            <property name="text">
+             <string>Use entire filename as the new Communication's ID</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <layout class="QGridLayout" name="gridLayoutRemoveFromEnd">
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="optionRemoveFromEnd">
+              <property name="text">
+               <string>Remove the following text from the end:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="editRemoveFromEnd"/>
+            </item>
+           </layout>
+          </item>
+          <item row="4" column="0">
+           <widget class="QRadioButton" name="optionSubfolderName">
+            <property name="text">
+             <string>Use sub-folder name as the new Communication's ID</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupFolder">
+         <property name="title">
+          <string>Folder to process</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLineEdit" name="editFolderName"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="commandSelectFolder">
+            <property name="text">
+             <string>Select</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="checkBoxRecursive">
+            <property name="text">
+             <string>Process sub-folders (recursively)</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QGroupBox" name="groupAnnotations">
+         <property name="title">
+          <string>Annotation Files</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_6">
+          <item row="0" column="0">
+           <widget class="QLabel" name="labelAnnotationsFormat">
+            <property name="text">
+             <string>Formats:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QTreeView" name="treeviewAnnotationsFormat"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="labelAnnotationsFilter">
+            <property name="text">
+             <string>Filename filter:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboAnnotationsFilter"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="editAnnotationsFilter"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="2">
+        <widget class="QGroupBox" name="groupSpeakerPolicy">
+         <property name="title">
+          <string>Speaker ID</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="optionSpeakerIntervals">
+            <property name="text">
+             <string>A special annotation tier indicates the Speaker ID.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="optionSpeakerSingle">
+            <property name="text">
+             <string>Only one speaker per annotation file. Use filename as the new Speaker ID.</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="optionSpeakerTiers">
+            <property name="text">
+             <string>Each tier contains a different speaker. Use tier name as the new Speaker ID.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QRadioButton" name="optionSpeakerPrimaryAndSecondary">
+            <property name="text">
+             <string>One main speaker per annotation file, and one or more tiers containing secondary speakers.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageProcess">
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="labelWait">
+         <property name="text">
+          <string>Praaline is searching for Media Recordings and Annotation files according to your instructions. Please wait...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QPlainTextEdit" name="texteditMessages"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QProgressBar" name="progressBar">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="commandAbort">
+         <property name="text">
+          <string>Abort process!</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>editFolderName</tabstop>
+  <tabstop>commandSelectFolder</tabstop>
+  <tabstop>checkBoxRecursive</tabstop>
+  <tabstop>treeviewRecordingsFormat</tabstop>
+  <tabstop>treeviewAnnotationsFormat</tabstop>
+  <tabstop>comboRecordingsFilter</tabstop>
+  <tabstop>editRecordingsFilter</tabstop>
+  <tabstop>comboAnnotationsFilter</tabstop>
+  <tabstop>editAnnotationsFilter</tabstop>
+  <tabstop>optionEntireFilename</tabstop>
+  <tabstop>optionRemoveFromEnd</tabstop>
+  <tabstop>editRemoveFromEnd</tabstop>
+  <tabstop>optionTakeLeft</tabstop>
+  <tabstop>optionRemoveLeft</tabstop>
+  <tabstop>spinBoxLeftChars</tabstop>
+  <tabstop>optionTakeRight</tabstop>
+  <tabstop>optionRemoveRight</tabstop>
+  <tabstop>spinBoxRightChars</tabstop>
+  <tabstop>optionSubfolderName</tabstop>
+  <tabstop>optionSpeakerSingle</tabstop>
+  <tabstop>optionSpeakerTiers</tabstop>
+  <tabstop>optionSpeakerIntervals</tabstop>
+  <tabstop>optionSpeakerPrimaryAndSecondary</tabstop>
+  <tabstop>commandAbort</tabstop>
+  <tabstop>texteditMessages</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

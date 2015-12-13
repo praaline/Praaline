@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GridViewWidget</class>
+ <widget class="QWidget" name="GridViewWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>742</width>
+    <height>537</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayoutTable">
+     <item row="8" column="1">
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="1">
+      <widget class="QToolButton" name="pinRowsToolButton">
+       <property name="text">
+        <string>...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../grid/qaiv.qrc">
+         <normaloff>:/qaiv/pin/enabled</normaloff>:/qaiv/pin/enabled</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QToolButton" name="clipboardCopyToolButton">
+       <property name="text">
+        <string>Copy to Clipboard</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../app/praaline.qrc">
+         <normaloff>:/icons/actions/edit_copy_24.png</normaloff>:/icons/actions/edit_copy_24.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0" rowspan="9">
+      <widget class="QAdvancedTableView" name="advancedTableView" native="true"/>
+     </item>
+     <item row="0" column="1">
+      <widget class="QToolButton" name="splitModeToolButton">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="../grid/qaiv.qrc">
+         <normaloff>:/qaiv/view/single</normaloff>:/qaiv/view/single</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="advancedTableViewResultLabel">
+       <property name="text">
+        <string>Result: 0 of 0</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QToolButton" name="findToolButton">
+       <property name="text">
+        <string>Find in table...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../app/praaline.qrc">
+         <normaloff>:/icons/actions/edit_find_24.png</normaloff>:/icons/actions/edit_find_24.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QToolButton" name="exportToolButton">
+       <property name="text">
+        <string>Export table to tab-separated file...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../app/praaline.qrc">
+         <normaloff>:/icons/actions/table_export_24.png</normaloff>:/icons/actions/table_export_24.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QToolButton" name="clipboardPasteToolButton">
+       <property name="text">
+        <string>Copy to Clipboard</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../app/praaline.qrc">
+         <normaloff>:/icons/actions/edit_paste_24.png</normaloff>:/icons/actions/edit_paste_24.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QToolButton" name="filterToolButton">
+       <property name="text">
+        <string>Find in table...</string>
+       </property>
+       <property name="icon">
+        <iconset resource="../../app/praaline.qrc">
+         <normaloff>:/icons/actions/filter_24.png</normaloff>:/icons/actions/filter_24.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>24</width>
+         <height>24</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <action name="singleViewAction">
+   <property name="icon">
+    <iconset resource="../grid/qaiv.qrc">
+     <normaloff>:/qaiv/view/single</normaloff>:/qaiv/view/single</iconset>
+   </property>
+   <property name="text">
+    <string>Single View</string>
+   </property>
+  </action>
+  <action name="horizontalSplitAction">
+   <property name="icon">
+    <iconset resource="../grid/qaiv.qrc">
+     <normaloff>:/qaiv/view/splitted</normaloff>:/qaiv/view/splitted</iconset>
+   </property>
+   <property name="text">
+    <string>Horizontal Split</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QAdvancedTableView</class>
+   <extends>QWidget</extends>
+   <header>grid/qadvancedtableview.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../grid/qaiv.qrc"/>
+  <include location="../../app/praaline.qrc"/>
+ </resources>
+ <connections/>
+</ui>

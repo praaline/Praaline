@@ -1,0 +1,12 @@
+#ifndef PLUGINDISMO_GLOBAL_H
+#define PLUGINDISMO_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(PLUGIN_DISMO_LIBRARY)
+#  define PLUGIN_DISMO_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define PLUGIN_DISMO_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // PLUGINDISMO_GLOBAL_H

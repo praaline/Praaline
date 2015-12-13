@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AnnotationControlsDisfluencies</class>
+ <widget class="QWidget" name="AnnotationControlsDisfluencies">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>895</width>
+    <height>132</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupSimple">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Simple disfluencies (select only one token)</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="3">
+         <widget class="QPushButton" name="cmdWithinWordPause">
+          <property name="text">
+           <string>Within-word Pause F4</string>
+          </property>
+          <property name="shortcut">
+           <string>F4</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="cmdLengthening">
+          <property name="text">
+           <string>Lengthening F3</string>
+          </property>
+          <property name="shortcut">
+           <string>F3</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="cmdFilledPause">
+          <property name="text">
+           <string>Filled pause F1</string>
+          </property>
+          <property name="shortcut">
+           <string>F1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="cmdFalseStart">
+          <property name="text">
+           <string>False start F2</string>
+          </property>
+          <property name="shortcut">
+           <string>F2</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="cmdComplex">
+       <property name="text">
+        <string>Open Complex Disfluency Editor F9</string>
+       </property>
+       <property name="shortcut">
+        <string>F9</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupStructured">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Structured disfluencies (select more than one contiguous tokens)</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_7" columnstretch="0,0">
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridEditingStructure">
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelEditingStructure">
+          <property name="text">
+           <string>Editing structure:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="txtEditingStructure"/>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <layout class="QGridLayout" name="gridStructuredButtons">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="cmdRepetition">
+          <property name="text">
+           <string>Repetition F5</string>
+          </property>
+          <property name="shortcut">
+           <string>F5</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="cmdSubstitution">
+          <property name="text">
+           <string>Substitution F6</string>
+          </property>
+          <property name="shortcut">
+           <string>F6</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="cmdInsertion">
+          <property name="text">
+           <string>Insertion F7</string>
+          </property>
+          <property name="shortcut">
+           <string>F7</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="cmdDeletion">
+          <property name="text">
+           <string>Deletion F8</string>
+          </property>
+          <property name="shortcut">
+           <string>F8</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelEditingStructureInstructions">
+        <property name="text">
+         <string>(reparans) [optional editing terms] *interruption point repair</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QGroupBox" name="groupBoundaries">
+     <property name="title">
+      <string>Boundaries / DMs</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="cmdBoundaryBreak">
+        <property name="text">
+         <string>Break here F10</string>
+        </property>
+        <property name="shortcut">
+         <string>F10</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="cmdBoundaryContinue">
+        <property name="text">
+         <string>Continue F11</string>
+        </property>
+        <property name="shortcut">
+         <string>F11</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="cmdDiscourseMarker">
+        <property name="text">
+         <string>Discourse Marker F12</string>
+        </property>
+        <property name="shortcut">
+         <string>F12</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

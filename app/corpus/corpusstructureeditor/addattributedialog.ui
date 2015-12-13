@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AddAttributeDialog</class>
+ <widget class="QDialog" name="AddAttributeDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>340</width>
+    <height>119</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Add new attribute</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QLabel" name="labelDatalength">
+     <property name="text">
+      <string>Maximum Lenght:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="labelDatatype">
+     <property name="text">
+      <string>Data type:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="2">
+    <widget class="QComboBox" name="comboDatatype"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="labelAttributeID">
+     <property name="text">
+      <string>Attribute ID:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1" colspan="2">
+    <widget class="QLineEdit" name="editAttributeID"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="spinDatalength">
+     <property name="minimumSize">
+      <size>
+       <width>70</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximum">
+      <number>1024</number>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>editAttributeID</tabstop>
+  <tabstop>comboDatatype</tabstop>
+  <tabstop>spinDatalength</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

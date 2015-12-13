@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImportMetadataWizard</class>
+ <widget class="QWizard" name="ImportMetadataWizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>955</width>
+    <height>610</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Wizard</string>
+  </property>
+  <property name="wizardStyle">
+   <enum>QWizard::ModernStyle</enum>
+  </property>
+  <widget class="QWizardPage" name="pageIntroduction">
+   <property name="title">
+    <string>Import Metadata Wizard - Step 1 of 3</string>
+   </property>
+   <property name="subTitle">
+    <string>This wizard will assist you in creating corpus objects and importing metadata from a text file.</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayoutBasicInfo">
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBoxCorpusItemType">
+        <property name="title">
+         <string>Corpus item type</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayoutPreviewIntroduction">
+         <item row="4" column="0">
+          <widget class="QRadioButton" name="optionAnnotations">
+           <property name="text">
+            <string>Annotations</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QRadioButton" name="optionSpeakers">
+           <property name="text">
+            <string>Speakers</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="optionParticipations">
+           <property name="text">
+            <string>Participations</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QRadioButton" name="optionRecordings">
+           <property name="text">
+            <string>Recordings</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="optionCommunications">
+           <property name="text">
+            <string>Communications</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="title">
+         <string>Import mode</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="optionModeUpdate">
+           <property name="text">
+            <string>Merge with existing items</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelModeUpdate">
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>If an item exists, its metadata will be updated based on the contents of the imported file.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QRadioButton" name="optionModeReplace">
+           <property name="text">
+            <string>Replace existing items</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelModeReplace">
+           <property name="font">
+            <font>
+             <pointsize>7</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>Existing items will be deleted and replaced with newitems having metadata from the imported file.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QGroupBox" name="groupBoxTextFileProperties">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Text file properties</string>
+        </property>
+        <layout class="QFormLayout" name="formLayout_3">
+         <property name="fieldGrowthPolicy">
+          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelDelimiter">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Delimiter:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboDelimiter"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelTextQualifier">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Text qualifier:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="comboTextQualifier"/>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="labelEncoding">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Encoding:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QComboBox" name="comboEncoding"/>
+         </item>
+         <item row="6" column="0" colspan="2">
+          <widget class="QCheckBox" name="checkHeaderLine">
+           <property name="text">
+            <string>My text file has a header line with attribute names</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBoxPreviewIntro">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Data Preivew</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QTableView" name="tableViewPreviewIntro">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="pageColumns">
+   <property name="title">
+    <string>Import Metadata Wizard - Step 2 of 3</string>
+   </property>
+   <property name="subTitle">
+    <string>This screen lets you define the correspondence between columns in the text file and corpus item attributes. You can also select the data format used to interpret each column.</string>
+   </property>
+   <layout class="QFormLayout" name="formLayout_2">
+    <property name="fieldGrowthPolicy">
+     <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+    </property>
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBoxColumnDataFormat">
+      <property name="title">
+       <string>Column data format</string>
+      </property>
+      <layout class="QFormLayout" name="formLayout">
+       <property name="fieldGrowthPolicy">
+        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+       </property>
+       <item row="0" column="0">
+        <widget class="QRadioButton" name="optionFormatText">
+         <property name="text">
+          <string>Text</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QRadioButton" name="optionFormatNumber">
+         <property name="text">
+          <string>Number</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QRadioButton" name="optionFormatDate">
+         <property name="text">
+          <string>Date:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="comboDateFormat"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <layout class="QGridLayout" name="gridLayoutColumnAttribute">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelAttribute">
+        <property name="text">
+         <string>Attribute for selected column:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="0">
+       <widget class="QComboBox" name="comboAttribute"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelMandatoryAttributes">
+        <property name="text">
+         <string>You must link the following attributes to a column before being able to import corpus items:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QGroupBox" name="groupBoxPreviewColumns">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Data preview</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayoutPreviewColumns">
+       <item row="0" column="0">
+        <widget class="QTableView" name="tableViewPreviewColumns"/>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="pageImport">
+   <property name="title">
+    <string>Import Metadata Wizard - Step 3 of 3</string>
+   </property>
+   <property name="subTitle">
+    <string>This screen concludes the Import Metadata wizard. You can preview the import results below. The corpus will be actually modified when you click Finish.</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QProgressBar" name="progressBarImport">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QTableView" name="tableViewResults"/>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>optionCommunications</tabstop>
+  <tabstop>optionSpeakers</tabstop>
+  <tabstop>optionParticipations</tabstop>
+  <tabstop>optionRecordings</tabstop>
+  <tabstop>optionAnnotations</tabstop>
+  <tabstop>optionModeUpdate</tabstop>
+  <tabstop>optionModeReplace</tabstop>
+  <tabstop>comboDelimiter</tabstop>
+  <tabstop>comboTextQualifier</tabstop>
+  <tabstop>comboEncoding</tabstop>
+  <tabstop>checkHeaderLine</tabstop>
+  <tabstop>tableViewPreviewIntro</tabstop>
+  <tabstop>comboDateFormat</tabstop>
+  <tabstop>comboAttribute</tabstop>
+  <tabstop>tableViewResults</tabstop>
+  <tabstop>optionFormatDate</tabstop>
+  <tabstop>tableViewPreviewColumns</tabstop>
+  <tabstop>optionFormatNumber</tabstop>
+  <tabstop>optionFormatText</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,12 @@
+#ifndef PLUGINVARIA_GLOBAL_H
+#define PLUGINVARIA_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(PLUGIN_VARIA_LIBRARY)
+#  define PLUGIN_VARIA_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define PLUGIN_VARIA_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // PLUGINVARIA_GLOBAL_H

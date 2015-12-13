@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExportAnnotationsWizard</class>
+ <widget class="QWizard" name="ExportAnnotationsWizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>751</width>
+    <height>555</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Wizard</string>
+  </property>
+  <property name="wizardStyle">
+   <enum>QWizard::ClassicStyle</enum>
+  </property>
+  <widget class="QWizardPage" name="pageCorpusItemsSelection">
+   <property name="title">
+    <string>Select Corpus Items to Export</string>
+   </property>
+   <property name="subTitle">
+    <string>Select the corpus items you want to export. Selecting a Communication will export all the associated Annotations.</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBoxExportFolder">
+      <property name="title">
+       <string>Save export files to the following folder</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="textExportFolder"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="commandSelectFolder">
+         <property name="text">
+          <string>Select folder</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QGroupBox" name="groupBoxCorpusItems">
+      <property name="title">
+       <string>Corpus Items to export</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3"/>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="pageLevelsAttributesSelection">
+   <property name="title">
+    <string>Select Annotation Levels and Attributes</string>
+   </property>
+   <property name="subTitle">
+    <string>Select which annotation levels and attributes you want to include in the exported files.</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
