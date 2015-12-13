@@ -1,0 +1,10 @@
+prefix=/work/sonic-visualiser/sv-dependency-builds/src/flac-1.2.1/../../script/win32/../..//win32-mingw/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FLAC
+Description: Free Lossless Audio Codec Library
+Version: 1.2.1
+Libs: -L${libdir} -lFLAC -lm
+Cflags: -I${includedir}/FLAC

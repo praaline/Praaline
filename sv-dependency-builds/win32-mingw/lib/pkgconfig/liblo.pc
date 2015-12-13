@@ -1,0 +1,10 @@
+prefix=/work/sonic-visualiser/sv-dependency-builds/src/liblo-0.26/../../script/win32/../..//win32-mingw/
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: liblo
+Version: 0.26
+Description: A lightweight OSC server/client library
+Libs: -L${libdir} -llo -lpthread
+Cflags: -I${includedir}

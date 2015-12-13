@@ -1,0 +1,12 @@
+prefix=/work/sonic-visualiser/sv-dependency-builds/src/portaudio/../../script/win32/../..//win32-mingw
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: PortAudio
+Description: Portable audio I/O
+Requires:
+Version: 19
+
+Libs: -L${libdir} -lportaudio  -lm -lpthread
+Cflags: -I${includedir} -pthread

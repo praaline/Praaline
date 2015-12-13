@@ -1,0 +1,10 @@
+prefix=/work/sonic-visualiser/sv-dependency-builds/src/fftw-3.3.3/../../script/win32/../..//win32-mingw
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FFTW
+Description: fast Fourier transform library
+Version: 3.3.3
+Libs: -L${libdir} -lfftw3  -lm
+Cflags: -I${includedir}

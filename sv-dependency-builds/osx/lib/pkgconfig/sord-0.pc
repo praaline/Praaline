@@ -1,0 +1,11 @@
+prefix=/Users/cannam/code/sv-dependency-builds/osx
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Sord
+Version: 0.12.0
+Description: A lightweight C library for storing RDF statements in memory.
+Requires: serd-0
+Libs: -L${libdir} -lsord-0
+Cflags: -I${includedir}/sord-0
