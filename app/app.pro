@@ -189,7 +189,8 @@ HEADERS  += \
     visualisation/visualiserwidget.h \
     query/extractsoundbiteswidget.h \
     corpus/MergeCorporaDialog.h \
-    statistics/CountStatisticsWidget.h
+    statistics/CountStatisticsWidget.h \
+    corpus/importcorpusitemswizard/importannotations.h
 
 FORMS    += mainwindow.ui \
     corpus/corpusmodewidget.ui \

@@ -72,7 +72,8 @@ HEADERS += layer/Colour3DPlotLayer.h \
            layer/TimeValueLayer.h \
            layer/VerticalScaleLayer.h \
            layer/WaveformLayer.h \
-           layer/SVLayersInitialiser.h
+           layer/SVLayersInitialiser.h \
+    layer/ShowLayerCommand.h
 SOURCES += layer/Colour3DPlotLayer.cpp \
 	   layer/ColourDatabase.cpp \
 	   layer/ColourMapper.cpp \

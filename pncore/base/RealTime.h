@@ -25,7 +25,7 @@
 #include "BaseTypes.h"
 #include <iostream>
 #include <string>
-#include <vamp-hostsdk/RealTime.h>
+#include "vamp-hostsdk/RealTime.h"
 
 struct timeval;
 

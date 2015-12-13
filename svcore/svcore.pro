@@ -93,7 +93,8 @@ HEADERS += base/AudioLevel.h \
            base/ViewManagerBase.h \
            base/Window.h \
            base/XmlExportable.h \
-           base/ZoomConstraint.h
+           base/ZoomConstraint.h \
+    data/model/NoteData.h
 SOURCES += base/AudioLevel.cpp \
            base/Clipboard.cpp \
            base/Command.cpp \

@@ -41,7 +41,8 @@ HEADERS += dataquay/BasicStore.h \
            dataquay/objectmapper/ObjectMapperForwarder.h \
            dataquay/objectmapper/ObjectStorer.h \
            dataquay/objectmapper/TypeMapping.h \
-           src/Debug.h
+           src/Debug.h \
+    dataquay/objectmapper/ObjectMapperExceptions.h
            
 SOURCES += src/Connection.cpp \
            src/Node.cpp \
