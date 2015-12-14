@@ -59,7 +59,8 @@ PRE_TARGETDEPS += \
         ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 # Will build the final executable in the main project directory.
-!mac*:TARGET = ../praaline
+#!mac*:
+TARGET = ../praaline
 
 SOURCES += main.cpp \
     corporamanager.cpp \
