@@ -4,7 +4,6 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp \
            plugins #praalinepy
