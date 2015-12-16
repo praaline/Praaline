@@ -3,7 +3,7 @@
 #include <QSortFilterProxyModel>
 #include "model/annotation/annotationtiermodel.h"
 #include "annotationtimelineeditor.h"
-#include "ui_Annotationtimelineeditor.h"
+#include "ui_annotationtimelineeditor.h"
 
 #include "grid/qadvancedtableview.h"
 #include "grid/qadvancedheaderview.h"

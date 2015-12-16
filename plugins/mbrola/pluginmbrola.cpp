@@ -8,7 +8,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pluginMBROLA.h"
+#include "pluginmbrola.h"
 
 
 #include "pncore/base/realvaluelist.h"

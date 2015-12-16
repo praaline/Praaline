@@ -3,7 +3,7 @@
 #include <QToolBar>
 #include <QTreeView>
 #include <QTableView>
-#include "Concordancerquickwidget.h"
+#include "concordancerquickwidget.h"
 #include "ui_concordancerquickwidget.h"
 
 #include "pncore/corpus/corpus.h"

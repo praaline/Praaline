@@ -1,7 +1,7 @@
 #ifndef PLUGINMBROLA_H
 #define PLUGINMBROLA_H
 
-#include "pluginMBROLA_global.h"
+#include "pluginmbrola_global.h"
 
 #include "iannotationplugin.h"
 #include <QtilitiesCategory>

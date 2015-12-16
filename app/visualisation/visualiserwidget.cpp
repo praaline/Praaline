@@ -79,7 +79,7 @@
 #include "rdf/PluginRDFIndexer.h"
 #include "rdf/RDFExporter.h"
 
-#include "NetworkPermissionTester.h"
+#include "networkpermissiontester.h"
 #include "framework/VersionTester.h"
 
 // For version information

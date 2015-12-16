@@ -17,7 +17,7 @@
 #define VISUALISERWIDGET_H
 
 #include "framework/VisualiserWindowBase.h"
-#include "PitchAnalyser.h"
+#include "pitchanalyser.h"
 
 // class VersionTester;
 class ActivityLog;

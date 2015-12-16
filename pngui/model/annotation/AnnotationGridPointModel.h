@@ -117,7 +117,7 @@ public:
         if (i == m_points.end()) return QVariant();
 
         if (column == 2) {
-            return i->duration;
+            return int(i->duration);
         } else if (column == 3) {
             return i->speakerID;
         } else if (column == 4) {
