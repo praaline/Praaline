@@ -7,8 +7,10 @@ AnnotationStructureAttribute::AnnotationStructureAttribute(QObject *parent) :
 {
 }
 
-AnnotationStructureAttribute::AnnotationStructureAttribute(const QString &ID, QObject *parent) :
-    StructureBase(ID, parent)
+AnnotationStructureAttribute::AnnotationStructureAttribute(const QString &ID, const QString &name, const QString &description,
+                                                           const QString &datatype, int datalength, bool indexed, const QString &nameValueList,
+                                                           QObject *parent) :
+    StructureBase(ID, name, description, datatype, datalength, indexed, nameValueList, parent)
 {
 }
 
@@ -17,3 +19,4 @@ AnnotationStructureAttribute::AnnotationStructureAttribute(const AnnotationStruc
 {
     m_statLevelOfMeasurement = other->statLevelOfMeasurement();
 }
+

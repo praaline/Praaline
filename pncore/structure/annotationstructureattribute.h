@@ -13,8 +13,10 @@ class PRAALINE_CORE_SHARED_EXPORT AnnotationStructureAttribute : public Structur
 
 public:
     explicit AnnotationStructureAttribute(QObject *parent = 0);
-    AnnotationStructureAttribute(const QString &ID, QObject *parent = 0);
     AnnotationStructureAttribute(const AnnotationStructureAttribute *other, QObject *parent = 0);
+    AnnotationStructureAttribute(const QString &ID, const QString &name = QString(), const QString &description = QString(),
+                                 const QString &datatype = "varchar", int datalength = 256, bool indexed = false, const QString &nameValueList = QString(),
+                                 QObject *parent = 0);
 
     // Data
     QString statLevelOfMeasurement() const { return m_statLevelOfMeasurement; }

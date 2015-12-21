@@ -8,6 +8,7 @@
 #include "pluginsyntax.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
+#include "CoNLLUReader.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -74,7 +75,7 @@ QString Praaline::Plugins::Syntax::PluginSyntax::pluginDescription() const {
 }
 
 QString Praaline::Plugins::Syntax::PluginSyntax::pluginCopyright() const {
-    return QString(tr("Copyright") + " 2012-2014, George Christodoulides");
+    return QString(tr("Copyright") + " 2015, George Christodoulides");
 }
 
 QString Praaline::Plugins::Syntax::PluginSyntax::pluginLicense() const {
@@ -93,23 +94,14 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(QHash<QString, QVari
 
 void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    QString filename = "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        if (!com->hasRecordings()) continue;
-        QPointer<CorpusRecording> rec = com->recordings().first();
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-
-                // corpus->datastoreAnnotations()->saveTiers(annot->ID(), speakerID, tiers);
-            }
-            qDeleteAll(tiersAll);
-        }
+        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
+        com->addAnnotation(annot);
+        AnnotationTierGroup *group = new AnnotationTierGroup();
+        CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
+        corpus->datastoreAnnotations()->saveTiers(com->ID(), "ud", group);
     }
 }
 

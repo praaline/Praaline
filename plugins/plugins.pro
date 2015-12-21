@@ -12,6 +12,6 @@ SUBDIRS +=  dismo \
             prosobox \
             syntax \
             dismo2 \
-            mbrola
-#longalign \
+            mbrola \
+            longalign
 

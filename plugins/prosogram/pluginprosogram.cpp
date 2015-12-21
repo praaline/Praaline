@@ -17,7 +17,7 @@ using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
     PluginProsogramPrivateData() :
-        overwrite(true), autosyllablePauseThreshold(0.250),
+        createLevels(true), overwrite(true), autosyllablePauseThreshold(0.250),
         timeRangeFrom(0.0), timeRangeTo(0.0),
         f0DetectionMin(60), f0DetectionMax(450), framePeriod(0.015),
         keepIntermediateFiles(true), createImageFiles(false)
@@ -30,6 +30,7 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
     }
 
     int command;
+    bool createLevels;
     bool overwrite;
     double autosyllablePauseThreshold;
     double timeRangeFrom;
@@ -46,6 +47,7 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
     bool createImageFiles;
     QString tiersOnImageFiles;
     QString fileFormat;
+    QString attributePrefix;
 };
 
 Praaline::Plugins::Prosogram::PluginProsogram::PluginProsogram(QObject* parent) : QObject(parent)
@@ -123,7 +125,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
     parameters << PluginParameter("command", "Function to apply", QVariant::Int, d->command, QStringList() <<
                                   "ProsoGram v. 2.9" <<
                                   "Create utterance segmentation from auto syllables");
-    parameters << PluginParameter("overwrite", "Overwrite?", QVariant::Bool, d->overwrite);
+    parameters << PluginParameter("createLevels", "Create annotation levels when they do not exist?", QVariant::Bool, d->createLevels);
+    parameters << PluginParameter("overwrite", "Overwrite existing annotations/values?", QVariant::Bool, d->overwrite);
     parameters << PluginParameter("autosyllablePauseThreshold", "Autosyllable pause threshold (sec)", QVariant::Double, d->autosyllablePauseThreshold);
 
     parameters << PluginParameter("timeRangeFrom", "Time range (s) From", QVariant::Double, d->timeRangeFrom);
@@ -158,6 +161,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
 void Praaline::Plugins::Prosogram::PluginProsogram::setParameters(QHash<QString, QVariant> parameters)
 {
     if (parameters.contains("command"))                     d->command = parameters.value("command").toInt();
+    if (parameters.contains("createLevels"))                d->createLevels = parameters.value("createLevels").toBool();
     if (parameters.contains("overwrite"))                   d->overwrite = parameters.value("overwrite").toBool();
     if (parameters.contains("autosyllablePauseThreshold"))  d->autosyllablePauseThreshold = parameters.value("autosyllablePauseThreshold").toDouble();
     if (parameters.contains("timeRangeFrom"))               d->timeRangeFrom = parameters.value("timeRangeFrom").toDouble();
@@ -189,6 +193,56 @@ void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
         printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
 }
 
+void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QString &prefix,
+                     const QString &ID, const QString &name = QString(), const QString &description = QString(),
+                     const QString &datatype = "varchar", int datalength = 256, bool indexed = false, const QString &nameValueList = QString())
+{
+    if (level->hasAttribute(ID)) return;
+    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype, datalength, indexed, nameValueList);
+    if (corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr))
+        level->addAttribute(attr);
+}
+
+void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoStructure(Corpus *corpus)
+{
+    if (!corpus) return;
+    d->attributePrefix = d->attributePrefix.trimmed();
+    AnnotationStructureLevel *level_syll = corpus->annotationStructure()->level(d->levelSyllable);
+    if (!level_syll) {
+        level_syll = new AnnotationStructureLevel(d->levelSyllable, AnnotationStructureLevel::IndependentLevel, "Syllables", "");
+        if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_syll)) return;
+        corpus->annotationStructure()->addLevel(level_syll);
+    }
+    // identification
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t1", "Nucleus t1", "Syllabic nucleus start", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t2", "Nucleus t2", "Syllabic nucleus end", "double", 0);
+    // before stylisation
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", "double", 0);
+    // after stylisation
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intersyllab", "Intersyllabic mvt", "Intersyllabic interval (ST) between end of previous nucleus and start of current one", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabdown", "Intrasyllabic mvt down", "Sum of downward pitch interval (ST) of tonal segments in nucleus", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", "int", 1);
+    // intensity
+    createAttribute(corpus, level_syll, d->attributePrefix, "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", "double", 0);
+    // durations
+    createAttribute(corpus, level_syll, d->attributePrefix, "syll_dur", "Syllable duration", "Syllable duration (msec)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", "double", 0);
+    // save
+    corpus->save();
+}
+
+
 void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllables(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
 {
     int countDone = 0;
@@ -205,17 +259,17 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
-                IntervalTier *tier_autosyll = tiers->getIntervalTierByName("auto_syll");
+                IntervalTier *tier_autosyll = tiers->getIntervalTierByName(d->levelSyllable);
                 if (!tier_autosyll) {
-                    printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Tier auto_syll not found.")
-                                 .arg(com->ID()).arg(annot->ID()).arg(speakerID));
+                    printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Auto-syllable tier (%4) not found.")
+                                 .arg(com->ID()).arg(annot->ID()).arg(speakerID).arg(d->levelSyllable));
                     continue;
                 }
-                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
+                IntervalTier *tier_segment = tiers->getIntervalTierByName(d->levelSegmentation);
                 if (tier_segment) {
                     if (!d->overwrite) {
-                        printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Already has segment tier.")
-                                     .arg(com->ID()).arg(annot->ID()).arg(speakerID));
+                        printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Already has segmentation tier (%4).")
+                                     .arg(com->ID()).arg(annot->ID()).arg(speakerID).arg(d->levelSegmentation));
                         continue;
                     } else {
                         delete tier_segment;
@@ -232,9 +286,9 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                         d->autosyllablePauseThreshold = d->autosyllablePauseThreshold - 0.050;
                 }
                 if (listLongPauses.isEmpty()) {
-                    tier_segment = new IntervalTier("segment", tier_autosyll->tMin(), tier_autosyll->tMax());
+                    tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax());
                 } else {
-                    tier_segment = new IntervalTier("segment", tier_autosyll->tMin(), tier_autosyll->tMax(), listLongPauses);
+                    tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax(), listLongPauses);
                     tier_segment->replaceText("<sil>", "_");
                     tier_segment->mergeIdenticalAnnotations("_");
                 }
@@ -257,6 +311,10 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
         emit printMessage("ProsoGram: no corpus selected!");
         return;
     }
+
+    d->levelPhone = d->levelPhone.trimmed();
+    d->levelSegmentation = d->levelSegmentation.trimmed();
+    d->levelSyllable = d->levelSyllable.trimmed();
 
     if (d->command == 1) {
         createSegmentsFromAutoSyllables(corpus, communications);
@@ -286,6 +344,22 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
     int countDone = 0;
     madeProgress(0);
     printMessage("ProsoGram v.2.9m running");
+
+    if (d->createLevels) {
+        if ((!d->levelSegmentation.isEmpty()) && (!corpus->annotationStructure()->hasLevel(d->levelSegmentation))) {
+            AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(d->levelSegmentation, AnnotationStructureLevel::IndependentLevel, "Segmentation", "");
+            if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_segment)) {
+                printMessage(QString("Error creating segmentation level: %1").arg(d->levelSegmentation));
+                return;
+            }
+            corpus->annotationStructure()->addLevel(level_segment);
+            corpus->save();
+        }
+        if (!corpus->annotationStructure()->hasLevel(d->levelSyllable)) {
+            createProsogramSyllableInfoStructure(corpus);
+        }
+    }
+
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         printMessage(QString("Annotating %1").arg(com->ID()));
@@ -294,26 +368,22 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
                 if (d->segmentationMethod == 0) {
-                    foreach (QPointer<CorpusParticipation> part, corpus->participationsForCommunication(com->ID())) {
-                        if (!part) continue;
-                        QString speakerID = part->speakerID();
-                        printMessage(QString("   speaker %1").arg(speakerID));
-                        // check already
-                        AnnotationTier *autosyll = corpus->datastoreAnnotations()->getTier(annot->ID(), speakerID, d->levelSyllable);
-                        if (autosyll) {
-                            QFileInfo info(corpus->baseMediaPath() + "/" + rec->filename());
-                            QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
-                            QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
-                            ProsoGram::updateGlobal(com, prosoPath + filenameGlobalsheet);
-                            printMessage("Autosyll already OK, updated globalsheet");
-                            continue;
-                        }
-                        QPointer<AnnotationTierGroup> tiers = new AnnotationTierGroup();
-                        if (!tiers) continue;
-                        // execute prosogram script
-                        prosogram->runProsoGram(corpus, rec, tiers, annot->ID(), speakerID);
-                        delete tiers;
+                    QString speakerID = annot->ID(); // default speaker ID - impossible to tell using automatic syllabification
+                    // check already
+                    AnnotationTier *autosyll = corpus->datastoreAnnotations()->getTier(annot->ID(), speakerID, d->levelSyllable);
+                    if (autosyll) {
+                        QFileInfo info(corpus->baseMediaPath() + "/" + rec->filename());
+                        QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
+                        QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+                        ProsoGram::updateGlobal(com, prosoPath + filenameGlobalsheet);
+                        printMessage("Autosyll already OK, updated globalsheet");
+                        continue;
                     }
+                    QPointer<AnnotationTierGroup> tiers = new AnnotationTierGroup();
+                    if (!tiers) continue;
+                    // execute prosogram script
+                    prosogram->runProsoGram(corpus, rec, tiers, annot->ID(), speakerID);
+                    delete tiers;
                 } else {
                     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
                     foreach (QString speakerID, tiersAll.keys()) {

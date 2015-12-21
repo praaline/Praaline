@@ -18,7 +18,7 @@ using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::DisMo::PluginDisMoPrivateData {
     PluginDisMoPrivateData() :
-        alreadyTokenised(false), tokenisedOnlyToMinimal(false),
+        createDisMoAnnotationLevels(false), alreadyTokenised(false), tokenisedOnlyToMinimal(false),
         levelToAnnotate("segment"), levelTokMin("tok_min"), levelTokMWU("tok_mwu"),
         levelPhones("phone"), attributePrefix("")
     {
@@ -32,6 +32,7 @@ struct Praaline::Plugins::DisMo::PluginDisMoPrivateData {
         attributeNames["discourse"] = "discourse";
     }
 
+    bool createDisMoAnnotationLevels;
     bool alreadyTokenised;
     bool tokenisedOnlyToMinimal;
     QString levelToAnnotate;
@@ -109,6 +110,7 @@ QString Praaline::Plugins::DisMo::PluginDisMo::pluginLicense() const {
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisMo::PluginDisMo::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
+    parameters << PluginParameter("createDisMoAnnotationLevels", "Create DisMo annotation levels?", QVariant::Bool, d->createDisMoAnnotationLevels);
     parameters << PluginParameter("alreadyTokenised", "Already tokenised?", QVariant::Bool, d->alreadyTokenised);
     parameters << PluginParameter("tokenisedOnlyToMinimal", "Tokenised only to minimal tokens?", QVariant::Bool, d->tokenisedOnlyToMinimal);
     parameters << PluginParameter("levelToAnnotate", "Level to annotate", QVariant::String, d->levelToAnnotate);
@@ -121,6 +123,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisMo::PluginDisMo:
 
 void Praaline::Plugins::DisMo::PluginDisMo::setParameters(QHash<QString, QVariant> parameters)
 {
+    if (parameters.contains("createDisMoAnnotationLevels")) d->createDisMoAnnotationLevels = parameters.value("createDisMoAnnotationLevels").toBool();
     if (parameters.contains("alreadyTokenised")) d->alreadyTokenised = parameters.value("alreadyTokenised").toBool();
     if (parameters.contains("tokenisedOnlyToMinimal")) d->tokenisedOnlyToMinimal = parameters.value("tokenisedOnlyToMinimal").toBool();
     if (parameters.contains("levelToAnnotate")) d->levelToAnnotate = parameters.value("levelToAnnotate").toString();
@@ -128,6 +131,37 @@ void Praaline::Plugins::DisMo::PluginDisMo::setParameters(QHash<QString, QVarian
     if (parameters.contains("levelTokMWU")) d->levelTokMWU = parameters.value("levelTokMWU").toString();
     if (parameters.contains("levelPhones")) d->levelPhones = parameters.value("levelPhones").toString();
     if (parameters.contains("attributePrefix")) d->attributePrefix = parameters.value("attributePrefix").toString();
+}
+
+void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpus *corpus)
+{
+    if (!corpus) return;
+    d->attributePrefix = d->attributePrefix.trimmed();
+    AnnotationStructureLevel *level_tok_min = new AnnotationStructureLevel(d->levelTokMin, AnnotationStructureLevel::IndependentLevel, "Tokens (minimal)", "");
+    corpus->datastoreAnnotations()->createAnnotationLevel(level_tok_min);
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1pos_min").arg(d->attributePrefix), "Part-of-Speech (min)", "", "varchar", 32));
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1disfluency").arg(d->attributePrefix), "Disfluency", "", "varchar", 32));
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1lemma_min").arg(d->attributePrefix), "Lemma (min)", "", "varchar", 256));
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1pos_ext_min").arg(d->attributePrefix), "POS extended (min)", "", "varchar", 32));
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1dismo_confidence").arg(d->attributePrefix), "DisMo confidence", "", "double", 0));
+    level_tok_min->addAttribute(new AnnotationStructureAttribute(QString("%1dismo_method").arg(d->attributePrefix), "DisMo method", "", "varchar", 64));
+    foreach (AnnotationStructureAttribute *attr, level_tok_min->attributes()) {
+        corpus->datastoreAnnotations()->createAnnotationAttribute(level_tok_min->ID(), attr);
+    }
+    AnnotationStructureLevel *level_tok_mwu = new AnnotationStructureLevel(d->levelTokMWU, AnnotationStructureLevel::GroupingLevel, "Tokens (MWU)", "");
+    corpus->datastoreAnnotations()->createAnnotationLevel(level_tok_mwu);
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1pos_mwu").arg(d->attributePrefix), "Part-of-Speech (MWU)", "", "varchar", 32));
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1discourse").arg(d->attributePrefix), "Discourse", "", "varchar", 32));
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1lemma_mwu").arg(d->attributePrefix), "Lemma (MWU)", "", "varchar", 256));
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1pos_ext_mwu").arg(d->attributePrefix), "POS extended (MWU)", "", "varchar", 32));
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1dismo_confidence").arg(d->attributePrefix), "DisMo confidence", "", "double", 0));
+    level_tok_mwu->addAttribute(new AnnotationStructureAttribute(QString("%1dismo_method").arg(d->attributePrefix), "DisMo method", "", "varchar", 64));
+    foreach (AnnotationStructureAttribute *attr, level_tok_mwu->attributes()) {
+        corpus->datastoreAnnotations()->createAnnotationAttribute(level_tok_mwu->ID(), attr);
+    }
+    corpus->annotationStructure()->addLevel(level_tok_min);
+    corpus->annotationStructure()->addLevel(level_tok_mwu);
+    corpus->save();
 }
 
 void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
@@ -144,6 +178,10 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
     QPointer<IntervalTier> tier_tok_min;
     QPointer<IntervalTier> tier_tok_mwu;
 
+    if (d->createDisMoAnnotationLevels) {
+        createDisMoAnnotationStructure(corpus);
+        emit printMessage("Created 2 annotation levels to store DisMo annotations");
+    }
     int countDone = 0;
     madeProgress(0);
     printMessage("DisMo Annotator ver. 1.0 running");

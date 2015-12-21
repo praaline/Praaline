@@ -67,6 +67,7 @@ namespace Praaline {
             private:
                 PluginProsogramPrivateData* d;
 
+                void createProsogramSyllableInfoStructure(Corpus *corpus);
                 void createSegmentsFromAutoSyllables(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
             };
         }

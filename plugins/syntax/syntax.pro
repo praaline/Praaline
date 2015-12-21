@@ -65,8 +65,10 @@ PRE_TARGETDEPS += \
 
 HEADERS += \ 
     pluginsyntax_global.h \
-    pluginsyntax.h
+    pluginsyntax.h \
+    CoNLLUReader.h
 
 SOURCES += \ 
-    pluginsyntax.cpp
+    pluginsyntax.cpp \
+    CoNLLUReader.cpp
 

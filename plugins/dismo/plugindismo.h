@@ -64,6 +64,7 @@ namespace Praaline {
             private:
                 PluginDisMoPrivateData* d;
 
+                void createDisMoAnnotationStructure(Corpus *corpus);
                 void addMWUindications(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };
         }
