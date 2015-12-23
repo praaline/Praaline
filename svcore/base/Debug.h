@@ -19,7 +19,7 @@
 #include <QDebug>
 #include <QTextStream>
 
-#include <vamp-hostsdk/RealTime.h>
+#include "base/RealTime.h"
 
 #include <string>
 #include <iostream>
@@ -41,7 +41,7 @@ extern QDebug &getSVDebug();
 
 #define SVDEBUG getSVDebug()
 
-inline QDebug &operator<<(QDebug &d, const Vamp::RealTime &rt) {
+inline QDebug &operator<<(QDebug &d, const RealTime &rt) {
     d << rt.toString();
     return d;
 }

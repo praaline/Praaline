@@ -14,8 +14,12 @@ public:
     ~SphinxRecogniser();
 
     void setUseMLLR(bool use);
-    bool recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID, QList<Interval *> &utterances, QList<Interval *> &segmentation);
-
+    void setUseSpecialisedLM(bool use);
+    void setAttributeNames(const QString &attributenameAcousticModel, const QString &attributenameLanguageModel);
+    bool recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID,
+                                 QList<Interval *> &utterances, QList<Interval *> &segmentation);
+    bool readRecognitionResults(const QString &fileID, const QString &filenameHypotheses, const QString filenameSegmentation,
+                                QList<Interval *> &utterances, QList<Interval *> &segmentation);
 signals:
 
 public slots:

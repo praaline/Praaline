@@ -3,10 +3,10 @@
 #include <QtPlugin>
 #include <QIcon>
 #include <QApplication>
-#include <ExtensionSystemConstants>
-
+#include <QElapsedTimer>
 #include <QFile>
 #include <QTextStream>
+#include <ExtensionSystemConstants>
 
 #include "pluginaligner.h"
 #include "pncore/corpus/corpus.h"
@@ -18,6 +18,7 @@
 #include "sphinx/sphinxsegmentation.h"
 #include "phonetisers/externalphonetiser.h"
 #include "easyalignbasic.h"
+#include "LongSoundAligner.h"
 
 #include "pncore/interfaces/praat/praattextgrid.h"
 
@@ -248,7 +249,7 @@ void Praaline::Plugins::Aligner::PluginAligner::autoTranscribePresegmented(Corpu
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
-                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
+                IntervalTier *tier_segment = tiers->getIntervalTierByName("auto_segments");
                 if (!tier_segment) continue;
                 QList<Interval *> utterances;
                 QList<Interval *> segmentation;
@@ -320,6 +321,30 @@ void Praaline::Plugins::Aligner::PluginAligner::createSegments(Corpus *corpus, Q
 
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
+    LongSoundAligner *LSA = new LongSoundAligner();
+    // LSA->createRecognitionLevel(corpus, 0);
+    madeProgress(0);
+    int i = 0;
+    QElapsedTimer timer;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (!com->hasRecordings()) continue;
+        // LSA->createUtterancesFromProsogramAutosyll(corpus, com);
+        com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
+        timer.start();
+        LSA->recognise(corpus, com, 0);
+        double secRecognitionTime = timer.elapsed() / 1000.0;
+        double secRecording = com->recordings().first()->durationSec();
+        printMessage(QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
+                     arg(com->ID()).arg(secRecording).arg(secRecognitionTime).arg(secRecognitionTime / secRecording));
+        ++i;
+        madeProgress(i * 100 / communications.count());
+        QApplication::processEvents();
+    }
+    madeProgress(100);
+    delete LSA;
+    return;
+
     if (d->cmdDownsampleWaveFiles) {
         createDownsampledWavFiles(corpus, communications);
         return;
@@ -376,9 +401,10 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //    }
 
 
-//    FeatureExtraction *FE = new FeatureExtraction();
-//    FE->setFeatureParametersFile("F:/CORPUS_THESIS_EXPERIMENT/PROSO2015/adapt/french_f0/feat.params");
+//    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
+//    FE->setFeatureParametersFile("D:/SPHINX/pocketsphinx-0.8/model/hmm/french_f0/feat.params");
 //    FE->createSphinxMFC(corpus, communications);
+//    return;
 
 //    AcousticModelTrainer mt;
 //    // mt.createMasterLabelFile(QString("d:/aligner_train_tests/%1.mlf").arg(corpus->ID()), corpus, communications, "segment", "tok_min", "phone");

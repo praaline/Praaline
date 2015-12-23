@@ -88,8 +88,10 @@ RDFExporter::write()
             const RegionModel::PointList &pl(m->getPoints());
             for (RegionModel::PointList::const_iterator i = pl.begin(); 
                  i != pl.end(); ++i) {
-                f.timestamp = RealTime::frame2RealTime(i->frame, sr).toVampRealTime();
-                f.duration = RealTime::frame2RealTime(i->duration, sr).toVampRealTime();
+                ::RealTime t = RealTime::frame2RealTime(i->frame, sr);
+                ::RealTime d = RealTime::frame2RealTime(i->duration, sr);
+                f.timestamp = Vamp::RealTime(t.sec, t.nsec);
+                f.duration = Vamp::RealTime(d.sec, d.nsec);
                 f.values.clear();
                 f.values.push_back(i->value);
                 f.label = i->label.toStdString();
@@ -106,8 +108,10 @@ RDFExporter::write()
             const NoteModel::PointList &pl(m->getPoints());
             for (NoteModel::PointList::const_iterator i = pl.begin(); 
                  i != pl.end(); ++i) {
-                f.timestamp = RealTime::frame2RealTime(i->frame, sr).toVampRealTime();
-                f.duration = RealTime::frame2RealTime(i->duration, sr).toVampRealTime();
+                ::RealTime t = RealTime::frame2RealTime(i->frame, sr);
+                ::RealTime d = RealTime::frame2RealTime(i->duration, sr);
+                f.timestamp = Vamp::RealTime(t.sec, t.nsec);
+                f.duration = Vamp::RealTime(d.sec, d.nsec);
                 f.values.clear();
                 f.values.push_back(i->value);
                 f.values.push_back(i->level);
@@ -125,7 +129,8 @@ RDFExporter::write()
             const SparseOneDimensionalModel::PointList &pl(m->getPoints());
             for (SparseOneDimensionalModel::PointList::const_iterator i = pl.begin(); 
                  i != pl.end(); ++i) {
-                f.timestamp = RealTime::frame2RealTime(i->frame, sr).toVampRealTime();
+                ::RealTime t = RealTime::frame2RealTime(i->frame, sr);
+                f.timestamp = Vamp::RealTime(t.sec, t.nsec);
                 f.values.clear();
                 f.label = i->label.toStdString();
                 m_fw->write(trackId, transform, output, features, summaryType);
@@ -141,7 +146,8 @@ RDFExporter::write()
             const SparseTimeValueModel::PointList &pl(m->getPoints());
             for (SparseTimeValueModel::PointList::const_iterator i = pl.begin(); 
                  i != pl.end(); ++i) {
-                f.timestamp = RealTime::frame2RealTime(i->frame, sr).toVampRealTime();
+                ::RealTime t = RealTime::frame2RealTime(i->frame, sr);
+                f.timestamp = Vamp::RealTime(t.sec, t.nsec);
                 f.values.clear();
                 f.values.push_back(i->value);
                 f.label = i->label.toStdString();
@@ -159,7 +165,8 @@ RDFExporter::write()
             m_fw->setFixedEventTypeURI("af:Text");
             for (TextModel::PointList::const_iterator i = pl.begin(); 
                  i != pl.end(); ++i) {
-                f.timestamp = RealTime::frame2RealTime(i->frame, sr).toVampRealTime();
+                ::RealTime t = RealTime::frame2RealTime(i->frame, sr);
+                f.timestamp = Vamp::RealTime(t.sec, t.nsec);
                 f.values.clear();
                 f.values.push_back(i->height);
                 f.label = i->label.toStdString();

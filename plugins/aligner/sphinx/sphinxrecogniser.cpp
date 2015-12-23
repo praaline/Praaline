@@ -14,9 +14,13 @@ struct SphinxRecogniserData {
     SphinxRecogniserData() {}
 
     bool useMLLR;
+    bool useSpecialisedLM;
     QString defaultAcousticModel;
     QString defaultLanguageModel;
     QString defaultPronunciationDictionary;
+
+    QString attributename_acoustic_model;
+    QString attributename_language_model;
 };
 
 SphinxRecogniser::SphinxRecogniser(QObject *parent) :
@@ -24,7 +28,11 @@ SphinxRecogniser::SphinxRecogniser(QObject *parent) :
 {
     d->defaultAcousticModel = "D:/SPHINX/pocketsphinx-0.8/model/hmm/french_f0";
     d->defaultLanguageModel = "D:/SPHINX/pocketsphinx-0.8/model/lm/french_f0/french3g62K.lm.dmp";
-    d->defaultPronunciationDictionary = "F:/CORPUS_THESIS_EXPERIMENT/PROSO2015/adapt/french_dict.dic";
+    d->defaultPronunciationDictionary = "D:/SPHINX/pocketsphinx-0.8/model/lm/french_f0/frenchWords62K.dic";
+    d->attributename_acoustic_model = "acoustic_model";
+    d->attributename_language_model = "language_model";
+    d->useMLLR = false;
+    d->useSpecialisedLM = false;
 }
 
 SphinxRecogniser::~SphinxRecogniser()
@@ -37,7 +45,19 @@ void SphinxRecogniser::setUseMLLR(bool use)
     d->useMLLR = use;
 }
 
-bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID, QList<Interval *> &utterances, QList<Interval *> &segmentation)
+void SphinxRecogniser::setUseSpecialisedLM(bool use)
+{
+    d->useSpecialisedLM = use;
+}
+
+void SphinxRecogniser::setAttributeNames(const QString &attributenameAcousticModel, const QString &attributenameLanguageModel)
+{
+    d->attributename_acoustic_model = attributenameAcousticModel;
+    d->attributename_language_model = attributenameLanguageModel;
+}
+
+bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID,
+                                               QList<Interval *> &utterances, QList<Interval *> &segmentation)
 {
     // Batch recognition of utterances given a pre-segmented tier and a corresponding recording to which
     // feature extaction has already been applied.
@@ -47,16 +67,19 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     QPointer<CorpusRecording> rec = com->recording(recordingID);
     if (!rec) return false;
 
+    // File names
+    QString fileID = QString(rec->filename()).replace(".wav", "");
+    QString filenameCtl = rec->basePath() + "/" + fileID + ".ctl";
+    QString filenameHypotheses = rec->basePath() + "/" + fileID + ".hyp";
+    QString filenameSegmentation = rec->basePath() + "/" + fileID + ".seg";
+
     // Create fileids file
-    // Get a temporary file and write out the utterances
-    QString filenameCtl;
-    QTemporaryFile fileCtl;
-    if (!fileCtl.open()) return false;
-    filenameCtl = fileCtl.fileName();
+    QFile fileCtl(filenameCtl);
+    if ( !fileCtl.open( QIODevice::WriteOnly | QIODevice::Text ) ) return false;
     QTextStream ctl(&fileCtl);
     ctl.setCodec("ISO 8859-1");
+    // Write utterances to transcribe
     int i = 0;
-    QString fileID = QString(rec->filename()).replace(".wav", "");
     if (utterances.count() > 1) {
         foreach (Interval *utterance, utterances) {
             QString utteranceID = fileID + QString("_%1").arg(i);
@@ -78,25 +101,26 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     QString filenameAcousticModel, filenameLanguageModel, filenameMLLRMatrix;
     if (d->useMLLR) {
         filenameAcousticModel = d->defaultAcousticModel;
-        filenameMLLRMatrix = com->basePath() + "/" + com->property("model_acoustic").toString() + "/mllr_matrix";
+        filenameMLLRMatrix = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString() + "/mllr_matrix";
     } else {
-        filenameAcousticModel = com->property("model_acoustic").toString();
+        filenameAcousticModel = com->property(d->attributename_acoustic_model).toString();
         if (filenameAcousticModel.isEmpty()) filenameAcousticModel = d->defaultAcousticModel;
         else filenameAcousticModel = com->basePath() + "/" + filenameAcousticModel;
     }
-    filenameLanguageModel = com->property("model_language").toString();
-    if (filenameLanguageModel.isEmpty()) filenameLanguageModel = d->defaultLanguageModel;
-    else filenameLanguageModel = com->basePath() + "/" + filenameLanguageModel;
-
-    QString filenameHypotheses = rec->basePath() + "/" + fileID + ".hyp";
-    QString filenameSegmentation = rec->basePath() + "/" + fileID + ".seg";
+    if (d->useSpecialisedLM) {
+        filenameLanguageModel = com->property(d->attributename_language_model).toString();
+        if (filenameLanguageModel.isEmpty()) filenameLanguageModel = d->defaultLanguageModel;
+        else filenameLanguageModel = com->basePath() + "/" + filenameLanguageModel;
+    } else {
+        filenameLanguageModel = d->defaultLanguageModel;
+    }
 
     QString appPath = QCoreApplication::applicationDirPath();
     QString sphinxPath = appPath + "/plugins/aligner/sphinx/";
     QProcess sphinx;
     sphinx.setWorkingDirectory(sphinxPath);
     QStringList sphinxParams;
-    // pocketsphinx_batch -argfile argFile.txt -cepdir . -ctl participant01econ.ctl -cepext .wav -adcin true -hyp participant01econ.hyp -hypseg participant01econ.seg -mllr ../PROSO2015/adapt/participant01_adapt/mllr_matrix
+    // pocketsphinx_batch -argfile argFile.txt -cepdir . -ctl MYFILE.ctl -cepext .wav -adcin true -hyp MYFILE.hyp -hypseg MYFILE.seg -mllr ../PROSO2015/adapt/participant01_adapt/mllr_matrix
 
     sphinxParams << "-hmm" << filenameAcousticModel <<
                     "-lm" << filenameLanguageModel <<
@@ -117,6 +141,12 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     QString err = QString(sphinx.readAllStandardError());
     qDebug() << err;
 
+    return readRecognitionResults(fileID, filenameHypotheses, filenameSegmentation, utterances, segmentation);
+}
+
+bool SphinxRecogniser::readRecognitionResults(const QString &fileID, const QString &filenameHypotheses, const QString filenameSegmentation,
+                                              QList<Interval *> &utterances, QList<Interval *> &segmentation)
+{
     // Read utterance hypotheses into intervals
     QFile fileHyp(filenameHypotheses);
     if ( !fileHyp.open( QIODevice::ReadOnly | QIODevice::Text ) ) return false;
@@ -129,7 +159,6 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
             QString utteranceID = line.section(" ", -2, -2);
             if (!utteranceID.startsWith("(")) continue;
             utteranceID = utteranceID.section("_", -1, -1);
-            qDebug() << utteranceID;
             bool ok;
             int i = utteranceID.toInt(&ok);
             if (!ok) continue;
@@ -161,4 +190,3 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     }
     return true;
 }
-

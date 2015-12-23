@@ -55,14 +55,18 @@ bool SphinxFeatureExtractor::createSphinxMFC(Corpus *corpus, QList<QPointer<Corp
     QProcess sphinxFE;
     sphinxFE.setWorkingDirectory(sphinxPath);
     QStringList sphinxFEparams;
+    // It is very important NOT to remove silence (de-activate VAD) because otherwise there will be missing frames in the
+    // output and it will be impossible to correlate time instants from the original recording with frames.
     sphinxFEparams << "-argfile" << m_filenameSphinxFeatParams <<
                       "-samprate" << QString("%1").arg(m_sampleRate) <<
                       "-c" << filenameCtl <<
                       "-di" << corpus->baseMediaPath() <<
                       "-do" << corpus->baseMediaPath() <<
-                      "-ei" << "16k.wav" <<
+                      "-ei" << "wav" <<
                       "-eo" << "mfc" <<
-                      "-mswav" << "yes";
+                      "-mswav" << "yes" <<
+                      "-remove_silence" << "no";
+                      // << "-ofmt" << "text";
     sphinxFE.start(sphinxPath + "sphinx_fe", sphinxFEparams);
     if (!sphinxFE.waitForStarted(-1)) return false;
     if (!sphinxFE.waitForFinished(-1)) return false;

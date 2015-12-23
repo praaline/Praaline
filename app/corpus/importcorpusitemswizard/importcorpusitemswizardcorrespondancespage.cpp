@@ -174,11 +174,36 @@ void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondances()
 bool ImportCorpusItemsWizardCorrespondancesPage::validatePage()
 {
     QHash<QString, QPair<QString, QString> > correspondances;
+    bool structureChanges = false;
+
     for (int i = 0; i < m_modelTiers->rowCount(); ++i) {
         QString tier = m_modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
         QString annotationLevelID = m_modelTiers->item(i, 1)->data(Qt::DisplayRole).toString();
         QString annotationAttributeID = m_modelTiers->item(i, 2)->data(Qt::DisplayRole).toString();
         correspondances.insert(tier, QPair<QString, QString>(annotationLevelID, annotationAttributeID));
+        // Create levels and attributes if they do not exist
+        // IMPROVE this: should lead to a next wizard page asking to define the data types of the new level/attributes
+        // for now, just use varchar(1024)
+        if (m_corpus && ui->optionCreateLevelsAttributes->isChecked()) {
+            if (!m_corpus->annotationStructure()->hasLevel(annotationLevelID)) {
+                QPointer<AnnotationStructureLevel> level = new AnnotationStructureLevel(annotationLevelID, AnnotationStructureLevel::IndependentLevel, annotationLevelID);
+                if (m_corpus->datastoreAnnotations()->createAnnotationLevel(level)) {
+                    m_corpus->annotationStructure()->addLevel(level);
+                    structureChanges = true;
+                }
+            }
+            AnnotationStructureLevel *level = m_corpus->annotationStructure()->level(annotationLevelID);
+            if (level && (!annotationAttributeID.isEmpty()) && (!level->hasAttribute(annotationAttributeID))) {
+                QPointer<AnnotationStructureAttribute> attr = new AnnotationStructureAttribute(annotationAttributeID, annotationAttributeID);
+                if (m_corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr)) {
+                    level->addAttribute(attr);
+                    structureChanges = true;
+                }
+            }
+        }
+    }
+    if (m_corpus && structureChanges) {
+        m_corpus->save();
     }
     QMultiHash<QString, TierCorrespondance>::iterator i;
     for (i = m_tierCorrespondances.begin(); i != m_tierCorrespondances.end(); ++i) {

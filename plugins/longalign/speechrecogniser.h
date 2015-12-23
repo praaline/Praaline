@@ -2,8 +2,7 @@
 #define SPEECHRECOGNISER_H
 
 #include <QString>
-#include "pncore/RealTime.h"
-#include "pncore/corpus/corpusrecording.h"
+class CorpusRecording;
 
 class SpeechRecogniser
 {

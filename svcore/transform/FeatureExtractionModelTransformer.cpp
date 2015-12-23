@@ -702,8 +702,9 @@ FeatureExtractionModelTransformer::run()
 
         if (m_abandoned) break;
 
+    RealTime r = RealTime::frame2RealTime(blockFrame, sampleRate);
 	Vamp::Plugin::FeatureSet features = m_plugin->process
-	    (buffers, RealTime::frame2RealTime(blockFrame, sampleRate).toVampRealTime());
+        (buffers, Vamp::RealTime(r.sec, r.nsec));
 
         if (m_abandoned) break;
 
@@ -839,7 +840,7 @@ FeatureExtractionModelTransformer::addFeature(int n,
 		<< endl;
 	    return;
 	} else {
-	    frame = RealTime::realTime2Frame(feature.timestamp, inputRate);
+        frame = RealTime::realTime2Frame(RealTime(feature.timestamp.sec, feature.timestamp.nsec), inputRate);
 	}
 
     } else if (m_descriptors[n]->sampleType ==
@@ -925,7 +926,7 @@ FeatureExtractionModelTransformer::addFeature(int n,
 
         sv_frame_t duration = 1;
         if (feature.hasDuration) {
-            duration = RealTime::realTime2Frame(feature.duration, inputRate);
+            duration = RealTime::realTime2Frame(RealTime(feature.duration.sec, feature.duration.nsec), inputRate);
         } else {
             if (in_range_for(feature.values, index)) {
                 duration = lrintf(feature.values[index++]);

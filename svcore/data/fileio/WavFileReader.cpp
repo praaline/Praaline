@@ -38,18 +38,18 @@ WavFileReader::WavFileReader(FileSource source, bool fileUpdating) :
     m_file = sf_open(m_path.toLocal8Bit(), SFM_READ, &m_fileInfo);
 
     if (!m_file || (!fileUpdating && m_fileInfo.channels <= 0)) {
-	cerr << "WavFileReader::initialize: Failed to open file at \""
-                  << m_path << "\" ("
-		  << sf_strerror(m_file) << ")" << endl;
+        cerr << "WavFileReader::initialize: Failed to open file at \""
+             << m_path << "\" ("
+             << sf_strerror(m_file) << ")" << endl;
 
-	if (m_file) {
-	    m_error = QString("Couldn't load audio file '%1':\n%2")
-		.arg(m_path).arg(sf_strerror(m_file));
-	} else {
-	    m_error = QString("Failed to open audio file '%1'")
-		.arg(m_path);
-	}
-	return;
+        if (m_file) {
+            m_error = QString("Couldn't load audio file '%1':\n%2")
+                    .arg(m_path).arg(sf_strerror(m_file));
+        } else {
+            m_error = QString("Failed to open audio file '%1'")
+                    .arg(m_path);
+        }
+        return;
     }
 
     if (m_fileInfo.channels > 0) {
@@ -65,14 +65,14 @@ WavFileReader::WavFileReader(FileSource source, bool fileUpdating) :
         // every file type of "at least" the historical period of Ogg
         // or FLAC as non-seekable.
         int type = m_fileInfo.format & SF_FORMAT_TYPEMASK;
-//        cerr << "WavFileReader: format type is " << type << " (flac, ogg are " << SF_FORMAT_FLAC << ", " << SF_FORMAT_OGG << ")" << endl;
+        //        cerr << "WavFileReader: format type is " << type << " (flac, ogg are " << SF_FORMAT_FLAC << ", " << SF_FORMAT_OGG << ")" << endl;
         if (type >= SF_FORMAT_FLAC || type >= SF_FORMAT_OGG) {
-//            cerr << "WavFileReader: Recording as non-seekable" << endl;
+            //            cerr << "WavFileReader: Recording as non-seekable" << endl;
             m_seekable = false;
         }
     }
 
-//    cerr << "WavFileReader: Frame count " << m_frameCount << ", channel count " << m_channelCount << ", sample rate " << m_sampleRate << ", seekable " << m_seekable << endl;
+    //    cerr << "WavFileReader: Frame count " << m_frameCount << ", channel count " << m_channelCount << ", sample rate " << m_sampleRate << ", seekable " << m_seekable << endl;
 
 }
 
@@ -93,11 +93,11 @@ WavFileReader::updateFrameCount()
         m_file = sf_open(m_path.toLocal8Bit(), SFM_READ, &m_fileInfo);
         if (!m_file || m_fileInfo.channels <= 0) {
             cerr << "WavFileReader::updateFrameCount: Failed to open file at \"" << m_path << "\" ("
-                      << sf_strerror(m_file) << ")" << endl;
+                 << sf_strerror(m_file) << ")" << endl;
         }
     }
 
-//    cerr << "WavFileReader::updateFrameCount: now " << m_fileInfo.frames << endl;
+    //    cerr << "WavFileReader::updateFrameCount: now " << m_fileInfo.frames << endl;
 
     m_frameCount = m_fileInfo.frames;
 
@@ -107,7 +107,7 @@ WavFileReader::updateFrameCount()
     }
 
     if (m_frameCount != prevCount) {
-//        cerr << "frameCountChanged" << endl;
+        //        cerr << "frameCountChanged" << endl;
         emit frameCountChanged();
     }
 }
@@ -131,34 +131,34 @@ WavFileReader::getInterleavedFrames(sv_frame_t start, sv_frame_t count) const
     }
 
     if (start >= m_fileInfo.frames) {
-//        cerr << "WavFileReader::getInterleavedFrames: " << start
-//                  << " > " << m_fileInfo.frames << endl;
-	return SampleBlock();
+        //        cerr << "WavFileReader::getInterleavedFrames: " << start
+        //                  << " > " << m_fileInfo.frames << endl;
+        return SampleBlock();
     }
 
     if (start + count > m_fileInfo.frames) {
-	count = m_fileInfo.frames - start;
+        count = m_fileInfo.frames - start;
     }
 
     if (start != m_lastStart || count != m_lastCount) {
 
-	if (sf_seek(m_file, start, SEEK_SET) < 0) {
-	    return SampleBlock();
-	}
+        if (sf_seek(m_file, start, SEEK_SET) < 0) {
+            return SampleBlock();
+        }
 
         sv_frame_t n = count * m_fileInfo.channels;
         m_buffer.resize(n);
-	
+
         sf_count_t readCount = 0;
 
-	if ((readCount = sf_readf_float(m_file, m_buffer.data(), count)) < 0) {
-	    return SampleBlock();
-	}
+        if ((readCount = sf_readf_float(m_file, m_buffer.data(), count)) < 0) {
+            return SampleBlock();
+        }
 
         m_buffer.resize(readCount * m_fileInfo.channels);
         
-	m_lastStart = start;
-	m_lastCount = readCount;
+        m_lastStart = start;
+        m_lastCount = readCount;
     }
 
     return m_buffer;

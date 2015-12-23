@@ -6,7 +6,7 @@
     error( Could not find the common.pri file! )
 }
 
-CONFIG += plugin dll qt thread warn_on stl rtti exceptions
+CONFIG += plugin dll qt thread warn_on stl rtti exceptions c++11
 TEMPLATE = lib
 DEFINES += PLUGIN_LONGALIGN_LIBRARY
 
@@ -29,7 +29,7 @@ DEPENDPATH += . .. ../.. ../../pncore
 
 # Settings for PocketSphinx
 win32 {
-    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.1-x32
+    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
 }
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local

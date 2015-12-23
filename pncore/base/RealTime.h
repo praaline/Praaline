@@ -25,7 +25,6 @@
 #include "BaseTypes.h"
 #include <iostream>
 #include <string>
-#include "vamp-hostsdk/RealTime.h"
 
 struct timeval;
 
@@ -55,8 +54,6 @@ struct PRAALINE_CORE_SHARED_EXPORT RealTime
 
     RealTime(const RealTime &r) :
 	sec(r.sec), nsec(r.nsec) { }
-    RealTime(const Vamp::RealTime &r) :
-	sec(r.sec), nsec(r.nsec) { }
 
     static RealTime fromSeconds(double sec);
     static RealTime fromMilliseconds(int msec);
@@ -65,7 +62,6 @@ struct PRAALINE_CORE_SHARED_EXPORT RealTime
     static RealTime fromXsdDuration(std::string xsdd);
 
     double toDouble() const;
-	Vamp::RealTime toVampRealTime() const { return Vamp::RealTime(sec, nsec); }
 
     RealTime &operator=(const RealTime &r) {
 	sec = r.sec; nsec = r.nsec; return *this;

@@ -2,7 +2,7 @@
 #define RECOGNITIONRESULT_H
 
 #include <QString>
-#include "pncore/RealTime.h"
+#include "base/RealTime.h"
 #include "pncore/annotation/intervaltier.h"
 
 class RecognitionResult

@@ -1,6 +1,9 @@
 #include <QString>
 #include <QFile>
 #include <QTextStream>
+
+#include "base/RealTime.h"
+#include "pncore/corpus/corpusrecording.h"
 #include "speechrecogniser.h"
 #include "pocketsphinx.h"
 

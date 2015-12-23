@@ -214,9 +214,10 @@ CSVFeatureWriter::writeFeature(DataId tt,
     bool haveDuration = true;
     
     if (f.hasDuration) {
-        duration = f.duration;
+        duration = ::RealTime(f.duration.sec, f.duration.nsec);
     } else if (optionalNextFeature) {
-        duration = optionalNextFeature->timestamp - f.timestamp;
+        Vamp::RealTime d = optionalNextFeature->timestamp - f.timestamp;
+        duration = ::RealTime(d.sec, d.nsec);
     } else {
         haveDuration = false;
     }
@@ -225,13 +226,13 @@ CSVFeatureWriter::writeFeature(DataId tt,
 
         sv_samplerate_t rate = transform.getSampleRate();
 
-        stream << ::RealTime::realTime2Frame(f.timestamp, rate);
+        stream << ::RealTime::realTime2Frame(::RealTime(f.timestamp.sec, f.timestamp.nsec), rate);
 
         if (haveDuration) {
             stream << m_separator;
             if (m_endTimes) {
                 stream << ::RealTime::realTime2Frame
-                    (::RealTime(f.timestamp) + duration, rate);
+                    (::RealTime(f.timestamp.sec, f.timestamp.nsec) + duration, rate);
             } else {
                 stream << ::RealTime::realTime2Frame(duration, rate);
             }
@@ -246,7 +247,7 @@ CSVFeatureWriter::writeFeature(DataId tt,
         if (haveDuration) {
             if (m_endTimes) {
                 QString endtime =
-                    (::RealTime(f.timestamp) + duration).toString().c_str();
+                    (::RealTime(f.timestamp.sec, f.timestamp.nsec) + duration).toString().c_str();
                 endtime.replace(QRegExp("^ +"), "");
                 stream << m_separator << endtime;
             } else {

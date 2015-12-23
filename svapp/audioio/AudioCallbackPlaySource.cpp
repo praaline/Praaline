@@ -1351,7 +1351,8 @@ AudioCallbackPlaySource::applyAuditioningEffect(sv_frame_t count, float **buffer
         }
     }
 
-    plugin->run(Vamp::RealTime::zeroTime, int(count));
+    // maybe Vamp:: ?
+    plugin->run(RealTime::zeroTime, int(count));
     
     for (int c = 0; c < getTargetChannelCount(); ++c) {
         for (int i = 0; i < count; ++i) {

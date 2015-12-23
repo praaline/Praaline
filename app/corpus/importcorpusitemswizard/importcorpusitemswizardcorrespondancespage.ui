@@ -92,6 +92,13 @@
       <item row="0" column="0">
        <widget class="QTableView" name="tableviewTiers"/>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="optionCreateLevelsAttributes">
+        <property name="text">
+         <string>Create Annotation Levels / Attributes if they do not already exist in the corpus annotation structure.</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
