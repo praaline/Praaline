@@ -22,7 +22,12 @@ CONFIG(debug, debug|release) {
 }
 
 # put plugin in the same directory as Praaline, inside the plugins sub-directory
-DESTDIR += ../../../../../../app/build/plugins/
+win32 {
+    DESTDIR += ../../../../../../app/build/plugins/
+}
+else {
+    DESTDIR = ../../app/build/plugins/
+}
 
 INCLUDEPATH += . .. ../.. ../../pncore ../../app/annotation
 DEPENDPATH += . .. ../.. ../../pncore

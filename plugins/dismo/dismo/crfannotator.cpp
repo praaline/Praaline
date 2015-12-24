@@ -74,7 +74,7 @@ void CRFAnnotator::tagFromCRF(const QString &filenameModel, bool isTokenUnitLeve
     QProcess *decoder = new QProcess();
     // DIRECTORY:
     QString appPath = QCoreApplication::applicationDirPath();
-    decoder->start(appPath + "/tools/crf/crf_test.exe" , QStringList() <<
+    decoder->start(appPath + "/tools/crf/crf_test" , QStringList() <<
                    "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
     if (!(decoder->waitForStarted(-1))) return;
     if (!(decoder->waitForFinished(-1))) return;

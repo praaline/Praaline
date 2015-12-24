@@ -94,7 +94,7 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(QHash<QString, QVari
 
 void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-    QString filename = "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
+    QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());

@@ -30,11 +30,12 @@
 using namespace DisMoAnnotator;
 
 Preprocessor::Preprocessor(const QString &language, TokenList &tokens)
-    : m_language(language), m_tokens(tokens)
+    : m_language(language), m_useSQLDictionary(true), m_tokens(tokens)
 {
     // DIRECTORY:
     QString appPath = QCoreApplication::applicationDirPath();
-    m_filenameDictionary = appPath + "/plugins/dismo/lex/dismodic_" + language + ".fst";
+    m_filenameDictionary = appPath + "/plugins/dismo/lex/dismodic_" + language;
+    if (m_useSQLDictionary) m_filenameDictionary.append(".db"); else m_filenameDictionary.append(".fst");
     m_filenameMWUDictionary = appPath + "/plugins/dismo/lex/mwudic_" + language + ".txt";
     loadDictionaries();
 }
@@ -139,9 +140,14 @@ void Preprocessor::applyLEXtoTokenized()
             myTokenUnits.insert(lookup, QStringList());
         }
     }
-    DictionaryFST dic(m_filenameDictionary);
-    // DictionarySQL dic("C:/Users/George/Documents/DisMoFR.sqlite");
-    dic.lookup(myTokenUnits);
+    if (m_useSQLDictionary) {
+        DictionarySQL dic(m_filenameDictionary);
+        dic.lookup(myTokenUnits);
+    }
+    else {
+        DictionaryFST dic(m_filenameDictionary);
+        dic.lookup(myTokenUnits);
+    }
     foreach(Token *token, m_tokens) {
         foreach (TokenUnit *tokenUnit, token->getTokenUnits()) {
             QString lookup = tokenUnit->text();
@@ -174,9 +180,14 @@ void Preprocessor::applyLEXMIN(QList<TokenUnit *> &tokenUnits)
         if (lookup.contains("=")) lookup = lookup.replace("=", "");
         myTokenUnits.insert(lookup, QStringList());
     }
-    DictionaryFST dic(m_filenameDictionary);
-    // DictionarySQL dic("C:/Users/George/Documents/DisMoFR.sqlite");
-    dic.lookup(myTokenUnits);
+    if (m_useSQLDictionary) {
+        DictionarySQL dic(m_filenameDictionary);
+        dic.lookup(myTokenUnits);
+    }
+    else {
+        DictionaryFST dic(m_filenameDictionary);
+        dic.lookup(myTokenUnits);
+    }
     foreach (TokenUnit *tokenUnit, tokenUnits) {
         QString lookup = tokenUnit->text();
         if (lookup.length() > 1 && lookup.endsWith("-"))

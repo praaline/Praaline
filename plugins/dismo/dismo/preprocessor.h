@@ -35,7 +35,8 @@ public:
 private:
     // State
     QString m_language;
-    QString m_filenameDictionary;       // the FST main dictionary
+    bool m_useSQLDictionary;
+    QString m_filenameDictionary;       // the main dictionary
     QString m_filenameMWUDictionary;    // list of multi-word units
     QHash<QString, QString> m_dictionaryMWU;
     TokenList &m_tokens;

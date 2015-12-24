@@ -199,9 +199,9 @@ int main(int argc, char *argv[])
     OBJECT_MANAGER->registerObject(annotation_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
 
     // Create an instance of the Visualisation Mode
-    VisualisationMode* visualisation_mode = new VisualisationMode();
-    CONTEXT_MANAGER->registerContext(visualisation_mode->contextString());
-    OBJECT_MANAGER->registerObject(visualisation_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
+//    VisualisationMode* visualisation_mode = new VisualisationMode();
+//    CONTEXT_MANAGER->registerContext(visualisation_mode->contextString());
+//    OBJECT_MANAGER->registerObject(visualisation_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
 
     // Create an instance of the Query Mode
     QueryMode* query_mode = new QueryMode();
