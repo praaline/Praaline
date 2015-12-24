@@ -109,22 +109,34 @@ Corpus *Corpus::create(const CorpusDefinition &definition, QString &errorMessage
 Corpus *Corpus::open(const CorpusDefinition &definition, QString &errorMessages, QObject *parent)
 {
     errorMessages.clear();
-    Corpus *corpus = new Corpus(definition, parent);
+    QPointer<Corpus> corpus = new Corpus(definition, parent);
     if (corpus->datastoreAnnotations()) {
         if (!corpus->datastoreAnnotations()->openDatastore(definition.datastoreAnnotations)) {
             errorMessages.append("Error opening annotation datastore: ").append(corpus->datastoreAnnotations()->lastError()).append("\n");
             corpus->datastoreAnnotations()->clearError();
-        } else {
-            corpus->datastoreAnnotations()->loadAnnotationStructure();
+            return 0;
+        }
+        if (!corpus->datastoreAnnotations()->loadAnnotationStructure()) {
+            errorMessages.append("Error reading annotation structure: ").append(corpus->datastoreAnnotations()->lastError()).append("\n");
+            corpus->datastoreAnnotations()->clearError();
+            return 0;
         }
     }
     if (corpus->datastoreMetadata()) {
         if (!corpus->datastoreMetadata()->openDatastore(definition.datastoreMetadata)) {
             errorMessages.append("Error opening metadata datastore: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
             corpus->datastoreMetadata()->clearError();
-        } else {
-            corpus->datastoreMetadata()->loadMetadataStructure();
-            corpus->datastoreMetadata()->loadCorpus(corpus);
+            return 0;
+        }
+        if (!corpus->datastoreMetadata()->loadMetadataStructure()) {
+            errorMessages.append("Error reading metadata structure: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
+            corpus->datastoreMetadata()->clearError();
+            return 0;
+        }
+        if (!corpus->datastoreMetadata()->loadCorpus(corpus)) {
+            errorMessages.append("Error loading corpus: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
+            corpus->datastoreMetadata()->clearError();
+            return 0;
         }
     }
     return corpus;

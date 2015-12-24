@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>711</width>
-    <height>489</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -58,10 +58,150 @@
     </item>
     <item row="1" column="0">
      <widget class="QGroupBox" name="groupBoxDatastoreType">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="title">
        <string>Corpus storage method</string>
       </property>
-      <layout class="QGridLayout" name="gridLayout" columnstretch="0,1" columnminimumwidth="64,0">
+      <layout class="QGridLayout" name="gridLayout_7" columnstretch="1,0">
+       <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayout" columnstretch="0,1">
+         <item row="2" column="1">
+          <widget class="QRadioButton" name="optionRemoteDB">
+           <property name="text">
+            <string>Connect to a database server (workgroup mode)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" rowspan="2">
+          <widget class="QLabel" name="iconLocalDb">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_local_database.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="labelRemoteDb">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Corpus metadata and annotation data are stored on a database server on the network (MySQL or Postgres). Media files are stored in folders (including network folders) and accessed from there. Multiple users may connect to the same corpus and work on it simultaneously.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="indent">
+            <number>18</number>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="labelLocalDb">
+           <property name="text">
+            <string>Corpus metadata and annotation data will be stored on a local SQLite database. Media files are stored filesystem folders. This is the default mode for individual projects.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="indent">
+            <number>18</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" rowspan="2">
+          <widget class="QLabel" name="iconFiles">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_file_collection.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QRadioButton" name="optionFiles">
+           <property name="text">
+            <string>File-based storage (not recommended)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QRadioButton" name="optionLocalDB">
+           <property name="text">
+            <string>Database stored on my computer (solo project mode)</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="labelFiles">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Corpus metadata and annotations are stored in XML files, and media files in folders. You will not be able to use Praaline queries and the concordancer; some plugins may also not work. Use this mode if you just want to organise a collection of files.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="indent">
+            <number>18</number>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" rowspan="2">
+          <widget class="QLabel" name="iconRemoteDb">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_remote_database.png</pixmap>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="labelDatastoreType">
          <property name="text">
@@ -69,111 +209,6 @@
          </property>
          <property name="wordWrap">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QRadioButton" name="optionLocalDB">
-         <property name="text">
-          <string>Database stored on my computer (solo project mode)</string>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="labelRemoteDb">
-         <property name="text">
-          <string>Corpus metadata and annotation data are stored on a database server on the network (MySQL or Postgres). Media files are stored in folders (including network folders) and accessed from there. Multiple users may connect to the same corpus and work on it simultaneously.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>18</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QRadioButton" name="optionFiles">
-         <property name="text">
-          <string>File-based storage (not recommended)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="labelFiles">
-         <property name="text">
-          <string>Corpus metadata and annotations are stored in XML files, and media files in folders. You will not be able to use Praaline queries and the concordancer; some plugins may also not work. Use this mode if you just want to organise a collection of files.</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>18</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="labelLocalDb">
-         <property name="text">
-          <string>Corpus metadata and annotation data will be stored on a local SQLite database. Media files are stored filesystem folders. This is the default mode for individual projects. </string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="indent">
-          <number>18</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QRadioButton" name="optionRemoteDB">
-         <property name="text">
-          <string>Connect to a database server (workgroup mode)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" rowspan="2">
-        <widget class="QLabel" name="iconLocalDb">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_local_database.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>false</bool>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0" rowspan="2">
-        <widget class="QLabel" name="iconRemoteDb">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_remote_database.png</pixmap>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" rowspan="2">
-        <widget class="QLabel" name="iconFiles">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../praaline.qrc">:/icons/corpusexplorer/corpus_file_collection.png</pixmap>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>

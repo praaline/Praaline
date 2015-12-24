@@ -22,6 +22,7 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/observers/corpusobserver.h"
 #include "corporamanager.h"
 #include "newcorpuswizard.h"
+#include "corpusdatabaseconnectiondialog.h"
 #include "addnewcorpusitemdialog.h"
 #include "corpusexploreroptionsdialog.h"
 #include "checkmediafilesdialog.h"
@@ -516,7 +517,23 @@ void CorpusExplorerWidget::openCorpusFile(const QString &filename)
 
 void CorpusExplorerWidget::openCorpusDbConnection()
 {
-
+    QPointer<CorpusDatabaseConnectionDialog> dialog = new CorpusDatabaseConnectionDialog(this);
+    dialog->exec();
+    CorpusDefinition definition = dialog->corpusDefinition();
+    QString errorMessages;
+    Corpus *corpus = Corpus::open(definition, errorMessages);
+    if (!errorMessages.isEmpty()) {
+        QMessageBox::warning(this, "Error opening corpus", errorMessages, QMessageBox::Ok);
+        return;
+    }
+    if (!corpus) return;
+    // Register corpus with the Corpus Manager and global object pool
+    CorpusObserver *cobs = new CorpusObserver(corpus);
+    cobs->setDefinition(definition);
+    OBJECT_MANAGER->registerObject(cobs, QtilitiesCategory("Corpus"));
+    d->corporaTopLevelNode->addNode(cobs->nodeCorpus());
+    d->corporaManager->addCorpus(corpus);
+    d->corporaManager->setActiveCorpus(corpus->ID());
 }
 
 void CorpusExplorerWidget::closeCorpus()

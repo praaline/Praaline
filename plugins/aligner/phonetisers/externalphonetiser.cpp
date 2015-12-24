@@ -145,12 +145,12 @@ QList<AlignerToken> mergePhonetiserTokens(const QList<AlignerToken> &ptokens)
             AlignerToken merge = AlignerToken(ptokens[i].start, ptokens[j].end,
                                               ptokens[i].orthographic + ptokens[j].orthographic);
             merged << merge;
-            qDebug() << i << j << merge.start << merge.end << merge.orthographic;
+            // qDebug() << i << j << merge.start << merge.end << merge.orthographic;
             i = j + 1;
         }
         else {
             merged << ptokens[i];
-            qDebug() << i << j << ptokens[i].start << ptokens[i].end << ptokens[i].orthographic;
+            // qDebug() << i << j << ptokens[i].start << ptokens[i].end << ptokens[i].orthographic;
             i++;
         }
     }
@@ -202,8 +202,8 @@ QList<AlignerToken> ExternalPhonetiser::phonetiseList(QList<Interval *> tokens, 
     foreach (PUtterance putterance, putterances) {
         QStringList phonetisation_split = putterance.phonetisation.split("|", QString::SkipEmptyParts);
         if (phonetisation_split.count() != putterance.ptokens.count()) {
-            qDebug() << "mismatched tokens-phonotokens";
-            qDebug() << putterance.phonetisation << putterance.orthographic;
+            // qDebug() << "mismatched tokens-phonotokens";
+            // qDebug() << putterance.phonetisation << putterance.orthographic;
             QHash<QString, QString> citationForms;
             foreach (int ptoken_id, putterance.ptokens) {
                 citationForms.insert(ptokens[ptoken_id].orthographic, "");

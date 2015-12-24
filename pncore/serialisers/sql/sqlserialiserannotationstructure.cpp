@@ -113,6 +113,7 @@ bool SQLSerialiserAnnotationStructure::read(AnnotationStructure *structure, QSql
     q2.prepare("SELECT * FROM praalineAnnotationAttributes WHERE levelID = :levelID");
     //
     q1.exec();
+    if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
     while (q1.next()) {
         // levels
         AnnotationStructureLevel *level = new AnnotationStructureLevel();

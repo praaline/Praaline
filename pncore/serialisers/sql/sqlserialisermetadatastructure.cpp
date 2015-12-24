@@ -133,6 +133,7 @@ bool readFromDatabase(MetadataStructure *structure, QSqlDatabase &db, QString ob
     q2.prepare("SELECT attributeID, name, description, datatype, length, isIndexed, nameValueList FROM praalineMetadataAttributes WHERE sectionID = :sectionID");
     //
     q1.exec();
+    if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
     while (q1.next()) {
         QString objectType = q1.value(0).toString();
         CorpusObject::Type object = CorpusObject::Type_Undefined;

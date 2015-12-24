@@ -124,7 +124,8 @@ SOURCES += main.cpp \
     visualisation/visualiserwidget.cpp \
     query/extractsoundbiteswidget.cpp \
     corpus/MergeCorporaDialog.cpp \
-    statistics/CountStatisticsWidget.cpp
+    statistics/CountStatisticsWidget.cpp \
+    corpus/corpusdatabaseconnectiondialog.cpp
 
 HEADERS  += \
     corporamanager.h \
@@ -191,7 +192,8 @@ HEADERS  += \
     query/extractsoundbiteswidget.h \
     corpus/MergeCorporaDialog.h \
     statistics/CountStatisticsWidget.h \
-    corpus/importcorpusitemswizard/importannotations.h
+    corpus/importcorpusitemswizard/importannotations.h \
+    corpus/corpusdatabaseconnectiondialog.h
 
 FORMS    += mainwindow.ui \
     corpus/corpusmodewidget.ui \
@@ -238,7 +240,8 @@ FORMS    += mainwindow.ui \
     visualisation/globalvisualisationwidget.ui \
     query/extractsoundbiteswidget.ui \
     corpus/MergeCorporaDialog.ui \
-    statistics/CountStatisticsWidget.ui
+    statistics/CountStatisticsWidget.ui \
+    corpus/corpusdatabaseconnectiondialog.ui
 
 RESOURCES += \
     praaline.qrc \

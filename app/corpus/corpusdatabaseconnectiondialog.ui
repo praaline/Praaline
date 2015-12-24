@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CorpusDatabaseConnectionDialog</class>
+ <widget class="QDialog" name="CorpusDatabaseConnectionDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>717</width>
+    <height>378</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_5">
+   <item row="0" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBoxBasic">
+     <property name="title">
+      <string>Basic information</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCorpusID">
+        <property name="text">
+         <string>Corpus ID:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="editCorpusID"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelCorpusName">
+        <property name="text">
+         <string>Corpus Name:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="editCorpusName"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>465</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="commandConnect">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="commandCancel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBoxData">
+     <property name="title">
+      <string>Corpus Data Storage</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <layout class="QGridLayout" name="gridLayoutMedia">
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelBaseFolder">
+          <property name="text">
+           <string>Corpus media files in folder:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="editBaseFolder"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QPushButton" name="commandSelectFolder">
+          <property name="text">
+           <string>Select folder</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayoutConnectionData">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBoxMetadataDb">
+          <property name="title">
+           <string>Corpus Metadata Database Connection</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelDatabaseTypeMetadata">
+             <property name="text">
+              <string>Database type:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxDatabaseTypeMetadata"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelHostnameMetadata">
+             <property name="text">
+              <string>Hostname (server):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="editHostnameMetadata"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelUsernameMetadata">
+             <property name="text">
+              <string>Username:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="editUsernameMetadata"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelPasswordMetadata">
+             <property name="text">
+              <string>Password:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="editPasswordMetadata"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelDatabaseNameMetadata">
+             <property name="text">
+              <string>Database name:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="editDatabaseNameMetadata"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBoxAnnotationsDb">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="title">
+           <string>Corpus Annotations Database Connection</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelDatabaseTypeAnnotations">
+             <property name="text">
+              <string>Database type:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxDatabaseTypeAnnotations"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelHostnameAnnotations">
+             <property name="text">
+              <string>Hostname (server):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="editHostnameAnnotations"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelUsernameAnnotations">
+             <property name="text">
+              <string>Username:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="editUsernameAnnotations"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelPasswordAnnotations">
+             <property name="text">
+              <string>Password:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="editPasswordAnnotations"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelDatabaseNameAnnotations">
+             <property name="text">
+              <string>Database name:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="editDatabaseNameAnnotations"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="optionUseSameDatabase">
+        <property name="text">
+         <string>Use the same database for metadata and annotations (default)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>comboBoxDatabaseTypeMetadata</tabstop>
+  <tabstop>editHostnameMetadata</tabstop>
+  <tabstop>editUsernameMetadata</tabstop>
+  <tabstop>editPasswordMetadata</tabstop>
+  <tabstop>editDatabaseNameMetadata</tabstop>
+  <tabstop>comboBoxDatabaseTypeAnnotations</tabstop>
+  <tabstop>editHostnameAnnotations</tabstop>
+  <tabstop>editUsernameAnnotations</tabstop>
+  <tabstop>editPasswordAnnotations</tabstop>
+  <tabstop>editDatabaseNameAnnotations</tabstop>
+  <tabstop>commandConnect</tabstop>
+  <tabstop>commandCancel</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

@@ -116,6 +116,9 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
 
 void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
 {
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Adding phonetisation to tokens");
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
@@ -134,8 +137,13 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus 
             }
             qDeleteAll(tiersAll);
         }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
         printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+        QApplication::processEvents();
     }
+    madeProgress(100);
+    printMessage("Finished");
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
@@ -320,7 +328,11 @@ void Praaline::Plugins::Aligner::PluginAligner::createSegments(Corpus *corpus, Q
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
-{    
+{
+    addPhonetisationToTokens(corpus, communications);
+    return;
+
+
     LongSoundAligner *LSA = new LongSoundAligner();
     // LSA->createRecognitionLevel(corpus, 0);
     madeProgress(0);
@@ -345,6 +357,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     delete LSA;
     return;
 
+
     if (d->cmdDownsampleWaveFiles) {
         createDownsampledWavFiles(corpus, communications);
         return;
@@ -354,7 +367,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     }
     return;
 
-    // addPhonetisationToTokens(corpus, communications);
 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
