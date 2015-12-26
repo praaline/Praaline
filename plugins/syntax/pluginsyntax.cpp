@@ -92,7 +92,7 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(QHash<QString, QVari
 {
 }
 
-void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void readUDCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
     QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -103,6 +103,11 @@ void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPoi
         CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
         corpus->datastoreAnnotations()->saveTiers(com->ID(), "ud", group);
     }
+}
+
+void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

@@ -4430,6 +4430,7 @@ void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec)
 
 void VisualiserWidget::jumpToTime(const RealTime &time)
 {
+    if (!getMainModel()) return;
     sv_frame_t frame = RealTime::realTime2Frame(time, getMainModel()->getSampleRate());
     m_viewManager->setGlobalCentreFrame(frame);
     m_viewManager->setPlaybackFrame(frame);
@@ -4437,12 +4438,14 @@ void VisualiserWidget::jumpToTime(const RealTime &time)
 
 void VisualiserWidget::baseGlobalCentreFrameChanged(sv_frame_t frame)
 {
+    if (!getMainModel()) return;
     RealTime time = RealTime::frame2RealTime(frame, getMainModel()->getSampleRate());
     emit userScrolledToTime(time);
 }
 
 void VisualiserWidget::basePlaybackFrameChanged(sv_frame_t frame)
 {
+    if (!getMainModel()) return;
     RealTime time = RealTime::frame2RealTime(frame, getMainModel()->getSampleRate());
     emit playbackScrolledToTime(time);
 }

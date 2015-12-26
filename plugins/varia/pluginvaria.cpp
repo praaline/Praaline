@@ -138,8 +138,12 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
 
-    PBExpe::analysisFeaturesForModelling(corpus);
 
+
+
+
+
+//    PBExpe::analysisFeaturesForModelling(corpus);
 //    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
 //    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
 //    PBExpe::analysisCalculateAverageDelay(corpus);

@@ -122,7 +122,7 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        if (!com->hasRecordings()) continue;
+        if (com->hasRecordings()) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
@@ -354,8 +354,52 @@ void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAut
     madeProgress(100);
 }
 
+void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Checking...");
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+                if (!tier_tok_min) continue;
+                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
+                if (!tier_segment) continue;
+                foreach (Interval *segment, tier_segment->intervals()) {
+                    QString seg, tok;
+                    QList<Interval *> tokens = tier_tok_min->getIntervalsContainedIn(segment);
+                    foreach (Interval *token, tokens) tok.append(token->text());
+                    tok = tok.remove(" ").remove("_");
+                    seg = segment->text().remove(" ").remove("|-").remove("-|").remove("/");
+                    if (tok != seg) {
+                        printMessage(QString("%1\t%2\t%3").arg(annotationID).arg(seg).arg(tok));
+                    }
+                }
+                // corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
+            }
+            qDeleteAll(tiersAll);
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+        QApplication::processEvents();
+    }
+    madeProgress(100);
+    printMessage("Finished");
+}
+
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
+    checks(corpus, communications);
+    return;
+
     LongSoundAligner *LSA = new LongSoundAligner();
     LSA->createRecognitionLevel(corpus, 0);
     madeProgress(0);

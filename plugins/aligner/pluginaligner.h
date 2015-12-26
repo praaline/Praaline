@@ -71,6 +71,7 @@ namespace Praaline {
 
                 void createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
                 void createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                void checks(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };
         }
     }
