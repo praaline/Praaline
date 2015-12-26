@@ -37,7 +37,7 @@ exists(config.pri) {
     macx* {
         DEFINES += HAVE_COREAUDIO HAVE_PORTAUDIO_2_0
     }
-    unix* {
+    unix*:!macx* {
         DEFINES += HAVE_LIBPULSE
     }
 }
