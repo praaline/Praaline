@@ -44,6 +44,7 @@ bool SphinxFeatureExtractor::createSphinxMFC(Corpus *corpus, QList<QPointer<Corp
         if (!com) continue;
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             if (!rec) continue;
+            if (!QFile::exists(corpus->baseMediaPath() + "/" + rec->filename())) continue;
             ctl << QString(rec->filename()).replace(".wav", "") << "\n";
         }
     }

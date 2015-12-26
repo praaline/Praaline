@@ -50,12 +50,14 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
             com = new CorpusCommunication(communicationID);
             com->setName(communicationID);
             m_corpus->addCommunication(com);
+            ui->texteditMessagesFiles->appendPlainText(QString("Communication %1 added.").arg(com->ID()));
         }
         if (com->hasRecording(rec->ID())) {
             ui->texteditMessagesFiles->appendPlainText(QString("Recording %1 already exists, not added.").arg(rec->ID()));
         } else {
             rec->setFilename(dirMedia.relativeFilePath(rec->filename()));
             com->addRecording(rec);
+            ui->texteditMessagesFiles->appendPlainText(QString("Recording %1 added.").arg(rec->ID()));
         }
         if ((counter % 100) == 0) QApplication::processEvents();
         counter++;

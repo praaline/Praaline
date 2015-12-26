@@ -327,16 +327,39 @@ void Praaline::Plugins::Aligner::PluginAligner::createSegments(Corpus *corpus, Q
     //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
 }
 
+void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
+    QString appPath = QCoreApplication::applicationDirPath();
+    QString sphinxHMModelsPath = appPath + "/plugins/aligner/sphinx/model/hmm/";
+    FE->setFeatureParametersFile(sphinxHMModelsPath + "french_f0/feat.params");
+    FE->createSphinxMFC(corpus, communications);
+    return;
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
+    QPointer<LongSoundAligner> LSA = new LongSoundAligner();
+    madeProgress(0);
+    int countDone = 0;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (!com->hasRecordings()) continue;
+        LSA->createUtterancesFromProsogramAutosyll(corpus, com);
+        ++countDone;
+        madeProgress(countDone * 100 / communications.count());
+        QApplication::processEvents();
+    }
+    madeProgress(100);
+}
+
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-    addPhonetisationToTokens(corpus, communications);
-    return;
-
-
     LongSoundAligner *LSA = new LongSoundAligner();
-    // LSA->createRecognitionLevel(corpus, 0);
+    LSA->createRecognitionLevel(corpus, 0);
     madeProgress(0);
-    int i = 0;
+    int countDone = 0;
     QElapsedTimer timer;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
@@ -349,8 +372,8 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
         double secRecording = com->recordings().first()->durationSec();
         printMessage(QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
                      arg(com->ID()).arg(secRecording).arg(secRecognitionTime).arg(secRecognitionTime / secRecording));
-        ++i;
-        madeProgress(i * 100 / communications.count());
+        ++countDone;
+        madeProgress(countDone * 100 / communications.count());
         QApplication::processEvents();
     }
     madeProgress(100);
@@ -413,10 +436,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //    }
 
 
-//    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
-//    FE->setFeatureParametersFile("D:/SPHINX/pocketsphinx-0.8/model/hmm/french_f0/feat.params");
-//    FE->createSphinxMFC(corpus, communications);
-//    return;
+
 
 //    AcousticModelTrainer mt;
 //    // mt.createMasterLabelFile(QString("d:/aligner_train_tests/%1.mlf").arg(corpus->ID()), corpus, communications, "segment", "tok_min", "phone");

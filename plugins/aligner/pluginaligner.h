@@ -68,6 +68,9 @@ namespace Praaline {
                 void createDownsampledWavFiles(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
                 void createSegments(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
                 void autoTranscribePresegmented(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
+
+                void createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                void createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };
         }
     }

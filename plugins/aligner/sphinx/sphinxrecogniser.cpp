@@ -4,6 +4,8 @@
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <QFile>
+#include <QFileInfo>
 
 #include "pncore/corpus/corpus.h"
 
@@ -26,9 +28,11 @@ struct SphinxRecogniserData {
 SphinxRecogniser::SphinxRecogniser(QObject *parent) :
     QObject(parent), d(new SphinxRecogniserData)
 {
-    d->defaultAcousticModel = "D:/SPHINX/pocketsphinx-0.8/model/hmm/french_f0";
-    d->defaultLanguageModel = "D:/SPHINX/pocketsphinx-0.8/model/lm/french_f0/french3g62K.lm.dmp";
-    d->defaultPronunciationDictionary = "D:/SPHINX/pocketsphinx-0.8/model/lm/french_f0/frenchWords62K.dic";
+    QString appPath = QCoreApplication::applicationDirPath();
+    QString sphinxPath = appPath + "/plugins/aligner/sphinx/";
+    d->defaultAcousticModel = sphinxPath + "/model/hmm/french_f0";
+    d->defaultLanguageModel = sphinxPath + "/model/lm/french_f0/french3g62K.lm.dmp";
+    d->defaultPronunciationDictionary = sphinxPath + "/model/lm/french_f0/frenchWords62K.dic";
     d->attributename_acoustic_model = "acoustic_model";
     d->attributename_language_model = "language_model";
     d->useMLLR = false;
@@ -103,17 +107,17 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
         filenameAcousticModel = d->defaultAcousticModel;
         filenameMLLRMatrix = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString() + "/mllr_matrix";
     } else {
-        filenameAcousticModel = com->property(d->attributename_acoustic_model).toString();
-        if (filenameAcousticModel.isEmpty()) filenameAcousticModel = d->defaultAcousticModel;
-        else filenameAcousticModel = com->basePath() + "/" + filenameAcousticModel;
+        if (!com->property(d->attributename_acoustic_model).toString().isEmpty())
+            filenameAcousticModel = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString();
     }
+    if (filenameAcousticModel.isEmpty() || !QFile::exists(filenameAcousticModel))
+        filenameAcousticModel = d->defaultAcousticModel;
     if (d->useSpecialisedLM) {
-        filenameLanguageModel = com->property(d->attributename_language_model).toString();
-        if (filenameLanguageModel.isEmpty()) filenameLanguageModel = d->defaultLanguageModel;
-        else filenameLanguageModel = com->basePath() + "/" + filenameLanguageModel;
-    } else {
-        filenameLanguageModel = d->defaultLanguageModel;
+        if (!com->property(d->attributename_language_model).toString().isEmpty())
+            filenameLanguageModel = com->basePath() + "/" + com->property(d->attributename_language_model).toString();
     }
+    if (filenameLanguageModel.isEmpty() || !QFile::exists(filenameAcousticModel))
+        filenameLanguageModel = d->defaultLanguageModel;
 
     QString appPath = QCoreApplication::applicationDirPath();
     QString sphinxPath = appPath + "/plugins/aligner/sphinx/";

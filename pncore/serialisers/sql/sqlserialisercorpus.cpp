@@ -183,7 +183,10 @@ bool SQLSerialiserCorpus::saveCommunication(CorpusCommunication *com)
     q.bindValue(":communicationName", com->name());
     foreach (MetadataStructureSection *section, preparedMetadataStructure->sections(CorpusObject::Type_Communication)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q.bindValue(QString(":%1").arg(attribute->ID()), com->property(attribute->ID()));
+            if (attribute->datatype() == "bool")
+                q.bindValue(QString(":%1").arg(attribute->ID()), com->property(attribute->ID()).toBool());
+            else
+                q.bindValue(QString(":%1").arg(attribute->ID()), com->property(attribute->ID()));
         }
     }
     q.exec();
@@ -203,7 +206,10 @@ bool SQLSerialiserCorpus::saveSpeaker(CorpusSpeaker *spk)
     q.bindValue(":speakerName", spk->name());
     foreach (MetadataStructureSection *section, preparedMetadataStructure->sections(CorpusObject::Type_Speaker)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q.bindValue(QString(":%1").arg(attribute->ID()), spk->property(attribute->ID()));
+            if (attribute->datatype() == "bool")
+                q.bindValue(QString(":%1").arg(attribute->ID()), spk->property(attribute->ID()).toBool());
+            else
+                q.bindValue(QString(":%1").arg(attribute->ID()), spk->property(attribute->ID()));
         }
     }
     q.exec();
@@ -233,7 +239,10 @@ bool SQLSerialiserCorpus::saveRecording(QString communicationID, CorpusRecording
     q.bindValue(":checksumMD5", rec->checksumMD5());
     foreach (MetadataStructureSection *section, preparedMetadataStructure->sections(CorpusObject::Type_Recording)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q.bindValue(QString(":%1").arg(attribute->ID()), rec->property(attribute->ID()));
+            if (attribute->datatype() == "bool")
+                q.bindValue(QString(":%1").arg(attribute->ID()), rec->property(attribute->ID()).toBool());
+            else
+                q.bindValue(QString(":%1").arg(attribute->ID()), rec->property(attribute->ID()));
         }
     }
     q.exec();
@@ -253,7 +262,10 @@ bool SQLSerialiserCorpus::saveAnnotation(QString communicationID, CorpusAnnotati
     q.bindValue(":annotationName", annot->name());
     foreach (MetadataStructureSection *section, preparedMetadataStructure->sections(CorpusObject::Type_Annotation)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q.bindValue(QString(":%1").arg(attribute->ID()), annot->property(attribute->ID()));
+            if (attribute->datatype() == "bool")
+                q.bindValue(QString(":%1").arg(attribute->ID()), annot->property(attribute->ID()).toBool());
+            else
+                q.bindValue(QString(":%1").arg(attribute->ID()), annot->property(attribute->ID()));
         }
     }
     q.exec();
@@ -274,7 +286,10 @@ bool SQLSerialiserCorpus::saveParticipation(CorpusParticipation *participation)
     q.bindValue(":role", participation->role());
     foreach (MetadataStructureSection *section, preparedMetadataStructure->sections(CorpusObject::Type_Participation)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q.bindValue(QString(":%1").arg(attribute->ID()), participation->property(attribute->ID()));
+            if (attribute->datatype() == "bool")
+                q.bindValue(QString(":%1").arg(attribute->ID()), participation->property(attribute->ID()).toBool());
+            else
+                q.bindValue(QString(":%1").arg(attribute->ID()), participation->property(attribute->ID()));
         }
     }
     q.exec();
