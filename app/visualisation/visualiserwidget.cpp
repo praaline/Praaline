@@ -252,8 +252,6 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
     connect(m_playSpeed, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
     connect(m_playSpeed, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
 
-    IconLoader il;
-
     m_playControlsSpacer = new QFrame;
 
     layout->setSpacing(4);
@@ -1680,39 +1678,39 @@ VisualiserWidget::setupTransformsMenu()
 void
 VisualiserWidget::setupHelpMenu()
 {
-    QMenu *menu = menuBar()->addMenu(tr("&Help"));
-    menu->setTearOffEnabled(true);
+//    QMenu *menu = menuBar()->addMenu(tr("&Help"));
+//    menu->setTearOffEnabled(true);
 
-    m_keyReference->setCategory(tr("Help"));
+//    m_keyReference->setCategory(tr("Help"));
 
-    IconLoader il;
+//    IconLoader il;
 
-    QString name = QApplication::applicationName();
+//    QString name = QApplication::applicationName();
 
-    QAction *action = new QAction(il.load("help"),
-                                  tr("&Help Reference"), this);
-    action->setShortcut(tr("F1"));
-    action->setStatusTip(tr("Open the %1 reference manual").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(help()));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+//    QAction *action = new QAction(il.load("help"),
+//                                  tr("&Help Reference"), this);
+//    action->setShortcut(tr("F1"));
+//    action->setStatusTip(tr("Open the %1 reference manual").arg(name));
+//    connect(action, SIGNAL(triggered()), this, SLOT(help()));
+//    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
 
-    action = new QAction(tr("&Key and Mouse Reference"), this);
-    action->setShortcut(tr("F2"));
-    action->setStatusTip(tr("Open a window showing the keystrokes you can use in %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(keyReference()));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+//    action = new QAction(tr("&Key and Mouse Reference"), this);
+//    action->setShortcut(tr("F2"));
+//    action->setStatusTip(tr("Open a window showing the keystrokes you can use in %1").arg(name));
+//    connect(action, SIGNAL(triggered()), this, SLOT(keyReference()));
+//    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
 
-    action = new QAction(tr("%1 on the &Web").arg(name), this);
-    action->setStatusTip(tr("Open the %1 website").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(website()));
-    menu->addAction(action);
+//    action = new QAction(tr("%1 on the &Web").arg(name), this);
+//    action->setStatusTip(tr("Open the %1 website").arg(name));
+//    connect(action, SIGNAL(triggered()), this, SLOT(website()));
+//    menu->addAction(action);
 
-    action = new QAction(tr("&About %1").arg(name), this);
-    action->setStatusTip(tr("Show information about %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(about()));
-    menu->addAction(action);
+//    action = new QAction(tr("&About %1").arg(name), this);
+//    action->setStatusTip(tr("Show information about %1").arg(name));
+//    connect(action, SIGNAL(triggered()), this, SLOT(about()));
+//    menu->addAction(action);
 }
 
 void

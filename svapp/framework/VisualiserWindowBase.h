@@ -310,8 +310,8 @@ protected:
     public:
         OSCQueueStarter(VisualiserWindowBase *mwb) : QThread(mwb), m_mwb(mwb) { }
         virtual void run() {
-            OSCQueue *queue = new OSCQueue(); // can take a long time
-            m_mwb->m_oscQueue = queue;
+            //OSCQueue *queue = new OSCQueue(); // can take a long time
+            //m_mwb->m_oscQueue = queue;
         }
     private:
         VisualiserWindowBase *m_mwb;

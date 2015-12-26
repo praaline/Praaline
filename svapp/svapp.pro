@@ -37,6 +37,9 @@ exists(config.pri) {
     macx* {
         DEFINES += HAVE_COREAUDIO HAVE_PORTAUDIO_2_0
     }
+    unix* {
+        DEFINES += HAVE_LIBPULSE
+    }
 }
 
 CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11

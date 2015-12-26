@@ -137,7 +137,7 @@ OSCQueue::getOSCURL() const
 {
     QString url = "";
 #ifdef HAVE_LIBLO
-    url = lo_server_thread_get_url(m_thread);
+    if (m_thread) url = lo_server_thread_get_url(m_thread);
 #endif
     return url;
 }

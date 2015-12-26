@@ -8,8 +8,6 @@
 #include <QApplication>
 #include <ExtensionSystemConstants>
 
-#include <QSqlQuery>
-#include <QSqlRecord>
 #include <QFile>
 #include <QTextStream>
 

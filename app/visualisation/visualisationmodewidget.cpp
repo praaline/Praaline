@@ -16,7 +16,8 @@ using namespace QtilitiesCoreGui;
 #include "svcore/base/Preferences.h"
 
 struct VisualisationModeWidgetData {
-    VisualisationModeWidgetData()
+    VisualisationModeWidgetData() :
+        widgetTimelineVisualisation(0), actionShowGlobalVisualisation(0)
     { }
 
     QAction *actionShowTimelineVisualisation;

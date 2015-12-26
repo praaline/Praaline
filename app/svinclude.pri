@@ -33,7 +33,8 @@ exists(svconfig.pri) {
         LIBS += -lportaudio -framework CoreAudio -framework CoreMidi -framework AudioUnit -framework AudioToolbox -framework CoreFoundation -framework CoreServices -framework Accelerate
     }
     linux* {
-        LIBS += -lasound -ldl
+        DEFINES += HAVE_LIBPULSE
+        LIBS += -lpulse -lasound -ldl
     }
 }
 

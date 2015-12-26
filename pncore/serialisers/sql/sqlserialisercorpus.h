@@ -31,31 +31,20 @@ public:
 private:
     SQLSerialiserCorpus();
 
-    static void prepareLoadStatements(MetadataStructure *structure, QSqlDatabase &db);
-    static void prepareSaveStatements(MetadataStructure *structure, QSqlDatabase &db);
+    static QList<CorpusCommunication *> execGetCommunications(QString corpusID, MetadataStructure *structure, QSqlDatabase &db);
+    static QList<CorpusSpeaker *> execGetSpeakers(QString corpusID, MetadataStructure *structure, QSqlDatabase &db);
+    static QList<CorpusRecording *> execGetRecordings(QString communicationID, MetadataStructure *structure, QSqlDatabase &db);
+    static QList<CorpusAnnotation *> execGetAnnotations(QString communicationID, MetadataStructure *structure, QSqlDatabase &db);
+    static QMultiMap<QString, CorpusRecording *> execGetRecordingsAll(QString corpusID, MetadataStructure *structure, QSqlDatabase &db);
+    static QMultiMap<QString, CorpusAnnotation *> execGetAnnotationsAll(QString corpusID, MetadataStructure *structure, QSqlDatabase &db);
+    static void execGetParticipations(Corpus *corpus, MetadataStructure *structure, QSqlDatabase &db);
 
-    static QList<CorpusCommunication *> getCommunications(QString corpusID);
-    static QList<CorpusSpeaker *> getSpeakers(QString corpusID);
-    static QList<CorpusRecording *> getRecordings(QString communicationID);
-    static QList<CorpusAnnotation *> getAnnotations(QString communicationID);
-    static QMultiMap<QString, CorpusRecording *> getRecordingsAll(QString corpusID);
-    static QMultiMap<QString, CorpusAnnotation *> getAnnotationsAll(QString corpusID);
-    static void readParticipations(Corpus *corpus);
-
-    static bool saveCommunication(CorpusCommunication *com);
-    static bool saveSpeaker(CorpusSpeaker *spk);
-    static bool saveRecording(QString communicationID, CorpusRecording *rec);
-    static bool saveAnnotation(QString communicationID, CorpusAnnotation *annot);
-    static bool saveParticipation(CorpusParticipation *participation);
-    static bool cleanUpCommunication(CorpusCommunication *com);
-
-    static MetadataStructure *preparedMetadataStructure;
-    static QSqlQuery queryCommunicationSelect, queryCommunicationInsert, queryCommunicationUpdate, queryCommunicationDelete;
-    static QSqlQuery queryCommunicationRecordingDelete, queryCommunicationAnnotationDelete;
-    static QSqlQuery querySpeakerSelect, querySpeakerInsert, querySpeakerUpdate, querySpeakerDelete;
-    static QSqlQuery queryRecordingSelect, queryRecordingSelectAll, queryRecordingInsert, queryRecordingUpdate, queryRecordingDelete;
-    static QSqlQuery queryAnnotationSelect, queryAnnotationSelectAll, queryAnnotationInsert, queryAnnotationUpdate, queryAnnotationDelete;
-    static QSqlQuery queryParticipationSelect, queryParticipationInsert, queryParticipationUpdate, queryParticipationDelete;
+    static bool execSaveCommunication(CorpusCommunication *com, MetadataStructure *structure, QSqlDatabase &db);
+    static bool execSaveSpeaker(CorpusSpeaker *spk, MetadataStructure *structure, QSqlDatabase &db);
+    static bool execSaveRecording(QString communicationID, CorpusRecording *rec, MetadataStructure *structure, QSqlDatabase &db);
+    static bool execSaveAnnotation(QString communicationID, CorpusAnnotation *annot, MetadataStructure *structure, QSqlDatabase &db);
+    static bool execSaveParticipation(CorpusParticipation *participation, MetadataStructure *structure, QSqlDatabase &db);
+    static bool execCleanUpCommunication(CorpusCommunication *com, QSqlDatabase &db);
 };
 
 #endif // SQLSERIALISERCORPUS_H

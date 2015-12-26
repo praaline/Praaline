@@ -8,9 +8,6 @@
 #include <QFile>
 #include <QTextStream>
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlError>
 
 #include "pluginfloralpfc.h"
 #include "pncore/corpus/corpus.h"

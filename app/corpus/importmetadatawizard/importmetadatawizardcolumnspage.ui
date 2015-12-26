@@ -107,10 +107,16 @@
    </item>
   </layout>
   <zorder>groupBoxPreviewColumns</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>labelAttribute</zorder>
   <zorder>groupBoxColumnDataFormat</zorder>
  </widget>
+ <tabstops>
+  <tabstop>optionFormatText</tabstop>
+  <tabstop>optionFormatNumber</tabstop>
+  <tabstop>optionFormatDate</tabstop>
+  <tabstop>comboDateFormat</tabstop>
+  <tabstop>comboAttribute</tabstop>
+  <tabstop>tableViewPreviewColumns</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
