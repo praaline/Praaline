@@ -60,6 +60,11 @@ namespace Praaline {
                 void printMessage(QString message);
                 void madeProgress(int progress);
 
+            protected slots:
+                void futureResultReadyAt(int index);
+                void futureProgressValueChanged(int progressValue);
+                void futureFinished();
+
             private:
                 PluginAlignerPrivateData* d;
                 void addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);

@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QCoreApplication>
 #include <QFile>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QFileInfo>
 
 #include "pncore/corpus/corpus.h"

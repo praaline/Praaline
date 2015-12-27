@@ -7,6 +7,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <ExtensionSystemConstants>
+#include <QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
 
 #include "pluginaligner.h"
 #include "pncore/corpus/corpus.h"
@@ -31,12 +34,18 @@ struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
 
     bool cmdDownsampleWaveFiles;
     bool cmdSplitToUtterances;
+
+    QFuture<QString> future;
+    QFutureWatcher<QString> watcher;
 };
 
 Praaline::Plugins::Aligner::PluginAligner::PluginAligner(QObject* parent) : QObject(parent)
 {
     d = new PluginAlignerPrivateData;
     setObjectName(pluginName());
+    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
+    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
+    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
 }
 
 Praaline::Plugins::Aligner::PluginAligner::~PluginAligner()
@@ -395,35 +404,66 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPo
     printMessage("Finished");
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+struct LSAStep
 {
-    checks(corpus, communications);
-    return;
+    LSAStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    typedef QString result_type;
 
-    LongSoundAligner *LSA = new LongSoundAligner();
-    LSA->createRecognitionLevel(corpus, 0);
-    madeProgress(0);
-    int countDone = 0;
-    QElapsedTimer timer;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        if (!com->hasRecordings()) continue;
-        // LSA->createUtterancesFromProsogramAutosyll(corpus, com);
+    QString operator()(const QPointer<CorpusCommunication> &com)
+    {
+        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
+        QElapsedTimer timer;
+        if (!com) return QString("%1\tEmpty").arg(com->ID());
+        if (!com->hasRecordings()) return QString("%1\tNo Recordings").arg(com->ID());
         com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
         timer.start();
-        LSA->recognise(corpus, com, 0);
+        LSA->recognise(m_corpus, com, 0);
         double secRecognitionTime = timer.elapsed() / 1000.0;
         double secRecording = com->recordings().first()->durationSec();
-        printMessage(QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
-                     arg(com->ID()).arg(secRecording).arg(secRecognitionTime).arg(secRecognitionTime / secRecording));
-        ++countDone;
-        madeProgress(countDone * 100 / communications.count());
+        return QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
+                arg(com->ID()).arg(secRecording).arg(secRecognitionTime).arg(secRecognitionTime / secRecording);
+        // For testing: return QString("%1 %2 %3").arg(com->ID()).arg(com->recordingsCount()).arg(timer.elapsed());
+    }
+
+    QPointer<Corpus> m_corpus;
+};
+
+void Praaline::Plugins::Aligner::PluginAligner::futureResultReadyAt(int index)
+{
+    QString result = d->watcher.resultAt(index);
+    qDebug() << d->watcher.progressValue() << result;
+    emit printMessage(result);
+    emit madeProgress(d->watcher.progressValue() * 100 / d->watcher.progressMaximum());
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::futureProgressValueChanged(int progressValue)
+{
+    qDebug() << progressValue;
+    emit madeProgress(progressValue * 100 / d->watcher.progressMaximum());
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
+{
+    emit madeProgress(100);
+    emit printMessage("Finished");
+    qDebug() << "Finished";
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    madeProgress(0);
+    printMessage("Starting");
+    d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
+    d->watcher.setFuture(d->future);
+
+    while (d->watcher.isRunning()) {
         QApplication::processEvents();
     }
-    madeProgress(100);
-    delete LSA;
     return;
 
+
+    checks(corpus, communications);
+    return;
 
     if (d->cmdDownsampleWaveFiles) {
         createDownsampledWavFiles(corpus, communications);

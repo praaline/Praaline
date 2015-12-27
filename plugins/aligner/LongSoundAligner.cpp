@@ -3,6 +3,7 @@
 #include <QList>
 #include <QMap>
 #include <QPointer>
+#include <QMutex>
 #include "LongSoundAligner.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/annotationtiergroup.h"
@@ -111,6 +112,8 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<Corpus> co
 
 bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com, int recognitionStep)
 {
+    static QMutex mutex;
+
     QPointer<SphinxRecogniser> sphinx = new SphinxRecogniser(this);
     sphinx->setAttributeNames(d->attributename_acoustic_model, d->attributename_language_model);
     if (recognitionStep == 0) {
@@ -128,7 +131,9 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
+        mutex.lock();
         tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -152,8 +157,10 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             tier_auto_hypseg->fillEmptyAnnotationsWith("_");
             tier_auto_hypseg->mergeIdenticalAnnotations("_");
             // Save
+            mutex.lock();
             corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_hypseg);
             corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_utterance);
+            mutex.unlock();
         }
         qDeleteAll(tiersAll);
     }
