@@ -414,14 +414,18 @@ struct LSAStep
         QPointer<LongSoundAligner> LSA = new LongSoundAligner();
         QElapsedTimer timer;
         if (!com) return QString("%1\tEmpty").arg(com->ID());
-        if (!com->hasRecordings()) return QString("%1\tNo Recordings").arg(com->ID());
+        if (!com->hasRecordings()) {
+            com->setProperty("LSA_status", "NoRecordings");
+            return QString("%1\tNo Recordings").arg(com->ID());
+        }
         com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
         timer.start();
         LSA->recognise(m_corpus, com, 0);
         double secRecognitionTime = timer.elapsed() / 1000.0;
         double secRecording = com->recordings().first()->durationSec();
         return QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
-                arg(com->ID()).arg(secRecording).arg(secRecognitionTime).arg(secRecognitionTime / secRecording);
+                arg(com->ID()).arg(secRecording).arg(secRecognitionTime).
+                arg(secRecognitionTime / ((secRecording > 300.0) ? 300.0 : secRecording));
         // For testing: return QString("%1 %2 %3").arg(com->ID()).arg(com->recordingsCount()).arg(timer.elapsed());
     }
 
@@ -453,12 +457,15 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 {
     madeProgress(0);
     printMessage("Starting");
+    QElapsedTimer timer;
+    timer.start();
     d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
     d->watcher.setFuture(d->future);
 
     while (d->watcher.isRunning()) {
         QApplication::processEvents();
     }
+    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
     return;
 
 

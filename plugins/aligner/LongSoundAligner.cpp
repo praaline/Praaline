@@ -125,7 +125,10 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     }
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     if (!com) return false;
-    if (!com->hasRecordings()) return false;
+    if (!com->hasRecordings()) {
+        com->setProperty("LSA_status", "NoRecordings");
+        return false;
+    }
     QPointer<CorpusRecording> rec = com->recordings().first();
     if (!rec) return false;
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
@@ -142,6 +145,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             QList<Interval *> utterances;
             QList<Interval *> segmentation;
             foreach (Interval *intv, tier_auto_utterance->intervals()) {
+                if (intv->tMin() > RealTime(300, 0)) break; // first 300 seconds limit
                 if (intv->text() != "_") utterances << intv;
             }
             sphinx->recogniseUtterances_MFC(com, rec->ID(), utterances, segmentation);
@@ -164,6 +168,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
         }
         qDeleteAll(tiersAll);
     }
+    com->setProperty("LSA_status", "First300");
     return true;
 }
 

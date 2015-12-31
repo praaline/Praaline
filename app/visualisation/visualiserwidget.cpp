@@ -54,8 +54,8 @@
 #include "widgets/KeyReference.h"
 #include "widgets/TransformFinder.h"
 #include "widgets/LabelCounterInputDialog.h"
+#include "widgets/KeyReference.h"
 #include "widgets/ActivityLog.h"
-#include "widgets/UnitConverter.h"
 #include "audioio/AudioCallbackPlaySource.h"
 #include "audioio/AudioCallbackPlayTarget.h"
 #include "audioio/PlaySpeedRangeMapper.h"
@@ -80,13 +80,7 @@
 #include "rdf/RDFExporter.h"
 
 #include "networkpermissiontester.h"
-#include "framework/VersionTester.h"
-
-// For version information
-#include <vamp/vamp.h>
-#include <vamp-hostsdk/PluginBase.h>
-#include "plugin/api/ladspa.h"
-#include "plugin/api/dssi.h"
+#include "SimpleVisualiserWidget.h"
 
 #include <QApplication>
 #include <QMessageBox>
@@ -131,19 +125,22 @@
 #include "pngui/layer/AnnotationGridLayer.h"
 #include "pngui/layer/ProsogramLayer.h"
 
+#include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
+#include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"
+using namespace QtilitiesCore;
+using namespace QtilitiesCoreGui;
+
 using std::vector;
 using std::map;
 using std::set;
 
 
-VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
-    VisualiserWindowBase(withAudioOutput, withOSCSupport),
-    m_overview(0),
+VisualiserWidget::VisualiserWidget(const QString &contextStringID, bool withAudioOutput, bool withOSCSupport) :
+    SimpleVisualiserWidget(contextStringID, withAudioOutput, withOSCSupport),
     m_mainMenusCreated(false),
     m_paneMenu(0),
     m_layerMenu(0),
     m_transformsMenu(0),
-    m_playbackMenu(0),
     m_existingLayersMenu(0),
     m_sliceMenu(0),
     m_recentTransformsMenu(0),
@@ -167,31 +164,20 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
     m_playControlsSpacer(0),
     m_playControlsWidth(0),
     m_layerTreeDialog(0),
-    m_activityLog(new ActivityLog()),
-    m_unitConverter(new UnitConverter()),
-    m_keyReference(new KeyReference()),
     m_templateWatcher(0)
 {
-    setWindowTitle(QApplication::applicationName());
-
-    UnitDatabase *udb = UnitDatabase::getInstance();
-    udb->registerUnit("Hz");
-    udb->registerUnit("dB");
-    udb->registerUnit("s");
-
-    ColourDatabase *cdb = ColourDatabase::getInstance();
-    cdb->addColour(Qt::black, tr("Black"));
-    cdb->addColour(Qt::darkRed, tr("Red"));
-    cdb->addColour(Qt::darkBlue, tr("Blue"));
-    cdb->addColour(Qt::darkGreen, tr("Green"));
-    cdb->addColour(QColor(200, 50, 255), tr("Purple"));
-    cdb->addColour(QColor(255, 150, 50), tr("Orange"));
-    cdb->setUseDarkBackground(cdb->addColour(Qt::white, tr("White")), true);
-    cdb->setUseDarkBackground(cdb->addColour(Qt::red, tr("Bright Red")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(30, 150, 255), tr("Bright Blue")), true);
-    cdb->setUseDarkBackground(cdb->addColour(Qt::green, tr("Bright Green")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(225, 74, 255), tr("Bright Purple")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(255, 188, 80), tr("Bright Orange")), true);
+    // Get objects from global object pool
+    QList<QObject *> list;
+    list = OBJECT_MANAGER->registeredInterfaces("KeyReference");
+    foreach (QObject* obj, list) {
+        KeyReference *keyReference = qobject_cast<KeyReference *>(obj);
+        if (keyReference) m_keyReference = keyReference;
+    }
+    list = OBJECT_MANAGER->registeredInterfaces("ActivityLog");
+    foreach (QObject* obj, list) {
+        ActivityLog *activityLog = qobject_cast<ActivityLog *>(obj);
+        if (activityLog) m_activityLog = activityLog;
+    }
 
     QFrame *frame = new QFrame;
     setCentralWidget(frame);
@@ -261,14 +247,12 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
     layout->addWidget(m_playSpeed, 1, 3);
     layout->addWidget(m_fader, 1, 4);
 
-    m_playControlsWidth =
-            m_fader->width() + m_playSpeed->width() + layout->spacing() * 2;
+    m_playControlsWidth = m_fader->width() + m_playSpeed->width() + layout->spacing() * 2;
 
     layout->setColumnMinimumWidth(0, 14);
     layout->setColumnStretch(0, 0);
 
-    m_paneStack->setPropertyStackMinWidth(m_playControlsWidth
-                                          + 2 + layout->spacing());
+    m_paneStack->setPropertyStackMinWidth(m_playControlsWidth + 2 + layout->spacing());
     m_playControlsSpacer->setFixedSize(QSize(2, 2));
 
     layout->setColumnStretch(1, 10);
@@ -279,7 +263,6 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
 
     setupMenus();
     setupToolbars();
-    setupHelpMenu();
 
     statusBar();
     m_currentLabel = new QLabel;
@@ -298,12 +281,9 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
     connect(this, SIGNAL(replacedDocument()), this, SLOT(documentReplaced()));
     m_activityLog->hide();
 
-    m_unitConverter->hide();
-
     newSession();
 
-    connect(m_midiInput, SIGNAL(eventsAvailable()),
-            this, SLOT(midiEventsAvailable()));
+    connect(m_midiInput, SIGNAL(eventsAvailable()), this, SLOT(midiEventsAvailable()));
 
     // Signals from base connect to slots in the visualiser widget, which emits signals
     // in order to be able to synchronise itselft with other widgets (e.g. the annotations editor)
@@ -325,9 +305,6 @@ VisualiserWidget::VisualiserWidget(bool withAudioOutput, bool withOSCSupport) :
 VisualiserWidget::~VisualiserWidget()
 {
     //    cerr << "VisualiserWidget::~VisualiserWidget" << endl;
-    delete m_keyReference;
-    delete m_activityLog;
-    delete m_unitConverter;
     delete m_layerTreeDialog;
     Profiles::getInstance()->dump();
     //    cerr << "VisualiserWidget::~VisualiserWidget finishing" << endl;
@@ -385,6 +362,7 @@ VisualiserWidget::setupMenus()
 
     setupFileMenu();
     setupEditMenu();
+    setupAnnotationMenu();
     setupViewMenu();
     setupPaneAndLayerMenus();
     setupTransformsMenu();
@@ -392,40 +370,31 @@ VisualiserWidget::setupMenus()
     m_mainMenusCreated = true;
 }
 
-void
-VisualiserWidget::goFullScreen()
+void VisualiserWidget::goFullScreen()
 {
     if (m_viewManager->getZoomWheelsEnabled()) {
         // The wheels seem to end up in the wrong place in full-screen mode
         toggleZoomWheels();
     }
-
     QWidget *ps = m_mainScroll->takeWidget();
     ps->setParent(0);
-
     QShortcut *sc;
-
     sc = new QShortcut(QKeySequence("Esc"), ps);
     connect(sc, SIGNAL(activated()), this, SLOT(endFullScreen()));
-
     sc = new QShortcut(QKeySequence("F11"), ps);
     connect(sc, SIGNAL(activated()), this, SLOT(endFullScreen()));
-
     QAction *acts[] = {
         m_playAction, m_zoomInAction, m_zoomOutAction, m_zoomFitAction,
         m_scrollLeftAction, m_scrollRightAction, m_showPropertyBoxesAction
     };
-
     for (int i = 0; i < int(sizeof(acts)/sizeof(acts[0])); ++i) {
         sc = new QShortcut(acts[i]->shortcut(), ps);
         connect(sc, SIGNAL(activated()), acts[i], SLOT(trigger()));
     }
-
     ps->showFullScreen();
 }
 
-void
-VisualiserWidget::endFullScreen()
+void VisualiserWidget::endFullScreen()
 {
     // these were only created in goFullScreen:
     QObjectList cl = m_paneStack->children();
@@ -433,44 +402,48 @@ VisualiserWidget::endFullScreen()
         QShortcut *sc = qobject_cast<QShortcut *>(o);
         if (sc) delete sc;
     }
-
     m_paneStack->showNormal();
     m_mainScroll->setWidget(m_paneStack);
 }
 
-void
-VisualiserWidget::setupFileMenu()
+void VisualiserWidget::setupFileMenu()
 {
     if (m_mainMenusCreated) return;
 
-    QMenu *menu = menuBar()->addMenu(tr("&File"));
-    menu->setTearOffEnabled(true);
-    QToolBar *toolbar = addToolBar(tr("File Toolbar"));
+    Command *command;
+    IconLoader il;
+    bool existed;
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID(m_contextStringID));
+    ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_visualisation = ACTION_MANAGER->createMenu(tr("V&isualisation"), existed);
+    if (!existed) menubar->addMenu(menu_visualisation, tr("&Playback"));
+
+    QToolBar *toolbar = addToolBar(tr("Visualisation Toolbar"));
 
     m_keyReference->setCategory(tr("File and Session Management"));
 
-    IconLoader il;
-
     QIcon icon = il.load("filenew");
     QAction *action = new QAction(icon, tr("&New Session"), this);
-    action->setShortcut(tr("Ctrl+N"));
-    action->setStatusTip(tr("Abandon the current %1 session and start a new one").arg(QApplication::applicationName()));
+    action->setStatusTip(tr("Abandon the current visualiser session and start a new one"));
     connect(action, SIGNAL(triggered()), this, SLOT(newSession()));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
     toolbar->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.NewSession", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     icon = il.load("fileopen");
-    action = new QAction(icon, tr("&Open..."), this);
-    action->setShortcut(tr("Ctrl+O"));
+    action = new QAction(icon, tr("&Open Session..."), this);
     action->setStatusTip(tr("Open a session file, audio file, or layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(openSomething()));
     m_keyReference->registerShortcut(action);
     toolbar->addAction(action);
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.OpenSession", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    // We want this one to go on the toolbar now, if we add it at all,
-    // but on the menu later
+    // We want this one to go on the toolbar now, if we add it at all, but on the menu later
     QAction *iaction = new QAction(tr("&Import More Audio..."), this);
     iaction->setShortcut(tr("Ctrl+I"));
     iaction->setStatusTip(tr("Import an extra audio file into a new pane"));
@@ -478,8 +451,7 @@ VisualiserWidget::setupFileMenu()
     connect(this, SIGNAL(canImportMoreAudio(bool)), iaction, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(iaction);
 
-    // We want this one to go on the toolbar now, if we add it at all,
-    // but on the menu later
+    // We want this one to go on the toolbar now, if we add it at all, but on the menu later
     QAction *raction = new QAction(tr("Replace &Main Audio..."), this);
     raction->setStatusTip(tr("Replace the main audio file of the session with a different file"));
     connect(raction, SIGNAL(triggered()), this, SLOT(replaceMainAudio()));
@@ -490,9 +462,11 @@ VisualiserWidget::setupFileMenu()
     action->setStatusTip(tr("Open or import a file from a remote URL"));
     connect(action, SIGNAL(triggered()), this, SLOT(openLocation()));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.OpenLocation", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    menu->addSeparator();
+    menu_visualisation->addSeperator();
 
     icon = il.load("filesave");
     action = new QAction(icon, tr("&Save Session"), this);
@@ -501,18 +475,22 @@ VisualiserWidget::setupFileMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(saveSession()));
     connect(this, SIGNAL(canSave(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
     toolbar->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.SaveSession", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     icon = il.load("filesaveas");
     action = new QAction(icon, tr("Save Session &As..."), this);
     action->setShortcut(tr("Ctrl+Shift+S"));
     action->setStatusTip(tr("Save the current session into a new %1 session file").arg(QApplication::applicationName()));
     connect(action, SIGNAL(triggered()), this, SLOT(saveSessionAs()));
-    menu->addAction(action);
     toolbar->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.SaveSessionAs", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    menu->addSeparator();
+    menu_visualisation->addSeperator();
 
     /*
     icon = il.load("fileopenaudio");
@@ -525,24 +503,32 @@ VisualiserWidget::setupFileMenu()
 */
 
     // the Replace action we made earlier
-    menu->addAction(raction);
+    command = ACTION_MANAGER->registerAction("Visualisation.ReplaceAudio", raction, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     // the Import action we made earlier
-    menu->addAction(iaction);
+    command = ACTION_MANAGER->registerAction("Visualisation.ImportMoreAudio", iaction, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     action = new QAction(tr("&Export Audio File..."), this);
     action->setStatusTip(tr("Export selection as an audio file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportAudio()));
     connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.ExportAudio", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     action = new QAction(tr("Export Audio Data..."), this);
     action->setStatusTip(tr("Export audio from selection into a data file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportAudioData()));
     connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.ExportAudioData", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    menu->addSeparator();
+    menu_visualisation->addSeperator();
 
     action = new QAction(tr("Import Annotation &Layer..."), this);
     action->setShortcut(tr("Ctrl+L"));
@@ -550,7 +536,9 @@ VisualiserWidget::setupFileMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(importLayer()));
     connect(this, SIGNAL(canImportLayer(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.ImportAnnotationLayer", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     action = new QAction(tr("Export Annotation La&yer..."), this);
     action->setShortcut(tr("Ctrl+Y"));
@@ -558,20 +546,24 @@ VisualiserWidget::setupFileMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(exportLayer()));
     connect(this, SIGNAL(canExportLayer(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.ExportAnnotationLayer", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    menu->addSeparator();
+    menu_visualisation->addSeperator();
 
     action = new QAction(tr("Export Image File..."), this);
     action->setStatusTip(tr("Export a single pane to an image file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportImage()));
     connect(this, SIGNAL(canExportImage(bool)), action, SLOT(setEnabled(bool)));
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.ExportImage", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
-    menu->addSeparator();
+    menu_visualisation->addSeperator();
 
     QString templatesMenuLabel = tr("Apply Session Template");
-    m_templatesMenu = menu->addMenu(templatesMenuLabel);
+    m_templatesMenu = menu_visualisation->menu()->addMenu(templatesMenuLabel);
     m_templatesMenu->setTearOffEnabled(true);
     // We need to have a main model for this option to be useful:
     // canExportAudio captures that
@@ -584,68 +576,62 @@ VisualiserWidget::setupFileMenu()
     // We need to have something in the session for this to be useful:
     // canDeleteCurrentLayer captures that
     connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
-    menu->addAction(action);
+    command = ACTION_MANAGER->registerAction("Visualisation.SaveTemplate", action, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     m_manageTemplatesAction = new QAction(tr("Manage Exported Templates"), this);
     connect(m_manageTemplatesAction, SIGNAL(triggered()), this, SLOT(manageSavedTemplates()));
-    menu->addAction(m_manageTemplatesAction);
+    command = ACTION_MANAGER->registerAction("Visualisation.ManageTemplates", m_manageTemplatesAction, context);
+    command->setCategory(QtilitiesCategory("Visualisation"));
+    menu_visualisation->addAction(command);
 
     setupTemplatesMenu();
 
-    menu->addSeparator();
-    action = new QAction(il.load("exit"),
-                         tr("&Quit"), this);
-    action->setShortcut(tr("Ctrl+Q"));
-    action->setStatusTip(tr("Exit %1").arg(QApplication::applicationName()));
-    connect(action, SIGNAL(triggered()), qApp, SLOT(closeAllWindows()));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    menu_visualisation->addSeperator();
 }
 
-void
-VisualiserWidget::setupEditMenu()
+void VisualiserWidget::setupEditMenu()
 {
     if (m_mainMenusCreated) return;
 
-    QMenu *menu = menuBar()->addMenu(tr("&Edit"));
-    menu->setTearOffEnabled(true);
-    CommandHistory::getInstance()->registerMenu(menu);
+    QAction *action;
+    IconLoader il;
+    bool existed;
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID(m_contextStringID));
+    ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_visualisation = ACTION_MANAGER->createMenu(tr("V&isualisation"), existed);
+    if (!existed) menubar->addMenu(menu_visualisation, tr("&Playback"));
 
     m_keyReference->setCategory(tr("Editing"));
 
-    menu->addSeparator();
-
-    IconLoader il;
-
-    QAction *action = new QAction(il.load("editcut"),
-                                  tr("Cu&t"), this);
+    action = new QAction(il.load("editcut"), tr("Cu&t"), this);
     action->setShortcut(tr("Ctrl+X"));
     action->setStatusTip(tr("Cut the selection from the current layer to the clipboard"));
     connect(action, SIGNAL(triggered()), this, SLOT(cut()));
     connect(this, SIGNAL(canEditSelection(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
     m_rightButtonMenu->addAction(action);
+    ACTION_MANAGER->registerAction("Edit.Cut", action, context);
 
-    action = new QAction(il.load("editcopy"),
-                         tr("&Copy"), this);
-    //action->setShortcut(tr("Ctrl+C"));
+    action = new QAction(il.load("editcopy"), tr("&Copy"), this);
+    action->setShortcut(tr("Ctrl+C"));
     action->setStatusTip(tr("Copy the selection from the current layer to the clipboard"));
     connect(action, SIGNAL(triggered()), this, SLOT(copy()));
     connect(this, SIGNAL(canEditSelection(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
     m_rightButtonMenu->addAction(action);
+    ACTION_MANAGER->registerAction("Edit.Copy", action, context);
 
-    action = new QAction(il.load("editpaste"),
-                         tr("&Paste"), this);
+    action = new QAction(il.load("editpaste"), tr("&Paste"), this);
     action->setShortcut(tr("Ctrl+V"));
     action->setStatusTip(tr("Paste from the clipboard to the current layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(paste()));
     connect(this, SIGNAL(canPaste(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
     m_rightButtonMenu->addAction(action);
+    ACTION_MANAGER->registerAction("Edit.Paste", action, context);
 
     action = new QAction(tr("Paste at Playback Position"), this);
     action->setShortcut(tr("Ctrl+Shift+V"));
@@ -653,7 +639,7 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(pasteAtPlaybackPosition()));
     connect(this, SIGNAL(canPaste(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
     m_deleteSelectedAction = new QAction(tr("&Delete Selected Items"), this);
@@ -662,10 +648,10 @@ VisualiserWidget::setupEditMenu()
     connect(m_deleteSelectedAction, SIGNAL(triggered()), this, SLOT(deleteSelected()));
     connect(this, SIGNAL(canDeleteSelection(bool)), m_deleteSelectedAction, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(m_deleteSelectedAction);
-    menu->addAction(m_deleteSelectedAction);
+    //menu->addAction(m_deleteSelectedAction);
     m_rightButtonMenu->addAction(m_deleteSelectedAction);
 
-    menu->addSeparator();
+    //menu->addSeparator();
     m_rightButtonMenu->addSeparator();
 
     m_keyReference->setCategory(tr("Selection"));
@@ -676,7 +662,7 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
     connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
     action = new QAction(tr("Select &Visible Range"), this);
@@ -685,7 +671,7 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(selectVisible()));
     connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
 
     action = new QAction(tr("Select to &Start"), this);
     action->setShortcut(tr("Shift+Left"));
@@ -693,7 +679,7 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(selectToStart()));
     connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
 
     action = new QAction(tr("Select to &End"), this);
     action->setShortcut(tr("Shift+Right"));
@@ -701,7 +687,7 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(selectToEnd()));
     connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
 
     action = new QAction(tr("C&lear Selection"), this);
     action->setShortcut(tr("Esc"));
@@ -709,107 +695,111 @@ VisualiserWidget::setupEditMenu()
     connect(action, SIGNAL(triggered()), this, SLOT(clearSelection()));
     connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
-    menu->addSeparator();
-
-    m_keyReference->setCategory(tr("Tapping Time Instants"));
-
-    action = new QAction(tr("&Insert Instant at Playback Position"), this);
-    action->setShortcut(tr("Enter"));
-    action->setStatusTip(tr("Insert a new time instant at the current playback position, in a new layer if necessary"));
-    connect(action, SIGNAL(triggered()), this, SLOT(insertInstant()));
-    connect(this, SIGNAL(canInsertInstant(bool)), action, SLOT(setEnabled(bool)));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
-
-    // Laptop shortcut (no keypad Enter key)
-    QString shortcut(tr(";"));
-    connect(new QShortcut(shortcut, this), SIGNAL(activated()),
-            this, SLOT(insertInstant()));
-    m_keyReference->registerAlternativeShortcut(action, shortcut);
-
-    action = new QAction(tr("Insert Instants at Selection &Boundaries"), this);
-    action->setShortcut(tr("Shift+Enter"));
-    action->setStatusTip(tr("Insert new time instants at the start and end of the current selected regions, in a new layer if necessary"));
-    connect(action, SIGNAL(triggered()), this, SLOT(insertInstantsAtBoundaries()));
-    connect(this, SIGNAL(canInsertInstantsAtBoundaries(bool)), action, SLOT(setEnabled(bool)));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
-
-    action = new QAction(tr("Insert Item at Selection"), this);
-    action->setShortcut(tr("Ctrl+Shift+Return"));
-    action->setStatusTip(tr("Insert a new note or region item corresponding to the current selection"));
-    connect(action, SIGNAL(triggered()), this, SLOT(insertItemAtSelection()));
-    connect(this, SIGNAL(canInsertItemAtSelection(bool)), action, SLOT(setEnabled(bool)));
-    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
-
-    menu->addSeparator();
-
-    QMenu *numberingMenu = menu->addMenu(tr("Number New Instants with"));
-    numberingMenu->setTearOffEnabled(true);
-    QActionGroup *numberingGroup = new QActionGroup(this);
-
-    Labeller::TypeNameMap types = m_labeller->getTypeNames();
-    for (Labeller::TypeNameMap::iterator i = types.begin(); i != types.end(); ++i) {
-
-        if (i->first == Labeller::ValueFromLabel ||
-                i->first == Labeller::ValueFromExistingNeighbour) continue;
-
-        action = new QAction(i->second, this);
-        connect(action, SIGNAL(triggered()), this, SLOT(setInstantsNumbering()));
-        action->setCheckable(true);
-        action->setChecked(m_labeller->getType() == i->first);
-        numberingGroup->addAction(action);
-        numberingMenu->addAction(action);
-        m_numberingActions[action] = (int)i->first;
-
-        if (i->first == Labeller::ValueFromTwoLevelCounter) {
-
-            QMenu *cycleMenu = numberingMenu->addMenu(tr("Cycle size"));
-            QActionGroup *cycleGroup = new QActionGroup(this);
-
-            int cycles[] = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16 };
-            for (int i = 0; i < int(sizeof(cycles)/sizeof(cycles[0])); ++i) {
-                action = new QAction(QString("%1").arg(cycles[i]), this);
-                connect(action, SIGNAL(triggered()), this, SLOT(setInstantsCounterCycle()));
-                action->setCheckable(true);
-                action->setChecked(cycles[i] == m_labeller->getCounterCycleSize());
-                cycleGroup->addAction(action);
-                cycleMenu->addAction(action);
-            }
-        }
-
-        if (i->first == Labeller::ValueNone ||
-                i->first == Labeller::ValueFromTwoLevelCounter ||
-                i->first == Labeller::ValueFromRealTime) {
-            numberingMenu->addSeparator();
-        }
-    }
-
-    action = new QAction(tr("Reset Numbering Counters"), this);
-    action->setStatusTip(tr("Reset to 1 all the counters used for counter-based labelling"));
-    connect(action, SIGNAL(triggered()), this, SLOT(resetInstantsCounters()));
-    connect(this, SIGNAL(replacedDocument()), action, SLOT(trigger()));
-    menu->addAction(action);
-
-    action = new QAction(tr("Set Numbering Counters..."), this);
-    action->setStatusTip(tr("Set the counters used for counter-based labelling"));
-    connect(action, SIGNAL(triggered()), this, SLOT(setInstantsCounters()));
-    menu->addAction(action);
-
-    action = new QAction(tr("Renumber Selected Instants"), this);
-    action->setStatusTip(tr("Renumber the selected instants using the current labelling scheme"));
-    connect(action, SIGNAL(triggered()), this, SLOT(renumberInstants()));
-    connect(this, SIGNAL(canRenumberInstants(bool)), action, SLOT(setEnabled(bool)));
-    //    m_keyReference->registerShortcut(action);
-    menu->addAction(action);
+    //menu->addSeparator();
 }
 
-void
-VisualiserWidget::setupViewMenu()
+void VisualiserWidget::setupAnnotationMenu()
+{
+//    // ANNOTATION
+//    m_keyReference->setCategory(tr("Tapping Time Instants"));
+
+//    action = new QAction(tr("&Insert Instant at Playback Position"), this);
+//    action->setShortcut(tr("Enter"));
+//    action->setStatusTip(tr("Insert a new time instant at the current playback position, in a new layer if necessary"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(insertInstant()));
+//    connect(this, SIGNAL(canInsertInstant(bool)), action, SLOT(setEnabled(bool)));
+//    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
+
+//    // Laptop shortcut (no keypad Enter key)
+//    QString shortcut(tr(";"));
+//    connect(new QShortcut(shortcut, this), SIGNAL(activated()),
+//            this, SLOT(insertInstant()));
+//    m_keyReference->registerAlternativeShortcut(action, shortcut);
+
+//    action = new QAction(tr("Insert Instants at Selection &Boundaries"), this);
+//    action->setShortcut(tr("Shift+Enter"));
+//    action->setStatusTip(tr("Insert new time instants at the start and end of the current selected regions, in a new layer if necessary"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(insertInstantsAtBoundaries()));
+//    connect(this, SIGNAL(canInsertInstantsAtBoundaries(bool)), action, SLOT(setEnabled(bool)));
+//    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
+
+//    action = new QAction(tr("Insert Item at Selection"), this);
+//    action->setShortcut(tr("Ctrl+Shift+Return"));
+//    action->setStatusTip(tr("Insert a new note or region item corresponding to the current selection"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(insertItemAtSelection()));
+//    connect(this, SIGNAL(canInsertItemAtSelection(bool)), action, SLOT(setEnabled(bool)));
+//    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
+
+//    menu->addSeparator();
+
+//    QMenu *numberingMenu = menu->addMenu(tr("Number New Instants with"));
+//    numberingMenu->setTearOffEnabled(true);
+//    QActionGroup *numberingGroup = new QActionGroup(this);
+
+//    Labeller::TypeNameMap types = m_labeller->getTypeNames();
+//    for (Labeller::TypeNameMap::iterator i = types.begin(); i != types.end(); ++i) {
+
+//        if (i->first == Labeller::ValueFromLabel ||
+//                i->first == Labeller::ValueFromExistingNeighbour) continue;
+
+//        action = new QAction(i->second, this);
+//        connect(action, SIGNAL(triggered()), this, SLOT(setInstantsNumbering()));
+//        action->setCheckable(true);
+//        action->setChecked(m_labeller->getType() == i->first);
+//        numberingGroup->addAction(action);
+//        numberingMenu->addAction(action);
+//        m_numberingActions[action] = (int)i->first;
+
+//        if (i->first == Labeller::ValueFromTwoLevelCounter) {
+
+//            QMenu *cycleMenu = numberingMenu->addMenu(tr("Cycle size"));
+//            QActionGroup *cycleGroup = new QActionGroup(this);
+
+//            int cycles[] = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16 };
+//            for (int i = 0; i < int(sizeof(cycles)/sizeof(cycles[0])); ++i) {
+//                action = new QAction(QString("%1").arg(cycles[i]), this);
+//                connect(action, SIGNAL(triggered()), this, SLOT(setInstantsCounterCycle()));
+//                action->setCheckable(true);
+//                action->setChecked(cycles[i] == m_labeller->getCounterCycleSize());
+//                cycleGroup->addAction(action);
+//                cycleMenu->addAction(action);
+//            }
+//        }
+
+//        if (i->first == Labeller::ValueNone ||
+//                i->first == Labeller::ValueFromTwoLevelCounter ||
+//                i->first == Labeller::ValueFromRealTime) {
+//            numberingMenu->addSeparator();
+//        }
+//    }
+
+//    action = new QAction(tr("Reset Numbering Counters"), this);
+//    action->setStatusTip(tr("Reset to 1 all the counters used for counter-based labelling"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(resetInstantsCounters()));
+//    connect(this, SIGNAL(replacedDocument()), action, SLOT(trigger()));
+//    menu->addAction(action);
+
+//    action = new QAction(tr("Set Numbering Counters..."), this);
+//    action->setStatusTip(tr("Set the counters used for counter-based labelling"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(setInstantsCounters()));
+//    menu->addAction(action);
+
+//    action = new QAction(tr("Renumber Selected Instants"), this);
+//    action->setStatusTip(tr("Renumber the selected instants using the current labelling scheme"));
+//    connect(action, SIGNAL(triggered()), this, SLOT(renumberInstants()));
+//    connect(this, SIGNAL(canRenumberInstants(bool)), action, SLOT(setEnabled(bool)));
+//    //    m_keyReference->registerShortcut(action);
+//    menu->addAction(action);
+}
+
+
+void VisualiserWidget::setupViewMenu()
 {
     if (m_mainMenusCreated) return;
 
@@ -873,8 +863,7 @@ VisualiserWidget::setupViewMenu()
 
     m_keyReference->setCategory(tr("Zoom"));
 
-    m_zoomInAction = new QAction(il.load("zoom-in"),
-                                 tr("Zoom &In"), this);
+    m_zoomInAction = new QAction(il.load("zoom-in"), tr("Zoom &In"), this);
     m_zoomInAction->setShortcut(tr("Up"));
     m_zoomInAction->setStatusTip(tr("Increase the zoom level"));
     connect(m_zoomInAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
@@ -882,8 +871,7 @@ VisualiserWidget::setupViewMenu()
     m_keyReference->registerShortcut(m_zoomInAction);
     menu->addAction(m_zoomInAction);
 
-    m_zoomOutAction = new QAction(il.load("zoom-out"),
-                                  tr("Zoom &Out"), this);
+    m_zoomOutAction = new QAction(il.load("zoom-out"), tr("Zoom &Out"), this);
     m_zoomOutAction->setShortcut(tr("Down"));
     m_zoomOutAction->setStatusTip(tr("Decrease the zoom level"));
     connect(m_zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
@@ -897,8 +885,7 @@ VisualiserWidget::setupViewMenu()
     connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
     menu->addAction(action);
 
-    m_zoomFitAction = new QAction(il.load("zoom-fit"),
-                                  tr("Zoom to &Fit"), this);
+    m_zoomFitAction = new QAction(il.load("zoom-fit"), tr("Zoom to &Fit"), this);
     m_zoomFitAction->setShortcut(tr("F"));
     m_zoomFitAction->setStatusTip(tr("Zoom to show the whole file"));
     connect(m_zoomFitAction, SIGNAL(triggered()), this, SLOT(zoomToFit()));
@@ -1007,16 +994,6 @@ VisualiserWidget::setupViewMenu()
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
-    action = new QAction(tr("Show Acti&vity Log"), this);
-    action->setStatusTip(tr("Open a window listing interactions and other events"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showActivityLog()));
-    menu->addAction(action);
-
-    action = new QAction(tr("Show &Unit Converter"), this);
-    action->setStatusTip(tr("Open a window of pitch and timing conversion utilities"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showUnitConverter()));
-    menu->addAction(action);
-
     menu->addSeparator();
 
     action = new QAction(tr("Go Full-Screen"), this);
@@ -1027,8 +1004,7 @@ VisualiserWidget::setupViewMenu()
     menu->addAction(action);
 }
 
-void
-VisualiserWidget::setupPaneAndLayerMenus()
+void VisualiserWidget::setupPaneAndLayerMenus()
 {
     if (m_paneMenu) {
         m_paneActions.clear();
@@ -1433,8 +1409,7 @@ VisualiserWidget::setupPaneAndLayerMenus()
     finaliseMenus();
 }
 
-void
-VisualiserWidget::setupTransformsMenu()
+void VisualiserWidget::setupTransformsMenu()
 {
     if (m_transformsMenu) {
         m_transformActions.clear();
@@ -1675,46 +1650,7 @@ VisualiserWidget::setupTransformsMenu()
     setupRecentTransformsMenu();
 }
 
-void
-VisualiserWidget::setupHelpMenu()
-{
-//    QMenu *menu = menuBar()->addMenu(tr("&Help"));
-//    menu->setTearOffEnabled(true);
-
-//    m_keyReference->setCategory(tr("Help"));
-
-//    IconLoader il;
-
-//    QString name = QApplication::applicationName();
-
-//    QAction *action = new QAction(il.load("help"),
-//                                  tr("&Help Reference"), this);
-//    action->setShortcut(tr("F1"));
-//    action->setStatusTip(tr("Open the %1 reference manual").arg(name));
-//    connect(action, SIGNAL(triggered()), this, SLOT(help()));
-//    m_keyReference->registerShortcut(action);
-//    menu->addAction(action);
-
-//    action = new QAction(tr("&Key and Mouse Reference"), this);
-//    action->setShortcut(tr("F2"));
-//    action->setStatusTip(tr("Open a window showing the keystrokes you can use in %1").arg(name));
-//    connect(action, SIGNAL(triggered()), this, SLOT(keyReference()));
-//    m_keyReference->registerShortcut(action);
-//    menu->addAction(action);
-
-//    action = new QAction(tr("%1 on the &Web").arg(name), this);
-//    action->setStatusTip(tr("Open the %1 website").arg(name));
-//    connect(action, SIGNAL(triggered()), this, SLOT(website()));
-//    menu->addAction(action);
-
-//    action = new QAction(tr("&About %1").arg(name), this);
-//    action->setStatusTip(tr("Show information about %1").arg(name));
-//    connect(action, SIGNAL(triggered()), this, SLOT(about()));
-//    menu->addAction(action);
-}
-
-void
-VisualiserWidget::setupTemplatesMenu()
+void VisualiserWidget::setupTemplatesMenu()
 {
     m_templatesMenu->clear();
 
@@ -1763,9 +1699,7 @@ VisualiserWidget::setupTemplatesMenu()
     m_manageTemplatesAction->setEnabled(havePersonal);
 }
 
-
-void
-VisualiserWidget::setupRecentTransformsMenu()
+void VisualiserWidget::setupRecentTransformsMenu()
 {
     m_recentTransformsMenu->clear();
     vector<QString> transforms = m_recentTransforms.getRecent();
@@ -1791,8 +1725,7 @@ VisualiserWidget::setupRecentTransformsMenu()
     }
 }
 
-void
-VisualiserWidget::setupExistingLayersMenus()
+void VisualiserWidget::setupExistingLayersMenus()
 {
     if (!m_existingLayersMenu) return; // should have been created by setupMenus
 
@@ -1869,41 +1802,41 @@ VisualiserWidget::setupExistingLayersMenus()
     m_sliceMenu->setEnabled(!m_sliceActions.empty());
 }
 
-void
-VisualiserWidget::setupToolbars()
+void VisualiserWidget::setupToolbars()
 {
     m_keyReference->setCategory(tr("Playback and Transport Controls"));
 
     IconLoader il;
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID("Context.VisualisationMode"));
 
-    QMenu *menu = m_playbackMenu = menuBar()->addMenu(tr("Play&back"));
-    menu->setTearOffEnabled(true);
     m_rightButtonMenu->addSeparator();
     m_rightButtonPlaybackMenu = m_rightButtonMenu->addMenu(tr("Playback"));
 
     QToolBar *toolbar = addToolBar(tr("Playback Toolbar"));
 
-    m_rwdStartAction = toolbar->addAction(il.load("rewind-start"),
-                                          tr("Rewind to Start"));
+    m_rwdStartAction = toolbar->addAction(il.load("rewind-start"), tr("Rewind to Start"));
     m_rwdStartAction->setShortcut(tr("Home"));
     m_rwdStartAction->setStatusTip(tr("Rewind to the start"));
     connect(m_rwdStartAction, SIGNAL(triggered()), this, SLOT(rewindStart()));
     connect(this, SIGNAL(canPlay(bool)), m_rwdStartAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.RewindStart", m_rwdStartAction, context);
 
     m_rwdAction = toolbar->addAction(il.load("rewind"), tr("Rewind"));
     m_rwdAction->setShortcut(tr("PgUp"));
     m_rwdAction->setStatusTip(tr("Rewind to the previous time instant or time ruler notch"));
     connect(m_rwdAction, SIGNAL(triggered()), this, SLOT(rewind()));
     connect(this, SIGNAL(canRewind(bool)), m_rwdAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.Rewind", m_rwdAction, context);
 
     m_rwdSimilarAction = new QAction(tr("Rewind to Similar Point"), this);
     m_rwdSimilarAction->setShortcut(tr("Shift+PgUp"));
     m_rwdSimilarAction->setStatusTip(tr("Rewind to the previous similarly valued time instant"));
     connect(m_rwdSimilarAction, SIGNAL(triggered()), this, SLOT(rewindSimilar()));
     connect(this, SIGNAL(canRewind(bool)), m_rwdSimilarAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.RewindSimilar", m_rwdSimilarAction, context);
 
-    m_playAction = toolbar->addAction(il.load("playpause"),
-                                      tr("Play / Pause"));
+    m_playAction = toolbar->addAction(il.load("playpause"), tr("Play / Pause"));
     m_playAction->setCheckable(true);
     m_playAction->setShortcut(tr("Space"));
     m_playAction->setStatusTip(tr("Start or stop playback from the current position"));
@@ -1913,74 +1846,76 @@ VisualiserWidget::setupToolbars()
     connect(m_playSource, SIGNAL(playStatusChanged(bool)),
             this, SLOT(playStatusChanged(bool)));
     connect(this, SIGNAL(canPlay(bool)), m_playAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.PlayPause", m_playAction, context);
 
-    m_ffwdAction = toolbar->addAction(il.load("ffwd"),
-                                      tr("Fast Forward"));
+    m_ffwdAction = toolbar->addAction(il.load("ffwd"), tr("Fast Forward"));
     m_ffwdAction->setShortcut(tr("PgDown"));
     m_ffwdAction->setStatusTip(tr("Fast-forward to the next time instant or time ruler notch"));
     connect(m_ffwdAction, SIGNAL(triggered()), this, SLOT(ffwd()));
     connect(this, SIGNAL(canFfwd(bool)), m_ffwdAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.FastForward", m_ffwdAction, context);
 
     m_ffwdSimilarAction = new QAction(tr("Fast Forward to Similar Point"), this);
     m_ffwdSimilarAction->setShortcut(tr("Shift+PgDown"));
     m_ffwdSimilarAction->setStatusTip(tr("Fast-forward to the next similarly valued time instant"));
     connect(m_ffwdSimilarAction, SIGNAL(triggered()), this, SLOT(ffwdSimilar()));
     connect(this, SIGNAL(canFfwd(bool)), m_ffwdSimilarAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.FastForwardSimilar", m_ffwdSimilarAction, context);
 
-    m_ffwdEndAction = toolbar->addAction(il.load("ffwd-end"),
-                                         tr("Fast Forward to End"));
+    m_ffwdEndAction = toolbar->addAction(il.load("ffwd-end"), tr("Fast Forward to End"));
     m_ffwdEndAction->setShortcut(tr("End"));
     m_ffwdEndAction->setStatusTip(tr("Fast-forward to the end"));
     connect(m_ffwdEndAction, SIGNAL(triggered()), this, SLOT(ffwdEnd()));
     connect(this, SIGNAL(canPlay(bool)), m_ffwdEndAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.FastForwardEnd", m_ffwdEndAction, context);
 
     toolbar = addToolBar(tr("Play Mode Toolbar"));
 
-    m_playSelectionAction = toolbar->addAction(il.load("playselection"),
-                                               tr("Constrain Playback to Selection"));
+    m_playSelectionAction = toolbar->addAction(il.load("playselection"), tr("Constrain Playback to Selection"));
     m_playSelectionAction->setCheckable(true);
     m_playSelectionAction->setChecked(m_viewManager->getPlaySelectionMode());
-    m_playSelectionAction->setShortcut(tr("s"));
+    m_playSelectionAction->setShortcut(tr("Ctrl+Alt+S"));
     m_playSelectionAction->setStatusTip(tr("Constrain playback to the selected regions"));
     connect(m_viewManager, SIGNAL(playSelectionModeChanged(bool)),
             m_playSelectionAction, SLOT(setChecked(bool)));
     connect(m_playSelectionAction, SIGNAL(triggered()), this, SLOT(playSelectionToggled()));
     connect(this, SIGNAL(canPlaySelection(bool)), m_playSelectionAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.PlaySelection", m_playSelectionAction, context);
 
-    m_playLoopAction = toolbar->addAction(il.load("playloop"),
-                                          tr("Loop Playback"));
+    m_playLoopAction = toolbar->addAction(il.load("playloop"), tr("Loop Playback"));
     m_playLoopAction->setCheckable(true);
     m_playLoopAction->setChecked(m_viewManager->getPlayLoopMode());
-    m_playLoopAction->setShortcut(tr("l"));
+    m_playLoopAction->setShortcut(tr("Ctrl+Alt+L"));
     m_playLoopAction->setStatusTip(tr("Loop playback"));
     connect(m_viewManager, SIGNAL(playLoopModeChanged(bool)),
             m_playLoopAction, SLOT(setChecked(bool)));
     connect(m_playLoopAction, SIGNAL(triggered()), this, SLOT(playLoopToggled()));
     connect(this, SIGNAL(canPlay(bool)), m_playLoopAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.PlayLoop", m_playLoopAction, context);
 
-    m_soloAction = toolbar->addAction(il.load("solo"),
-                                      tr("Solo Current Pane"));
+    m_soloAction = toolbar->addAction(il.load("solo"), tr("Solo Current Pane"));
     m_soloAction->setCheckable(true);
     m_soloAction->setChecked(m_viewManager->getPlaySoloMode());
     m_prevSolo = m_viewManager->getPlaySoloMode();
-    m_soloAction->setShortcut(tr("o"));
+    m_soloAction->setShortcut(tr("Ctrl+Alt+O"));
     m_soloAction->setStatusTip(tr("Solo the current pane during playback"));
     connect(m_viewManager, SIGNAL(playSoloModeChanged(bool)),
             m_soloAction, SLOT(setChecked(bool)));
     connect(m_soloAction, SIGNAL(triggered()), this, SLOT(playSoloToggled()));
     connect(this, SIGNAL(canChangeSolo(bool)), m_soloAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.PlaySolo", m_soloAction, context);
 
     QAction *alAction = 0;
     if (Document::canAlign()) {
-        alAction = toolbar->addAction(il.load("align"),
-                                      tr("Align File Timelines"));
+        alAction = toolbar->addAction(il.load("align"), tr("Align File Timelines"));
         alAction->setCheckable(true);
         alAction->setChecked(m_viewManager->getAlignMode());
-        alAction->setStatusTip(tr("Treat multiple audio files as versions of the same work, and align their timelines"));
+        alAction->setStatusTip(tr("Treat multiple audio files as versions of the same recording, and align their timelines"));
         connect(m_viewManager, SIGNAL(alignModeChanged(bool)),
                 alAction, SLOT(setChecked(bool)));
         connect(alAction, SIGNAL(triggered()), this, SLOT(alignToggled()));
         connect(this, SIGNAL(canAlign(bool)), alAction, SLOT(setEnabled(bool)));
+        ACTION_MANAGER->registerAction("Playback.Align", alAction, context);
     }
 
     m_keyReference->registerShortcut(m_playAction);
@@ -1995,22 +1930,6 @@ VisualiserWidget::setupToolbars()
     m_keyReference->registerShortcut(m_rwdStartAction);
     m_keyReference->registerShortcut(m_ffwdEndAction);
 
-    menu->addAction(m_playAction);
-    menu->addAction(m_playSelectionAction);
-    menu->addAction(m_playLoopAction);
-    menu->addAction(m_soloAction);
-    if (alAction) menu->addAction(alAction);
-    menu->addSeparator();
-    menu->addAction(m_rwdAction);
-    menu->addAction(m_ffwdAction);
-    menu->addSeparator();
-    menu->addAction(m_rwdSimilarAction);
-    menu->addAction(m_ffwdSimilarAction);
-    menu->addSeparator();
-    menu->addAction(m_rwdStartAction);
-    menu->addAction(m_ffwdEndAction);
-    menu->addSeparator();
-
     m_rightButtonPlaybackMenu->addAction(m_playAction);
     m_rightButtonPlaybackMenu->addAction(m_playSelectionAction);
     m_rightButtonPlaybackMenu->addAction(m_playLoopAction);
@@ -2024,23 +1943,26 @@ VisualiserWidget::setupToolbars()
     m_rightButtonPlaybackMenu->addAction(m_ffwdEndAction);
     m_rightButtonPlaybackMenu->addSeparator();
 
-    QAction *fastAction = menu->addAction(tr("Speed Up"));
-    fastAction->setShortcut(tr("Ctrl+PgUp"));
+    QAction *fastAction = new QAction(tr("Speed Up"), this);
+    fastAction->setShortcut(tr("Ctrl+Alt+PgUp"));
     fastAction->setStatusTip(tr("Time-stretch playback to speed it up without changing pitch"));
     connect(fastAction, SIGNAL(triggered()), this, SLOT(speedUpPlayback()));
     connect(this, SIGNAL(canSpeedUpPlayback(bool)), fastAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.SpeedUp", fastAction, context);
 
-    QAction *slowAction = menu->addAction(tr("Slow Down"));
-    slowAction->setShortcut(tr("Ctrl+PgDown"));
+    QAction *slowAction = new QAction(tr("Slow Down"), this);
+    slowAction->setShortcut(tr("Ctrl+Alt+PgDown"));
     slowAction->setStatusTip(tr("Time-stretch playback to slow it down without changing pitch"));
     connect(slowAction, SIGNAL(triggered()), this, SLOT(slowDownPlayback()));
     connect(this, SIGNAL(canSlowDownPlayback(bool)), slowAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.SlowDown", slowAction, context);
 
-    QAction *normalAction = menu->addAction(tr("Restore Normal Speed"));
-    normalAction->setShortcut(tr("Ctrl+Home"));
+    QAction *normalAction = new QAction(tr("Restore Normal Speed"), this);
+    normalAction->setShortcut(tr("Ctrl+Alt+Home"));
     normalAction->setStatusTip(tr("Restore non-time-stretched playback"));
     connect(normalAction, SIGNAL(triggered()), this, SLOT(restoreNormalPlayback()));
     connect(this, SIGNAL(canChangePlaybackSpeed(bool)), normalAction, SLOT(setEnabled(bool)));
+    ACTION_MANAGER->registerAction("Playback.RestoreNormalSpeed", normalAction, context);
 
     m_keyReference->registerShortcut(fastAction);
     m_keyReference->registerShortcut(slowAction);
@@ -2057,8 +1979,7 @@ VisualiserWidget::setupToolbars()
     QActionGroup *group = new QActionGroup(this);
 
     m_keyReference->setCategory(tr("Tool Selection"));
-    QAction *action = toolbar->addAction(il.load("navigate"),
-                                         tr("Navigate"));
+    QAction *action = toolbar->addAction(il.load("navigate"), tr("Navigate"));
     action->setCheckable(true);
     action->setChecked(true);
     action->setShortcut(tr("1"));
@@ -2069,8 +1990,7 @@ VisualiserWidget::setupToolbars()
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::NavigateMode] = action;
 
-    m_keyReference->setCategory
-            (tr("Navigate Tool Mouse Actions"));
+    m_keyReference->setCategory(tr("Navigate Tool Mouse Actions"));
     m_keyReference->registerShortcut
             (tr("Navigate"), tr("Left"),
              tr("Click left button and drag to move around"));
@@ -2229,25 +2149,13 @@ VisualiserWidget::updateMenuStates()
     if (m_paneStack) currentPane = m_paneStack->getCurrentPane();
     if (currentPane) currentLayer = currentPane->getSelectedLayer();
 
-    bool haveCurrentPane =
-            (currentPane != 0);
-    bool haveCurrentLayer =
-            (haveCurrentPane &&
-             (currentLayer != 0));
-    bool havePlayTarget =
-            (m_playTarget != 0);
-    bool haveSelection =
-            (m_viewManager &&
-             !m_viewManager->getSelections().empty());
-    bool haveCurrentEditableLayer =
-            (haveCurrentLayer &&
-             currentLayer->isLayerEditable());
-    bool haveCurrentTimeInstantsLayer =
-            (haveCurrentLayer &&
-             dynamic_cast<TimeInstantLayer *>(currentLayer));
-    bool haveCurrentTimeValueLayer =
-            (haveCurrentLayer &&
-             dynamic_cast<TimeValueLayer *>(currentLayer));
+    bool haveCurrentPane = (currentPane != 0);
+    bool haveCurrentLayer = (haveCurrentPane && (currentLayer != 0));
+    bool havePlayTarget = (m_playTarget != 0);
+    bool haveSelection = (m_viewManager && !m_viewManager->getSelections().empty());
+    bool haveCurrentEditableLayer = (haveCurrentLayer && currentLayer->isLayerEditable());
+    bool haveCurrentTimeInstantsLayer = (haveCurrentLayer && dynamic_cast<TimeInstantLayer *>(currentLayer));
+    bool haveCurrentTimeValueLayer = (haveCurrentLayer && dynamic_cast<TimeValueLayer *>(currentLayer));
 
     bool alignMode = m_viewManager && m_viewManager->getAlignMode();
     emit canChangeSolo(havePlayTarget && !alignMode);
@@ -2904,7 +2812,6 @@ VisualiserWidget::closeSession()
     delete m_layerTreeDialog.data();
 
     m_activityLog->hide();
-    m_unitConverter->hide();
     m_keyReference->hide();
 
     delete m_document;
@@ -3439,8 +3346,7 @@ VisualiserWidget::addPane(const LayerConfiguration &configuration, QString text)
     updateMenuStates();
 }
 
-void
-VisualiserWidget::addLayer()
+void VisualiserWidget::addLayer()
 {
     QObject *s = sender();
     QAction *action = dynamic_cast<QAction *>(s);
@@ -3490,7 +3396,6 @@ VisualiserWidget::addLayer()
     TransformActionMap::iterator i = m_transformActions.find(action);
 
     if (i == m_transformActions.end()) {
-
         LayerActionMap::iterator i = m_layerActions.find(action);
 
         if (i == m_layerActions.end()) {
@@ -3584,8 +3489,7 @@ VisualiserWidget::addLayer()
     addLayer(transformId);
 }
 
-void
-VisualiserWidget::addLayer(QString transformId)
+void VisualiserWidget::addLayer(QString transformId)
 {
     Pane *pane = m_paneStack->getCurrentPane();
     if (!pane) {
@@ -3674,8 +3578,7 @@ VisualiserWidget::addLayer(QString transformId)
     updateMenuStates();
 }
 
-void
-VisualiserWidget::renameCurrentLayer()
+void VisualiserWidget::renameCurrentLayer()
 {
     Pane *pane = m_paneStack->getCurrentPane();
     if (pane) {
@@ -3694,8 +3597,7 @@ VisualiserWidget::renameCurrentLayer()
     }
 }
 
-void
-VisualiserWidget::findTransform()
+void VisualiserWidget::findTransform()
 {
     TransformFinder *finder = new TransformFinder(this);
     if (!finder->exec()) {
@@ -3710,15 +3612,13 @@ VisualiserWidget::findTransform()
     }
 }
 
-void
-VisualiserWidget::playSoloToggled()
+void VisualiserWidget::playSoloToggled()
 {
     VisualiserWindowBase::playSoloToggled();
     m_soloModified = true;
 }
 
-void
-VisualiserWidget::alignToggled()
+void VisualiserWidget::alignToggled()
 {
     QAction *action = dynamic_cast<QAction *>(sender());
 
@@ -3760,24 +3660,17 @@ VisualiserWidget::alignToggled()
     }
 }
 
-void
-VisualiserWidget::playSpeedChanged(int position)
+void VisualiserWidget::playSpeedChanged(int position)
 {
     PlaySpeedRangeMapper mapper(60, 120);
-
     double percent = m_playSpeed->mappedValue();
     double factor = mapper.getFactorForValue(percent);
-
     //    cerr << "play speed position = " << position << " (range 0-120) percent = " << percent << " factor = " << factor << endl;
-
     int centre = m_playSpeed->defaultValue();
-
     // Percentage is shown to 0dp if >100, to 1dp if <100; factor is
     // shown to 3sf
-
     char pcbuf[30];
     char facbuf[30];
-
     if (position == centre) {
         contextHelpChanged(tr("Playback speed: Normal"));
     } else if (position < centre) {
@@ -3793,14 +3686,11 @@ VisualiserWidget::playSpeedChanged(int position)
                            .arg(pcbuf)
                            .arg(facbuf));
     }
-
     m_playSource->setTimeStretch(1.0 / factor); // factor is a speedup
-
     updateMenuStates();
 }
 
-void
-VisualiserWidget::speedUpPlayback()
+void VisualiserWidget::speedUpPlayback()
 {
     int value = m_playSpeed->value();
     value = value + m_playSpeed->pageStep();
@@ -3808,8 +3698,7 @@ VisualiserWidget::speedUpPlayback()
     m_playSpeed->setValue(value);
 }
 
-void
-VisualiserWidget::slowDownPlayback()
+void VisualiserWidget::slowDownPlayback()
 {
     int value = m_playSpeed->value();
     value = value - m_playSpeed->pageStep();
@@ -3954,8 +3843,7 @@ VisualiserWidget::outputLevelsChanged(float left, float right)
     m_fader->setPeakRight(right);
 }
 
-void
-VisualiserWidget::sampleRateMismatch(sv_samplerate_t requested,
+void VisualiserWidget::sampleRateMismatch(sv_samplerate_t requested,
                                      sv_samplerate_t actual,
                                      bool willResample)
 {
@@ -3969,16 +3857,14 @@ VisualiserWidget::sampleRateMismatch(sv_samplerate_t requested,
     updateDescriptionLabel();
 }
 
-void
-VisualiserWidget::audioOverloadPluginDisabled()
+void VisualiserWidget::audioOverloadPluginDisabled()
 {
     QMessageBox::information
             (this, tr("Audio processing overload"),
              tr("<b>Overloaded</b><p>Audio effects plugin auditioning has been disabled due to a processing overload."));
 }
 
-void
-VisualiserWidget::audioTimeStretchMultiChannelDisabled()
+void VisualiserWidget::audioTimeStretchMultiChannelDisabled()
 {
     static bool shownOnce = false;
     if (shownOnce) return;
@@ -3988,8 +3874,7 @@ VisualiserWidget::audioTimeStretchMultiChannelDisabled()
     shownOnce = true;
 }
 
-void
-VisualiserWidget::midiEventsAvailable()
+void VisualiserWidget::midiEventsAvailable()
 {
     Pane *currentPane = 0;
     NoteLayer *currentNoteLayer = 0;
@@ -4079,8 +3964,7 @@ VisualiserWidget::midiEventsAvailable()
     }
 }
 
-void
-VisualiserWidget::playStatusChanged(bool )
+void VisualiserWidget::playStatusChanged(bool )
 {
     Pane *currentPane = 0;
     NoteLayer *currentNoteLayer = 0;
@@ -4095,22 +3979,19 @@ VisualiserWidget::playStatusChanged(bool )
     }
 }
 
-void
-VisualiserWidget::layerRemoved(Layer *layer)
+void VisualiserWidget::layerRemoved(Layer *layer)
 {
     setupExistingLayersMenus();
     VisualiserWindowBase::layerRemoved(layer);
 }
 
-void
-VisualiserWidget::layerInAView(Layer *layer, bool inAView)
+void VisualiserWidget::layerInAView(Layer *layer, bool inAView)
 {
     setupExistingLayersMenus();
     VisualiserWindowBase::layerInAView(layer, inAView);
 }
 
-void
-VisualiserWidget::modelAdded(Model *model)
+void VisualiserWidget::modelAdded(Model *model)
 {
     VisualiserWindowBase::modelAdded(model);
     if (dynamic_cast<DenseTimeValueModel *>(model)) {
@@ -4185,110 +4066,26 @@ VisualiserWidget::setInstantsCounterCycle()
     settings.endGroup();
 }
 
-void
-VisualiserWidget::setInstantsCounters()
+void VisualiserWidget::setInstantsCounters()
 {
     LabelCounterInputDialog dialog(m_labeller, this);
     dialog.setWindowTitle(tr("Reset Counters"));
     dialog.exec();
 }
 
-void
-VisualiserWidget::resetInstantsCounters()
+void VisualiserWidget::resetInstantsCounters()
 {
     if (m_labeller) m_labeller->resetCounters();
 }
 
-void
-VisualiserWidget::modelGenerationFailed(QString transformName, QString message)
-{
-
-    QString quoted;
-    if (transformName != "") {
-        quoted = QString("\"%1\" ").arg(transformName);
-    }
-
-    if (message != "") {
-
-        QMessageBox::warning
-                (this,
-                 tr("Failed to generate layer"),
-                 tr("<b>Layer generation failed</b><p>Failed to generate derived layer.<p>The layer transform %1failed:<p>%2")
-                 .arg(quoted).arg(message),
-                 QMessageBox::Ok);
-    } else {
-        QMessageBox::warning
-                (this,
-                 tr("Failed to generate layer"),
-                 tr("<b>Layer generation failed</b><p>Failed to generate a derived layer.<p>The layer transform %1failed.<p>No error information is available.")
-                 .arg(quoted),
-                 QMessageBox::Ok);
-    }
-}
-
-void
-VisualiserWidget::modelGenerationWarning(QString /* transformName */, QString message)
-{
-
-    QMessageBox::warning
-            (this, tr("Warning"), message, QMessageBox::Ok);
-}
-
-void
-VisualiserWidget::modelRegenerationFailed(QString layerName,
-                                          QString transformName, QString message)
-{
-
-    if (message != "") {
-
-        QMessageBox::warning
-                (this,
-                 tr("Failed to regenerate layer"),
-                 tr("<b>Layer generation failed</b><p>Failed to regenerate derived layer \"%1\" using new data model as input.<p>The layer transform \"%2\" failed:<p>%3")
-                 .arg(layerName).arg(transformName).arg(message),
-                 QMessageBox::Ok);
-    } else {
-        QMessageBox::warning
-                (this,
-                 tr("Failed to regenerate layer"),
-                 tr("<b>Layer generation failed</b><p>Failed to regenerate derived layer \"%1\" using new data model as input.<p>The layer transform \"%2\" failed.<p>No error information is available.")
-                 .arg(layerName).arg(transformName),
-                 QMessageBox::Ok);
-    }
-}
-
-void
-VisualiserWidget::modelRegenerationWarning(QString layerName,
-                                           QString /* transformName */,
-                                           QString message)
-{
-
-    QMessageBox::warning
-            (this, tr("Warning"), tr("<b>Warning when regenerating layer</b><p>When regenerating the derived layer \"%1\" using new data model as input:<p>%2").arg(layerName).arg(message), QMessageBox::Ok);
-}
-
-void
-VisualiserWidget::alignmentFailed(QString transformName, QString message)
-{
-
-    QMessageBox::warning
-            (this,
-             tr("Failed to calculate alignment"),
-             tr("<b>Alignment calculation failed</b><p>Failed to calculate an audio alignment using transform \"%1\":<p>%2")
-             .arg(transformName).arg(message),
-             QMessageBox::Ok);
-}
-
-void
-VisualiserWidget::rightButtonMenuRequested(Pane *pane, QPoint position)
+void VisualiserWidget::rightButtonMenuRequested(Pane *pane, QPoint position)
 {
     //    cerr << "VisualiserWidget::rightButtonMenuRequested(" << pane << ", " << position.x() << ", " << position.y() << ")" << endl;
     m_paneStack->setCurrentPane(pane);
     m_rightButtonMenu->popup(position);
 }
 
-void
-VisualiserWidget::showLayerTree()
+void VisualiserWidget::showLayerTree()
 {
     if (!m_layerTreeDialog.isNull()) {
         m_layerTreeDialog->show();
@@ -4299,21 +4096,6 @@ VisualiserWidget::showLayerTree()
     m_layerTreeDialog = new LayerTreeDialog(m_paneStack, this);
     m_layerTreeDialog->setAttribute(Qt::WA_DeleteOnClose); // see below
     m_layerTreeDialog->show();
-}
-
-void
-VisualiserWidget::showActivityLog()
-{
-    m_activityLog->show();
-    m_activityLog->raise();
-    m_activityLog->scrollToEnd();
-}
-
-void
-VisualiserWidget::showUnitConverter()
-{
-    m_unitConverter->show();
-    m_unitConverter->raise();
 }
 
 void
@@ -4333,12 +4115,6 @@ void
 VisualiserWidget::mouseLeftWidget()
 {
     contextHelpChanged("");
-}
-
-void
-VisualiserWidget::keyReference()
-{
-    m_keyReference->show();
 }
 
 // ====================================================================================================================

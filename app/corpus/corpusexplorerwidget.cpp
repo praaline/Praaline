@@ -160,7 +160,7 @@ void CorpusExplorerWidget::setupActions()
     ActionContainer* menu_bar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
     ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
     if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
-    ActionContainer* corpus_menu = ACTION_MANAGER->createMenu("Corpus", existed);
+    ActionContainer* corpus_menu = ACTION_MANAGER->createMenu("&Corpus", existed);
     if (!existed) menu_bar->addMenu(corpus_menu, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------

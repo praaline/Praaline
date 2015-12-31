@@ -58,6 +58,7 @@
 
 #include "widgets/RangeInputDialog.h"
 #include "widgets/ActivityLog.h"
+#include "svgui/widgets/KeyReference.h"
 
 // For version information
 #include "vamp/vamp.h"

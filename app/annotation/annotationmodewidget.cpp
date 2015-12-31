@@ -67,38 +67,38 @@ void AnnotationModeWidget::setupActions()
     bool existed;
     Command* command;
 
-    ActionContainer* menu_bar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
-    ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
-    if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
+    ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_window = ACTION_MANAGER->createMenu("&Window", existed);
+    if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
-    // VIEW MENU
+    // WINDOW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowManualAnnotation = new QAction("Show Vertical Timeline Editor", this);
+    d->actionShowManualAnnotation = new QAction("Timeline Editor", this);
     connect(d->actionShowManualAnnotation, SIGNAL(triggered()), SLOT(showManualAnnotation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowManual", d->actionShowManualAnnotation, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowAutomaticAnnotation = new QAction("Show Automatic Annotation", this);
+    d->actionShowAutomaticAnnotation = new QAction("Automatic Annotation", this);
     connect(d->actionShowAutomaticAnnotation, SIGNAL(triggered()), SLOT(showAutomaticAnnotation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowAutomatic", d->actionShowAutomaticAnnotation, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowBatchEditor = new QAction("Show Batch Editor", this);
+    d->actionShowBatchEditor = new QAction("Batch Annotation Editor", this);
     connect(d->actionShowBatchEditor, SIGNAL(triggered()), SLOT(showBatchEditor()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowBatch", d->actionShowBatchEditor, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowCompareAnnotations = new QAction("Show Compare Annotations", this);
+    d->actionShowCompareAnnotations = new QAction("Compare Annotations", this);
     connect(d->actionShowCompareAnnotations, SIGNAL(triggered()), SLOT(showCompareAnnotations()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowCompareAnnotations", d->actionShowCompareAnnotations, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    view_menu->addSeperator();
+    menu_window->addSeperator();
 }
 
 void AnnotationModeWidget::showManualAnnotation()

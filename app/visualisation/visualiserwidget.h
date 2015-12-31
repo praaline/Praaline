@@ -2,14 +2,13 @@
 #define VISUALISERWIDGET_H
 
 #include <QPointer>
-#include "framework/VisualiserWindowBase.h"
+#include "SimpleVisualiserWidget.h"
 
 class LayerTreeDialog;
-class ActivityLog;
-class UnitConverter;
-
 class QFileSystemWatcher;
 class QScrollArea;
+class KeyReference;
+class ActivityLog;
 
 class CorpusCommunication;
 class CorpusRecording;
@@ -17,12 +16,13 @@ class AnnotationTierModel;
 class IntervalTier;
 class AnnotationTierGroup;
 
-class VisualiserWidget : public VisualiserWindowBase
+class VisualiserWidget : public SimpleVisualiserWidget
 {
     Q_OBJECT
 
 public:
-    VisualiserWidget(bool withAudioOutput = true, bool withOSCSupport = true);
+    VisualiserWidget(const QString &contextStringID = "Context.VisualisationMode",
+                     bool withAudioOutput = true, bool withOSCSupport = true);
     virtual ~VisualiserWidget();
 
     void addLayerTimeInstantsFromIntevalTier(IntervalTier *tier);
@@ -93,12 +93,6 @@ protected slots:
     virtual void setInstantsCounters();
     virtual void resetInstantsCounters();
 
-    virtual void modelGenerationFailed(QString, QString);
-    virtual void modelGenerationWarning(QString, QString);
-    virtual void modelRegenerationFailed(QString, QString, QString);
-    virtual void modelRegenerationWarning(QString, QString, QString);
-    virtual void alignmentFailed(QString, QString);
-
     virtual void rightButtonMenuRequested(Pane *, QPoint point);
 
     virtual void propertyStacksResized(int);
@@ -140,8 +134,6 @@ protected slots:
     virtual void modelAboutToBeDeleted(Model *);
 
     virtual void showLayerTree();
-    virtual void showActivityLog();
-    virtual void showUnitConverter();
 
     virtual void mouseEnteredWidget();
     virtual void mouseLeftWidget();
@@ -153,21 +145,11 @@ protected slots:
     virtual void saveSessionAsTemplate();
     virtual void manageSavedTemplates();
 
-    virtual void keyReference();
-
 protected:
-    Overview                *m_overview;
-    Fader                   *m_fader;
-    AudioDial               *m_playSpeed;
-    WaveformLayer           *m_panLayer;
-
-    QScrollArea             *m_mainScroll;
-
     bool                     m_mainMenusCreated;
     QMenu                   *m_paneMenu;
     QMenu                   *m_layerMenu;
     QMenu                   *m_transformsMenu;
-    QMenu                   *m_playbackMenu;
     QMenu                   *m_existingLayersMenu;
     QMenu                   *m_sliceMenu;
     QMenu                   *m_recentTransformsMenu;
@@ -205,11 +187,9 @@ protected:
     QLabel                  *m_descriptionLabel;
     QLabel                  *m_currentLabel;
 
-    QPointer<LayerTreeDialog>   m_layerTreeDialog;
-
     ActivityLog             *m_activityLog;
-    UnitConverter           *m_unitConverter;
     KeyReference            *m_keyReference;
+    QPointer<LayerTreeDialog>   m_layerTreeDialog;
 
     QFileSystemWatcher      *m_templateWatcher;
 
@@ -249,10 +229,10 @@ protected:
     virtual void setupMenus();
     virtual void setupFileMenu();
     virtual void setupEditMenu();
+    virtual void setupAnnotationMenu();
     virtual void setupViewMenu();
     virtual void setupPaneAndLayerMenus();
     virtual void setupTransformsMenu();
-    virtual void setupHelpMenu();
     virtual void setupExistingLayersMenus();
     virtual void setupToolbars();
 

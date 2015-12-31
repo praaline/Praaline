@@ -11,10 +11,6 @@ using namespace QtilitiesCoreGui;
 #include "timelinevisualisationwidget.h"
 #include "globalvisualisationwidget.h"
 
-#include "svcore/base/UnitDatabase.h"
-#include "svgui/layer/ColourDatabase.h"
-#include "svcore/base/Preferences.h"
-
 struct VisualisationModeWidgetData {
     VisualisationModeWidgetData() :
         widgetTimelineVisualisation(0), actionShowGlobalVisualisation(0)
@@ -40,31 +36,6 @@ VisualisationModeWidget::VisualisationModeWidget(QWidget *parent) :
     ui->gridLayoutTimelineVisualisation->addWidget(d->widgetTimelineVisualisation);
     ui->gridLayoutGlobalVisualisation->addWidget(d->widgetGlobalVisualisation);
 
-    Preferences *pref = Preferences::getInstance();
-    pref->setResampleOnLoad(true);
-    pref->setFixedSampleRate(44100);
-    pref->setSpectrogramSmoothing(Preferences::SpectrogramInterpolated);
-    pref->setNormaliseAudio(true);
-
-    UnitDatabase *udb = UnitDatabase::getInstance();
-    udb->registerUnit("Hz");
-    udb->registerUnit("dB");
-    udb->registerUnit("s");
-
-    ColourDatabase *cdb = ColourDatabase::getInstance();
-    cdb->addColour(Qt::black, tr("Black"));
-    cdb->addColour(Qt::darkRed, tr("Red"));
-    cdb->addColour(Qt::darkBlue, tr("Blue"));
-    cdb->addColour(Qt::darkGreen, tr("Green"));
-    cdb->addColour(QColor(200, 50, 255), tr("Purple"));
-    cdb->addColour(QColor(255, 150, 50), tr("Orange"));
-    cdb->setUseDarkBackground(cdb->addColour(Qt::white, tr("White")), true);
-    cdb->setUseDarkBackground(cdb->addColour(Qt::red, tr("Bright Red")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(30, 150, 255), tr("Bright Blue")), true);
-    cdb->setUseDarkBackground(cdb->addColour(Qt::green, tr("Bright Green")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(225, 74, 255), tr("Bright Purple")), true);
-    cdb->setUseDarkBackground(cdb->addColour(QColor(255, 188, 80), tr("Bright Orange")), true);
-
     setupActions();
 
     ui->stackedWidget->setCurrentIndex(0);
@@ -89,26 +60,26 @@ void VisualisationModeWidget::setupActions()
     bool existed;
     Command* command;
 
-    ActionContainer* menu_bar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
-    ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
-    if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
+    ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_window = ACTION_MANAGER->createMenu(tr("&Window"), existed);
+    if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowTimelineVisualisation = new QAction("Show Timeline Visualiser", this);
+    d->actionShowTimelineVisualisation = new QAction("Timeline Visualiser", this);
     connect(d->actionShowTimelineVisualisation, SIGNAL(triggered()), SLOT(showTimelineVisualisation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowTimeline", d->actionShowTimelineVisualisation, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowGlobalVisualisation = new QAction("Show Corpus-level Visualiser", this);
+    d->actionShowGlobalVisualisation = new QAction("Corpus-level Visualiser", this);
     connect(d->actionShowGlobalVisualisation, SIGNAL(triggered()), SLOT(showGlobalVisualisation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowGlobal", d->actionShowGlobalVisualisation, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    view_menu->addSeperator();
+    menu_window->addSeperator();
 }
 
 void VisualisationModeWidget::showTimelineVisualisation()

@@ -65,38 +65,38 @@ void QueryModeWidget::setupActions()
     bool existed;
     Command* command;
 
-    ActionContainer* menu_bar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
-    ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
-    if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
+    ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_window = ACTION_MANAGER->createMenu(tr("&Window"), existed);
+    if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowCorcondancer = new QAction("Show Concordancer", this);
+    d->actionShowCorcondancer = new QAction("Concordancer", this);
     connect(d->actionShowCorcondancer, SIGNAL(triggered()), SLOT(showConcordancer()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowConcordancer", d->actionShowCorcondancer, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowCreateDataset = new QAction("Show Create Dataset window", this);
+    d->actionShowCreateDataset = new QAction("Dataset Creator", this);
     connect(d->actionShowCreateDataset, SIGNAL(triggered()), SLOT(showCreateDataset()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowCreateDataset", d->actionShowCreateDataset, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowAdvancedQueries = new QAction("Show Advanced Queries window", this);
+    d->actionShowAdvancedQueries = new QAction("Advanced Queries", this);
     connect(d->actionShowAdvancedQueries, SIGNAL(triggered()), SLOT(showAdvancedQueries()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowAdvancedQueries", d->actionShowAdvancedQueries, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    d->actionShowExtractSamples = new QAction("Show Extract Samples window", this);
+    d->actionShowExtractSamples = new QAction("Sample Extraction Tool", this);
     connect(d->actionShowExtractSamples, SIGNAL(triggered()), SLOT(showExtractSamples()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowExtractSamples", d->actionShowExtractSamples, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    view_menu->addAction(command);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
 
-    view_menu->addSeperator();
+    menu_window->addSeperator();
 }
 
 void QueryModeWidget::showConcordancer()

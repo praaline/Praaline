@@ -21,6 +21,7 @@
 
 // class VersionTester;
 class ActivityLog;
+class KeyReference;
 
 class PitchAnalyserWidget : public VisualiserWindowBase
 {
