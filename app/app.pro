@@ -100,7 +100,6 @@ SOURCES += main.cpp \
     annotation/manualannotationwidget.cpp \
     annotation/dis/annotationcontrolsdisfluencies.cpp \
     annotation/dis/disfluencyanalyser.cpp \
-    annotation/transcriberwidget.cpp \
     annotation/batcheditorwidget.cpp \
     annotation/annotatecorpusitemswindowbase.cpp \
     #visualisation/pitchanalyser.cpp \
@@ -127,7 +126,8 @@ SOURCES += main.cpp \
     statistics/CountStatisticsWidget.cpp \
     corpus/corpusdatabaseconnectiondialog.cpp \
     PraalineMainWindow.cpp \
-    visualisation/SimpleVisualiserWidget.cpp
+    visualisation/SimpleVisualiserWidget.cpp \
+    annotation/transcriberwidget.cpp
 
 HEADERS  += \
     corporamanager.h \
@@ -167,7 +167,6 @@ HEADERS  += \
     annotation/manualannotationwidget.h \
     annotation/dis/annotationcontrolsdisfluencies.h \
     annotation/dis/disfluencyanalyser.h \
-    annotation/transcriberwidget.h \
     annotation/batcheditorwidget.h \
     annotation/annotatecorpusitemswindowbase.h \
     #visualisation/pitchanalyser.h \
@@ -197,7 +196,8 @@ HEADERS  += \
     corpus/importcorpusitemswizard/importannotations.h \
     corpus/corpusdatabaseconnectiondialog.h \
     PraalineMainWindow.h \
-    visualisation/SimpleVisualiserWidget.h
+    visualisation/SimpleVisualiserWidget.h \
+    annotation/transcriberwidget.h
 
 FORMS    += mainwindow.ui \
     corpus/corpusmodewidget.ui \

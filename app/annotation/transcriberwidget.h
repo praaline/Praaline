@@ -2,6 +2,7 @@
 #define TRANSCRIBERWIDGET_H
 
 #include <QMainWindow>
+#include "visualisation/SimpleVisualiserWidget.h"
 
 namespace Ui {
 class TranscriberWidget;
@@ -9,7 +10,7 @@ class TranscriberWidget;
 
 struct TranscriberWidgetData;
 
-class TranscriberWidget : public QMainWindow
+class TranscriberWidget : public SimpleVisualiserWidget
 {
     Q_OBJECT
 

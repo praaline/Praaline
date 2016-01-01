@@ -35,7 +35,6 @@ signals:
     void playbackScrolledToTime(RealTime);
 
 public slots:
-    virtual void preferenceChanged(PropertyContainer::PropertyName);
     virtual bool commitData(bool mayAskUser);
 
     void goFullScreen();
@@ -47,11 +46,6 @@ public slots:
                                     const QList<QPair<QString, QString> > &attributes);
     void addProsogramPaneToSession(QPointer<CorpusRecording> rec);
     void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
-
-    void jumpToTime(const RealTime &time);
-
-    void baseGlobalCentreFrameChanged(sv_frame_t);
-    void basePlaybackFrameChanged(sv_frame_t);
 
 protected slots:
     virtual void importAudio();
@@ -70,10 +64,6 @@ protected slots:
     virtual void newSession();
     virtual void closeSession();
 
-    virtual void sampleRateMismatch(sv_samplerate_t, sv_samplerate_t, bool);
-    virtual void audioOverloadPluginDisabled();
-    virtual void audioTimeStretchMultiChannelDisabled();
-
     virtual void toolNavigateSelected();
     virtual void toolSelectSelected();
     virtual void toolEditSelected();
@@ -81,19 +71,12 @@ protected slots:
     virtual void toolEraseSelected();
     virtual void toolMeasureSelected();
 
-    virtual void documentModified();
-    virtual void documentRestored();
-    virtual void documentReplaced();
-
     virtual void updateMenuStates();
-    virtual void updateDescriptionLabel();
 
     virtual void setInstantsNumbering();
     virtual void setInstantsCounterCycle();
     virtual void setInstantsCounters();
     virtual void resetInstantsCounters();
-
-    virtual void rightButtonMenuRequested(Pane *, QPoint point);
 
     virtual void propertyStacksResized(int);
 
@@ -104,9 +87,6 @@ protected slots:
 
     virtual void findTransform();
 
-    virtual void paneAdded(Pane *);
-    virtual void paneHidden(Pane *);
-    virtual void paneAboutToBeDeleted(Pane *);
     virtual void paneDropAccepted(Pane *, QStringList);
     virtual void paneDropAccepted(Pane *, QString);
 
@@ -114,29 +94,13 @@ protected slots:
     virtual void setupTemplatesMenu();
 
     virtual void playSpeedChanged(int);
-    virtual void playSoloToggled();
     virtual void alignToggled();
 
-    virtual void currentPaneChanged(Pane *);
-
-    virtual void speedUpPlayback();
-    virtual void slowDownPlayback();
-    virtual void restoreNormalPlayback();
-
-    virtual void outputLevelsChanged(float, float);
-
+    virtual void modelAdded(Model *);
     virtual void layerRemoved(Layer *);
     virtual void layerInAView(Layer *, bool);
 
-    virtual void mainModelChanged(WaveFileModel *);
-    virtual void mainModelGainChanged(float);
-    virtual void modelAdded(Model *);
-    virtual void modelAboutToBeDeleted(Model *);
-
     virtual void showLayerTree();
-
-    virtual void mouseEnteredWidget();
-    virtual void mouseLeftWidget();
 
     virtual void handleOSCMessage(const OSCMessage &);
     virtual void midiEventsAvailable();
@@ -154,22 +118,10 @@ protected:
     QMenu                   *m_sliceMenu;
     QMenu                   *m_recentTransformsMenu;
     QMenu                   *m_templatesMenu;
-    QMenu                   *m_rightButtonMenu;
     QMenu                   *m_rightButtonLayerMenu;
     QMenu                   *m_rightButtonTransformsMenu;
-    QMenu                   *m_rightButtonPlaybackMenu;
 
     QAction                 *m_deleteSelectedAction;
-    QAction                 *m_soloAction;
-    QAction                 *m_rwdStartAction;
-    QAction                 *m_rwdSimilarAction;
-    QAction                 *m_rwdAction;
-    QAction                 *m_ffwdAction;
-    QAction                 *m_ffwdSimilarAction;
-    QAction                 *m_ffwdEndAction;
-    QAction                 *m_playAction;
-    QAction                 *m_playSelectionAction;
-    QAction                 *m_playLoopAction;
     QAction                 *m_manageTemplatesAction;
     QAction                 *m_zoomInAction;
     QAction                 *m_zoomOutAction;
@@ -178,17 +130,9 @@ protected:
     QAction                 *m_scrollRightAction;
     QAction                 *m_showPropertyBoxesAction;
 
-    bool                     m_soloModified;
-    bool                     m_prevSolo;
-
     QFrame                  *m_playControlsSpacer;
     int                      m_playControlsWidth;
 
-    QLabel                  *m_descriptionLabel;
-    QLabel                  *m_currentLabel;
-
-    ActivityLog             *m_activityLog;
-    KeyReference            *m_keyReference;
     QPointer<LayerTreeDialog>   m_layerTreeDialog;
 
     QFileSystemWatcher      *m_templateWatcher;
@@ -242,9 +186,6 @@ protected:
     virtual bool checkSaveModified();
 
     virtual void exportAudio(bool asData);
-
-    virtual void updateVisibleRangeDisplay(Pane *p) const;
-    virtual void updatePositionStatusDisplays() const;
 
     virtual bool shouldCreateNewSessionForRDFAudio(bool *cancel);
 

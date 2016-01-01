@@ -32,8 +32,9 @@ private:
     void setupActions();
 
 private slots:
-    void showManualAnnotation();
     void showAutomaticAnnotation();
+    void showTranscriber();
+    void showManualAnnotation();
     void showBatchEditor();
     void showCompareAnnotations();
 

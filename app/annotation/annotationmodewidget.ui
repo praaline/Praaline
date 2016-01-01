@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayoutMain">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -167,10 +167,26 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="pageAutomaticAnnotation">
       <layout class="QGridLayout" name="gridLayoutAutomaticAnnotation">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageTranscriber">
+      <layout class="QGridLayout" name="gridLayoutTranscriber">
        <property name="leftMargin">
         <number>0</number>
        </property>
