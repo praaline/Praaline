@@ -4,8 +4,9 @@
 #include "importcorpusitemswizardfinalpage.h"
 #include "ui_importcorpusitemswizardfinalpage.h"
 
-#include <pncore/interfaces/praat/praattextgrid.h>
-#include <pncore/interfaces/transcriber/transcriberannotationgraph.h>
+#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/transcriber/transcriberannotationgraph.h"
+#include "pncore/interfaces/subtitles/subtitlesfile.h"
 
 ImportCorpusItemsWizardFinalPage::ImportCorpusItemsWizardFinalPage(
         QPointer<Corpus> corpus,
@@ -97,8 +98,12 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         }
         if (annot->filename().toLower().endsWith("textgrid")) {
             importPraat(com, annot, correspondances);
-        } else if (annot->filename().toLower().endsWith("trs")) {
+        }
+        else if (annot->filename().toLower().endsWith("trs")) {
             importTranscriber(com, annot, correspondances);
+        }
+        else if (annot->filename().toLower().endsWith("srt")) {
+            importSubRipTranscription(com, annot, correspondances);
         }
         count++;
         ui->progressBarFiles->setValue(count);
@@ -217,6 +222,27 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(QPointer<CorpusCommunic
     }
     m_corpus->datastoreAnnotations()->saveTiersAllSpeakers(annot->ID(), tiersAll);
     qDeleteAll(tiersAll);
+}
+
+void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,
+                                                                 QList<TierCorrespondance> &correspondances)
+{
+    Q_UNUSED(correspondances)
+    ui->texteditMessagesFiles->appendPlainText(QString("Importing %1/%2...").arg(com->ID()).arg(annot->ID()));
+
+    QPointer<IntervalTier> tierTranscription = new IntervalTier();
+    bool result = SubtitlesFile::loadSRT(annot->filename(), tierTranscription);
+    tierTranscription->setName("transcription");
+    if (!result) {
+        return;
+    }
+    // Add speakers if necessary
+    QString speakerID = annot->ID();
+    if (!m_corpus->hasSpeaker(speakerID))
+        m_corpus->addSpeaker(new CorpusSpeaker(speakerID));
+    if (!m_corpus->hasParticipation(com->ID(), speakerID))
+        m_corpus->addParticipation(com->ID(), speakerID, "Participant");
+    m_corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tierTranscription);
 }
 
 void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,

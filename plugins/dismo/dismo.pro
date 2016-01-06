@@ -97,7 +97,8 @@ HEADERS += \
     dismo/tokenlist.h \
     dismo/tokenunit.h \
     serialisers/dismoserialisersql.h \
-    serialisers/dismoserialisertiers.h
+    serialisers/dismoserialisertiers.h \
+    dismo/CRFFeatureSet.h
 
 SOURCES += \
     plugindismo.cpp \
@@ -128,4 +129,5 @@ SOURCES += \
     dismo/tokenlist.cpp \
     dismo/tokenunit.cpp \
     serialisers/dismoserialisersql.cpp \
-    serialisers/dismoserialisertiers.cpp
+    serialisers/dismoserialisertiers.cpp \
+    dismo/CRFFeatureSet.cpp

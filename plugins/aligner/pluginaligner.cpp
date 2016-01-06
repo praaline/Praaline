@@ -29,11 +29,13 @@ using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
-    PluginAlignerPrivateData() : cmdDownsampleWaveFiles(false), cmdSplitToUtterances(false)
+    PluginAlignerPrivateData() :
+        commandDownsampleWaveFiles(false), commandExtractFeatures(false), commandSplitToUtterances(false)
     {}
 
-    bool cmdDownsampleWaveFiles;
-    bool cmdSplitToUtterances;
+    bool commandDownsampleWaveFiles;
+    bool commandExtractFeatures;
+    bool commandSplitToUtterances;
 
     QFuture<QString> future;
     QFutureWatcher<QString> watcher;
@@ -111,139 +113,39 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Aligner::PluginAlig
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
 
-    parameters << PluginParameter("cmdDownsampleWaveFiles", "Create WAV files downsampled to 16kHz", QVariant::Bool, d->cmdDownsampleWaveFiles);
-    parameters << PluginParameter("cmdSplitToUtterances", "Split WAV files to utterances", QVariant::Bool, d->cmdSplitToUtterances);
+    parameters << PluginParameter("commandDownsampleWaveFiles", "Create WAV files downsampled to 16kHz", QVariant::Bool, d->commandDownsampleWaveFiles);
+    parameters << PluginParameter("commandExtractFeatures", "Extract MFCC feature files", QVariant::Bool, d->commandExtractFeatures);
+    parameters << PluginParameter("commandSplitToUtterances", "Split WAV files to utterances", QVariant::Bool, d->commandSplitToUtterances);
 
     return parameters;
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVariant> parameters)
 {
-    if (parameters.contains("cmdDownsampleWaveFiles")) d->cmdDownsampleWaveFiles = parameters.value("cmdDownsampleWaveFiles").toBool();
-    if (parameters.contains("cmdSplitToUtterances")) d->cmdDownsampleWaveFiles = parameters.value("cmdSplitToUtterances").toBool();
-}
-
-void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
-{
-    int countDone = 0;
-    madeProgress(0);
-    printMessage("Adding phonetisation to tokens");
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        if (com->hasRecordings()) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-                IntervalTier *tier_token = tiers->getIntervalTierByName("tok_min");
-                if (!tier_token) continue;
-                ExternalPhonetiser::addPhonetisationToTokens(tier_token, "", "phonetisation");
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
-            }
-            qDeleteAll(tiersAll);
-        }
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-        printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
-        QApplication::processEvents();
-    }
-    madeProgress(100);
-    printMessage("Finished");
-}
-
-void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
-{
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        if (!com->hasRecordings()) continue;
-        CorpusRecording *rec = com->recordings().first();
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                if (speakerID.startsWith("(")) continue;
-
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-
-                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
-                if (!tier_segment) continue;
-                QList<Interval *> list_utterances;
-                int i = 0;
-                foreach (Interval *intv, tier_segment->intervals()) {
-                    if (intv->isPauseSilent()) { i++; continue; }
-                    Interval *utt = new Interval(intv);
-                    QString spk = speakerID.replace(annotationID, "");
-                    if (spk.startsWith("_")) spk = spk.remove(0, 1);
-                    QString utteranceID = QString("%1_%2_%3").arg(annotationID).arg(spk).arg(i);
-                    utt->setAttribute("utteranceID", utteranceID);
-                    list_utterances << utt;
-                    i++;
-                }
-                // QString wavfile = QString("G:/PFC_WAVE/16k/%1.16k.wav").arg(rec->filename().replace(".mp3", ""));
-                // QString wavfile = QString("%1.16k.wav").arg(rec->filename().replace(".mp3", ""));
-                //corpus->baseMediaPath() + "/" + rec->filename()
-                // AudioSegmenter::segment(wavfile, "D:/Aligner_train_tests/pfc", list_utterances, "utteranceID", 16000);
-//                QList<QStringList> argumentList = AudioSegmenter::script(wavfile, ".", list_utterances, "utteranceID", 16000);
-//                foreach (QStringList arguments, argumentList) {
-//                    QString cmd("sox ");
-//                    cmd.append(arguments.join(" "));
-//                    printMessage(cmd);
-//                }
-//                printMessage(QString("%1 %2").arg(wavfile).arg(wavfile.replace(".wav", ".mfc")));
-            }
-            qDeleteAll(tiersAll);
-        }
-        //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
-    }
-}
-
-void Praaline::Plugins::Aligner::PluginAligner::align(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
-{
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        if (!com->hasRecordings()) continue;
-        CorpusRecording *rec = com->recordings().first();
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                if (speakerID.startsWith("(")) continue;
-
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-
-                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
-                if (!tier_segment) continue;
-            }
-            printMessage("Progress");
-        }
-        qDeleteAll(tiersAll);
-    }
-    //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+    if (parameters.contains("commandDownsampleWaveFiles")) d->commandDownsampleWaveFiles = parameters.value("commandDownsampleWaveFiles").toBool();
+    if (parameters.contains("commandExtractFeatures")) d->commandExtractFeatures = parameters.value("commandExtractFeatures").toBool();
+    if (parameters.contains("commandSplitToUtterances")) d->commandSplitToUtterances = parameters.value("commandSplitToUtterances").toBool();
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::createDownsampledWavFiles(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
 {
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Downsampling Recordings");
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         CorpusRecording *rec = com->recordings().first();
-//        QList<Interval *> list;
-//        list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
-//        AudioSegmenter::segment(corpus->baseMediaPath() + "/" + rec->filename(), corpus->baseMediaPath(), list, QString(), 16000);
-//        qDeleteAll(list);
-        printMessage(rec->filename().replace(".wav", ".16k"));
+        QList<Interval *> list;
+        list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
+        AudioSegmenter::segment(corpus->baseMediaPath() + "/" + rec->filename(), corpus->baseMediaPath(), list, QString(), 16000);
+        qDeleteAll(list);
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+        printMessage(QString("Created file %1 downsampled to 16kHz").arg(rec->filename().replace(".wav", ".16k.wav")));
+        QApplication::processEvents();
     }
-    //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+    printMessage("Finished");
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::autoTranscribePresegmented(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
@@ -455,6 +357,19 @@ void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
 
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
+
+    if (d->commandDownsampleWaveFiles) {
+        createDownsampledWavFiles(corpus, communications);
+    }
+    if (d->commandExtractFeatures) {
+        createFeatureFilesFull(corpus, communications);
+    }
+    if (d->commandSplitToUtterances) {
+        return;
+    }
+    return;
+
+
     madeProgress(0);
     printMessage("Starting");
     QElapsedTimer timer;
@@ -472,14 +387,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     checks(corpus, communications);
     return;
 
-    if (d->cmdDownsampleWaveFiles) {
-        createDownsampledWavFiles(corpus, communications);
-        return;
-    }
-    else if (d->cmdSplitToUtterances) {
-        return;
-    }
-    return;
 
 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
@@ -578,3 +485,111 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //                QString filenameRec = corpus->baseMediaPath() + "/" + rec->filename();
 //                QFileInfo info(filenameRec);
 //                QString filename = info.absolutePath() + QString("/%1_phone.svl").arg(speakerID);
+
+void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+{
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Adding phonetisation to tokens");
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (com->hasRecordings()) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_token = tiers->getIntervalTierByName("tok_min");
+                if (!tier_token) continue;
+                ExternalPhonetiser::addPhonetisationToTokens(tier_token, "", "phonetisation");
+                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
+            }
+            qDeleteAll(tiersAll);
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+        printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+        QApplication::processEvents();
+    }
+    madeProgress(100);
+    printMessage("Finished");
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (!com->hasRecordings()) continue;
+        CorpusRecording *rec = com->recordings().first();
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                if (speakerID.startsWith("(")) continue;
+
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+
+                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
+                if (!tier_segment) continue;
+                QList<Interval *> list_utterances;
+                int i = 0;
+                foreach (Interval *intv, tier_segment->intervals()) {
+                    if (intv->isPauseSilent()) { i++; continue; }
+                    Interval *utt = new Interval(intv);
+                    QString spk = speakerID.replace(annotationID, "");
+                    if (spk.startsWith("_")) spk = spk.remove(0, 1);
+                    QString utteranceID = QString("%1_%2_%3").arg(annotationID).arg(spk).arg(i);
+                    utt->setAttribute("utteranceID", utteranceID);
+                    list_utterances << utt;
+                    i++;
+                }
+                // QString wavfile = QString("G:/PFC_WAVE/16k/%1.16k.wav").arg(rec->filename().replace(".mp3", ""));
+                // QString wavfile = QString("%1.16k.wav").arg(rec->filename().replace(".mp3", ""));
+                //corpus->baseMediaPath() + "/" + rec->filename()
+                // AudioSegmenter::segment(wavfile, "D:/Aligner_train_tests/pfc", list_utterances, "utteranceID", 16000);
+//                QList<QStringList> argumentList = AudioSegmenter::script(wavfile, ".", list_utterances, "utteranceID", 16000);
+//                foreach (QStringList arguments, argumentList) {
+//                    QString cmd("sox ");
+//                    cmd.append(arguments.join(" "));
+//                    printMessage(cmd);
+//                }
+//                printMessage(QString("%1 %2").arg(wavfile).arg(wavfile.replace(".wav", ".mfc")));
+            }
+            qDeleteAll(tiersAll);
+        }
+        //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+    }
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::align(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (!com->hasRecordings()) continue;
+        CorpusRecording *rec = com->recordings().first();
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                if (speakerID.startsWith("(")) continue;
+
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+
+                IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
+                if (!tier_segment) continue;
+            }
+            printMessage("Progress");
+        }
+        qDeleteAll(tiersAll);
+    }
+    //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+}

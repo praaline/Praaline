@@ -8,7 +8,9 @@
 #include "pluginsyntax.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
+
 #include "CoNLLUReader.h"
+#include "CorpusImporter.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -107,7 +109,15 @@ void readUDCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communic
 
 void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-
+    QString filename = "D:/CORPORA/C-PERCEO/corpus_perceo_oral.txt";
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
+        com->addAnnotation(annot);
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers;
+        CorpusImporter::readPerceo(filename, tiers);
+        corpus->datastoreAnnotations()->saveTiersAllSpeakers(com->ID(), tiers);
+    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

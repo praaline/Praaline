@@ -42,6 +42,7 @@ private:
 
     void importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
     void importTranscriber(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
+    void importSubRipTranscription(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
 };
 
 #endif // IMPORTCORPUSITEMSWIZARDFINALPAGE_H

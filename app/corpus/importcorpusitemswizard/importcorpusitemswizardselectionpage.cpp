@@ -40,6 +40,10 @@ ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
     item = new QStandardItem("TranscriberAG files (.trs)");  item->setData("trs");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
     m_modelFormatsAnnotation->setItem(1, 0, item);
+    item = new QStandardItem("SubRip subtitle files (.srt)");  item->setData("srt");
+    item->setCheckable(true);   item->setCheckState(Qt::Checked);
+    m_modelFormatsAnnotation->setItem(2, 0, item);
+
     ui->treeviewAnnotationsFormat->setModel(m_modelFormatsAnnotation);
     ui->treeviewAnnotationsFormat->setHeaderHidden(true);
 
