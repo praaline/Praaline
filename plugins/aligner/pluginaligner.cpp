@@ -30,12 +30,14 @@ using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
     PluginAlignerPrivateData() :
-        commandDownsampleWaveFiles(false), commandExtractFeatures(false), commandSplitToUtterances(false)
+        commandDownsampleWaveFiles(false), commandExtractFeatures(false), commandSplitToUtterances(false),
+        commandLongSoundAligner(false)
     {}
 
     bool commandDownsampleWaveFiles;
     bool commandExtractFeatures;
     bool commandSplitToUtterances;
+    bool commandLongSoundAligner;
 
     QFuture<QString> future;
     QFutureWatcher<QString> watcher;
@@ -116,6 +118,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Aligner::PluginAlig
     parameters << PluginParameter("commandDownsampleWaveFiles", "Create WAV files downsampled to 16kHz", QVariant::Bool, d->commandDownsampleWaveFiles);
     parameters << PluginParameter("commandExtractFeatures", "Extract MFCC feature files", QVariant::Bool, d->commandExtractFeatures);
     parameters << PluginParameter("commandSplitToUtterances", "Split WAV files to utterances", QVariant::Bool, d->commandSplitToUtterances);
+    parameters << PluginParameter("commandLongSoundAligner", "Run Long Sound Aliger", QVariant::Bool, d->commandLongSoundAligner);
 
     return parameters;
 }
@@ -125,6 +128,7 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
     if (parameters.contains("commandDownsampleWaveFiles")) d->commandDownsampleWaveFiles = parameters.value("commandDownsampleWaveFiles").toBool();
     if (parameters.contains("commandExtractFeatures")) d->commandExtractFeatures = parameters.value("commandExtractFeatures").toBool();
     if (parameters.contains("commandSplitToUtterances")) d->commandSplitToUtterances = parameters.value("commandSplitToUtterances").toBool();
+    if (parameters.contains("commandLongSoundAligner")) d->commandLongSoundAligner = parameters.value("commandLongSoundAligner").toBool();
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::createDownsampledWavFiles(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
@@ -146,6 +150,16 @@ void Praaline::Plugins::Aligner::PluginAligner::createDownsampledWavFiles(Corpus
         QApplication::processEvents();
     }
     printMessage("Finished");
+}
+
+void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
+    QString appPath = QCoreApplication::applicationDirPath();
+    QString sphinxHMModelsPath = appPath + "/plugins/aligner/sphinx/model/hmm/";
+    FE->setFeatureParametersFile(sphinxHMModelsPath + "french_f0/feat.params");
+    FE->createSphinxMFC(corpus, communications);
+    return;
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::autoTranscribePresegmented(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
@@ -238,16 +252,6 @@ void Praaline::Plugins::Aligner::PluginAligner::createSegments(Corpus *corpus, Q
     //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
-{
-    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString sphinxHMModelsPath = appPath + "/plugins/aligner/sphinx/model/hmm/";
-    FE->setFeatureParametersFile(sphinxHMModelsPath + "french_f0/feat.params");
-    FE->createSphinxMFC(corpus, communications);
-    return;
-}
-
 void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
     printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
@@ -320,7 +324,7 @@ struct LSAStep
             com->setProperty("LSA_status", "NoRecordings");
             return QString("%1\tNo Recordings").arg(com->ID());
         }
-        com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
+        //com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
         timer.start();
         LSA->recognise(m_corpus, com, 0);
         double secRecognitionTime = timer.elapsed() / 1000.0;
@@ -367,21 +371,25 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     if (d->commandSplitToUtterances) {
         return;
     }
-    return;
+    if (d->commandLongSoundAligner) {
+        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
+        LSA->createRecognitionLevel(corpus, 0);
+        madeProgress(0);
+        printMessage("Starting");
+        QElapsedTimer timer;
+        timer.start();
+        d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
+        d->watcher.setFuture(d->future);
 
-
-    madeProgress(0);
-    printMessage("Starting");
-    QElapsedTimer timer;
-    timer.start();
-    d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
-    d->watcher.setFuture(d->future);
-
-    while (d->watcher.isRunning()) {
-        QApplication::processEvents();
+        while (d->watcher.isRunning()) {
+            QApplication::processEvents();
+        }
+        printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
+        return;
     }
-    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
     return;
+
+
 
 
     checks(corpus, communications);

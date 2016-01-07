@@ -24,7 +24,7 @@ LongSoundAligner::LongSoundAligner(QObject *parent) :
 {
     d->tiername_auto_syll = "auto_syll";
     d->tiername_auto_syll_nucl = "auto_syll_nucl";
-    d->tiername_auto_utterance = "auto_utterance";
+    d->tiername_auto_utterance = "transcription"; //"auto_utterance";
     d->tiername_auto_hypseg = "auto_hypseg_%1";
     d->attributename_acoustic_model = "acoustic_model";
     d->attributename_language_model = "language_model";
