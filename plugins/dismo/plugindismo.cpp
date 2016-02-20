@@ -9,6 +9,7 @@
 
 #include "plugindismo.h"
 #include "dismo/dismoannotator.h"
+#include "dismo/dismotrainer.h"
 #include "serialisers/dismoserialisersql.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
@@ -164,10 +165,102 @@ void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpu
     corpus->save();
 }
 
+void trainExperiments()
+{
+
+//    DisMoAnnotator::DismoTrainer *T = new DisMoAnnotator::DismoTrainer();
+//    QString path = "D:/DROPBOX/DISMO_ARTICLE/crf/French_vPFC/";
+//    T->loadTableFiles(QStringList() << path + "fullcorpus_cprompfc.txt");
+//    T->train(path + "test_", DisMoAnnotator::DismoTrainer::POSMin);
+//    delete T;
+
+    QStringList cuts;
+    // cuts << "50" << "60" << "70";
+    // cuts << "90" << "100";
+    cuts << "120" << "140";
+    foreach (QString cut, cuts) {
+        DisMoAnnotator::DismoTrainer *T = new DisMoAnnotator::DismoTrainer();
+        QString path = "D:/DROPBOX/DISMO_ARTICLE/crf/French_vPFC/";
+        T->loadTableFiles(QStringList() << path + "fullcorpus_" + cut + ".txt");
+        T->train(path + "coarse_train_" + cut + "_", DisMoAnnotator::DismoTrainer::POSMin);
+        delete T;
+    }
+}
+
+QString evaluateCRFfile(const QString &filename, double &precision, double &precisionWithNonAmbig)
+{
+    int countCorrect = 0, countIncorrect = 0, countIncorrectButNonAmbig = 0;
+    precision = 0.0;
+    precisionWithNonAmbig = 0.0;
+    QString line;
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        return QString("Error opening %1").arg(filename);
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    do {
+        line = stream.readLine().trimmed();
+        if (line.isEmpty()) continue;
+        QString dictionary = line.section('\t', 1, 1);
+        QString correct = line.section('\t', 3, 3);
+        QString response = line.section('\t', 4, 4);
+        if (correct == response)
+            countCorrect++;
+        else {
+            countIncorrect++;
+            if (!dictionary.contains("+"))
+                countIncorrectButNonAmbig++;
+        }
+    } while (!stream.atEnd());
+    file.close();
+    int total = countCorrect + countIncorrect;
+    precision = ((double)countCorrect) / ((double)total);
+    precisionWithNonAmbig = ((double)(countCorrect + countIncorrectButNonAmbig)) / ((double)total);
+
+    // get data from the training log
+    QString info;
+    QString filenameLog = QString(filename).replace("eval_", "").replace(".txt", ".log");
+    QFile fileLog(filenameLog);
+    if ( !fileLog.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        return QString("Error opening %1").arg(filenameLog);
+    QTextStream streamLog(&fileLog);
+    streamLog.setCodec("UTF-8");
+    QString numSentences, numFeatures, time;
+    do {
+        line = streamLog.readLine().trimmed();
+        if (line.startsWith("Number of sentences:")) {
+            numSentences = line.section(":", 1, 1).trimmed();
+        }
+        else if (line.startsWith("Number of features:")) {
+            numFeatures = line.section(":", 1, 1).trimmed();
+        }
+        else if (line.startsWith("Done!")) {
+            time = line.section("!", 1, 1).remove("s").trimmed();
+        }
+    } while (!streamLog.atEnd());
+    fileLog.close();
+    info = QString("%1\t%2\t%3\t%4\t%5\t%6").arg(filename).arg(numSentences).arg(numFeatures).arg(time).arg(precision).arg(precisionWithNonAmbig);
+    return info;
+}
+
+
 void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
 //    addMWUindications(corpus, communications);
 //    return;
+
+    //trainExperiments();
+    double precision = 0.0, precisionWithNonAmbig = 0.0;
+    QString path = "D:/DROPBOX/DISMO_ARTICLE/crf/French_vPFC/";
+    QStringList cuts; cuts << "50" << "60" << "70" << "90" << "100" << "120" << "140";
+    QStringList cfactors; cfactors << "1" << "2" << "3";
+    foreach (QString cut, cuts) {
+        foreach (QString cfactor, cfactors) {
+            QString file = "eval_cposmin_" + cut + "_" + cfactor + ".txt";
+            printMessage(evaluateCRFfile(path + file, precision, precisionWithNonAmbig));
+        }
+    }
+    return;
 
     if (!corpus) {
         emit printMessage("DisMo: no corpus selected!");

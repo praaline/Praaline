@@ -259,8 +259,12 @@ void AutomaticAnnotationWidget::actionAnnotate()
     QList<QPointer<CorpusCommunication> > communications = selectedCommunications();
     QList<IAnnotationPlugin *> plugins = selectedPlugins();
 
-    if (communications.isEmpty() || plugins.isEmpty()) return;
-    Corpus *corpus = qobject_cast<Corpus *>(selectedCommunications().first()->parent());
+    if (plugins.isEmpty()) {
+        QMessageBox::warning(this, "Automatic Annotation", "No annotation plugins selected. Select at least one automatic annotation plugin to run!");
+        return;
+    }
+    Corpus *corpus = 0;
+    if (!communications.empty()) corpus = qobject_cast<Corpus *>(selectedCommunications().first()->parent());
     ui->progressBar->setValue(0);
     d->runningPlugins = plugins.count();
 

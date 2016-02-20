@@ -127,7 +127,8 @@ SOURCES += main.cpp \
     corpus/corpusdatabaseconnectiondialog.cpp \
     PraalineMainWindow.cpp \
     visualisation/SimpleVisualiserWidget.cpp \
-    annotation/transcriberwidget.cpp
+    annotation/transcriberwidget.cpp \
+    annotation/asr/LanguageModelBuilderWidget.cpp
 
 HEADERS  += \
     corporamanager.h \
@@ -197,7 +198,8 @@ HEADERS  += \
     corpus/corpusdatabaseconnectiondialog.h \
     PraalineMainWindow.h \
     visualisation/SimpleVisualiserWidget.h \
-    annotation/transcriberwidget.h
+    annotation/transcriberwidget.h \
+    annotation/asr/LanguageModelBuilderWidget.h
 
 FORMS    += mainwindow.ui \
     corpus/corpusmodewidget.ui \
@@ -245,7 +247,8 @@ FORMS    += mainwindow.ui \
     query/extractsoundbiteswidget.ui \
     corpus/MergeCorporaDialog.ui \
     statistics/CountStatisticsWidget.ui \
-    corpus/corpusdatabaseconnectiondialog.ui
+    corpus/corpusdatabaseconnectiondialog.ui \
+    annotation/asr/LanguageModelBuilderWidget.ui
 
 RESOURCES += \
     praaline.qrc \

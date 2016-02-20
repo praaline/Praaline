@@ -13,15 +13,17 @@
 
 #include "pluginaligner.h"
 #include "pncore/corpus/corpus.h"
-#include "pnlib/audiosegmenter.h"
+#include "pnlib/AudioSegmenter.h"
 #include "phonemedatabase.h"
-#include "sphinx/sphinxacousticmodeladapter.h"
-#include "sphinx/sphinxfeatureextractor.h"
-#include "sphinx/sphinxrecogniser.h"
-#include "sphinx/sphinxsegmentation.h"
-#include "phonetisers/externalphonetiser.h"
+#include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
+#include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
+#include "pnlib/asr/sphinx/SphinxRecogniser.h"
+#include "pnlib/asr/sphinx/SphinxSegmentation.h"
+#include "pnlib/phonetiser/ExternalPhonetiser.h"
 #include "easyalignbasic.h"
 #include "LongSoundAligner.h"
+
+#include "pnlib/asr/SpeechRecognitionRecipes.h"
 
 #include "pncore/interfaces/praat/praattextgrid.h"
 
@@ -131,36 +133,6 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
     if (parameters.contains("commandLongSoundAligner")) d->commandLongSoundAligner = parameters.value("commandLongSoundAligner").toBool();
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createDownsampledWavFiles(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
-{
-    int countDone = 0;
-    madeProgress(0);
-    printMessage("Downsampling Recordings");
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        if (!com->hasRecordings()) continue;
-        CorpusRecording *rec = com->recordings().first();
-        QList<Interval *> list;
-        list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
-        AudioSegmenter::segment(corpus->baseMediaPath() + "/" + rec->filename(), corpus->baseMediaPath(), list, QString(), 16000);
-        qDeleteAll(list);
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-        printMessage(QString("Created file %1 downsampled to 16kHz").arg(rec->filename().replace(".wav", ".16k.wav")));
-        QApplication::processEvents();
-    }
-    printMessage("Finished");
-}
-
-void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFull(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
-{
-    SphinxFeatureExtractor *FE = new SphinxFeatureExtractor();
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString sphinxHMModelsPath = appPath + "/plugins/aligner/sphinx/model/hmm/";
-    FE->setFeatureParametersFile(sphinxHMModelsPath + "french_f0/feat.params");
-    FE->createSphinxMFC(corpus, communications);
-    return;
-}
 
 void Praaline::Plugins::Aligner::PluginAligner::autoTranscribePresegmented(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
 {
@@ -310,33 +282,7 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPo
     printMessage("Finished");
 }
 
-struct LSAStep
-{
-    LSAStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
-    typedef QString result_type;
-
-    QString operator()(const QPointer<CorpusCommunication> &com)
-    {
-        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
-        QElapsedTimer timer;
-        if (!com) return QString("%1\tEmpty").arg(com->ID());
-        if (!com->hasRecordings()) {
-            com->setProperty("LSA_status", "NoRecordings");
-            return QString("%1\tNo Recordings").arg(com->ID());
-        }
-        //com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
-        timer.start();
-        LSA->recognise(m_corpus, com, 0);
-        double secRecognitionTime = timer.elapsed() / 1000.0;
-        double secRecording = com->recordings().first()->durationSec();
-        return QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
-                arg(com->ID()).arg(secRecording).arg(secRecognitionTime).
-                arg(secRecognitionTime / ((secRecording > 300.0) ? 300.0 : secRecording));
-        // For testing: return QString("%1 %2 %3").arg(com->ID()).arg(com->recordingsCount()).arg(timer.elapsed());
-    }
-
-    QPointer<Corpus> m_corpus;
-};
+// Asynchronous execution
 
 void Praaline::Plugins::Aligner::PluginAligner::futureResultReadyAt(int index)
 {
@@ -359,14 +305,69 @@ void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
     qDebug() << "Finished";
 }
 
+struct LSAStep
+{
+    LSAStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    typedef QString result_type;
+
+    QString operator() (const QPointer<CorpusCommunication> &com)
+    {
+        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
+        QElapsedTimer timer;
+        if (!com) return QString("%1\tEmpty").arg(com->ID());
+        if (!com->hasRecordings()) {
+            com->setProperty("LSA_status", "NoRecordings");
+            return QString("%1\tNo Recordings").arg(com->ID());
+        }
+        //com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
+        timer.start();
+        LSA->recognise(m_corpus, com, 0);
+        double secRecognitionTime = timer.elapsed() / 1000.0;
+        double secRecording = com->recordings().first()->durationSec();
+        return QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
+                arg(com->ID()).arg(secRecording).arg(secRecognitionTime).
+                arg(secRecognitionTime / ((secRecording > 300.0) ? 300.0 : secRecording));
+        // For testing: return QString("%1 %2 %3").arg(com->ID()).arg(com->recordingsCount()).arg(timer.elapsed());
+    }
+
+    QPointer<Corpus> m_corpus;
+};
+
+struct DownsampleWaveFileStep
+{
+    DownsampleWaveFileStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    typedef QString result_type;
+
+    QString operator() (const QPointer<CorpusCommunication> &com)
+    {
+        if (!com) return QString("%1\tis empty.").arg(com->ID());
+        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            SpeechRecognitionRecipes::downsampleWaveFile(m_corpus, rec);
+        }
+        return QString("%1\tdownsampled %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
+    }
+    QPointer<Corpus> m_corpus;
+};
+
+
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
+    madeProgress(0);
+    printMessage("Starting");
+    QElapsedTimer timer;
+    timer.start();
 
+    // asynchronous execution
     if (d->commandDownsampleWaveFiles) {
-        createDownsampledWavFiles(corpus, communications);
+        d->future = QtConcurrent::mapped(communications, DownsampleWaveFileStep(corpus));
+        d->watcher.setFuture(d->future);
+        while (d->watcher.isRunning()) QApplication::processEvents();
     }
     if (d->commandExtractFeatures) {
-        createFeatureFilesFull(corpus, communications);
+        SpeechRecognitionRecipes::Configuration config;
+        QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
+        config.sphinxHMModelPath = sphinxPath + "model/hmm/french_f0";
+        SpeechRecognitionRecipes::batchCreateSphinxFeatureFiles(corpus, communications, config);
     }
     if (d->commandSplitToUtterances) {
         return;
@@ -374,28 +375,15 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     if (d->commandLongSoundAligner) {
         QPointer<LongSoundAligner> LSA = new LongSoundAligner();
         LSA->createRecognitionLevel(corpus, 0);
-        madeProgress(0);
-        printMessage("Starting");
-        QElapsedTimer timer;
-        timer.start();
         d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
         d->watcher.setFuture(d->future);
-
-        while (d->watcher.isRunning()) {
-            QApplication::processEvents();
-        }
-        printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
-        return;
+        while (d->watcher.isRunning()) QApplication::processEvents();
     }
+    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
     return;
-
-
-
 
     checks(corpus, communications);
     return;
-
-
 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -419,8 +407,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
             qDeleteAll(tiersAll);
         }
     }
-
-
 
 //    foreach (QPointer<CorpusCommunication> com, communications) {
 //        if (!com) continue;

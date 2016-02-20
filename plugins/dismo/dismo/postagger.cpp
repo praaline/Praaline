@@ -83,7 +83,8 @@ void POSTagger::writeTokenToCRF(QTextStream &out, int i, bool isTraining)
 void POSTagger::writeTokenUnitToCRF(QTextStream &out, int i, int j, bool isTraining)
 {
     // feature selection
-    bool duration = true; bool ambiguity3 = true; bool ambiguity = false; bool mwu = true;
+    bool duration = false; bool ambiguity3 = true; bool ambiguity = false; bool mwu = true;
+    bool outputCoarsePOSTag = true;
     // bool duration = false; bool ambiguity3 = false; bool ambiguity = true; bool mwu = false;
     // token unit
     Token *token = m_tokens[i];
@@ -122,14 +123,18 @@ void POSTagger::writeTokenUnitToCRF(QTextStream &out, int i, int j, bool isTrain
     }
     // POS tag
     if (isTraining) {
+        QString tag = "UNK";
         if (!tokunit->getTagPOS().isEmpty())
-            out << "\t" << sanitizeString(tokunit->getTagPOS());    // give the correct answer (training file)
+            tag = sanitizeString(tokunit->getTagPOS());    // give the correct answer (training file)
         else if (!token->getTagDiscourse().isEmpty())
-            out << "\t" << sanitizeString(token->getTagDiscourse());
+            tag = sanitizeString(token->getTagDiscourse());
         else if (!tokunit->getTagDisfluency().isEmpty())
-            out << "\t" << sanitizeString(token->getTagDisfluency());
+            tag = sanitizeString(token->getTagDisfluency());
+        // Output full tag or coarse tag
+        if (outputCoarsePOSTag)
+            out << "\t" << tag.left(3);
         else
-            out << "\tUNK";
+            out << "\t" << tag;
     }
     out << "\n";
 }

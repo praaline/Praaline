@@ -29,8 +29,8 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../app/annotation
-DEPENDPATH += . .. ../.. ../../pncore
+INCLUDEPATH += . .. ../.. ../../pncore ../../pnlib ../../app/annotation
+DEPENDPATH += . .. ../.. ../../pncore ../../pnlib
 
 # Qtilities configuration
 QTILITIES += extension_system
@@ -56,27 +56,9 @@ PRE_TARGETDEPS += \
 HEADERS += \ 
     pluginaligner_global.h \
     pluginaligner.h \
-    alignertoken.h \
     phonemedatabase.h \
     easyalignbasic.h \
     annotationpluginpraatscript.h \
-    abstractphonetiser.h \
-    abstractacousticmodeltrainer.h \
-    abstractacousticmodeladapter.h \
-    abstractlanguagemodeltrainer.h \
-    abstractfeatureextractor.h \
-    abstractforcedaligner.h \
-    abstractrecogniser.h \
-    htk/htkacousticmodeladapter.h \
-    sphinx/sphinxacousticmodeladapter.h \
-    htk/htkacousticmodeltrainer.h \
-    sphinx/sphinxfeatureextractor.h \
-    sphinx/sphinxrecogniser.h \
-    abstractsyllabifier.h \
-    phonetisers/rulebasedphonetiser.h \
-    phonetisers/externalphonetiser.h \
-    sphinx/sphinxsegmentation.h \
-    htk/htkforcedaligner.h \
     LongSoundAligner.h
 	
 SOURCES += \ 
@@ -84,13 +66,4 @@ SOURCES += \
     phonemedatabase.cpp \
     easyalignbasic.cpp \
     annotationpluginpraatscript.cpp \
-    htk/htkacousticmodeladapter.cpp \
-    sphinx/sphinxacousticmodeladapter.cpp \
-    htk/htkacousticmodeltrainer.cpp \
-    sphinx/sphinxfeatureextractor.cpp \
-    sphinx/sphinxrecogniser.cpp \
-    phonetisers/rulebasedphonetiser.cpp \
-    phonetisers/externalphonetiser.cpp \
-    sphinx/sphinxsegmentation.cpp \
-    htk/htkforcedaligner.cpp \
     LongSoundAligner.cpp

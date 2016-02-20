@@ -8,7 +8,7 @@
 #include <QTextStream>
 #include <QCryptographicHash>
 #include "base/RealTime.h"
-#include "soundinfo.h"
+#include "SoundInfo.h"
 
 SoundInfo::SoundInfo() :
     channels(0), sampleRate(0), precisionBits(0), bitRate(0), filesize(0)

@@ -57,7 +57,7 @@ QString TokenList::tokenTextToString(const QString separatorBefore, const QStrin
 
 void TokenList::readFromTable(const QStringList &input)
 {
-    QString line, s_tMin, s_tMax, s_tok_min, s_pos_min, s_tok_loc, s_pos_loc, s_disc, s_disf, s_boundary;
+    QString line, group, fileid, s_tMin, s_tMax, s_tok_min, s_pos_min, s_tok_loc, s_pos_loc, s_disc, s_disf, s_boundary;
     QString prev_tok_loc, prev_pos_loc, prev_disc, prev_boundary;
     RealTime r_tMin, r_tMax;
     QList<TokenUnit *> units;
@@ -65,17 +65,19 @@ void TokenList::readFromTable(const QStringList &input)
     prev_tok_loc = "";
 
     foreach(line, input) {
-        s_tMin = line.section('\t', 1, 1).replace(",", ".");
-        s_tMax = line.section('\t', 2, 2).replace(",", ".");
+        group = line.section('\t', 0, 0);
+        fileid = line.section('\t', 1, 1);
+        s_tMin = line.section('\t', 2, 2).replace(",", ".");
+        s_tMax = line.section('\t', 3, 3).replace(",", ".");
         r_tMin = RealTime::fromSeconds(s_tMin.toDouble());
         r_tMax = RealTime::fromSeconds(s_tMax.toDouble());
-        s_tok_min = line.section('\t', 3, 3);
-        s_pos_min = line.section('\t', 4, 4);
-        s_tok_loc = line.section('\t', 5, 5);
-        s_pos_loc = line.section('\t', 6, 6);
-        s_disc = line.section('\t', 7, 7);
-        s_disf = line.section('\t', 8, 8);
-        s_boundary = line.section('\t', 9, 9);
+        s_tok_min = line.section('\t', 4, 4);
+        s_pos_min = line.section('\t', 5, 5);
+        s_tok_loc = line.section('\t', 6, 6);
+        s_pos_loc = line.section('\t', 7, 7);
+        s_disc = line.section('\t', 8, 8);
+        s_disf = line.section('\t', 9, 9);
+        s_boundary = line.section('\t', 10, 10);
 
         TokenUnit *u = new TokenUnit(r_tMin, r_tMax, s_tok_min);
         u->setTagPOS(s_pos_min, "", 1.0);

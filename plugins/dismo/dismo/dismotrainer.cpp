@@ -157,7 +157,7 @@ void DismoTrainer::outputTrainingFile(const QString &modelname, const int indexT
 // private
 void DismoTrainer::prepareTrainingFiles(const QString &filenameBase, const QString &modelname)
 {
-    QString filename = m_modelsPath + filenameBase + modelname;
+    QString filename = filenameBase + modelname;
     if (modelname == "mwulist")
         filename.append(".txt");
     else

@@ -2,7 +2,7 @@
 #include <QStringList>
 #include <QProcess>
 #include <QCoreApplication>
-#include "audiosegmenter.h"
+#include "AudioSegmenter.h"
 
 // Audio Segmenter
 // Input:  a wave file to extract segments from

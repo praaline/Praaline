@@ -14,7 +14,7 @@
 #include "pncore/annotation/interval.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
 
-#include "phonetisers/externalphonetiser.h"
+#include "pnlib/phonetiser/ExternalPhonetiser.h"
 #include "easyalignbasic.h"
 
 EasyAlignBasic::EasyAlignBasic(QObject *parent) :
@@ -85,11 +85,11 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
         //
         QList<Interval *> utt; utt << new Interval(intv_utteranceOrtho);
         utt.first()->setText(utteranceOut.replace("_", "").trimmed());
-        QList<AlignerToken> atokens = ExternalPhonetiser::phonetiseList(utt);
+        QList<SpeechToken> atokens = ExternalPhonetiser::phonetiseList(utt);
         QList<QString> ls_words;
         QList<QString> ls_phonetizations;
         QString phonetized;
-        foreach (AlignerToken atoken, atokens) {
+        foreach (SpeechToken atoken, atokens) {
             ls_words << atoken.orthographic;
             ls_phonetizations << atoken.phonetisation;
             phonetized = phonetized.append(atoken.phonetisation).append("| ");

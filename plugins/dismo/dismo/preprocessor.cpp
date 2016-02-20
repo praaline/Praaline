@@ -154,8 +154,11 @@ void Preprocessor::applyLEXtoTokenized()
             if (lookup.length() > 1 && lookup.endsWith("-"))
                 lookup.chop(1); // ex: existe- # t-il : remove - from existe
             if (lookup.contains("=")) lookup = lookup.replace("=", "");
-            if (myTokenUnits.contains(lookup)) {
+            if (myTokenUnits.contains(lookup) || myTokenUnits.contains(lookup.toLower())) {
                 foreach (QString dictionaryEntryText, myTokenUnits[lookup]) {
+                    tokenUnit->addPossibleTag(dictionaryEntryText);
+                }
+                foreach (QString dictionaryEntryText, myTokenUnits[lookup.toLower()]) {
                     tokenUnit->addPossibleTag(dictionaryEntryText);
                 }
                 tokenUnit->updateUnambiguous();

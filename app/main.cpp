@@ -1,6 +1,8 @@
 #include <QApplication>
 #include "PraalineMainWindow.h"
 
+#include "plugins/dismo/dismo/dismotrainer.h"
+
 int main(int argc, char *argv[])
 {
     // Initialize application object, using Qtilities instead of QApplication

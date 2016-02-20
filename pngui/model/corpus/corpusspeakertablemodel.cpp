@@ -44,9 +44,10 @@ QVariant CorpusSpeakerTableModel::headerData(int section, Qt::Orientation orient
             if (section == 0) return tr("Corpus ID");
             else if (section == 1) return tr("Speaker ID");
             else if (section == 2) return tr("Name");
-            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count())
-                return m_attributes.at(section - 3)->name();
-            else
+            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count()) {
+                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 3);
+                return (attr) ? attr->name() : QVariant();
+            } else
                 return QVariant();
         } else {
             if (section == 0) return tr("Speaker ID");

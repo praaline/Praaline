@@ -7,7 +7,7 @@
 #include "LongSoundAligner.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/annotationtiergroup.h"
-#include "sphinx/sphinxrecogniser.h"
+#include "pnlib/asr/sphinx/SphinxRecogniser.h"
 
 struct LongSoundAlignerData
 {
