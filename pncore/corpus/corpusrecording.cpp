@@ -46,6 +46,13 @@ QString CorpusRecording::basePath() const
     return QString();
 }
 
+QString CorpusRecording::baseMediaPath() const
+{
+    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
+    if (com) return com->baseMediaPath();
+    return QString();
+}
+
 QString CorpusRecording::communicationID() const
 {
     CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());

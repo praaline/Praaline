@@ -15,8 +15,8 @@ PointTier::PointTier(const QString &name, const RealTime tMin, const RealTime tM
     m_tMax = tMax;
 }
 
-PointTier::PointTier(const QString &name, const RealTime tMin, const RealTime tMax,
-                     const QList<Point *> &points, QObject *parent) :
+PointTier::PointTier(const QString &name, const QList<Point *> &points,
+                     const RealTime tMin, const RealTime tMax, QObject *parent) :
     AnnotationTier(parent)
 {
     m_name = name;
@@ -25,6 +25,8 @@ PointTier::PointTier(const QString &name, const RealTime tMin, const RealTime tM
     m_points = points;
     if (m_points.count() == 0) return;
     qSort(m_points.begin(), m_points.end(), PointTier::ComparePoints);
+    if (m_tMin > m_points.first()->m_time) m_tMin = m_points.first()->m_time;
+    if (m_tMax < m_points.last()->m_time) m_tMax = m_points.last()->m_time;
 }
 
 PointTier::PointTier(const PointTier *copy, QString name, QObject *parent) :
@@ -218,7 +220,7 @@ IntervalTier *PointTier::getIntervalsMax(const QString &name, QObject *parent)
         intervals << new Interval(tMin, p->time(), p->text());
         tMin = p->time();
     }
-    return new IntervalTier(name, m_tMin, m_tMax, intervals, parent);
+    return new IntervalTier(name, intervals, m_tMin, m_tMax, parent);
 }
 
 QList<Point *> PointTier::findLocalMaxima(const RealTime &localMaxThreshold, const QString &compareAttributeID) const

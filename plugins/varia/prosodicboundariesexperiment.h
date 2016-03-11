@@ -28,7 +28,6 @@ public:
     static void analysisCreateAdjustedTappingTier(Corpus *corpus);
     static void analysisCalculateSmoothedTappingModel(Corpus *corpus);
     static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus);
-    static void analysisCalculateForce(Corpus *corpus);
     static void analysisCalculateAverageDelay(Corpus *corpus);
     static void analysisCalculateCoverage(Corpus *corpus);
     static void analysisFeaturesForModelling(Corpus *corpus);

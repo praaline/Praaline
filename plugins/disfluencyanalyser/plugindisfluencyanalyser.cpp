@@ -9,6 +9,7 @@
 #include "pncore/corpus/corpus.h"
 #include "pncore/corpus/corpusbookmark.h"
 #include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
+#include "pncore/interfaces/praat/praattextgrid.h"
 
 #include "disfluency.h"
 #include "disfluencyanalysertool.h"
@@ -18,8 +19,16 @@ using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyserPrivateData {
-    PluginDisfluencyAnalyserPrivateData() {}
-    QString command;
+    PluginDisfluencyAnalyserPrivateData() :
+        commandPatternsREP(false), commandPatternsINS(false), commandPatternsSUB(false),
+        commandExportMultiTierTextgrids(false), commandConcordances(false)
+    {}
+
+    bool commandPatternsREP;
+    bool commandPatternsINS;
+    bool commandPatternsSUB;
+    bool commandExportMultiTierTextgrids;
+    bool commandConcordances;
 };
 
 Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::PluginDisfluencyAnalyser(QObject* parent) : QObject(parent)
@@ -90,13 +99,21 @@ QString Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::pluginL
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
-    parameters << PluginParameter("command", "Command", QVariant::String, d->command);
+    parameters << PluginParameter("commandPatternsREP", "Patterns-based detection: Repetitions", QVariant::Bool, d->commandPatternsREP);
+    parameters << PluginParameter("commandPatternsINS", "Patterns-based detection: Insertions", QVariant::Bool, d->commandPatternsINS);
+    parameters << PluginParameter("commandPatternsSUB", "Patterns-based detection: Substitutions", QVariant::Bool, d->commandPatternsSUB);
+    parameters << PluginParameter("commandExportMultiTierTextgrids", "Export multi-tier textgrids", QVariant::Bool, d->commandExportMultiTierTextgrids);
+    parameters << PluginParameter("commandConcordances", "Create Concordances", QVariant::Bool, d->commandConcordances);
     return parameters;
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParameters(QHash<QString, QVariant> parameters)
 {
-    if (parameters.contains("command")) d->command = parameters.value("command").toString();
+    if (parameters.contains("commandPatternsREP")) d->commandPatternsREP = parameters.value("commandPatternsREP").toBool();
+    if (parameters.contains("commandPatternsINS")) d->commandPatternsINS = parameters.value("commandPatternsINS").toBool();
+    if (parameters.contains("commandPatternsSUB")) d->commandPatternsSUB = parameters.value("commandPatternsSUB").toBool();
+    if (parameters.contains("commandExportMultiTierTextgrids")) d->commandExportMultiTierTextgrids = parameters.value("commandExportMultiTierTextgrids").toBool();
+    if (parameters.contains("commandConcordances")) d->commandConcordances = parameters.value("commandConcordances").toBool();
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
@@ -187,7 +204,6 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
                     bookmarks << PD->createBookmarks(corpus->ID(), com->ID(), annotationID, substitutions);
                 }
                 delete PD;
-
             }
             corpus->datastoreAnnotations()->saveTiersAllSpeakers(annotationID, tiersAll);
             qDeleteAll(tiersAll);
@@ -198,10 +214,145 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
     }
 }
 
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMultiTierTextgrids(
+        Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    int countDone = 0;
+    madeProgress(0);
+    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Exporting multi-tier textgrid"));
+    QString path = corpus->basePath();
+
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        printMessage(QString("Exporting %1").arg(com->ID()));
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                printMessage(QString("   speaker %1").arg(speakerID));
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+
+                IntervalTier *tier_phone = 0, *tier_syll = 0, *tier_delivery = 0;
+                IntervalTier *tier_tok_min = 0, *tier_tok_mwu = 0, *tier_ortho = 0;
+                QStringList tierNamesToExclude; tierNamesToExclude << "words" << "tok-mwu" << "pos-mwu";
+                QList<AnnotationTier *> restOfTiers;
+                foreach(AnnotationTier *atier, tiers->tiers()) {
+                    if      (atier->name() == "phone")       tier_phone = qobject_cast<IntervalTier *>(atier);
+                    else if (atier->name() == "syll")        tier_syll = qobject_cast<IntervalTier *>(atier);
+                    else if (atier->name() == "delivery")    tier_delivery = qobject_cast<IntervalTier *>(atier);
+                    else if (atier->name() == "tok_min")     tier_tok_min = qobject_cast<IntervalTier *>(atier);
+                    else if (atier->name() == "tok_mwu")     tier_tok_mwu = qobject_cast<IntervalTier *>(atier);
+                    else if (atier->name() == "ortho")       tier_ortho = qobject_cast<IntervalTier *>(atier);
+                    else {
+                        restOfTiers << atier;
+                    }
+                }
+
+                QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
+                if (tier_phone) {
+                    txg->addTier(new IntervalTier(tier_phone));
+                }
+                if (tier_syll) {
+                    txg->addTier(new IntervalTier(tier_syll));
+                    tier_delivery = new IntervalTier(tier_syll, "delivery");
+                    foreach (Interval *intv, tier_delivery->intervals())
+                        if (intv->isPauseSilent()) intv->setText("_"); else intv->setText("");
+                    txg->addTier(tier_delivery);
+                }
+                if (tier_tok_min) {\
+                    txg->addTier(new IntervalTier(tier_tok_min, "tok-min"));
+                    IntervalTier *tier_pos_min = new IntervalTier(tier_tok_min, "pos-min");
+                    foreach (Interval *intv, tier_pos_min->intervals())
+                        intv->setText(intv->attribute("pos_min").toString());
+                    txg->addTier(tier_pos_min);
+                    IntervalTier *tier_disfluencyL1 = new IntervalTier(tier_tok_min, "disfluency-lex");
+                    foreach (Interval *intv, tier_disfluencyL1->intervals()) {
+                        QString d = intv->attribute("disfluency").toString();
+                        if (d == "LEN" || d == "FST" || d == "FIL" || d == "WDP")
+                            intv->setText(d);
+                        else if (d.contains("SIL"))
+                            intv->setText("SIL");
+                        else
+                            intv->setText("");
+                        if (tier_delivery && (d == "FIL")) {
+                            Interval *syll = tier_delivery->intervalAtTime(intv->tCenter());
+                            if (syll) syll->setText("FIL");
+                        }
+                    }
+                    txg->addTier(tier_disfluencyL1);
+                    IntervalTier *tier_disfluencyL2 = new IntervalTier(tier_tok_min, "disfluency-rep");
+                    foreach (Interval *intv, tier_disfluencyL2->intervals()) {
+                        QString d = intv->attribute("disfluency").toString();
+                        if (d.contains("REP"))
+                            intv->setText(d.remove("+SIL").remove("+FST").remove("+LEN").remove("+FIL").remove("+WDP"));
+                        else
+                            intv->setText("");
+                    }
+                    txg->addTier(tier_disfluencyL2);
+                    IntervalTier *tier_disfluencyL3 = new IntervalTier(tier_tok_min, "disfluency-struct");
+                    foreach (Interval *intv, tier_disfluencyL3->intervals()) {
+                        QString d = intv->attribute("disfluency").toString();
+                        if (d.contains("INS") || d.contains("SUB") || d.contains("DEL") || d.contains("COM"))
+                            intv->setText(d);
+                        else
+                            intv->setText("");
+                    }
+                    txg->addTier(tier_disfluencyL3);
+                }
+                if (tier_tok_mwu) {
+                    txg->addTier(new IntervalTier(tier_tok_mwu, "tok-mwu"));
+                    IntervalTier *tier_pos_mwu = new IntervalTier(tier_tok_mwu, "pos-mwu");
+                    foreach (Interval *intv, tier_pos_mwu->intervals())
+                        intv->setText(intv->attribute("pos_mwu").toString());
+                    txg->addTier(tier_pos_mwu);
+                }
+                if (tier_ortho) {
+                    txg->addTier(new IntervalTier(tier_ortho));
+                }
+                if (txg->tiersCount() > 0) {
+                    if (tier_phone) {
+                        foreach (AnnotationTier *atier, txg->tiers()) {
+                            IntervalTier *tier = qobject_cast<IntervalTier *>(atier);
+                            if (tier)
+                                tier->fixBoundariesBasedOnTier(tier_phone);
+                        }
+                    }
+                    // add rest of tiers (not aligned to phones)
+                    foreach (AnnotationTier *atier, restOfTiers) {
+                        if (atier->tierType() == AnnotationTier::TierType_Points)
+                            txg->addTier(new PointTier(qobject_cast<PointTier *>(atier)));
+                        else if (atier->tierType() == AnnotationTier::TierType_Intervals)
+                            txg->addTier(new IntervalTier(qobject_cast<IntervalTier *>(atier)));
+                    }
+                    // exclude tiers
+                    foreach (QString name, tierNamesToExclude) {
+                        txg->removeTierByName(name);
+                    }
+                    PraatTextGrid::save(path + "/" + annot->ID() + "_dismo.TextGrid", txg);
+                }
+            }
+            qDeleteAll(tiersAll);
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+}
+
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-    if (d->command.contains("patterns")) patterns(corpus, communications, QStringList( { "INS", "SUB"} ));
-    if (d->command.contains("concordance")) concordances(corpus, communications);
+    QStringList patternsToAnnotate;
+    if (d->commandPatternsREP) patternsToAnnotate << "REP";
+    if (d->commandPatternsINS) patternsToAnnotate << "INS";
+    if (d->commandPatternsSUB) patternsToAnnotate << "SUB";
+    if (!patternsToAnnotate.isEmpty())
+        patterns(corpus, communications, patternsToAnnotate);
+    if (d->commandConcordances)
+        concordances(corpus, communications);
+    if (d->commandExportMultiTierTextgrids)
+        exportMultiTierTextgrids(corpus, communications);
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

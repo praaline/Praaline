@@ -44,6 +44,15 @@ QString CorpusSpeaker::basePath() const
         return QString();
 }
 
+QString CorpusSpeaker::baseMediaPath() const
+{
+    Corpus *myCorpus = qobject_cast<Corpus *>(this->parent());
+    if (myCorpus)
+        return myCorpus->baseMediaPath();
+    else
+        return QString();
+}
+
 void CorpusSpeaker::setName(const QString &name)
 {
     if (m_name != name) {

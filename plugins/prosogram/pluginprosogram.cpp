@@ -207,22 +207,24 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
 {
     if (!corpus) return;
     d->attributePrefix = d->attributePrefix.trimmed();
+    // If need be, create syllables level
     AnnotationStructureLevel *level_syll = corpus->annotationStructure()->level(d->levelSyllable);
     if (!level_syll) {
         level_syll = new AnnotationStructureLevel(d->levelSyllable, AnnotationStructureLevel::IndependentLevel, "Syllables", "");
         if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_syll)) return;
         corpus->annotationStructure()->addLevel(level_syll);
     }
-    // identification
+    // Create syllable attributes where necessary
+    // ...identification
     createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t1", "Nucleus t1", "Syllabic nucleus start", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t2", "Nucleus t2", "Syllabic nucleus end", "double", 0);
-    // before stylisation
+    // ...before stylisation
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", "double", 0);
-    // after stylisation
+    // ...after stylisation
     createAttribute(corpus, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", "double", 0);
@@ -231,14 +233,14 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", "int", 1);
-    // intensity
+    // ...intensity
     createAttribute(corpus, level_syll, d->attributePrefix, "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", "double", 0);
-    // durations
+    // ...durations
     createAttribute(corpus, level_syll, d->attributePrefix, "syll_dur", "Syllable duration", "Syllable duration (msec)", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", "double", 0);
     createAttribute(corpus, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", "double", 0);
-    // save
+    // Save
     corpus->save();
 }
 
@@ -288,7 +290,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                 if (listLongPauses.isEmpty()) {
                     tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax());
                 } else {
-                    tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax(), listLongPauses);
+                    tier_segment = new IntervalTier(d->levelSegmentation, listLongPauses, tier_autosyll->tMin(), tier_autosyll->tMax());
                     tier_segment->replaceText("<sil>", "_");
                     tier_segment->mergeIdenticalAnnotations("_");
                 }
@@ -346,6 +348,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
     printMessage("ProsoGram v.2.9m running");
 
     if (d->createLevels) {
+        // Create segmentation level if it does not exist
         if ((!d->levelSegmentation.isEmpty()) && (!corpus->annotationStructure()->hasLevel(d->levelSegmentation))) {
             AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(d->levelSegmentation, AnnotationStructureLevel::IndependentLevel, "Segmentation", "");
             if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_segment)) {
@@ -355,9 +358,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
             corpus->annotationStructure()->addLevel(level_segment);
             corpus->save();
         }
-        if (!corpus->annotationStructure()->hasLevel(d->levelSyllable)) {
-            createProsogramSyllableInfoStructure(corpus);
-        }
+        // Create and/or add attributes to syllable level
+        createProsogramSyllableInfoStructure(corpus);
     }
 
     foreach(QPointer<CorpusCommunication> com, communications) {

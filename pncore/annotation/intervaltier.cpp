@@ -20,19 +20,22 @@ IntervalTier::IntervalTier(const QString &name, const RealTime tMin, const RealT
     m_intervals << new Interval(tMin, tMax, ""); // initial blank interval
 }
 
-IntervalTier::IntervalTier(const QString &name, const RealTime tMin, const RealTime tMax,
-                           const QList<Interval *> &intervals, QObject *parent) :
+IntervalTier::IntervalTier(const QString &name, const QList<Interval *> &intervals,
+                           const RealTime tMin, const RealTime tMax, QObject *parent) :
     AnnotationTier(parent)
 {
     m_name = name;
-    m_tMin = tMin;
-    m_tMax = tMax;
+    if (intervals.count() == 0) { // special case
+        m_tMin = tMin;
+        m_tMax = tMax;
+        m_intervals << new Interval(tMin, tMax, ""); // initial blank interval
+        return;
+    }
     m_intervals = intervals;
-    if (m_intervals.count() == 0) return;
     qSort(m_intervals.begin(), m_intervals.end(), IntervalTier::compareIntervals);
+    m_tMin = qMin(m_intervals.first()->tMin(), tMin);
+    m_tMax = qMax(m_intervals.last()->tMax(), tMax);
     fixEmptyIntervals();
-    if (m_tMax > m_intervals.at(m_intervals.count() - 1)->m_time)
-        m_intervals.at(m_intervals.count() - 1)->m_tMax = m_tMax;
 }
 
 // Deep copy constructor
@@ -498,7 +501,7 @@ IntervalTier *IntervalTier::getIntervalTierSubset(const RealTime &timeStart, con
     foreach (Interval *intv, getIntervalsOverlappingWith(timeStart, timeEnd)) {
         intervals << new Interval(intv); // deep copy
     }
-    IntervalTier *ret = new IntervalTier(name(), timeStart, timeEnd, intervals);
+    IntervalTier *ret = new IntervalTier(name(), intervals, timeStart, timeEnd);
     if (ret->countItems() > 0) {
         ret->timeShift(-timeStart);
         if (ret->firstInterval()->tMin() < RealTime(0, 0) && ret->firstInterval()->tMax() > RealTime(0, 0))
@@ -634,12 +637,12 @@ void IntervalTier::fixEmptyIntervals()
     QList<Interval *> new_intervals;
     RealTime previous_tMax = m_tMin;
 
-    foreach (Interval *i, m_intervals) {
-        if (previous_tMax < i->tMin()) {
-            new_intervals << new Interval(previous_tMax, i->tMin(), "");
+    foreach (Interval *intv, m_intervals) {
+        if (previous_tMax < intv->tMin()) {
+            new_intervals << new Interval(previous_tMax, intv->tMin(), "");
         }
-        new_intervals << i;
-        previous_tMax = i->tMax();
+        new_intervals << intv;
+        previous_tMax = intv->tMax();
     }
     if (previous_tMax < m_tMax) {
         new_intervals << new Interval(previous_tMax, m_tMax, "");

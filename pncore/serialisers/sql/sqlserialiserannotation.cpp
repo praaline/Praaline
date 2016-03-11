@@ -259,9 +259,9 @@ AnnotationTier *SQLSerialiserAnnotation::getTier(const QString &annotationID, co
                      RealTime(-1, 0), RealTime(-1, 0));
 
     if (intervals.count() > 0) {
-        return new IntervalTier(levelID, intervals.first()->tMin(), intervals.last()->tMax(), intervals);
+        return new IntervalTier(levelID, intervals);
     } else if (points.count() > 0) {
-        return new PointTier(levelID, points.first()->time(), points.last()->time(), points);
+        return new PointTier(levelID, points);
     }
     return 0;
 }
@@ -373,11 +373,11 @@ IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &annota
     for (int i = 0; i < timelineBoundaries.count() - 1; ++i) {
         timelineIntervals << new Interval(timelineBoundaries.at(i), timelineBoundaries.at(i + 1), "");
     }
-    IntervalTier *timeline = new IntervalTier(QString("%1_timeline").arg(levelID),
-                                              timelineBoundaries.first(), timelineBoundaries.last(), timelineIntervals);
+    IntervalTier *timeline = new IntervalTier(QString("%1_timeline").arg(levelID), timelineIntervals,
+                                              timelineBoundaries.first(), timelineBoundaries.last());
     foreach (QString speakerID, speakingIntervals.keys()) {
-        speakingTiers.insert(speakerID, new IntervalTier(speakerID, timeline->tMin(), timeline->tMax(),
-                                                         speakingIntervals[speakerID]));
+        speakingTiers.insert(speakerID, new IntervalTier(speakerID, speakingIntervals[speakerID],
+                                                         timeline->tMin(), timeline->tMax()));
     }
     foreach (Interval *segment, timeline->intervals()) {
         QString speakers;

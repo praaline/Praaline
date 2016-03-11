@@ -48,7 +48,9 @@ HEADERS += \
     syllabifier/AbstractSyllabifier.h \
     asr/AbstractLanguageModelTrainer.h \
     asr/AbstractSpeechRecogniser.h \
-    asr/SpeechRecognitionRecipes.h
+    asr/SpeechRecognitionRecipes.h \
+    vad/OpenSmileVAD.h \
+    asr/sphinx/SphinxPronunciationDictionary.h
 
 SOURCES += \ 
     SoundInfo.cpp \
@@ -64,4 +66,6 @@ SOURCES += \
     phonetiser/ExternalPhonetiser.cpp \
     phonetiser/RuleBasedPhonetiser.cpp \
     phonetiser/DictionaryPhonetiser.cpp \
-    asr/SpeechRecognitionRecipes.cpp
+    asr/SpeechRecognitionRecipes.cpp \
+    vad/OpenSmileVAD.cpp \
+    asr/sphinx/SphinxPronunciationDictionary.cpp

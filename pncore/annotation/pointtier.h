@@ -19,8 +19,8 @@ public:
     // Constructors, destructor
     PointTier(const QString &name = QString(),
               const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
-    PointTier(const QString &name, const RealTime tMin, const RealTime tMax,
-              const QList<Point *> &points, QObject *parent = 0);
+    PointTier(const QString &name, const QList<Point *> &points,
+              const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
     PointTier(const PointTier *copy, QString name = QString(), QObject *parent = 0);
     virtual ~PointTier();
 

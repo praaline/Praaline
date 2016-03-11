@@ -22,6 +22,7 @@ public:
 
     QPointer<Corpus> corpus() const;
     QString basePath() const;
+    QString baseMediaPath() const;
 
     QString name() const { return m_name; }
     void setName(const QString &name);

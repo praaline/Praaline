@@ -101,7 +101,7 @@ void ValibelProcessor::importValibelFile(Corpus *corpus, const QString &filename
     corpus->addCommunication(com);
     foreach (QString speakerID, segmentIntervals.keys()) {
         RealTime tend = segmentIntervals[speakerID].last()->tMax();
-        IntervalTier *tier = new IntervalTier("segment", RealTime(), tend, segmentIntervals[speakerID]);
+        IntervalTier *tier = new IntervalTier("segment", segmentIntervals[speakerID], RealTime(), tend);
         tier->fillEmptyAnnotationsWith("_");
         corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier);
     }

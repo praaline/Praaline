@@ -51,6 +51,7 @@ LIBS += -L../../pnlib/$${COMPONENTSPATH} -lpnlib \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
+        ../../pnlib/$${COMPONENTSPATH}/libpnlib.a
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 

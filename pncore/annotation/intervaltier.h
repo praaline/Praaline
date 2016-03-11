@@ -23,8 +23,8 @@ public:
     // Constructors, destructor
     IntervalTier(const QString &name = QString(),
                  const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
-    IntervalTier(const QString &name, const RealTime tMin, const RealTime tMax,
-                 const QList<Interval *> &intervals, QObject *parent = 0);
+    IntervalTier(const QString &name, const QList<Interval *> &intervals,
+                 const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
     IntervalTier(const IntervalTier *copy, QString name = QString(), QObject *parent = 0);
     IntervalTier(const QString &name, const IntervalTier *tierA, const IntervalTier *tierB,
                  const QString &textA, const QString &textB, const QString &textAB, QObject *parent = 0);

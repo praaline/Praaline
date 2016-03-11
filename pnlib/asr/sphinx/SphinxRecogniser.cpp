@@ -17,14 +17,21 @@
 struct SphinxRecogniserData {
     SphinxRecogniserData() {}
 
-    bool useMLLR;
-    bool useSpecialisedLM;
     QString defaultAcousticModel;
     QString defaultLanguageModel;
     QString defaultPronunciationDictionary;
 
+    QString userAcousticModel;
+    QString userLanguageModel;
+    QString userPronunciationDictionary;
+    QString userMLLRMatrix;
+
+    bool useAcousticModelFromAttribute;
+    bool useLanguageModelFromAttribute;
+    bool useMLLRMatrixFromAttribute;
     QString attributename_acoustic_model;
     QString attributename_language_model;
+    QString attributename_mllr_matrix;
 };
 
 SphinxRecogniser::SphinxRecogniser(QObject *parent) :
@@ -37,8 +44,8 @@ SphinxRecogniser::SphinxRecogniser(QObject *parent) :
     d->defaultPronunciationDictionary = sphinxPath + "/model/lm/french_f0/frenchWords62K.dic";
     d->attributename_acoustic_model = "acoustic_model";
     d->attributename_language_model = "language_model";
-    d->useMLLR = false;
-    d->useSpecialisedLM = false;
+    d->useMLLRMatrixFromAttribute = false;
+    d->useLanguageModelFromAttribute = false;
 }
 
 SphinxRecogniser::~SphinxRecogniser()
@@ -46,21 +53,54 @@ SphinxRecogniser::~SphinxRecogniser()
     delete d;
 }
 
-void SphinxRecogniser::setUseMLLR(bool use)
+// ==============================================================================================================================
+// Configuration
+// ==============================================================================================================================
+
+void SphinxRecogniser::setAcousticModel(const QString &pathAcousticModel)
 {
-    d->useMLLR = use;
+    d->userAcousticModel = pathAcousticModel;
 }
 
-void SphinxRecogniser::setUseSpecialisedLM(bool use)
+void SphinxRecogniser::setLanguageModel(const QString &filenameLanguageModel)
 {
-    d->useSpecialisedLM = use;
+    d->userLanguageModel = filenameLanguageModel;
 }
 
-void SphinxRecogniser::setAttributeNames(const QString &attributenameAcousticModel, const QString &attributenameLanguageModel)
+void SphinxRecogniser::setPronunciationDictionary(const QString &filenamePronunciationDictionary)
+{
+    d->userPronunciationDictionary = filenamePronunciationDictionary;
+}
+
+void SphinxRecogniser::setMLLRMatrix(const QString &filenameMLLRMatrix)
+{
+    d->userMLLRMatrix = filenameMLLRMatrix;
+}
+
+void SphinxRecogniser::setUseAcousticModelFromAttribute(bool use)
+{
+    d->useAcousticModelFromAttribute = use;
+}
+
+void SphinxRecogniser::setUseLanguageModelFromAttribute(bool use)
+{
+    d->useLanguageModelFromAttribute = use;
+}
+
+void SphinxRecogniser::setUseMLLRMatrixFromAttribute(bool use)
+{
+    d->useMLLRMatrixFromAttribute = use;
+}
+
+void SphinxRecogniser::setAttributeNames(const QString &attributenameAcousticModel, const QString &attributenameLanguageModel,
+                                         const QString &attributenameMLLRMatrix)
 {
     d->attributename_acoustic_model = attributenameAcousticModel;
     d->attributename_language_model = attributenameLanguageModel;
+    d->attributename_mllr_matrix = attributenameMLLRMatrix;
 }
+
+// ==============================================================================================================================
 
 bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID,
                                                QList<Interval *> &utterances, QList<Interval *> &segmentation)
@@ -104,22 +144,36 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     }
     fileCtl.close();
 
-    QString filenameAcousticModel, filenameLanguageModel, filenameMLLRMatrix;
-    if (d->useMLLR) {
-        filenameAcousticModel = d->defaultAcousticModel;
-        filenameMLLRMatrix = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString() + "/mllr_matrix";
-    } else {
-        if (!com->property(d->attributename_acoustic_model).toString().isEmpty())
-            filenameAcousticModel = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString();
+    // Configure Sphinx
+    QString pathAcousticModel, filenameLanguageModel, filenamePronunciationDictionary, filenameMLLRMatrix;
+    // Acoustic Model
+    pathAcousticModel = d->defaultAcousticModel;
+    if ((!d->userAcousticModel.isEmpty()) && (QFile::exists(d->userAcousticModel)))
+        pathAcousticModel = d->userAcousticModel;
+    if (d->useAcousticModelFromAttribute && (!com->property(d->attributename_acoustic_model).toString().isEmpty())) {
+        QString f = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString();
+        if (QFile::exists(f)) pathAcousticModel = f;
     }
-    if (filenameAcousticModel.isEmpty() || !QFile::exists(filenameAcousticModel))
-        filenameAcousticModel = d->defaultAcousticModel;
-    if (d->useSpecialisedLM) {
-        if (!com->property(d->attributename_language_model).toString().isEmpty())
-            filenameLanguageModel = com->basePath() + "/" + com->property(d->attributename_language_model).toString();
+    // Language Model
+    filenameLanguageModel = d->defaultLanguageModel;
+    if ((!d->userLanguageModel.isEmpty()) && (QFile::exists(d->userLanguageModel)))
+        filenameLanguageModel = d->userLanguageModel;
+    if (d->useLanguageModelFromAttribute && (!com->property(d->attributename_language_model).toString().isEmpty())) {
+        QString f = com->basePath() + "/" + com->property(d->attributename_language_model).toString();
+        if (QFile::exists(f)) filenameLanguageModel = f;
     }
-    if (filenameLanguageModel.isEmpty() || !QFile::exists(filenameAcousticModel))
-        filenameLanguageModel = d->defaultLanguageModel;
+    // Pronunciation Dictionary
+    filenamePronunciationDictionary = d->defaultPronunciationDictionary;
+    if ((!d->userPronunciationDictionary.isEmpty()) && (QFile::exists(d->userPronunciationDictionary)))
+        filenamePronunciationDictionary = d->userPronunciationDictionary;
+    // MLLR adaptation matrix
+    filenameMLLRMatrix = "";
+    if ((!d->userMLLRMatrix.isEmpty()) && (QFile::exists(d->userMLLRMatrix)))
+        filenameMLLRMatrix = d->userMLLRMatrix;
+    if (d->useMLLRMatrixFromAttribute && (!com->property(d->attributename_mllr_matrix).toString().isEmpty())) {
+        QString f = com->basePath() + "/" + com->property(d->attributename_mllr_matrix).toString();
+        if (QFile::exists(f)) filenameMLLRMatrix = f;
+    }
 
     QString appPath = QCoreApplication::applicationDirPath();
     QString sphinxPath = appPath + "/plugins/aligner/sphinx/";
@@ -128,15 +182,15 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     QStringList sphinxParams;
     // pocketsphinx_batch -argfile argFile.txt -cepdir . -ctl MYFILE.ctl -cepext .wav -adcin true -hyp MYFILE.hyp -hypseg MYFILE.seg -mllr ../PROSO2015/adapt/participant01_adapt/mllr_matrix
 
-    sphinxParams << "-hmm" << filenameAcousticModel <<
+    sphinxParams << "-hmm" << pathAcousticModel <<
                     "-lm" << filenameLanguageModel <<
-                    "-dict" << d->defaultPronunciationDictionary <<
+                    "-dict" << filenamePronunciationDictionary <<
                     "-cepdir" << rec->basePath() <<
                     "-ctl" << filenameCtl <<
                     "-cepext" << ".mfc" <<
                     "-hyp" << filenameHypotheses <<
                     "-hypseg" << filenameSegmentation;
-    if (d->useMLLR) {
+    if (!filenameMLLRMatrix.isEmpty()) {
         sphinxParams << "-mllr" << filenameMLLRMatrix;
     }
     sphinx.start(sphinxPath + "pocketsphinx_batch", sphinxParams);

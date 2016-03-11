@@ -53,8 +53,8 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
         }
     }
 
-    IntervalTier *tier_toAlign_ortho = new IntervalTier(
-                m_tiernameTranscription, tier_ortho->tMin(), tier_ortho->tMax(), intervalsToAlign);
+    IntervalTier *tier_toAlign_ortho = new IntervalTier(m_tiernameTranscription, intervalsToAlign,
+                                                        tier_ortho->tMin(), tier_ortho->tMax());
     IntervalTier *tier_toAlign_phono = new IntervalTier(tier_toAlign_ortho);
     tier_toAlign_phono->setName(m_tiernamePhonetisation);
 
@@ -127,10 +127,10 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
         phonetized.replace("|", " ");
         intv_utterance->setText(phonetized.trimmed());
     }
-    IntervalTier *tier_toAlign_wordsT = new IntervalTier(
-                "wordsT", tier_ortho->tMin(), tier_ortho->tMax(), intervalsWords);
-    IntervalTier *tier_toAlign_phonesT = new IntervalTier(
-                "phonesT", tier_ortho->tMin(), tier_ortho->tMax(), intervalsPhones);
+    IntervalTier *tier_toAlign_wordsT = new IntervalTier("wordsT", intervalsWords,
+                                                         tier_ortho->tMin(), tier_ortho->tMax());
+    IntervalTier *tier_toAlign_phonesT = new IntervalTier("phonesT", intervalsPhones,
+                                                          tier_ortho->tMin(), tier_ortho->tMax());
 
     IntervalTier *tier_toAlign_selection = new IntervalTier(tier_selection);
     txgAlign->addTier(tier_toAlign_phonesT);
@@ -206,8 +206,8 @@ QString EasyAlignBasic::postAlignment(CorpusCommunication *com, QPointer<Annotat
                 list_new_words << tier_wordsOrig->getIntervalsContainedIn(segment);
         }
     }
-    IntervalTier *tier_phonesN = new IntervalTier("phones", txgAlign->tMin(), txgAlign->tMax(), list_new_phones);
-    IntervalTier *tier_wordsN = new IntervalTier("words", txgAlign->tMin(), txgAlign->tMax(), list_new_words);
+    IntervalTier *tier_phonesN = new IntervalTier("phones", list_new_phones, txgAlign->tMin(), txgAlign->tMax());
+    IntervalTier *tier_wordsN = new IntervalTier("words", list_new_words, txgAlign->tMin(), txgAlign->tMax());
     txgAlign->removeTierByName("phones"); txgAlign->removeTierByName("phonesT");
     txgAlign->removeTierByName("words"); txgAlign->removeTierByName("wordsT");
     txgAlign->removeTierByName("phono");

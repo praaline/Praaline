@@ -23,8 +23,10 @@ using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::Promise::PluginPromisePrivateData {
-    PluginPromisePrivateData() {}
+    PluginPromisePrivateData() : createLevels(true), overwrite(true) {}
 
+    bool createLevels;
+    bool overwrite;
     QString command;
 };
 

@@ -253,11 +253,7 @@ bool TranscriberAnnotationGraph::load(const QString &filename, QList<QPointer<Co
                 listTranscriptionIntervals << turn->intervals.value(spk->ID);
             }
         }
-        RealTime tMax;
-        if (listTranscriptionIntervals.count() > 0) {
-            tMax = listTranscriptionIntervals.at(listTranscriptionIntervals.count() - 1)->tMax();
-        }
-        IntervalTier *tierTranscription = new IntervalTier("transcription", RealTime(), tMax, listTranscriptionIntervals);
+        IntervalTier *tierTranscription = new IntervalTier("transcription", listTranscriptionIntervals);
         tiers->addTier(tierTranscription);
         tiersAll.insert(spk->name, tiers);
     }

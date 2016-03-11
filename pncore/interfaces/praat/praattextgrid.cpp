@@ -152,7 +152,7 @@ bool PraatTextGrid::load(const QString &filename, AnnotationTierGroup *group)
                     xMax = RealTime::fromSeconds(xMax_d);
                     intervals << new Interval(xMin, xMax, text);
                 }
-                group->addTier(new IntervalTier(tierName, tierxMin, tierxMax, intervals));
+                group->addTier(new IntervalTier(tierName, intervals, tierxMin, tierxMax));
                 intervals.clear();
             } else if (tierType == 2) {
                 for (int j = 0; j < tierSize; j++) {
@@ -161,7 +161,7 @@ bool PraatTextGrid::load(const QString &filename, AnnotationTierGroup *group)
                     timePoint = RealTime::fromSeconds(timePoint_d);
                     points << new Point(timePoint, text);
                 }
-                group->addTier(new PointTier(tierName, tierxMin, tierxMax, points));
+                group->addTier(new PointTier(tierName, points, tierxMin, tierxMax));
                 points.clear();
             }
         }
@@ -175,9 +175,9 @@ bool PraatTextGrid::load(const QString &filename, AnnotationTierGroup *group)
             if (readTierHeader(false, stream, line, new_tierType, tierSize, new_tierName, xMin_d, xMax_d)) {
                 // Add previous tier first
                 if (tierType == 1)
-                    group->addTier(new IntervalTier(tierName, tierxMin, tierxMax, intervals));
+                    group->addTier(new IntervalTier(tierName, intervals, tierxMin, tierxMax));
                 if (tierType == 2)
-                    group->addTier(new PointTier(tierName, tierxMin, tierxMax, points));
+                    group->addTier(new PointTier(tierName, points, tierxMin, tierxMax));
                 // Then register the new tier
                 tierType = new_tierType;
                 tierName = new_tierName;
@@ -198,9 +198,9 @@ bool PraatTextGrid::load(const QString &filename, AnnotationTierGroup *group)
         } while (!stream.atEnd());
         // Add the last tier (if any)
         if (tierType == 1)
-            group->addTier(new IntervalTier(tierName, tierxMin, tierxMax, intervals));
+            group->addTier(new IntervalTier(tierName, intervals, tierxMin, tierxMax));
         if (tierType == 2)
-            group->addTier(new PointTier(tierName, tierxMin, tierxMax, points));
+            group->addTier(new PointTier(tierName, points, tierxMin, tierxMax));
     }
     file.close();
     return true;

@@ -306,7 +306,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                         foreach (Interval *intv, qobject_cast<IntervalTier *>(tier)->getIntervalsContainedIn(ispk))
                             intervalsTierSpk << new Interval(intv);
                     }
-                    IntervalTier *tierSpk = new IntervalTier(tier->name(), tier->tMin(), tier->tMax(), intervalsTierSpk, tiersSpk);
+                    IntervalTier *tierSpk = new IntervalTier(tier->name(), intervalsTierSpk, tier->tMin(), tier->tMax(), tiersSpk);
                     tiersSpk->addTier(tierSpk);
                 }
                 else if (tier->tierType() == AnnotationTier::TierType_Points) {
@@ -316,7 +316,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                         foreach (Point *point, qobject_cast<PointTier *>(tier)->getPointsContainedIn(ispk))
                             pointsTierSpk << new Point(point);
                     }
-                    PointTier *tierSpk = new PointTier(tier->name(), tier->tMin(), tier->tMax(), pointsTierSpk, tiersSpk);
+                    PointTier *tierSpk = new PointTier(tier->name(), pointsTierSpk, tier->tMin(), tier->tMax(), tiersSpk);
                     tiersSpk->addTier(tierSpk);
                 }
             }

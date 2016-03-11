@@ -40,6 +40,7 @@ public:
     virtual CorpusObject::Type type() const { return CorpusObject::Type_Undefined; }
 
     virtual QString basePath() const { return QString(); }
+    virtual QString baseMediaPath() const { return QString(); }
 
     bool isDirty() { return m_dirty; }
     void setDirty(bool value);

@@ -28,6 +28,7 @@ public:
     CorpusObject::Type type() const { return CorpusObject::Type_Annotation; }
 
     QString basePath() const;
+    QString baseMediaPath() const;
     QString communicationID() const;
     QPointer<Corpus> corpus() const;
 

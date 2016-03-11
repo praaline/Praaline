@@ -70,9 +70,6 @@ namespace Praaline {
                 void addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
                 void createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
                 void align(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-                void createSegments(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-                void autoTranscribePresegmented(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-
                 void createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
                 void checks(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };

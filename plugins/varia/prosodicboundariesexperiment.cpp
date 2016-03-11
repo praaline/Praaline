@@ -227,7 +227,7 @@ bool PBExpe::resultsReadTapping(const QString &subjectID, const QString &filenam
             }
             state = 0;
             // add to database
-            IntervalTier *tier = new IntervalTier("tapping", RealTime(0, 0), RealTime::fromMilliseconds(t1 - t0), eventIntervals);
+            IntervalTier *tier = new IntervalTier("tapping", eventIntervals, RealTime(0, 0), RealTime::fromMilliseconds(t1 - t0));
             corpus->datastoreAnnotations()->saveTier(stimulusID, subjectID, tier);
             delete tier;
             eventIntervals.clear();
@@ -471,7 +471,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             sp->setAttribute("timesAdj", groupTimesAdj.join("|"));
             smoothPoints << sp;
         }
-        PointTier *tier_smooth = new PointTier("smooth", RealTime(0,0), tMax, smoothPoints);
+        PointTier *tier_smooth = new PointTier("smooth", smoothPoints, RealTime(0,0), tMax);
 
         // Calculate local maxima
         QList<Point *> maxima;

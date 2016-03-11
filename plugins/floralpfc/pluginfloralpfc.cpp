@@ -285,7 +285,7 @@ void separateSpeakers(Corpus *corpus, QList<QPointer<CorpusCommunication> > comm
 
             QMap<QString, AnnotationTier *> tiersAll;
             foreach (QString spk, lists.keys()) {
-                IntervalTier *t = new IntervalTier("segment", transcription->tMin(), transcription->tMax(), lists[spk]);
+                IntervalTier *t = new IntervalTier("segment", lists[spk], transcription->tMin(), transcription->tMax());
                 foreach (Interval *i, t->intervals()) {
                     if (i->text().isEmpty()) { i->setText("_"); i->setAttribute("schwa", "_"); i->setAttribute("liaison", "_"); }
                 }

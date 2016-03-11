@@ -99,9 +99,8 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<Corpus> co
             }
             // Creating a new tier and passing only the annotated pause intervals will create blank intervals
             // between them - these will be the automatically-detected utternaces.
-            IntervalTier *tier_auto_utterance = new IntervalTier(d->tiername_auto_utterance,
-                                                                 tier_auto_syll->tMin(), tier_auto_syll->tMax(),
-                                                                 longPauses);
+            IntervalTier *tier_auto_utterance = new IntervalTier(d->tiername_auto_utterance, longPauses,
+                                                                 tier_auto_syll->tMin(), tier_auto_syll->tMax());
             tiers->addTier(tier_auto_utterance);
             corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_auto_utterance);
         }
@@ -115,13 +114,13 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     static QMutex mutex;
 
     QPointer<SphinxRecogniser> sphinx = new SphinxRecogniser(this);
-    sphinx->setAttributeNames(d->attributename_acoustic_model, d->attributename_language_model);
+    sphinx->setAttributeNames(d->attributename_acoustic_model, d->attributename_language_model, "MLLR");
     if (recognitionStep == 0) {
-        sphinx->setUseMLLR(false);
-        sphinx->setUseSpecialisedLM(true);
+        sphinx->setUseMLLRMatrixFromAttribute(false);
+        sphinx->setUseLanguageModelFromAttribute(false);
     } else {
-        sphinx->setUseMLLR(true);
-        sphinx->setUseSpecialisedLM(true);
+        sphinx->setUseMLLRMatrixFromAttribute(true);
+        sphinx->setUseLanguageModelFromAttribute(true);
     }
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     if (!com) return false;
@@ -151,7 +150,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             sphinx->recogniseUtterances_MFC(com, rec->ID(), utterances, segmentation);
             // Segment (word) hypotheses
             IntervalTier *tier_auto_hypseg = new IntervalTier(QString(d->tiername_auto_hypseg).arg(recognitionStep),
-                                                              RealTime(0, 0), rec->duration(), segmentation);
+                                                              segmentation, RealTime(0, 0), rec->duration());
             foreach (Interval *intv, tier_auto_hypseg->intervals()) {
                 intv->setAttribute("text_from_dic", intv->text());
                 intv->setText(intv->text().replace("<sil>", "").replace("[b]", "").replace("[i]", "")

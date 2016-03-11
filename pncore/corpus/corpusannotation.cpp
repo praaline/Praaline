@@ -44,6 +44,13 @@ QString CorpusAnnotation::basePath() const
     return QString();
 }
 
+QString CorpusAnnotation::baseMediaPath() const
+{
+    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
+    if (com) return com->baseMediaPath();
+    return QString();
+}
+
 QPointer<Corpus> CorpusAnnotation::corpus() const
 {
     CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());

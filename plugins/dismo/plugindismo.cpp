@@ -250,17 +250,17 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
 //    return;
 
     //trainExperiments();
-    double precision = 0.0, precisionWithNonAmbig = 0.0;
-    QString path = "D:/DROPBOX/DISMO_ARTICLE/crf/French_vPFC/";
-    QStringList cuts; cuts << "50" << "60" << "70" << "90" << "100" << "120" << "140";
-    QStringList cfactors; cfactors << "1" << "2" << "3";
-    foreach (QString cut, cuts) {
-        foreach (QString cfactor, cfactors) {
-            QString file = "eval_cposmin_" + cut + "_" + cfactor + ".txt";
-            printMessage(evaluateCRFfile(path + file, precision, precisionWithNonAmbig));
-        }
-    }
-    return;
+//    double precision = 0.0, precisionWithNonAmbig = 0.0;
+//    QString path = "D:/DROPBOX/DISMO_ARTICLE/crf/French_vPFC/";
+//    QStringList cuts; cuts << "50" << "60" << "70" << "90" << "100" << "120" << "140";
+//    QStringList cfactors; cfactors << "1" << "2" << "3";
+//    foreach (QString cut, cuts) {
+//        foreach (QString cfactor, cfactors) {
+//            QString file = "eval_cposmin_" + cut + "_" + cfactor + ".txt";
+//            printMessage(evaluateCRFfile(path + file, precision, precisionWithNonAmbig));
+//        }
+//    }
+//    return;
 
     if (!corpus) {
         emit printMessage("DisMo: no corpus selected!");

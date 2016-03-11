@@ -50,6 +50,15 @@ QString CorpusCommunication::basePath() const
         return QString();
 }
 
+QString CorpusCommunication::baseMediaPath() const
+{
+    Corpus *myCorpus = qobject_cast<Corpus *>(this->parent());
+    if (myCorpus)
+        return myCorpus->baseMediaPath();
+    else
+        return QString();
+}
+
 void CorpusCommunication::setName(const QString &name)
 {
     if (m_name != name) {
