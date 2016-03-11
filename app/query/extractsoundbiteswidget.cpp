@@ -11,8 +11,8 @@
 #include "pncore/corpus/corpuscommunication.h"
 #include "pncore/corpus/corpusrecording.h"
 #include "pngui/widgets/gridviewwidget.h"
-#include "pnlib/audiosegmenter.h"
-#include "pnlib/soundinfo.h"
+#include "pnlib/AudioSegmenter.h"
+#include "pnlib/SoundInfo.h"
 #include "corporamanager.h"
 
 

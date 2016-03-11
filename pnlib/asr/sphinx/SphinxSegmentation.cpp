@@ -8,7 +8,7 @@
 #include "pncore/annotation/interval.h"
 #include "pncore/annotation/intervaltier.h"
 
-#include "sphinxsegmentation.h"
+#include "SphinxSegmentation.h"
 
 SphinxSegmentation::SphinxSegmentation(QObject *parent) : QObject(parent)
 {

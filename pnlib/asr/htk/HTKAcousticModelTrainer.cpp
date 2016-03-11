@@ -8,7 +8,7 @@
 #include "pncore/annotation/annotationtiergroup.h"
 #include "pncore/annotation/intervaltier.h"
 
-#include "htkacousticmodeltrainer.h"
+#include "HTKAcousticModelTrainer.h"
 
 struct HTKAcousticModelTrainerData {
     QHash<QString, QString> phonemeTranslations;

@@ -19,7 +19,6 @@ DEPENDPATH += . .. ../pncore
 
 HEADERS += \ 
     SoundInfo.h \
-    AudioSegmenter.h \
     diff/diff.h \
     diff/diff3.h \
     diff/dtl.h \
@@ -50,7 +49,8 @@ HEADERS += \
     asr/AbstractSpeechRecogniser.h \
     asr/SpeechRecognitionRecipes.h \
     vad/OpenSmileVAD.h \
-    asr/sphinx/SphinxPronunciationDictionary.h
+    asr/sphinx/SphinxPronunciationDictionary.h \
+    AudioSegmenter.h
 
 SOURCES += \ 
     SoundInfo.cpp \

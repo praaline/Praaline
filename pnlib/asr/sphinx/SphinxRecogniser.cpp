@@ -11,8 +11,8 @@
 
 #include "pncore/corpus/corpus.h"
 
-#include "sphinxsegmentation.h"
-#include "sphinxrecogniser.h"
+#include "SphinxSegmentation.h"
+#include "SphinxRecogniser.h"
 
 struct SphinxRecogniserData {
     SphinxRecogniserData() {}

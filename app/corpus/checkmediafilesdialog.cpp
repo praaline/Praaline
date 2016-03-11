@@ -7,7 +7,7 @@
 #include "ui_checkmediafilesdialog.h"
 
 #include "pncore/corpus/corpus.h"
-#include "pnlib/soundinfo.h"
+#include "pnlib/SoundInfo.h"
 
 CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
     QDialog(parent),

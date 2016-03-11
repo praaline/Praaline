@@ -4,7 +4,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "pncore/corpus/corpus.h"
-#include "pnlib/soundinfo.h"
+#include "pnlib/SoundInfo.h"
 
 #include "importcorpusitemswizardprocessmediapage.h"
 #include "ui_importcorpusitemswizardprocessmediapage.h"

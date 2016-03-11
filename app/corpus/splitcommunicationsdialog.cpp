@@ -8,7 +8,7 @@
 #include <QStandardItemModel>
 #include "pncore/corpus/corpus.h"
 
-#include "pnlib/audiosegmenter.h"
+#include "pnlib/AudioSegmenter.h"
 
 #include "splitcommunicationsdialog.h"
 #include "ui_splitcommunicationsdialog.h"
