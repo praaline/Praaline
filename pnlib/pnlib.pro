@@ -18,7 +18,6 @@ INCLUDEPATH += . .. ../pncore
 DEPENDPATH += . .. ../pncore
 
 HEADERS += \ 
-    SoundInfo.h \
     diff/diff.h \
     diff/diff3.h \
     diff/dtl.h \
@@ -50,11 +49,10 @@ HEADERS += \
     asr/SpeechRecognitionRecipes.h \
     vad/OpenSmileVAD.h \
     asr/sphinx/SphinxPronunciationDictionary.h \
+    SoundInfo.h \
     AudioSegmenter.h
 
 SOURCES += \ 
-    SoundInfo.cpp \
-    AudioSegmenter.cpp \
     diff/diffintervals.cpp \
     asr/sphinx/SphinxAcousticModelAdapter.cpp \
     asr/sphinx/SphinxFeatureExtractor.cpp \
@@ -68,4 +66,6 @@ SOURCES += \
     phonetiser/DictionaryPhonetiser.cpp \
     asr/SpeechRecognitionRecipes.cpp \
     vad/OpenSmileVAD.cpp \
-    asr/sphinx/SphinxPronunciationDictionary.cpp
+    asr/sphinx/SphinxPronunciationDictionary.cpp \
+    SoundInfo.cpp \
+    AudioSegmenter.cpp
