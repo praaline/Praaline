@@ -17,9 +17,11 @@
 
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
 
+#include "InterraterAgreement.h"
 #include "prosodicboundariesexperiment.h"
 
 #include "pluginvaria.h"
+
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -243,11 +245,46 @@ void Praaline::Plugins::Varia::PluginVaria::exportMultiTierTextgrids(
     }
 }
 
+
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
 
-    exportMultiTierTextgrids(corpus, communications);
+    int countDone = 0;
+    madeProgress(0);
+    printMessage(QString("Inter-rater agreement"));
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+
+                IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+
+                InterraterAgreement agreement;
+                agreement.addGroup("0", QStringList() << "0");
+                agreement.addGroup("P", QStringList() << "P" << "L");
+                QList<Interval *> syllables = tier_syll->intervals();
+                foreach (Interval * syll, syllables) {
+                    if (syll->attribute("promise_pos").toString().isEmpty()) syll->setAttribute("promise_pos", "0");
+                    if (syll->attribute("delivery2").toString().isEmpty()) syll->setAttribute("delivery2", "0");
+                }
+                double k = agreement.getCohenKappa("0", "P", syllables, "promise_pos", "delivery2");
+                printMessage(QString("%1\t%2").arg(com->ID()).arg(k));
+            }
+            qDeleteAll(tiersAll);
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
     return;
+//    exportMultiTierTextgrids(corpus, communications);
+//    return;
 
 //    QString path = "D:/DROPBOX/2015-10 SP8 - Prosodic boundaries perception experiment/results/Result files raw 22-02-2016";
 //    QDir dirinfo(path);

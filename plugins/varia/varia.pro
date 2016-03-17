@@ -61,7 +61,8 @@ HEADERS += \
     chunkannotator.h \
     svbridge.h \
     prosodicboundaries.h \
-    prosodicboundariesexperiment.h
+    prosodicboundariesexperiment.h \
+    InterraterAgreement.h
 
 SOURCES += \ 
     pluginvaria.cpp \
@@ -69,4 +70,5 @@ SOURCES += \
     chunkannotator.cpp \
     svbridge.cpp \
     prosodicboundaries.cpp \
-    prosodicboundariesexperiment.cpp
+    prosodicboundariesexperiment.cpp \
+    InterraterAgreement.cpp
