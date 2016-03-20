@@ -1,16 +1,16 @@
-TARGET = PraalinePy.pyd
-OFILES = sipPraalinePycmodule.o sipPraalinePyHelloSip.o sipPraalinePyRealTime.o sipPraalinePystdstring.o
+TARGET = PraalinePy.so
+OFILES = sipPraalinePycmodule.o sipPraalinePyRealTime.o sipPraalinePystdstring.o
 HFILES = sipAPIPraalinePy.h 
 
 CC = gcc
 CXX = g++
 LINK = g++
-CPPFLAGS = -DNDEBUG -DUNICODE -DQT_LARGEFILE_SUPPORT -I. -IC:\Python34\include
-CFLAGS = -O2 -Wall
-CXXFLAGS = -O2 -Wall
-LFLAGS = -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -shared -Wl,-subsystem,windows -Wl,-s
-LIBS = -LC:\Python34\libs -lpncore -lpython34
-.SUFFIXES: .cpp .cxx .cc .C .c
+CPPFLAGS = -DNDEBUG -I. -I/usr/include/python2.7
+CFLAGS =  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security  -D_FORTIFY_SOURCE=2 -fPIC -Wall -W
+CXXFLAGS =  -g -O2 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security  -D_FORTIFY_SOURCE=2 -fPIC -Wall -W
+LFLAGS =  -Wl,-Bsymbolic-functions -Wl,-z,relro -shared -Wl,--version-script=PraalinePy.exp
+LIBS = -lpncore
+.SUFFIXES: .c .o .cpp .cc .cxx .C
 
 
 .cpp.o:
@@ -33,16 +33,16 @@ all: $(TARGET)
 $(OFILES): $(HFILES)
 
 $(TARGET): $(OFILES)
+	@echo '{ global: initPraalinePy; local: *; };' > PraalinePy.exp
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OFILES) $(LIBS)
 
 install: $(TARGET)
-	@if not exist C:\Python34\Lib\site-packages mkdir C:\Python34\Lib\site-packages
-	copy /y $(TARGET) C:\Python34\Lib\site-packages\$(TARGET)
-	strip C:\Python34\Lib\site-packages\$(TARGET)
+	@test -d $(DESTDIR)/usr/lib/python2.7/dist-packages || mkdir -p $(DESTDIR)/usr/lib/python2.7/dist-packages
+	cp -f $(TARGET) $(DESTDIR)/usr/lib/python2.7/dist-packages/$(TARGET)
 
 clean:
-	-del $(TARGET)
-	-del sipPraalinePycmodule.o
-	-del sipPraalinePyHelloSip.o
-	-del sipPraalinePyRealTime.o
-	-del sipPraalinePystdstring.o
+	-rm -f $(TARGET)
+	-rm -f sipPraalinePycmodule.o
+	-rm -f sipPraalinePyRealTime.o
+	-rm -f sipPraalinePystdstring.o
+	-rm -f PraalinePy.exp

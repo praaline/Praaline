@@ -4,10 +4,10 @@
 
 #include "pngui/model/annotation/annotationtiermodel.h"
 
-#include "annotationcontrolsdisfluencies.h"
+#include "AnnotationControlsDisfluencies.h"
 #include "ui_annotationcontrolsdisfluencies.h"
 
-#include "disfluencyanalyser.h"
+#include "DisfluencyAnalyser.h"
 
 AnnotationControlsDisfluencies::AnnotationControlsDisfluencies(QWidget *parent) :
     QWidget(parent),

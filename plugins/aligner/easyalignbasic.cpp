@@ -14,7 +14,7 @@
 #include "pncore/annotation/interval.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
 
-#include "pnlib/phonetiser/ExternalPhonetiser.h"
+#include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
 #include "easyalignbasic.h"
 
 EasyAlignBasic::EasyAlignBasic(QObject *parent) :

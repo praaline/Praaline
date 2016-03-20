@@ -1,4 +1,4 @@
-#include "interrateragreement.h"
+#include "InterraterAgreement.h"
 
 InterraterAgreement::InterraterAgreement()
 {

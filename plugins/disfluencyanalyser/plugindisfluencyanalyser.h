@@ -3,7 +3,7 @@
 
 #include "plugindisfluencyanalyser_global.h"
 
-#include "iannotationplugin.h"
+#include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>
 #include <QObject>
 

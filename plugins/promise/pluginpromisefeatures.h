@@ -7,7 +7,7 @@
 #include <QHash>
 #include <QPair>
 #include <QTextStream>
-#include "pncore/base/realvaluelist.h"
+#include "pncore/base/RealValueList.h"
 #include "pncore/annotation/interval.h"
 #include "pncore/annotation/intervaltier.h"
 #include "pncore/annotation/annotationtiergroup.h"

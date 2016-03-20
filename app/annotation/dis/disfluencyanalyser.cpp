@@ -1,7 +1,7 @@
 #include <QString>
 #include <QList>
 #include <QPair>
-#include "disfluencyanalyser.h"
+#include "DisfluencyAnalyser.h"
 
 DisfluencyAnalyser::DisfluencyAnalyser()
 {

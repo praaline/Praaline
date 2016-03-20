@@ -47,15 +47,25 @@ include(../external/qtilities/src/Qtilities.pri)
 include(../external/qtilities/src/Dependencies.pri)
 INCLUDEPATH += external/qtilities/include
 
+# QScintilla
+INCLUDEPATH += $$PWD/../libs/qscintilla/Qt4Qt5
+LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5
+LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
+DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
+
+
 # Application components
 LIBS +=  \
         -L../pngui/$${COMPONENTSPATH} -lpngui \
-        -L../pnlib/$${COMPONENTSPATH} -lpnlib \
+        -L../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
+        -L../pnlib/crf/$${COMPONENTSPATH} -lpraaline-crf \
+        -L../pnlib/diff/$${COMPONENTSPATH} -lpraaline-diff \
+        -L../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
+        -L../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
         -L../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../pngui/$${COMPONENTSPATH}/libpngui.a \
-        ../pnlib/$${COMPONENTSPATH}/libpnlib.a \
         ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 # Will build the final executable in the main project directory.
@@ -63,192 +73,203 @@ PRE_TARGETDEPS += \
 TARGET = ../praaline
 
 SOURCES += main.cpp \
-    corporamanager.cpp \
-    corpus/corpusmode.cpp \
-    corpus/corpusmodewidget.cpp \
-    annotation/annotationmode.cpp \
-    annotation/annotationmodewidget.cpp \
-    visualisation/visualisationmode.cpp \
-    visualisation/visualisationmodewidget.cpp \
-    query/querymode.cpp \
-    query/querymodewidget.cpp \
-    statistics/statisticsmode.cpp \
-    statistics/statisticsmodewidget.cpp \
-    scripting/scriptingmode.cpp \
-    scripting/scriptingmodewidget.cpp \
-    corpus/corpusexplorerwidget.cpp \
-    corpus/corpusexplorertablewidget.cpp \
-    corpus/newcorpuswizard.cpp \
-    corpus/connecttocorpusdatabasedialog.cpp \
-    corpus/addnewcorpusitemdialog.cpp \
-    corpus/corpusexploreroptionsdialog.cpp \
-    corpus/checkmediafilesdialog.cpp \
-    corpus/splitcommunicationsdialog.cpp \
-    corpus/corpusstructureeditor/corpusstructureeditorwidget.cpp \
-    corpus/corpusstructureeditor/addattributedialog.cpp \
-    corpus/corpusstructureeditor/addleveldialog.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizard.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizardanalysepage.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizardcorrespondancespage.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizardfinalpage.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizardprocessmediapage.cpp \
-    corpus/importcorpusitemswizard/importcorpusitemswizardselectionpage.cpp \
-    corpus/exportannotationswizard/exportannotationswizard.cpp \
-    corpus/exportannotationswizard/exportannotationswizardpraatpage.cpp \
-    corpus/exportmetadatawizard/exportmetadatawizard.cpp \
-    annotation/automaticannotationwidget.cpp \
-    annotation/manualannotationwidget.cpp \
     annotation/dis/annotationcontrolsdisfluencies.cpp \
     annotation/dis/disfluencyanalyser.cpp \
-    annotation/batcheditorwidget.cpp \
-    annotation/annotatecorpusitemswindowbase.cpp \
     #visualisation/pitchanalyser.cpp \
-    visualisation/audioenabledwidget.cpp \
-    query/concordancerwidget.cpp \
-    query/createdatasetwidget.cpp \
-    query/advancedquerieswidget.cpp \
-    statistics/interrateragreement.cpp \
-    corpus/importmetadatawizard/importmetadatawizard.cpp \
-    corpus/importmetadatawizard/importmetadatawizardbasicinfopage.cpp \
-    corpus/importmetadatawizard/importmetadatawizardcolumnspage.cpp \
-    corpus/importmetadatawizard/importmetadatawizardfinalpage.cpp \
-    query/concordancerquickwidget.cpp \
-    annotation/compareannotationswidget.cpp \
-    visualisation/pitchanalyser.cpp \
-    praalinesplash.cpp \
-    networkpermissiontester.cpp \
-    visualisation/timelinevisualisationwidget.cpp \
-    visualisation/globalvisualisationwidget.cpp \
-    visualisation/pitchanalyserwidget.cpp \
-    visualisation/visualiserwidget.cpp \
-    query/extractsoundbiteswidget.cpp \
     corpus/MergeCorporaDialog.cpp \
     statistics/CountStatisticsWidget.cpp \
-    corpus/corpusdatabaseconnectiondialog.cpp \
     PraalineMainWindow.cpp \
     visualisation/SimpleVisualiserWidget.cpp \
-    annotation/transcriberwidget.cpp \
-    annotation/asr/LanguageModelBuilderWidget.cpp
+    annotation/asr/LanguageModelBuilderWidget.cpp \
+    query/AnnotationDataBrowserWidget.cpp \
+    visualisation/ExportVisualisationDialog.cpp \
+    query/sql/SqlTextEdit.cpp \
+    query/sql/SqlUiLexer.cpp \
+    query/AdvancedQueriesWidget.cpp \
+    corpus/CorpusExplorerTableWidget.cpp \
+    corpus/CorpusExplorerWidget.cpp \
+    query/ConcordancerQuickWidget.cpp \
+    query/ConcordancerWidget.cpp \
+    query/CreateDatasetWidget.cpp \
+    query/ExtractSoundBitesWidget.cpp \
+    query/QueryMode.cpp \
+    query/QueryModeWidget.cpp \
+    scripting/ScriptingMode.cpp \
+    annotation/AnnotateCorpusItemsWindowBase.cpp \
+    annotation/AnnotationMode.cpp \
+    annotation/AnnotationModeWidget.cpp \
+    annotation/AutomaticAnnotationWidget.cpp \
+    annotation/BatchEditorWidget.cpp \
+    annotation/CompareAnnotationsWidget.cpp \
+    annotation/ManualAnnotationWidget.cpp \
+    annotation/TranscriberWidget.cpp \
+    scripting/ScriptingModeWidget.cpp \
+    corpus/corpusstructureeditor/AddAttributeDialog.cpp \
+    corpus/corpusstructureeditor/AddLevelDialog.cpp \
+    corpus/corpusstructureeditor/CorpusStructureEditorWidget.cpp \
+    corpus/exportannotationswizard/ExportAnnotationsWizard.cpp \
+    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.cpp \
+    corpus/exportmetadatawizard/ExportMetadataWizard.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.cpp \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.cpp \
+    corpus/importmetadatawizard/ImportMetadataWizard.cpp \
+    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.cpp \
+    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.cpp \
+    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.cpp \
+    corpus/AddNewCorpusItemDialog.cpp \
+    corpus/CheckMediaFilesDialog.cpp \
+    corpus/ConnectToCorpusDatabaseDialog.cpp \
+    corpus/CorpusDatabaseConnectionDialog.cpp \
+    corpus/CorpusExplorerOptionsDialog.cpp \
+    corpus/CorpusMode.cpp \
+    corpus/CorpusModeWidget.cpp \
+    corpus/NewCorpusWizard.cpp \
+    corpus/SplitCommunicationsDialog.cpp \
+    statistics/InterraterAgreement.cpp \
+    statistics/StatisticsMode.cpp \
+    statistics/StatisticsModeWidget.cpp \
+    CorporaManager.cpp \
+    NetworkPermissionTester.cpp \
+    PraalineSplash.cpp \
+    visualisation/AudioEnabledWidget.cpp \
+    visualisation/GlobalVisualisationWidget.cpp \
+    visualisation/PitchAnalyser.cpp \
+    visualisation/PitchAnalyserWidget.cpp \
+    visualisation/TimelineVisualisationWidget.cpp \
+    visualisation/VisualisationMode.cpp \
+    visualisation/VisualisationModeWidget.cpp \
+    visualisation/VisualiserWidget.cpp
 
 HEADERS  += \
-    corporamanager.h \
-    corpus/corpusmode.h \
-    corpus/corpusmodewidget.h \
-    annotation/annotationmode.h \
-    annotation/annotationmodewidget.h \
-    visualisation/visualisationmode.h \
-    visualisation/visualisationmodewidget.h \
-    query/querymode.h \
-    query/querymodewidget.h \
-    statistics/statisticsmode.h \
-    statistics/statisticsmodewidget.h \
-    scripting/scriptingmode.h \
-    scripting/scriptingmodewidget.h \
-    corpus/corpusexplorerwidget.h \
-    corpus/corpusexplorertablewidget.h \
-    corpus/newcorpuswizard.h \
-    corpus/connecttocorpusdatabasedialog.h \
-    corpus/addnewcorpusitemdialog.h \
-    corpus/corpusexploreroptionsdialog.h \
-    corpus/checkmediafilesdialog.h \
-    corpus/splitcommunicationsdialog.h \
-    corpus/corpusstructureeditor/corpusstructureeditorwidget.h \
-    corpus/corpusstructureeditor/addattributedialog.h \
-    corpus/corpusstructureeditor/addleveldialog.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizard.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizardanalysepage.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizardcorrespondancespage.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizardfinalpage.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizardprocessmediapage.h \
-    corpus/importcorpusitemswizard/importcorpusitemswizardselectionpage.h \
-    corpus/exportannotationswizard/exportannotationswizard.h \
-    corpus/exportannotationswizard/exportannotationswizardpraatpage.h \
-    annotation/automaticannotationwidget.h \
-    annotation/iannotationplugin.h \
-    annotation/manualannotationwidget.h \
-    annotation/dis/annotationcontrolsdisfluencies.h \
-    annotation/dis/disfluencyanalyser.h \
-    annotation/batcheditorwidget.h \
-    annotation/annotatecorpusitemswindowbase.h \
     #visualisation/pitchanalyser.h \
-    visualisation/audioenabledwidget.h \
-    query/concordancerwidget.h \
-    query/createdatasetwidget.h \
-    query/advancedquerieswidget.h \
-    statistics/interrateragreement.h \
-    corpus/exportmetadatawizard/exportmetadatawizard.h \
-    corpus/importmetadatawizard/importmetadatawizard.h \
-    corpus/importmetadatawizard/importmetadatawizardbasicinfopage.h \
-    corpus/importmetadatawizard/importmetadatawizardcolumnspage.h \
-    corpus/importmetadatawizard/importmetadatawizardfinalpage.h \
-    query/concordancerquickwidget.h \
-    annotation/compareannotationswidget.h \
-    visualisation/pitchanalyser.h \
-    praalinesplash.h \
-    networkpermissiontester.h \
-    version.h \
-    visualisation/timelinevisualisationwidget.h \
-    visualisation/globalvisualisationwidget.h \
-    visualisation/pitchanalyserwidget.h \
-    visualisation/visualiserwidget.h \
-    query/extractsoundbiteswidget.h \
     corpus/MergeCorporaDialog.h \
     statistics/CountStatisticsWidget.h \
-    corpus/importcorpusitemswizard/importannotations.h \
-    corpus/corpusdatabaseconnectiondialog.h \
     PraalineMainWindow.h \
     visualisation/SimpleVisualiserWidget.h \
-    annotation/transcriberwidget.h \
-    annotation/asr/LanguageModelBuilderWidget.h
+    annotation/asr/LanguageModelBuilderWidget.h \
+    query/AnnotationDataBrowserWidget.h \
+    visualisation/ExportVisualisationDialog.h \
+    query/sql/SqlTextEdit.h \
+    query/sql/SqlUiLexer.h \
+    query/AdvancedQueriesWidget.h \
+    corpus/CorpusExplorerTableWidget.h \
+    corpus/CorpusExplorerWidget.h \
+    query/ConcordancerQuickWidget.h \
+    query/ConcordancerWidget.h \
+    query/CreateDatasetWidget.h \
+    query/ExtractSoundBitesWidget.h \
+    query/QueryMode.h \
+    query/QueryModeWidget.h \
+    annotation/dis/AnnotationControlsDisfluencies.h \
+    annotation/dis/DisfluencyAnalyser.h \
+    annotation/AnnotateCorpusItemsWindowBase.h \
+    annotation/AnnotationMode.h \
+    annotation/AnnotationModeWidget.h \
+    annotation/AutomaticAnnotationWidget.h \
+    annotation/BatchEditorWidget.h \
+    annotation/CompareAnnotationsWidget.h \
+    annotation/IAnnotationPlugin.h \
+    annotation/ManualAnnotationWidget.h \
+    annotation/TranscriberWidget.h \
+    corpus/corpusstructureeditor/AddAttributeDialog.h \
+    corpus/corpusstructureeditor/AddLevelDialog.h \
+    corpus/corpusstructureeditor/CorpusStructureEditorWidget.h \
+    corpus/exportannotationswizard/ExportAnnotationsWizard.h \
+    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.h \
+    corpus/exportmetadatawizard/ExportMetadataWizard.h \
+    corpus/importcorpusitemswizard/ImportAnnotations.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.h \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.h \
+    corpus/importmetadatawizard/ImportMetadataWizard.h \
+    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.h \
+    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.h \
+    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.h \
+    corpus/AddNewCorpusItemDialog.h \
+    corpus/CheckMediaFilesDialog.h \
+    corpus/ConnectToCorpusDatabaseDialog.h \
+    corpus/CorpusDatabaseConnectionDialog.h \
+    corpus/CorpusExplorerOptionsDialog.h \
+    corpus/CorpusMode.h \
+    corpus/CorpusModeWidget.h \
+    corpus/NewCorpusWizard.h \
+    corpus/SplitCommunicationsDialog.h \
+    scripting/ScriptingMode.h \
+    scripting/ScriptingModeWidget.h \
+    statistics/InterraterAgreement.h \
+    statistics/StatisticsMode.h \
+    statistics/StatisticsModeWidget.h \
+    visualisation/AudioEnabledWidget.h \
+    visualisation/GlobalVisualisationWidget.h \
+    visualisation/PitchAnalyser.h \
+    visualisation/PitchAnalyserWidget.h \
+    visualisation/TimelineVisualisationWidget.h \
+    visualisation/VisualisationMode.h \
+    visualisation/VisualisationModeWidget.h \
+    visualisation/VisualiserWidget.h \
+    CorporaManager.h \
+    NetworkPermissionTester.h \
+    PraalineSplash.h \
+    Version.h
 
-FORMS    += mainwindow.ui \
-    corpus/corpusmodewidget.ui \
-    annotation/annotationmodewidget.ui \
-    visualisation/visualisationmodewidget.ui \
-    query/querymodewidget.ui \
-    statistics/statisticsmodewidget.ui \
-    scripting/scriptingmodewidget.ui \
-    corpus/corpusexplorerwidget.ui \
-    corpus/corpusexplorertablewidget.ui \
-    corpus/newcorpuswizard.ui \
-    corpus/connecttocorpusdatabasedialog.ui \
-    corpus/addnewcorpusitemdialog.ui \
-    corpus/corpusexploreroptionsdialog.ui \
-    corpus/checkmediafilesdialog.ui \
-    corpus/splitcommunicationsdialog.ui \
-    corpus/corpusstructureeditor/corpusstructureeditorwidget.ui \
-    corpus/corpusstructureeditor/addattributedialog.ui \
-    corpus/corpusstructureeditor/addleveldialog.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizard.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizardanalysepage.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizardcorrespondancespage.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizardfinalpage.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizardprocessmediapage.ui \
-    corpus/importcorpusitemswizard/importcorpusitemswizardselectionpage.ui \
-    corpus/exportannotationswizard/exportannotationswizard.ui \
-    corpus/exportannotationswizard/exportannotationswizardpraatpage.ui \
-    annotation/transcriberwidget.ui \
-    annotation/automaticannotationwidget.ui \
-    annotation/manualannotationwidget.ui \
-    annotation/dis/annotationcontrolsdisfluencies.ui \
-    annotation/batcheditwidget.ui \
-    query/concordancerwidget.ui \
-    query/createdatasetwidget.ui \
-    query/advancedquerieswidget.ui \
-    corpus/exportmetadatawizard/exportmetadatawizard.ui \
-    corpus/importmetadatawizard/importmetadatawizard.ui \
-    corpus/importmetadatawizard/importmetadatawizardbasicinfopage.ui \
-    corpus/importmetadatawizard/importmetadatawizardcolumnspage.ui \
-    corpus/importmetadatawizard/importmetadatawizardfinalpage.ui \
-    query/concordancerquickwidget.ui \
-    annotation/compareannotationswidget.ui \
-    visualisation/timelinevisualisationwidget.ui \
-    visualisation/globalvisualisationwidget.ui \
-    query/extractsoundbiteswidget.ui \
+FORMS    += \
     corpus/MergeCorporaDialog.ui \
     statistics/CountStatisticsWidget.ui \
-    corpus/corpusdatabaseconnectiondialog.ui \
-    annotation/asr/LanguageModelBuilderWidget.ui
+    annotation/asr/LanguageModelBuilderWidget.ui \
+    query/AnnotationDataBrowserWidget.ui \
+    query/AdvancedQueriesWidget.ui \
+    query/ConcordancerQuickWidget.ui \
+    query/ConcordancerWidget.ui \
+    query/CreateDatasetWidget.ui \
+    query/ExtractSoundBitesWidget.ui \
+    query/QueryModeWidget.ui \
+    annotation/dis/AnnotationControlsDisfluencies.ui \
+    annotation/AnnotationModeWidget.ui \
+    annotation/AutomaticAnnotationWidget.ui \
+    annotation/BatchEditWidget.ui \
+    annotation/CompareAnnotationsWidget.ui \
+    annotation/ManualAnnotationWidget.ui \
+    annotation/TranscriberWidget.ui \
+    MainWindow.ui \
+    visualisation/ExportVisualisationDialog.ui \
+    visualisation/GlobalVisualisationWidget.ui \
+    visualisation/TimelineVisualisationWidget.ui \
+    visualisation/VisualisationModeWidget.ui \
+    statistics/StatisticsModeWidget.ui \
+    scripting/ScriptingModeWidget.ui \
+    corpus/SplitCommunicationsDialog.ui \
+    corpus/NewCorpusWizard.ui \
+    corpus/CorpusModeWidget.ui \
+    corpus/CorpusExplorerWidget.ui \
+    corpus/CorpusExplorerTableWidget.ui \
+    corpus/CorpusExplorerOptionsDialog.ui \
+    corpus/CorpusDatabaseConnectionDialog.ui \
+    corpus/ConnectToCorpusDatabaseDialog.ui \
+    corpus/CheckMediaFilesDialog.ui \
+    corpus/AddNewCorpusItemDialog.ui \
+    corpus/importmetadatawizard/ImportMetadataWizard.ui \
+    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.ui \
+    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.ui \
+    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.ui \
+    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.ui \
+    corpus/exportmetadatawizard/ExportMetadataWizard.ui \
+    corpus/exportannotationswizard/ExportAnnotationsWizard.ui \
+    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.ui \
+    corpus/corpusstructureeditor/AddAttributeDialog.ui \
+    corpus/corpusstructureeditor/AddLevelDialog.ui \
+    corpus/corpusstructureeditor/CorpusStructureEditorWidget.ui
 
 RESOURCES += \
     praaline.qrc \

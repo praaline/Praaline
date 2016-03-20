@@ -2465,6 +2465,28 @@ View::toNewImage(sv_frame_t f0, sv_frame_t f1)
     }
 }
 
+bool
+View::toPaintDevice(QPaintDevice *device)
+{
+    sv_frame_t f0 = getModelsStartFrame();
+    sv_frame_t f1 = getModelsEndFrame();
+    return toPaintDevice(device, f0, f1);
+}
+
+bool
+View::toPaintDevice(QPaintDevice *device, sv_frame_t f0, sv_frame_t f1)
+{
+    if (!device) return false;
+    QPainter *paint = new QPainter(device);
+    if (!render(*paint, 0, f0, f1)) {
+        delete paint;
+        return false;
+    } else {
+        delete paint;
+        return true;
+    }
+}
+
 QSize
 View::getImageSize()
 {

@@ -15,8 +15,9 @@
 // MA 02110-1301 USA
 //
 
-%Module(name = PraalinePy, version=0)
-%License(type="GPL",licensee="George Christodoulides",signature="george@mycontent.gr",timestamp="2014")
-%Include std_string.sip
+%Module(name = PraalinePy, version=1)
+%License(type="GPL",licensee="George Christodoulides",signature="george@mycontent.gr",timestamp="2016")
+
+%Include stdstring.sip
 %Include RealTime.sip
 

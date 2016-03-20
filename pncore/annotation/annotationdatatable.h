@@ -8,7 +8,7 @@
 #include <QVariant>
 #include <QHash>
 #include "base/RealTime.h"
-#include "base/realvaluelist.h"
+#include "base/RealValueList.h"
 
 class PRAALINE_CORE_SHARED_EXPORT AnnotationDataTable : public QObject
 {

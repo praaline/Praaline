@@ -47,11 +47,11 @@ CONFIG( debug, debug|release ) {
     COMPONENTSPATH = build/release
 }
 # Application components
-LIBS += -L../../pnlib/$${COMPONENTSPATH} -lpnlib \
+LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
-        ../../pnlib/$${COMPONENTSPATH}/libpnlib.a
+        ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 

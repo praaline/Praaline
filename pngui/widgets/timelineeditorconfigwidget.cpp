@@ -54,6 +54,9 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     d->modelLevelsAttributes = new QStandardItemModel;
     d->modelLevelsAttributes->setColumnCount(4);
     d->modelLevelsAttributes->setHorizontalHeaderLabels(QStringList() << "Level" << "Attribute" << "Function" << "Parameters");
+    addLevelAttribute("syll", "boundary");
+    addLevelAttribute("syll", "contour");
+
     addLevelAttribute("tok_min", "");
     addLevelAttribute("tok_min", "pos_min");
     addLevelAttribute("tok_min", "disfluency");

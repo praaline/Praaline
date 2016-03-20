@@ -1,5 +1,7 @@
 // SIP Wrapper for RealTime
 
+%Include stdstring.sip
+
 struct RealTime
 {
 

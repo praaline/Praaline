@@ -244,8 +244,8 @@ public:
     virtual QColor getBackground() const;
 
     enum TextStyle {
-	BoxedText,
-	OutlinedText,
+        BoxedText,
+        OutlinedText,
         OutlinedItalicText
     };
 
@@ -259,10 +259,10 @@ public:
         return m_manager && m_manager->shouldShowFeatureLabels();
     }
     virtual bool shouldIlluminateLocalFeatures(const Layer *, QPoint &) const {
-	return false;
+        return false;
     }
     virtual bool shouldIlluminateLocalSelection(QPoint &, bool &, bool &) const {
-	return false;
+        return false;
     }
 
     virtual void setPlaybackFollow(PlaybackFollowMode m);
@@ -283,7 +283,7 @@ public:
 					  int value) const;
     virtual void setProperty(const PropertyName &, int value);
     virtual QString getPropertyContainerName() const {
-	return objectName();
+        return objectName();
     }
     virtual QString getPropertyContainerIconName() const = 0;
 
@@ -299,6 +299,8 @@ public:
     virtual QImage *toNewImage();
     virtual QSize getImageSize(sv_frame_t f0, sv_frame_t f1);
     virtual QSize getImageSize();
+    virtual bool toPaintDevice(QPaintDevice *device, sv_frame_t f0, sv_frame_t f1);
+    virtual bool toPaintDevice(QPaintDevice *device);
 
     virtual int getTextLabelHeight(const Layer *layer, QPainter &) const;
 

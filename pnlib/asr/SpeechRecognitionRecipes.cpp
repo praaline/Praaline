@@ -7,7 +7,7 @@
 #include <QMutex>
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/interval.h"
-#include "pnlib/AudioSegmenter.h"
+#include "pnlib/sox/AudioSegmenter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "SpeechRecognitionRecipes.h"

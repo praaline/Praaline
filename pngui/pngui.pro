@@ -118,7 +118,8 @@ HEADERS += \
     layer/PraalineLayersInitialiser.h \
     model/annotation/ProsogramTonalSegmentModel.h \
     model/annotation/ProsogramModel.h \
-    layer/ProsogramLayer.h
+    layer/ProsogramLayer.h \
+    epsengine/EpsEngine.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -189,4 +190,6 @@ SOURCES += \
     layer/AnnotationGridLayer.cpp \
     layer/PraalineLayersInitialiser.cpp \
     model/annotation/ProsogramModel.cpp \
-    layer/ProsogramLayer.cpp
+    layer/ProsogramLayer.cpp \
+    epsengine/EpsPaintEngine.cpp \
+    epsengine/EpsPaintDevice.cpp

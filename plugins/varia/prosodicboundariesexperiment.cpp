@@ -8,7 +8,7 @@
 #include <QTextStream>
 
 #include "prosodicboundaries.h"
-#include "pncore/base/realvaluelist.h"
+#include "pncore/base/RealValueList.h"
 #include "svcore/data/model/SparseOneDimensionalModel.h"
 #include "svcore/data/model/SparseTimeValueModel.h"
 #include "pncore/corpus/corpus.h"

@@ -168,7 +168,7 @@ int ProsogramLayer::getYForValue(View *v, double value) const
 {
     double min = 0.0, max = 0.0;
     bool logarithmic = false;
-    int h = v->height();
+    int h = v->height() * 0.9;
     getScaleExtents(v, min, max, logarithmic);
     return int(h - ((value - min) * h) / (max - min));
 }
@@ -421,7 +421,7 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     QPointer<AnnotationGridPointModel> phoneModel = m_model->phoneModel();
     QPointer<AnnotationGridPointModel> syllModel = m_model->syllModel();
     int phone_y0 = getYForValue(v, segmentModel->getf0MinimumST());
-    int tiersHeight = (v->height() - phone_y0) / 2; if (tiersHeight < 10) tiersHeight = 10;
+    int tiersHeight = (v->height() - phone_y0 - 2) / 2;
     int phone_y1 = phone_y0 + tiersHeight;
     int syll_y0 = phone_y1 + 1;
     int syll_y1 = v->height();

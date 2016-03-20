@@ -19,13 +19,13 @@
 
 #include "view/Pane.h"
 #include "view/PaneStack.h"
+#include "view/ViewManager.h"
 #include "data/model/WaveFileModel.h"
 #include "data/model/SparseOneDimensionalModel.h"
 #include "data/model/NoteModel.h"
 #include "data/model/FlexiNoteModel.h"
 #include "data/model/Labeller.h"
 #include "data/model/TabularModel.h"
-#include "view/ViewManager.h"
 
 #include "layer/WaveformLayer.h"
 #include "layer/TimeRulerLayer.h"

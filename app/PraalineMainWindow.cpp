@@ -27,12 +27,12 @@
 #include "../external/qtilities/include/QtilitiesProjectManagement/QtilitiesProjectManagement"
 
 // Application Modes
-#include "corpus/corpusmode.h"
-#include "annotation/annotationmode.h"
-#include "visualisation/visualisationmode.h"
-#include "query/querymode.h"
-#include "statistics/statisticsmode.h"
-#include "scripting/scriptingmode.h"
+#include "corpus/CorpusMode.h"
+#include "annotation/AnnotationMode.h"
+#include "visualisation/VisualisationMode.h"
+#include "query/QueryMode.h"
+#include "statistics/StatisticsMode.h"
+#include "scripting/ScriptingMode.h"
 
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
@@ -40,7 +40,7 @@ using namespace QtilitiesExtensionSystem;
 using namespace QtilitiesProjectManagement;
 using namespace Praaline;
 
-#include "corporamanager.h"
+#include "CorporaManager.h"
 
 struct PraalineMainWindowData {
     PraalineMainWindowData() {}

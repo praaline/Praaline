@@ -14,18 +14,18 @@
 
 #include "pluginaligner.h"
 #include "pncore/corpus/corpus.h"
-#include "pnlib/AudioSegmenter.h"
+#include "pnlib/mediautil/AudioSegmenter.h"
 #include "phonemedatabase.h"
 #include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "pnlib/asr/sphinx/SphinxSegmentation.h"
-#include "pnlib/phonetiser/ExternalPhonetiser.h"
+#include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
 #include "easyalignbasic.h"
 #include "LongSoundAligner.h"
 
 #include "pnlib/asr/SpeechRecognitionRecipes.h"
-#include "pnlib/vad/OpenSmileVAD.h"
+#include "pnlib/featextract/OpenSmileVAD.h"
 
 #include "pncore/interfaces/praat/praattextgrid.h"
 

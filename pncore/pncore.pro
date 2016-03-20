@@ -27,7 +27,6 @@ DEPENDPATH += . ..
 HEADERS += \
     base/BaseTypes.h \
     base/RealTime.h \
-    base/realvaluelist.h \
     annotation/point.h \
     annotation/interval.h \
     annotation/annotationtier.h \
@@ -91,11 +90,11 @@ HEADERS += \
     annotation/treetier.h \
     interfaces/transcriber/transcriberannotationgraph.h \
     interfaces/praat/PraatPointTierFile.h \
-    interfaces/anvil/AnvilMetadataTranscript.h
+    interfaces/anvil/AnvilMetadataTranscript.h \
+    base/RealValueList.h
 
 SOURCES += \
     base/RealTime.cpp \
-    base/realvaluelist.cpp \
     annotation/point.cpp \
     annotation/interval.cpp \
     annotation/annotationtier.cpp \
@@ -155,4 +154,5 @@ SOURCES += \
     annotation/treetier.cpp \
     interfaces/transcriber/transcriberannotationgraph.cpp \
     interfaces/praat/PraatPointTierFile.cpp \
-    interfaces/anvil/AnvilMetadataTranscript.cpp
+    interfaces/anvil/AnvilMetadataTranscript.cpp \
+    base/RealValueList.cpp

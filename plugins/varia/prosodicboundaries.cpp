@@ -3,7 +3,7 @@
 #include <QDebug>
 #include "pncore/annotation/annotationtiergroup.h"
 #include "pncore/annotation/intervaltier.h"
-#include "pncore/base/realvaluelist.h"
+#include "pncore/base/RealValueList.h"
 #include "prosodicboundaries.h"
 
 QStringList ProsodicBoundaries::POS_CLI = QStringList( { "PRP:det", "DET:def", "DET:dem", "DET:int", "DET:par", "DET:pos",

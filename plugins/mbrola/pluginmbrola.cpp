@@ -11,7 +11,7 @@
 #include "pluginmbrola.h"
 
 
-#include "pncore/base/realvaluelist.h"
+#include "pncore/base/RealValueList.h"
 #include "mbrolafilemanager.h"
 #include "pseudolanguage.h"
 
