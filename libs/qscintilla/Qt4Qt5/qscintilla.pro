@@ -175,7 +175,8 @@ HEADERS = \
 	../src/UnicodeFromUTF8.h \
 	../src/UniConversion.h \
 	../src/ViewStyle.h \
-	../src/XPM.h
+	../src/XPM.h \
+    ../lexlib/SparseState.h
 
 SOURCES = \
 	qsciscintilla.cpp \
