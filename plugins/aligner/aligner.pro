@@ -48,10 +48,14 @@ CONFIG( debug, debug|release ) {
 }
 # Application components
 LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
+        -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
+        -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a
+        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a
+        ../../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 

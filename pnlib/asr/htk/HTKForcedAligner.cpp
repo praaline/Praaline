@@ -5,7 +5,7 @@
 #include <QTextStream>
 #include <QCoreApplication>
 
-#include "pnlib/sox/AudioSegmenter.h"
+#include "pnlib/mediautil/AudioSegmenter.h"
 #include "SpeechToken.h"
 #include "HTKForcedAligner.h"
 #include "phonetiser/ExternalPhonetiser.h"

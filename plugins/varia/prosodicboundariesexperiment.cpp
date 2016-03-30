@@ -72,10 +72,7 @@ void PBExpe::measuresForPotentialStimuli(QPointer<CorpusAnnotation> annot, QList
                     syll_durations.append(syll->duration().toDouble());
             }
             QString boundary = syll->attribute("boundary").toString();
-            QSε στη φλυαρία μου και της βγήκε 20 λεπτά μετά το μοντάζ..
-                    Αυτό είναι ένα δείγμα και αύριο βγαίνει το video..
-
-                    Βtring contour = syll->attribute("contour").toString();
+            QString contour = syll->attribute("contour").toString();
             if (boundary.contains("//") || boundary.contains("///")) {
                 numProsodicBoundaries++;
                 if (contour == "T" && boundary.contains("///")) numBoundariesT3++;

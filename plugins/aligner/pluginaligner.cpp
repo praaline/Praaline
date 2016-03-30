@@ -14,7 +14,6 @@
 
 #include "pluginaligner.h"
 #include "pncore/corpus/corpus.h"
-#include "pnlib/mediautil/AudioSegmenter.h"
 #include "phonemedatabase.h"
 #include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
@@ -24,6 +23,7 @@
 #include "easyalignbasic.h"
 #include "LongSoundAligner.h"
 
+#include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/asr/SpeechRecognitionRecipes.h"
 #include "pnlib/featextract/OpenSmileVAD.h"
 
