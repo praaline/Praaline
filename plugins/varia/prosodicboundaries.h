@@ -21,8 +21,11 @@ public:
     static bool isLexical(Interval *token);
     static QString categorise_CLI_INT_LEX(Interval *token);
 
+    static QList<QString> analyseBoundaryListToStrings(Corpus *corpus, const QString &annotID,
+                                                       QList<int> syllIndices, QStringList additionalAttributeIDs);
     static void analyseBoundaryList(QTextStream &out, Corpus *corpus, const QString &annotID,
                                     QList<int> syllIndices, QStringList additionalAttributeIDs);
+    static QList<QString> analyseCorpusSampleToStrings(Corpus *corpus, const QString &annotID);
     static void analyseCorpusSample(QTextStream &out, Corpus *corpus, const QString &annotID);
 
 private:

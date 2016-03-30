@@ -12,12 +12,16 @@
 #include "svgui/widgets/Fader.h"
 
 #include "../visualisation/SimpleVisualiserWidget.h"
+#include "pngui/widgets/annotationtimelineeditor.h"
 #include "TranscriberWidget.h"
 #include "ui_transcriberwidget.h"
 
 struct TranscriberWidgetData {
-    TranscriberWidgetData() {}
+    TranscriberWidgetData() :
+    annotationEditor(0)
+    {}
 
+    AnnotationTimelineEditor *annotationEditor;     // Annotation timeline editor
 };
 
 TranscriberWidget::TranscriberWidget(QWidget *parent) :
@@ -62,6 +66,9 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     statusBar()->addPermanentWidget(m_currentLabel);
 
     finaliseMenus();
+
+    d->annotationEditor = new AnnotationTimelineEditor(this);
+    layout->addWidget(d->annotationEditor);
 }
 
 TranscriberWidget::~TranscriberWidget()

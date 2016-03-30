@@ -33,7 +33,9 @@ HEADERS += \
     phonetiser/ExternalPhonetiser.h \
     phonetiser/DictionaryPhonetiser.h \
     phonetiser/AbstractPhonetiser.h \
-    syllabifier/AbstractSyllabifier.h
+    syllabifier/AbstractSyllabifier.h \
+    sphinx/SphinxOnlineRecogniser.h \
+    sphinx/SphinxConfiguration.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -47,7 +49,9 @@ SOURCES += \
     htk/HTKAcousticModelAdapter.cpp \
     phonetiser/RuleBasedPhonetiser.cpp \
     phonetiser/ExternalPhonetiser.cpp \
-    phonetiser/DictionaryPhonetiser.cpp
+    phonetiser/DictionaryPhonetiser.cpp \
+    sphinx/SphinxOnlineRecogniser.cpp \
+    sphinx/SphinxConfiguration.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro

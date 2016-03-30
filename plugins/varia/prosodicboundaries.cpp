@@ -117,10 +117,12 @@ QString ProsodicBoundaries::categorise_CLI_INT_LEX(Interval *token)
     return "LEX";
 }
 
-void ProsodicBoundaries::analyseBoundaryList(QTextStream &out, Corpus *corpus, const QString &annotID,
-                                             QList<int> syllIndices, QStringList additionalAttributeIDs)
+QList<QString>
+ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &annotID,
+                                                 QList<int> syllIndices, QStringList additionalAttributeIDs)
 {
-    if (!corpus) return;
+    QList<QString> results;
+    if (!corpus) return results;
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -229,51 +231,66 @@ void ProsodicBoundaries::analyseBoundaryList(QTextStream &out, Corpus *corpus, c
             }
 
             // --------------------------------------------------------------------------------------------------------
-            // Write results to file
+            // Write results to a string list
             // --------------------------------------------------------------------------------------------------------
-            out << annotID << "\t" << annotID.right(1) << "\t" << speakerID << "\t" << isyll << "\t";
-            out << QString::number(tier_syll->interval(isyll)->tMin().toDouble()).replace(".", ",") << "\t";
-            out << QString(syll->text()).remove("\t").remove("\n") << "\t";
+            QString resultLine;
+            QString sep = "\t", decimal = ",";
+            resultLine.append(annotID).append(sep).append(annotID.right(1)).append(sep).append(speakerID);
+            resultLine.append(sep).append(QString::number(isyll)).append(sep);
+            resultLine.append(QString::number(tier_syll->interval(isyll)->tMin().toDouble()).replace(".", decimal)).append(sep);
+            resultLine.append(QString(syll->text()).remove("\t").remove("\n")).append(sep);
             // Expert
-            out << expertBoundaryType << "\t" << expertContour << "\t" << expertBoundary + expertContour << "\t";
+            resultLine.append(expertBoundaryType).append(sep).append(expertContour).append(sep).append(expertBoundary).append(expertContour).append(sep);
             // Prosody
-            out << QString::number(durNextPause).replace(".", ",") << "\t";
-            out << QString::number(logdurNextPause).replace(".", ",") << "\t";
-            out << QString::number(logdurNextPauseZ).replace(".", ",") << "\t";
-            out << QString::number(durSyllRel20).replace(".", ",") << "\t";
-            out << QString::number(durSyllRel30).replace(".", ",") << "\t";
-            out << QString::number(durSyllRel40).replace(".", ",") << "\t";
-            out << QString::number(durSyllRel50).replace(".", ",") << "\t";
-            out << QString::number(logdurSyllRel20).replace(".", ",") << "\t";
-            out << QString::number(logdurSyllRel30).replace(".", ",") << "\t";
-            out << QString::number(logdurSyllRel40).replace(".", ",") << "\t";
-            out << QString::number(logdurSyllRel50).replace(".", ",") << "\t";
-            out << QString::number(f0meanSyllRel20).replace(".", ",") << "\t";
-            out << QString::number(f0meanSyllRel30).replace(".", ",") << "\t";
-            out << QString::number(f0meanSyllRel40).replace(".", ",") << "\t";
-            out << QString::number(f0meanSyllRel50).replace(".", ",") << "\t";
-            out << QString::number(intrasyllab_up).replace(".", ",") << "\t";
-            out << QString::number(intrasyllab_down).replace(".", ",") << "\t";
-            out << QString::number(trajectory).replace(".", ",") << "\t";
+            resultLine.append(QString::number(durNextPause).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurNextPause).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurNextPauseZ).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(durSyllRel20).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(durSyllRel30).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(durSyllRel40).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(durSyllRel50).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurSyllRel20).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurSyllRel30).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurSyllRel40).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(logdurSyllRel50).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(f0meanSyllRel20).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(f0meanSyllRel30).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(f0meanSyllRel40).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(f0meanSyllRel50).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(intrasyllab_up).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(intrasyllab_down).replace(".", decimal)).append(sep);
+            resultLine.append(QString::number(trajectory).replace(".", decimal)).append(sep);
             // Syntax
-            out << tok_mwu_text << "\t" << sequence_text << "\t" << rection_text << "\t";
-            out << syntacticBoundaryType << "\t";
-            out << pos_mwu << "\t" << pos_mwu.left(3) << "\t" << categorise_CLI_INT_LEX(tok_mwu);
+            resultLine.append(tok_mwu_text).append(sep).append(sequence_text).append(sep).append(rection_text).append(sep);
+            resultLine.append(syntacticBoundaryType).append(sep);
+            resultLine.append(pos_mwu).append(sep).append(pos_mwu.left(3)).append(sep).append(categorise_CLI_INT_LEX(tok_mwu));
             // Other requested attributes
             QString rest;
             foreach (QString attributeID, additionalAttributeIDs) {
-                rest.append(syll->attribute(attributeID).toString().replace(".", ",")).append("\t");
+                rest.append(syll->attribute(attributeID).toString().replace(".", decimal)).append(sep);
             }
-            if (rest.endsWith("\t")) rest.chop(1);
-            if (!rest.isEmpty()) out << "\t" << rest;
-            out << "\n";
+            if (rest.endsWith(sep)) rest.chop(sep.length());
+            if (!rest.isEmpty()) resultLine.append(sep).append(rest);
+            results << resultLine;
         }
+    }
+    return results;
+}
+
+
+void ProsodicBoundaries::analyseBoundaryList(QTextStream &out, Corpus *corpus, const QString &annotID,
+                                             QList<int> syllIndices, QStringList additionalAttributeIDs)
+{
+    QList<QString> results = analyseBoundaryListToStrings(corpus, annotID, syllIndices, additionalAttributeIDs);
+    foreach (QString line, results) {
+        out << line << "\n";
     }
 }
 
 
-void ProsodicBoundaries::analyseCorpusSample(QTextStream &out, Corpus *corpus, const QString &annotID)
+QList<QString> ProsodicBoundaries::analyseCorpusSampleToStrings(Corpus *corpus, const QString &annotID)
 {
+    QList<QString> results;
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -293,8 +310,19 @@ void ProsodicBoundaries::analyseCorpusSample(QTextStream &out, Corpus *corpus, c
             syllables << i_lastsyll;
         }
 
-        analyseBoundaryList(out, corpus, annotID, syllables, additionalAttributeIDs);
+        results << analyseBoundaryListToStrings(corpus, annotID, syllables, additionalAttributeIDs);
+    }
+    return results;
+}
+
+void ProsodicBoundaries::analyseCorpusSample(QTextStream &out, Corpus *corpus, const QString &annotID)
+{
+    QList<QString> results = analyseCorpusSampleToStrings(corpus, annotID);
+    foreach (QString line, results) {
+        out << line << "\n";
     }
 }
+
+
 
 

@@ -6,13 +6,14 @@ CONFIG += ordered
 
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp \
+           libpraat \
            libs/qscintilla/Qt4Qt5/qscintilla.pro \
            libs/qcustomplot/qcustomplot.pro \
            plugins \
            praalinepy
 SUBDIRS += app
 
-sub_dataquay.file = dataquay/lib.pro
+sub_dataquay.file = dataquay/libdataquay.pro
 
 pnlib.depends = pncore
 pngui.depends = pncore

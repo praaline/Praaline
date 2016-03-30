@@ -26,11 +26,16 @@ public:
     // Analyse
     static void analysisCalculateDeltaRT(Corpus *corpus);
     static void analysisCreateAdjustedTappingTier(Corpus *corpus);
-    static void analysisCalculateSmoothedTappingModel(Corpus *corpus);
+    static void analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects = 0);
     static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus);
     static void analysisCalculateAverageDelay(Corpus *corpus);
     static void analysisCalculateCoverage(Corpus *corpus);
-    static void analysisFeaturesForModelling(Corpus *corpus);
+    static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations);
+
+    // Statistics
+    static void statExtractFeaturesForModelling(Corpus *corpus);
+    static void statInterAnnotatorAgreement(Corpus *corpus);
+    static void statCorrespondanceNSandMS(Corpus *corpus);
 
 private:
     PBExpe() {}

@@ -249,44 +249,45 @@ void Praaline::Plugins::Varia::PluginVaria::exportMultiTierTextgrids(
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
 
-    int countDone = 0;
-    madeProgress(0);
-    printMessage(QString("Inter-rater agreement"));
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
+//    int countDone = 0;
+//    madeProgress(0);
+//    printMessage(QString("Inter-rater agreement"));
+//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//            if (!annot) continue;
+//            QString annotationID = annot->ID();
+//            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+//            foreach (QString speakerID, tiersAll.keys()) {
+//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                if (!tiers) continue;
 
-                IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
-                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+//                IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+//                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
 
-                InterraterAgreement agreement;
-                agreement.addGroup("0", QStringList() << "0");
-                agreement.addGroup("P", QStringList() << "P" << "L");
-                QList<Interval *> syllables = tier_syll->intervals();
-                foreach (Interval * syll, syllables) {
-                    if (syll->attribute("promise_pos").toString().isEmpty()) syll->setAttribute("promise_pos", "0");
-                    if (syll->attribute("delivery2").toString().isEmpty()) syll->setAttribute("delivery2", "0");
-                }
-                double k = agreement.getCohenKappa("0", "P", syllables, "promise_pos", "delivery2");
-                printMessage(QString("%1\t%2").arg(com->ID()).arg(k));
-            }
-            qDeleteAll(tiersAll);
-        }
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-    }
-    return;
+//                InterraterAgreement agreement;
+//                agreement.addGroup("0", QStringList() << "0");
+//                agreement.addGroup("P", QStringList() << "P" << "L");
+//                QList<Interval *> syllables = tier_syll->intervals();
+//                foreach (Interval * syll, syllables) {
+//                    if (syll->attribute("promise_pos").toString().isEmpty()) syll->setAttribute("promise_pos", "0");
+//                    if (syll->attribute("delivery2").toString().isEmpty()) syll->setAttribute("delivery2", "0");
+//                }
+//                double k = agreement.getCohenKappa("0", "P", syllables, "promise_pos", "delivery2");
+//                printMessage(QString("%1\t%2").arg(com->ID()).arg(k));
+//            }
+//            qDeleteAll(tiersAll);
+//        }
+//        countDone++;
+//        madeProgress(countDone * 100 / communications.count());
+//    }
+//    return;
+
 //    exportMultiTierTextgrids(corpus, communications);
 //    return;
 
-//    QString path = "D:/DROPBOX/2015-10 SP8 - Prosodic boundaries perception experiment/results/Result files raw 22-02-2016";
+//    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/RESULTS/Result files raw 22-02-2016";
 //    QDir dirinfo(path);
 //    QFileInfoList list;
 //    list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
@@ -303,7 +304,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //            else if (info.baseName().contains("expe2")) expeType = "2";
 //            else if (info.baseName().contains("expe3")) expeType = "3";
 //            else if (info.baseName().contains("expe4")) expeType = "4";
-//            PBExpe::resultsReadParticipantInfo(subjectID, expeType, info.canonicalFilePath(), corpus);
+//            // PBExpe::resultsReadParticipantInfo(subjectID, expeType, info.canonicalFilePath(), corpus);
 //            // PBExpe::resultsReadTapping(subjectID, info.canonicalFilePath(), corpus);
 //            printMessage(QString("Read data from %1").arg(info.baseName()));
 //        }
@@ -311,15 +312,24 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    corpus->save();
 //    return;
 
-    // PBExpe::analysisCalculateDeltaRT(corpus);
-    // PBExpe::analysisCreateAdjustedTappingTier(corpus);
+//    PBExpe::analysisCalculateDeltaRT(corpus);
+//    PBExpe::analysisCreateAdjustedTappingTier(corpus);
 
-//    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
-//    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
-//    PBExpe::analysisCalculateAverageDelay(corpus);
+    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
+    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
+    PBExpe::analysisCalculateAverageDelay(corpus);
 //    PBExpe::analysisCalculateCoverage(corpus);
 
-//    PBExpe::analysisFeaturesForModelling(corpus);
+//    PBExpe::analysisStabilisation(corpus, 10, 100);
+//    PBExpe::analysisStabilisation(corpus, 20, 100);
+//    PBExpe::analysisStabilisation(corpus, 30, 100);
+//    PBExpe::analysisStabilisation(corpus, 15, 100);
+//    PBExpe::analysisStabilisation(corpus, 25, 100);
+
+
+//    PBExpe::statExtractFeaturesForModelling(corpus);
+    // PBExpe::statInterAnnotatorAgreement(corpus);
+    // PBExpe::statCorrespondanceNSandMS(corpus);
 
 
 //    QString path = "C:/Users/George/Downloads/Rhap_meta";

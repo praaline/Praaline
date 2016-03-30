@@ -13,5 +13,5 @@ SUBDIRS +=  dismo \
             syntax \
             dismo2 \
             mbrola #\
-            #longalign
+            # longalign
 

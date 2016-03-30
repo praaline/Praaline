@@ -2,10 +2,13 @@
 #include <QList>
 #include <QStringList>
 #include <QMap>
+#include <QHash>
 #include <QPointer>
+#include <QScopedPointer>
 #include <QDebug>
 #include <QFile>
 #include <QTextStream>
+#include <QTime>
 
 #include "prosodicboundaries.h"
 #include "pncore/base/RealValueList.h"
@@ -13,9 +16,15 @@
 #include "svcore/data/model/SparseTimeValueModel.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/corpus/corpusspeaker.h"
+#include "pncore/corpus/corpusbookmark.h"
+#include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
 
 #include "prosodicboundaries.h"
 #include "prosodicboundariesexperiment.h"
+
+// ====================================================================================================================
+// 1. Stimuli selection
+// ====================================================================================================================
 
 bool PBExpe::ipuIsMonological(Interval *ipu, IntervalTier *timeline, QString &speaker)
 {
@@ -63,7 +72,10 @@ void PBExpe::measuresForPotentialStimuli(QPointer<CorpusAnnotation> annot, QList
                     syll_durations.append(syll->duration().toDouble());
             }
             QString boundary = syll->attribute("boundary").toString();
-            QString contour = syll->attribute("contour").toString();
+            QSε στη φλυαρία μου και της βγήκε 20 λεπτά μετά το μοντάζ..
+                    Αυτό είναι ένα δείγμα και αύριο βγαίνει το video..
+
+                    Βtring contour = syll->attribute("contour").toString();
             if (boundary.contains("//") || boundary.contains("///")) {
                 numProsodicBoundaries++;
                 if (contour == "T" && boundary.contains("///")) numBoundariesT3++;
@@ -185,6 +197,8 @@ void PBExpe::potentialStimuliFromCorpus(Corpus *corpus, QList<QPointer<CorpusCom
 }
 
 // ====================================================================================================================
+// 2. Read results from OpenSesame files into Praaline database
+// ====================================================================================================================
 
 bool PBExpe::resultsReadTapping(const QString &subjectID, const QString &filename, Corpus *corpus)
 {
@@ -273,6 +287,8 @@ bool PBExpe::resultsReadParticipantInfo(const QString &subjectID, const QString 
 }
 
 // ====================================================================================================================
+// 3. Initial analysis: convert tapping to Perceived Prosodic Boundaries and attribute to syllables
+// ====================================================================================================================
 
 void PBExpe::analysisCalculateDeltaRT(Corpus *corpus)
 {
@@ -330,6 +346,7 @@ void PBExpe::analysisCalculateDeltaRT(Corpus *corpus)
         spk->setProperty("drt_sd", dRTsAll.stddev());
         dRTsAll.clear();
     }
+    corpus->save();
 }
 
 void PBExpe::analysisCreateAdjustedTappingTier(Corpus *corpus)
@@ -350,21 +367,40 @@ void PBExpe::analysisCreateAdjustedTappingTier(Corpus *corpus)
     }
 }
 
-void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
+void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects)
 {
     if (!corpus) return;
+    QTime time = QTime::currentTime();
+    qsrand((uint)time.msec());
     foreach (CorpusCommunication *com, corpus->communications()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
 
         // Sparse one-dimensional model of key-down events, adjusted for subject RT
         sv_samplerate_t sampleRate = 16000;
-        SparseOneDimensionalModel *modelInstants = new SparseOneDimensionalModel(sampleRate, 1);
+        QScopedPointer<SparseOneDimensionalModel> modelInstants(new SparseOneDimensionalModel(sampleRate, 1));
         RealTime tMax;
         int totalAnnotators = 0;
+        QStringList subjectIDs;
+        // Select subjects (randomly up to maxNumberOfSubjects).
         foreach (QString subjectID, tiers.keys()) {
+            if (subjectID.isEmpty()) continue;
             QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
-            IntervalTier *tier_tapping = tiersSubj->getIntervalTierByName("tappingAdj");
+            if (!tiersSubj->tierNames().contains("tappingAdj")) continue;
+            subjectIDs << subjectID;
+        }
+        if (maxNumberOfSubjects > 0)  {
+            while (subjectIDs.count() > maxNumberOfSubjects) {
+                subjectIDs.removeAt(qrand() % subjectIDs.count());
+            }
+        }
+        qDebug() << com->ID() << " with " << subjectIDs.count() << " subjects: " << subjectIDs.join(", ");
+
+        foreach (QString subjectID, subjectIDs) {
+            QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
+            QPointer<IntervalTier> tier_tapping = tiersSubj->getIntervalTierByName("tappingAdj");
             if (!tier_tapping) continue;
+            if (subjectID.isEmpty()) continue;
+            if (tier_tapping->countItems() == 1) continue; // The subject did not tap (not a single time) on this sample
             if (tier_tapping->tMax() > tMax) tMax = tier_tapping->tMax();
             totalAnnotators++;
             foreach(Interval *intv, tier_tapping->intervals()) {
@@ -407,6 +443,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             previousFrame = frame;
             for (SparseOneDimensionalModel::PointList::const_iterator i = leftPPBs.end(); i != leftPPBs.begin(); --i) {
                 const SparseOneDimensionalModel::Point &p(*i);
+                if (p.label.isEmpty()) continue;
                 if (p.frame > frame) continue;
                 if (p.frame < groupingFrame0) break;
                 if (previousFrame -  p.frame > groupingDistanceLimitF) break;
@@ -418,6 +455,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             previousFrame = frame;
             for (SparseOneDimensionalModel::PointList::const_iterator i = rightPPBs.begin(); i != rightPPBs.end(); ++i) {
                 const SparseOneDimensionalModel::Point &p(*i);
+                if (p.label.isEmpty()) continue;
                 if (p.frame <= frame) continue;
                 if (p.frame > groupingFrame1) break;
                 if (p.frame - previousFrame > groupingDistanceLimitF) break;
@@ -432,12 +470,13 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             bool isFirst = true;
             for (SparseOneDimensionalModel::PointList::const_iterator i = PPBs.begin(); i != PPBs.end(); ++i) {
                 const SparseOneDimensionalModel::Point &p(*i);
+                if (p.label.isEmpty()) { qDebug() << "empty label" << com->ID() << p.frame; continue; }
                 RealTime t = RealTime::frame2RealTime(p.frame, sampleRate);
                 if (isFirst) { groupFirstPPB = t; isFirst = false; }
                 if (!groupSubjectsHavingAnnotated.contains(p.label)) {
+                    CorpusSpeaker *spk = corpus->speaker(p.label);
                     groupSubjectsHavingAnnotated << p.label;
                     groupTimesAdj << QString("%1").arg(t.toDouble());
-                    CorpusSpeaker *spk = corpus->speaker(p.label);
                     RealTime orig = t + RealTime::fromSeconds(spk->property("drt_avg").toDouble());
                     groupTimesOrig << QString("%1").arg(orig.toDouble());
                     if (groupLastPPB < t) groupLastPPB = t;
@@ -452,6 +491,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             SparseOneDimensionalModel::PointList windowPPBs = modelInstants->getPoints(slidingFrame0, slidingFrame1);
             for (SparseOneDimensionalModel::PointList::const_iterator i = windowPPBs.begin(); i != windowPPBs.end(); ++i) {
                 const SparseOneDimensionalModel::Point &p(*i);
+                if (p.label.isEmpty()) continue;
                 if (p.frame < slidingFrame0) continue;
                 if (p.frame > slidingFrame1) continue;
                 if (!slidingSubjectsHavingAnnotated.contains(p.label)) {
@@ -459,6 +499,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
                     slidingCount++;
                 }
             }
+
             // 3. Update values
             com->setProperty("totalAnnotators", totalAnnotators);
             double force = ((double)slidingCount) / ((double)totalAnnotators);
@@ -471,7 +512,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             sp->setAttribute("timesAdj", groupTimesAdj.join("|"));
             smoothPoints << sp;
         }
-        PointTier *tier_smooth = new PointTier("smooth", smoothPoints, RealTime(0,0), tMax);
+        QScopedPointer<PointTier> tier_smooth(new PointTier("smooth", smoothPoints, RealTime(0,0), tMax));
 
         // Calculate local maxima
         QList<Point *> maxima;
@@ -498,8 +539,8 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus)
             p->setAttribute("localMax", true);
         }
 
-        corpus->datastoreAnnotations()->saveTier(com->ID(), "smooth", tier_smooth);
-        qDebug() << com->ID();
+        corpus->datastoreAnnotations()->saveTier(com->ID(), "smooth", tier_smooth.data());
+        qDeleteAll(tiers);
     }
     corpus->save(); // make sure you save the total annotators data!
 }
@@ -550,7 +591,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus)
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
         QPointer<AnnotationTierGroup> tiersSmooth = tiers.value("smooth");
         if (!tiersSmooth) continue;
-        PointTier *tier_smooth = tiersSmooth->getPointTierByName("smooth");
+        QPointer<PointTier> tier_smooth = tiersSmooth->getPointTierByName("smooth");
         if (!tier_smooth) continue;
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
@@ -574,7 +615,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus)
                 continue; // (secondary speakers, not analysed)
             }
 
-            IntervalTier *tier_tok_min = tiersSpk->getIntervalTierByName("tok_min");
+            QPointer<IntervalTier> tier_tok_min = tiersSpk->getIntervalTierByName("tok_min");
             if (!tier_tok_min) continue;
 
             // For each syllable, mark which is the corresponding "last syll of word"
@@ -585,13 +626,22 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus)
                     lastSyllables << ((last_syll < 0) ? 0 : last_syll);
                     last_syll++;
                 } else {
-                    int prev_last_syll = last_syll;
-                    last_syll = tier_syll->intervalIndexAtTime(tok_min->tMax() - RealTime(0, 10));
-                    for (int i = prev_last_syll; i < last_syll; ++i) lastSyllables << last_syll;
+                    Interval *syllAtRightBoundaryOfToken = tier_syll->intervalAtTime(tok_min->tMax() - RealTime(0, 10));
+                    if (syllAtRightBoundaryOfToken->tMax() == tok_min->tMax()) {
+                        int prev_last_syll = last_syll;
+                        last_syll = tier_syll->intervalIndexAtTime(tok_min->tMax() - RealTime(0, 10));
+                        for (int i = prev_last_syll; i < last_syll; ++i) lastSyllables << last_syll;
+                    }
+                    // otherwise, enchainement, continue to next word
                 }
             }
             if (lastSyllables.count() != tier_syll->count()) {
                 continue; // and investiage
+            }
+            // Add an attribute to "last syllables" indicating that they are a potential PPB site
+            for (int i = 0; i < tier_syll->count(); ++i) {
+                if (lastSyllables.at(i) == i)
+                    tier_syll->interval(i)->setAttribute("potentialBoundarySite", true);
             }
 
             // Go through local maxima and attribute PPB groups to syllables
@@ -624,26 +674,34 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus)
             foreach (int syllIndex, assignments.keys()) {
                 QList<int> groups = assignments.value(syllIndex);
                 QMap<RealTime, PerceivedBoundary> merged;
+                QList<QString> mergedSubjectIDs;
                 foreach (int spIndex, groups) {
                     QList<PerceivedBoundary> group = groupFromSP(tier_smooth->point(spIndex));
                     foreach (PerceivedBoundary PPB, group) {
-                        if (!merged.contains(PPB.timeAdj)) {
+                        if (!mergedSubjectIDs.contains(PPB.subject)) {
                             merged.insert(PPB.timeAdj, PPB);
+                            mergedSubjectIDs << PPB.subject;
+                        } else {
+                            qDebug() << "Avoided counting tapping by the same subject twice " << com->ID() << " syll index " << syllIndex;
                         }
                     }
                 }
                 QStringList subjects, timesAdj, timesOrig;
                 foreach (PerceivedBoundary PPB, merged) {
-                    subjects << PPB.subject;
-                    timesAdj << QString("%1").arg(PPB.timeAdj.toDouble());
-                    timesOrig << QString("%1").arg(PPB.timeOrig.toDouble());
+                    if (!subjects.contains(PPB.subject)) {
+                        subjects << PPB.subject;
+                        timesAdj << QString("%1").arg(PPB.timeAdj.toDouble());
+                        timesOrig << QString("%1").arg(PPB.timeOrig.toDouble());
+                    } else {
+                        qDebug() << "Error subject included twice " << com->ID() << " syll index " << syllIndex << " subject " << PPB.subject;
+                    }
                 }
                 int totalAnnotators = com->property("totalAnnotators").toInt();
                 double force = ((double)(merged.count())) / ((double)totalAnnotators);
                 Interval *syll = tier_syll->interval(syllIndex);
 
                 if (force > 1.0) {
-                    qDebug() << com->ID() << " " << force;
+                    qDebug() << "Error force > 1 at " << com->ID() << " syll index " << syllIndex << " force " << force;
                     continue;
                 }
 
@@ -660,6 +718,54 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus)
         qDebug() << com->ID();
     }
 }
+
+void PBExpe::analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations)
+{
+    if (!corpus) return;
+    QMap<QString, RealValueList > syllBoundaryForces;
+
+    for (int iter = 0; iter < iterations; ++iter) {
+        qDebug() << "ITERATION " << iter << "==========================================================";
+        analysisCalculateSmoothedTappingModel(corpus, maxNumberOfSubjects);
+        analysisAttributeTappingToSyllablesLocalMaxima(corpus);
+
+        foreach (CorpusCommunication *com, corpus->communications()) {
+            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+            foreach (QString speakerID, tiers.keys()) {
+                QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+                IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+                if (!tier_syll) continue;
+                for (int syllNo = 0; syllNo < tier_syll->countItems(); ++syllNo) {
+                    Interval *syll = tier_syll->interval(syllNo);
+                    if (!syll->attribute("potentialBoundarySite").toBool()) continue;
+                    QString ID = QString("%1\t%2\t%3\t%4")
+                            .arg(com->ID())
+                            .arg(syllNo, 3, 10, QChar('0'))
+                            .arg(QString(syll->text()).replace("\t", "").replace("\n", ""))
+                            .arg(QString::number(syll->tMin().toDouble()));
+                    syllBoundaryForces[ID].append(syll->attribute("boundaryForce").toDouble());
+                }
+            }
+            qDeleteAll(tiers);
+        }
+    }
+    // Save results
+    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/";
+    QFile file(path + QString("convergence_%1_%2.txt").arg(maxNumberOfSubjects).arg(iterations));
+    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    foreach (QString ID, syllBoundaryForces.keys()) {
+        out << ID << "\t";
+        out << QString::number(syllBoundaryForces[ID].mean(), 'f', 6) << "\t";
+        out << QString::number(syllBoundaryForces[ID].stddev(), 'f', 6) << "\t";
+        foreach (double f, syllBoundaryForces[ID]) {
+            out << QString::number(f, 'f', 3) << ";";
+        }
+        out << "\n";
+    }
+}
+
 
 void PBExpe::analysisCalculateAverageDelay(Corpus *corpus)
 {
@@ -737,15 +843,19 @@ void PBExpe::analysisCalculateCoverage(Corpus *corpus)
     qDebug() << AllPPBs.keys().count();
 }
 
-void PBExpe::analysisFeaturesForModelling(Corpus *corpus)
+// ====================================================================================================================
+// 4. Create feature files for statistical analyses
+// ====================================================================================================================
+
+void PBExpe::statExtractFeaturesForModelling(Corpus *corpus)
 {
     if (!corpus) return;
     QStringList ppbAttributeIDs;
     ppbAttributeIDs << "boundaryDelay" << "boundaryDispersion" << "boundaryForce" <<
-                       "boundaryFirstPPB" << "boundaryLastPPB";
+                       "boundaryFirstPPB" << "boundaryLastPPB" << "promise_pos";
     // "boundarySubjects" << "boundaryTimesAdj" << "boundaryTimesOrig"
 
-    QFile file("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/features.txt");
+    QFile file("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/features.txt");
     if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream out(&file);
     out.setCodec("UTF-8");
@@ -770,7 +880,7 @@ void PBExpe::analysisFeaturesForModelling(Corpus *corpus)
             QList<int> ppbSyllables;
             for (int i = 0; i < tier_syll->countItems(); ++i) {
                 Interval *syll = tier_syll->interval(i);
-                if (syll->attribute("boundaryForce").toDouble() == 0.0) continue;
+                if (syll->attribute("boundaryForce").toDouble() <= 0.01) continue;
                 ppbSyllables << i;
             }
             ProsodicBoundaries::analyseBoundaryList(out, corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
@@ -782,4 +892,226 @@ void PBExpe::analysisFeaturesForModelling(Corpus *corpus)
     file.close();
 }
 
+double getCohenKappa(const QList<bool> &annotations1, const QList<bool> &annotations2)
+{
+    int n00 = 0, n01 = 0, n10 = 0, n11 = 0;
+    if (annotations1.count() != annotations2.count()) return -1.0;
+    for (int i = 0; i < annotations1.count(); ++i) {
+        bool label1 = annotations1.at(i);
+        bool label2 = annotations2.at(i);
+        //                   annotator1
+        //                   true      false
+        // annotator2 true    n00       n01
+        //            false   n10       n11
+        if      ((label1 == true)  && (label2 == true))  n00++;
+        else if ((label1 == false) && (label2 == true))  n01++;
+        else if ((label1 == true)  && (label2 == false)) n10++;
+        else if ((label1 == false) && (label2 == false)) n11++;
+    }
+    double Pa = (double(n00 + n11)) / (double(n00+n01+n10+n11));
+    double Pe = (double((n00+n10)*(n00+n01)+(n10+n11)*(n01+n11))) / (double(n00+n01+n10+n11)) / (double(n00+n01+n10+n11));
+    double k = (Pa - Pe) / (1 - Pe);
+    return k;
+}
 
+void PBExpe::statInterAnnotatorAgreement(Corpus *corpus)
+{
+    QFile fileCohen("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/kappaScoresCohen.txt");
+    QFile fileFleiss("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/kappaScoresFleiss.txt");
+    if ( !fileCohen.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    if ( !fileFleiss.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream outCohen(&fileCohen);
+    QTextStream outFleiss(&fileFleiss);
+    outCohen.setCodec("UTF-8");
+    outFleiss.setCodec("UTF-8");
+    outCohen << "stimulusID\t" << "stimulusType\t" << "annotator1\t" << "annotator2\t" << "kappa\n";
+    outFleiss << "stimulusID\t" << "stimulusType\t" << "kappa\n";
+
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        QString id = com->ID();
+        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+
+        // Get list of subjects who tapped during this sample
+        QList<QString> annotatorsForSample = corpus->datastoreAnnotations()->getSpeakersActiveInLevel(com->ID(), "tapping");
+        qDebug() << com->ID() << " " << annotatorsForSample.count();
+        // To calculate Cohen's kappa we need all the annotations by Subject ID -> (Syllable ID, Perceived as boundary?)
+        QHash<QString, QList<bool> > boundaryAnnotations;
+        foreach (QString subjectID, annotatorsForSample) {
+            boundaryAnnotations.insert(subjectID, QList<bool>());
+        }
+        // To calculcate Fleiss' kappa we need the number of subjects who annotated each syllable as being
+        // a boundary and the number of subjects who annotated the same syllable as not a boudnary.
+        QList<QPair<int, int> > boundaryAnnotationsBySyllable;
+        // Cohen kappa scores for each pair of annotators in this sample
+        QHash<QPair<QString, QString>, double> kappaScoresForSample;
+
+        // Process each syllable and categorise only those that are potential prosodic boundary sites.
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+            if (!tier_syll) continue;
+            foreach (Interval *syll, tier_syll->intervals()) {
+                if (!syll->attribute("potentialBoundarySite").toBool()) continue;
+                QStringList subjectsPPB = syll->attribute("boundarySubjects").toString().split("|");
+                int numberOfSubjectsPB0 = 0, numberOfSubjectsPB1 = 0;
+                foreach (QString subjectID, annotatorsForSample) {
+                    if (subjectsPPB.contains(subjectID)) {
+                        boundaryAnnotations[subjectID] << true;
+                        ++numberOfSubjectsPB1;
+                    }
+                    else {
+                        boundaryAnnotations[subjectID] << false;
+                        ++numberOfSubjectsPB0;
+                    }
+                }
+                if (numberOfSubjectsPB0 + numberOfSubjectsPB1 != annotatorsForSample.count()) {
+                    qDebug() << "Error " << annotatorsForSample.count() << " " << numberOfSubjectsPB0 << " " << numberOfSubjectsPB1;
+                }
+                boundaryAnnotationsBySyllable << QPair<int, int>(numberOfSubjectsPB0, numberOfSubjectsPB1);
+            }
+        }
+
+        // Calculate Cohen's kappa for each pair of annotators
+        QPair<QString, QString> annotatorPair;
+        foreach (QString annotator1, annotatorsForSample) {
+            foreach (QString annotator2, annotatorsForSample) {
+                if (annotator1 == annotator2)
+                    continue;
+                if (kappaScoresForSample.contains(QPair<QString, QString>(annotator2, annotator1)))
+                    continue;
+                annotatorPair = QPair<QString, QString>(annotator1, annotator2);
+                double k = getCohenKappa(boundaryAnnotations[annotator1], boundaryAnnotations[annotator2]);
+                if (k > 1.0) qDebug() << com->ID() << " " << annotator1 << " " << annotator2 << " " << k;
+                kappaScoresForSample.insert(annotatorPair, k);
+            }
+        }
+
+        // Calculcate Fleiss' kappa for the sample
+        int nCases = boundaryAnnotationsBySyllable.count();
+        int nAnnotators = annotatorsForSample.count();
+        double totalP = 0.0, meanP = 0.0, meanPe = 0.0;
+        int totalPB0 = 0, totalPB1 = 0;
+        double marginalPB0 = 0.0, marginalPB1 = 0.0;
+
+        QPair<int, int> x;
+        foreach (x, boundaryAnnotationsBySyllable) {
+            totalPB0 += x.first;
+            totalPB1 += x.second;
+            if (x.first + x.second != annotatorsForSample.count()) {
+                qDebug() << "Error";
+            }
+            double P = ((double)(x.first * x.first + x.second * x.second - nAnnotators)) /
+                       ((double)(nAnnotators * (nAnnotators - 1)));
+            totalP = totalP + P;
+            // DEBUG: outFleiss << com->ID() << "\t" << x.first << "\t" << x.second << "\t" << P << "\n";
+        }
+        marginalPB0 = ((double)totalPB0) / ((double)(nCases * nAnnotators));
+        marginalPB1 = ((double)totalPB1) / ((double)(nCases * nAnnotators));
+
+        meanP = totalP / ((double)nCases);
+        meanPe = marginalPB0 * marginalPB0 + marginalPB1 * marginalPB1;
+        double fleissKappa = (meanP - meanPe) / (1.0 - meanPe);
+        // DEBUG: outFleiss << com->ID() << "\t" << marginalPB0 << "\t" << marginalPB1 << "\t" << fleissKappa << "\n\n";
+
+        foreach (annotatorPair, kappaScoresForSample.keys()) {
+            outCohen << com->ID() << "\t" << com->ID().right(1) << "\t";
+            outCohen << annotatorPair.first << "\t";
+            outCohen << annotatorPair.second << "\t";
+            outCohen << kappaScoresForSample.value(annotatorPair) << "\n";
+        }
+        outFleiss << com->ID() << "\t" << com->ID().right(1) << "\t";
+        outFleiss << fleissKappa << "\n";
+    }
+
+    fileCohen.close();
+    fileFleiss.close();
+}
+
+void PBExpe::statCorrespondanceNSandMS(Corpus *corpus)
+{
+    if (!corpus) return;
+    QStringList ppbAttributeIDs;
+    ppbAttributeIDs << "promise_pos" << "boundaryDelay" << "boundaryDispersion" << "boundaryForce" <<
+                       "boundaryFirstPPB" << "boundaryLastPPB";
+    // "boundarySubjects" << "boundaryTimesAdj" << "boundaryTimesOrig"
+
+    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/";
+    QFile file(path + "expeall_correspondance.txt");
+    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+
+    // Print header row
+    QStringList fieldLabels;
+    fieldLabels << "stimulusID" << "stimulusType" << "speaker" << "syll_ID" << "syll_tmin" << "syll";
+    fieldLabels << "expertBoundaryType" << "expertContour" << "expertBoundary";
+    fieldLabels << "durNextPause" << "logdurNextPause" << "logdurNextPauseZ";
+    fieldLabels << "durSyllRel20" << "durSyllRel30" << "durSyllRel40" << "durSyllRel50";
+    fieldLabels << "logdurSyllRel20" << "logdurSyllRel30" << "logdurSyllRel40" << "logdurSyllRel50";
+    fieldLabels << "f0meanSyllRel20" << "f0meanSyllRel30" << "f0meanSyllRel40" << "f0meanSyllRel50";
+    fieldLabels << "intrasyllab_up" << "intrasyllab_down" << "trajectory";
+    fieldLabels << "tok_mwu" << "sequence" << "rection" << "syntacticBoundaryType";
+    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex" << "promise_pos";
+    fieldLabels << "boundaryDelay" << "boundaryDispersion" << "boundaryForce" << "boundaryFirstPPB" << "boundaryLastPPB";
+    QString headerRow;
+    foreach (QString fieldLabel, fieldLabels) {
+        headerRow = headerRow.append(QString("ns_%1\tms_%1\t").arg(fieldLabel));
+    }
+    headerRow.chop(1);
+    out << headerRow << "\n";
+
+    QList<QPointer<CorpusBookmark> > bookmarks;
+
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        QString id = com->ID();
+        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        if (id.endsWith("S")) continue;
+
+        QString idNS = id; QString idMS = id.remove("N").append("S");
+        QList<QString> featuresNS, featuresMS;
+
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+            if (!tier_syll) continue;
+            QList<int> ppbSyllables;
+            for (int i = 0; i < tier_syll->countItems(); ++i) {
+                Interval *syll = tier_syll->interval(i);
+                if (!syll->attribute("potentialBoundarySite").toBool()) continue;
+                ppbSyllables << i;
+            }
+            featuresNS = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, idNS, ppbSyllables, ppbAttributeIDs);
+            featuresMS = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, idMS, ppbSyllables, ppbAttributeIDs);
+            for (int i = 0; i < featuresNS.count(); ++i) {
+                QStringList fieldsNS = featuresNS.at(i).split("\t");
+                QStringList fieldsMS = featuresMS.at(i).split("\t");
+                QString line;
+                for (int j = 0; j < fieldsNS.count(); ++j) {
+                    line = line.append(QString("%1\t%2\t").arg(fieldsNS.at(j)).arg(fieldsMS.at(j)));
+                }
+                line.chop(1);
+                out << line << "\n";
+                // if intersting case, add it to bookmarks
+                double forceNS = QString(fieldsNS.at(37)).replace(",", ".").toDouble();
+                double forceMS = QString(fieldsMS.at(37)).replace(",", ".").toDouble();
+                RealTime t = RealTime::fromSeconds(QString(fieldsNS.at(4)).replace(",", ".").toDouble());
+                if ((forceNS - forceMS > 0.40) || (forceMS - forceNS > 0.40)) {
+                    QString name = QString("NS: %1 MS: %2")
+                            .arg(QString::number(forceNS * 100.0, 'f', 0))
+                            .arg(QString::number(forceMS * 100.0, 'f', 0));
+                    bookmarks << new CorpusBookmark(corpus->ID(), idNS, idNS, t, name);
+                    bookmarks << new CorpusBookmark(corpus->ID(), idMS, idMS, t, name);
+                }
+            }
+        }
+        qDeleteAll(tiers);
+        qDebug() << idNS << "<>" << idMS;
+    }
+    file.close();
+
+    XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, path + "bookmarks_divergences.xml");
+    qDeleteAll(bookmarks);
+
+}
