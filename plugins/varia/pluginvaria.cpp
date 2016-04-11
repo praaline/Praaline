@@ -315,10 +315,11 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    PBExpe::analysisCalculateDeltaRT(corpus);
 //    PBExpe::analysisCreateAdjustedTappingTier(corpus);
 
-    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
-    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
-    PBExpe::analysisCalculateAverageDelay(corpus);
+//    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
+//    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
+//    PBExpe::analysisCalculateAverageDelay(corpus);
 //    PBExpe::analysisCalculateCoverage(corpus);
+//    PBExpe::analysisCheckBoundaryRightAfterPause(corpus);
 
 //    PBExpe::analysisStabilisation(corpus, 10, 100);
 //    PBExpe::analysisStabilisation(corpus, 20, 100);
@@ -328,8 +329,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 
 
 //    PBExpe::statExtractFeaturesForModelling(corpus);
-    // PBExpe::statInterAnnotatorAgreement(corpus);
-    // PBExpe::statCorrespondanceNSandMS(corpus);
+//    PBExpe::statInterAnnotatorAgreement(corpus);
+//    PBExpe::statCorrespondanceNSandMS(corpus);
 
 
 //    QString path = "C:/Users/George/Downloads/Rhap_meta";
@@ -345,23 +346,23 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    chunk(corpus, communications);
 //    return;
 
-//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-//    foreach (QPointer<CorpusCommunication> com, communications) {
-//        if (!com) continue;
-//        if (!com->hasRecordings()) continue;
-//        QPointer<CorpusRecording> rec = com->recordings().first();
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-//            if (!annot) continue;
-//            QString annotationID = annot->ID();
-//            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-//            foreach (QString speakerID, tiersAll.keys()) {
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-//                if (!tiers) continue;
-//                PraatTextGrid::save(corpus->basePath() + "/" + com->ID() + ".TextGrid", tiers);
-//            }
-//            qDeleteAll(tiersAll);
-//        }
-//    }
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            if (!rec) continue;
+            QString annotationID = rec->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID, QStringList() << "auto_segment");
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                tiers->renameTier("auto_segment", "ortho");
+                QString filename = QString(corpus->basePath() + "/" + rec->filename()).replace(".wav", ".TextGrid");
+                PraatTextGrid::save(filename, tiers);
+            }
+            qDeleteAll(tiersAll);
+        }
+    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

@@ -39,10 +39,15 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
 {
     QProcess sox;
     // DIRECTORY:
+    QString soxPath;
+#ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
-    QString soxPath = appPath + "/tools/sox/";
+    soxPath = appPath + "/tools/sox/";
     sox.setWorkingDirectory(soxPath);
-    sox.start(soxPath + "sox.exe" , QStringList() <<
+#else
+    soxPath = "/usr/bin/";
+#endif
+    sox.start(soxPath + "sox" , QStringList() <<
               "--i" << filename);
     if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
         return false;

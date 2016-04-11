@@ -12,6 +12,23 @@ DEPENDPATH += . .. ../.. ../../pncore
 
 TARGET = praaline-asr
 
+# Linking dynamically with PocketSphinx
+win32 {
+    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+}
+unix {
+    POCKETSPHINX_BASE_PATH = /usr/local
+}
+INCLUDEPATH += $${POCKETSPHINX_BASE_PATH}/include/pocketsphinx \
+               $${POCKETSPHINX_BASE_PATH}/include/sphinxbase \
+               $${POCKETSPHINX_BASE_PATH}/include/
+win32 {
+    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
+}
+unix {
+    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
+}
+
 HEADERS += \
     SpeechToken.h \
     SpeechRecognitionRecipes.h \
@@ -34,8 +51,9 @@ HEADERS += \
     phonetiser/DictionaryPhonetiser.h \
     phonetiser/AbstractPhonetiser.h \
     syllabifier/AbstractSyllabifier.h \
-    sphinx/SphinxOnlineRecogniser.h \
-    sphinx/SphinxConfiguration.h
+    sphinx/SphinxConfiguration.h \
+    sphinx/SphinxOfflineRecogniser.h \
+    sphinx/SphinxAcousticModelTrainer.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -50,8 +68,9 @@ SOURCES += \
     phonetiser/RuleBasedPhonetiser.cpp \
     phonetiser/ExternalPhonetiser.cpp \
     phonetiser/DictionaryPhonetiser.cpp \
-    sphinx/SphinxOnlineRecogniser.cpp \
-    sphinx/SphinxConfiguration.cpp
+    sphinx/SphinxConfiguration.cpp \
+    sphinx/SphinxOfflineRecogniser.cpp \
+    sphinx/SphinxAcousticModelTrainer.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro

@@ -67,6 +67,11 @@ LIBS +=  \
         $$LIBS
 PRE_TARGETDEPS += \
         ../pngui/$${COMPONENTSPATH}/libpngui.a \
+        ../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
+        ../pnlib/crf/$${COMPONENTSPATH}/libpraaline-crf.a \
+        ../pnlib/diff/$${COMPONENTSPATH}/libpraaline-diff.a \
+        ../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a \
+        ../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a \
         ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 # Will build the final executable in the main project directory.

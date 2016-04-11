@@ -14,8 +14,10 @@ TARGET = praaline-mediautil
 
 HEADERS += \
     SoundInfo.h \
-    AudioSegmenter.h
+    AudioSegmenter.h \
+    SoxExternal.h
 
 SOURCES += \
     SoundInfo.cpp \
-    AudioSegmenter.cpp
+    AudioSegmenter.cpp \
+    SoxExternal.cpp

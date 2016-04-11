@@ -46,8 +46,13 @@ bool SphinxFeatureExtractor::batchCreateSphinxMFC(const QString &basePath, QStri
     fileCtl.close();
     // Launch Sphinx feature extraction
     // sphinx_fe -argfile french_f0/feat.params -samprate 16000 -c inputfile.fileids -di . -do . -ei wav -eo mfc -mswav yes
+    QString sphinxPath;
+#ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
-    QString sphinxPath = appPath + "/plugins/aligner/sphinx/";
+    sphinxPath = appPath + "/plugins/aligner/sphinx/";
+#else
+    sphinxPath = "/usr/local/bin/";
+#endif
     QProcess sphinxFE;
     sphinxFE.setWorkingDirectory(sphinxPath);
     QStringList sphinxFEparams;

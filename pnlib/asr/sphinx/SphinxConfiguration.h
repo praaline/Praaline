@@ -9,6 +9,8 @@ public:
     SphinxConfiguration();
     SphinxConfiguration(const SphinxConfiguration &other);
 
+    void setConfig(const SphinxConfiguration &config);
+
     QString name() const
     { return m_name; }
     void setName(const QString &name)

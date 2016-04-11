@@ -27,6 +27,8 @@
 #include "pnlib/asr/SpeechRecognitionRecipes.h"
 #include "pnlib/featextract/OpenSmileVAD.h"
 
+#include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
+
 #include "pncore/interfaces/praat/praattextgrid.h"
 
 using namespace Qtilities::ExtensionSystem;
@@ -185,7 +187,10 @@ void Praaline::Plugins::Aligner::PluginAligner::futureResultReadyAt(int index)
 void Praaline::Plugins::Aligner::PluginAligner::futureProgressValueChanged(int progressValue)
 {
     qDebug() << progressValue;
-    emit madeProgress(progressValue * 100 / d->watcher.progressMaximum());
+    if (d->watcher.progressMaximum() > 0)
+        emit madeProgress(progressValue * 100 / d->watcher.progressMaximum());
+    else
+        emit madeProgress(100);
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
@@ -294,6 +299,8 @@ struct SphinxAutomaticTranscriptionStep
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
+        int id = com->ID().left(3).right(2).toInt();
+        if (id > 10) return QString("%1 ok").arg(id);
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             bool result = SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(
                         m_corpus, com, rec, rec->ID(), "auto_segment", "transcription",
@@ -346,7 +353,37 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
                                              d->sphinxPronunciationDictionary, d->sphinxMLLRMatrix));
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
+
+//        SphinxOfflineRecogniser sphinx;
+//        SphinxConfiguration config;
+//        QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
+//        config.setDirectoryAcousticModel(sphinxPath + "model/hmm/french_f0");
+//        config.setFilenameLanguageModel(sphinxPath + "model/lm/french_f0/french3g62K.lm.bin");
+//        config.setFilenamePronunciationDictionary(sphinxPath + "model/lm/french_f0/frenchWords62K.dic");
+//        sphinx.initialize(config);
+//        foreach (QPointer<CorpusCommunication> com, communications) {
+//            if (!com) continue;
+//            foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//                QString filenameMFCC = QString(rec->baseMediaPath() + "/" + rec->filename()).replace(".wav", ".16k.mfc");
+//                sphinx.openFeatureFile(filenameMFCC);
+//                QScopedPointer<IntervalTier> autoseg(qobject_cast<IntervalTier *>(corpus->datastoreAnnotations()->getTier(rec->ID(), "", "auto_segment")));
+//                if (!autoseg) continue;
+//                for (int i = 0; i < autoseg->countItems(); ++i) {
+//                    Interval *segment = autoseg->interval(i);
+//                    qint64 frameStart = segment->tMin().toNanoseconds() / 10000000L - 5;
+//                    if (frameStart < 0) frameStart = 0;
+//                    qint64 frameEnd = segment->tMax().toNanoseconds() / 10000000L;
+//                    if (i < autoseg->countItems() - 1)
+//                        frameEnd = frameEnd + 5;
+//                    else
+//                        frameEnd = frameEnd - 5;
+//                    sphinx.decode(frameStart, frameEnd);
+//                    printMessage(QString("%1 %2").arg(i).arg(sphinx.getUtterance()));
+//                }
+//            }
+//        }
     }
+
     if (d->commandLongSoundAligner) {
         QPointer<LongSoundAligner> LSA = new LongSoundAligner();
         LSA->createRecognitionLevel(corpus, 0);

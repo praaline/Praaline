@@ -31,6 +31,7 @@ public:
     static void analysisCalculateAverageDelay(Corpus *corpus);
     static void analysisCalculateCoverage(Corpus *corpus);
     static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations);
+    static void analysisCheckBoundaryRightAfterPause(Corpus *corpus);
 
     // Statistics
     static void statExtractFeaturesForModelling(Corpus *corpus);
