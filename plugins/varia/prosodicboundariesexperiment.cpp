@@ -864,15 +864,17 @@ void PBExpe::analysisCalculateCoverage(Corpus *corpus)
 // 4. Create feature files for statistical analyses
 // ====================================================================================================================
 
-void PBExpe::statExtractFeaturesForModelling(Corpus *corpus)
+void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, bool multilevel, bool includePotential)
 {
     if (!corpus) return;
     QStringList ppbAttributeIDs;
     ppbAttributeIDs << "boundaryDelay" << "boundaryDispersion" << "boundaryForce" <<
                        "boundaryFirstPPB" << "boundaryLastPPB" << "promise_pos";
-    // "boundarySubjects" << "boundaryTimesAdj" << "boundaryTimesOrig"
+    if (multilevel) {
+        ppbAttributeIDs << "boundarySubjects" << "boundaryTimesAdj" << "boundaryTimesOrig";
+    }
 
-    QFile file("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/expeall_features.txt");
+    QFile file("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/multilevel.txt");
     if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream out(&file);
     out.setCodec("UTF-8");
@@ -884,7 +886,12 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus)
            "f0meanSyllRel20\tf0meanSyllRel30\tf0meanSyllRel40\tf0meanSyllRel50\t"
            "intrasyllab_up\tintrasyllab_down\ttrajectory\t"
            "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\t"
-           "boundaryDelay\tboundaryDispersion\tboundaryForce\tboundaryFirstPPB\tboundaryLastPPB\tpromise_pos\n";
+           "boundaryDelay\tboundaryDispersion\tboundaryForce\tboundaryFirstPPB\tboundaryLastPPB\tpromise_pos";
+    if (multilevel) {
+        out << "\tsubjectID\tresponseTimeAdj\tresponseTimeOrig\n";
+    } else {
+        out << "\n";
+    }
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
@@ -898,11 +905,30 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus)
             QList<int> ppbSyllables;
             for (int i = 0; i < tier_syll->countItems(); ++i) {
                 Interval *syll = tier_syll->interval(i);
-                if (syll->attribute("boundaryForce").toDouble() <= 0.01) continue;
-                ppbSyllables << i;
+                if (includePotential) {
+                    if (syll->attribute("potentialBoundarySite").toBool()) ppbSyllables << i;
+                } else {
+                    if (syll->attribute("boundaryForce").toDouble() >= 0.01) ppbSyllables << i;
+                }
             }
-            if (!ppbSyllables.isEmpty())
-                ProsodicBoundaries::analyseBoundaryList(out, corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
+            if (ppbSyllables.isEmpty()) continue;
+            QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
+            if (!multilevel) {
+                foreach (QString line, results) out << line < "\n";
+            } else {
+                foreach (QString line, results) {
+                    QStringList fields = line.split("\t");
+                    QStringList subjectsPPB = fields.at(fields.count() - 3).split("|");
+                    QStringList responseTimesAdj = fields.at(fields.count() - 2).split("|");
+                    QStringList responseTimesOrig = fields.at(fields.count() - 1).split("|");
+                    for (int i = 0; i < subjectsPPB.count(); ++i) {
+                        out << fields.mid(fields.count() - 3).join("\t") << "\t";
+                        out << subjectsPPB.at(i) << "\t";
+                        out << responseTimesAdj.at(i) << "\t";
+                        out << responseTimesOrig.at(i) << "\n";
+                    }
+                }
+            }
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();

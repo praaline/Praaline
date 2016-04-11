@@ -34,7 +34,7 @@ public:
     static void analysisCheckBoundaryRightAfterPause(Corpus *corpus);
 
     // Statistics
-    static void statExtractFeaturesForModelling(Corpus *corpus);
+    static void statExtractFeaturesForModelling(Corpus *corpus, bool multilevel, bool includePotential);
     static void statInterAnnotatorAgreement(Corpus *corpus);
     static void statCorrespondanceNSandMS(Corpus *corpus);
 

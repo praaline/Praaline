@@ -328,7 +328,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    PBExpe::analysisStabilisation(corpus, 25, 100);
 
 
-//    PBExpe::statExtractFeaturesForModelling(corpus);
+    PBExpe::statExtractFeaturesForModelling(corpus, true, false);
 //    PBExpe::statInterAnnotatorAgreement(corpus);
 //    PBExpe::statCorrespondanceNSandMS(corpus);
 
