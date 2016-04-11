@@ -273,6 +273,10 @@ struct OpenSmileVADSegmentationStep
         static QMutex mutex;
         if (!com) return QString("%1\tis empty.").arg(com->ID());
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            int id = rec->ID().left(3).right(2).toInt();
+            if (id > 10) return QString("%1 ok").arg(id);
+            if (!rec->ID().contains("PASSENGER")) continue;
+
             IntervalTier *tier_utterances =
                     OpenSmileVAD::splitToUtterances(rec, RealTime::fromSeconds(0.250), RealTime::fromSeconds(0.250), "_", "");
             if (!tier_utterances) continue;
@@ -299,9 +303,11 @@ struct SphinxAutomaticTranscriptionStep
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        int id = com->ID().left(3).right(2).toInt();
-        if (id > 10) return QString("%1 ok").arg(id);
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            int id = rec->ID().left(3).right(2).toInt();
+            if (id > 10) return QString("%1 ok").arg(id);
+            if (!rec->ID().contains("PASSENGER")) continue;
+
             bool result = SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(
                         m_corpus, com, rec, rec->ID(), "auto_segment", "transcription",
                         m_sphinxAcousticModel, m_sphinxLanguageModel,
