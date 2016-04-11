@@ -41,6 +41,8 @@ public:
     void setFilenameMLLRMatrix(const QString &filenameMLLRMatrix)
     { m_filenameMLLRMatrix = filenameMLLRMatrix; }
 
+    static QString sphinxPath();
+    static QString defaultModelsPath();
 
 private:
     QString m_name;

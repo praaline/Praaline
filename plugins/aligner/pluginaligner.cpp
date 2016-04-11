@@ -341,8 +341,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
     }
     if (d->commandExtractFeatures) {
         SpeechRecognitionRecipes::Configuration config;
-        QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
-        config.sphinxHMModelPath = sphinxPath + "model/hmm/french_f0";
+        config.sphinxHMModelPath = SphinxConfiguration::defaultModelsPath() + "model/hmm/french_f0";
         // BATCH MODE (but UI unresponsive) SpeechRecognitionRecipes::batchCreateSphinxFeatureFiles(corpus, communications, config);
         d->future = QtConcurrent::mapped(communications, SphinxFeatureExtractionStep(corpus, config));
         d->watcher.setFuture(d->future);

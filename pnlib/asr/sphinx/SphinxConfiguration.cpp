@@ -1,3 +1,5 @@
+#include <QDir>
+#include <QCoreApplication>
 #include "SphinxConfiguration.h"
 
 SphinxConfiguration::SphinxConfiguration()
@@ -21,4 +23,30 @@ void SphinxConfiguration::setConfig(const SphinxConfiguration &config)
     m_filenameLanguageModel = config.filenameLanguageModel();
     m_filenamePronunciationDictionary = config.filenamePronunciationDictionary();
     m_filenameMLLRMatrix = config.filenameMLLRMatrix();
+}
+
+// static
+QString SphinxConfiguration::sphinxPath()
+{
+#ifdef Q_OS_WIN
+    QString appPath = QCoreApplication::applicationDirPath();
+    return appPath + "/plugins/aligner/sphinx/";
+#endif
+#ifdef Q_OS_MAC
+    return "/usr/local/bin/";
+#else
+    return "/usr/local/bin/";
+#endif
+}
+
+// static
+QString SphinxConfiguration::defaultModelsPath()
+{
+    QString appPath = QCoreApplication::applicationDirPath();
+#ifdef Q_OS_MAC
+    QDir dir(appPath);
+    dir.cdUp(); dir.cdUp(); dir.cdUp();
+    appPath = dir.absolutePath() + "/";
+#endif
+    return appPath + "/plugins/aligner/sphinx/";
 }

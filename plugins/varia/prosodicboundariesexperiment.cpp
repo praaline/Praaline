@@ -914,7 +914,7 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, bool multilevel, bo
             if (ppbSyllables.isEmpty()) continue;
             QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
             if (!multilevel) {
-                foreach (QString line, results) out << line < "\n";
+                foreach (QString line, results) out << line << "\n";
             } else {
                 foreach (QString line, results) {
                     QStringList fields = line.split("\t");

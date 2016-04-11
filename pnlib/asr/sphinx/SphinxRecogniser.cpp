@@ -11,6 +11,7 @@
 
 #include "pncore/corpus/corpus.h"
 
+#include "SphinxConfiguration.h"
 #include "SphinxSegmentation.h"
 #include "SphinxRecogniser.h"
 
@@ -37,11 +38,9 @@ struct SphinxRecogniserData {
 SphinxRecogniser::SphinxRecogniser(QObject *parent) :
     QObject(parent), d(new SphinxRecogniserData)
 {
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString sphinxPath = appPath + "/plugins/aligner/sphinx";
-    d->defaultAcousticModel = sphinxPath + "/model/hmm/french_f0";
-    d->defaultLanguageModel = sphinxPath + "/model/lm/french_f0/french3g62K.lm.bin";
-    d->defaultPronunciationDictionary = sphinxPath + "/model/lm/french_f0/frenchWords62K.dic";
+    d->defaultAcousticModel = SphinxConfiguration::defaultModelsPath() + "/model/hmm/french_f0";
+    d->defaultLanguageModel = SphinxConfiguration::defaultModelsPath() + "/model/lm/french_f0/french3g62K.lm.bin";
+    d->defaultPronunciationDictionary = SphinxConfiguration::defaultModelsPath() + "/model/lm/french_f0/frenchWords62K.dic";
     d->attributename_acoustic_model = "acoustic_model";
     d->attributename_language_model = "language_model";
     d->useMLLRMatrixFromAttribute = false;
@@ -175,13 +174,7 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
         if (QFile::exists(f)) filenameMLLRMatrix = f;
     }
 
-    QString sphinxPath;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    sphinxPath = appPath + "/plugins/aligner/sphinx/";
-#else
-    sphinxPath = "/usr/local/bin/";
-#endif
+    QString sphinxPath = SphinxConfiguration::sphinxPath();
     QProcess sphinx;
     sphinx.setWorkingDirectory(sphinxPath);
     QStringList sphinxParams;
