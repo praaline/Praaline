@@ -24,7 +24,7 @@
 
 TEMPLATE = lib
 TARGET = qscintilla2
-CONFIG += qt warn_off release thread exceptions staticlib debug_and_release
+CONFIG += qt warn_off release thread exceptions staticlib debug_and_release c++11
 INCLUDEPATH += . ../include ../lexlib ../src
 
 !CONFIG(staticlib) {
@@ -35,9 +35,9 @@ DEFINES += SCINTILLA_QT SCI_LEXER
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += widgets printsupport
 
-    greaterThan(QT_MINOR_VERSION, 1) {
+    #greaterThan(QT_MINOR_VERSION, 1) {
 	    macx:QT += macextras
-    }
+    #}
 
     # Work around QTBUG-39300.
     CONFIG -= android_install

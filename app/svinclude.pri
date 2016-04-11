@@ -17,7 +17,7 @@ exists(svconfig.pri) {
     }
     macx* {
         INCLUDEPATH += ../sv-dependency-builds/osx/include
-        LIBS += -L/Users/george/Develop/praaline/sv-dependency-builds/osx/lib
+        LIBS += -L/Users/george/Develop/Praaline/sv-dependency-builds/osx/lib
     }
 
     DEFINES += HAVE_BZ2 HAVE_FFTW3 HAVE_FFTW3F HAVE_SNDFILE HAVE_SAMPLERATE HAVE_VAMP HAVE_VAMPHOSTSDK HAVE_RUBBERBAND HAVE_LIBLO HAVE_MAD HAVE_ID3TAG
