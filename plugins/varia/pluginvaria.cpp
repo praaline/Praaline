@@ -312,13 +312,15 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    corpus->save();
 //    return;
 
+//    PBExpe::actualStimuliFromCorpus(corpus, communications);
+
 //    PBExpe::analysisCalculateDeltaRT(corpus);
 //    PBExpe::analysisCreateAdjustedTappingTier(corpus);
 
-    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
-    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus);
-    PBExpe::analysisCalculateAverageDelay(corpus);
-//    PBExpe::analysisCalculateCoverage(corpus);
+//    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
+    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "boundary2");
+    PBExpe::analysisCalculateAverageDelay(corpus, "boundary2");
+    PBExpe::analysisCalculateCoverage(corpus, "boundary2");
 
 //    PBExpe::analysisStabilisation(corpus, 10, 100);
 //    PBExpe::analysisStabilisation(corpus, 20, 100);

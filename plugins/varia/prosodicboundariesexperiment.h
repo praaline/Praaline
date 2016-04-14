@@ -19,6 +19,7 @@ public:
                                             IntervalTier *tier_syll, IntervalTier *tier_tokmin);
     static void potentialStimuliFromSample(Corpus *corpus, QPointer<CorpusAnnotation> annot, QTextStream &out);
     static void potentialStimuliFromCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+    static void actualStimuliFromCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
     // Read out results
     static bool resultsReadTapping(const QString &subjectID, const QString &filename, Corpus *corpus);
     static bool resultsReadParticipantInfo(const QString &subjectID, const QString &expeType,
@@ -27,15 +28,16 @@ public:
     static void analysisCalculateDeltaRT(Corpus *corpus);
     static void analysisCreateAdjustedTappingTier(Corpus *corpus);
     static void analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects = 0);
-    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus);
-    static void analysisCalculateAverageDelay(Corpus *corpus);
-    static void analysisCalculateCoverage(Corpus *corpus);
-    static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations);
+    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString prefix);
+    static void analysisCalculateAverageDelay(Corpus *corpus, QString prefix);
+    static void analysisCalculateCoverage(Corpus *corpus, QString prefix);
+    static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations, QString prefix);
+    static void createProsodicUnits(Corpus *corpus);
 
     // Statistics
-    static void statExtractFeaturesForModelling(Corpus *corpus);
-    static void statInterAnnotatorAgreement(Corpus *corpus);
-    static void statCorrespondanceNSandMS(Corpus *corpus);
+    static void statExtractFeaturesForModelling(Corpus *corpus, QString prefix);
+    static void statInterAnnotatorAgreement(Corpus *corpus, QString prefix);
+    static void statCorrespondanceNSandMS(Corpus *corpus, QString prefix);
 
 private:
     PBExpe() {}

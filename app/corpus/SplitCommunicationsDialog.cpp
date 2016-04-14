@@ -133,7 +133,7 @@ void SplitCommunicationsDialog::doSplit()
                     if (selectedSplitLabels.contains(label)) {
                         Interval *segment = new Interval(intv);
                         segment->setAttribute("splitCommunicationID", QString("%1_%2_%3")
-                                              .arg(communicationID).arg(i, 2, 10, QChar('0')).arg(label));
+                                              .arg(rec->ID()).arg(i, 2, 10, QChar('0')).arg(label));
                         segments << segment;
                         i++;
                     }

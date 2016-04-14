@@ -64,11 +64,13 @@ HEADERS += \
     phonemedatabase.h \
     easyalignbasic.h \
     annotationpluginpraatscript.h \
-    LongSoundAligner.h
+    LongSoundAligner.h \
+    BroadClassAligner.h
 	
 SOURCES += \ 
     pluginaligner.cpp \
     phonemedatabase.cpp \
     easyalignbasic.cpp \
     annotationpluginpraatscript.cpp \
-    LongSoundAligner.cpp
+    LongSoundAligner.cpp \
+    BroadClassAligner.cpp
