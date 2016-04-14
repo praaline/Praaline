@@ -23,7 +23,10 @@ bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<Corpus> corpus, QPoin
     if (!rec) return false;
     QList<Interval *> list;
     list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
-    bool ret = AudioSegmenter::segment(corpus->baseMediaPath() + "/" + rec->filename(), corpus->baseMediaPath(), list, QString(), 16000);
+    QString filename = corpus->baseMediaPath();
+    if (!filename.endsWith("/")) filename = filename.append("/");
+    filename = filename.append(rec->filename());
+    bool ret = AudioSegmenter::segment(filename, corpus->baseMediaPath(), list, QString(), 16000);
     qDeleteAll(list);
     return ret;
 }
@@ -86,7 +89,9 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> c
     sphinx->setMLLRMatrix(filenameMLLRMatrix);
     // Transcribe
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    mutex.lock();
     tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+    mutex.unlock();
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
@@ -101,12 +106,14 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> c
         foreach (Interval *utterance, utterances) {
             qDebug() << utterance->text();
         }
-        IntervalTier *tier_auto_transcribe = new IntervalTier(tiernameTranscription, segmentation,
-                                                              RealTime(0, 0), rec->duration());
-        mutex.lock();
-        corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_transcribe);
-        corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
-        mutex.unlock();
+        if (segmentation.count() > 1) {
+            IntervalTier *tier_auto_transcribe = new IntervalTier(tiernameTranscription, segmentation,
+                                                                  RealTime(0, 0), rec->duration());
+            mutex.lock();
+            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_transcribe);
+            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
+            mutex.unlock();
+        }
     }
     qDeleteAll(tiersAll);
     return true;
@@ -122,7 +129,9 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
+        mutex.lock();
         tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;

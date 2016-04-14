@@ -48,14 +48,19 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
 {
     QProcess sox;
     // DIRECTORY:
+    QString soxPath;
+#ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
-    QString soxPath = appPath + "/tools/sox/";
+    soxPath = appPath + "/tools/sox/";
     sox.setWorkingDirectory(soxPath);
+#else
+    soxPath = "/usr/bin/";
+#endif
     QString path = pathOut;
     if (path.endsWith("/")) path.chop(1);
     QList<QStringList> scriptArguments = script(filenameIn, pathOut, segments, attribute, newSamplingRate, normalise, channels);
     foreach (QStringList arguments, scriptArguments) {
-        sox.start(soxPath + "sox.exe", arguments);
+        sox.start(soxPath + "sox", arguments);
         if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
             return false;
     }

@@ -652,6 +652,8 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
             int last_syll = -1;
             foreach (Interval *unit, tier_basic_units->intervals()) {
                 if (unit->isPauseSilent()) {
+            foreach (Interval *tok_mwu, tier_tok_mwu->intervals()) {
+                if (tok_mwu->isPauseSilent()) {
                     lastSyllables << ((last_syll < 0) ? 0 : last_syll);
                     last_syll++;
                 } else {
@@ -666,6 +668,26 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
             }
             if (lastSyllables.count() != tier_syll->count()) {
                 continue; // and investiage
+            }
+            // Corrections to the algorithm for long pauses and monosyllabic words
+            // s0 _ s1 s2 ==> move boundary from s1 to s0
+            // s0 _ s1 _  AND s1 is a # ==> move boundary to s0
+            for (int i = 1; i < tier_syll->count() - 2; ++i) {
+                Interval *s0 = tier_syll->interval(i - 1);
+                Interval *sX = tier_syll->interval(i);
+                Interval *s1 = tier_syll->interval(i + 1);
+                if ((!s0->isPauseSilent()) && (sX->isPauseSilent()) && (!s1->isPauseSilent())) {
+                    Interval *s2 = tier_syll->interval(i + 2);
+                    if (!s2->isPauseSilent()) {
+                        lastSyllables[i + 1] = i - 1;
+                        qDebug() << "Move potential boundary position " << com->ID() << " for syll " << i + 1 << " to syll " << i-1;
+                    } else {
+                        if (s1->attribute("boundary").toString().contains("#")) {
+                            lastSyllables[i + 1] = i - 1;
+                            qDebug() << "Move potential boundary position " << com->ID() << " for syll " << i + 1 << " to syll " << i-1;
+                        }
+                    }
+                }
             }
             // Add an attribute to "last syllables" indicating that they are a potential PPB site
             for (int i = 0; i < tier_syll->count(); ++i) {
@@ -904,7 +926,7 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix)
                        prefix + "FirstPPB" << prefix + "LastPPB" << "promise_pos";
     // prefix + "Subjects" << prefix + "TimesAdj" << prefix + "TimesOrig"
 
-    QFile file("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/features.txt");
+    QFile file("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/multilevel.txt");
     if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream out(&file);
     out.setCodec("UTF-8");
@@ -916,10 +938,16 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix)
            "f0meanSyllRel20\tf0meanSyllRel30\tf0meanSyllRel40\tf0meanSyllRel50\t"
            "intrasyllab_up\tintrasyllab_down\ttrajectory\t"
            "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\t"
-           "boundaryDelay\tboundaryDispersion\tboundaryForce\tboundaryFirstPPB\tboundaryLastPPB\n";
+           "boundaryDelay\tboundaryDispersion\tboundaryForce\tboundaryFirstPPB\tboundaryLastPPB\tpromise_pos";
+    if (multilevel) {
+        out << "\tsubjectID\tresponseTimeAdj\tresponseTimeOrig\n";
+    } else {
+        out << "\n";
+    }
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        if (id == "B19S" || id == "B19N") continue;
 
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
@@ -932,7 +960,24 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix)
                 if (syll->attribute(prefix + "Force").toDouble() <= 0.01) continue;
                 ppbSyllables << i;
             }
-            ProsodicBoundaries::analyseBoundaryList(out, corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
+            if (ppbSyllables.isEmpty()) continue;
+            QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
+            if (!multilevel) {
+                foreach (QString line, results) out << line << "\n";
+            } else {
+                foreach (QString line, results) {
+                    QStringList fields = line.split("\t");
+                    QStringList subjectsPPB = fields.at(fields.count() - 3).split("|");
+                    QStringList responseTimesAdj = fields.at(fields.count() - 2).split("|");
+                    QStringList responseTimesOrig = fields.at(fields.count() - 1).split("|");
+                    for (int i = 0; i < subjectsPPB.count(); ++i) {
+                        out << fields.mid(fields.count() - 3).join("\t") << "\t";
+                        out << subjectsPPB.at(i) << "\t";
+                        out << responseTimesAdj.at(i) << "\t";
+                        out << responseTimesOrig.at(i) << "\n";
+                    }
+                }
+            }
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();
@@ -979,6 +1024,7 @@ void PBExpe::statInterAnnotatorAgreement(Corpus *corpus, QString prefix)
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        if (id == "B19S" || id == "B19N") continue;
 
         // Get list of subjects who tapped during this sample
         QList<QString> annotatorsForSample = corpus->datastoreAnnotations()->getSpeakersActiveInLevel(com->ID(), "tapping");
@@ -1117,6 +1163,7 @@ void PBExpe::statCorrespondanceNSandMS(Corpus *corpus, QString prefix)
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
         if (id.endsWith("S")) continue;
+        if (id.startsWith("B19")) continue;
 
         QString idNS = id; QString idMS = id.remove("N").append("S");
         QList<QString> featuresNS, featuresMS;
@@ -1164,4 +1211,36 @@ void PBExpe::statCorrespondanceNSandMS(Corpus *corpus, QString prefix)
     XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, path + "bookmarks_divergences.xml");
     qDeleteAll(bookmarks);
 
+}
+
+void PBExpe::analysisCheckBoundaryRightAfterPause(Corpus *corpus)
+{
+    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/";
+    QList<QPointer<CorpusBookmark> > bookmarks;
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        QString id = com->ID();
+        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+            if (!tier_syll) continue;
+
+            for (int i = 0; i < tier_syll->countItems() - 1; ++i) {
+                Interval *syll = tier_syll->interval(i);
+                Interval *syll_next = tier_syll->interval(i+1);
+                if (syll->isPauseSilent() && syll_next->attribute("boundaryForce").toDouble() > 0.0) {
+                    bookmarks << new CorpusBookmark(corpus->ID(), com->ID(), com->ID(), syll->tMin(), "");
+                }
+//                if (syll->attribute("boundary").toString().contains("#")) {
+//                    bookmarks << new CorpusBookmark(corpus->ID(), com->ID(), com->ID(), syll->tMin(), "");
+//                }
+            }
+        }
+        qDeleteAll(tiers);
+        qDebug() << com->ID();
+    }
+    XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, path + "bookmarks_pauses2.xml");
+    qDeleteAll(bookmarks);
 }

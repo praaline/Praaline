@@ -33,6 +33,7 @@ public:
     static void analysisCalculateCoverage(Corpus *corpus, QString prefix);
     static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations, QString prefix);
     static void createProsodicUnits(Corpus *corpus);
+    static void analysisCheckBoundaryRightAfterPause(Corpus *corpus);
 
     // Statistics
     static void statExtractFeaturesForModelling(Corpus *corpus, QString prefix);

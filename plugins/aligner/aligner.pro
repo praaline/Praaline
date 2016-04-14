@@ -37,7 +37,13 @@ QTILITIES += extension_system
 include(../../external/qtilities/src/Qtilities.pri)
 INCLUDEPATH += ../../external/qtilities/include
 
-
+# Linking dynamically with PocketSphinx
+win32 {
+    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+}
+unix {
+    POCKETSPHINX_BASE_PATH = /usr/local
+}
 # Build folder organisation
 CONFIG( debug, debug|release ) {
     # debug
@@ -47,8 +53,13 @@ CONFIG( debug, debug|release ) {
     COMPONENTSPATH = build/release
 }
 # Application components
-LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
-        -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
+win32 {
+    LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
+}
+unix {
+    LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
+}
+LIBS += -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
         -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
