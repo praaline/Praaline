@@ -61,8 +61,7 @@ unix {
 }
 LIBS += -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
         -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
-        -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
-        $$LIBS
+        -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX}
 PRE_TARGETDEPS += \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a
         ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a

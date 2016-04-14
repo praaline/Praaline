@@ -652,8 +652,6 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
             int last_syll = -1;
             foreach (Interval *unit, tier_basic_units->intervals()) {
                 if (unit->isPauseSilent()) {
-            foreach (Interval *tok_mwu, tier_tok_mwu->intervals()) {
-                if (tok_mwu->isPauseSilent()) {
                     lastSyllables << ((last_syll < 0) ? 0 : last_syll);
                     last_syll++;
                 } else {
@@ -918,7 +916,7 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
 // 4. Create feature files for statistical analyses
 // ====================================================================================================================
 
-void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix)
+void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix, bool multilevel)
 {
     if (!corpus) return;
     QStringList ppbAttributeIDs;

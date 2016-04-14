@@ -36,7 +36,7 @@ public:
     static void analysisCheckBoundaryRightAfterPause(Corpus *corpus);
 
     // Statistics
-    static void statExtractFeaturesForModelling(Corpus *corpus, QString prefix);
+    static void statExtractFeaturesForModelling(Corpus *corpus, QString prefix, bool multilevel);
     static void statInterAnnotatorAgreement(Corpus *corpus, QString prefix);
     static void statCorrespondanceNSandMS(Corpus *corpus, QString prefix);
 
