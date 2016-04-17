@@ -62,7 +62,8 @@ HEADERS += \
     svbridge.h \
     prosodicboundaries.h \
     prosodicboundariesexperiment.h \
-    InterraterAgreement.h
+    InterraterAgreement.h \
+    ProsodyCourse.h
 
 SOURCES += \ 
     pluginvaria.cpp \
@@ -71,4 +72,5 @@ SOURCES += \
     svbridge.cpp \
     prosodicboundaries.cpp \
     prosodicboundariesexperiment.cpp \
-    InterraterAgreement.cpp
+    InterraterAgreement.cpp \
+    ProsodyCourse.cpp

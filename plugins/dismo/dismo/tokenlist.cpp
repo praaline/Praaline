@@ -370,8 +370,8 @@ void TokenList::writeToTiers(IntervalTier *tierTokMin, IntervalTier *tierPOSMin,
             i_tok_min->setAttribute("pos_ext_min", tu->getTagPOSext());
             i_tok_min->setAttribute("lemma_min", tu->getLemma());
             i_tok_min->setAttribute("disfluency", tu->getTagDisfluency());
-            i_tok_min->setAttribute("dismoconfidence", tu->getConfidencePOS());
-            i_tok_min->setAttribute("dismomethod", tu->getMatchTypePOS());
+            i_tok_min->setAttribute("dismo_confidence", tu->getConfidencePOS());
+            i_tok_min->setAttribute("dismo_method", tu->getMatchTypePOS());
             if (tok->isMWU())
                 i_tok_min->setAttribute("part_of_mwu", true);
             else
@@ -385,8 +385,8 @@ void TokenList::writeToTiers(IntervalTier *tierTokMin, IntervalTier *tierPOSMin,
         i_tok_mwu->setAttribute("pos_ext_mwu", tok->getTagPOSext());
         i_tok_mwu->setAttribute("lemma_mwu", tok->getLemma());
         i_tok_mwu->setAttribute("discourse", tok->getTagDiscourse());
-        i_tok_mwu->setAttribute("dismoconfidence", tok->getConfidencePOS());
-        i_tok_mwu->setAttribute("dismomethod", tok->getMatchTypePOS());
+        i_tok_mwu->setAttribute("dismo_confidence", tok->getConfidencePOS());
+        i_tok_mwu->setAttribute("dismo_method", tok->getMatchTypePOS());
         intervals_tokmwu.append(i_tok_mwu);
         intervals_posmwu.append(tok->toIntervalPOS());
         intervals_discourse.append(tok->toIntervalDiscourse());
@@ -418,6 +418,14 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
     }
     if (tierTokMin->countItems() != j) {
         qDebug() << "Error - mismatch number of tokens in tok-min and token list";
+        int iterTU = 0;
+        for (int iterTok = 0; iterTok < this->count(); ++iterTok) {
+            Token *tok = this->at(iterTok);
+            foreach (TokenUnit *tu, tok->getTokenUnits()) {
+                qDebug() << iterTok << "\t" << iterTU << "\t" << tu->text() << "\t" << tu->getTagPOS();
+                iterTU++;
+            }
+        }
         return;
     }
     j = 0;
@@ -434,8 +442,8 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
         i_tok_mwu->setAttribute(attributes.value("pos_ext_mwu", "pos_ext_mwu"), tok->getTagPOSext());
         i_tok_mwu->setAttribute(attributes.value("lemma_mwu", "lemma_mwu"), tok->getLemma());
         i_tok_mwu->setAttribute(attributes.value("discourse", "discourse"), tok->getTagDiscourse());
-        i_tok_mwu->setAttribute(attributes.value("dismoconfidence", "dismoconfidence"), tok->getConfidencePOS());
-        i_tok_mwu->setAttribute(attributes.value("dismomethod", "dismomethod"), tok->getMatchTypePOS());
+        i_tok_mwu->setAttribute(attributes.value("dismo_confidence", "dismo_confidence"), tok->getConfidencePOS());
+        i_tok_mwu->setAttribute(attributes.value("dismo_method", "dismo_method"), tok->getMatchTypePOS());
         list_intervals_tok_mwu << i_tok_mwu;
         foreach (TokenUnit *tu, tok->getTokenUnits()) {
             Interval *i_tok_min = tierTokMin->interval(j);
@@ -443,8 +451,8 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
             i_tok_min->setAttribute(attributes.value("pos_ext_min", "pos_ext_min"), tu->getTagPOSext());
             i_tok_min->setAttribute(attributes.value("lemma_min", "lemma_min"), tu->getLemma());
             i_tok_min->setAttribute(attributes.value("disfluency", "disfluency"), tu->getTagDisfluency());
-            i_tok_min->setAttribute(attributes.value("dismoconfidence", "dismoconfidence"), tu->getConfidencePOS());
-            i_tok_min->setAttribute(attributes.value("dismomethod", "dismomethod"), tu->getMatchTypePOS());
+            i_tok_min->setAttribute(attributes.value("dismo_confidence", "dismo_confidence"), tu->getConfidencePOS());
+            i_tok_min->setAttribute(attributes.value("dismo_method", "dismo_method"), tu->getMatchTypePOS());
             if (tok->isMWU())
                 i_tok_min->setAttribute(attributes.value("part_of_mwu", "part_of_mwu"), true);
             else

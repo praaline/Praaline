@@ -1,29 +1,44 @@
 #ifndef BROADCLASSALIGNER_H
 #define BROADCLASSALIGNER_H
 
+#include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QList>
 #include <QHash>
 
 class IntervalTier;
+class Corpus;
+class CorpusCommunication;
+
+struct BroadClassAlignerData;
 
 class BroadClassAligner
 {
 public:
     BroadClassAligner();
+    ~BroadClassAligner();
 
     void addBroadPhoneticClass(const QString &name, const QList<QString> &phonemes);
     void resetClasses();
+
     void initialiseFR();
-    void initialiseCV();
+    void initialiseFRSphinx();
+    void initialiseFRcv();
 
     QString phonemeToBroadClass(const QString &phoneme) const;
+
+    bool adaptDictionary(const QString &filenameInput, const QString &filenameOutput) const;
     void updatePhoneTierWithBroadClasses(IntervalTier *tier, const QString &attributeBroadClass) const;
+    void updateTokenTierWithBroadClasses(IntervalTier *tier_phone, const QString &attributeBroadClassPhone,
+                                         IntervalTier *tier_token, const QString &attributeBroadClassToken) const;
+    void prepareBPCTrainingFromCommunications(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications,
+                                              const QString &outputPath);
 
 private:
-    QString m_defaultBroadClass;
-    QList<QString> m_broadPhoneticClasses;
-    QHash<QString, QString> m_correspondances;
+    BroadClassAlignerData *d;
+
+    void prepareTiers(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications);
 };
 
 #endif // BROADCLASSALIGNER_H

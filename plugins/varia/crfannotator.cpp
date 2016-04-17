@@ -53,8 +53,17 @@ void CRFAnnotator::annotateFromCRF(const QString &filenameModel) {
     // Pass to CRF decoder
     QProcess decoder;
     // DIRECTORY:
+    QString decoderCommand;
+#ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
-    decoder.start(appPath + "/tools/crf/crf_test.exe" , QStringList() <<
+    decoderCommand = appPath + "/tools/crf/crf_test";
+#endif
+#ifdef Q_OS_MAC
+    decoderCommand = "/usr/local/bin/crf_test"
+#else
+    decoderCommand = "/usr/local/bin/crf_test";
+#endif
+    decoder.start(decoderCommand, QStringList() <<
                   "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
     if (!decoder.waitForStarted(-1)) return;
     if (!decoder.waitForFinished(-1)) return;

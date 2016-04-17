@@ -28,12 +28,13 @@ public:
     static void analysisCalculateDeltaRT(Corpus *corpus);
     static void analysisCreateAdjustedTappingTier(Corpus *corpus);
     static void analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects = 0);
-    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString prefix);
+    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString levelForUnits, QString prefix);
     static void analysisCalculateAverageDelay(Corpus *corpus, QString prefix);
     static void analysisCalculateCoverage(Corpus *corpus, QString prefix);
-    static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations, QString prefix);
-    static void createProsodicUnits(Corpus *corpus);
+    static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations, QString prefix);    
     static void analysisCheckBoundaryRightAfterPause(Corpus *corpus);
+    static void createProsodicUnits(Corpus *corpus);
+    static QStringList printTranscriptionInProsodicUnits(Corpus *corpus);
 
     // Statistics
     static void statExtractFeaturesForModelling(Corpus *corpus, QString prefix, bool multilevel);

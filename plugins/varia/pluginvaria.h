@@ -62,7 +62,6 @@ namespace Praaline {
 
             private:
                 PluginVariaPrivateData* d;
-                void exportMultiTierTextgrids(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };
         }
     }

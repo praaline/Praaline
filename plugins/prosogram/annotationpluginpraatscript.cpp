@@ -26,10 +26,18 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     m_process->setReadChannel(QProcess::StandardOutput);
     connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
     connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
+    QString praatCommand;
+#ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
-    QString command = appPath + "/tools/praatcon.exe";
+    praatCommand = appPath + "/tools/praatcon.exe";
+#endif
+#ifdef Q_OS_MAC
+    praatCommand = "/usr/local/bin/praat"
+#else
+    praatCommand = "/usr/bin/praat";
+#endif
     emit logOutput("Praat script: " + script + " "+ scriptArguments.join(" "));
-    m_process->start(command, QStringList() << "-a" << script << scriptArguments);
+    m_process->start(praatCommand, QStringList() << "-a" << script << scriptArguments);
     if (!m_process->waitForStarted(-1)) {
         emit logOutput("Error: " + m_process->errorString());
         return;

@@ -22,6 +22,7 @@
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
 #include "easyalignbasic.h"
 #include "LongSoundAligner.h"
+#include "BroadClassAligner.h"
 
 #include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/asr/SpeechRecognitionRecipes.h"
@@ -328,6 +329,10 @@ struct SphinxAutomaticTranscriptionStep
 
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
+    BroadClassAligner BPCA;
+    BPCA.prepareBPCTrainingFromCommunications(corpus, communications, "/home/george/broad-align/");
+    return;
+
     madeProgress(0);
     printMessage("Starting");
     QElapsedTimer timer;

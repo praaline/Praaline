@@ -612,7 +612,7 @@ QList<PerceivedBoundary> groupFromSyll(Interval *syll, QString prefix)
     return groupFromLists(subjects, timesAdj, timesOrig);
 }
 
-void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString prefix)
+void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString levelForUnits, QString prefix)
 {
     if (!corpus) return;
     foreach (CorpusCommunication *com, corpus->communications()) {
@@ -623,7 +623,6 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
         if (!tier_smooth) continue;
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
-            qDebug() << tiersSpk->tierNames().join(" ");
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
             if (!tier_syll) continue;
 
@@ -644,8 +643,9 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
                 continue; // (secondary speakers, not analysed)
             }
 
-            QPointer<IntervalTier> tier_basic_units = tiersSpk->getIntervalTierByName("tok_min");
+            QPointer<IntervalTier> tier_basic_units = tiersSpk->getIntervalTierByName(levelForUnits);
             if (!tier_basic_units) continue;
+            QPointer<IntervalTier> tier_tokens = tiersSpk->getIntervalTierByName("tok_min");
 
             // For each syllable, mark which is the corresponding "last syll" of the basic unit
             QList<int> lastSyllables;
@@ -660,11 +660,14 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
                         int prev_last_syll = last_syll;
                         last_syll = tier_syll->intervalIndexAtTime(unit->tMax() - RealTime(0, 10));
                         for (int i = prev_last_syll; i < last_syll; ++i) lastSyllables << last_syll;
+                    } else {
+                        // otherwise, enchainement, continue to next word
+                        qDebug() << com->ID() << " " << syllAtRightBoundaryOfUnit->tMax().toDouble() << " " << unit->tMax().toDouble();
                     }
-                    // otherwise, enchainement, continue to next word
                 }
-            }
+            }            
             if (lastSyllables.count() != tier_syll->count()) {
+                qDebug() << "Error: lastSyllables count != syllables count " << lastSyllables.count() << " " << tier_syll->count();
                 continue; // and investiage
             }
             // Corrections to the algorithm for long pauses and monosyllabic words
@@ -691,7 +694,22 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
             for (int i = 0; i < tier_syll->count(); ++i) {
                 if (lastSyllables.at(i) == i)
                     tier_syll->interval(i)->setAttribute(prefix + "PotentialSite", true);
+                else
+                    tier_syll->interval(i)->setAttribute(prefix + "PotentialSite", false);
             }
+
+            QString tokens, syllables, potentials;
+            foreach (Interval *unit, tier_basic_units->intervals()) {
+                foreach (Interval *token, tier_tokens->getIntervalsContainedIn(unit)) tokens.append(token->text()).append(" ");
+                tokens = tokens.trimmed().append("\t");
+                foreach (Interval *syll, tier_syll->getIntervalsContainedIn(unit)) syllables.append(syll->text()).append(" ");
+                syllables = syllables.trimmed().append("\t");
+                for (int i = 0; i < tier_syll->count(); ++i) {
+                    if (lastSyllables.at(i) == i) potentials.append("1 "); else potentials.append("0 ");
+                }
+                potentials = potentials.trimmed().append("\t");
+            }
+
 
             // Go through local maxima and attribute PPB groups to syllables
             QHash<int, QList<int> > assignments;
@@ -776,7 +794,7 @@ void PBExpe::analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int 
     for (int iter = 0; iter < iterations; ++iter) {
         qDebug() << "ITERATION " << iter << "==========================================================";
         analysisCalculateSmoothedTappingModel(corpus, maxNumberOfSubjects);
-        analysisAttributeTappingToSyllablesLocalMaxima(corpus, prefix);
+        analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", prefix);
 
         foreach (CorpusCommunication *com, corpus->communications()) {
             QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
@@ -901,15 +919,80 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
-            IntervalTier *tier_tok_min = tiersSpk->getIntervalTierByName("tok_min");
-            if (!tier_tok_min) continue;
-
+            IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName("tok_mwu");
+            if (!tier_tok_mwu) continue;
+            bool inside = false;
+            RealTime start, end;
+            QList<Interval *> units;
+            int unitIterator = 1;
+            // start at 0
+            // 0 --CLI, INT--> 1  0 --pause--> 0  0--LEX-->0 and create unit
+            // 1 --LEX-->0 and create unit 1-->
+            foreach (Interval *tok_mwu, tier_tok_mwu->intervals()) {
+                if (!inside) {
+                    if (!tok_mwu->isPauseSilent()) {
+                        QString cat = ProsodicBoundaries::categorise_CLI_INT_LEX(tok_mwu);
+                        if (cat == "CLI" || cat == "INT") {
+                            inside = true;
+                            start = tok_mwu->tMin();
+                        } else { // LEX, 0
+                            start = tok_mwu->tMin(); end = tok_mwu->tMax();
+                            units << new Interval(start, end, QString::number(unitIterator));
+                            start = end; ++unitIterator;
+                        }
+                    } else {
+                        start = tok_mwu->tMax();
+                    }
+                } else {
+                    if (!tok_mwu->isPauseSilent()) {
+                        QString cat = ProsodicBoundaries::categorise_CLI_INT_LEX(tok_mwu);
+                        if (cat == "LEX" || cat == "0") {
+                            end = tok_mwu->tMax();
+                            units << new Interval(start, end, QString::number(unitIterator));
+                            start = end; ++unitIterator;
+                            inside = false;
+                        }
+                    }
+                }
+            }
+            IntervalTier *tier_units = new IntervalTier("prosodic_unit", units, RealTime(0, 0), tier_tok_mwu->tMax());
+            corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_units);
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();
     }
 }
 
+QStringList PBExpe::printTranscriptionInProsodicUnits(Corpus *corpus)
+{
+    QStringList ret;
+    if (!corpus) return ret;
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        QString id = com->ID();
+        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName("tok_mwu");
+            if (!tier_tok_mwu) continue;
+            IntervalTier *tier_units = tiersSpk->getIntervalTierByName("prosodic_unit");
+            if (!tier_units) continue;
+            QString transcript;
+            foreach (Interval *unit, tier_units->intervals()) {
+                QList<Interval *> tokens = tier_tok_mwu->getIntervalsContainedIn(unit);
+                foreach (Interval *token, tokens) {
+                    transcript.append(token->text()).append(" ");
+                }
+                transcript.append("| ");
+            }
+            if (!transcript.isEmpty()) transcript.chop(1);
+            ret << QString("%1\t%2").arg(id).arg(transcript);
+        }
+        qDeleteAll(tiers);
+        qDebug() << com->ID();
+    }
+    return ret;
+}
 
 
 // ====================================================================================================================
