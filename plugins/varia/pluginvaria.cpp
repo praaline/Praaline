@@ -19,6 +19,8 @@
 
 #include "InterraterAgreement.h"
 #include "prosodicboundariesexperiment.h"
+#include "MyExperiments.h"
+#include "ProsodyCourse.h"
 
 #include "pluginvaria.h"
 
@@ -136,7 +138,18 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 
 
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
-{
+{    
+    int countDone = 0;
+    madeProgress(0);
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
+        MyExperiments::createBasicMetadata(corpus, com);
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+    return;
+
 
 //    int countDone = 0;
 //    madeProgress(0);

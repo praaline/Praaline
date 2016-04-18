@@ -37,6 +37,7 @@ public:
     QString baseMediaPath() const;
     QString communicationID() const;
     QPointer<Corpus> corpus() const;
+    QString filePath() const;
 
     QString name() const { return m_name; }
     void setName(const QString &name);

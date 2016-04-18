@@ -67,6 +67,11 @@ QPointer<Corpus> CorpusRecording::corpus() const
     return 0;
 }
 
+QString CorpusRecording::filePath() const
+{
+    return QFileInfo(baseMediaPath() + "/" + filename()).path();
+}
+
 void CorpusRecording::setName(const QString &name)
 {
     if (m_name != name) {

@@ -39,15 +39,19 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
             if (section == 0) return tr("Corpus ID");
             else if (section == 1) return tr("Communication ID");
             else if (section == 2) return tr("Name");
-            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count())
-                return m_attributes.at(section - 3)->name();
+            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count()) {
+                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 3);
+                if (attr) return attr->name(); else return QVariant();
+            }
             else
                 return QVariant();
         } else {
             if (section == 0) return tr("Communication ID");
             else if (section == 1) return tr("Name");
-            else if ((section - 2) >= 0 && (section - 2) < m_attributes.count())
-                return m_attributes.at(section - 2)->name();
+            else if ((section - 2) >= 0 && (section - 2) < m_attributes.count()) {
+                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 2);
+                if (attr) return attr->name(); else return QVariant();
+            }
             else
                 return QVariant();
         }
