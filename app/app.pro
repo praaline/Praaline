@@ -149,7 +149,11 @@ SOURCES += main.cpp \
     visualisation/TimelineVisualisationWidget.cpp \
     visualisation/VisualisationMode.cpp \
     visualisation/VisualisationModeWidget.cpp \
-    visualisation/VisualiserWidget.cpp
+    visualisation/VisualiserWidget.cpp \
+    statistics/AnalyserTemporal.cpp \
+    statistics/AnalyserSpeechRate.cpp \
+    statistics/AnalyserSegmentDurations.cpp \
+    statistics/AnalyserPitch.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -224,7 +228,14 @@ HEADERS  += \
     CorporaManager.h \
     NetworkPermissionTester.h \
     PraalineSplash.h \
-    Version.h
+    Version.h \
+    statistics/StatisticsTemporal.h \
+    statistics/StatisticsPitch.h \
+    statistics/AnalyserTemporal.h \
+    statistics/AnalyserSpeechRate.h \
+    statistics/AnalyserSegmentDurations.h \
+    statistics/AnalyserPitch.h \
+    statistics/istatisticalanalyserplugin.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

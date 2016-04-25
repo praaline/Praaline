@@ -118,7 +118,7 @@ void PBExpe::potentialStimuliFromSample(Corpus *corpus, QPointer<CorpusAnnotatio
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(annot->ID(), "tok_mwu");
+        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annot->ID(), "tok_mwu");
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;
         IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
@@ -929,13 +929,14 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
             // 0 --CLI, INT--> 1  0 --pause--> 0  0--LEX-->0 and create unit
             // 1 --LEX-->0 and create unit 1-->
             foreach (Interval *tok_mwu, tier_tok_mwu->intervals()) {
+                QString cat = ProsodicBoundaries::categorise_CLI_INT_LEX(tok_mwu);
+                bool groupBreak = (cat == "LEX" || cat == "0");
                 if (!inside) {
                     if (!tok_mwu->isPauseSilent()) {
-                        QString cat = ProsodicBoundaries::categorise_CLI_INT_LEX(tok_mwu);
-                        if (cat == "CLI" || cat == "INT") {
+                        if (!groupBreak) {
                             inside = true;
                             start = tok_mwu->tMin();
-                        } else { // LEX, 0
+                        } else { // groupBreak==true
                             start = tok_mwu->tMin(); end = tok_mwu->tMax();
                             units << new Interval(start, end, QString::number(unitIterator));
                             start = end; ++unitIterator;
@@ -945,8 +946,7 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
                     }
                 } else {
                     if (!tok_mwu->isPauseSilent()) {
-                        QString cat = ProsodicBoundaries::categorise_CLI_INT_LEX(tok_mwu);
-                        if (cat == "LEX" || cat == "0") {
+                        if (groupBreak) {
                             end = tok_mwu->tMax();
                             units << new Interval(start, end, QString::number(unitIterator));
                             start = end; ++unitIterator;

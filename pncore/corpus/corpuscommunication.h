@@ -41,6 +41,7 @@ public:
     bool hasRecordings() const;
     bool hasRecording(const QString &recordingID) const;
     const QMap<QString, QPointer<CorpusRecording> > &recordings() const;
+    QList<QString> recordingIDs() const;
     void addRecording(CorpusRecording *recording);
     void removeRecording(const QString &recordingID);
     void unlinkRecording(const QString &recordingID);
@@ -51,6 +52,7 @@ public:
     bool hasAnnotations() const;
     bool hasAnnotation(const QString &annotationID) const;
     const QMap<QString, QPointer<CorpusAnnotation> > &annotations() const;
+    QList<QString> annotationIDs() const;
     void addAnnotation(CorpusAnnotation *annotation);
     void removeAnnotation(const QString &annotationID);
     void unlinkAnnotation(const QString &annotationID);

@@ -110,6 +110,11 @@ const QMap<QString, QPointer<CorpusRecording> > &CorpusCommunication::recordings
     return m_recordings;
 }
 
+QList<QString> CorpusCommunication::recordingIDs() const
+{
+    return m_recordings.keys();
+}
+
 void CorpusCommunication::addRecording(CorpusRecording *recording)
 {
     if (!recording) return;
@@ -180,6 +185,11 @@ bool CorpusCommunication::hasAnnotation(const QString &annotationID) const
 const QMap<QString, QPointer<CorpusAnnotation> > &CorpusCommunication::annotations() const
 {
     return m_annotations;
+}
+
+QList<QString> CorpusCommunication::annotationIDs() const
+{
+    return m_annotations.keys();
 }
 
 void CorpusCommunication::addAnnotation(CorpusAnnotation *annotation)

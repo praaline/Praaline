@@ -135,7 +135,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
 
         // Prepare syllables (calculcate log duration and a list of pause durations)
         // Distinguish between intra-speaker and inter-speaker pauses
-        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(annotID, "syll");
+        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotID, "syll");
         foreach (Interval *syll, tier_syll->intervals()) {
             syll->setAttribute("duration_log", log(syll->attribute("duration").toDouble()));
             if (syll->text() == "_") {

@@ -139,16 +139,36 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
-    int countDone = 0;
-    madeProgress(0);
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
-        MyExperiments::createBasicMetadata(corpus, com);
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-    }
-    return;
+//    int countDone = 0;
+//    madeProgress(0);
+
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        TemporalAnalyser analyser;
+//        analyser.calculate(corpus, com);
+//        foreach (QString measureID, analyser.measureIDsForCommunication()) {
+//            l
+//        }
+//        QString header("\t");
+//        foreach (QString speakerID, analyser.speakerIDs()) {
+//            header.append(speakerID).append("\t");
+//        }
+//        header.chop(1);
+//        printMessage(header);
+//        foreach(QString measureID, analyser.measureIDsForSpeaker()) {
+//            QString line;
+//            line.append(analyser.measureDefinitionForSpeaker(measureID).displayNameUnit()).append("\t");
+//            foreach (QString speakerID, analyser.speakerIDs()) {
+//                line.append(QString("%1").arg(analyser.measureSpk(speakerID, measureID))).append("\t");
+//            }
+//            line.chop(1);
+//            printMessage(line);
+//        }
+//        printMessage("");
+//        countDone++;
+//        madeProgress(countDone * 100 / communications.count());
+//    }
+//    return;
 
 
 //    int countDone = 0;

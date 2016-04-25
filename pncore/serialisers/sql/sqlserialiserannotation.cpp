@@ -340,7 +340,8 @@ QList<QString> SQLSerialiserAnnotation::getSpeakersActiveInAnnotation(const QStr
 }
 
 // static
-IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &annotationID, const QString &levelID,
+IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
+                                                           const QString &levelID,
                                                            const AnnotationStructure *structure, QSqlDatabase &db)
 {
     QList<RealTime> timelineBoundaries;
@@ -350,13 +351,20 @@ IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &annota
     if (!structure) return 0;
     AnnotationStructureLevel *level = structure->level(levelID);
     if (!level) return 0;
+    if (communicationID.isEmpty() && annotationID.isEmpty()) return 0;
 
     QSqlQuery query(db);
-    QString q = QString("SELECT tMin, tMax, speakerID, xText FROM %1 WHERE annotationID = :annotationID ORDER BY tMin")
-            .arg(levelID);
+    QString q = QString("SELECT tMin, tMax, speakerID, xText FROM %1 ").arg(levelID);
+    if (!communicationID.isEmpty()) q.append(QString(" INNER JOIN annotation ON %1.annotationID=annotation.annotationID ").arg(levelID));
+    q.append(" WHERE 1=1 ");
+    if (!communicationID.isEmpty()) q.append(" AND annotation.communicationID=:communicationID ");
+    if (!annotationID.isEmpty()) q.append(" AND annotationID = :annotationID ");
+    q.append(" ORDER BY tMin ");
+    // qDebug() << q;
     query.setForwardOnly(true);
     query.prepare(q);
-    query.bindValue(":annotationID", annotationID);
+    if (!communicationID.isEmpty()) query.bindValue(":communicationID", communicationID);
+    if (!annotationID.isEmpty()) query.bindValue(":annotationID", annotationID);
     query.exec();
     while (query.next()) {
         RealTime tMin = RealTime::fromNanoseconds(query.value(0).toLongLong());

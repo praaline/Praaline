@@ -97,7 +97,7 @@ QString temporalVariables(Corpus *corpus, QString annotationID, QString speakerI
     if (!tiers) return QString();
     IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
     IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(annotationID, "segment");
+    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
         tier_timeline->replaceText(speakerID, "L1");
         tier_timeline->replaceText("L1+L2", "L1");

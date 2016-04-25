@@ -49,7 +49,7 @@ void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annota
         if (!tier) continue;
         tier->fixBoundariesBasedOnTier(tier_phone);
     }
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(annotationID, "segment");
+    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
         tier_timeline->replaceText(speakerID, "L1");
         tier_timeline->replaceText("L1+L2", "L1");

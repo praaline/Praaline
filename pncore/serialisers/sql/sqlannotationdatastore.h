@@ -47,7 +47,8 @@ public:
     QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID);
     QList<QString> getSpeakersInAnnotation(const QString &annotationID);
     QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID);
-    IntervalTier *getSpeakerTimeline(const QString &annotationID, const QString &levelID);
+    IntervalTier *getSpeakerTimeline(const QString &communicationID,const QString &annotationID,
+                                     const QString &levelID);
 
     bool deleteAllForAnnotationID(QString annotationID);
 

@@ -6,7 +6,7 @@ CONFIG += ordered
 
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp \
-           #libpraat \
+           libpraat \
            libs/qscintilla/Qt4Qt5/qscintilla.pro \
            libs/qcustomplot/qcustomplot.pro \
            plugins #\

@@ -9,6 +9,7 @@
 #include "pncore/interfaces/praat/praattextgrid.h"
 
 #include "ProsodyCourse.h"
+#include "TemporalAnalyser.h"
 
 ProsodyCourse::ProsodyCourse()
 {
@@ -115,6 +116,39 @@ void ProsodyCourse::exportMultiTierTextgrids(Corpus *corpus, QPointer<CorpusComm
         qDeleteAll(tiersAll);
     }
 }
+
+void ProsodyCourse::temporalVariables(Corpus *corpus, QPointer<CorpusCommunication> com)
+{
+
+
+//    QString path = corpus->basePath();
+//    QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
+
+//    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        if (!annot) continue;
+//        QString annotationID = annot->ID();
+//        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+//        foreach (QString speakerID, tiersAll.keys()) {
+//            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//            if (!tiers) continue;
+//            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+//            IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
+//            txg->addTier(new IntervalTier(tier_syll));
+//            txg->addTier(new IntervalTier(tier_tokmin));
+//        }
+//        qDeleteAll(tiersAll);
+//    }
+
+//    txg->addTier(tier_timeline);
+//    IntervalTier *tier_timelineT = new IntervalTier(tier_timeline, "timelineT");
+//    foreach (Interval *intv, tier_timelineT->intervals())
+//        intv->setText(intv->attribute("temporal").toString());
+//    txg->addTier(tier_timelineT);
+
+//    PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg);
+
+}
+
 
 //int countDone = 0;
 //madeProgress(0);

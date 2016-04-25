@@ -15,6 +15,7 @@ public:
     ProsodyCourse();
 
     static void exportMultiTierTextgrids(Corpus *corpus, QPointer<CorpusCommunication> com);
+    static void temporalVariables(Corpus *corpus, QPointer<CorpusCommunication> com);
 };
 
 #endif // PROSODYCOURSE_H

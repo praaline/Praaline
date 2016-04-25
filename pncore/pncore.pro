@@ -91,7 +91,9 @@ HEADERS += \
     interfaces/transcriber/transcriberannotationgraph.h \
     interfaces/praat/PraatPointTierFile.h \
     interfaces/anvil/AnvilMetadataTranscript.h \
-    base/RealValueList.h
+    base/RealValueList.h \
+    statistics/StatisticalSummary.h \
+    statistics/StatisticalMeasureDefinition.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -155,4 +157,6 @@ SOURCES += \
     interfaces/transcriber/transcriberannotationgraph.cpp \
     interfaces/praat/PraatPointTierFile.cpp \
     interfaces/anvil/AnvilMetadataTranscript.cpp \
-    base/RealValueList.cpp
+    base/RealValueList.cpp \
+    statistics/StatisticalSummary.cpp \
+    statistics/StatisticalMeasureDefinition.cpp
