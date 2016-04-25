@@ -269,8 +269,12 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                             else {
                                 // Articulation
                                 if (temporal == "S")    timeArticulationAlone += token->duration().toDouble();
-                                if (temporal == "OVC")  timeArticulationOverlapContinue += token->duration().toDouble();
-                                if (temporal == "OVT")  timeArticulationOverlapTurnChange += token->duration().toDouble();
+                                else if (temporal == "OVC")  timeArticulationOverlapContinue += token->duration().toDouble();
+                                else if (temporal == "OVT")  timeArticulationOverlapTurnChange += token->duration().toDouble();
+                                else {
+                                    int aaarg = 5;
+                                    aaarg = aaarg + 2;
+                                }
                                 QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(token);
                                 int nsyll = (syllIndices.second - syllIndices.first + 1);
                                 numSyllablesArticulated += nsyll;

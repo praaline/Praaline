@@ -9,7 +9,6 @@
 #include "pncore/interfaces/praat/praattextgrid.h"
 
 #include "ProsodyCourse.h"
-#include "TemporalAnalyser.h"
 
 ProsodyCourse::ProsodyCourse()
 {

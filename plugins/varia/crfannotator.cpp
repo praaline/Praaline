@@ -59,7 +59,7 @@ void CRFAnnotator::annotateFromCRF(const QString &filenameModel) {
     decoderCommand = appPath + "/tools/crf/crf_test";
 #endif
 #ifdef Q_OS_MAC
-    decoderCommand = "/usr/local/bin/crf_test"
+    decoderCommand = "/usr/local/bin/crf_test";
 #else
     decoderCommand = "/usr/local/bin/crf_test";
 #endif

@@ -32,7 +32,7 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     praatCommand = appPath + "/tools/praatcon.exe";
 #endif
 #ifdef Q_OS_MAC
-    praatCommand = "/usr/local/bin/praat"
+    praatCommand = "/Applications/Praat.app/Contents/MacOS/Praat";
 #else
     praatCommand = "/usr/bin/praat";
 #endif
