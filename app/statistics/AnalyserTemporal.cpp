@@ -188,6 +188,10 @@ IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPoi
 void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
     if (!corpus || !com) return;
+
+    d->measuresCom.clear();
+    d->measuresSpk.clear();
+
     IntervalTier *tier_timeline = getSpeakerTimeline(corpus, com);
 
     // Measures that can be calculated from the timeline, on the Communication level

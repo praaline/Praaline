@@ -55,7 +55,7 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
         CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
         if (manager) d->corporaManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+//    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
 
     // Output messages of running statistical analysis plugins
     d->textResults = new QTextEdit(this);
@@ -63,6 +63,7 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
     d->textResults->setFont(fixedFont);
     ui->gridLayoutMessages->addWidget(d->textResults);
 
+    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
 
     ui->splitterLeftRight->setSizes(QList<int>() << 50 << 300);
 }
@@ -98,8 +99,36 @@ void StatisticsModeWidget::analyse()
 {
     AnalyserTemporal *analyser = new AnalyserTemporal(this);
 
-
-
+    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        analyser->calculate(corpus, com);
+        QString line;
+        line.append("\t").append(com->ID());
+        d->textResults->append(line);
+        foreach (QString measureID, analyser->measureIDsForCommunication()) {
+            line = analyser->measureDefinitionForCommunication(measureID).displayNameUnit();
+            line.append(QString("\t%1").arg(analyser->measureCom(measureID)));
+            d->textResults->append(line);
+        }
+        line.append("\n");
+        d->textResults->append(line);
+        //
+        line.clear();
+        foreach (QString speakerID, analyser->speakerIDs()) {
+            line.append("\t").append(speakerID);
+        }
+        line.append("\n");
+        d->textResults->append(line);
+        foreach (QString measureID, analyser->measureIDsForSpeaker()) {
+            line = analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
+            foreach (QString speakerID, analyser->speakerIDs()) {
+                line.append(QString("\t%1").arg(analyser->measureSpk(speakerID, measureID)));
+            }
+            d->textResults->append(line);
+        }
+        line.append("\n");
+        d->textResults->append(line);
+    }
 
     delete analyser;
 }
