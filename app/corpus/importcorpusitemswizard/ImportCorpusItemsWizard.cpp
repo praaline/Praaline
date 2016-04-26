@@ -9,7 +9,7 @@
 #include "ImportAnnotations.h"
 
 #include "ImportCorpusItemsWizard.h"
-#include "ui_importcorpusitemswizard.h"
+#include "ui_ImportCorpusItemsWizard.h"
 
 struct ImportCorpusItemsWizardData {
     ImportCorpusItemsWizardData() :

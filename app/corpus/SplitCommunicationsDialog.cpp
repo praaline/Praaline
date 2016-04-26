@@ -11,7 +11,7 @@
 #include "pnlib/mediautil/AudioSegmenter.h"
 
 #include "SplitCommunicationsDialog.h"
-#include "ui_splitcommunicationsdialog.h"
+#include "ui_SplitCommunicationsDialog.h"
 
 
 struct SplitCommunicationsDialogData{

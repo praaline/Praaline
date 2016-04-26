@@ -1,5 +1,5 @@
 #include "VisualisationModeWidget.h"
-#include "ui_visualisationmodewidget.h"
+#include "ui_VisualisationModeWidget.h"
 
 #include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
 #include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"

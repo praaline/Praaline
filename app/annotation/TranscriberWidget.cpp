@@ -14,7 +14,7 @@
 #include "../visualisation/SimpleVisualiserWidget.h"
 #include "pngui/widgets/annotationtimelineeditor.h"
 #include "TranscriberWidget.h"
-#include "ui_transcriberwidget.h"
+#include "ui_TranscriberWidget.h"
 
 struct TranscriberWidgetData {
     TranscriberWidgetData() :

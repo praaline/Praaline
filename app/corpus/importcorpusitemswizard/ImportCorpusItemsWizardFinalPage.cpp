@@ -2,7 +2,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include "ImportCorpusItemsWizardFinalPage.h"
-#include "ui_importcorpusitemswizardfinalpage.h"
+#include "ui_ImportCorpusItemsWizardFinalPage.h"
 
 #include "pncore/interfaces/praat/praattextgrid.h"
 #include "pncore/interfaces/transcriber/transcriberannotationgraph.h"

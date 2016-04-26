@@ -9,7 +9,7 @@
 #include <QStandardItemModel>
 #include <QDebug>
 #include "StatisticsModeWidget.h"
-#include "ui_statisticsmodewidget.h"
+#include "ui_StatisticsModeWidget.h"
 
 #include "InterraterAgreement.h"
 #include "AnalyserTemporal.h"
@@ -100,6 +100,8 @@ void StatisticsModeWidget::analyse()
     AnalyserTemporal *analyser = new AnalyserTemporal(this);
 
     QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    if (!corpus) return;
+
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         analyser->calculate(corpus, com);
         QString line;

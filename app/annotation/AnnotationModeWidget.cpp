@@ -1,5 +1,5 @@
 #include "AnnotationModeWidget.h"
-#include "ui_annotationmodewidget.h"
+#include "ui_AnnotationModeWidget.h"
 
 #include "AutomaticAnnotationWidget.h"
 #include "ManualAnnotationWidget.h"

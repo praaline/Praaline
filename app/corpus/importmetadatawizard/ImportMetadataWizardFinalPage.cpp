@@ -1,5 +1,5 @@
 #include "ImportMetadataWizardFinalPage.h"
-#include "ui_importmetadatawizardfinalpage.h"
+#include "ui_ImportMetadataWizardFinalPage.h"
 
 ImportMetadataWizardFinalPage::ImportMetadataWizardFinalPage(QWidget *parent) :
     QWizardPage(parent),

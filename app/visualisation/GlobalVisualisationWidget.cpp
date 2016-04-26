@@ -1,5 +1,5 @@
 #include "GlobalVisualisationWidget.h"
-#include "ui_globalvisualisationwidget.h"
+#include "ui_GlobalVisualisationWidget.h"
 
 GlobalVisualisationWidget::GlobalVisualisationWidget(QWidget *parent) :
     QMainWindow(parent),

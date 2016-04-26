@@ -1,7 +1,7 @@
 #include <QDebug>
 #include <QStandardItemModel>
 #include "CorpusExplorerOptionsDialog.h"
-#include "ui_corpusexploreroptionsdialog.h"
+#include "ui_CorpusExplorerOptionsDialog.h"
 
 struct CorpusExplorerOptionsDialogData {
     CorpusExplorerOptionsDialogData() :

@@ -1,5 +1,5 @@
 #include "TimelineVisualisationWidget.h"
-#include "ui_timelinevisualisationwidget.h"
+#include "ui_TimelineVisualisationWidget.h"
 
 #include <QPointer>
 #include <QString>

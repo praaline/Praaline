@@ -8,7 +8,7 @@
 #include <QProgressDialog>
 
 #include "CorpusExplorerWidget.h"
-#include "ui_corpusexplorerwidget.h"
+#include "ui_CorpusExplorerWidget.h"
 
 #include <QtilitiesProjectManagement>
 using namespace QtilitiesProjectManagement;

@@ -3,7 +3,7 @@
 #include <QStandardItemModel>
 #include <QDebug>
 #include "BatchEditorWidget.h"
-#include "ui_batcheditwidget.h"
+#include "ui_BatchEditorWidget.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/annotationtier.h"

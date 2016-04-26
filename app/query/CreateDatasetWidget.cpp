@@ -1,5 +1,5 @@
 #include "CreateDatasetWidget.h"
-#include "ui_createdatasetwidget.h"
+#include "ui_CreateDatasetWidget.h"
 
 CreateDatasetWidget::CreateDatasetWidget(QWidget *parent) :
     QMainWindow(parent),

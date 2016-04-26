@@ -1,5 +1,5 @@
 #include "ImportMetadataWizardColumnsPage.h"
-#include "ui_importmetadatawizardcolumnspage.h"
+#include "ui_ImportMetadataWizardColumnsPage.h"
 
 ImportMetadataWizardColumnsPage::ImportMetadataWizardColumnsPage(QWidget *parent) :
     QWizardPage(parent),

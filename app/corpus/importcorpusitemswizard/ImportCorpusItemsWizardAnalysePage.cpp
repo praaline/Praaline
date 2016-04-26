@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QClipboard>
 #include "ImportCorpusItemsWizardAnalysePage.h"
-#include "ui_importcorpusitemswizardanalysepage.h"
+#include "ui_ImportCorpusItemsWizardAnalysePage.h"
 
 #include "pncore/interfaces/praat/praattextgrid.h"
 

@@ -4,7 +4,7 @@
 #include <QTreeView>
 #include <QTableView>
 #include "ConcordancerWidget.h"
-#include "ui_concordancerwidget.h"
+#include "ui_ConcordancerWidget.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/query/querydefinition.h"

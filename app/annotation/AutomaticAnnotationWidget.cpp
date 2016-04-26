@@ -11,7 +11,7 @@
 #include "qttreepropertybrowser.h"
 
 #include "AutomaticAnnotationWidget.h"
-#include "ui_automaticannotationwidget.h"
+#include "ui_AutomaticAnnotationWidget.h"
 
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/model/checkableproxymodel.h"

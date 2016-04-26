@@ -1,5 +1,5 @@
 #include "QueryModeWidget.h"
-#include "ui_querymodewidget.h"
+#include "ui_QueryModeWidget.h"
 
 #include "AdvancedQueriesWidget.h"
 #include "ConcordancerWidget.h"

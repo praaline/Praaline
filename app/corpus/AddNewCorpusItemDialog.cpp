@@ -1,5 +1,5 @@
 #include "AddNewCorpusItemDialog.h"
-#include "ui_addnewcorpusitemdialog.h"
+#include "ui_AddNewCorpusItemDialog.h"
 
 AddNewCorpusItemDialog::AddNewCorpusItemDialog(QWidget *parent) :
     QDialog(parent),

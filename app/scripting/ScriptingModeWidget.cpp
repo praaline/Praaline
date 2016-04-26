@@ -1,5 +1,5 @@
 #include "ScriptingModeWidget.h"
-#include "ui_scriptingmodewidget.h"
+#include "ui_ScriptingModeWidget.h"
 
 ScriptingModeWidget::ScriptingModeWidget(QWidget *parent) :
     QWidget(parent),

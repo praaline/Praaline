@@ -5,7 +5,7 @@
 #include <QTreeView>
 
 #include "CorpusStructureEditorWidget.h"
-#include "ui_corpusstructureeditorwidget.h"
+#include "ui_CorpusStructureEditorWidget.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/serialisers/xml/xmlserialisermetadatastructure.h"

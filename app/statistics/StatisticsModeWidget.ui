@@ -55,7 +55,11 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="1" column="0">
-         <layout class="QGridLayout" name="gridLayoutMessages"/>
+         <layout class="QGridLayout" name="gridLayoutMessages">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
+         </layout>
         </item>
         <item row="0" column="0">
          <widget class="QCommandLinkButton" name="commandAnalyse">

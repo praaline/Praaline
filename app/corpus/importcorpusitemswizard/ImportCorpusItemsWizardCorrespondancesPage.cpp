@@ -7,7 +7,7 @@
 #include <QStandardItemModel>
 #include "pncore/interfaces/interfacetextfile.h"
 #include "ImportCorpusItemsWizardCorrespondancesPage.h"
-#include "ui_importcorpusitemswizardcorrespondancespage.h"
+#include "ui_ImportCorpusItemsWizardCorrespondancesPage.h"
 
 ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondancesPage(
         QPointer<Corpus> corpus,

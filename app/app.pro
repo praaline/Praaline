@@ -80,8 +80,6 @@ PRE_TARGETDEPS += \
 TARGET = ../praaline
 
 SOURCES += main.cpp \
-    annotation/dis/annotationcontrolsdisfluencies.cpp \
-    annotation/dis/disfluencyanalyser.cpp \
     #visualisation/pitchanalyser.cpp \
     corpus/MergeCorporaDialog.cpp \
     statistics/CountStatisticsWidget.cpp \
@@ -153,7 +151,9 @@ SOURCES += main.cpp \
     statistics/AnalyserTemporal.cpp \
     statistics/AnalyserSpeechRate.cpp \
     statistics/AnalyserSegmentDurations.cpp \
-    statistics/AnalyserPitch.cpp
+    statistics/AnalyserPitch.cpp \
+    annotation/dis/AnnotationControlsDisfluencies.cpp \
+    annotation/dis/DisfluencyAnalyser.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -251,7 +251,6 @@ FORMS    += \
     annotation/dis/AnnotationControlsDisfluencies.ui \
     annotation/AnnotationModeWidget.ui \
     annotation/AutomaticAnnotationWidget.ui \
-    annotation/BatchEditWidget.ui \
     annotation/CompareAnnotationsWidget.ui \
     annotation/ManualAnnotationWidget.ui \
     annotation/TranscriberWidget.ui \
@@ -287,7 +286,8 @@ FORMS    += \
     corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.ui \
     corpus/corpusstructureeditor/AddAttributeDialog.ui \
     corpus/corpusstructureeditor/AddLevelDialog.ui \
-    corpus/corpusstructureeditor/CorpusStructureEditorWidget.ui
+    corpus/corpusstructureeditor/CorpusStructureEditorWidget.ui \
+    annotation/BatchEditorWidget.ui
 
 RESOURCES += \
     praaline.qrc \

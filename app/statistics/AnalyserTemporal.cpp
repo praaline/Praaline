@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -261,7 +262,23 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                         numSilentPauses++;
                     }
                     else {
+
+
+
+//            foreach (Interval *syll, tier_syll->intervals()) {
+//                QList<Interval *>timeline = tier_timeline->intervalAtTime(syll->tCenter());
+//                QString speakers = timeline->text();
+//                QString temporal = timeline->attribute("temporal").toString();
+
+
+
+//            }
+
+
+
+
                         // Speech. Separate filled pauses from articulated syllables.
+                        RealTime durAccumulator;
                         QList<Interval *> tokens = tier_tokmin->getIntervalsContainedIn(intv);
                         foreach (Interval *token, tokens) {
                             if (d->filledPauseTokens.contains(token->text())) {
@@ -269,23 +286,27 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                                 timeFilledPause += token->duration().toDouble();
                                 durationsPauseFIL << token->duration().toDouble();
                                 numFilledPauses++;
+                                durAccumulator = durAccumulator + token->duration();
                             }
                             else {
                                 // Articulation
                                 if (temporal == "S")    timeArticulationAlone += token->duration().toDouble();
                                 else if (temporal == "OVC")  timeArticulationOverlapContinue += token->duration().toDouble();
                                 else if (temporal == "OVT")  timeArticulationOverlapTurnChange += token->duration().toDouble();
-                                else {
-                                    int aaarg = 5;
-                                    aaarg = aaarg + 2;
-                                }
                                 QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(token);
                                 int nsyll = (syllIndices.second - syllIndices.first + 1);
                                 numSyllablesArticulated += nsyll;
                                 numTokens++;
                                 currentTurnSyllableCount += (double)nsyll;
                                 currentTurnTokenCount += 1.0;
+                                durAccumulator = durAccumulator + token->duration();
                             }
+                        }
+                        if (durAccumulator != intv->duration()) {
+                            qDebug() << "ERROR at " << com->ID() << " " << intv->tMin().toDouble();
+                            qDebug() << "         " << durAccumulator.toDouble() << " " << intv->duration().toDouble();
+                            foreach (Interval *token, tokens)
+                                qDebug() << "           " << token->text() << " " << token->duration().toDouble();
                         }
                         // End of Speech.
                     }

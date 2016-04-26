@@ -10,7 +10,7 @@
 #include <QtMultimedia>
 #include <QSignalBlocker>
 #include "ManualAnnotationWidget.h"
-#include "ui_manualannotationwidget.h"
+#include "ui_ManualAnnotationWidget.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/annotationtiergroup.h"

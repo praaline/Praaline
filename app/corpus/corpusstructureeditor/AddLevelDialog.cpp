@@ -1,5 +1,5 @@
 #include "AddLevelDialog.h"
-#include "ui_addleveldialog.h"
+#include "ui_AddLevelDialog.h"
 
 AddLevelDialog::AddLevelDialog(AnnotationStructure *structure, QWidget *parent) :
     QDialog(parent),

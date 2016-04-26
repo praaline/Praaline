@@ -3,7 +3,7 @@
 #include <QMessageBox>
 
 #include "CompareAnnotationsWidget.h"
-#include "ui_compareannotationswidget.h"
+#include "ui_CompareAnnotationsWidget.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/intervaltier.h"

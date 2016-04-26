@@ -1,6 +1,6 @@
 #include <QFileDialog>
 #include "ImportCorpusItemsWizardSelectionPage.h"
-#include "ui_importcorpusitemswizardselectionpage.h"
+#include "ui_ImportCorpusItemsWizardSelectionPage.h"
 
 ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
         QPointer<Corpus> corpus,

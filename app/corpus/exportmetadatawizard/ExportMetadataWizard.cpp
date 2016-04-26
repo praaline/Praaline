@@ -1,5 +1,5 @@
 #include "ExportMetadataWizard.h"
-#include "ui_exportmetadatawizard.h"
+#include "ui_ExportMetadataWizard.h"
 
 #include "pncore/corpus/corpus.h"
 

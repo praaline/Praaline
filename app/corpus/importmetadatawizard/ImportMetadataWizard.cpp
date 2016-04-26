@@ -6,7 +6,8 @@
 #include <QApplication>
 #include <QDebug>
 #include "ImportMetadataWizard.h"
-#include "ui_importmetadatawizard.h"
+#include "ui_ImportMetadataWizard.h"
+
 #include "pncore/corpus/corpus.h"
 #include "pngui/model/corpus/corpuscommunicationtablemodel.h"
 #include "pngui/model/corpus/corpusspeakertablemodel.h"

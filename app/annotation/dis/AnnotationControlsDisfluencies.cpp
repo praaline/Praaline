@@ -5,7 +5,7 @@
 #include "pngui/model/annotation/annotationtiermodel.h"
 
 #include "AnnotationControlsDisfluencies.h"
-#include "ui_annotationcontrolsdisfluencies.h"
+#include "ui_AnnotationControlsDisfluencies.h"
 
 #include "DisfluencyAnalyser.h"
 

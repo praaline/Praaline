@@ -1,6 +1,6 @@
 #include <QFileDialog>
 #include "NewCorpusWizard.h"
-#include "ui_newcorpuswizard.h"
+#include "ui_NewCorpusWizard.h"
 #include "pncore/serialisers/datastoreinfo.h"
 
 NewCorpusWizard::NewCorpusWizard(QWidget *parent) :

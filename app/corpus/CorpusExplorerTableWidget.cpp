@@ -1,5 +1,5 @@
 #include "CorpusExplorerTableWidget.h"
-#include "ui_corpusexplorertablewidget.h"
+#include "ui_CorpusExplorerTableWidget.h"
 
 #include "grid/qadvancedtableview.h"
 #include "grid/qadvancedheaderview.h"

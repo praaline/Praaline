@@ -1,5 +1,5 @@
 #include "AddAttributeDialog.h"
-#include "ui_addattributedialog.h"
+#include "ui_AddAttributeDialog.h"
 
 AddAttributeDialog::AddAttributeDialog(QWidget *parent) :
     QDialog(parent),

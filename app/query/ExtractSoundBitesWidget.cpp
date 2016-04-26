@@ -1,5 +1,5 @@
 #include "ExtractSoundBitesWidget.h"
-#include "ui_extractsoundbiteswidget.h"
+#include "ui_ExtractSoundBitesWidget.h"
 
 #include <QString>
 #include <QList>

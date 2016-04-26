@@ -1,5 +1,5 @@
 #include "CorpusModeWidget.h"
-#include "ui_corpusmodewidget.h"
+#include "ui_CorpusModeWidget.h"
 
 #include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
 #include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"

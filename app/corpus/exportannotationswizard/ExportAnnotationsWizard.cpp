@@ -1,5 +1,5 @@
 #include "ExportAnnotationsWizard.h"
-#include "ui_exportannotationswizard.h"
+#include "ui_ExportAnnotationsWizard.h"
 #include "ExportAnnotationsWizardPraatPage.h"
 
 struct ExportAnnotationsWizardData {

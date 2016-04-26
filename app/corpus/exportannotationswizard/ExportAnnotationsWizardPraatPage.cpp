@@ -1,5 +1,5 @@
 #include "ExportAnnotationsWizardPraatPage.h"
-#include "ui_exportannotationswizardpraatpage.h"
+#include "ui_ExportAnnotationsWizardPraatPage.h"
 
 #include <QStandardItemModel>
 #include "pngui/model/checkableproxymodel.h"

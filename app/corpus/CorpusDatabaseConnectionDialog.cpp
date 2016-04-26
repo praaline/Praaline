@@ -2,7 +2,7 @@
 #include <QString>
 #include <QFileDialog>
 #include "CorpusDatabaseConnectionDialog.h"
-#include "ui_corpusdatabaseconnectiondialog.h"
+#include "ui_CorpusDatabaseConnectionDialog.h"
 #include "pncore/serialisers/corpusdefinition.h"
 
 CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) :

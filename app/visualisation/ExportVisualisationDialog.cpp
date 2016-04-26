@@ -16,7 +16,7 @@
 #include "pngui/epsengine/EpsEngine.h"
 
 #include "ExportVisualisationDialog.h"
-#include "ui_exportvisualisationdialog.h"
+#include "ui_ExportVisualisationDialog.h"
 
 
 struct ExportVisualisationDialogData

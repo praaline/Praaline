@@ -4,7 +4,7 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "CheckMediaFilesDialog.h"
-#include "ui_checkmediafilesdialog.h"
+#include "ui_CheckMediaFilesDialog.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pnlib/mediautil/SoundInfo.h"

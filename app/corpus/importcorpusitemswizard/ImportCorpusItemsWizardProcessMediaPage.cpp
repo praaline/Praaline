@@ -7,7 +7,7 @@
 #include "pnlib/mediautil/SoundInfo.h"
 
 #include "ImportCorpusItemsWizardProcessMediaPage.h"
-#include "ui_importcorpusitemswizardprocessmediapage.h"
+#include "ui_ImportCorpusItemsWizardProcessMediaPage.h"
 
 ImportCorpusItemsWizardProcessMediaPage::ImportCorpusItemsWizardProcessMediaPage(
         QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,

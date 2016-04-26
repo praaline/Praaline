@@ -1,5 +1,5 @@
 #include "ConnectToCorpusDatabaseDialog.h"
-#include "ui_connecttocorpusdatabasedialog.h"
+#include "ui_ConnectToCorpusDatabaseDialog.h"
 
 ConnectToCorpusDatabaseDialog::ConnectToCorpusDatabaseDialog(QWidget *parent) :
     QDialog(parent),

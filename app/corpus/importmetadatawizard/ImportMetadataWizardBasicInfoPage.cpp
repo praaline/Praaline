@@ -1,5 +1,5 @@
 #include "ImportMetadataWizardBasicInfoPage.h"
-#include "ui_importmetadatawizardbasicinfopage.h"
+#include "ui_ImportMetadataWizardBasicInfoPage.h"
 
 ImportMetadataWizardBasicInfoPage::ImportMetadataWizardBasicInfoPage(QWidget *parent) :
     QWizardPage(parent),
