@@ -43,7 +43,7 @@ public:
                                                         const AnnotationStructure *structure, QSqlDatabase &db);
 
     static IntervalTier *getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
-                                            const QString &levelID,
+                                            const QString &levelID, bool detailed,
                                             const AnnotationStructure *structure, QSqlDatabase &db);
     static bool deleteAllForAnnotationID(QString annotationID, const AnnotationStructure *structure, QSqlDatabase &db);
 

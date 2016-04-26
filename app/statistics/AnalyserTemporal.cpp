@@ -10,6 +10,8 @@
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
 
+#include "pncore/interfaces/praat/praattextgrid.h"
+
 #include "AnalyserTemporal.h"
 
 struct AnalyserTemporalData {
@@ -42,6 +44,7 @@ QList<QString> AnalyserTemporal::measureIDsForCommunication()
             << "TimeTotalSample" << "TimeSingleSpeaker" << "TimeOverlap" << "TimeGap"
             << "RatioSingleSpeaker" << "RatioOverlap" << "RatioGap"
             << "GapDurations_Median" << "GapDurations_Q1" << "GapDurations_Q3"
+            << "TurnChangesCount" << "TurnChangesCount_Gap" << "TurnChangesCount_Overlap"
             << "TurnChangesRate" << "TurnChangesRate_Gap" << "TurnChangesRate_Overlap";
 }
 
@@ -62,56 +65,59 @@ QList<QString> AnalyserTemporal::measureIDsForSpeaker()
 
 StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForCommunication(const QString &measureID)
 {
-    if (measureID == "TimeTotalSample")     return StatisticalMeasureDefinition("TimeTotalSample", "Total sample time", "s");
-    if (measureID == "TimeSingleSpeaker")   return StatisticalMeasureDefinition("TimeSingleSpeaker", "Single-speaker time", "s");
-    if (measureID == "TimeOverlap")         return StatisticalMeasureDefinition("TimeOverlap", "Overlap time", "s");
-    if (measureID == "TimeGap")             return StatisticalMeasureDefinition("TimeGap", "Gap time", "s");
-    if (measureID == "RatioSingleSpeaker")  return StatisticalMeasureDefinition("RatioSingleSpeaker", "Single-Speaker time ratio", "%", "Signle-speaker time / Total sample time");
-    if (measureID == "RatioOverlap")        return StatisticalMeasureDefinition("RatioOverlap", "Overlap time ratio", "%", "Overlap time / Total sample time");
-    if (measureID == "RatioGap")            return StatisticalMeasureDefinition("RatioGap", "Gap time ratio", "%", "Gap time / Total sample time");
-    if (measureID == "GapDurations_Median") return StatisticalMeasureDefinition("GapDurations_Median", "Gap duration (median)", "s");
-    if (measureID == "GapDurations_Q1")     return StatisticalMeasureDefinition("GapDurations_Q1", "Gap duration (Q1)", "s");
-    if (measureID == "GapDurations_Q3")     return StatisticalMeasureDefinition("GapDurations_Q3", "Gap duration (Q3)", "s");
-    if (measureID == "TurnChangesRate")     return StatisticalMeasureDefinition("TurnChangesRate", "Turn changes per second", "1/s");
-    if (measureID == "TurnChangesRate_Gap") return StatisticalMeasureDefinition("TurnChangesRate_Gap", "Turn changes per second, without overlap", "1/s");
-    if (measureID == "TurnChangesRate_Overlap") return StatisticalMeasureDefinition("TurnChangesRate_Overlap", "Turn changes per second, with overlap", "1/s");
+    if (measureID == "TimeTotalSample")          return StatisticalMeasureDefinition("TimeTotalSample", "Total sample time", "s");
+    if (measureID == "TimeSingleSpeaker")        return StatisticalMeasureDefinition("TimeSingleSpeaker", "Single-speaker time", "s");
+    if (measureID == "TimeOverlap")              return StatisticalMeasureDefinition("TimeOverlap", "Overlap time", "s");
+    if (measureID == "TimeGap")                  return StatisticalMeasureDefinition("TimeGap", "Gap time", "s");
+    if (measureID == "RatioSingleSpeaker")       return StatisticalMeasureDefinition("RatioSingleSpeaker", "Single-Speaker time ratio", "%", "Signle-speaker time / Total sample time");
+    if (measureID == "RatioOverlap")             return StatisticalMeasureDefinition("RatioOverlap", "Overlap time ratio", "%", "Overlap time / Total sample time");
+    if (measureID == "RatioGap")                 return StatisticalMeasureDefinition("RatioGap", "Gap time ratio", "%", "Gap time / Total sample time");
+    if (measureID == "GapDurations_Median")      return StatisticalMeasureDefinition("GapDurations_Median", "Gap duration (median)", "s");
+    if (measureID == "GapDurations_Q1")          return StatisticalMeasureDefinition("GapDurations_Q1", "Gap duration (Q1)", "s");
+    if (measureID == "GapDurations_Q3")          return StatisticalMeasureDefinition("GapDurations_Q3", "Gap duration (Q3)", "s");
+    if (measureID == "TurnChangesCount")         return StatisticalMeasureDefinition("TurnChangesCount", "Number of turn changes", "");
+    if (measureID == "TurnChangesCount_Gap")     return StatisticalMeasureDefinition("TurnChangesCount_Gap", "Number of turn changes, withour overlap", "");
+    if (measureID == "TurnChangesCount_Overlap") return StatisticalMeasureDefinition("TurnChangesCount_Overlap", "Number of turn changes, with overlap", "");
+    if (measureID == "TurnChangesRate")          return StatisticalMeasureDefinition("TurnChangesRate", "Turn changes per second", "1/s");
+    if (measureID == "TurnChangesRate_Gap")      return StatisticalMeasureDefinition("TurnChangesRate_Gap", "Turn changes per second, without overlap", "1/s");
+    if (measureID == "TurnChangesRate_Overlap")  return StatisticalMeasureDefinition("TurnChangesRate_Overlap", "Turn changes per second, with overlap", "1/s");
     return StatisticalMeasureDefinition(measureID, measureID, "");
     // Note: total sample time is less than the recording (media file) time, by excluding leading and trailing silence
 }
 
 StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForSpeaker(const QString &measureID)
 {
-    if (measureID == "TimeSpeech") return StatisticalMeasureDefinition("TimeSpeech", "Speech time", "s", "Articulation Time + Silent Pause Time + Filled Pause Time");
-    if (measureID == "TimeArticulation") return StatisticalMeasureDefinition("TimeArticulation", "Articulation time", "s");
-    if (measureID == "TimeArticulation_Alone") return StatisticalMeasureDefinition("TimeArticulation_Alone", "Articulation, speaking alone time", "s");
-    if (measureID == "TimeArticulation_Overlap") return StatisticalMeasureDefinition("TimeArticulation_Overlap", "Articulation, overlap time", "s");
-    if (measureID == "TimeArticulation_Overlap_Continue") return StatisticalMeasureDefinition("TimeArticulation_Overlap_Continue", "Articulation, overlap without turn change, time", "s");
+    if (measureID == "TimeSpeech")                return StatisticalMeasureDefinition("TimeSpeech", "Speech time", "s", "Articulation Time + Silent Pause Time + Filled Pause Time");
+    if (measureID == "TimeArticulation")          return StatisticalMeasureDefinition("TimeArticulation", "Articulation time", "s");
+    if (measureID == "TimeArticulation_Alone")    return StatisticalMeasureDefinition("TimeArticulation_Alone", "Articulation, speaking alone time", "s");
+    if (measureID == "TimeArticulation_Overlap")  return StatisticalMeasureDefinition("TimeArticulation_Overlap", "Articulation, overlap time", "s");
+    if (measureID == "TimeArticulation_Overlap_Continue")   return StatisticalMeasureDefinition("TimeArticulation_Overlap_Continue", "Articulation, overlap without turn change, time", "s");
     if (measureID == "TimeArticulation_Overlap_TurnChange") return StatisticalMeasureDefinition("TimeArticulation_Overlap_TurnChange", "Articulation, overlap with turn change, time", "s");
     if (measureID == "TimeSilentPause") return StatisticalMeasureDefinition("TimeSilentPause", "Silent pause time", "s");
     if (measureID == "TimeFilledPause") return StatisticalMeasureDefinition("TimeFilledPause", "Filled pause time", "s");
-    if (measureID == "RatioArticulation") return StatisticalMeasureDefinition("RatioArticulation", "Articulation ratio", "%");
-    if (measureID == "RatioArticulation_Alone") return StatisticalMeasureDefinition("RatioArticulation_Alone", "Articulation, speaking alone ratio", "%");
+    if (measureID == "RatioArticulation")         return StatisticalMeasureDefinition("RatioArticulation", "Articulation ratio", "%");
+    if (measureID == "RatioArticulation_Alone")   return StatisticalMeasureDefinition("RatioArticulation_Alone", "Articulation, speaking alone ratio", "%");
     if (measureID == "RatioArticulation_Overlap") return StatisticalMeasureDefinition("RatioArticulation_Overlap", "Articulation, overlap ratio, ", "%");
-    if (measureID == "RatioArticulation_Overlap_Continue") return StatisticalMeasureDefinition("RatioArticulation_Overlap_Continue", "Articulation, overlap without turn change, ratio", "%");
+    if (measureID == "RatioArticulation_Overlap_Continue")   return StatisticalMeasureDefinition("RatioArticulation_Overlap_Continue", "Articulation, overlap without turn change, ratio", "%");
     if (measureID == "RatioArticulation_Overlap_TurnChange") return StatisticalMeasureDefinition("RatioArticulation_Overlap_TurnChange", "Articulation, overlap with turn change, ratio", "%");
     if (measureID == "RatioSilentPause") return StatisticalMeasureDefinition("RatioSilentPause", "Silent pause ratio", "%");
     if (measureID == "RatioFilledPause") return StatisticalMeasureDefinition("RatioFilledPause", "Filled pause ratio", "%");
-    if (measureID == "NumTokens") return StatisticalMeasureDefinition("NumTokens", "Number of tokens", "");
-    if (measureID == "NumSyllables") return StatisticalMeasureDefinition("NumSyllables", "Number of syllables (articulated)", "");
-    if (measureID == "NumSilentPauses") return StatisticalMeasureDefinition("NumSilentPauses", "Number of silent pauses", "");
-    if (measureID == "NumFilledPauses") return StatisticalMeasureDefinition("NumFilledPauses", "Number of filled pauses", "");
-    if (measureID == "SpeechRate") return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
-    if (measureID == "SilentPauseRate") return StatisticalMeasureDefinition("SilentPauseRate", "Silent pause rate", "SIL/s", "Number of silent pauses / Speech time");
-    if (measureID == "FilledPauseRate") return StatisticalMeasureDefinition("FilledPauseRate", "Filled pause rate", "FIL/s", "Number of filled pauses / Speech time");
+    if (measureID == "NumTokens")        return StatisticalMeasureDefinition("NumTokens", "Number of tokens", "");
+    if (measureID == "NumSyllables")     return StatisticalMeasureDefinition("NumSyllables", "Number of syllables (articulated)", "");
+    if (measureID == "NumSilentPauses")  return StatisticalMeasureDefinition("NumSilentPauses", "Number of silent pauses", "");
+    if (measureID == "NumFilledPauses")  return StatisticalMeasureDefinition("NumFilledPauses", "Number of filled pauses", "");
+    if (measureID == "SpeechRate")       return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
+    if (measureID == "SilentPauseRate")  return StatisticalMeasureDefinition("SilentPauseRate", "Silent pause rate", "SIL/s", "Number of silent pauses / Speech time");
+    if (measureID == "FilledPauseRate")  return StatisticalMeasureDefinition("FilledPauseRate", "Filled pause rate", "FIL/s", "Number of filled pauses / Speech time");
     if (measureID == "ArticulationRate") return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "(syll/s)", "All articulated syllables (excluding SIL and FIL) / Articulation time");
     if (measureID == "PauseDur_SIL_Median") return StatisticalMeasureDefinition("PauseDur_SIL_Median", "Silent pause duration (median)", "s");
-    if (measureID == "PauseDur_SIL_Q1") return StatisticalMeasureDefinition("PauseDur_SIL_Q1", "Silent pause duration (Q1)", "s");
-    if (measureID == "PauseDur_SIL_Q3") return StatisticalMeasureDefinition("PauseDur_SIL_Q3", "Silent pause duration (Q3)", "s");
+    if (measureID == "PauseDur_SIL_Q1")     return StatisticalMeasureDefinition("PauseDur_SIL_Q1", "Silent pause duration (Q1)", "s");
+    if (measureID == "PauseDur_SIL_Q3")     return StatisticalMeasureDefinition("PauseDur_SIL_Q3", "Silent pause duration (Q3)", "s");
     if (measureID == "PauseDur_FIL_Median") return StatisticalMeasureDefinition("PauseDur_FIL_Median", "Filled pause duration (median)", "s");
-    if (measureID == "PauseDur_FIL_Q1") return StatisticalMeasureDefinition("PauseDur_FIL_Q1", "Filled pause duration (Q1)", "s");
-    if (measureID == "PauseDur_FIL_Q3") return StatisticalMeasureDefinition("PauseDur_FIL_Q3", "Filled pause duration (Q3)", "s");
-    if (measureID == "TurnDuration_Time_Median") return StatisticalMeasureDefinition("TurnDuration_Time_Median", "Turn duration (median)", "s");
-    if (measureID == "TurnDuration_Syll_Median") return StatisticalMeasureDefinition("TurnDuration_Syll_Median", "Number of syllables in turn (median)", "syll");
+    if (measureID == "PauseDur_FIL_Q1")     return StatisticalMeasureDefinition("PauseDur_FIL_Q1", "Filled pause duration (Q1)", "s");
+    if (measureID == "PauseDur_FIL_Q3")     return StatisticalMeasureDefinition("PauseDur_FIL_Q3", "Filled pause duration (Q3)", "s");
+    if (measureID == "TurnDuration_Time_Median")  return StatisticalMeasureDefinition("TurnDuration_Time_Median", "Turn duration (median)", "s");
+    if (measureID == "TurnDuration_Syll_Median")  return StatisticalMeasureDefinition("TurnDuration_Syll_Median", "Number of syllables in turn (median)", "syll");
     if (measureID == "TurnDuration_Token_Median") return StatisticalMeasureDefinition("TurnDuration_Token_Median", "Number of tokens in turn (median)", "tokens");
     // Note: ArtRatio + SilRatio + FilRatio = 100%. Percentages calculated over the Speech time of current speaker)
     return StatisticalMeasureDefinition(measureID, measureID, "");
@@ -137,7 +143,9 @@ IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPoi
 {
     if (!corpus || !com) return 0;
 
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables);
+    // A timeline on the syllable level with detailed = true means there will be an interval for each syllable
+    // and possibly segmented syllables when two speakers overlap.
+    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
     if (!tier_timeline) return 0;
 
     // Exclude silence at the begining and end of recording
@@ -186,6 +194,33 @@ IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPoi
     return tier_timeline;
 }
 
+void debugCreateTimelineTextgrid(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+{
+    IntervalTier *tier_timeline = getSpeakerTimeline(corpus, com);
+    QString path = corpus->basePath();
+    QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+            IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
+            txg->addTier(new IntervalTier(tier_syll));
+            txg->addTier(new IntervalTier(tier_tokmin));
+        }
+        qDeleteAll(tiersAll);
+    }
+    txg->addTier(tier_timeline);
+    IntervalTier *tier_timelineT = new IntervalTier(tier_timeline, "timelineT");
+    foreach (Interval *intv, tier_timelineT->intervals())
+        intv->setText(intv->attribute("temporal").toString());
+    txg->addTier(tier_timelineT);
+    PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg);
+}
+
 void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
     if (!corpus || !com) return;
@@ -196,7 +231,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     IntervalTier *tier_timeline = getSpeakerTimeline(corpus, com);
 
     // Measures that can be calculated from the timeline, on the Communication level
-    double timeSingleSpeaker(0), timeOverlap(0), timeGap(0);
+    RealTime timeSingleSpeaker, timeOverlap, timeGap;
     QList<double> gapDurations;
     int turnChangesWithGap(0), turnChangesWithOverlap(0);
     foreach (Interval *intv, tier_timeline->intervals()) {
@@ -214,24 +249,26 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             if (temporal == "OVT") turnChangesWithOverlap++;
         }
     }
-    double timeTotalSample = timeSingleSpeaker + timeOverlap + timeGap;
+    RealTime timeTotalSample = timeSingleSpeaker + timeOverlap + timeGap;
     if (timeTotalSample == 0) return;
-    d->measuresCom.insert("TimeTotalSample", timeTotalSample);
-    d->measuresCom.insert("TimeSingleSpeaker", timeSingleSpeaker);
-    d->measuresCom.insert("TimeOverlap", timeOverlap );
-    d->measuresCom.insert("TimeGap", timeGap);
-    d->measuresCom.insert("RatioSingleSpeaker", timeSingleSpeaker / timeTotalSample);
-    d->measuresCom.insert("RatioOverlap", timeOverlap / timeTotalSample);
-    d->measuresCom.insert("RatioGap", timeGap / timeTotalSample);
+    d->measuresCom.insert("TimeTotalSample", timeTotalSample.toDouble());
+    d->measuresCom.insert("TimeSingleSpeaker", timeSingleSpeaker.toDouble());
+    d->measuresCom.insert("TimeOverlap", timeOverlap.toDouble());
+    d->measuresCom.insert("TimeGap", timeGap.toDouble());
+    d->measuresCom.insert("RatioSingleSpeaker", timeSingleSpeaker.toDouble() / timeTotalSample.toDouble());
+    d->measuresCom.insert("RatioOverlap", timeOverlap.toDouble() / timeTotalSample.toDouble());
+    d->measuresCom.insert("RatioGap", timeGap.toDouble() / timeTotalSample.toDouble());
     StatisticalSummary summaryGapDurations;
     summaryGapDurations.calculate(gapDurations);
     d->measuresCom.insert("GapDurations_Median", summaryGapDurations.median());
     d->measuresCom.insert("GapDurations_Q1", summaryGapDurations.firstQuartile());
     d->measuresCom.insert("GapDurations_Q3", summaryGapDurations.thirdQuartile());
+    d->measuresCom.insert("TurnChangesCount", (turnChangesWithGap + turnChangesWithOverlap);
+    d->measuresCom.insert("TurnChangesCount_Gap", turnChangesWithGap);
+    d->measuresCom.insert("TurnChangesCount_Overlap", turnChangesWithOverlap);
     d->measuresCom.insert("TurnChangesRate", ((double)(turnChangesWithGap + turnChangesWithOverlap)) / timeTotalSample);
     d->measuresCom.insert("TurnChangesRate_Gap", ((double)turnChangesWithGap) / timeTotalSample);
     d->measuresCom.insert("TurnChangesRate_Overlap", ((double)turnChangesWithOverlap) / timeTotalSample);
-
 
     foreach (QString annotationID, com->annotationIDs()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID, QStringList() <<
@@ -243,120 +280,81 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             IntervalTier *tier_tokmin = tiers->getIntervalTierByName(d->levelTokens);
             if (!tier_syll || !tier_tokmin) continue;
             // Per speaker measures
-            double timeSpeech(0), timeSilentPause(0), timeFilledPause(0);
-            double timeArticulationAlone(0), timeArticulationOverlapContinue(0), timeArticulationOverlapTurnChange(0);
+            RealTime timeSpeech, timeSilentPause, timeFilledPause;
+            RealTime timeArticulationAlone, timeArticulationOverlapContinue, timeArticulationOverlapTurnChange;
             int numSilentPauses(0), numFilledPauses(0), numSyllablesArticulated(0), numTokens(0);
             QList<double> durationsPauseSIL, durationsPauseFIL;
             QList<double> turnDurations, turnTokenCounts, turnSyllableCounts;
             double currentTurnDuration(0), currentTurnTokenCount(0), currentTurnSyllableCount(0);
-            // Process timeline, focusing only on intervals for current speaker
-            foreach (Interval *intv, tier_timeline->intervals()) {
-                QString temporal = intv->attribute("temporal").toString();
-                if (intv->text().contains(speakerID)) {
-                    timeSpeech += intv->duration().toDouble();
-                    currentTurnDuration += intv->duration().toDouble();
-                    if (temporal == "P") {
-                        // Silent pause belonging to current speaker
-                        timeSilentPause += intv->duration().toDouble();
-                        durationsPauseSIL << intv->duration().toDouble();
-                        numSilentPauses++;
-                    }
-                    else {
 
-
-
-//            foreach (Interval *syll, tier_syll->intervals()) {
-//                QList<Interval *>timeline = tier_timeline->intervalAtTime(syll->tCenter());
-//                QString speakers = timeline->text();
-//                QString temporal = timeline->attribute("temporal").toString();
-
-
-
-//            }
-
-
-
-
-                        // Speech. Separate filled pauses from articulated syllables.
-                        RealTime durAccumulator;
-                        QList<Interval *> tokens = tier_tokmin->getIntervalsContainedIn(intv);
-                        foreach (Interval *token, tokens) {
-                            if (d->filledPauseTokens.contains(token->text())) {
-                                // Filled pause
-                                timeFilledPause += token->duration().toDouble();
-                                durationsPauseFIL << token->duration().toDouble();
-                                numFilledPauses++;
-                                durAccumulator = durAccumulator + token->duration();
-                            }
-                            else {
-                                // Articulation
-                                if (temporal == "S")    timeArticulationAlone += token->duration().toDouble();
-                                else if (temporal == "OVC")  timeArticulationOverlapContinue += token->duration().toDouble();
-                                else if (temporal == "OVT")  timeArticulationOverlapTurnChange += token->duration().toDouble();
-                                QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(token);
-                                int nsyll = (syllIndices.second - syllIndices.first + 1);
-                                numSyllablesArticulated += nsyll;
-                                numTokens++;
-                                currentTurnSyllableCount += (double)nsyll;
-                                currentTurnTokenCount += 1.0;
-                                durAccumulator = durAccumulator + token->duration();
-                            }
-                        }
-                        if (durAccumulator != intv->duration()) {
-                            qDebug() << "ERROR at " << com->ID() << " " << intv->tMin().toDouble();
-                            qDebug() << "         " << durAccumulator.toDouble() << " " << intv->duration().toDouble();
-                            foreach (Interval *token, tokens)
-                                qDebug() << "           " << token->text() << " " << token->duration().toDouble();
-                        }
-                        // End of Speech.
-                    }
+            // The basic unit is the speaker's syllables
+            foreach (Interval *syll, tier_syll->intervals()) {
+                QString syllCategory = "";
+                QList<Interval *> tokens = tier_tokmin->getIntervalsOverlappingWith(syll);
+                if (tokens.count() == 1 && d->filledPauseTokens.contains(tokens.first()->text())) {
+                    // This syllable is a filled pause
+                    syllCategory = "FIL";
                 }
-                else {
-                    // Turn just changed.
-                    if (currentTurnDuration > 0) {
-                        turnDurations << currentTurnDuration;
-                        turnTokenCounts << currentTurnTokenCount;
-                        turnSyllableCounts << currentTurnSyllableCount;
-                    }
-                    currentTurnDuration = 0;
-                    currentTurnTokenCount = 0;
-                    currentTurnSyllableCount = 0;
+                // Process sub-syllabic segments on the timeline
+                foreach (Interval *intv, tier_timeline->getIntervalsContainedIn(syll)) {
+                    QString temporal = intv->attribute("temporal").toString();
+                    if (intv->text().contains(speakerID)) {
+                        timeSpeech += intv->duration();
+                        if (temporal == "P") {
+                            // Silent pause belonging to current speaker
+                            timeSilentPause += intv->duration();
+                            durationsPauseSIL << intv->duration().toDouble();
+                            syllCategory = "SIL";
+                        }
+                        else {
+                            // Speech. Separate filled pauses from articulated syllables.
+                            if (syllCategory == "FIL") { // Filled pause
+                                timeFilledPause += intv->duration();
+                                durationsPauseFIL << intv->duration().toDouble();
+                            }
+                            else { // Articulated syllable
+                                syllCategory = "ART";
+                                if      (temporal == "S")    timeArticulationAlone += intv->duration();
+                                else if (temporal == "OVC")  timeArticulationOverlapContinue += intv->duration();
+                                else if (temporal == "OVT")  timeArticulationOverlapTurnChange += intv->duration();
+                            }
+                            // End of speech.
+                        }
+                    } // if current speaker
                 }
+                if      (syllCategory == "SIL") numSilentPauses++;
+                else if (syllCategory == "FIL") numFilledPauses++;
+                else if (syllCategory == "ART") numSyllablesArticulated++;
             }
-            // Any left-overs?
-            if (currentTurnDuration > 0) {
-                turnDurations << currentTurnDuration;
-                turnTokenCounts << currentTurnTokenCount;
-                turnSyllableCounts << currentTurnSyllableCount;
-            }
-            if (timeSpeech == 0) continue;
+
+            if (timeSpeech == RealTime(0,0)) continue;
             // Add statistical measures for current speaker
-            double timeArticulation = timeArticulationAlone + timeArticulationOverlapContinue + timeArticulationOverlapTurnChange;
-            double timeOverlap = timeArticulationOverlapContinue + timeArticulationOverlapTurnChange;
+            RealTime timeArticulation = timeArticulationAlone + timeArticulationOverlapContinue + timeArticulationOverlapTurnChange;
+            RealTime timeOverlap = timeArticulationOverlapContinue + timeArticulationOverlapTurnChange;
             QHash<QString, double> measures;
-            measures.insert("TimeSpeech", timeSpeech);
-            measures.insert("TimeArticulation", timeArticulation);
-            measures.insert("TimeArticulation_Alone", timeArticulationAlone);
-            measures.insert("TimeArticulation_Overlap", timeOverlap);
-            measures.insert("TimeArticulation_Overlap_Continue", timeArticulationOverlapContinue);
-            measures.insert("TimeArticulation_Overlap_TurnChange", timeArticulationOverlapTurnChange);
-            measures.insert("TimeSilentPause", timeSilentPause);
-            measures.insert("TimeFilledPause", timeFilledPause);
-            measures.insert("RatioArticulation", timeArticulation / timeSpeech);
-            measures.insert("RatioArticulation_Alone", timeArticulationAlone / timeSpeech);
-            measures.insert("RatioArticulation_Overlap", timeOverlap / timeSpeech);
-            measures.insert("RatioArticulation_Overlap_Continue", timeArticulationOverlapContinue / timeSpeech);
-            measures.insert("RatioArticulation_Overlap_TurnChange", timeArticulationOverlapTurnChange / timeSpeech);
-            measures.insert("RatioSilentPause", timeSilentPause / timeSpeech);
-            measures.insert("RatioFilledPause", timeFilledPause / timeSpeech);
+            measures.insert("TimeSpeech", timeSpeech.toDouble());
+            measures.insert("TimeArticulation", timeArticulation.toDouble());
+            measures.insert("TimeArticulation_Alone", timeArticulationAlone.toDouble());
+            measures.insert("TimeArticulation_Overlap", timeOverlap.toDouble());
+            measures.insert("TimeArticulation_Overlap_Continue", timeArticulationOverlapContinue.toDouble());
+            measures.insert("TimeArticulation_Overlap_TurnChange", timeArticulationOverlapTurnChange.toDouble());
+            measures.insert("TimeSilentPause", timeSilentPause.toDouble());
+            measures.insert("TimeFilledPause", timeFilledPause.toDouble());
+            measures.insert("RatioArticulation", timeArticulation.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioArticulation_Alone", timeArticulationAlone.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioArticulation_Overlap", timeOverlap.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioArticulation_Overlap_Continue", timeArticulationOverlapContinue.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioArticulation_Overlap_TurnChange", timeArticulationOverlapTurnChange.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioSilentPause", timeSilentPause.toDouble() / timeSpeech.toDouble());
+            measures.insert("RatioFilledPause", timeFilledPause.toDouble() / timeSpeech.toDouble());
             measures.insert("NumTokens", numTokens);
             measures.insert("NumSyllables", numSyllablesArticulated);
             measures.insert("NumSilentPauses", numSilentPauses);
             measures.insert("NumFilledPauses", numFilledPauses);
-            measures.insert("SpeechRate", numSyllablesArticulated / timeSpeech);
-            measures.insert("SilentPauseRate", numSilentPauses / timeSpeech);
-            measures.insert("FilledPauseRate", numFilledPauses / timeSpeech);
-            measures.insert("ArticulationRate", numSyllablesArticulated / timeArticulation);
+            measures.insert("SpeechRate", numSyllablesArticulated / timeSpeech.toDouble());
+            measures.insert("SilentPauseRate", numSilentPauses / timeSpeech.toDouble());
+            measures.insert("FilledPauseRate", numFilledPauses / timeSpeech.toDouble());
+            measures.insert("ArticulationRate", numSyllablesArticulated / timeArticulation.toDouble());
             StatisticalSummary summaryDurationsPauseSIL, summaryDurationsPauseFIL;
             StatisticalSummary summaryTurnDurations, summaryTurnTokenCounts, summaryTurnSyllableCounts;
             summaryDurationsPauseSIL.calculate(durationsPauseSIL);

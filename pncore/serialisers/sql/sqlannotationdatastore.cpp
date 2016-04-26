@@ -178,9 +178,10 @@ QList<QString> SQLAnnotationDatastore::getSpeakersActiveInAnnotation(const QStri
     return SQLSerialiserAnnotation::getSpeakersActiveInAnnotation(annotationID, m_structure, m_database);
 }
 
-IntervalTier *SQLAnnotationDatastore::getSpeakerTimeline(const QString &communicationID,const QString &annotationID, const QString &levelID)
+IntervalTier *SQLAnnotationDatastore::getSpeakerTimeline(const QString &communicationID,const QString &annotationID,
+                                                         const QString &levelID, bool detailed)
 {
-    return SQLSerialiserAnnotation::getSpeakerTimeline(communicationID, annotationID, levelID, m_structure, m_database);
+    return SQLSerialiserAnnotation::getSpeakerTimeline(communicationID, annotationID, levelID, detailed, m_structure, m_database);
 }
 
 bool SQLAnnotationDatastore::deleteAllForAnnotationID(QString annotationID)

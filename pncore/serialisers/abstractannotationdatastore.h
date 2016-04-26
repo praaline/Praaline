@@ -59,7 +59,7 @@ public:
     virtual QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID) = 0;
 
     virtual IntervalTier *getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
-                                             const QString &levelID) = 0;
+                                             const QString &levelID, bool detailed = false) = 0;
 
     virtual bool deleteAllForAnnotationID(QString annotationID) = 0;
 

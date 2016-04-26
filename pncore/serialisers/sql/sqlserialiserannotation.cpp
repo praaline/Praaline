@@ -341,7 +341,7 @@ QList<QString> SQLSerialiserAnnotation::getSpeakersActiveInAnnotation(const QStr
 
 // static
 IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
-                                                           const QString &levelID,
+                                                           const QString &levelID, bool detailed,
                                                            const AnnotationStructure *structure, QSqlDatabase &db)
 {
     QList<RealTime> timelineBoundaries;
@@ -399,7 +399,7 @@ IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &commun
         segment->setText(speakers);
     }
     qDeleteAll(speakingTiers);
-    timeline->mergeIdenticalAnnotations();
+    if (!detailed) timeline->mergeIdenticalAnnotations();
     return timeline;
 }
 
