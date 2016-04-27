@@ -26,7 +26,6 @@ public:
     double measureSpk(const QString &speakerID, const QString &measureID) const;
     QList<QString> speakerIDs() const;
 
-    IntervalTier *getSpeakerTimeline(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
     void calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
 
 signals:

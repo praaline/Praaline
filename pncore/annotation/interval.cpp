@@ -68,8 +68,8 @@ QVariant Interval::attribute(const QString &name) const
 bool Interval::overlaps(const Interval &other, const RealTime threshold) const
 {
     // default threshold is 0
-    return (((m_tMax - other.m_time) >= threshold) &&
-            ((other.m_tMax - m_time) >= threshold));
+    return (((m_tMax - other.m_time) > threshold) &&
+            ((other.m_tMax - m_time) > threshold));
 }
 
 bool Interval::covers(const Interval &other, const RealTime threshold) const

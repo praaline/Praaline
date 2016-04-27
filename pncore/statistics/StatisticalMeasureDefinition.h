@@ -20,14 +20,15 @@ public:
     QVariant::Type type() const { return m_type; }
 
     QString displayNameUnit() const {
+        if (m_units.isEmpty()) return m_displayName;
         return QString("%1 (%2)").arg(m_displayName).arg(m_units);
     }
 
 private:
     QString m_ID;
     QString m_displayName;
-    QString m_description;
     QString m_units;
+    QString m_description;
     QVariant::Type m_type;
 };
 

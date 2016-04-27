@@ -25,7 +25,7 @@ struct AnalyserTemporalData {
     QStringList filledPauseTokens;
 
     QHash<QString, double> measuresCom;
-    QHash<QString, QHash<QString, double> > measuresSpk;
+    QMap<QString, QHash<QString, double> > measuresSpk; // speakers are sorted
 };
 
 AnalyserTemporal::AnalyserTemporal(QObject *parent) :
@@ -60,7 +60,7 @@ QList<QString> AnalyserTemporal::measureIDsForSpeaker()
             << "NumTokens" << "NumSyllables" << "NumSilentPauses" << "NumFilledPauses"
             << "SpeechRate" << "SilentPauseRate" << "FilledPauseRate" << "ArticulationRate"
             << "PauseDur_SIL_Median" << "PauseDur_SIL_Q1" << "PauseDur_SIL_Q3" << "PauseDur_FIL_Median" << "PauseDur_FIL_Q1" << "PauseDur_FIL_Q3"
-            << "TurnDuration_Time_Median" << "TurnDuration_Syll_Median" << "TurnDuration_Token_Median";
+            << "TurnDuration_Time_Mean" << "TurnDuration_Syll_Mean" << "TurnDuration_Token_Mean";
 }
 
 StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForCommunication(const QString &measureID)
@@ -78,9 +78,9 @@ StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForCommunication
     if (measureID == "TurnChangesCount")         return StatisticalMeasureDefinition("TurnChangesCount", "Number of turn changes", "");
     if (measureID == "TurnChangesCount_Gap")     return StatisticalMeasureDefinition("TurnChangesCount_Gap", "Number of turn changes, withour overlap", "");
     if (measureID == "TurnChangesCount_Overlap") return StatisticalMeasureDefinition("TurnChangesCount_Overlap", "Number of turn changes, with overlap", "");
-    if (measureID == "TurnChangesRate")          return StatisticalMeasureDefinition("TurnChangesRate", "Turn changes per second", "1/s");
-    if (measureID == "TurnChangesRate_Gap")      return StatisticalMeasureDefinition("TurnChangesRate_Gap", "Turn changes per second, without overlap", "1/s");
-    if (measureID == "TurnChangesRate_Overlap")  return StatisticalMeasureDefinition("TurnChangesRate_Overlap", "Turn changes per second, with overlap", "1/s");
+    if (measureID == "TurnChangesRate")          return StatisticalMeasureDefinition("TurnChangesRate", "Turn changes per minute", "1/min");
+    if (measureID == "TurnChangesRate_Gap")      return StatisticalMeasureDefinition("TurnChangesRate_Gap", "Turn changes per minute, without overlap", "1/min");
+    if (measureID == "TurnChangesRate_Overlap")  return StatisticalMeasureDefinition("TurnChangesRate_Overlap", "Turn changes per minute, with overlap", "1/min");
     return StatisticalMeasureDefinition(measureID, measureID, "");
     // Note: total sample time is less than the recording (media file) time, by excluding leading and trailing silence
 }
@@ -109,16 +109,16 @@ StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForSpeaker(const
     if (measureID == "SpeechRate")       return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
     if (measureID == "SilentPauseRate")  return StatisticalMeasureDefinition("SilentPauseRate", "Silent pause rate", "SIL/s", "Number of silent pauses / Speech time");
     if (measureID == "FilledPauseRate")  return StatisticalMeasureDefinition("FilledPauseRate", "Filled pause rate", "FIL/s", "Number of filled pauses / Speech time");
-    if (measureID == "ArticulationRate") return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "(syll/s)", "All articulated syllables (excluding SIL and FIL) / Articulation time");
+    if (measureID == "ArticulationRate") return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Articulation time");
     if (measureID == "PauseDur_SIL_Median") return StatisticalMeasureDefinition("PauseDur_SIL_Median", "Silent pause duration (median)", "s");
     if (measureID == "PauseDur_SIL_Q1")     return StatisticalMeasureDefinition("PauseDur_SIL_Q1", "Silent pause duration (Q1)", "s");
     if (measureID == "PauseDur_SIL_Q3")     return StatisticalMeasureDefinition("PauseDur_SIL_Q3", "Silent pause duration (Q3)", "s");
     if (measureID == "PauseDur_FIL_Median") return StatisticalMeasureDefinition("PauseDur_FIL_Median", "Filled pause duration (median)", "s");
     if (measureID == "PauseDur_FIL_Q1")     return StatisticalMeasureDefinition("PauseDur_FIL_Q1", "Filled pause duration (Q1)", "s");
     if (measureID == "PauseDur_FIL_Q3")     return StatisticalMeasureDefinition("PauseDur_FIL_Q3", "Filled pause duration (Q3)", "s");
-    if (measureID == "TurnDuration_Time_Median")  return StatisticalMeasureDefinition("TurnDuration_Time_Median", "Turn duration (median)", "s");
-    if (measureID == "TurnDuration_Syll_Median")  return StatisticalMeasureDefinition("TurnDuration_Syll_Median", "Number of syllables in turn (median)", "syll");
-    if (measureID == "TurnDuration_Token_Median") return StatisticalMeasureDefinition("TurnDuration_Token_Median", "Number of tokens in turn (median)", "tokens");
+    if (measureID == "TurnDuration_Time_Mean")  return StatisticalMeasureDefinition("TurnDuration_Time_Mean", "Turn duration (mean)", "s");
+    if (measureID == "TurnDuration_Syll_Mean")  return StatisticalMeasureDefinition("TurnDuration_Syll_Mean", "Number of syllables in turn (mean)", "syll");
+    if (measureID == "TurnDuration_Token_Mean") return StatisticalMeasureDefinition("TurnDuration_Token_Mean", "Number of tokens in turn (mean)", "tokens");
     // Note: ArtRatio + SilRatio + FilRatio = 100%. Percentages calculated over the Speech time of current speaker)
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
@@ -139,38 +139,47 @@ QList<QString> AnalyserTemporal::speakerIDs() const
     return d->measuresSpk.keys();
 }
 
-IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+QPair<IntervalTier *, IntervalTier *> getSpeakerTimeline(AnalyserTemporalData *d, QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    if (!corpus || !com) return 0;
+    QPair<IntervalTier *, IntervalTier *> ret(0, 0);
+    if (!corpus || !com) return ret;
 
     // A timeline on the syllable level with detailed = true means there will be an interval for each syllable
     // and possibly segmented syllables when two speakers overlap.
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
-    if (!tier_timeline) return 0;
+    IntervalTier *tier_timelineSyll = corpus->datastoreAnnotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
+    if (!tier_timelineSyll) return ret;
 
     // Exclude silence at the begining and end of recording
     int i = 0;
-    while (i < tier_timeline->count() && tier_timeline->interval(i)->isPauseSilent()) {
-        tier_timeline->interval(i)->setAttribute("temporal", "X");
+    while (i < tier_timelineSyll->count() && tier_timelineSyll->interval(i)->isPauseSilent()) {
+        tier_timelineSyll->interval(i)->setAttribute("temporal", "X");
         i++;
     }
-    i = tier_timeline->count() - 1;
-    while (i >= 0 && tier_timeline->interval(i)->isPauseSilent()) {
-        tier_timeline->interval(i)->setAttribute("temporal", "X");
+    i = tier_timelineSyll->count() - 1;
+    while (i >= 0 && tier_timelineSyll->interval(i)->isPauseSilent()) {
+        tier_timelineSyll->interval(i)->setAttribute("temporal", "X");
         i--;
     }
+
+    // Create a timeline clone where regions of identical speakers are merged together
+    IntervalTier *tier_timelineSpk = new IntervalTier(tier_timelineSyll);
+    tier_timelineSpk->mergeIdenticalAnnotations();
+
     // Categorise intervals using an additional attribute on the timeline tier
-    for (i = 0; i < tier_timeline->count(); ++i) {
-        Interval *intv = tier_timeline->interval(i);
+    for (i = 0; i < tier_timelineSpk->count(); ++i) {
+        Interval *intv = tier_timelineSpk->interval(i);
         if (intv->attribute("temporal").toString() == "X")
             continue; // excluded
         if (intv->isPauseSilent()) {
-            QString speakerBefore, speakerAfter;
-            if (i > 0) speakerBefore = tier_timeline->interval(i - 1)->text();
-            if (i < tier_timeline->count() - 2) speakerAfter = tier_timeline->interval(i + 1)->text();
-            if (speakerAfter.contains(speakerBefore) || (speakerBefore.isEmpty()) || (speakerAfter.isEmpty())) {
-                intv->setText(speakerBefore); // silent pause belonging to the current speaker
+            QString speakerBeforePause, speakerAfterPause;
+            if (i > 0) speakerBeforePause = tier_timelineSpk->interval(i - 1)->text();
+            if (i < tier_timelineSpk->count() - 2) speakerAfterPause = tier_timelineSpk->interval(i + 1)->text();
+            if (speakerAfterPause.contains(speakerBeforePause) && !speakerBeforePause.isEmpty() && !speakerAfterPause.isEmpty()) {
+                intv->setText(speakerBeforePause); // silent pause belonging to the current speaker
                 intv->setAttribute("temporal", "P");
+            }
+            else if (speakerBeforePause.isEmpty() || speakerAfterPause.isEmpty()) {
+                intv->setAttribute("temporal", "X");
             } else {
                 intv->setAttribute("temporal", "G");
             }
@@ -180,8 +189,8 @@ IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPoi
             if (intv->text().contains("+")) {
                 // Detect overlaps with or without change of turn
                 QString speakerBefore, speakerAfter;
-                if (i > 0) speakerBefore = tier_timeline->interval(i - 1)->text();
-                if (i < tier_timeline->count() - 2) speakerAfter = tier_timeline->interval(i + 1)->text();
+                if (i > 0) speakerBefore = tier_timelineSpk->interval(i - 1)->text();
+                if (i < tier_timelineSpk->count() - 2) speakerAfter = tier_timelineSpk->interval(i + 1)->text();
                 if ((speakerBefore == speakerAfter) && (!speakerBefore.contains("+")) && (!speakerAfter.contains("+")))
                     intv->setAttribute("temporal", "OVC");
                 else
@@ -190,15 +199,25 @@ IntervalTier *AnalyserTemporal::getSpeakerTimeline(QPointer<Corpus> corpus, QPoi
                 intv->setAttribute("temporal", "S");
             }
         }
+        foreach (Interval *syllseg, tier_timelineSyll->getIntervalsContainedIn(intv)) {
+            syllseg->setText(intv->text());
+            syllseg->setAttribute("temporal", intv->attribute("temporal"));
+        }
     }
-    return tier_timeline;
+    ret.first = tier_timelineSyll;
+    ret.second = tier_timelineSpk;
+    return ret;
 }
 
-void debugCreateTimelineTextgrid(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    IntervalTier *tier_timeline = getSpeakerTimeline(corpus, com);
+    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, corpus, com);
+    if (!timelines.first || !timelines.second) return;
+    IntervalTier *tier_timelineSyll(timelines.first);
+    IntervalTier *tier_timelineSpk(timelines.second);
+
     QString path = corpus->basePath();
-    QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
+    QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
@@ -210,15 +229,28 @@ void debugCreateTimelineTextgrid(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
             txg->addTier(new IntervalTier(tier_syll));
             txg->addTier(new IntervalTier(tier_tokmin));
+            // Turn
+            IntervalTier *tier_turns = new IntervalTier(tier_timelineSpk);
+            foreach (Interval *intv, tier_turns->intervals()) {
+                if (intv->text().contains(speakerID)) intv->setText(speakerID); else intv->setText("");
+            }
+            tier_turns->mergeIdenticalAnnotations();
+            txg->addTier(tier_turns);
         }
         qDeleteAll(tiersAll);
     }
-    txg->addTier(tier_timeline);
-    IntervalTier *tier_timelineT = new IntervalTier(tier_timeline, "timelineT");
-    foreach (Interval *intv, tier_timelineT->intervals())
+    txg->addTier(tier_timelineSyll);
+    IntervalTier *tier_timelineSyllT = new IntervalTier(tier_timelineSyll, "timelineSyllT");
+    foreach (Interval *intv, tier_timelineSyllT->intervals())
         intv->setText(intv->attribute("temporal").toString());
-    txg->addTier(tier_timelineT);
-    PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg);
+    txg->addTier(tier_timelineSyllT);
+    txg->addTier(tier_timelineSpk);
+    IntervalTier *tier_timelineSpkT = new IntervalTier(tier_timelineSpk, "timelineSpkT");
+    foreach (Interval *intv, tier_timelineSpkT->intervals())
+        intv->setText(intv->attribute("temporal").toString());
+    txg->addTier(tier_timelineSpkT);
+
+    PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg.data());
 }
 
 void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
@@ -228,29 +260,35 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     d->measuresCom.clear();
     d->measuresSpk.clear();
 
-    IntervalTier *tier_timeline = getSpeakerTimeline(corpus, com);
+    // debugCreateTimelineTextgrid(d, corpus, com);
+
+    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, corpus, com);
+    if (!timelines.first || !timelines.second) return;
+    QScopedPointer<IntervalTier> tier_timelineSyll(timelines.first);
+    QScopedPointer<IntervalTier> tier_timelineSpk(timelines.second);
 
     // Measures that can be calculated from the timeline, on the Communication level
     RealTime timeSingleSpeaker, timeOverlap, timeGap;
     QList<double> gapDurations;
     int turnChangesWithGap(0), turnChangesWithOverlap(0);
-    foreach (Interval *intv, tier_timeline->intervals()) {
+    foreach (Interval *intv, tier_timelineSpk->intervals()) {
         QString temporal = intv->attribute("temporal").toString();
         if (temporal == "X") continue;
-        if (temporal == "S" || temporal == "P")
-            timeSingleSpeaker += intv->duration().toDouble();
+        if (temporal == "S" || temporal == "P") {
+            timeSingleSpeaker = timeSingleSpeaker + intv->duration();
+        }
         else if (temporal == "G") {
             gapDurations << intv->duration().toDouble();
             turnChangesWithGap++;
-            timeGap += intv->duration().toDouble();
+            timeGap = timeGap + intv->duration();
         }
         else {
-            timeOverlap += intv->duration().toDouble();
+            timeOverlap = timeOverlap + intv->duration();
             if (temporal == "OVT") turnChangesWithOverlap++;
         }
     }
     RealTime timeTotalSample = timeSingleSpeaker + timeOverlap + timeGap;
-    if (timeTotalSample == 0) return;
+    if (timeTotalSample == RealTime(0, 0)) return;
     d->measuresCom.insert("TimeTotalSample", timeTotalSample.toDouble());
     d->measuresCom.insert("TimeSingleSpeaker", timeSingleSpeaker.toDouble());
     d->measuresCom.insert("TimeOverlap", timeOverlap.toDouble());
@@ -263,12 +301,13 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     d->measuresCom.insert("GapDurations_Median", summaryGapDurations.median());
     d->measuresCom.insert("GapDurations_Q1", summaryGapDurations.firstQuartile());
     d->measuresCom.insert("GapDurations_Q3", summaryGapDurations.thirdQuartile());
-    d->measuresCom.insert("TurnChangesCount", (turnChangesWithGap + turnChangesWithOverlap);
+    d->measuresCom.insert("TurnChangesCount", (turnChangesWithGap + turnChangesWithOverlap));
     d->measuresCom.insert("TurnChangesCount_Gap", turnChangesWithGap);
     d->measuresCom.insert("TurnChangesCount_Overlap", turnChangesWithOverlap);
-    d->measuresCom.insert("TurnChangesRate", ((double)(turnChangesWithGap + turnChangesWithOverlap)) / timeTotalSample);
-    d->measuresCom.insert("TurnChangesRate_Gap", ((double)turnChangesWithGap) / timeTotalSample);
-    d->measuresCom.insert("TurnChangesRate_Overlap", ((double)turnChangesWithOverlap) / timeTotalSample);
+    // * 60.0 ==> convert to turns per minute
+    d->measuresCom.insert("TurnChangesRate", ((double)(turnChangesWithGap + turnChangesWithOverlap)) * 60.0 / timeTotalSample.toDouble());
+    d->measuresCom.insert("TurnChangesRate_Gap", ((double)turnChangesWithGap) * 60.0 / timeTotalSample.toDouble());
+    d->measuresCom.insert("TurnChangesRate_Overlap", ((double)turnChangesWithOverlap) * 60.0 / timeTotalSample.toDouble());
 
     foreach (QString annotationID, com->annotationIDs()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID, QStringList() <<
@@ -284,49 +323,64 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             RealTime timeArticulationAlone, timeArticulationOverlapContinue, timeArticulationOverlapTurnChange;
             int numSilentPauses(0), numFilledPauses(0), numSyllablesArticulated(0), numTokens(0);
             QList<double> durationsPauseSIL, durationsPauseFIL;
-            QList<double> turnDurations, turnTokenCounts, turnSyllableCounts;
-            double currentTurnDuration(0), currentTurnTokenCount(0), currentTurnSyllableCount(0);
-
-            // The basic unit is the speaker's syllables
-            foreach (Interval *syll, tier_syll->intervals()) {
-                QString syllCategory = "";
-                QList<Interval *> tokens = tier_tokmin->getIntervalsOverlappingWith(syll);
-                if (tokens.count() == 1 && d->filledPauseTokens.contains(tokens.first()->text())) {
-                    // This syllable is a filled pause
-                    syllCategory = "FIL";
+            QList<double> turnDurations, turnTokenCounts, turnArtSyllCounts;
+            // Turn level
+            QScopedPointer<IntervalTier> tier_turns(new IntervalTier(tier_timelineSpk.data()));
+            foreach (Interval *intv, tier_turns->intervals()) {
+                if (intv->text().contains(speakerID)) intv->setText(speakerID); else intv->setText("");
+            }
+            tier_turns->mergeIdenticalAnnotations();
+            foreach (Interval *turn, tier_turns->intervals()) {
+                if (!turn->text().contains(speakerID)) continue;
+                turnDurations << turn->duration().toDouble();
+                timeSpeech = timeSpeech + turn->duration();
+                // Count non-pause, non-filled pause tokens in the turn
+                int currentTurnTokenCount(0), currentTurnArtSyllCount(0);
+                foreach (Interval *token, tier_tokmin->getIntervalsContainedIn(turn)) {
+                    if ((!token->isPauseSilent()) && (!d->filledPauseTokens.contains(token->text()))) {
+                        numTokens++;
+                        currentTurnTokenCount++;
+                    }
                 }
-                // Process sub-syllabic segments on the timeline
-                foreach (Interval *intv, tier_timeline->getIntervalsContainedIn(syll)) {
-                    QString temporal = intv->attribute("temporal").toString();
-                    if (intv->text().contains(speakerID)) {
-                        timeSpeech += intv->duration();
-                        if (temporal == "P") {
-                            // Silent pause belonging to current speaker
-                            timeSilentPause += intv->duration();
-                            durationsPauseSIL << intv->duration().toDouble();
-                            syllCategory = "SIL";
-                        }
-                        else {
-                            // Speech. Separate filled pauses from articulated syllables.
+                turnTokenCounts << ((double)currentTurnTokenCount);
+                // The basic units of time measurement are the speaker's syllables
+                foreach (Interval *syll, tier_syll->getIntervalsContainedIn(turn)) {
+                    QString syllCategory = ""; // SIL, FIL or ART?
+                    QList<Interval *> tokens = tier_tokmin->getIntervalsOverlappingWith(syll);
+                    // foreach (Interval *token, tokens) qDebug() << token->text();
+                    if (tokens.count() == 1 && d->filledPauseTokens.contains(tokens.first()->text())) {
+                        syllCategory = "FIL"; // This syllable is a filled pause
+                    }
+                    // Process sub-syllabic segments on the timeline
+                    foreach (Interval *intv, tier_timelineSyll->getIntervalsContainedIn(syll)) {
+                        QString temporal = intv->attribute("temporal").toString();
+                        if (intv->text().contains(speakerID)) {
                             if (syllCategory == "FIL") { // Filled pause
-                                timeFilledPause += intv->duration();
+                                timeFilledPause = timeFilledPause + intv->duration();
                                 durationsPauseFIL << intv->duration().toDouble();
                             }
-                            else { // Articulated syllable
-                                syllCategory = "ART";
-                                if      (temporal == "S")    timeArticulationAlone += intv->duration();
-                                else if (temporal == "OVC")  timeArticulationOverlapContinue += intv->duration();
-                                else if (temporal == "OVT")  timeArticulationOverlapTurnChange += intv->duration();
+                            else {
+                                if (temporal == "P") {
+                                    if (syllCategory != "ART") syllCategory = "SIL";
+                                    timeSilentPause = timeSilentPause + intv->duration();
+                                    durationsPauseSIL << intv->duration().toDouble();
+                                }
+                                else {
+                                    syllCategory = "ART";
+                                    if      (temporal == "S")    timeArticulationAlone = timeArticulationAlone + intv->duration();
+                                    else if (temporal == "OVC")  timeArticulationOverlapContinue = timeArticulationOverlapContinue + intv->duration();
+                                    else if (temporal == "OVT")  timeArticulationOverlapTurnChange = timeArticulationOverlapTurnChange + intv->duration();
+                                }
                             }
-                            // End of speech.
                         }
-                    } // if current speaker
-                }
-                if      (syllCategory == "SIL") numSilentPauses++;
-                else if (syllCategory == "FIL") numFilledPauses++;
-                else if (syllCategory == "ART") numSyllablesArticulated++;
-            }
-
+                    }
+                    if      (syllCategory == "SIL") { numSilentPauses++; }
+                    else if (syllCategory == "FIL") { numFilledPauses++; }
+                    else if (syllCategory == "ART") { numSyllablesArticulated++; currentTurnArtSyllCount++; }
+                } // end foreach syll
+                turnArtSyllCounts << ((double)currentTurnArtSyllCount);
+            } // end foreach turn
+            // Processing of this speaker finished
             if (timeSpeech == RealTime(0,0)) continue;
             // Add statistical measures for current speaker
             RealTime timeArticulation = timeArticulationAlone + timeArticulationOverlapContinue + timeArticulationOverlapTurnChange;
@@ -356,21 +410,21 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             measures.insert("FilledPauseRate", numFilledPauses / timeSpeech.toDouble());
             measures.insert("ArticulationRate", numSyllablesArticulated / timeArticulation.toDouble());
             StatisticalSummary summaryDurationsPauseSIL, summaryDurationsPauseFIL;
-            StatisticalSummary summaryTurnDurations, summaryTurnTokenCounts, summaryTurnSyllableCounts;
+            StatisticalSummary summaryTurnDurations, summaryTurnTokenCounts, summaryTurnArtSyllCounts;
             summaryDurationsPauseSIL.calculate(durationsPauseSIL);
             summaryDurationsPauseFIL.calculate(durationsPauseFIL);
             summaryTurnDurations.calculate(turnDurations);
             summaryTurnTokenCounts.calculate(turnTokenCounts);
-            summaryTurnSyllableCounts.calculate(turnSyllableCounts);
+            summaryTurnArtSyllCounts.calculate(turnArtSyllCounts);
             measures.insert("PauseDur_SIL_Median", summaryDurationsPauseSIL.median());
             measures.insert("PauseDur_SIL_Q1", summaryDurationsPauseSIL.firstQuartile());
             measures.insert("PauseDur_SIL_Q3", summaryDurationsPauseSIL.thirdQuartile());
             measures.insert("PauseDur_FIL_Median", summaryDurationsPauseFIL.median());
             measures.insert("PauseDur_FIL_Q1", summaryDurationsPauseFIL.firstQuartile());
             measures.insert("PauseDur_FIL_Q3", summaryDurationsPauseFIL.thirdQuartile());
-            measures.insert("TurnDuration_Time_Median", summaryTurnDurations.median());
-            measures.insert("TurnDuration_Token_Median", summaryTurnTokenCounts.median());
-            measures.insert("TurnDuration_Syll_Median", summaryTurnSyllableCounts.median());
+            measures.insert("TurnDuration_Time_Mean", summaryTurnDurations.mean());
+            measures.insert("TurnDuration_Token_Mean", summaryTurnTokenCounts.mean());
+            measures.insert("TurnDuration_Syll_Mean", summaryTurnArtSyllCounts.mean());
             d->measuresSpk.insert(speakerID, measures);
         }
         qDeleteAll(tiersAll);

@@ -112,7 +112,7 @@ void StatisticsModeWidget::analyse()
             line.append(QString("\t%1").arg(analyser->measureCom(measureID)));
             d->textResults->append(line);
         }
-        line.append("\n");
+        line = "\n";
         d->textResults->append(line);
         //
         line.clear();
@@ -128,7 +128,7 @@ void StatisticsModeWidget::analyse()
             }
             d->textResults->append(line);
         }
-        line.append("\n");
+        line = "\n";
         d->textResults->append(line);
     }
 
