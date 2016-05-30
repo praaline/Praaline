@@ -2,6 +2,7 @@
 #include <QString>
 #include <QList>
 #include <QStandardItemModel>
+#include "math.h"
 #include "pncore/corpus/corpus.h"
 #include "pncore/corpus/corpuscommunication.h"
 #include "pncore/annotation/intervaltier.h"

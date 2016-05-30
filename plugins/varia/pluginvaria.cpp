@@ -139,14 +139,15 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
-    int countDone = 0;
-    madeProgress(0);
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        MyExperiments::createTextgridsFromAutosyll(corpus, com);
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-    }
+
+//    int countDone = 0;
+//    madeProgress(0);
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        MyExperiments::createTextgridsFromAutosyll(corpus, com);
+//        countDone++;
+//        madeProgress(countDone * 100 / communications.count());
+//    }
 
 //    ProsodyCourse::syllableTables(corpus);
 //    return;
@@ -256,9 +257,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    QStringList transcripts = PBExpe::printTranscriptionInProsodicUnits(corpus);
 //    foreach (QString t, transcripts) printMessage(t);
 
-//    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundary");
+    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundary");
 //    PBExpe::analysisCalculateAverageDelay(corpus, "boundary2");
-//  PBExpe::analysisCalculateCoverage(corpus, "boundary2");
+//    PBExpe::analysisCalculateCoverage(corpus, "boundary2");
 //    PBExpe::analysisCheckBoundaryRightAfterPause(corpus);
 
 //    PBExpe::analysisStabilisation(corpus, 10, 100);
