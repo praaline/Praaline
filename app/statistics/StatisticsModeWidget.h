@@ -22,6 +22,9 @@ signals:
 
 private slots:
     void analyse();
+    void analyseT();
+    void analyseFromFile();
+
     void actionSaveOutput();
     void actionClearOutput();
 

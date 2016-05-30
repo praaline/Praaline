@@ -28,7 +28,7 @@ class PRAALINE_CORE_SHARED_EXPORT Interval : public AnnotationElement
 public:
     Interval(const RealTime tMin, const RealTime tMax, const QString &text);
     Interval(const RealTime tMin, const RealTime tMax, const QString &text, const QHash<QString, QVariant> &attributes);
-    Interval(const Interval *copy);
+    Interval(const Interval *copy, bool copyAttributes = true);
     Interval(const RealTime tMin, const RealTime tMax, const Interval *copy);
     Interval(const QList<Interval *> &intervals, const QString &separator = QString());
     virtual ~Interval() {}

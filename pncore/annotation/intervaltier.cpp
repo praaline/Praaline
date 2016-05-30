@@ -41,7 +41,7 @@ IntervalTier::IntervalTier(const QString &name, const QList<Interval *> &interva
 // Deep copy constructor
 // Makes an exact copy of another tier, deep copying the intervals.
 // If name is not given, it will be the same as the original tier.
-IntervalTier::IntervalTier(const IntervalTier *copy, QString name, QObject *parent) :
+IntervalTier::IntervalTier(const IntervalTier *copy, QString name, bool copyAttributes, QObject *parent) :
     AnnotationTier(parent)
 {
     if (!copy) {
@@ -54,7 +54,7 @@ IntervalTier::IntervalTier(const IntervalTier *copy, QString name, QObject *pare
     m_tMax = copy->tMax();
     // deep copy of intervals
     foreach (Interval *intv, copy->intervals()) {
-        m_intervals << new Interval(intv);
+        m_intervals << new Interval(intv, copyAttributes);
     }
 }
 

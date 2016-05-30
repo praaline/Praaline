@@ -358,7 +358,7 @@ IntervalTier * SQLSerialiserAnnotation::getSpeakerTimeline(const QString &commun
     if (!communicationID.isEmpty()) q.append(QString(" INNER JOIN annotation ON %1.annotationID=annotation.annotationID ").arg(levelID));
     q.append(" WHERE 1=1 ");
     if (!communicationID.isEmpty()) q.append(" AND annotation.communicationID=:communicationID ");
-    if (!annotationID.isEmpty()) q.append(" AND annotationID = :annotationID ");
+    if (!annotationID.isEmpty()) q.append(" AND annotation.annotationID = :annotationID ");
     q.append(" ORDER BY tMin ");
     // qDebug() << q;
     query.setForwardOnly(true);

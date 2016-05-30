@@ -134,6 +134,25 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
     QPointer<IntervalTier> tier_syll;
     QPointer<IntervalTier> tier_token;
 
+    // Save features used into the following intermediate files
+    QFile fileFeatures(QString("/home/george/promise_features.txt"));
+    if (! fileFeatures.open(QFile::WriteOnly | QFile::Text)) {
+        printMessage("Cannot write to intermediate file (features).");
+        return;
+    }
+    QTextStream streamFeatures(&fileFeatures);
+    streamFeatures.setCodec("UTF-8");
+    streamFeatures.generateByteOrderMark();
+    QFile fileFeaturesCRF(QString("/home/george/promise_featurescrf.txt"));
+    if (! fileFeaturesCRF.open(QFile::WriteOnly | QFile::Text)) {
+        printMessage("Cannot write to intermediate file (CRF features).");
+        return;
+    }
+    QTextStream streamFeaturesCRF(&fileFeaturesCRF);
+    streamFeaturesCRF.setCodec("UTF-8");
+    streamFeaturesCRF.generateByteOrderMark();
+    // End save intermediate files
+
     int countDone = 0;
     madeProgress(0);
     printMessage("Promise Prosodic Prominence Annotator ver. 1.0 running");
@@ -154,9 +173,9 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
                 if (!tier_token) { printMessage("   Tier not found: tok_min (tokens). Aborting."); continue; }
 
                 IntervalTier *tier_promise_nopos = promise->annotate(annot->ID(), filenameModelCrossNoPOS, false, "promise",
-                                                                     tier_syll, tier_token, speakerID);
+                                                                     tier_syll, tier_token, speakerID, streamFeatures, streamFeaturesCRF);
                 IntervalTier *tier_promise_pos = promise->annotate(annot->ID(), filenameModelCrossPOS, true, "promise_pos",
-                                                                   tier_syll, tier_token, speakerID);
+                                                                   tier_syll, tier_token, speakerID, streamFeatures, streamFeaturesCRF);
                 for (int i = 0; i < tier_syll->countItems(); ++i) {
                     if (tier_promise_nopos && i < tier_promise_nopos->countItems()) {
                         tier_syll->interval(i)->setAttribute("promise", tier_promise_nopos->interval(i)->text());
@@ -178,6 +197,10 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
         madeProgress(countDone * 100 / communications.count());
     }
     delete promise;
+
+    fileFeatures.close();
+    fileFeaturesCRF.close();
+
     madeProgress(100);
     printMessage("Promise finished.");
 }

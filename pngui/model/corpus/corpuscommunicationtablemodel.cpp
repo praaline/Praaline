@@ -26,7 +26,7 @@ int CorpusCommunicationTableModel::rowCount(const QModelIndex &parent) const
 int CorpusCommunicationTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    int basicPropertiesCount = (m_multiCorpus) ? 3 : 2;
+    int basicPropertiesCount = (m_multiCorpus) ? 4 : 3;
     return basicPropertiesCount + m_attributes.count();
 }
 
@@ -39,8 +39,9 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
             if (section == 0) return tr("Corpus ID");
             else if (section == 1) return tr("Communication ID");
             else if (section == 2) return tr("Name");
-            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count()) {
-                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 3);
+            else if (section == 3) return tr("Duration");
+            else if ((section - 4) >= 0 && (section - 4) < m_attributes.count()) {
+                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 4);
                 if (attr) return attr->name(); else return QVariant();
             }
             else
@@ -48,8 +49,9 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
         } else {
             if (section == 0) return tr("Communication ID");
             else if (section == 1) return tr("Name");
-            else if ((section - 2) >= 0 && (section - 2) < m_attributes.count()) {
-                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 2);
+            else if (section == 2) return tr("Duration");
+            else if ((section - 3) >= 0 && (section - 3) < m_attributes.count()) {
+                QPointer<MetadataStructureAttribute> attr = m_attributes.at(section - 3);
                 if (attr) return attr->name(); else return QVariant();
             }
             else
@@ -73,15 +75,17 @@ QVariant CorpusCommunicationTableModel::data(const QModelIndex &index, int role)
             if (index.column() == 0) return com->property("corpusID");
             else if (index.column() == 1) return com->property("ID");
             else if (index.column() == 2) return com->property("name");
-            else if ((index.column() - 3) >= 0 && (index.column() - 3) < m_attributes.count())
-                return com->property(m_attributes.at(index.column() - 3)->ID());
+            else if (index.column() == 3) return com->property("durationSec");
+            else if ((index.column() - 4) >= 0 && (index.column() - 4) < m_attributes.count())
+                return com->property(m_attributes.at(index.column() - 4)->ID());
             else
                 return QVariant();
         } else {
             if (index.column() == 0) return com->property("ID");
             else if (index.column() == 1) return com->property("name");
-            else if ((index.column() - 2) >= 0 && (index.column() - 2) < m_attributes.count())
-                return com->property(m_attributes.at(index.column() - 2)->ID());
+            else if (index.column() == 2) return com->property("durationSec");
+            else if ((index.column() - 3) >= 0 && (index.column() - 3) < m_attributes.count())
+                return com->property(m_attributes.at(index.column() - 3)->ID());
             else
                 return QVariant();
         }
@@ -111,15 +115,15 @@ bool CorpusCommunicationTableModel::setData(const QModelIndex &index, const QVar
             if      (index.column() == 0) return com->setProperty("corpusID", value);
             else if (index.column() == 1) return com->setProperty("ID", value);
             else if (index.column() == 2) return com->setProperty("name", value);
-            else if ((index.column() - 3) >= 0 && (index.column() - 3) < m_attributes.count())
-                return com->setProperty(m_attributes.at(index.column() - 3)->ID(), value);
+            else if ((index.column() - 4) >= 0 && (index.column() - 4) < m_attributes.count())
+                return com->setProperty(m_attributes.at(index.column() - 4)->ID(), value);
             else
                 return false;
         } else {
             if      (index.column() == 0) return com->setProperty("ID", value);
             else if (index.column() == 1) return com->setProperty("name", value);
-            else if ((index.column() - 2) >= 0 && (index.column() - 2) < m_attributes.count())
-                return com->setProperty(m_attributes.at(index.column() - 2)->ID(), value);
+            else if ((index.column() - 3) >= 0 && (index.column() - 3) < m_attributes.count())
+                return com->setProperty(m_attributes.at(index.column() - 3)->ID(), value);
             else
                 return false;
         }

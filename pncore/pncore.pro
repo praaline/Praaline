@@ -93,7 +93,8 @@ HEADERS += \
     interfaces/anvil/AnvilMetadataTranscript.h \
     base/RealValueList.h \
     statistics/StatisticalSummary.h \
-    statistics/StatisticalMeasureDefinition.h
+    statistics/StatisticalMeasureDefinition.h \
+    statistics/HistogramCalculator.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -159,4 +160,8 @@ SOURCES += \
     interfaces/anvil/AnvilMetadataTranscript.cpp \
     base/RealValueList.cpp \
     statistics/StatisticalSummary.cpp \
-    statistics/StatisticalMeasureDefinition.cpp
+    statistics/StatisticalMeasureDefinition.cpp \
+    statistics/HistogramCalculator.cpp
+
+DISTFILES += \
+    pncore.qmodel

@@ -16,6 +16,7 @@ class PRAALINE_CORE_SHARED_EXPORT CorpusCommunication : public CorpusObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(double durationSec READ durationSec)
 
 public:
     explicit CorpusCommunication(QObject *parent = 0);
@@ -45,6 +46,7 @@ public:
     void addRecording(CorpusRecording *recording);
     void removeRecording(const QString &recordingID);
     void unlinkRecording(const QString &recordingID);
+    double durationSec() const;
 
     // ANNOTATIONS
     QPointer<CorpusAnnotation> annotation(const QString &annotationID) const;

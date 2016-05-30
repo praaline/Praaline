@@ -25,13 +25,15 @@ Interval::Interval(const RealTime tMin, const RealTime tMax, const QString &text
 {
 }
 
-Interval::Interval(const Interval *copy)
+Interval::Interval(const Interval *copy, bool copyAttributes)
 {
     m_time = copy->m_time;
     m_tMax = copy->m_tMax;
     m_text = copy->m_text;
-    foreach (QString attributeID, copy->m_attributes.keys())
-        m_attributes.insert(attributeID, copy->m_attributes.value(attributeID));
+    if (copyAttributes) {
+        foreach (QString attributeID, copy->m_attributes.keys())
+            m_attributes.insert(attributeID, copy->m_attributes.value(attributeID));
+    }
 }
 
 Interval::Interval(const RealTime tMin, const RealTime tMax, const Interval *copy) :

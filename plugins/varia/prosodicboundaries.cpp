@@ -109,6 +109,7 @@ bool ProsodicBoundaries::isLexical(Interval *token)
 QString ProsodicBoundaries::categorise_CLI_INT_LEX(Interval *token)
 {
     if (!token) return "0";
+    if (token->isPauseSilent()) return "_";
     QString currentPOS = token->attribute("pos_mwu").toString();
     if (currentPOS == "0") return "FST"; // false starts
     if (POS_CLI.contains(currentPOS)) return "CLI";

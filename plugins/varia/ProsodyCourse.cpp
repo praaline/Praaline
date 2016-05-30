@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QObject>
 #include <QPointer>
 #include <QString>
@@ -8,6 +9,7 @@
 #include "pncore/annotation/intervaltier.h"
 #include "pncore/interfaces/praat/praattextgrid.h"
 
+#include "prosodicboundaries.h"
 #include "ProsodyCourse.h"
 
 ProsodyCourse::ProsodyCourse()
@@ -116,36 +118,45 @@ void ProsodyCourse::exportMultiTierTextgrids(Corpus *corpus, QPointer<CorpusComm
     }
 }
 
-void ProsodyCourse::temporalVariables(Corpus *corpus, QPointer<CorpusCommunication> com)
+
+
+
+void ProsodyCourse::syllableTables(Corpus *corpus)
 {
-
-
-//    QString path = corpus->basePath();
-//    QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
-
-//    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-//        if (!annot) continue;
-//        QString annotationID = annot->ID();
-//        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-//        foreach (QString speakerID, tiersAll.keys()) {
-//            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-//            if (!tiers) continue;
-//            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
-//            IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
-//            txg->addTier(new IntervalTier(tier_syll));
-//            txg->addTier(new IntervalTier(tier_tokmin));
-//        }
-//        qDeleteAll(tiersAll);
-//    }
-
-//    txg->addTier(tier_timeline);
-//    IntervalTier *tier_timelineT = new IntervalTier(tier_timeline, "timelineT");
-//    foreach (Interval *intv, tier_timelineT->intervals())
-//        intv->setText(intv->attribute("temporal").toString());
-//    txg->addTier(tier_timelineT);
-
-//    PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg);
-
+    if (!corpus) return;
+    QFile file("/home/george/Dropbox/Prosody2016_Syllables.txt");
+    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    QStringList extraAttributes;
+    extraAttributes << "promise_pos" << "promise" << "delivery" << "f0_mean";
+    out << "communicationID\tspeakerID\tsyll_ID\tsyll_tmin\tsyll\t"
+           "expertBoundaryType\texpertContour\texpertBoundary\t"
+           "durNextPause\tlogdurNextPause\tlogdurNextPauseZ\t"
+           "durSyllRel20\tdurSyllRel30\tdurSyllRel40\tdurSyllRel50\t"
+           "logdurSyllRel20\tlogdurSyllRel30\tlogdurSyllRel40\tlogdurSyllRel50\t"
+           "f0meanSyllRel20\tf0meanSyllRel30\tf0meanSyllRel40\tf0meanSyllRel50\t"
+           "intrasyllab_up\tintrasyllab_down\ttrajectory\t"
+           "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\t"
+           "promise_pos\tpromise\tdelivery2\tf0_mean\n";
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        foreach (QString annotationID, com->annotationIDs()) {
+            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiers.keys()) {
+                QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+                IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+                if (!tier_syll) continue;
+                QList<int> syllables;
+                for (int i = 0; i < tier_syll->countItems(); ++i) { syllables << i; }
+                if (syllables.isEmpty()) continue;
+                QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, annotationID, syllables, extraAttributes);
+                foreach (QString line, results) out << line.replace(",", ".") << "\n";
+            }
+            qDeleteAll(tiers);
+            qDebug() << com->ID();
+        }
+    }
+    file.close();
 }
 
 

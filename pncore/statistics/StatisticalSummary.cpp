@@ -25,6 +25,12 @@ StatisticalSummary::StatisticalSummary(const Statistics& stats)
     reset();
 }
 
+StatisticalSummary::StatisticalSummary(const QList<double> &values, const StatisticalSummary::Statistics& stats)
+    : m_statistics(stats)
+{
+    calculate(values);
+}
+
 StatisticalSummary::~StatisticalSummary()
 {
 }

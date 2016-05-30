@@ -42,6 +42,7 @@ public:
     Q_DECLARE_FLAGS(Statistics, Statistic)
 
     StatisticalSummary(const StatisticalSummary::Statistics& stats = All);
+    StatisticalSummary(const QList<double> &values, const StatisticalSummary::Statistics& stats = All);
     virtual ~StatisticalSummary();
 
 

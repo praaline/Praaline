@@ -23,6 +23,9 @@ void MyExperiments::createTextgridsFromAutosyll(QPointer<Corpus> corpus, QPointe
 {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     if (!corpus || !com) return;
+    if (com->property("transcriptionMode").toString() != "mmm") return;
+    QString outputPath = "/home/george/zeinab";
+
     foreach (QPointer<CorpusRecording> rec, com->recordings()) {
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
@@ -37,11 +40,27 @@ void MyExperiments::createTextgridsFromAutosyll(QPointer<Corpus> corpus, QPointe
                 foreach (Interval *intv, tier_autosyll->intervals()) {
                     if (intv->text() == "_") pauses << new Interval(intv);
                 }
-                IntervalTier *tier_utterances = new IntervalTier("utterance", pauses, tier_autosyll->tMin(),
-                                                                 tier_autosyll->tMax());
-                txg->addTier(tier_utterances);
+                bool subjectIDisOdd = (speakerID.remove("S").toInt() % 2 != 0);
+                QString config = com->property("subjectConfig").toString();
+
+                if (rec->ID().contains("DRIVER")) {
+                    if ((subjectIDisOdd && (config == "A")) || (!subjectIDisOdd && (config == "B"))) {
+                        QString tierID = QString("%1_%2").arg(speakerID).arg("DRIV");
+                        IntervalTier *tier_utterances = new IntervalTier(tierID, pauses, tier_autosyll->tMin(),
+                                                                         tier_autosyll->tMax());
+                        txg->addTier(tier_utterances);
+                    }
+                } else {
+                    if ((!subjectIDisOdd && (config == "A")) || (subjectIDisOdd && (config == "B"))) {
+                        QString tierID = QString("%1_%2").arg(speakerID).arg("PASS");
+                        IntervalTier *tier_utterances = new IntervalTier(tierID, pauses, tier_autosyll->tMin(),
+                                                                         tier_autosyll->tMax());
+                        txg->addTier(tier_utterances);
+                    }
+                }
             }
-            PraatTextGrid::save(rec->filePath() + "/" + rec->ID() + ".TextGrid", txg.data());
+            QFile::copy(corpus->baseMediaPath() + "/" + rec->filename(), outputPath + "/" + rec->ID() + ".wav");
+            PraatTextGrid::save(outputPath + "/" + rec->ID() + ".TextGrid", txg.data());
             qDeleteAll(tiersAll);
         }
     }
@@ -89,8 +108,40 @@ void MyExperiments::createBasicMetadata(QPointer<Corpus> corpus, QPointer<Corpus
     }
 }
 
+void MyExperiments::renameRecordings(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+{
+    if (!corpus || !com) return;
+//    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//        QString newFilename = rec->filename().section("/", 0, 0) + "/" + rec->ID() + ".wav";
+//        if (QFile::rename(corpus->baseMediaPath() + "/" + rec->filename(), corpus->baseMediaPath() + "/" + newFilename)) {
+//            rec->setFilename(newFilename);
+//            rec->setName(rec->ID());
+//        }
+//    }
+}
 
-
-
-
+void MyExperiments::updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    if (!corpus || !com) return;
+    if (com->property("transcriptionMode").toString() == "m") {
+        com->setProperty("transcriptionMode", "mmm");
+        return;
+    }
+    com->setProperty("transcriptionMode", "A");
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
+            if (tier_transcription) {
+                com->setProperty("transcriptionMode", "M");
+            }
+        }
+    }
+}
 

@@ -257,7 +257,9 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
     QString annotSpeakerID = annot->property("speakerPolicyData").toString();
     if (policy == SpeakerPolicySingle) {
         if (annotSpeakerID.isEmpty()) {
-            importBasic(m_corpus, com, annot, policy, annot->ID(), inputTiers, correspondances);
+            // no speaker ID given, use the filename
+            importBasic(m_corpus, com, annot, policy, QFile(annot->filename()).fileName().remove(".textgrid"),
+                        inputTiers, correspondances);
         }
         else {
             importBasic(m_corpus, com, annot, policy, annotSpeakerID, inputTiers, correspondances);

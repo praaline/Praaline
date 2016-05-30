@@ -150,10 +150,10 @@ SOURCES += main.cpp \
     visualisation/VisualiserWidget.cpp \
     statistics/AnalyserTemporal.cpp \
     statistics/AnalyserSpeechRate.cpp \
-    statistics/AnalyserSegmentDurations.cpp \
-    statistics/AnalyserPitch.cpp \
     annotation/dis/AnnotationControlsDisfluencies.cpp \
-    annotation/dis/DisfluencyAnalyser.cpp
+    annotation/dis/DisfluencyAnalyser.cpp \
+    statistics/AnalyserSegmentDuration.cpp \
+    statistics/AnalyserPitch.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -233,9 +233,9 @@ HEADERS  += \
     statistics/StatisticsPitch.h \
     statistics/AnalyserTemporal.h \
     statistics/AnalyserSpeechRate.h \
-    statistics/AnalyserSegmentDurations.h \
-    statistics/AnalyserPitch.h \
-    statistics/istatisticalanalyserplugin.h
+    statistics/istatisticalanalyserplugin.h \
+    statistics/AnalyserSegmentDuration.h \
+    statistics/AnalyserPitch.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

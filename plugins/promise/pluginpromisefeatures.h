@@ -19,7 +19,8 @@ public:
     explicit PluginProminenceFeatures(QObject *parent = 0);
 
     IntervalTier *annotate(QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-                           IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID);
+                           IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID,
+                           QTextStream &streamFeatures, QTextStream &streamFeaturesCRF);
 
     QString process(AnnotationTierGroup *txg, QString annotationID, QTextStream &out);
 
@@ -45,7 +46,8 @@ private:
     void outputSVM(IntervalTier *tier_syll, IntervalTier *tier_token,
                    QHash<QString, RealValueList> &features, QTextStream &out);
     int outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                  QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out);
+                  QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
+                  bool createSequences = true);
     IntervalTier *annotateWithCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
                                   QHash<QString, RealValueList> &features, bool withPOS,
                                   const QString &filenameModel, const QString &tier_name = "promise");

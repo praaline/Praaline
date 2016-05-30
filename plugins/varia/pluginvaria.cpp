@@ -139,9 +139,20 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
+    int countDone = 0;
+    madeProgress(0);
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        MyExperiments::createTextgridsFromAutosyll(corpus, com);
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+
+//    ProsodyCourse::syllableTables(corpus);
+//    return;
+
 //    int countDone = 0;
 //    madeProgress(0);
-
 //    foreach (QPointer<CorpusCommunication> com, communications) {
 //        if (!com) continue;
 //        TemporalAnalyser analyser;
@@ -275,23 +286,6 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    chunk(corpus, communications);
 //    return;
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            if (!rec) continue;
-            QString annotationID = rec->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID, QStringList() << "auto_segment");
-            foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-                tiers->renameTier("auto_segment", "ortho");
-                QString filename = QString(corpus->basePath() + "/" + rec->filename()).replace(".wav", ".TextGrid");
-                PraatTextGrid::save(filename, tiers);
-            }
-            qDeleteAll(tiersAll);
-        }
-    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

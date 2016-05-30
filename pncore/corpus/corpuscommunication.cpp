@@ -158,6 +158,16 @@ void CorpusCommunication::recordingChangedID(const QString &oldID, const QString
     m_recordings.insert(newID, recording);
 }
 
+double CorpusCommunication::durationSec() const
+{
+    double duration(0);
+    foreach (QPointer<CorpusRecording> rec, m_recordings) {
+        if (!rec) continue;
+        if (rec->duration().toDouble() > duration) duration = rec->duration().toDouble();
+    }
+    return duration;
+}
+
 // ==========================================================================================================
 // Annotations
 // ==========================================================================================================

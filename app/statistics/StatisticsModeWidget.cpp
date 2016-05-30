@@ -13,6 +13,7 @@
 
 #include "InterraterAgreement.h"
 #include "AnalyserTemporal.h"
+#include "AnalyserPitch.h"
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/annotationtier.h"
@@ -63,8 +64,15 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
     d->textResults->setFont(fixedFont);
     ui->gridLayoutMessages->addWidget(d->textResults);
 
+    // Command Analyse
     connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
 
+    // Results grid
+    d->tableResults = new GridViewWidget(this);
+    d->tableResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    ui->gridLayoutMessages->addWidget(d->tableResults);
+
+    // Splitter
     ui->splitterLeftRight->setSizes(QList<int>() << 50 << 300);
 }
 
@@ -95,9 +103,9 @@ void StatisticsModeWidget::actionClearOutput()
     d->textResults->clear();
 }
 
-void StatisticsModeWidget::analyse()
+void StatisticsModeWidget::analyseT()
 {
-    AnalyserTemporal *analyser = new AnalyserTemporal(this);
+    QScopedPointer<AnalyserTemporal>analyser(new AnalyserTemporal);
 
     QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
     if (!corpus) return;
@@ -131,6 +139,133 @@ void StatisticsModeWidget::analyse()
         line = "\n";
         d->textResults->append(line);
     }
-
-    delete analyser;
 }
+
+void StatisticsModeWidget::analyseFromFile()
+{
+    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    if (!corpus) return;
+    QScopedPointer<AnalyserPitch> analyser(new AnalyserPitch);
+
+    d->textResults->setWordWrapMode(QTextOption::NoWrap);
+
+    QStandardItemModel *model = new QStandardItemModel(this);
+
+    QFile file("/home/george/subintervals.txt");
+    if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return;
+    QTextStream stream(&file);
+    QList<Interval *> intervals;
+    QString currentCommunicationID, currentAnnotationID;
+    do {
+        QString line = stream.readLine().trimmed();
+        // CommunicationID	AnnotationID	Occurrence	Part	tMin	tMax
+        QString communicationID = line.section("\t", 0, 0);
+        QString annotationID = line.section("\t", 1, 1);
+        QString label = line.section("\t", 2, 3);
+        RealTime tMin = RealTime::fromSeconds(line.section("\t", 4, 4).toDouble());
+        RealTime tMax = RealTime::fromSeconds(line.section("\t", 5, 5).toDouble());
+
+        annotationID.replace("G01B_DRIV_S2_4035_4516", "01_CelineB_G01B_DRIV_S2_4035_4516");
+        annotationID.replace("G01B_PASS_S1_4035_4516", "02_Gervaise_G01B_PASS_S1_4035_4516");
+        annotationID.replace("G02A_DRIV_S1_3156_3954", "03_AlineC_G02A_DRIV_S1_3156_3954");
+        annotationID.replace("G02A_PASS_S2_3156_3954", "04_AdeleF_G02A_PASS_S2_3156_3954");
+        annotationID.replace("G02B_DRIV_S2_3535_4239", "05_MorganeL_G02B_DRIV_S2_3535_4239");
+        annotationID.replace("G02B_PASS_S1_3532_4239", "06_CamilleS_G02B_PASS_S1_3532_4239");
+        annotationID.replace("G03B_DRIV_S2_2620_3138", "07_AdelaideC_G03B_DRIV_S2_2620_3138");
+        annotationID.replace("G03B_PASS_S1_2620_3138", "08_EmilieDuv_G03B_PASS_S1_2620_3138");
+        annotationID.replace("G04B_DRIV_S2_5626_6229", "09_AntoinetteT_G04B_DRIV_S2_5626_6229");
+        annotationID.replace("G04B_PASS_S1_5626_6229", "10_AliceP_G04B_PASS_S1_5626_6229");
+        annotationID.replace("G05B_DRIV_S2_2358_2820", "11_EmilieLaf_G05B_DRIV_S2_2358_2820");
+        annotationID.replace("G05B_PASS_S1_2358_2820", "12_DeysiY_G05B_PASS_S1_2358_2820");
+
+        if (currentAnnotationID == annotationID) {
+            intervals << new Interval(tMin, tMax, label);
+        }
+        else {
+            if (!intervals.isEmpty()) {
+                analyser->calculate(corpus, currentCommunicationID, currentAnnotationID, intervals);
+                for (int i = 0; i < analyser->model()->rowCount(); ++i) {
+                    model->appendRow(analyser->model()->takeRow(i));
+                }
+                qDeleteAll(intervals);
+                intervals.clear();
+            }
+            currentCommunicationID = communicationID;
+            currentAnnotationID = annotationID;
+            intervals << new Interval(tMin, tMax, label);
+        }
+    } while (!stream.atEnd());
+    file.close();
+    if (!intervals.isEmpty()) {
+        analyser->calculate(corpus, currentCommunicationID, currentAnnotationID, intervals);
+        for (int i = 0; i < analyser->model()->rowCount(); ++i) {
+            model->appendRow(analyser->model()->takeRow(i));
+        }
+        qDeleteAll(intervals);
+        intervals.clear();
+    }
+    // Update table headers
+    if (analyser && analyser->model()) {
+        for (int i = 0; i < analyser->model()->columnCount(); ++i)
+            model->setHorizontalHeaderItem(i, analyser->model()->horizontalHeaderItem(i));
+    }
+    // Update table
+    d->tableResults->tableView()->setModel(model);
+    if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
+    d->modelResults = model;
+}
+
+//for (int i = 0; i < analyser->model()->rowCount(); ++i) {
+//    QString line;
+//    for (int j = 0; j < analyser->model()->columnCount(); ++j) {
+//        line.append(analyser->model()->item(i, j)->data(Qt::DisplayRole).toString()).append("\t");
+//    }
+//    if (!line.isEmpty()) line.chop(1);
+//    d->textResults->append(line);
+//}
+
+
+void StatisticsModeWidget::analyse()
+{
+//    analyseFromFile();
+//    return;
+
+    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    if (!corpus) return;
+    QScopedPointer<AnalyserPitch> analyser(new AnalyserPitch);
+
+    QStandardItemModel *model = new QStandardItemModel(this);
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        if (!com) continue;
+        foreach (QString annotationID, com->annotationIDs()) {
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()
+                    ->getTiersAllSpeakers(annotationID, QStringList() << "ortho");
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_macroUnit = tiers->getIntervalTierByName("ortho");
+                QList<Interval *> macroUnitIntervals;
+                foreach (Interval *intv, tier_macroUnit->intervals()) {
+                    if (!intv->isPauseSilent()) macroUnitIntervals << intv;
+                }
+                // Run analyser for each macro-unit (excluding pauses) and take each row of results into the model
+                analyser->calculate(corpus, com->ID(), annotationID, macroUnitIntervals);
+                for (int i = 0; i < analyser->model()->rowCount(); ++i) {
+                    model->appendRow(analyser->model()->takeRow(i));
+                }
+            }
+            qDeleteAll(tiersAll);
+        }
+    }
+    // Update table headers
+    if (analyser && analyser->model()) {
+        for (int i = 0; i < analyser->model()->columnCount(); ++i)
+            model->setHorizontalHeaderItem(i, new QStandardItem(analyser->model()->horizontalHeaderItem(i)->text()));
+    }
+    // Update table
+    d->tableResults->tableView()->setModel(model);
+    if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
+    d->modelResults = model;
+
+}
+

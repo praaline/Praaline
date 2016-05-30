@@ -38,19 +38,23 @@ using namespace Praaline::Plugins;
 struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
     PluginAlignerPrivateData() :
         commandDownsampleWaveFiles(false), commandExtractFeatures(false), commandSplitToUtterances(false),
-        commandAutomaticTranscription(false), commandLongSoundAligner(false)
-    {}
+        commandAutomaticTranscription(false), commandCreateMLLRAdaptation(false), commandLongSoundAligner(false)
+    {
+        sphinxMLLRAdaptationPath = "$CORPUS_BASE_PATH/mllr_adapt/";
+    }
 
     bool commandDownsampleWaveFiles;
     bool commandExtractFeatures;
     bool commandSplitToUtterances;
     bool commandAutomaticTranscription;
+    bool commandCreateMLLRAdaptation;
     bool commandLongSoundAligner;
 
     QString sphinxAcousticModel;
     QString sphinxLanguageModel;
     QString sphinxPronunciationDictionary;
     QString sphinxMLLRMatrix;
+    QString sphinxMLLRAdaptationPath;
 
     QFuture<QString> future;
     QFutureWatcher<QString> watcher;
@@ -132,12 +136,14 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Aligner::PluginAlig
     parameters << PluginParameter("commandExtractFeatures", "Extract MFCC feature files", QVariant::Bool, d->commandExtractFeatures);
     parameters << PluginParameter("commandSplitToUtterances", "Split WAV files to utterances", QVariant::Bool, d->commandSplitToUtterances);
     parameters << PluginParameter("commandAutomaticTranscription", "Automatic Transcription", QVariant::Bool, d->commandAutomaticTranscription);
+    parameters << PluginParameter("commandCreateMLLRAdaptation", "Create MLLR adaptation files", QVariant::Bool, d->commandCreateMLLRAdaptation);
     parameters << PluginParameter("commandLongSoundAligner", "Run Long Sound Aliger", QVariant::Bool, d->commandLongSoundAligner);
 
     parameters << PluginParameter("sphinxAcousticModel", "Sphinx Acoustic Model", QVariant::String, d->sphinxAcousticModel);
     parameters << PluginParameter("sphinxLanguageModel", "Sphinx Language Model", QVariant::String, d->sphinxLanguageModel);
     parameters << PluginParameter("sphinxPronunciationDictionary", "Sphinx Pronunciation Dictionary", QVariant::String, d->sphinxPronunciationDictionary);
     parameters << PluginParameter("sphinxMLLRMatrix", "Sphinx MLLR Adaptation Matrix", QVariant::String, d->sphinxMLLRMatrix);
+    parameters << PluginParameter("sphinxMLLRMatrix", "Path for MLLR Adaptation Files", QVariant::String, d->sphinxMLLRAdaptationPath);
 
     return parameters;
 }
@@ -148,12 +154,14 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
     if (parameters.contains("commandExtractFeatures")) d->commandExtractFeatures = parameters.value("commandExtractFeatures").toBool();
     if (parameters.contains("commandSplitToUtterances")) d->commandSplitToUtterances = parameters.value("commandSplitToUtterances").toBool();
     if (parameters.contains("commandAutomaticTranscription")) d->commandAutomaticTranscription = parameters.value("commandAutomaticTranscription").toBool();
+    if (parameters.contains("commandCreateMLLRAdaptation")) d->commandCreateMLLRAdaptation = parameters.value("commandCreateMLLRs").toBool();
     if (parameters.contains("commandLongSoundAligner")) d->commandLongSoundAligner = parameters.value("commandLongSoundAligner").toBool();
 
     if (parameters.contains("sphinxAcousticModel")) d->sphinxAcousticModel = parameters.value("sphinxAcousticModel").toString();
     if (parameters.contains("sphinxLanguageModel")) d->sphinxLanguageModel = parameters.value("sphinxLanguageModel").toString();
     if (parameters.contains("sphinxPronunciationDictionary")) d->sphinxPronunciationDictionary = parameters.value("sphinxPronunciationDictionary").toString();
     if (parameters.contains("sphinxMLLRMatrix")) d->sphinxMLLRMatrix = parameters.value("sphinxMLLRMatrix").toString();
+    if (parameters.contains("sphinxMLLRAdaptationPath")) d->sphinxMLLRAdaptationPath = parameters.value("sphinxMLLRAdaptationPath").toString();
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
@@ -174,9 +182,10 @@ void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAut
 }
 
 
-// ================================================================================================
-// Asynchronous execution
-// ================================================================================================
+// ====================================================================================================================
+// Asynchronous execution: basic event handling
+// ====================================================================================================================
+
 void Praaline::Plugins::Aligner::PluginAligner::futureResultReadyAt(int index)
 {
     QString result = d->watcher.resultAt(index);
@@ -200,7 +209,10 @@ void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
     emit printMessage("Finished");
     qDebug() << "Finished";
 }
-// ================================================================================================
+
+// ====================================================================================================================
+// Asynchronous execution steps: procedures for each plugin sub-commmand
+// ====================================================================================================================
 
 struct LSAStep
 {
@@ -307,15 +319,14 @@ struct SphinxAutomaticTranscriptionStep
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             int id = rec->ID().left(3).right(2).toInt();
             if (id > 10) return QString("%1 ok").arg(id);
-            if (!rec->ID().contains("PASSENGER")) continue;
 
             bool result = SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(
-                        m_corpus, com, rec, rec->ID(), "auto_segment", "transcription",
+                        m_corpus, com, rec, rec->ID(), "auto_segment", "auto_transcription",
                         m_sphinxAcousticModel, m_sphinxLanguageModel,
                         m_sphinxPronunciationDictionary, m_sphinxMLLRMatrix);
             if (result) {
                 SpeechRecognitionRecipes::updateSegmentationFromTranscription(
-                            m_corpus, com, "auto_segment", "transcription");
+                            m_corpus, com, "auto_segment", "auto_transcription");
             }
         }
         return QString("%1\tautomatically transcribed %2 recording(s) using Sphinx.").arg(com->ID()).arg(com->recordingsCount());
@@ -327,12 +338,28 @@ struct SphinxAutomaticTranscriptionStep
     QString m_sphinxMLLRMatrix;
 };
 
+struct CreateMLLRAdaptationStep
+{
+    CreateMLLRAdaptationStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    typedef QString result_type;
+
+    QString operator() (const QPointer<CorpusCommunication> &com)
+    {
+        if (!com) return QString("%1\tis empty.").arg(com->ID());
+        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            // SpeechRecognitionRecipes::downsampleWaveFile(m_corpus, rec);
+        }
+        return QString("%1\t %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
+    }
+    QPointer<Corpus> m_corpus;
+    QString m_MLLRAdaptationPath;
+};
+
+
+// ====================================================================================================================
+
 void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
-    BroadClassAligner BPCA;
-    BPCA.prepareBPCTrainingFromCommunications(corpus, communications, "/home/george/broad-align/");
-    return;
-
     madeProgress(0);
     printMessage("Starting");
     QElapsedTimer timer;
@@ -363,6 +390,32 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
                                              d->sphinxPronunciationDictionary, d->sphinxMLLRMatrix));
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
+    }
+    if (d->commandCreateMLLRAdaptation) {
+        d->future = QtConcurrent::mapped(communications, CreateMLLRAdaptationStep(corpus));
+        d->watcher.setFuture(d->future);
+        while (d->watcher.isRunning()) QApplication::processEvents();
+    }
+
+    if (d->commandLongSoundAligner) {
+        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
+        LSA->createRecognitionLevel(corpus, 0);
+        d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
+        d->watcher.setFuture(d->future);
+        while (d->watcher.isRunning()) QApplication::processEvents();
+    }
+    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
+    madeProgress(100);
+    return;
+
+
+}
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    using namespace Praaline::Plugins::Aligner;
+    Q_EXPORT_PLUGIN2(PluginAligner, PluginAligner)
+#endif
+
 
 //        SphinxOfflineRecogniser sphinx;
 //        SphinxConfiguration config;
@@ -392,19 +445,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //                }
 //            }
 //        }
-    }
-
-    if (d->commandLongSoundAligner) {
-        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
-        LSA->createRecognitionLevel(corpus, 0);
-        d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
-        d->watcher.setFuture(d->future);
-        while (d->watcher.isRunning()) QApplication::processEvents();
-    }
-    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
-    madeProgress(100);
-    return;
-
 //    checks(corpus, communications);
 //    return;
 
@@ -451,8 +491,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //    }
 
 
-
-
 //    AcousticModelTrainer mt;
 //    // mt.createMasterLabelFile(QString("d:/aligner_train_tests/%1.mlf").arg(corpus->ID()), corpus, communications, "segment", "tok_min", "phone");
 //    mt.createMasterLabelFileFromTokens(QString("d:/aligner_train_tests/%1.mlf").arg(corpus->ID()), corpus, communications, "segment", "tok_min", "phonetisation");
@@ -472,7 +510,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //        printMessage(word);
 //    }
 
-    //createFeatureFilesFromUtterances(corpus, communications);
+//  createFeatureFilesFromUtterances(corpus, communications);
 
 //                IntervalTier *tier_phone = new IntervalTier("phone", tier_segment->tMin(), tier_segment->tMax());
 //                ForceAligner f;
@@ -484,14 +522,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //                txg->addTier(tier_segment);
 //                PraatTextGrid::save("d:/aligner_tests/test.textgrid", txg);
 //                delete txg;
-
-
-}
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    using namespace Praaline::Plugins::Aligner;
-    Q_EXPORT_PLUGIN2(PluginAligner, PluginAligner)
-#endif
 
 //QList<AlignerToken> out = Phonetiser::phonetise(tier_tokens);
 //foreach (AlignerToken ptoken, out) {
@@ -651,3 +681,4 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPo
     madeProgress(100);
     printMessage("Finished");
 }
+

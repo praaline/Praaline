@@ -25,7 +25,7 @@ public:
                  const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
     IntervalTier(const QString &name, const QList<Interval *> &intervals,
                  const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
-    IntervalTier(const IntervalTier *copy, QString name = QString(), QObject *parent = 0);
+    IntervalTier(const IntervalTier *copy, QString name = QString(), bool copyAttributes = true, QObject *parent = 0);
     IntervalTier(const QString &name, const IntervalTier *tierA, const IntervalTier *tierB,
                  const QString &textA, const QString &textB, const QString &textAB, QObject *parent = 0);
     virtual ~IntervalTier();

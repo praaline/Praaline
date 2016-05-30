@@ -373,7 +373,8 @@ int quantize(double x, int factor, int max)
 }
 
 int PluginProminenceFeatures::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                        QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out)
+                                        QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
+                                        bool createSequences)
 {
     int noSequences = 0;
     QStringList featureSelection;
@@ -397,15 +398,17 @@ int PluginProminenceFeatures::outputCRF(IntervalTier *tier_syll, IntervalTier *t
         // if (!prom.isEmpty() && prom != "p" && prom != "P") exclude = true;
         // if (delivery == "H" || delivery == "%" || delivery == "&") exclude = true;
 
-        if (syll->isPauseSilent() && syll->duration().toDouble() > 0.100) {
-            if (!endSequence) {
-                out << "\n";
-                endSequence = true;
-                noSequences++;
+        if (createSequences) {
+            if (syll->isPauseSilent() && syll->duration().toDouble() > 0.100) {
+                if (!endSequence) {
+                    out << "\n";
+                    endSequence = true;
+                    noSequences++;
+                }
+                continue;
             }
-            continue;
+            endSequence = false;
         }
-        endSequence = false;
 
         if (sylltext.length() == 0) sylltext = "_";
         // ID
@@ -578,7 +581,8 @@ QString outputCRFTemplate() {
 }
 
 IntervalTier *PluginProminenceFeatures::annotate(QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-                                                 IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID)
+                                                 IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID,
+                                                 QTextStream &streamFeatures, QTextStream &streamFeaturesCRF)
 {
     m_currentAnnotationID = annotationID;
 
@@ -587,6 +591,9 @@ IntervalTier *PluginProminenceFeatures::annotate(QString annotationID, const QSt
 
     IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, withPOS, filenameModel, tierName);
 
+    if (withPOS == false) return promise;
+    // otherwise, write feature files
+
     QStringList featureSelection;
     featureSelection << "syll_dur_log_rel22_z" << "syll_dur_log_rel33_z" << "syll_dur_log_rel44_z" << "syll_dur_log_rel55_z" <<
                         "f0_max_st_rel22" << "f0_max_st_rel33" << "f0_max_st_rel44" << "f0_max_st_rel55" <<
@@ -594,60 +601,26 @@ IntervalTier *PluginProminenceFeatures::annotate(QString annotationID, const QSt
                         "f0_up" << "f0_down" << "f0_mvt" << "f0_traj" <<
                         "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
 
-    QFile fileOut(QString("D:/PROMCRF/features_%1.txt").arg(speakerID));
-    if (! fileOut.open(QFile::WriteOnly | QFile::Text)) return promise;
-    QTextStream out(&fileOut);
-    out.setCodec("UTF-8");
-    out.generateByteOrderMark();
-    bool endSequence = true;
     for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+        streamFeatures << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
         Interval *syll = tier_syll->interval(isyll);
-        if (syll->isPauseSilent() && syll->duration().toDouble() > 0.100) {
-            if (!endSequence) {
-                out << "_\n";
-                endSequence = true;
-            }
-            continue;
-        }
-        endSequence = false;
-
-        out << syll->text() << "\t";
+        streamFeatures << syll->text() << "\t";
+        streamFeatures << syll->tMin().toDouble() << "\t";
+        streamFeatures << syll->tMax().toDouble() << "\t";
         foreach (QString featureName, featureSelection) {
             if (featureName.endsWith("_z")) {
                 featureName.chop(2);
-                out << features[featureName].zscore(isyll) << "\t";
+                streamFeatures << features[featureName].zscore(isyll) << "\t";
             }
             else {
-                out << features[featureName].at(isyll) << "\t";
+                streamFeatures << features[featureName].at(isyll) << "\t";
             }
         }
-
-        out << syll->attribute("P_score").toString() << "\t";
-        out << syll->attribute("Z_score").toString() << "\t";
-        out << syll->attribute("promise").toString() << "\t";
-        out << syll->attribute("promise_pos").toString() << "\t";
-        out << syll->attribute("prom_AH").toString() << "\t";
-        out << syll->attribute("prom_CdlC").toString() << "\t";
-        out << syll->attribute("prom_GB").toString() << "\t";
-        out << syll->attribute("prom_MB").toString() << "\t";
-        out << syll->attribute("prom_NH").toString() << "\t";
-        out << syll->attribute("prom_LF").toString() << "\t";
-        out << syll->attribute("prom_AP").toString() << "\t";
-        out << syll->attribute("prom_AEL").toString() << "\t";
-        out << syll->attribute("prom_JLV").toString() << "\t";
-        out << syll->attribute("prom_ML").toString() << "\t";
-        out << syll->attribute("prom_SL").toString() << "\t";
-        out << syll->attribute("prom_ZT").toString() << "\n";
+        streamFeatures << syll->attribute("promise").toString() << "\t";
+        streamFeatures << syll->attribute("promise_pos").toString() << "\n";
     }
-    fileOut.close();
 
-    QFile fileOutCRF(QString("D:/PROMCRF/featurescrf_%1.txt").arg(speakerID));
-    if (! fileOutCRF.open(QFile::WriteOnly | QFile::Text)) return promise;
-    QTextStream outCRF(&fileOutCRF);
-    outCRF.setCodec("UTF-8");
-    outCRF.generateByteOrderMark();
-    outputCRF(tier_syll, tier_token, features, withPOS, outCRF);
-    fileOutCRF.close();
+    outputCRF(tier_syll, tier_token, features, withPOS, streamFeaturesCRF, false);
     return promise;
 }
 

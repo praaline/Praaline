@@ -15,6 +15,8 @@ public:
 
     static void createTextgridsFromAutosyll(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
     static void createBasicMetadata(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
+    static void renameRecordings(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
+    static void updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
 };
 
 #endif // MYEXPERIMENTS_H
