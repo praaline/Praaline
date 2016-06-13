@@ -257,7 +257,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 //    QStringList transcripts = PBExpe::printTranscriptionInProsodicUnits(corpus);
 //    foreach (QString t, transcripts) printMessage(t);
 
-    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundary");
+//    PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundary");
 //    PBExpe::analysisCalculateAverageDelay(corpus, "boundary2");
 //    PBExpe::analysisCalculateCoverage(corpus, "boundary2");
 //    PBExpe::analysisCheckBoundaryRightAfterPause(corpus);
@@ -271,7 +271,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 
 //    PBExpe::statExtractFeaturesForModelling(corpus, true, false, "boundary");
 //    PBExpe::statInterAnnotatorAgreement(corpus);
-//    PBExpe::statCorrespondanceNSandMS(corpus);
+    PBExpe::statCorrespondanceNSandMS(corpus, "boundary");
 
 
 //    QString path = "C:/Users/George/Downloads/Rhap_meta";
