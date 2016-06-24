@@ -140,14 +140,15 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
 
-//    int countDone = 0;
-//    madeProgress(0);
-//    foreach (QPointer<CorpusCommunication> com, communications) {
-//        if (!com) continue;
-//        MyExperiments::createTextgridsFromAutosyll(corpus, com);
-//        countDone++;
-//        madeProgress(countDone * 100 / communications.count());
-//    }
+    int countDone = 0;
+    madeProgress(0);
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
+        MyExperiments::updateTranscriptionMode(corpus, com);
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
 
 //    ProsodyCourse::syllableTables(corpus);
 //    return;
@@ -271,7 +272,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPoint
 
 //    PBExpe::statExtractFeaturesForModelling(corpus, true, false, "boundary");
 //    PBExpe::statInterAnnotatorAgreement(corpus);
-    PBExpe::statCorrespondanceNSandMS(corpus, "boundary");
+//    PBExpe::statCorrespondanceNSandMS(corpus, "boundary");
 
 
 //    QString path = "C:/Users/George/Downloads/Rhap_meta";
