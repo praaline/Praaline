@@ -72,15 +72,15 @@ HEADERS += \
     pluginaligner_global.h \
     pluginaligner.h \
     phonemedatabase.h \
-    easyalignbasic.h \
     annotationpluginpraatscript.h \
     LongSoundAligner.h \
-    BroadClassAligner.h
+    BroadClassAligner.h \
+    EasyAlignBasic.h
 	
 SOURCES += \ 
     pluginaligner.cpp \
     phonemedatabase.cpp \
-    easyalignbasic.cpp \
     annotationpluginpraatscript.cpp \
     LongSoundAligner.cpp \
-    BroadClassAligner.cpp
+    BroadClassAligner.cpp \
+    EasyAlignBasic.cpp

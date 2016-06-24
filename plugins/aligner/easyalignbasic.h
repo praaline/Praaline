@@ -19,16 +19,17 @@ public:
     void setTiernameSelection(const QString &tiername) { m_tiernameSelection = tiername; }
     void setFilterSelection(const QString &filter) { m_filterSelection = filter; }
     void setTiernameTranscription(const QString &tiername) { m_tiernameTranscription = tiername; }
-    void setTiernamePhonetiszation(const QString &tiername) { m_tiernamePhonetisation = tiername; }
+    void setTiernamePhonetisation(const QString &tiername) { m_tiernamePhonetisation = tiername; }
     void setPreciseUtteranceBoundaries(bool precise) { m_preciseUtteranceBoundaries = precise; }
 
-    QString prepareAlignmentTextgrid(CorpusCommunication *com, QPointer<AnnotationTierGroup> tiers);
-    void runEasyAlign(CorpusCommunication *com);
-    void runSyllabify(CorpusCommunication *com);
-    QString postAlignment(CorpusCommunication *com, QPointer<AnnotationTierGroup> tiers, bool fakeAlignment = false);
+    QString prepareAlignmentTextgrid(QList<Interval *> intervalsToAlign, IntervalTier *tier_ortho, QString filenameTextGrid);
+    void runEasyAlign(QString filenameSound, QString filenameTextgrid);
+    QString postAlignment(const QString &filenameTextgrid);
+    void runSyllabify(QString filenameTextgrid);
+
     QString mergeFiles(CorpusCommunication *com);
 
-    QString quickScript(CorpusCommunication *com);
+    static QString runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication *com);
 
 signals:
 
