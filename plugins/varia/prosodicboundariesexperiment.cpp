@@ -469,8 +469,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumber
             // Left side
             SparseOneDimensionalModel::PointList leftPPBs = modelInstants->getPoints(groupingFrame0, frame);
             previousFrame = frame;
-            for (SparseOneDimensionalModel::PointList::const_iterator i = leftPPBs.end(); i != leftPPBs.begin(); --i) {
-                if (i == leftPPBs.end()) continue;
+            for (SparseOneDimensionalModel::PointList::const_reverse_iterator i = leftPPBs.rbegin(); i != leftPPBs.rend(); ++i) {
                 const SparseOneDimensionalModel::Point &p(*i);
                 if (p.label.isEmpty()) continue;
                 if (p.frame > frame) continue;
