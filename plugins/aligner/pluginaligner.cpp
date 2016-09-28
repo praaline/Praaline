@@ -20,7 +20,7 @@
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "pnlib/asr/sphinx/SphinxSegmentation.h"
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
-#include "easyalignbasic.h"
+#include "EasyAlignBasic.h"
 #include "LongSoundAligner.h"
 #include "BroadClassAligner.h"
 
@@ -49,6 +49,7 @@ struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
     bool commandAutomaticTranscription;
     bool commandCreateMLLRAdaptation;
     bool commandLongSoundAligner;
+    bool commandEasyAlign;
 
     QString sphinxAcousticModel;
     QString sphinxLanguageModel;
@@ -138,6 +139,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Aligner::PluginAlig
     parameters << PluginParameter("commandAutomaticTranscription", "Automatic Transcription", QVariant::Bool, d->commandAutomaticTranscription);
     parameters << PluginParameter("commandCreateMLLRAdaptation", "Create MLLR adaptation files", QVariant::Bool, d->commandCreateMLLRAdaptation);
     parameters << PluginParameter("commandLongSoundAligner", "Run Long Sound Aliger", QVariant::Bool, d->commandLongSoundAligner);
+    parameters << PluginParameter("commandEasyAlign", "Run EasyAlign", QVariant::Bool, d->commandEasyAlign);
 
     parameters << PluginParameter("sphinxAcousticModel", "Sphinx Acoustic Model", QVariant::String, d->sphinxAcousticModel);
     parameters << PluginParameter("sphinxLanguageModel", "Sphinx Language Model", QVariant::String, d->sphinxLanguageModel);
@@ -156,6 +158,7 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
     if (parameters.contains("commandAutomaticTranscription")) d->commandAutomaticTranscription = parameters.value("commandAutomaticTranscription").toBool();
     if (parameters.contains("commandCreateMLLRAdaptation")) d->commandCreateMLLRAdaptation = parameters.value("commandCreateMLLRs").toBool();
     if (parameters.contains("commandLongSoundAligner")) d->commandLongSoundAligner = parameters.value("commandLongSoundAligner").toBool();
+    if (parameters.contains("commandEasyAlign")) d->commandEasyAlign = parameters.value("commandEasyAlign").toBool();
 
     if (parameters.contains("sphinxAcousticModel")) d->sphinxAcousticModel = parameters.value("sphinxAcousticModel").toString();
     if (parameters.contains("sphinxLanguageModel")) d->sphinxLanguageModel = parameters.value("sphinxLanguageModel").toString();
@@ -355,6 +358,18 @@ struct CreateMLLRAdaptationStep
     QString m_MLLRAdaptationPath;
 };
 
+struct RunEasyAlignStep
+{
+    RunEasyAlignStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    typedef QString result_type;
+
+    QString operator() (const QPointer<CorpusCommunication> &com)
+    {
+        if (!com) return QString("%1\tis empty.").arg(com->ID());
+        return EasyAlignBasic::runAllEasyAlignSteps(m_corpus, com);
+    }
+    QPointer<Corpus> m_corpus;
+};
 
 // ====================================================================================================================
 
@@ -404,10 +419,15 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
+
+    if (d->commandEasyAlign) {
+        d->future = QtConcurrent::mapped(communications, RunEasyAlignStep(corpus));
+        d->watcher.setFuture(d->future);
+        while (d->watcher.isRunning()) QApplication::processEvents();
+    }
     printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
     madeProgress(100);
     return;
-
 
 }
 

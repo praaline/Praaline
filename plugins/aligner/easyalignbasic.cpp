@@ -1,9 +1,11 @@
+#include <QDebug>
 #include <QString>
 #include <QList>
 #include <QFile>
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QProcess>
+#include <QMutex>
 #include <QCoreApplication>
 
 #include "pncore/corpus/corpus.h"
@@ -15,7 +17,7 @@
 #include "pncore/interfaces/praat/praattextgrid.h"
 
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
-#include "easyalignbasic.h"
+#include "EasyAlignBasic.h"
 
 EasyAlignBasic::EasyAlignBasic(QObject *parent) :
     AnnotationPluginPraatScript(parent),
@@ -29,29 +31,36 @@ EasyAlignBasic::~EasyAlignBasic()
 {
 }
 
-QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPointer<AnnotationTierGroup> tiers)
+QString temp()
 {
-    QString result = QString("Preparing additional alignment textgrid(s)").arg(com->ID());
+//    IntervalTier *tier_selection = tiers->getIntervalTierByName(m_tiernameSelection);
+//    if (!tier_selection) {
+//        // continue;
+//        tier_selection = new IntervalTier(m_tiernameSelection, tiers->tMin(), tiers->tMax(), this);
+//        tier_selection->interval(0)->setText(m_filterSelection);
+//    }
+//    IntervalTier *tier_ortho = tiers->getIntervalTierByName(m_tiernameTranscription);
+//    // txg->getIntervalTierByIndex(0);
+
+//    if (!tier_ortho) return "no ortho";
+
+//    // Decide where to realign
+//    AnnotationTierGroup *txgAlign = new AnnotationTierGroup(this);
+//    QList<Interval *> intervalsToAlign;
+//    foreach (Interval *intv, tier_selection->intervals()) {
+//        if (intv->text() == m_filterSelection) {
+//            intervalsToAlign << tier_ortho->getIntervalsContainedIn(intv);
+//        }
+//    }
+//    QString filename = com->basePath() + "/" + com->recordings().first()->filename();
+//    filename = filename.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
+
+}
+
+QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAlign, IntervalTier *tier_ortho, QString filenameTextGrid)
+{
+    QString result = QString("Preparing textgrid: ").arg(filenameTextGrid);
     // Find the input tiers
-    IntervalTier *tier_selection = tiers->getIntervalTierByName(m_tiernameSelection);
-    if (!tier_selection) {
-        // continue;
-        tier_selection = new IntervalTier(m_tiernameSelection, tiers->tMin(), tiers->tMax(), this);
-        tier_selection->interval(0)->setText(m_filterSelection);
-    }
-    IntervalTier *tier_ortho = tiers->getIntervalTierByName(m_tiernameTranscription);
-    // txg->getIntervalTierByIndex(0);
-
-    if (!tier_ortho) return "no ortho";
-
-    // Decide where to realign
-    AnnotationTierGroup *txgAlign = new AnnotationTierGroup(this);
-    QList<Interval *> intervalsToAlign;
-    foreach (Interval *intv, tier_selection->intervals()) {
-        if (intv->text() == m_filterSelection) {
-            intervalsToAlign << tier_ortho->getIntervalsContainedIn(intv);
-        }
-    }
 
     IntervalTier *tier_toAlign_ortho = new IntervalTier(m_tiernameTranscription, intervalsToAlign,
                                                         tier_ortho->tMin(), tier_ortho->tMax());
@@ -72,7 +81,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
         intv_utteranceOrtho->setText(utterance);
         // Format for phonetizer
         QString utteranceOut = utterance;
-        utteranceOut = utteranceOut.replace("/", "").replace("-", "").replace("=", "").replace("!", "");
+        utteranceOut = utteranceOut.replace("/", "").replace("-", "").replace("=", "").replace("!", "").replace("?", "").replace(":", "");
         // noises and paraverbal (make sure it's after the _ replace block!)
         QRegExp rx("[(.*)]");
         rx.setMinimal(true);
@@ -82,6 +91,8 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
             utteranceOut.replace(s, capture.length(), "");
             s += rx.cap(1).length();
         }
+        if (utteranceOut.trimmed().isEmpty()) continue;
+        qDebug() << utteranceOut;
         //
         QList<Interval *> utt; utt << new Interval(intv_utteranceOrtho);
         utt.first()->setText(utteranceOut.replace("_", "").trimmed());
@@ -99,6 +110,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
         while (ls_words.count() > ls_phonetizations.count())
             ls_phonetizations.append("@");
         int count = qMin(ls_phonetizations.count(), ls_words.count());
+        if (count == 0) count = 1;
         //
         RealTime w_xMin = intv_utterance->tMin();
         RealTime w_step = (intv_utterance->tMax() - intv_utterance->tMin()) / ((double) count);
@@ -132,28 +144,25 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(CorpusCommunication *com, QPoin
     IntervalTier *tier_toAlign_phonesT = new IntervalTier("phonesT", intervalsPhones,
                                                           tier_ortho->tMin(), tier_ortho->tMax());
 
-    IntervalTier *tier_toAlign_selection = new IntervalTier(tier_selection);
+    AnnotationTierGroup *txgAlign = new AnnotationTierGroup(this);
     txgAlign->addTier(tier_toAlign_phonesT);
     txgAlign->addTier(tier_toAlign_wordsT);
     txgAlign->addTier(tier_toAlign_phono);
     txgAlign->addTier(tier_toAlign_ortho);
-    txgAlign->addTier(tier_toAlign_selection);
 
-    QString filename = com->basePath() + "/" + com->recordings().first()->filename();
-    filename = filename.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
-    PraatTextGrid::save(filename, txgAlign);
+    PraatTextGrid::save(filenameTextGrid, txgAlign);
 
     return result;
 }
 
-void EasyAlignBasic::runEasyAlign(CorpusCommunication *com)
+void EasyAlignBasic::runEasyAlign(QString filenameSound, QString filenameTextgrid)
 {
     QString appPath = QCoreApplication::applicationDirPath();
     QString script = appPath + "/plugins/easyalign/align_sound.praat";
     QStringList scriptArguments;
-    QString filenameSound = com->basePath() + "/" + com->recordings().first()->filename();
-    QString filenameTextgrid = QString(filenameSound).replace(".wav", ".TextGrid");
-    filenameTextgrid = filenameTextgrid.replace(".TextGrid", m_alignerOutputFilenameSuffix + ".TextGrid");
+//    QString filenameSound = com->basePath() + "/" + com->recordings().first()->filename();
+//    QString filenameTextgrid = QString(filenameSound).replace(".wav", ".TextGrid");
+//    filenameTextgrid = filenameTextgrid.replace(".TextGrid", m_alignerOutputFilenameSuffix + ".TextGrid");
     QString preciseEndpoint = (m_preciseUtteranceBoundaries) ? "1" : "0";
     QString considerStar = "1";
     QString allowElision = "1";
@@ -164,66 +173,60 @@ void EasyAlignBasic::runEasyAlign(CorpusCommunication *com)
     executePraatScript(script, scriptArguments);
 }
 
-QString EasyAlignBasic::postAlignment(CorpusCommunication *com, QPointer<AnnotationTierGroup> tiers, bool fakeAlignment)
+QString EasyAlignBasic::postAlignment(const QString &filenameTextgrid)
 {
     QString result = "Post-processing EasyAlign results";
 
     AnnotationTierGroup *txgAlign = new AnnotationTierGroup(this);
-    QString filename = com->basePath() + "/" + com->recordings().first()->filename();
-    filename = filename.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
-    PraatTextGrid::load(filename, txgAlign);
+    PraatTextGrid::load(filenameTextgrid, txgAlign);
 
     // Find the input tiers
-    IntervalTier *tier_selection = txgAlign->getIntervalTierByName(m_tiernameSelection); if (!tier_selection) return "tier not found 1";
     IntervalTier *tier_transcription = txgAlign->getIntervalTierByName(m_tiernameTranscription); if (!tier_transcription) return "tier not found 2";
     IntervalTier *tier_words = txgAlign->getIntervalTierByName("words"); if (!tier_words) return "tier not found 3";
     IntervalTier *tier_phones = txgAlign->getIntervalTierByName("phones"); if (!tier_phones) return "tier not found 4";
     IntervalTier *tier_wordsT = txgAlign->getIntervalTierByName("wordsT"); if (!tier_wordsT) return "tier not found 5";
     IntervalTier *tier_phonesT = txgAlign->getIntervalTierByName("phonesT"); if (!tier_phonesT) return "tier not found 6";
 
-    IntervalTier *tier_wordsOrig = tiers->getIntervalTierByName("tok_min");
     QList<Interval *> list_new_phones;
     QList<Interval *> list_new_words;
 
     foreach (Interval *segment, tier_transcription->intervals()) {
         if (segment->text() == "_") continue;
-        Interval *selection = tier_selection->intervalAtTime(segment->tCenter());
-        if (selection->text() == m_filterSelection) {
-            QList<Interval *> words = tier_words->getIntervalsContainedIn(segment);
-            if (    (words.count() == 0) ||
-                    (words.count() == 1 && (words.at(0)->text() == "_")) ||
-                    (words.count() == 1 && (words.at(0)->text().trimmed().isEmpty()))   ) {
-                list_new_words << tier_wordsT->getIntervalsContainedIn(segment);
-                list_new_phones << tier_phonesT->getIntervalsContainedIn(segment);
-            }
-            else {
-                list_new_words << words;
-                list_new_phones << tier_phones->getIntervalsContainedIn(segment);
-            }
+        QList<Interval *> words = tier_words->getIntervalsContainedIn(segment);
+        if (    (words.count() == 0) ||
+                (words.count() == 1 && (words.at(0)->text() == "_")) ||
+                (words.count() == 1 && (words.at(0)->text().trimmed().isEmpty()))   ) {
+            list_new_words << tier_wordsT->getIntervalsContainedIn(segment);
+            list_new_phones << tier_phonesT->getIntervalsContainedIn(segment);
         }
         else {
-            if (tier_wordsOrig)
-                list_new_words << tier_wordsOrig->getIntervalsContainedIn(segment);
+            list_new_words << words;
+            list_new_phones << tier_phones->getIntervalsContainedIn(segment);
         }
     }
     IntervalTier *tier_phonesN = new IntervalTier("phones", list_new_phones, txgAlign->tMin(), txgAlign->tMax());
     IntervalTier *tier_wordsN = new IntervalTier("words", list_new_words, txgAlign->tMin(), txgAlign->tMax());
-    txgAlign->removeTierByName("phones"); txgAlign->removeTierByName("phonesT");
-    txgAlign->removeTierByName("words"); txgAlign->removeTierByName("wordsT");
-    txgAlign->removeTierByName("phono");
-    txgAlign->insertTier(0, tier_phonesN);
-    txgAlign->insertTier(1, tier_wordsN);
-    PraatTextGrid::save(filename, txgAlign);
+
+    AnnotationTierGroup *txgAlignNew = new AnnotationTierGroup(this);
+    txgAlignNew->addTier(tier_phonesN);
+    txgAlignNew->addTier(tier_wordsN);
+    txgAlignNew->addTier(tier_transcription);
+//    txgAlign->removeTierByName("phones"); txgAlign->removeTierByName("phonesT");
+//    txgAlign->removeTierByName("words"); txgAlign->removeTierByName("wordsT");
+//    txgAlign->removeTierByName("phono");
+//    txgAlign->insertTier(0, tier_phonesN);
+//    txgAlign->insertTier(1, tier_wordsN);
+    PraatTextGrid::save(filenameTextgrid, txgAlignNew);
     return result;
 }
 
-void EasyAlignBasic::runSyllabify(CorpusCommunication *com)
+void EasyAlignBasic::runSyllabify(QString filenameTextgrid)
 {
     QString appPath = QCoreApplication::applicationDirPath();
     QString script = appPath + "/plugins/easyalign/syllabify2.praat";
     QStringList scriptArguments;
-    QString filenameTextgrid = com->basePath() + "/" + com->recordings().first()->filename();
-    filenameTextgrid = filenameTextgrid.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
+//    QString filenameTextgrid = com->basePath() + "/" + com->recordings().first()->filename();
+//    filenameTextgrid = filenameTextgrid.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
     scriptArguments << filenameTextgrid;
     executePraatScript(script, scriptArguments);
 }
@@ -303,9 +306,74 @@ QString EasyAlignBasic::mergeFiles(CorpusCommunication *com)
     return result;
 }
 
-QString EasyAlignBasic::quickScript(CorpusCommunication *com)
+// static
+QString EasyAlignBasic::runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication *com)
 {
     QString ret;
+    static QMutex mutex;
+    if (!corpus) return ret;
+    if (!com) return ret;
+    QPointer<EasyAlignBasic> EA = new EasyAlignBasic();
+
+    foreach (QString annotationID, com->annotationIDs()) {
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+        mutex.lock();
+        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        mutex.unlock();
+        foreach (QString speakerID, tiersAll.keys()) {
+            // Find corresponding recording
+            QPointer<CorpusRecording> recording(0);
+            foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+                if (rec->property("speakerID").toString() == speakerID) {
+                    recording = rec;
+                    break;
+                }
+            }
+            if (!recording) continue;
+
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_ortho = tiers->getIntervalTierByName("transcription");
+            if (!tier_ortho) continue;
+            IntervalTier *tier_words_exist = tiers->getIntervalTierByName("words");
+            if (tier_words_exist && tier_words_exist->countItems() > 0) continue;
+
+            // Align all intervals
+            QList<Interval *> intervalsToAlign;
+            foreach (Interval *intv, tier_ortho->intervals()) {
+                intervalsToAlign << new Interval(intv);
+            }
+            // Create a textgrid with the same name as the recording
+            QString filenameSound = corpus->baseMediaPath() + "/" + recording->filename();
+            QString filenameAlignTextgrid = corpus->baseMediaPath() + "/" + QString(recording->filename()).replace(".wav", ".TextGrid");
+            EA->prepareAlignmentTextgrid(tier_ortho->intervals(), tier_ortho, filenameAlignTextgrid);
+            // alignment
+            EA->runEasyAlign(filenameSound, filenameAlignTextgrid);
+            // post-processing of the texgrid
+            EA->postAlignment(filenameAlignTextgrid);
+            // syllabification
+            EA->runSyllabify(filenameAlignTextgrid);
+
+            AnnotationTierGroup *txg = new AnnotationTierGroup();
+            PraatTextGrid::load(filenameAlignTextgrid, txg);
+
+            IntervalTier *tier_phone = txg->getIntervalTierByName("phones"); tier_phone->setName("phone");
+            IntervalTier *tier_syll = txg->getIntervalTierByName("syll");
+            IntervalTier *tier_words = txg->getIntervalTierByName("words");
+            mutex.lock();
+            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_phone);
+            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_syll);
+            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_words);
+            mutex.unlock();
+
+
+            ret.append(recording->ID()).append(" ");
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret;
+}
+
 //    foreach (CorpusAnnotation *annot, com->annotations()) {
 //        AnnotationObject *obj = annot->getAnnotation();
 //        if (!obj || obj->fileType() != AnnotationObject::FileType_TierGroup) continue;
@@ -325,5 +393,4 @@ QString EasyAlignBasic::quickScript(CorpusCommunication *com)
 //            ret.append("\n");
 //        }
 //    }
-    return ret;
-}
+
