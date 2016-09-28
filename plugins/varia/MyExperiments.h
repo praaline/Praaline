@@ -17,6 +17,8 @@ public:
     static void createBasicMetadata(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
     static void renameRecordings(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
     static void updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
+
+    static void mergePauses(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
 };
 
 #endif // MYEXPERIMENTS_H

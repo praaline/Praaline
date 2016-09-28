@@ -124,10 +124,7 @@ void MyExperiments::updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<Co
 {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     if (!corpus || !com) return;
-    if (com->property("transcriptionMode").toString() == "m") {
-        com->setProperty("transcriptionMode", "mmm");
-        return;
-    }
+
     com->setProperty("transcriptionMode", "A");
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
@@ -144,4 +141,29 @@ void MyExperiments::updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<Co
         }
     }
 }
+
+void MyExperiments::mergePauses(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    if (!corpus || !com) return;
+
+    foreach (QString annotationID, com->annotationIDs()) {
+        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+
+            QStringList tiernames; tiernames << "phone" << "syll" << "words" << "tok_min" << "tok_mwu" << "transcription";
+            foreach (QString tiername, tiernames) {
+                IntervalTier *tier = tiers->getIntervalTierByName(tiername);
+                if (!tier) continue;
+                tier->fillEmptyAnnotationsWith("_");
+                tier->mergeIdenticalAnnotations("_");
+                corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier);
+            }
+        }
+        qDeleteAll(tiersAll);
+    }
+}
+
 

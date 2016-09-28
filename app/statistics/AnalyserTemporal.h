@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QTextStream>
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 
 struct AnalyserTemporalData;
@@ -26,7 +27,8 @@ public:
     double measureSpk(const QString &speakerID, const QString &measureID) const;
     QList<QString> speakerIDs() const;
 
-    void calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
+    void calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+                   QTextStream &pauseListSIL, QTextStream &pauseListFIL);
 
 signals:
 

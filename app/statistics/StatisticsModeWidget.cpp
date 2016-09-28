@@ -103,44 +103,6 @@ void StatisticsModeWidget::actionClearOutput()
     d->textResults->clear();
 }
 
-void StatisticsModeWidget::analyseT()
-{
-    QScopedPointer<AnalyserTemporal>analyser(new AnalyserTemporal);
-
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
-
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
-        analyser->calculate(corpus, com);
-        QString line;
-        line.append("\t").append(com->ID());
-        d->textResults->append(line);
-        foreach (QString measureID, analyser->measureIDsForCommunication()) {
-            line = analyser->measureDefinitionForCommunication(measureID).displayNameUnit();
-            line.append(QString("\t%1").arg(analyser->measureCom(measureID)));
-            d->textResults->append(line);
-        }
-        line = "\n";
-        d->textResults->append(line);
-        //
-        line.clear();
-        foreach (QString speakerID, analyser->speakerIDs()) {
-            line.append("\t").append(speakerID);
-        }
-        line.append("\n");
-        d->textResults->append(line);
-        foreach (QString measureID, analyser->measureIDsForSpeaker()) {
-            line = analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
-            foreach (QString speakerID, analyser->speakerIDs()) {
-                line.append(QString("\t%1").arg(analyser->measureSpk(speakerID, measureID)));
-            }
-            d->textResults->append(line);
-        }
-        line = "\n";
-        d->textResults->append(line);
-    }
-}
-
 void StatisticsModeWidget::analyseFromFile()
 {
     QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
@@ -224,9 +186,100 @@ void StatisticsModeWidget::analyseFromFile()
 //    d->textResults->append(line);
 //}
 
+void StatisticsModeWidget::analyseT()
+{
+    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    if (!corpus) return;
+    QScopedPointer<AnalyserTemporal>analyser(new AnalyserTemporal);
+    // Pause lists
+    QFile filePauseListSIL(corpus->basePath() + "/pauselist_SIL.txt");
+    if ( !filePauseListSIL.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream pauseListSIL(&filePauseListSIL);
+    pauseListSIL.setCodec("UTF-8");
+    QFile filePauseListFIL(corpus->basePath() + "/pauselist_FIL.txt");
+    if ( !filePauseListFIL.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream pauseListFIL(&filePauseListFIL);
+    pauseListFIL.setCodec("UTF-8");
+
+    // Models available
+    QStandardItemModel *modelCom = new QStandardItemModel(this);
+    QStandardItemModel *modelSpk = new QStandardItemModel(this);
+    // Create model headers
+    QStringList labels;
+    labels << "CommunicationID";
+    foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication))
+        labels << attr->ID();
+    foreach (QString measureID, analyser->measureIDsForCommunication()) labels << measureID;
+    modelCom->setHorizontalHeaderLabels(labels);
+    labels.clear();
+    labels << "CommunicationID" << "SpeakerID";
+    pauseListSIL << "CommunicationID\tSpeakerID\t";
+    pauseListFIL << "CommunicationID\tSpeakerID\t";
+    foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        labels << attr->ID();
+        pauseListSIL << attr->ID() << "\t";
+        pauseListFIL << attr->ID() << "\t";
+    }
+    foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+        labels << attr->ID();
+    }
+    foreach (QString measureID, analyser->measureIDsForSpeaker()) labels << measureID;
+    modelSpk->setHorizontalHeaderLabels(labels);
+    pauseListSIL << "Duration\n"; pauseListFIL << "Duration\n";
+    // Analyse communications / and then speakers
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        analyser->calculate(corpus, com, pauseListSIL, pauseListFIL);
+        QList<QStandardItem *> itemsCom;
+        QStandardItem *item;
+        item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsCom << item;
+        // properties
+        foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+            item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsCom << item;
+        }
+        // measures
+        foreach (QString measureID, analyser->measureIDsForCommunication()) {
+            // analyser->measureDefinitionForCommunication(measureID).displayNameUnit()
+            item = new QStandardItem(); item->setData(analyser->measureCom(measureID), Qt::DisplayRole); itemsCom << item;
+        }
+        modelCom->appendRow(itemsCom);
+
+        foreach (QString speakerID, analyser->speakerIDs()) {
+            QList<QStandardItem *> itemsSpk;
+            item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsSpk << item;
+            item = new QStandardItem(); item->setData(speakerID, Qt::DisplayRole); itemsSpk << item;
+            // properties
+            foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
+            }
+            foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+                item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
+            }
+            // measures
+            foreach (QString measureID, analyser->measureIDsForSpeaker()) {
+                // analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
+                item = new QStandardItem(); item->setData(analyser->measureSpk(speakerID, measureID), Qt::DisplayRole); itemsSpk << item;
+            }
+            modelSpk->appendRow(itemsSpk);
+        }
+
+    }
+
+    // Update table headers
+//    for (int i = 0; i < modelCom->columnCount(); ++i)
+//        model->setHorizontalHeaderItem(i, new QStandardItem(analyser->model()->horizontalHeaderItem(i)->text()));
+    // Update table
+    d->tableResults->tableView()->setModel(modelSpk);
+    if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
+    d->modelResults = modelSpk;
+
+    filePauseListSIL.close();
+    filePauseListFIL.close();
+}
 
 void StatisticsModeWidget::analyse()
 {
+    analyseT();
+    return;
 //    analyseFromFile();
 //    return;
 
@@ -239,11 +292,11 @@ void StatisticsModeWidget::analyse()
         if (!com) continue;
         foreach (QString annotationID, com->annotationIDs()) {
             QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()
-                    ->getTiersAllSpeakers(annotationID, QStringList() << "ortho");
+                    ->getTiersAllSpeakers(annotationID, QStringList() << "transcription");
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
-                IntervalTier *tier_macroUnit = tiers->getIntervalTierByName("ortho");
+                IntervalTier *tier_macroUnit = tiers->getIntervalTierByName("transcription");
                 QList<Interval *> macroUnitIntervals;
                 foreach (Interval *intv, tier_macroUnit->intervals()) {
                     if (!intv->isPauseSilent()) macroUnitIntervals << intv;

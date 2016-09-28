@@ -4,6 +4,8 @@
 #include <QString>
 #include <QList>
 #include <QMap>
+#include <QFile>
+#include <QTextStream>
 
 #include "pncore/corpus/corpus.h"
 #include "pncore/annotation/intervaltier.h"
@@ -253,7 +255,8 @@ void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpu
     PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg.data());
 }
 
-void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+                                 QTextStream &pauseListSIL, QTextStream &pauseListFIL)
 {
     if (!corpus || !com) return;
 
@@ -426,6 +429,22 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             measures.insert("TurnDuration_Token_Mean", summaryTurnTokenCounts.mean());
             measures.insert("TurnDuration_Syll_Mean", summaryTurnArtSyllCounts.mean());
             d->measuresSpk.insert(speakerID, measures);
+
+            // Pause lists
+            foreach (double dur, durationsPauseSIL) {
+                pauseListSIL << com->ID() << "\t" << speakerID << "\t";
+                foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                    pauseListSIL << com->property(attr->ID()).toString() << "\t";
+                }
+                pauseListSIL << QString::number(dur) << "\n";
+            }
+            foreach (double dur, durationsPauseFIL) {
+                pauseListFIL << com->ID() << "\t" << speakerID << "\t";
+                foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                    pauseListFIL << com->property(attr->ID()).toString() << "\t";
+                }
+                pauseListFIL << QString::number(dur) << "\n";
+            }
         }
         qDeleteAll(tiersAll);
     }
