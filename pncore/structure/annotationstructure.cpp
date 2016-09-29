@@ -68,12 +68,16 @@ QList<AnnotationStructureLevel *> AnnotationStructure::levels() const
 
 void AnnotationStructure::insertLevel(int index, AnnotationStructureLevel *level)
 {
+    if (!level) return;
+    if (hasLevel(level->ID())) return;
     level->setParent(this);
     m_levels.insert(index, level);
 }
 
 void AnnotationStructure::addLevel(AnnotationStructureLevel *level)
 {
+    if (!level) return;
+    if (hasLevel(level->ID())) return;
     level->setParent(this);
     m_levels << level;
 }

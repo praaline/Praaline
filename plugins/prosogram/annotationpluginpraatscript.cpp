@@ -37,7 +37,9 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     praatCommand = "/usr/bin/praat";
 #endif
     emit logOutput("Praat script: " + script + " "+ scriptArguments.join(" "));
-    m_process->start(praatCommand, QStringList() << "-a" << script << scriptArguments);
+    // QStringList args;
+    //foreach (QString arg, scriptArguments) args << QString("\"").append(arg).append("\"");
+    m_process->start(praatCommand, QStringList() << "--run" << script << scriptArguments);
     if (!m_process->waitForStarted(-1)) {
         emit logOutput("Error: " + m_process->errorString());
         return;

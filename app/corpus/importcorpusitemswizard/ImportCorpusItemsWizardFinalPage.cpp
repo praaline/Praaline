@@ -285,6 +285,8 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
             // There is a speaker ID tier
             QString speakerTierName = annot->property("speakerPolicyData").toString();
             tierSpeaker = inputTiers->getIntervalTierByName(speakerTierName);
+            // Hack for CHumour
+            tierSpeaker->replaceText("gap", "");
         }
         if (!tierSpeaker) {
             importBasic(m_corpus, com, annot, SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
@@ -296,15 +298,26 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
 //            intv->setText(s);
 //        }
 //        tierSpeaker->mergeIdenticalAnnotations();
-        QStringList speakerNames = tierSpeaker->getDistinctTextLabels();
-        speakerNames.removeOne(""); speakerNames.removeOne("_");
+        QStringList speakerNames;
+        QStringList speakerLabels = tierSpeaker->getDistinctTextLabels();
+        speakerLabels.removeOne(""); speakerLabels.removeOne("_");
+        foreach (QString speakerLabel, speakerLabels) {
+            speakerLabel = speakerLabel.replace(" ", "");
+            if (speakerLabel.contains("+"))
+                speakerNames << speakerLabel.split("+");
+            else
+                speakerNames << speakerLabel;
+        }
+
         foreach (QString speakerID, speakerNames) {
             AnnotationTierGroup *tiersSpk = new AnnotationTierGroup();
             foreach (AnnotationTier *tier, inputTiers->tiers()) {
                 if (tier->tierType() == AnnotationTier::TierType_Intervals) {
                     QList<Interval *> intervalsTierSpk;
                     foreach (Interval *ispk, tierSpeaker->intervals()) {
-                        if (ispk->text() != speakerID) continue;
+                        QString spkLabel = ispk->text();
+                        if (!spkLabel.split("+").contains(speakerID)) continue;
+                        // if (spkLabel != speakerID) continue;
                         foreach (Interval *intv, qobject_cast<IntervalTier *>(tier)->getIntervalsContainedIn(ispk))
                             intervalsTierSpk << new Interval(intv);
                     }
@@ -314,7 +327,9 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                 else if (tier->tierType() == AnnotationTier::TierType_Points) {
                     QList<Point *> pointsTierSpk;
                     foreach  (Interval *ispk, tierSpeaker->intervals()) {
-                        if (ispk->text() != speakerID) continue;
+                        QString spkLabel = ispk->text();
+                        if (!spkLabel.split("+").contains(speakerID)) continue;
+                        // if (ispk->text() != speakerID) continue;
                         foreach (Point *point, qobject_cast<PointTier *>(tier)->getPointsContainedIn(ispk))
                             pointsTierSpk << new Point(point);
                     }
