@@ -19,28 +19,38 @@ public:
     };
 
     Disfluency(IntervalTier *tierTokens, int start, int end, const QString &globalTag,
-               int interruptionPoint = -1, int editTermStart = -1, int editTermEnd = -1, QObject *parent = 0);
+               int interruptionPoint = -1, int reparansStart = -1,
+               int editTermStart = -1, int editTermEnd = -1, QObject *parent = 0);
 
     int indexInterruptionPoint() const { return m_interruptionPoint; }
+    int indexReparansStart() const { return m_reparansStart; }
     int indexEditTermStart() const { return m_editTermStart; }
-    int indexEditTermEnd() const { return m_editTermEnd; }
+    int indexEditTermEnd() const { return m_editTermEnd; }    
 
     RealTime timeStart() const;
     RealTime timeEnd() const;
     RealTime timeInterruptionPoint() const;
+    RealTime timeReparansStart() const;
     RealTime timeEditTermStart() const;
     RealTime timeEditTermEnd() const;
+    RealTime timeReparandumStart() const { return timeStart(); }
+    RealTime timeReparandumEnd() const { return timeInterruptionPoint(); }
+    RealTime timeInterregnumStart() const { return timeInterruptionPoint(); }
+    RealTime timeInterregnumEnd() const { return timeReparansStart(); }
+    RealTime timeReparansEnd() const { return timeEnd(); }
 
     QString globalTag() const { return m_tag; }
     void setGlobalTag(const QString &tag) { m_tag = tag; }
 
     DisfluencyStructureTypes structureType() const;
     QList<Interval *> reparandumIntervals() const;
+    QList<Interval *> interregnumIntervals() const;
     QList<Interval *> editTermIntervals() const;
-    QList<Interval *> repairIntervals(int startFrom = 0) const;
+    QList<Interval *> reparansIntervals(int startFrom = 0) const;
     QString reparandumText() const;
+    QString interregnumText() const;
     QString editTermText() const;
-    QString repairText() const;
+    QString reparansText() const;
 
     QString formatted(const QString &leftS = "(", const QString &rightS = ")",
                       const QString &intpt = "* ",
@@ -58,6 +68,7 @@ private:
     int m_interruptionPoint;
     int m_editTermStart;
     int m_editTermEnd;
+    int m_reparansStart;
     // Complex disfluency data
     QList<QPair<int, int> > m_structure;
 

@@ -118,6 +118,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParamet
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {
+    bool withSyllData = true;
     int countDone = 0;
     madeProgress(0);
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
@@ -135,25 +136,98 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
                 if (!tier_tok_min) continue;
 
+                IntervalTier *tier_syll = 0;
+                if (withSyllData) tier_syll = tiers->getIntervalTierByName("syll");
+
                 DisfluencyAnalyserTool *DA = new DisfluencyAnalyserTool(tier_tok_min, this);
                 DA->readFromTier(tier_tok_min, "disfluency");
                 QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
                 foreach (Disfluency *disf, DA->disfluencies()) {
+
+                    // Only repetitions
+                    if (disf->globalTag() != "REP") continue;
+
                     result.append(annotationID).append("\t");
                     result.append(speakerID).append("\t");
-                    if (spk) result.append(QString::number(spk->property("age").toInt())).append("\t");
-                    else result.append("0\t");
+                    // result.append(disf->globalTag()).append("\t");
+                    // interval indices
                     result.append(QString::number(disf->indexStart())).append("\t");
                     result.append(QString::number(disf->indexInterruptionPoint())).append("\t");
                     result.append(QString::number(disf->indexEnd())).append("\t");
-                    result.append(disf->globalTag()).append("\t");
+
+                    // structure
+                    QList<Interval *> reparandum = disf->reparandumIntervals();
+                    QList<Interval *> interregnum = disf->interregnumIntervals();
+                    QList<Interval *> reparans = disf->reparansIntervals();
+                    RealTime startReparandum, endReparandum, startInterregnum, endInterregnum, startReparans, endReparans;
+                    if (!reparandum.isEmpty()) {
+                        startReparandum = reparandum.first()->tMin();
+                        endReparandum = reparandum.last()->tMax();
+                    }
+                    if (!interregnum.isEmpty()) {
+                        startInterregnum = interregnum.first()->tMin();
+                        endInterregnum = interregnum.last()->tMax();
+                    }
+                    if (!reparans.isEmpty()) {
+                        startReparans = reparans.first()->tMin();
+                        endReparans = reparans.last()->tMax();
+                    }
+
+                    int numberOfTokensInReparandum(0), numberOfTokensInReparans(0), numberOfRepetitions(0);
+                    int numberOf_SIL_InReparandum(0),   numberOf_FIL_InReparandum(0),
+                        numberOf_SIL_InInterregnum(0),  numberOf_FIL_InInterregnum(0),
+                        numberOf_SIL_InReparans(0),     numberOf_FIL_InReparans(0);
+
+                    foreach (Interval *intv, reparandum) {
+                        QString dis = intv->attribute("disfluency").toString();
+                        if      (dis.contains("SIL")) numberOf_SIL_InReparandum++;
+                        else if (dis.contains("FIL")) numberOf_FIL_InReparandum++;
+                        else    numberOfTokensInReparandum++;
+                    }
+                    foreach (Interval *intv, interregnum) {
+                        QString dis = intv->attribute("disfluency").toString();
+                        if      (dis.contains("SIL")) numberOf_SIL_InInterregnum++;
+                        else if (dis.contains("FIL")) numberOf_FIL_InInterregnum++;
+                    }
+                    foreach (Interval *intv, reparans) {
+                        QString dis = intv->attribute("disfluency").toString();
+                        if      (dis.contains("SIL")) numberOf_SIL_InReparans++;
+                        else if (dis.contains("FIL")) numberOf_FIL_InReparans++;
+                        else    numberOfTokensInReparans++;
+                    }
+                    if (numberOfTokensInReparans > 0)
+                        numberOfRepetitions = numberOfTokensInReparandum / numberOfTokensInReparans;
+
+                    // Export results
+
+                    result.append(QString::number(startReparandum.toDouble())).append("\t");
+                    result.append(QString::number(endReparandum.toDouble())).append("\t");
+                    result.append(QString::number(startInterregnum.toDouble())).append("\t");
+                    result.append(QString::number(endInterregnum.toDouble())).append("\t");
+                    result.append(QString::number(startReparans.toDouble())).append("\t");
+                    result.append(QString::number(endReparans.toDouble())).append("\t");
+
+                    result.append(QString::number(numberOfTokensInReparandum)).append("\t");
+                    result.append(QString::number(numberOf_SIL_InReparandum)).append("\t");
+                    result.append(QString::number(numberOf_FIL_InReparandum)).append("\t");
+
+                    result.append(QString::number(numberOf_SIL_InInterregnum)).append("\t");
+                    result.append(QString::number(numberOf_FIL_InInterregnum)).append("\t");
+
+                    result.append(QString::number(numberOfTokensInReparans)).append("\t");
+                    result.append(QString::number(numberOf_SIL_InReparans)).append("\t");
+                    result.append(QString::number(numberOf_FIL_InReparans)).append("\t");
+
+                    result.append(QString::number(numberOfRepetitions)).append("\t");
+
+
                     result.append(disf->contextText(-5)).append("\t");
                     result.append(disf->formatted()).append("\t");
                     result.append(disf->contextText(5)).append("\n");
                 }
                 delete DA;
                 if (result.length() > 1) result.chop(1);
-                printMessage(result);
+                if (!result.isEmpty()) printMessage(result);
                 result.clear();
 
             }
@@ -349,8 +423,18 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(Co
     if (d->commandPatternsSUB) patternsToAnnotate << "SUB";
     if (!patternsToAnnotate.isEmpty())
         patterns(corpus, communications, patternsToAnnotate);
-    if (d->commandConcordances)
+    if (d->commandConcordances) {
+        QString title = "annotationID\tspeakerID\tindexStart\tindexInterruption\tindexEnd\t";
+        title = title.append("startReparandum\tendReparandum\tstartInterregnum\tendInterregnum\tstartReparans\tendReparans\t");
+        title = title.append("numberOfTokensInReparandum\tnumberOf_SIL_InReparandum\tnumberOf_FIL_InReparandum\t");
+        title = title.append("numberOf_SIL_InInterregnum\tnumberOf_FIL_InInterregnum\t");
+        title = title.append("numberOfTokensInReparans\tnumberOf_SIL_InReparans\tnumberOf_FIL_InReparans\t");
+        title = title.append("numberOfRepetitions\t");
+        title = title.append("leftContext\tdisfluencySequence\trightContext");
+        printMessage(title);
+
         concordances(corpus, communications);
+    }
     if (d->commandExportMultiTierTextgrids)
         exportMultiTierTextgrids(corpus, communications);
 }
