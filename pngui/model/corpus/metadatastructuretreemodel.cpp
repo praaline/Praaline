@@ -87,6 +87,7 @@ QModelIndex MetadataStructureTreeModel::parent(const QModelIndex &index) const
     if (!index.isValid()) return QModelIndex();
 
     QObject *childItem = getItem(index);
+    if (!childItem) return QModelIndex();
     QObject *parentItem = childItem->parent();
 
     MetadataStructureSection *section;
