@@ -255,6 +255,87 @@ void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpu
     PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg.data());
 }
 
+QPair<int, int> windowNoPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight)
+{
+    QPair<int, int> ret;
+    ret.first = i; ret.second = i;
+    // Checks
+    if (!tier_syll) return ret;
+    if (i < 0 || i >= tier_syll->countItems()) return ret;
+    if (tier_syll->interval(i)->isPauseSilent()) return ret;
+    // Calculation
+    ret.first = i - windowLeft;
+    if (ret.first < 0) ret.first = 0;
+    while (tier_syll->interval(ret.first)->isPauseSilent() && ret.first < i) ret.first++;
+    ret.second = i + windowRight;
+    if (ret.second >= tier_syll->countItems()) ret.second = tier_syll->countItems() - 1;
+    while (tier_syll->interval(ret.second)->isPauseSilent() && ret.second > i) ret.second--;
+    return ret;
+}
+
+QPair<int, int> windowIncludingPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight)
+{
+    QPair<int, int> ret;
+    ret.first = i; ret.second = i;
+    // Checks
+    if (!tier_syll) return ret;
+    if (i < 0 || i >= tier_syll->countItems()) return ret;
+    // Calculation
+    ret.first = i - windowLeft;
+    if (ret.first < 0) ret.first = 0;
+    ret.second = i + windowRight;
+    if (ret.second >= tier_syll->countItems()) ret.second = tier_syll->countItems() - 1;
+    return ret;
+}
+
+bool mean(double &mean, IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
+          bool checkStylized, bool includePause)
+{
+    if (!tier_syll) return 0.0;
+    QPair<int, int> window;
+    if (includePause)   window = windowIncludingPause(tier_syll, i, windowLeft, windowRight);
+    else                window = windowNoPause(tier_syll, i, windowLeft, windowRight);
+    double sum = 0.0;
+    int count = 0;
+    for (int j = window.first; j <= window.second; j++) {
+        Interval *syll = tier_syll->interval(j);
+        if (checkStylized) {
+            if (syll->attribute("f0_min").toInt() == 0) continue; // check if stylised
+        }
+        double x = syll->attribute(attributeName).toDouble();
+        sum = sum + x;
+        count++;
+    }
+    if (count == 0) return false;
+    mean = sum / ((double)count);
+    return true;
+}
+
+double relative(IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
+                bool checkStylized, bool logarithmic, bool includePause)
+{
+    // When it is impossible to calculate a relative value, return 1 for ratios or 0=log(1) for logarithmic attributes
+    if (!tier_syll) return (logarithmic) ? 0.0 : 1.0;
+    Interval *syll = tier_syll->interval(i);
+    if (!syll) return (logarithmic) ? 0.0 : 1.0;
+    // Check if attribute has to be stylised and if not, try to interpolate
+    double value = syll->attribute(attributeName).toDouble();
+    if (checkStylized && (syll->attribute("f0_min").toInt() == 0)) {
+        if (!mean(value, tier_syll, attributeName, i, 1, 1, true, includePause))
+            return (logarithmic) ? 0.0 : 1.0; // no luck
+    }
+    // Get mean in window
+    double windowMean = 0.0;
+    if (!mean(windowMean, tier_syll, attributeName, i, windowLeft, windowRight, checkStylized, includePause))
+        return (logarithmic) ? 0.0 : 1.0; // no luck
+    // Calculate relative value
+    if (logarithmic) {
+        return value - windowMean;
+    }
+    // else linear
+    return value / windowMean;
+}
+
 void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                  QTextStream &pauseListSIL, QTextStream &pauseListFIL)
 {
@@ -326,6 +407,9 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             RealTime timeArticulationAlone, timeArticulationOverlapContinue, timeArticulationOverlapTurnChange;
             int numSilentPauses(0), numFilledPauses(0), numSyllablesArticulated(0), numTokens(0);
             QList<double> durationsPauseSIL, durationsPauseFIL;
+            QList<double> durationsPauseSIL_rel1, durationsPauseSIL_rel2, durationsPauseSIL_rel3,
+                          durationsPauseSIL_rel4, durationsPauseSIL_rel5;
+
             QList<double> turnDurations, turnTokenCounts, turnArtSyllCounts;
             // Turn level
             QScopedPointer<IntervalTier> tier_turns(new IntervalTier(tier_timelineSpk.data()));
@@ -347,6 +431,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                 }
                 turnTokenCounts << ((double)currentTurnTokenCount);
                 // The basic units of time measurement are the speaker's syllables
+                int syllIndex(0);
                 foreach (Interval *syll, tier_syll->getIntervalsContainedIn(turn)) {
                     QString syllCategory = ""; // SIL, FIL or ART?
                     QList<Interval *> tokens = tier_tokmin->getIntervalsOverlappingWith(syll);
@@ -367,6 +452,11 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                                     if (syllCategory != "ART") syllCategory = "SIL";
                                     timeSilentPause = timeSilentPause + intv->duration();
                                     durationsPauseSIL << intv->duration().toDouble();
+                                    durationsPauseSIL_rel1 << relative(tier_syll, "duration", syllIndex, 1, 1, false, false, true);
+                                    durationsPauseSIL_rel2 << relative(tier_syll, "duration", syllIndex, 2, 2, false, false, true);
+                                    durationsPauseSIL_rel3 << relative(tier_syll, "duration", syllIndex, 3, 3, false, false, true);
+                                    durationsPauseSIL_rel4 << relative(tier_syll, "duration", syllIndex, 4, 4, false, false, true);
+                                    durationsPauseSIL_rel5 << relative(tier_syll, "duration", syllIndex, 5, 5, false, false, true);
                                 }
                                 else {
                                     syllCategory = "ART";
@@ -380,6 +470,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                     if      (syllCategory == "SIL") { numSilentPauses++; }
                     else if (syllCategory == "FIL") { numFilledPauses++; }
                     else if (syllCategory == "ART") { numSyllablesArticulated++; currentTurnArtSyllCount++; }
+                    syllIndex++;
                 } // end foreach syll
                 turnArtSyllCounts << ((double)currentTurnArtSyllCount);
             } // end foreach turn
@@ -431,12 +522,17 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             d->measuresSpk.insert(speakerID, measures);
 
             // Pause lists
-            foreach (double dur, durationsPauseSIL) {
+            for (int i = 0; i < durationsPauseSIL.count(); ++i) {
                 pauseListSIL << com->ID() << "\t" << speakerID << "\t";
                 foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
                     pauseListSIL << com->property(attr->ID()).toString() << "\t";
                 }
-                pauseListSIL << QString::number(dur) << "\n";
+                pauseListSIL << QString::number(durationsPauseSIL.at(i)) << "\t";
+                pauseListSIL << QString::number(durationsPauseSIL_rel1.at(i)) << "\t";
+                pauseListSIL << QString::number(durationsPauseSIL_rel2.at(i)) << "\t";
+                pauseListSIL << QString::number(durationsPauseSIL_rel3.at(i)) << "\t";
+                pauseListSIL << QString::number(durationsPauseSIL_rel4.at(i)) << "\t";
+                pauseListSIL << QString::number(durationsPauseSIL_rel5.at(i)) << "\n";
             }
             foreach (double dur, durationsPauseFIL) {
                 pauseListFIL << com->ID() << "\t" << speakerID << "\t";

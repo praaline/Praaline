@@ -64,7 +64,8 @@ HEADERS += \
     prosodicboundariesexperiment.h \
     InterraterAgreement.h \
     ProsodyCourse.h \
-    MyExperiments.h
+    MyExperiments.h \
+    DisfluenciesExperiments.h
 
 SOURCES += \ 
     pluginvaria.cpp \
@@ -75,4 +76,5 @@ SOURCES += \
     prosodicboundariesexperiment.cpp \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
-    MyExperiments.cpp
+    MyExperiments.cpp \
+    DisfluenciesExperiments.cpp

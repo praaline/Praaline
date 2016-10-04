@@ -160,9 +160,21 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
                     QList<Interval *> interregnum = disf->interregnumIntervals();
                     QList<Interval *> reparans = disf->reparansIntervals();
                     RealTime startReparandum, endReparandum, startInterregnum, endInterregnum, startReparans, endReparans;
+                    double meanPitchReparandum(0.0), meanPitchReparans(0.0);
+
                     if (!reparandum.isEmpty()) {
                         startReparandum = reparandum.first()->tMin();
                         endReparandum = reparandum.last()->tMax();
+
+                        QList<Interval *> sylls = tier_syll->getIntervalsContainedIn(startReparandum, endReparandum);
+                        int countSyll(0); double sum(0.0);
+                        foreach (Interval *syll, sylls) {
+                            if (syll->attribute("f0_min").toInt() == 0) continue;
+                            //sum += syll->attribute("f0_mean");
+                            countSyll++;
+                        }
+                        if (countSyll == 0) meanPitchReparandum = -1.0; // not stylized
+
                     }
                     if (!interregnum.isEmpty()) {
                         startInterregnum = interregnum.first()->tMin();

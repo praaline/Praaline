@@ -225,7 +225,8 @@ void StatisticsModeWidget::analyseT()
     }
     foreach (QString measureID, analyser->measureIDsForSpeaker()) labels << measureID;
     modelSpk->setHorizontalHeaderLabels(labels);
-    pauseListSIL << "Duration\n"; pauseListFIL << "Duration\n";
+    pauseListSIL << "Duration\tDurationRel1\tDurationRel2\tDurationRel3\tDurationRel4\tDurationRel5\n";
+    pauseListFIL << "Duration\n";
     // Analyse communications / and then speakers
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         analyser->calculate(corpus, com, pauseListSIL, pauseListFIL);

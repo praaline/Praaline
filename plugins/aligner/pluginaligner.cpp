@@ -42,6 +42,9 @@ struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
     {
         sphinxMLLRAdaptationPath = "$CORPUS_BASE_PATH/mllr_adapt/";
     }
+    ~PluginAlignerPrivateData() {
+        future.cancel();
+    }
 
     bool commandDownsampleWaveFiles;
     bool commandExtractFeatures;
@@ -61,9 +64,9 @@ struct Praaline::Plugins::Aligner::PluginAlignerPrivateData {
     QFutureWatcher<QString> watcher;
 };
 
-Praaline::Plugins::Aligner::PluginAligner::PluginAligner(QObject* parent) : QObject(parent)
+Praaline::Plugins::Aligner::PluginAligner::PluginAligner(QObject* parent) :
+    QObject(parent), d(new PluginAlignerPrivateData)
 {
-    d = new PluginAlignerPrivateData;
     setObjectName(pluginName());
     connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
     connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));

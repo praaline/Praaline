@@ -75,7 +75,6 @@ HEADERS += \
     annotationpluginpraatscript.h \
     LongSoundAligner.h \
     BroadClassAligner.h \
-    EasyAlignBasic.h \
     EasyAlignBasic.h
 	
 SOURCES += \ 
@@ -84,5 +83,4 @@ SOURCES += \
     annotationpluginpraatscript.cpp \
     LongSoundAligner.cpp \
     BroadClassAligner.cpp \
-    EasyAlignBasic.cpp \
     EasyAlignBasic.cpp
