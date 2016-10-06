@@ -12,7 +12,8 @@ class Corpus;
 class DisfluenciesExperiments
 {
 public:
-    static bool resultsReadTapping(const QString &subjectID, const QString &filename, Corpus *corpus);
+    static bool resultsReadTapping(const QString &sessionID, const QString &filename, Corpus *corpus);
+    static void analysisCalculateDeltaRT(Corpus *corpus);
 
 private:
     DisfluenciesExperiments() {}
