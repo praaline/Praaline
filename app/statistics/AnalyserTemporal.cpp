@@ -78,7 +78,7 @@ StatisticalMeasureDefinition AnalyserTemporal::measureDefinitionForCommunication
     if (measureID == "GapDurations_Q1")          return StatisticalMeasureDefinition("GapDurations_Q1", "Gap duration (Q1)", "s");
     if (measureID == "GapDurations_Q3")          return StatisticalMeasureDefinition("GapDurations_Q3", "Gap duration (Q3)", "s");
     if (measureID == "TurnChangesCount")         return StatisticalMeasureDefinition("TurnChangesCount", "Number of turn changes", "");
-    if (measureID == "TurnChangesCount_Gap")     return StatisticalMeasureDefinition("TurnChangesCount_Gap", "Number of turn changes, withour overlap", "");
+    if (measureID == "TurnChangesCount_Gap")     return StatisticalMeasureDefinition("TurnChangesCount_Gap", "Number of turn changes, without overlap", "");
     if (measureID == "TurnChangesCount_Overlap") return StatisticalMeasureDefinition("TurnChangesCount_Overlap", "Number of turn changes, with overlap", "");
     if (measureID == "TurnChangesRate")          return StatisticalMeasureDefinition("TurnChangesRate", "Turn changes per minute", "1/min");
     if (measureID == "TurnChangesRate_Gap")      return StatisticalMeasureDefinition("TurnChangesRate_Gap", "Turn changes per minute, without overlap", "1/min");
