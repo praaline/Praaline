@@ -60,9 +60,9 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     addLevelAttribute("tok_min", "");
     addLevelAttribute("tok_min", "pos_min");
     addLevelAttribute("tok_min", "disfluency");
-    addLevelAttribute("tok_mwu", "");
+//    addLevelAttribute("tok_mwu", "");
     addLevelAttribute("tok_mwu", "pos_mwu");
-    addLevelAttribute("tok_mwu", "discourse");
+//    addLevelAttribute("tok_mwu", "discourse");
 //    addLevelAttribute("tok_mwu", "DM_discourse");
 //    addLevelAttribute("tok_mwu", "DM_optionality");
 

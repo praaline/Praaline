@@ -323,7 +323,11 @@ AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
 {
     int h = v->height();
     if ((m_plotStyle == PlotBlendedSpeakers) && m_model) {
-        return int(m_tierTuples.at(tierIndex).indexLevelAttributePair * h / m_model->countLevelsAttributes());
+        int i = m_tierTuples.at(tierIndex).indexLevelAttributePair;
+        int c = m_model->countLevelsAttributes();
+        int y = i * h / c;
+        qDebug() << "Tier index " << tierIndex << " height " << y;
+        return y;
     }
     return int(tierIndex * h / m_tierTuples.count());
 }
@@ -366,7 +370,14 @@ AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
     for (int tierIndex = 0; tierIndex < tierCount; ++ tierIndex) {
         // Top and bottom for boundary lines
         int y0 = getYForTierIndex(v, tierIndex) + 1;
-        int y1 = (tierIndex + 1 == tierCount) ? rect.bottom() : getYForTierIndex(v, tierIndex + 1);
+        int y1; // bottom boundary, calculate as follows
+        if (m_plotStyle == PlotBlendedSpeakers) {
+            // attention, in the Blended Speakers plot mode, the tiers wrap around
+            y1 = (tierIndex + 1 < m_model->countLevelsAttributes()) ? getYForTierIndex(v, tierIndex + 1) : rect.bottom();
+        } else {
+            y1 = (tierIndex + 1 < tierCount) ? getYForTierIndex(v, tierIndex + 1) : rect.bottom();
+        }
+
         int boundaryHeight = y1 - y0;
 
         // Info for this tier

@@ -59,6 +59,9 @@ public:
     QList<QString> levels() const;
     QList<QString> attributesForLevel(const QString &levelID) const;
 
+    void excludeSpeakerIDs(const QList<QString> &list);
+    void clearExcludedSpeakerIDs();
+
     QList<TierTuple> tierTuples(const GridLayout) const;
 
     QPointer<AnnotationGridPointModel> boundariesForLevel(const QString &levelID);

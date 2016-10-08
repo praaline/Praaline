@@ -17,6 +17,7 @@ struct AnnotationGridModelData {
     QMap<QString, QPointer<AnnotationTierGroup> > tiers;            // Speaker ID, corresponding tiers
     QList<QPair<QString, QString> > attributes;                     // Level ID, Attribute ID
     QMap<QString, QPointer<AnnotationGridPointModel> > boundaries;  // Level ID, corresponding points (all speakers)
+    QList<QString> excludedSpeakerIDs;
 };
 
 AnnotationGridModel::AnnotationGridModel(sv_samplerate_t sampleRate,
@@ -139,6 +140,16 @@ QList<QString> AnnotationGridModel::attributesForLevel(const QString &levelID) c
     return ret;
 }
 
+void AnnotationGridModel::excludeSpeakerIDs(const QList<QString> &list)
+{
+    d->excludedSpeakerIDs.append(list);
+}
+
+void AnnotationGridModel::clearExcludedSpeakerIDs()
+{
+    d->excludedSpeakerIDs.clear();
+}
+
 
 QList<AnnotationGridModel::TierTuple> AnnotationGridModel::tierTuples(const AnnotationGridModel::GridLayout layout) const
 {
@@ -146,8 +157,7 @@ QList<AnnotationGridModel::TierTuple> AnnotationGridModel::tierTuples(const Anno
     QPair<QString, QString> pairLA;
     if (layout == AnnotationGridModel::LayoutSpeakersThenLevelAttributes) {
         foreach (QString speakerID, d->tiers.keys()) {
-            // TODO: CHANGE!!!
-            if (speakerID.startsWith("S") || speakerID == "smooth") continue;
+            if (d->excludedSpeakerIDs.contains(speakerID)) continue;
             int i = 0;
             foreach (pairLA, d->attributes) {
                 if (pairLA.second == "_context") continue;
@@ -160,8 +170,7 @@ QList<AnnotationGridModel::TierTuple> AnnotationGridModel::tierTuples(const Anno
         foreach (pairLA, d->attributes) {
             if (pairLA.second == "_context") continue;
             foreach (QString speakerID, d->tiers.keys()) {
-                // TODO: CHANGE!!!
-                if (speakerID.startsWith("S") || speakerID == "smooth") continue;
+                if (d->excludedSpeakerIDs.contains(speakerID)) continue;
                 ret << TierTuple(speakerID, pairLA.first, pairLA.second, i);
             }
             ++i;
@@ -180,6 +189,7 @@ QVariant AnnotationGridModel::data(const QString &speakerID, const QString &leve
 {
     if (!d->tiers.contains(speakerID)) return QVariant();
     QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(speakerID);
+    if (!tiers_spk) return QVariant();
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(levelID);
     if (tier_intv) {
         if (index > 0 && index < tier_intv->count())

@@ -3451,6 +3451,7 @@ void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<Annotat
     foreach (pair, attributes) if (pair.first != "tapping") annotationAttributes << pair;
 
     AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), tiers, attributes);
+    model->excludeSpeakerIDs(QList<QString>() << "Emilie_1" << "Emilie_2");
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add annotations pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
@@ -3458,6 +3459,7 @@ void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<Annotat
     Pane *pane = command->getPane();
     Layer *newLayer = m_document->createImportedLayer(model);
     qobject_cast<AnnotationGridLayer *>(newLayer)->setPlotStyle(AnnotationGridLayer::PlotBlendedSpeakers);
+    qobject_cast<AnnotationGridLayer *>(newLayer)->setBaseColour(ColourDatabase::getInstance()->getColourIndex(tr("Black")));
     m_document->addLayerToView(pane, newLayer);
     m_paneStack->setCurrentPane(pane);
     m_paneStack->setCurrentLayer(pane, newLayer);
@@ -3509,7 +3511,7 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     // add instants layer
     Layer *newInstantsLayer = m_document->createEmptyLayer(LayerFactory::Type("TimeInstants"));
     m_document->addLayerToView(pane, newInstantsLayer);
-    newInstantsLayer->setLayerDormant(pane, true);
+    // newInstantsLayer->setLayerDormant(pane, true);
     // add smoothed values layer
     Layer *newValuesLayer = m_document->createEmptyLayer(LayerFactory::Type("TimeValues"));
     TimeValueLayer *layerSmooth = qobject_cast<TimeValueLayer *>(newValuesLayer);
@@ -3549,7 +3551,8 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
         if (tier_tapping) {
             foreach(Interval *intv, tier_tapping->intervals()) {
                 if (intv->text() != "x") continue;
-                SparseOneDimensionalModel::Point point(RealTime::realTime2Frame(intv->tMin(), modelInstants->getSampleRate()), subjectID);
+                SparseOneDimensionalModel::Point point(RealTime::realTime2Frame(intv->tMin(), modelInstants->getSampleRate()),
+                                                       QString(subjectID).replace("Emilie_", ""));
                 modelInstants->addPoint(point);
             }
         }
@@ -3611,7 +3614,7 @@ void VisualiserWidget::exportPDF(const QString &filename)
 
     int iter = 0;
     QPdfWriter pdf(filename);
-    pdf.setResolution(200);
+    pdf.setResolution(220);
     pdf.setPageOrientation(QPageLayout::Landscape);
     QPainter painterPDF;
     painterPDF.begin(&pdf);
@@ -3622,7 +3625,7 @@ void VisualiserWidget::exportPDF(const QString &filename)
         if (f1 > end) f1 = end;
 
         QList<QImage *> images;
-        for (int paneIndex = 0; paneIndex < m_paneStack->getPaneCount(); ++paneIndex) {
+        for (int paneIndex = 1; paneIndex < m_paneStack->getPaneCount(); ++paneIndex) {
             Pane *pane = m_paneStack->getPane(paneIndex);
             if (!pane) continue;
 
@@ -3640,12 +3643,12 @@ void VisualiserWidget::exportPDF(const QString &filename)
 
         // QImage composite(compositeWidth, compositeHeight, QImage::Format_RGB32);
 
-        if ((iter > 0) && (iter % 2 == 0)) { y = 0; pdf.newPage(); }
+        if ((iter > 0) && (iter % 4 == 0)) { y = 0; pdf.newPage(); }
         foreach (QImage *img, images) {
             painterPDF.drawImage(compositeWidth - img->width(), y, *img);
             y = y + img->height() + 1;
         }
-        y += 15;
+        y += 5;
         // composite.save(QString("composite_%1.png").arg(iter), "PNG");
         ++iter;
     }
