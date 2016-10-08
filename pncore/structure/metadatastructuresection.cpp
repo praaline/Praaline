@@ -57,6 +57,19 @@ bool MetadataStructureSection::hasAttributes() const
     return !m_attributes.isEmpty();
 }
 
+bool MetadataStructureSection::hasAttribute(const QString &ID)
+{
+    return (attributeIndexByID(ID) != -1);
+}
+
+QStringList MetadataStructureSection::attributeIDs() const
+{
+    QStringList ret;
+    foreach (QPointer<MetadataStructureAttribute> attribute, m_attributes)
+        if (attribute) ret << attribute->ID();
+    return ret;
+}
+
 QList<QPointer<MetadataStructureAttribute> > MetadataStructureSection::attributes() const
 {
     return m_attributes;

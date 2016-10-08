@@ -137,24 +137,28 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
     }
 }
 
+//QString path = "/home/george/Dropbox/2016 Experiences perceptives disfluences/01_GAMEANNOTATOR_ANALYSIS/Annotation2";
+//QDir dirinfo(path);
+//QFileInfoList list;
+//list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+//dirinfo.setNameFilters(QStringList() << "*.txt");
+//list << dirinfo.entryInfoList();
+//foreach (QFileInfo info, list) {
+//    if (!info.isDir()) {
+//        DisfluenciesExperiments::resultsReadTapping("2", info.canonicalFilePath(), corpus);
+//        printMessage(QString("Read data from %1").arg(info.baseName()));
+//    }
+//}
+//corpus->save();
+//return;
 
 
 void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 {    
-    QString path = "/home/george/Dropbox/2016 Experiences perceptives disfluences/01_GAMEANNOTATOR_ANALYSIS/Annotation2";
-    QDir dirinfo(path);
-    QFileInfoList list;
-    list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
-    dirinfo.setNameFilters(QStringList() << "*.txt");
-    list << dirinfo.entryInfoList();
-    foreach (QFileInfo info, list) {
-        if (!info.isDir()) {
-            DisfluenciesExperiments::resultsReadTapping("2", info.canonicalFilePath(), corpus);
-            printMessage(QString("Read data from %1").arg(info.baseName()));
-        }
-    }
-    corpus->save();
+    // DisfluenciesExperiments::analysisCalculateDeltaRT(corpus);
+    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(corpus);
     return;
+
 
     int countDone = 0;
     madeProgress(0);

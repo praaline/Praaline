@@ -34,6 +34,8 @@ public:
     int attributeIndexByID(const QString &ID) const;
     int attributesCount() const;
     bool hasAttributes() const;
+    bool hasAttribute(const QString &ID);
+    QStringList attributeIDs() const;
     QList<QPointer<MetadataStructureAttribute> > attributes() const;
     void insertAttribute(int index, MetadataStructureAttribute *attribute);
     void addAttribute(MetadataStructureAttribute *attribute);

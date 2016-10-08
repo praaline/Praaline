@@ -1,5 +1,7 @@
 #include <QFile>
+#include <QDir>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
@@ -60,7 +62,8 @@ bool CorpusDefinition::save(const QString &filename)
     xml.writeAttribute("usepassword", (datastoreAnnotations.usePassword) ? "yes" : "no");
     xml.writeEndElement(); // AnnotationsDatastore
     xml.writeStartElement("MediaDatastore");
-    xml.writeAttribute("baseMediaPath", baseMediaPath);
+    QString relativeBaseMediaPath = QDir(basePath).relativeFilePath(baseMediaPath);
+    xml.writeAttribute("baseMediaPath", relativeBaseMediaPath);
     xml.writeEndElement(); // MediaDatastore
     xml.writeEndElement(); // PraalineCorpusDefinition
     xml.writeEndDocument();
@@ -130,11 +133,16 @@ bool CorpusDefinition::load(const QString &filename)
     file.close();
     this->filenameDefinition = filename;
     this->basePath = finfo.canonicalPath();
+    // Media path is relative to corpus definition file
     if (this->baseMediaPath.isEmpty())
         this->baseMediaPath = this->basePath;
+    else
+        this->baseMediaPath = this->baseMediaPath.replace(QRegularExpression("^./"), this->basePath + "/");
+    // Adjust to open correctly SQLite databases
     if (this->datastoreMetadata.driver == "QSQLITE")
         this->datastoreMetadata.datasource = this->basePath + "/" + this->datastoreMetadata.datasource;
     if (this->datastoreAnnotations.driver == "QSQLITE")
         this->datastoreAnnotations.datasource = this->basePath + "/" + this->datastoreAnnotations.datasource;
+
     return true;
 }

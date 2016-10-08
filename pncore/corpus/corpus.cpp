@@ -7,6 +7,7 @@
 #include <QMultiHash>
 #include <QPair>
 #include <QDir>
+#include <QRegularExpression>
 #include "corpusobject.h"
 #include "corpus.h"
 #include "serialisers/datastorefactory.h"
