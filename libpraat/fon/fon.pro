@@ -5,7 +5,7 @@
 CONFIG += staticlib
 TARGET = fon
 
-INCLUDEPATH += ../num ../kar ../sys ../dwsys ../stat ../dwtools ../LPC ../fon ../external/portaudio ../external/flac ../external/mp3
+INCLUDEPATH += . ../num ../kar ../sys ../dwsys ../stat ../dwtools ../LPC ../fon ../external/portaudio ../external/flac ../external/mp3
 
 SOURCES = Transition.cpp Distributions_and_Transition.cpp \
    Function.cpp Sampled.cpp SampledXY.cpp Matrix.cpp Vector.cpp Polygon.cpp PointProcess.cpp \

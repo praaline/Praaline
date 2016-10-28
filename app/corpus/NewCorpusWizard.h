@@ -8,6 +8,8 @@ namespace Ui {
 class NewCorpusWizard;
 }
 
+struct NewCorpusWizardData;
+
 class NewCorpusWizard : public QWizard
 {
     Q_OBJECT
@@ -18,8 +20,8 @@ public:
 
     bool validateCurrentPage();
 
-    CorpusDefinition newDefinition() { return m_newDefinition; }
-    Corpus *newCorpus() { return m_newCorpus; }
+    CorpusDefinition newDefinition();
+    Corpus *newCorpus();
 
 private slots:
     void localDbSelectFolder();
@@ -27,13 +29,13 @@ private slots:
 
 private:
     Ui::NewCorpusWizard *ui;
+    NewCorpusWizardData *d;
 
+    void populateTemplates();
     void createLocalDbCorpus();
     void createRemoteDbCorpus();
     void createFilesCorpus();
-
-    CorpusDefinition m_newDefinition;
-    Corpus *m_newCorpus;
+    void applyTemplates();
 };
 
 #endif // NEWCORPUSWIZARD_H
