@@ -94,7 +94,100 @@ HEADERS += \
     base/RealValueList.h \
     statistics/StatisticalSummary.h \
     statistics/StatisticalMeasureDefinition.h \
-    statistics/HistogramCalculator.h
+    statistics/HistogramCalculator.h \
+    QSqlMigrator/Structure/Column.h \
+    QSqlMigrator/Structure/Index.h \
+    QSqlMigrator/Structure/LocalScheme.h \
+    QSqlMigrator/Structure/Table.h \
+    QSqlMigrator/Scheme/Database.h \
+    QSqlMigrator/Scheme/DbColumn.h \
+    QSqlMigrator/Scheme/DbTable.h \
+    QSqlMigrator/Helper/ColumnService.h \
+    QSqlMigrator/Helper/HelperRepository.h \
+    QSqlMigrator/Helper/QuoteService.h \
+    QSqlMigrator/Helper/SqlStructureService.h \
+    QSqlMigrator/Helper/TypeMapperService.h \
+    QSqlMigrator/Commands/AddColumn.h \
+    QSqlMigrator/Commands/AlterColumnType.h \
+    QSqlMigrator/Commands/BaseCommand.h \
+    QSqlMigrator/Commands/CreateIndex.h \
+    QSqlMigrator/Commands/CreateTable.h \
+    QSqlMigrator/Commands/CustomCommandBase.h \
+    QSqlMigrator/Commands/DropColumn.h \
+    QSqlMigrator/Commands/DropIndex.h \
+    QSqlMigrator/Commands/DropTable.h \
+    QSqlMigrator/Commands/RenameColumn.h \
+    QSqlMigrator/Commands/RenameTable.h \
+    QSqlMigrator/Migrations/Migration.h \
+    QSqlMigrator/Migrations/MigrationRepository.h \
+    QSqlMigrator/Migrations/RegisterMigration.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropColumnService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.h \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.h \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlColumnService.h \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlQuoteService.h \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlTypeMapperService.h \
+    QSqlMigrator/BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.h \
+    QSqlMigrator/CommandExecution/BaseCommandExecutionService.h \
+    QSqlMigrator/CommandExecution/CommandExecutionContext.h \
+    QSqlMigrator/CommandExecution/CommandExecutionService.h \
+    QSqlMigrator/CommandExecution/CommandExecutionServiceRepository.h \
+    QSqlMigrator/CommandExecution/CustomCommandService.h \
+    QSqlMigrator/CommandExecution/LocalSchemeBaseCommandExecutionService.h \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionContext.h \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionService.h \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionServiceRepository.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeAlterColumnTypeService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeCreateIndexService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeCreateTableService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropColumnService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.h \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.h \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeComparisonContext.h \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeComparisonService.h \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeMigrator.h \
+    QSqlMigrator/MigrationExecution/LocalSchemeMigrationExecutionContext.h \
+    QSqlMigrator/MigrationExecution/LocalSchemeMigrationExecutionService.h \
+    QSqlMigrator/MigrationExecution/MigrationExecutionConfig.h \
+    QSqlMigrator/MigrationExecution/MigrationExecutionContext.h \
+    QSqlMigrator/MigrationExecution/MigrationExecutionService.h \
+    QSqlMigrator/MigrationTracker/MigrationTrackerService.h \
+    QSqlMigrator/QSqlMigrator/QSqlMigratorConfig.h \
+    QSqlMigrator/QSqlMigrator/QSqlMigratorService.h \
+    QSqlMigrator/QSqlMigrator.h \
+    QSqlMigrator/QSqlMigratorConfig.h \
+    QSqlMigrator/Databases/SqliteMigrator/SqliteMigrator.h \
+    QSqlMigrator/Databases/SqliteMigrator/DatabaseLock.h \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteAlterColumnService.h \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.h \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteDropColumnService.h \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteRenameColumnService.h \
+    QSqlMigrator/Databases/SqliteMigrator/Helper/SqliteSqlStructureService.h \
+    QSqlMigrator/Databases/SqliteMigrator/MigrationTracker/SqliteMigrationTableService.h \
+    QSqlMigrator/Databases/MysqlMigrator/MysqlMigrator.h \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlColumnService.h \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlStructureService.h \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlTypeMapperService.h \
+    QSqlMigrator/Databases/MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.h \
+    QSqlMigrator/Databases/MysqlMigrator/CommandExecution/MysqlRenameColumnService.h \
+    QSqlMigrator/Databases/FirebirdMigrator/FirebirdMigrator.h \
+    QSqlMigrator/Databases/FirebirdMigrator/Helper/FirebirdSqlStructureService.h \
+    QSqlMigrator/Databases/PostgresqlMigrator/PostgresqlMigrator.h \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlColumnService.h \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlQuoteService.h \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlStructureService.h \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h \
+    base/DataType.h \
+    QSqlMigrator/Structure/SqlType.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -130,7 +223,6 @@ SOURCES += \
     serialisers/sql/sqlserialisercorpus.cpp \
     serialisers/sql/sqlserialisermetadatastructure.cpp \
     serialisers/sql/sqlserialiserannotationstructure.cpp \
-    serialisers/sql/sqlschemaproxymetadata.cpp \
     serialisers/sql/sqlschemaproxyannotation.cpp \
     serialisers/sql/sqlserialiserannotation.cpp \
     query/querydefinition.cpp \
@@ -161,7 +253,93 @@ SOURCES += \
     base/RealValueList.cpp \
     statistics/StatisticalSummary.cpp \
     statistics/StatisticalMeasureDefinition.cpp \
-    statistics/HistogramCalculator.cpp
+    statistics/HistogramCalculator.cpp \
+    QSqlMigrator/Structure/Column.cpp \
+    QSqlMigrator/Structure/Index.cpp \
+    QSqlMigrator/Structure/LocalScheme.cpp \
+    QSqlMigrator/Structure/Table.cpp \
+    QSqlMigrator/Scheme/Database.cpp \
+    QSqlMigrator/Scheme/DbColumn.cpp \
+    QSqlMigrator/Scheme/DbTable.cpp \
+    QSqlMigrator/Helper/HelperRepository.cpp \
+    QSqlMigrator/Commands/AddColumn.cpp \
+    QSqlMigrator/Commands/AlterColumnType.cpp \
+    QSqlMigrator/Commands/BaseCommand.cpp \
+    QSqlMigrator/Commands/CreateIndex.cpp \
+    QSqlMigrator/Commands/CreateTable.cpp \
+    QSqlMigrator/Commands/CustomCommandBase.cpp \
+    QSqlMigrator/Commands/DropColumn.cpp \
+    QSqlMigrator/Commands/DropIndex.cpp \
+    QSqlMigrator/Commands/DropTable.cpp \
+    QSqlMigrator/Commands/RenameColumn.cpp \
+    QSqlMigrator/Commands/RenameTable.cpp \
+    QSqlMigrator/Migrations/Migration.cpp \
+    QSqlMigrator/Migrations/MigrationRepository.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlAddColumnService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlAlterColumnTypeService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlCreateIndexService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlCreateTableService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropColumnService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropIndexService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlDropTableService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlRenameColumnService.cpp \
+    QSqlMigrator/BaseSqlMigrator/CommandExecution/BaseSqlRenameTableService.cpp \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlColumnService.cpp \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlQuoteService.cpp \
+    QSqlMigrator/BaseSqlMigrator/Helper/BaseSqlTypeMapperService.cpp \
+    QSqlMigrator/BaseSqlMigrator/MigrationTracker/BaseMigrationTableService.cpp \
+    QSqlMigrator/CommandExecution/BaseCommandExecutionService.cpp \
+    QSqlMigrator/CommandExecution/CommandExecutionContext.cpp \
+    QSqlMigrator/CommandExecution/CommandExecutionService.cpp \
+    QSqlMigrator/CommandExecution/CommandExecutionServiceRepository.cpp \
+    QSqlMigrator/CommandExecution/CustomCommandService.cpp \
+    QSqlMigrator/CommandExecution/LocalSchemeBaseCommandExecutionService.cpp \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionContext.cpp \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionService.cpp \
+    QSqlMigrator/CommandExecution/LocalSchemeCommandExecutionServiceRepository.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeAddColumnService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeAlterColumnTypeService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeCreateIndexService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeCreateTableService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropColumnService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropIndexService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeDropTableService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeRenameColumnService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/CommandExecution/LocalSchemeRenameTableService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeComparisonContext.cpp \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeComparisonService.cpp \
+    QSqlMigrator/LocalSchemeMigrator/LocalSchemeMigrator.cpp \
+    QSqlMigrator/MigrationExecution/LocalSchemeMigrationExecutionContext.cpp \
+    QSqlMigrator/MigrationExecution/LocalSchemeMigrationExecutionService.cpp \
+    QSqlMigrator/MigrationExecution/MigrationExecutionConfig.cpp \
+    QSqlMigrator/MigrationExecution/MigrationExecutionContext.cpp \
+    QSqlMigrator/MigrationExecution/MigrationExecutionService.cpp \
+    QSqlMigrator/QSqlMigrator/QSqlMigratorConfig.cpp \
+    QSqlMigrator/QSqlMigrator/QSqlMigratorService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/SqliteMigrator.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/DatabaseLock.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteAlterColumnService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteAlterColumnTypeService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteDropColumnService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/CommandExecution/SqliteRenameColumnService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/Helper/SqliteSqlStructureService.cpp \
+    QSqlMigrator/Databases/SqliteMigrator/MigrationTracker/SqliteMigrationTableService.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/MysqlMigrator.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlColumnService.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlStructureService.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/Helper/MysqlTypeMapperService.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/CommandExecution/MysqlAlterColumnTypeService.cpp \
+    QSqlMigrator/Databases/MysqlMigrator/CommandExecution/MysqlRenameColumnService.cpp \
+    QSqlMigrator/Databases/FirebirdMigrator/FirebirdMigrator.cpp \
+    QSqlMigrator/Databases/FirebirdMigrator/Helper/FirebirdSqlStructureService.cpp \
+    QSqlMigrator/Databases/PostgresqlMigrator/PostgresqlMigrator.cpp \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlColumnService.cpp \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlQuoteService.cpp \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlStructureService.cpp \
+    QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.cpp \
+    serialisers/sql/sqlschemaproxymetadata.cpp \
+    base/DataType.cpp \
+    QSqlMigrator/Structure/SqlType.cpp
 
 DISTFILES += \
     pncore.qmodel

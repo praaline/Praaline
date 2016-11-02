@@ -11,6 +11,9 @@ class QScrollArea;
 class KeyReference;
 class ActivityLog;
 
+class CorpusCommunication;
+class CorpusRecording;
+
 class SimpleVisualiserWidget : public VisualiserWindowBase
 {
     Q_OBJECT
@@ -32,6 +35,9 @@ public slots:
     virtual void jumpToTime(const RealTime &time);
     virtual void baseGlobalCentreFrameChanged(sv_frame_t);
     virtual void basePlaybackFrameChanged(sv_frame_t);
+
+    virtual void newSessionWithCommunication(QPointer<CorpusCommunication> com);
+    virtual void addRecordingToSession(QPointer<CorpusRecording> rec);
 
 protected slots:
     virtual void importAudio();
@@ -150,6 +156,19 @@ protected:
     virtual void exportAudio(bool asData);
     virtual void updateVisibleRangeDisplay(Pane *p) const;
     virtual void updatePositionStatusDisplays() const;
+
+    struct LayerConfiguration {
+        LayerConfiguration(LayerFactory::LayerType _layer
+                           = LayerFactory::Type("TimeRuler"),
+                           Model *_source = 0,
+                           int _channel = -1) :
+            layer(_layer), sourceModel(_source), channel(_channel) { }
+        LayerFactory::LayerType layer;
+        Model *sourceModel;
+        int channel;
+    };
+
+    virtual void addPane(const LayerConfiguration &configuration, QString text);
 };
 
 #endif // SIMPLEVISUALISERWIDGET_H

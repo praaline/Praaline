@@ -40,8 +40,7 @@ public slots:
     void goFullScreen();
     void endFullScreen();
 
-    void newSessionWithCommunication(QPointer<CorpusCommunication> com);
-    void addRecordingToSession(QPointer<CorpusRecording> rec);
+
     void addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                     const QList<QPair<QString, QString> > &attributes);
     void addProsogramPaneToSession(QPointer<CorpusRecording> rec);
@@ -138,17 +137,6 @@ protected:
 
     QFileSystemWatcher      *m_templateWatcher;
 
-    struct LayerConfiguration {
-        LayerConfiguration(LayerFactory::LayerType _layer
-                           = LayerFactory::Type("TimeRuler"),
-                           Model *_source = 0,
-                           int _channel = -1) :
-            layer(_layer), sourceModel(_source), channel(_channel) { }
-        LayerFactory::LayerType layer;
-        Model *sourceModel;
-        int channel;
-    };
-
     typedef std::map<QAction *, LayerConfiguration> PaneActionMap;
     PaneActionMap m_paneActions;
 
@@ -180,8 +168,6 @@ protected:
     virtual void setupTransformsMenu();
     virtual void setupExistingLayersMenus();
     virtual void setupToolbars();
-
-    virtual void addPane(const LayerConfiguration &configuration, QString text);
 
     virtual void closeEvent(QCloseEvent *e);
     virtual bool checkSaveModified();

@@ -6,3 +6,4 @@ SUBDIRS +=  asr \
             diff \
             featextract \
             mediautil
+

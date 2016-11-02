@@ -17,67 +17,75 @@
 
 #include "VisualiserWidget.h"
 
-#include "view/Pane.h"
-#include "view/PaneStack.h"
-#include "data/model/WaveFileModel.h"
-#include "data/model/SparseOneDimensionalModel.h"
-#include "data/model/RangeSummarisableTimeValueModel.h"
-#include "data/model/NoteModel.h"
-#include "data/model/AggregateWaveModel.h"
-#include "data/model/Labeller.h"
-#include "data/osc/OSCQueue.h"
-#include "framework/Document.h"
-#include "framework/TransformUserConfigurator.h"
-#include "view/ViewManager.h"
-#include "base/Preferences.h"
-#include "base/ResourceFinder.h"
-#include "layer/WaveformLayer.h"
-#include "layer/TimeRulerLayer.h"
-#include "layer/TimeInstantLayer.h"
-#include "layer/TimeValueLayer.h"
-#include "layer/NoteLayer.h"
-#include "layer/Colour3DPlotLayer.h"
-#include "layer/SliceLayer.h"
-#include "layer/SliceableLayer.h"
-#include "layer/ImageLayer.h"
-#include "layer/RegionLayer.h"
-#include "widgets/Fader.h"
-#include "view/Overview.h"
-#include "widgets/PropertyBox.h"
-#include "widgets/PropertyStack.h"
-#include "widgets/AudioDial.h"
-#include "widgets/IconLoader.h"
-#include "widgets/LayerTreeDialog.h"
-#include "widgets/ListInputDialog.h"
-#include "widgets/SubdividingMenu.h"
-#include "widgets/NotifyingPushButton.h"
-#include "widgets/KeyReference.h"
-#include "widgets/TransformFinder.h"
-#include "widgets/LabelCounterInputDialog.h"
-#include "widgets/KeyReference.h"
-#include "widgets/ActivityLog.h"
-#include "audioio/AudioCallbackPlaySource.h"
-#include "audioio/AudioCallbackPlayTarget.h"
-#include "audioio/PlaySpeedRangeMapper.h"
-#include "data/fileio/DataFileReaderFactory.h"
-#include "data/fileio/PlaylistFileReader.h"
-#include "data/fileio/WavFileWriter.h"
-#include "data/fileio/CSVFileWriter.h"
-#include "data/fileio/MIDIFileWriter.h"
-#include "data/fileio/BZipFileDevice.h"
-#include "data/fileio/FileSource.h"
-#include "data/midi/MIDIInput.h"
-#include "transform/TransformFactory.h"
-#include "transform/ModelTransformerFactory.h"
-#include "base/PlayParameterRepository.h"
-#include "base/XmlExportable.h"
-#include "widgets/CommandHistory.h"
-#include "base/Clipboard.h"
-#include "base/UnitDatabase.h"
-#include "layer/ColourDatabase.h"
-#include "widgets/ModelDataTableDialog.h"
-#include "rdf/PluginRDFIndexer.h"
-#include "rdf/RDFExporter.h"
+#include "svcore/base/Preferences.h"
+#include "svcore/base/ResourceFinder.h"
+#include "svcore/base/PlayParameterRepository.h"
+#include "svcore/base/XmlExportable.h"
+#include "svcore/base/Clipboard.h"
+#include "svcore/base/UnitDatabase.h"
+
+#include "svcore/data/fileio/DataFileReaderFactory.h"
+#include "svcore/data/fileio/PlaylistFileReader.h"
+#include "svcore/data/fileio/WavFileWriter.h"
+#include "svcore/data/fileio/CSVFileWriter.h"
+#include "svcore/data/fileio/MIDIFileWriter.h"
+#include "svcore/data/fileio/BZipFileDevice.h"
+#include "svcore/data/fileio/FileSource.h"
+#include "svcore/data/midi/MIDIInput.h"
+
+#include "svcore/data/model/WaveFileModel.h"
+#include "svcore/data/model/SparseOneDimensionalModel.h"
+#include "svcore/data/model/RangeSummarisableTimeValueModel.h"
+#include "svcore/data/model/NoteModel.h"
+#include "svcore/data/model/AggregateWaveModel.h"
+#include "svcore/data/model/Labeller.h"
+#include "svcore/data/osc/OSCQueue.h"
+
+#include "svcore/transform/TransformFactory.h"
+#include "svcore/transform/ModelTransformerFactory.h"
+#include "svcore/rdf/PluginRDFIndexer.h"
+#include "svcore/rdf/RDFExporter.h"
+
+#include "svgui/view/Pane.h"
+#include "svgui/view/PaneStack.h"
+#include "svgui/view/ViewManager.h"
+#include "svgui/view/Overview.h"
+
+#include "svgui/layer/WaveformLayer.h"
+#include "svgui/layer/TimeRulerLayer.h"
+#include "svgui/layer/TimeInstantLayer.h"
+#include "svgui/layer/TimeValueLayer.h"
+#include "svgui/layer/NoteLayer.h"
+#include "svgui/layer/Colour3DPlotLayer.h"
+#include "svgui/layer/SliceLayer.h"
+#include "svgui/layer/SliceableLayer.h"
+#include "svgui/layer/ImageLayer.h"
+#include "svgui/layer/RegionLayer.h"
+#include "svgui/layer/ColourDatabase.h"
+
+#include "svgui/widgets/Fader.h"
+#include "svgui/widgets/PropertyBox.h"
+#include "svgui/widgets/PropertyStack.h"
+#include "svgui/widgets/AudioDial.h"
+#include "svgui/widgets/IconLoader.h"
+#include "svgui/widgets/LayerTreeDialog.h"
+#include "svgui/widgets/ListInputDialog.h"
+#include "svgui/widgets/SubdividingMenu.h"
+#include "svgui/widgets/NotifyingPushButton.h"
+#include "svgui/widgets/KeyReference.h"
+#include "svgui/widgets/TransformFinder.h"
+#include "svgui/widgets/LabelCounterInputDialog.h"
+#include "svgui/widgets/KeyReference.h"
+#include "svgui/widgets/ActivityLog.h"
+#include "svgui/widgets/CommandHistory.h"
+#include "svgui/widgets/ModelDataTableDialog.h"
+
+#include "svapp/framework/Document.h"
+#include "svapp/framework/TransformUserConfigurator.h"
+
+#include "svapp/audioio/AudioCallbackPlaySource.h"
+#include "svapp/audioio/AudioCallbackPlayTarget.h"
+#include "svapp/audioio/PlaySpeedRangeMapper.h"
 
 #include "ExportVisualisationDialog.h"
 #include "NetworkPermissionTester.h"
@@ -161,7 +169,7 @@ VisualiserWidget::VisualiserWidget(const QString &contextStringID, bool withAudi
 
     layout->setSpacing(4);
     layout->addWidget(m_mainScroll, 0, 0, 1, 5);
-    layout->addWidget(m_overview, 1, 1);
+    layout->addWidget(m_overview, 1, 0, 1, 2);
     layout->addWidget(m_playControlsSpacer, 1, 2);
     layout->addWidget(m_playSpeed, 1, 3);
     layout->addWidget(m_fader, 1, 4);
@@ -2351,27 +2359,19 @@ void
 VisualiserWidget::newSession()
 {
     if (!checkSaveModified()) return;
-
     closeSession();
     createDocument();
-
     Pane *pane = m_paneStack->addPane();
-
     connect(pane, SIGNAL(contextHelpChanged(const QString &)),
             this, SLOT(contextHelpChanged(const QString &)));
-
     if (!m_timeRulerLayer) {
         m_timeRulerLayer = m_document->createMainModelLayer
                 (LayerFactory::Type("TimeRuler"));
     }
-
     m_document->addLayerToView(pane, m_timeRulerLayer);
-
     Layer *waveform = m_document->createMainModelLayer(LayerFactory::Type("Waveform"));
     m_document->addLayerToView(pane, waveform);
-
     m_overview->registerView(pane);
-
     CommandHistory::getInstance()->clear();
     CommandHistory::getInstance()->documentSaved();
     documentRestored();
@@ -2382,47 +2382,35 @@ void
 VisualiserWidget::closeSession()
 {
     if (!checkSaveModified()) return;
-
     while (m_paneStack->getPaneCount() > 0) {
-
         Pane *pane = m_paneStack->getPane(m_paneStack->getPaneCount() - 1);
-
         while (pane->getLayerCount() > 0) {
             m_document->removeLayerFromView
                     (pane, pane->getLayer(pane->getLayerCount() - 1));
         }
-
         m_overview->unregisterView(pane);
         m_paneStack->deletePane(pane);
     }
 
     while (m_paneStack->getHiddenPaneCount() > 0) {
-
         Pane *pane = m_paneStack->getHiddenPane
                 (m_paneStack->getHiddenPaneCount() - 1);
-
         while (pane->getLayerCount() > 0) {
             m_document->removeLayerFromView
                     (pane, pane->getLayer(pane->getLayerCount() - 1));
         }
-
         m_overview->unregisterView(pane);
         m_paneStack->deletePane(pane);
     }
-
     delete m_layerTreeDialog.data();
-
     m_activityLog->hide();
     m_keyReference->hide();
-
     delete m_document;
     m_document = 0;
     m_viewManager->clearSelections();
     m_timeRulerLayer = 0; // document owned this
-
     m_sessionFile = "";
     setWindowTitle(QApplication::applicationName());
-
     CommandHistory::getInstance()->clear();
     CommandHistory::getInstance()->documentSaved();
     documentRestored();
@@ -2434,13 +2422,9 @@ VisualiserWidget::openSomething()
     QString orig = m_audioFile;
     if (orig == "") orig = ".";
     else orig = QFileInfo(orig).absoluteDir().canonicalPath();
-
     QString path = getOpenFileName(FileFinder::AnyFile);
-
     if (path.isEmpty()) return;
-
     FileOpenStatus status = openPath(path, ReplaceSession);
-
     if (status == FileOpenFailed) {
         QMessageBox::critical(this, tr("Failed to open file"),
                               tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
@@ -2456,21 +2440,15 @@ VisualiserWidget::openLocation()
     QSettings settings;
     settings.beginGroup("VisualiserWidget");
     QString lastLocation = settings.value("lastremote", "").toString();
-
     bool ok = false;
     QString text = QInputDialog::getText
             (this, tr("Open Location"),
              tr("Please enter the URL of the location to open:"),
              QLineEdit::Normal, lastLocation, &ok);
-
     if (!ok) return;
-
     settings.setValue("lastremote", text);
-
     if (text.isEmpty()) return;
-
     FileOpenStatus status = openPath(text, AskUser);
-
     if (status == FileOpenFailed) {
         QMessageBox::critical(this, tr("Failed to open location"),
                               tr("<b>Open failed</b><p>URL \"%1\" could not be opened").arg(text));
@@ -2830,76 +2808,8 @@ void VisualiserWidget::addPane()
         }
         return;
     }
-    addPane(i->second, action->text());
-}
-
-void
-VisualiserWidget::addPane(const LayerConfiguration &configuration, QString text)
-{
-    CommandHistory::getInstance()->startCompoundOperation(text, true);
-
-    AddPaneCommand *command = new AddPaneCommand(this);
-    CommandHistory::getInstance()->addCommand(command);
-
-    Pane *pane = command->getPane();
-
-    if (configuration.layer == LayerFactory::Type("Spectrum")) {
-        pane->setPlaybackFollow(PlaybackScrollContinuous);
-        pane->setFollowGlobalZoom(false);
-        pane->setZoomLevel(512);
-    }
-
-    if (configuration.layer != LayerFactory::Type("TimeRuler") &&
-            configuration.layer != LayerFactory::Type("Spectrum") &&
-            configuration.layer != LayerFactory::Type("AnnotationGrid")) {
-        if (!m_timeRulerLayer) {
-            // cerr << "no time ruler layer, creating one" << endl;
-            m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
-        }
-        // cerr << "adding time ruler layer " << m_timeRulerLayer << endl;
-        m_document->addLayerToView(pane, m_timeRulerLayer);
-    }
-
-    Layer *newLayer = m_document->createLayer(configuration.layer);
-
-    Model *suggestedModel = configuration.sourceModel;
-    Model *model = 0;
-
-    if (suggestedModel) {
-        // check its validity
-        std::vector<Model *> inputModels = m_document->getTransformInputModels();
-        for (size_t j = 0; j < inputModels.size(); ++j) {
-            if (inputModels[j] == suggestedModel) {
-                model = suggestedModel;
-                break;
-            }
-        }
-        if (!model) {
-            cerr << "WARNING: Model " << (void *)suggestedModel
-                 << " appears in pane action map, but is not reported "
-                 << "by document as a valid transform source" << endl;
-        }
-    }
-
-    if (!model) {
-        model = m_document->getMainModel();
-    }
-
-    m_document->setModel(newLayer, model);
-
-    m_document->setChannel(newLayer, configuration.channel);
-    m_document->addLayerToView(pane, newLayer);
-
-    m_paneStack->setCurrentPane(pane);
-    m_paneStack->setCurrentLayer(pane, newLayer);
-
-    //    cerr << "VisualiserWidget::addPane: global centre frame is "
-    //              << m_viewManager->getGlobalCentreFrame() << endl;
-    //    pane->setCentreFrame(m_viewManager->getGlobalCentreFrame());
-
-    CommandHistory::getInstance()->endCompoundOperation();
-
-    updateMenuStates();
+    // Call base class implementation to add the pane
+    SimpleVisualiserWidget::addPane(i->second, action->text());
 }
 
 void VisualiserWidget::addLayer()
@@ -3402,44 +3312,35 @@ void VisualiserWidget::showLayerTree()
 // ====================================================================================================================
 
 // public slot
-void VisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunication> com)
-{
-    if (!com) return;
-    bool first = false;
-    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-        if (!first) {
-            // Main audio
-            QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
-            FileOpenStatus status = openPath(path, ReplaceSession);
-            if (status == FileOpenFailed) {
-                QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
-            } else if (status == FileOpenWrongMode) {
-                QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>Please load at least one audio file before importing annotations.").arg(path));
-            }
-            addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");
-            //addPane(LayerConfiguration(LayerFactory::Type("Spectrogram"), getMainModel()), "Main Spectrogram");
-            addProsogramPaneToSession(rec);
-            first = true;
-        }
-        else {
-            // import more audio
-            addRecordingToSession(rec);
-        }
-    }
-}
+//void VisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunication> com)
+//{
+//    if (!com) return;
+//    bool first = false;
+//    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//        if (!first) {
+//            // Main audio
+//            QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
+//            FileOpenStatus status = openPath(path, ReplaceSession);
+//            if (status == FileOpenFailed) {
+//                QMessageBox::critical(this, tr("Failed to open file"),
+//                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
+//            } else if (status == FileOpenWrongMode) {
+//                QMessageBox::critical(this, tr("Failed to open file"),
+//                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>Please load at least one audio file before importing annotations.").arg(path));
+//            }
+//            addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");
+//            //addPane(LayerConfiguration(LayerFactory::Type("Spectrogram"), getMainModel()), "Main Spectrogram");
+//            addProsogramPaneToSession(rec);
+//            first = true;
+//        }
+//        else {
+//            // import more audio
+//            addRecordingToSession(rec);
+//        }
+//    }
+//}
 
-void VisualiserWidget::addRecordingToSession(QPointer<CorpusRecording> rec)
-{
-    if (!rec) return;
-    QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
-    FileOpenStatus status = openAudio(path, CreateAdditionalModel);
-    if (status == FileOpenFailed) {
-        QMessageBox::critical(this, tr("Failed to open file"),
-                              tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
-    }
-}
+
 
 void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                                   const QList<QPair<QString, QString> > &attributes)

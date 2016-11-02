@@ -2,7 +2,12 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include "QSqlMigrator/QSqlMigrator.h"
 #include "sqlschemaproxymetadata.h"
+
+using namespace QSqlMigrator;
+using namespace QSqlMigrator::Structure;
+using namespace QSqlMigrator::Commands;
 
 SQLSchemaProxyMetadata::SQLSchemaProxyMetadata()
 {
@@ -11,76 +16,72 @@ SQLSchemaProxyMetadata::SQLSchemaProxyMetadata()
 bool createNewSchema(MetadataStructure *structure, CorpusObject::Type what, QSqlDatabase &db)
 {
     QString tableName, sqlBase, sqlKeys, sqlMetadata;
+    ColumnList columns;
     if (what == CorpusObject::Type_Communication) {
         tableName = "communication";
-        sqlBase = "CREATE TABLE communication ( "
-                "   communicationID varchar(64) NOT NULL DEFAULT '', "
-                "   corpusID varchar(64), "
-                "   communicationName varchar(128) ";
-        sqlKeys = ", PRIMARY KEY (communicationID) )";
+        columns << Column("communicationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("communicationName", SqlType(SqlType::VarChar, 128));
     }
     else if (what == CorpusObject::Type_Speaker) {
         tableName = "speaker";
-        sqlBase = "CREATE TABLE speaker ( "
-                "   speakerID varchar(64) NOT NULL DEFAULT '', "
-                "   corpusID varchar(64), "
-                "   speakerName varchar(128) ";
-        sqlKeys = ", PRIMARY KEY (speakerID) )";
+        columns << Column("speakerID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("speakerName", SqlType(SqlType::VarChar, 128));
     }
     else if (what == CorpusObject::Type_Recording) {
         tableName = "recording";
-        sqlBase = "CREATE TABLE recording ( "
-                "   recordingID varchar(64) NOT NULL DEFAULT '', "
-                "   communicationID varchar(64), "
-                "   recordingName varchar(128), "
-                "   filename varchar(256), "
-                "   format varchar(32), "
-                "   duration bigint(20), "
-                "   channels tinyint(4) DEFAULT 1, "
-                "   sampleRate int(11), "
-                "   precisionBits tinyint(2), "
-                "   bitRate int(11), "
-                "   encoding varchar(256), "
-                "   fileSize int(11), "
-                "   checksumMD5 varchar(64) ";
-        sqlKeys = ", PRIMARY KEY (recordingID) )";
+        columns << Column("recordingID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("recordingName", SqlType(SqlType::VarChar, 128)) <<
+                   Column("filename", SqlType(SqlType::VarChar, 256)) <<
+                   Column("format", SqlType(SqlType::VarChar, 32)) <<
+                   Column("duration", SqlType::BigInt) <<
+                   Column("channels", SqlType::SmallInt, "1") <<
+                   Column("sampleRate", SqlType::Integer) <<
+                   Column("precisionBits", SqlType::SmallInt) <<
+                   Column("bitRate", SqlType::Integer) <<
+                   Column("encoding", SqlType(SqlType::VarChar, 256)) <<
+                   Column("fileSize", SqlType::BigInt) <<
+                   Column("checksumMD5", SqlType(SqlType::VarChar, 64));
     }
     else if (what == CorpusObject::Type_Annotation) {
         tableName = "annotation";
-        sqlBase = "CREATE TABLE annotation ( "
-                "   annotationID varchar(64) NOT NULL DEFAULT '', "
-                "   communicationID varchar(64), "
-                "   recordingID varchar(64), "
-                "   annotationName varchar(128) ";
-        sqlKeys = ", PRIMARY KEY (annotationID) )";
+        columns << Column("annotationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("recordingID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("annotationName", SqlType(SqlType::VarChar, 64));
     }
     else if (what == CorpusObject::Type_Participation) {
         tableName = "participation";
-        sqlBase = "CREATE TABLE participation ( "
-                "   corpusID varchar(64), "
-                "   communicationID varchar(64) NOT NULL DEFAULT '', "
-                "   speakerID varchar(64) NOT NULL DEFAULT '', "
-                "   role varchar(128) ";
-        sqlKeys = ", PRIMARY KEY (communicationID, speakerID) )";
+        columns << Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64), "", Column::NotNullable) <<
+                   Column("speakerID", SqlType(SqlType::VarChar, 64), "", Column::NotNullable) <<
+                   Column("role", SqlType(SqlType::VarChar, 128));
     }
     else return false;
-    QSqlQuery q(db), qdel(db);
-    qdel.prepare(QString("DROP TABLE IF EXISTS %1").arg(tableName));
-    qdel.exec();
-    if (qdel.lastError().isValid()) return false;
+    // Drop table if exists
+//    QSqlQuery q(db), qdel(db);
+//    qdel.prepare(QString("DROP TABLE IF EXISTS %1").arg(tableName));
+//    qdel.exec();
+//    if (qdel.lastError().isValid()) return false;
     foreach (MetadataStructureSection *section, structure->sections(what)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
+
+            //
+
+
             sqlMetadata.append(", ").append(attribute->ID()).append(" ").append(attribute->datatype());
             if (attribute->datalength() > 0)
                 sqlMetadata.append("(").append(QString::number(attribute->datalength())).append(")");
             sqlMetadata.append(" ");
         }
     }
-    q.prepare(QString("%1 %2 %3").arg(sqlBase).arg(sqlMetadata).arg(sqlKeys));
-    q.exec();
-    if (q.lastError().isValid()) {
-        return false;
-    }
+//    q.prepare(QString("%1 %2 %3").arg(sqlBase).arg(sqlMetadata).arg(sqlKeys));
+//    q.exec();
+//    if (q.lastError().isValid()) {
+//        return false;
+//    }
     return true;
 }
 

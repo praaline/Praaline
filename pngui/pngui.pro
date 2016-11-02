@@ -25,6 +25,10 @@ include(../external/qtilities/src/Qtilities.pri)
 include(../external/qtilities/src/Dependencies.pri)
 INCLUDEPATH += external/qtilities/include
 
+# For QXlsx
+QT += core gui gui-private
+DEFINES += XLSX_NO_LIB
+
 FORMS += \
     grid/qadvancedtableview.ui \
     grid/qconditionaldecorationdialog.ui \
@@ -119,7 +123,52 @@ HEADERS += \
     model/annotation/ProsogramTonalSegmentModel.h \
     model/annotation/ProsogramModel.h \
     layer/ProsogramLayer.h \
-    epsengine/EpsEngine.h
+    epsengine/EpsEngine.h \
+    xlsx/xlsxzipwriter_p.h \
+    xlsx/xlsxzipreader_p.h \
+    xlsx/xlsxworksheet.h \
+    xlsx/xlsxworksheet_p.h \
+    xlsx/xlsxworkbook.h \
+    xlsx/xlsxworkbook_p.h \
+    xlsx/xlsxutility_p.h \
+    xlsx/xlsxtheme_p.h \
+    xlsx/xlsxstyles_p.h \
+    xlsx/xlsxsimpleooxmlfile_p.h \
+    xlsx/xlsxsharedstrings_p.h \
+    xlsx/xlsxrichstring.h \
+    xlsx/xlsxrichstring_p.h \
+    xlsx/xlsxrelationships_p.h \
+    xlsx/xlsxnumformatparser_p.h \
+    xlsx/xlsxmediafile_p.h \
+    xlsx/xlsxglobal.h \
+    xlsx/xlsxformat.h \
+    xlsx/xlsxformat_p.h \
+    xlsx/xlsxdrawinganchor_p.h \
+    xlsx/xlsxdrawing_p.h \
+    xlsx/xlsxdocument.h \
+    xlsx/xlsxdocument_p.h \
+    xlsx/xlsxdocpropscore_p.h \
+    xlsx/xlsxdocpropsapp_p.h \
+    xlsx/xlsxdatavalidation.h \
+    xlsx/xlsxdatavalidation_p.h \
+    xlsx/xlsxcontenttypes_p.h \
+    xlsx/xlsxconditionalformatting.h \
+    xlsx/xlsxconditionalformatting_p.h \
+    xlsx/xlsxcolor_p.h \
+    xlsx/xlsxchartsheet.h \
+    xlsx/xlsxchartsheet_p.h \
+    xlsx/xlsxchart.h \
+    xlsx/xlsxchart_p.h \
+    xlsx/xlsxcellreference.h \
+    xlsx/xlsxcellrange.h \
+    xlsx/xlsxcellformula.h \
+    xlsx/xlsxcellformula_p.h \
+    xlsx/xlsxcell.h \
+    xlsx/xlsxcell_p.h \
+    xlsx/xlsxabstractsheet.h \
+    xlsx/xlsxabstractsheet_p.h \
+    xlsx/xlsxabstractooxmlfile.h \
+    xlsx/xlsxabstractooxmlfile_p.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -192,4 +241,35 @@ SOURCES += \
     model/annotation/ProsogramModel.cpp \
     layer/ProsogramLayer.cpp \
     epsengine/EpsPaintEngine.cpp \
-    epsengine/EpsPaintDevice.cpp
+    epsengine/EpsPaintDevice.cpp \
+    xlsx/xlsxzipwriter.cpp \
+    xlsx/xlsxzipreader.cpp \
+    xlsx/xlsxworksheet.cpp \
+    xlsx/xlsxworkbook.cpp \
+    xlsx/xlsxutility.cpp \
+    xlsx/xlsxtheme.cpp \
+    xlsx/xlsxstyles.cpp \
+    xlsx/xlsxsimpleooxmlfile.cpp \
+    xlsx/xlsxsharedstrings.cpp \
+    xlsx/xlsxrichstring.cpp \
+    xlsx/xlsxrelationships.cpp \
+    xlsx/xlsxnumformatparser.cpp \
+    xlsx/xlsxmediafile.cpp \
+    xlsx/xlsxformat.cpp \
+    xlsx/xlsxdrawinganchor.cpp \
+    xlsx/xlsxdrawing.cpp \
+    xlsx/xlsxdocument.cpp \
+    xlsx/xlsxdocpropscore.cpp \
+    xlsx/xlsxdocpropsapp.cpp \
+    xlsx/xlsxdatavalidation.cpp \
+    xlsx/xlsxcontenttypes.cpp \
+    xlsx/xlsxconditionalformatting.cpp \
+    xlsx/xlsxcolor.cpp \
+    xlsx/xlsxchartsheet.cpp \
+    xlsx/xlsxchart.cpp \
+    xlsx/xlsxcellreference.cpp \
+    xlsx/xlsxcellrange.cpp \
+    xlsx/xlsxcellformula.cpp \
+    xlsx/xlsxcell.cpp \
+    xlsx/xlsxabstractsheet.cpp \
+    xlsx/xlsxabstractooxmlfile.cpp

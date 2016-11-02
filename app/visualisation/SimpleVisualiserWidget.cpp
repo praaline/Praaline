@@ -17,6 +17,10 @@
 #include "svapp/audioio/PlaySpeedRangeMapper.h"
 #include "svapp/framework/Document.h"
 
+#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/corpuscommunication.h"
+#include "pncore/corpus/corpusrecording.h"
+
 #include "SimpleVisualiserWidget.h"
 
 #include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
@@ -667,7 +671,8 @@ void SimpleVisualiserWidget::rightButtonMenuRequested(Pane *pane, QPoint positio
 {
     // cerr << "VisualiserWidget::rightButtonMenuRequested(" << pane << ", " << position.x() << ", " << position.y() << ")" << endl;
     m_paneStack->setCurrentPane(pane);
-    m_rightButtonMenu->popup(position);
+    if (m_rightButtonMenu)
+        m_rightButtonMenu->popup(position);
 }
 
 void SimpleVisualiserWidget::propertyStacksResized(int)
@@ -844,10 +849,73 @@ void SimpleVisualiserWidget::midiEventsAvailable()
 
 }
 
-//void SimpleVisualiserWidget::addPane(const LayerConfiguration &configuration, QString text)
-//{
+void SimpleVisualiserWidget::addPane(const SimpleVisualiserWidget::LayerConfiguration &configuration, QString text)
+{
+    CommandHistory::getInstance()->startCompoundOperation(text, true);
 
-//}
+    AddPaneCommand *command = new AddPaneCommand(this);
+    CommandHistory::getInstance()->addCommand(command);
+
+    Pane *pane = command->getPane();
+
+    if (configuration.layer == LayerFactory::Type("Spectrum")) {
+        pane->setPlaybackFollow(PlaybackScrollContinuous);
+        pane->setFollowGlobalZoom(false);
+        pane->setZoomLevel(512);
+    }
+
+    if (configuration.layer != LayerFactory::Type("TimeRuler") &&
+            configuration.layer != LayerFactory::Type("Spectrum") &&
+            configuration.layer != LayerFactory::Type("AnnotationGrid")) {
+        if (!m_timeRulerLayer) {
+            // cerr << "no time ruler layer, creating one" << endl;
+            m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
+        }
+        // cerr << "adding time ruler layer " << m_timeRulerLayer << endl;
+        m_document->addLayerToView(pane, m_timeRulerLayer);
+    }
+
+    Layer *newLayer = m_document->createLayer(configuration.layer);
+
+    Model *suggestedModel = configuration.sourceModel;
+    Model *model = 0;
+
+    if (suggestedModel) {
+        // check its validity
+        std::vector<Model *> inputModels = m_document->getTransformInputModels();
+        for (size_t j = 0; j < inputModels.size(); ++j) {
+            if (inputModels[j] == suggestedModel) {
+                model = suggestedModel;
+                break;
+            }
+        }
+        if (!model) {
+            cerr << "WARNING: Model " << (void *)suggestedModel
+                 << " appears in pane action map, but is not reported "
+                 << "by document as a valid transform source" << endl;
+        }
+    }
+
+    if (!model) {
+        model = m_document->getMainModel();
+    }
+
+    m_document->setModel(newLayer, model);
+
+    m_document->setChannel(newLayer, configuration.channel);
+    m_document->addLayerToView(pane, newLayer);
+
+    m_paneStack->setCurrentPane(pane);
+    m_paneStack->setCurrentLayer(pane, newLayer);
+
+    //    cerr << "VisualiserWidget::addPane: global centre frame is "
+    //              << m_viewManager->getGlobalCentreFrame() << endl;
+    //    pane->setCentreFrame(m_viewManager->getGlobalCentreFrame());
+
+    CommandHistory::getInstance()->endCompoundOperation();
+
+    updateMenuStates();
+}
 
 bool SimpleVisualiserWidget::checkSaveModified()
 {
@@ -859,3 +927,41 @@ void SimpleVisualiserWidget::exportAudio(bool asData)
 
 }
 
+void SimpleVisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunication> com)
+{
+    // The default implementation will create a Waveform pane for each of the Recordings
+    // contained in the Communication
+    if (!com) return;
+    bool first = false;
+    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        if (!first) {
+            // Main audio
+            QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
+            FileOpenStatus status = openPath(path, ReplaceSession);
+            if (status == FileOpenFailed) {
+                QMessageBox::critical(this, tr("Failed to open file"),
+                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
+            } else if (status == FileOpenWrongMode) {
+                QMessageBox::critical(this, tr("Failed to open file"),
+                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>Please load at least one audio file before importing annotations.").arg(path));
+            }
+            addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");
+            first = true;
+        }
+        else {
+            // import more audio
+            addRecordingToSession(rec);
+        }
+    }
+}
+
+void SimpleVisualiserWidget::addRecordingToSession(QPointer<CorpusRecording> rec)
+{
+    if (!rec) return;
+    QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
+    FileOpenStatus status = openAudio(path, CreateAdditionalModel);
+    if (status == FileOpenFailed) {
+        QMessageBox::critical(this, tr("Failed to open file"),
+                              tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
+    }
+}
