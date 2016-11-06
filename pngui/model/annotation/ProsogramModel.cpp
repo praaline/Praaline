@@ -6,16 +6,19 @@
 #include <QTextStream>
 #include <QFileInfo>
 #include <QDir>
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusparticipation.h"
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusParticipation.h"
+using namespace Praaline::Core;
+
 #include "svcore/data/model/SparseTimeValueModel.h"
 #include "AnnotationGridPointModel.h"
 #include "ProsogramTonalSegmentModel.h"
 #include "ProsogramModel.h"
 
 #include "pncore/interfaces/praat/PraatPointTierFile.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 struct ProsogramModelData {
     ProsogramModelData () : sampleRate(0), segments(0), phones(0), sylls(0),

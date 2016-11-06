@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pnlib/asr/SpeechToken.h"
 #include "pnlib/asr/phonetiser/AbstractPhonetiser.h"
 
@@ -16,9 +16,9 @@ public:
     explicit ExternalPhonetiser(QObject *parent = 0);
     ~ExternalPhonetiser();
 
-    static QList<SpeechToken> phonetiseList(QList<Interval *> tokens, const QString &attributeID = QString());
-    static QList<SpeechToken> phonetiseTier(IntervalTier *tier_tokens, const QString &attributeID = QString());
-    static void addPhonetisationToTokens(IntervalTier *tier_tokens, const QString &attributeIDOrthographic,
+    static QList<SpeechToken> phonetiseList(QList<Praaline::Core::Interval *> tokens, const QString &attributeID = QString());
+    static QList<SpeechToken> phonetiseTier(Praaline::Core::IntervalTier *tier_tokens, const QString &attributeID = QString());
+    static void addPhonetisationToTokens(Praaline::Core::IntervalTier *tier_tokens, const QString &attributeIDOrthographic,
                                          const QString &attributeIDPhonetisation);
 
 signals:

@@ -5,8 +5,8 @@
 #include <QPointer>
 #include <QMutex>
 #include "LongSoundAligner.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/annotationtiergroup.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 
 struct LongSoundAlignerData
@@ -49,10 +49,10 @@ bool LongSoundAligner::createRecognitionLevel(QPointer<Corpus> corpus, int recog
     attr = new AnnotationStructureAttribute("text_from_dic", "Text from Dic", "Text from pronunciation dictionary");
     if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
-    attr = new AnnotationStructureAttribute("acoustic_score", "Acoustic score", "Acoustic score for this word", "double", 0);
+    attr = new AnnotationStructureAttribute("acoustic_score", "Acoustic score", "Acoustic score for this word", DataType::Double);
     if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
-    attr = new AnnotationStructureAttribute("lm_score", "LM score", "Language model score for this word", "double", 0);
+    attr = new AnnotationStructureAttribute("lm_score", "LM score", "Language model score for this word", DataType::Double);
     if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
     corpus->save();

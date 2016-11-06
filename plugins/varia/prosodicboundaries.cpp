@@ -1,8 +1,8 @@
 #include "math.h"
 #include <QPointer>
 #include <QDebug>
-#include "pncore/annotation/annotationtiergroup.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pncore/base/RealValueList.h"
 #include "prosodicboundaries.h"
 

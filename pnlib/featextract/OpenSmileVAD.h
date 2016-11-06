@@ -7,8 +7,12 @@
 #include <QPair>
 #include "pncore/base/RealTime.h"
 
+namespace Praaline {
+namespace Core {
 class CorpusRecording;
 class IntervalTier;
+}
+}
 
 class OpenSmileVAD : public QObject
 {
@@ -17,9 +21,10 @@ public:
     explicit OpenSmileVAD(QObject *parent = 0);
 
     static bool runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivation);
-    static IntervalTier *splitToUtterances(QPointer<CorpusRecording> rec,
-                                           RealTime minimumDurationSilent, RealTime minimumDurationVoice,
-                                           QString textSilent, QString textVoice);
+    static Praaline::Core::IntervalTier *splitToUtterances(
+            QPointer<Praaline::Core::CorpusRecording> rec,
+            RealTime minimumDurationSilent, RealTime minimumDurationVoice,
+            QString textSilent, QString textVoice);
 signals:
 
 public slots:

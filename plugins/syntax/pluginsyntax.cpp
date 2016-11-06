@@ -6,8 +6,8 @@
 #include <ExtensionSystemConstants>
 
 #include "pluginsyntax.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "CoNLLUReader.h"
 #include "CorpusImporter.h"

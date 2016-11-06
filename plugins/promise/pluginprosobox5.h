@@ -4,8 +4,11 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusannotation.h"
+
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+using namespace Praaline::Core;
+
 #include "annotationpluginpraatscript.h"
 
 class PluginProsobox5 : public AnnotationPluginPraatScript

@@ -13,7 +13,7 @@
 #include <QMutex>
 
 #include "pluginaligner.h"
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "phonemedatabase.h"
 #include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
@@ -30,7 +30,7 @@
 
 #include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
 
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;

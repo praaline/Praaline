@@ -11,7 +11,7 @@
 #include <QColor>
 #include <QMultiMap>
 #include "pncore/base/RealTime.h"
-#include "pncore/annotation/annotationtiergroup.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 
 struct AnnotationTierModelData;
 
@@ -26,7 +26,7 @@ public:
         QVariant value;
     };
 
-    explicit AnnotationTierModel(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+    explicit AnnotationTierModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
                                  const QString &tiernameMinimal,
                                  const QList<QPair<QString, QString> > &attributes,
                                  Qt::Orientation orientation,

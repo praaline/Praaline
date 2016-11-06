@@ -5,8 +5,8 @@
 #include <QTextStream>
 #include <QDebug>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "mbrolafilemanager.h"
 

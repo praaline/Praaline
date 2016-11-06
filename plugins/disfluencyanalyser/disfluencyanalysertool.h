@@ -5,8 +5,8 @@
 #include <QString>
 #include <QStringList>
 #include "pncore/base/RealTime.h"
-#include "pncore/annotation/interval.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/Interval.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "disfluency.h"
 
 class DisfluencyAnalyserTool : public QObject

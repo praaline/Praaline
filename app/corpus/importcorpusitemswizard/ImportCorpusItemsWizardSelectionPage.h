@@ -8,7 +8,10 @@
 #include <QMap>
 #include <QFileInfo>
 #include <QStandardItemModel>
-#include "pncore/corpus/corpus.h"
+
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
+
 #include "ImportAnnotations.h"
 
 namespace Ui {

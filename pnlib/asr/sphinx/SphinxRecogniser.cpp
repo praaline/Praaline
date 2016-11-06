@@ -9,7 +9,7 @@
 #include <QMutexLocker>
 #include <QFileInfo>
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 
 #include "SphinxConfiguration.h"
 #include "SphinxSegmentation.h"

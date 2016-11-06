@@ -2,7 +2,7 @@
 #define SPHINXACOUSTICMODELADAPTER_H
 
 #include <QObject>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "SphinxPronunciationDictionary.h"
 
 struct SphinxAcousticModelAdapterData;

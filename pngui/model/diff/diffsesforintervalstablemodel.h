@@ -5,7 +5,7 @@
 #include <QList>
 #include <QColor>
 #include <QAbstractTableModel>
-#include "pncore/annotation/interval.h"
+#include "pncore/annotation/Interval.h"
 using namespace std;
 #include "pnlib/diff/dtl.h"
 using namespace dtl;
@@ -15,8 +15,9 @@ class DiffSESforIntervalsTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit DiffSESforIntervalsTableModel(dtl::Ses<Interval *>::sesElemVec &sesElemVec,
-                                           const QList<Interval *> &intervals_A, const QList<Interval *> &intervals_B,
+    explicit DiffSESforIntervalsTableModel(dtl::Ses<Praaline::Core::Interval *>::sesElemVec &sesElemVec,
+                                           const QList<Praaline::Core::Interval *> &intervals_A,
+                                           const QList<Praaline::Core::Interval *> &intervals_B,
                                            const QString &attributeID_A = QString(), const QString &attributeID_B = QString(),
                                            const QStringList &extraAttributeIDs_A = QStringList(),
                                            const QStringList &extraAttributeIDs_B = QStringList(),
@@ -37,9 +38,9 @@ signals:
 public slots:
 
 private:
-    dtl::Ses<Interval *>::sesElemVec &m_sesElemVec;
-    QList<Interval *> m_intervals_A;
-    QList<Interval *> m_intervals_B;
+    dtl::Ses<Praaline::Core::Interval *>::sesElemVec &m_sesElemVec;
+    QList<Praaline::Core::Interval *> m_intervals_A;
+    QList<Praaline::Core::Interval *> m_intervals_B;
     QString m_attributeID_A;
     QString m_attributeID_B;
     QStringList m_extraAttributeIDs_A;

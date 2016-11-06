@@ -4,8 +4,8 @@
 #include <QTextStream>
 #include <QDebug>
 #include "CoNLLUReader.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/annotation/annotationtiergroup.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 
 CoNLLUReader::CoNLLUReader()
 {

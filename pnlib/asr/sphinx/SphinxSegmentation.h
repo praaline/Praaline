@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QHash>
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/IntervalTier.h"
 
 class SphinxSegmentation : public QObject
 {
@@ -13,7 +13,7 @@ public:
     explicit SphinxSegmentation(QObject *parent = 0);
     ~SphinxSegmentation();
 
-    static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Interval *> > &utterances);
+    static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Praaline::Core::Interval *> > &utterances);
 
 signals:
 

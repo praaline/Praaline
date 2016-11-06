@@ -2,8 +2,8 @@
 #include <QHash>
 #include <qmath.h>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
 

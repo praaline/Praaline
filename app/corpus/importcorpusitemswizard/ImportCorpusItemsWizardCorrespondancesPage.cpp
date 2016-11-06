@@ -5,7 +5,7 @@
 #include <QFileInfo>
 #include <QMultiHash>
 #include <QStandardItemModel>
-#include "pncore/interfaces/interfacetextfile.h"
+#include "pncore/interfaces/InterfaceTextFile.h"
 #include "ImportCorpusItemsWizardCorrespondancesPage.h"
 #include "ui_ImportCorpusItemsWizardCorrespondancesPage.h"
 

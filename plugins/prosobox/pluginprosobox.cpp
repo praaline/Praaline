@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <ExtensionSystemConstants>
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "pluginprosobox.h"
 #include "prosoboxscript.h"
 

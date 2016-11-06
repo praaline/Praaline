@@ -1,4 +1,11 @@
-#include "pncore/corpus/corpuscommunication.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusRecording.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/corpus/CorpusSpeaker.h"
+#include "pncore/serialisers/CorpusDefinition.h"
+using namespace Praaline::Core;
+
 #include "corpusobserver.h"
 
 CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointer<CorpusCommunication> com) :

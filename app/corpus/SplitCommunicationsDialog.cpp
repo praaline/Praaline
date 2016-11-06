@@ -6,7 +6,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QStandardItemModel>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 
 #include "pnlib/mediautil/AudioSegmenter.h"
 

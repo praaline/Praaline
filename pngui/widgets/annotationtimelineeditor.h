@@ -29,10 +29,11 @@ public:
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
 
-    void setData(QMap<QString, QPointer<AnnotationTierGroup> > &tierGroups, const QList<QPair<QString, QString> > &columns);
-    void addTierGroup(QString speakerID, QPointer<AnnotationTierGroup> tierGroup);
+    void setData(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups,
+                 const QList<QPair<QString, QString> > &columns);
+    void addTierGroup(QString speakerID, QPointer<Praaline::Core::AnnotationTierGroup> tierGroup);
     void removeTierGroup(QString speakerID);
-    const QMap<QString, QPointer<AnnotationTierGroup> > &tierGroups() const;
+    const QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups() const;
 
     void setColumns(const QList<QPair<QString, QString> > &columns);
     const QList<QPair<QString, QString> > &columns() const;

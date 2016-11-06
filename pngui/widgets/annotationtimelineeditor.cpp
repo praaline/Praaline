@@ -24,6 +24,7 @@
 
 #include "gridviewwidget.h"
 
+using namespace Praaline::Core;
 
 
 struct AnnotationTimelineEditorData {

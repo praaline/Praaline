@@ -17,7 +17,7 @@
 
 // Praaline.Core
 #include <QHash>
-#include "annotation/annotationtiergroup.h"
+#include "annotation/AnnotationTierGroup.h"
 // DisMo
 #include "preprocessor.h"
 #include "boundarydetector.h"

@@ -3,15 +3,18 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QTreeView>
+#include <QDebug>
 
 #include "CorpusStructureEditorWidget.h"
 #include "ui_CorpusStructureEditorWidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/serialisers/xml/xmlserialisermetadatastructure.h"
-#include "pncore/serialisers/xml/xmlserialiserannotationstructure.h"
-#include "pngui/model/corpus/metadatastructuretreemodel.h"
-#include "pngui/model/corpus/annotationstructuretreemodel.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
+#include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
+using namespace Praaline::Core;
+
+#include "pngui/model/corpus/MetadataStructureTreeModel.h"
+#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/observers/corpusobserver.h"
 #include "CorporaManager.h"
 #include "AddAttributeDialog.h"
@@ -175,7 +178,14 @@ void CorpusStructureEditorWidget::refreshMetadataStructureTreeView(MetadataStruc
 {
     if (!structure) return;
     QPointer<MetadataStructureTreeModel> previousMetadataStructureModel = d->treemodelMetadataStructure;
+    // disconnect events from previous model
+    if (d->treemodelMetadataStructure) d->treemodelMetadataStructure->disconnect();
+    // create new model
     d->treemodelMetadataStructure = new MetadataStructureTreeModel(structure, this);
+    // connect signals to new model
+    connect(d->treemodelMetadataStructure, SIGNAL(renameMetadataAttribute(Praaline::Core::CorpusObject::Type, QString, QString)),
+            this, SLOT(renameMetadataAttribute(Praaline::Core::CorpusObject::Type,QString,QString)));
+    // set model
     d->treeviewMetadataStructure->setModel(d->treemodelMetadataStructure);
     d->treeviewMetadataStructure->expandAll();
     for (int i = 0; i< d->treemodelMetadataStructure->columnCount(); ++i)
@@ -187,7 +197,16 @@ void CorpusStructureEditorWidget::refreshAnnotationStructureTreeView(AnnotationS
 {
     if (!structure) return;
     QPointer<AnnotationStructureTreeModel> previousAnnotationStructureModel = d->treemodelAnnotationStructure;
+    // disconnect events from previous model
+    if (d->treemodelAnnotationStructure) d->treemodelAnnotationStructure->disconnect();
+    // create new model
     d->treemodelAnnotationStructure = new AnnotationStructureTreeModel(structure, false, false, this);
+    // connect signals to new model
+    connect(d->treemodelAnnotationStructure, SIGNAL(renameAnnotationLevel(QString, QString)),
+            this, SLOT(renameAnnotationLevel(QString,QString)));
+    connect(d->treemodelAnnotationStructure, SIGNAL(renameAnnotationAttribute(QString, QString, QString)),
+            this, SLOT(renameAnnotationAttribute(QString,QString,QString)));
+    // set model
     d->treeviewAnnotationStructure->setModel(d->treemodelAnnotationStructure);
     d->treeviewAnnotationStructure->expandAll();
     for (int i = 0; i< d->treemodelAnnotationStructure->columnCount(); ++i)
@@ -268,8 +287,9 @@ void CorpusStructureEditorWidget::addMetadataStructureAttribute()
     QString attributeID = dialog->attributeID();
     if (attributeID.isEmpty()) return;
     MetadataStructureAttribute *newAttribute = new MetadataStructureAttribute(attributeID);
-    newAttribute->setDatatype(dialog->datatype());
-    newAttribute->setDatalength(dialog->datalength());
+    DataType dt = DataType(dialog->datatype());
+    if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
+    newAttribute->setDatatype(dt);
 
     if (!obs->corpus()->datastoreMetadata()->createMetadataAttribute(type, newAttribute))
         return; // failed to create attribute
@@ -314,6 +334,18 @@ void CorpusStructureEditorWidget::removeMetadataStructureItem()
         obs->corpus()->datastoreMetadata()->deleteMetadataAttribute(type, attribute->ID());
         section->removeAttributeByID(attribute->ID());
         refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+    }
+}
+
+void CorpusStructureEditorWidget::renameMetadataAttribute(Praaline::Core::CorpusObject::Type type,
+                                                          const QString &oldID, const QString &newID)
+{
+    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
+    if (!obs) return;
+    if (!obs->corpus()) return;
+    if (!obs->corpus()->datastoreMetadata()) return;
+    if (obs->corpus()->datastoreMetadata()->renameMetadataAttribute(type, oldID, newID)) {
+        obs->corpus()->metadataStructure()->attribute(type, oldID)->setID(newID);
     }
 }
 
@@ -366,8 +398,9 @@ void CorpusStructureEditorWidget::addAnnotationStructureLevel()
     AnnotationStructureLevel *newLevel = new AnnotationStructureLevel(levelID);
     newLevel->setLevelType(dialog->levelType());
     newLevel->setParentLevelID(dialog->parentLevelID());
-    newLevel->setDatatype(dialog->datatype());
-    newLevel->setDatalength(dialog->datalength());
+    DataType dt = DataType(dialog->datatype());
+    if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
+    newLevel->setDatatype(dt);
 
     // Create level
     if (!obs->corpus()->datastoreAnnotations()->createAnnotationLevel(newLevel))
@@ -401,8 +434,9 @@ void CorpusStructureEditorWidget::addAnnotationStructureAttribute()
     QString attributeID = dialog->attributeID();
     if (attributeID.isEmpty()) return;
     AnnotationStructureAttribute *newAttribute = new AnnotationStructureAttribute(attributeID);
-    newAttribute->setDatatype(dialog->datatype());
-    newAttribute->setDatalength(dialog->datalength());
+    DataType dt = DataType(dialog->datatype());
+    if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
+    newAttribute->setDatatype(dt);
 
     if (!obs->corpus()->datastoreAnnotations()->createAnnotationAttribute(level->ID(), newAttribute))
         return; // failed to create attribute
@@ -474,8 +508,29 @@ void CorpusStructureEditorWidget::exportAnnotationStructure()
     XMLSerialiserAnnotationStructure::write(obs->corpus()->annotationStructure(), filename);
 }
 
-void CorpusStructureEditorWidget::duplicateAnnotationStructureLevel()
+void CorpusStructureEditorWidget::renameAnnotationLevel(const QString &oldID, const QString &newID)
 {
+    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
+    if (!obs) return;
+    if (!obs->corpus()) return;
+    if (!obs->corpus()->datastoreAnnotations()) return;
+    if (obs->corpus()->datastoreAnnotations()->renameAnnotationLevel(oldID, newID)) {
+        obs->corpus()->annotationStructure()->level(oldID)->setID(newID);
+    }
+}
 
+void CorpusStructureEditorWidget::renameAnnotationAttribute(const QString &levelID, const QString &oldID, const QString &newID)
+{
+    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
+    if (!obs) return;
+    if (!obs->corpus()) return;
+    if (!obs->corpus()->datastoreAnnotations()) return;
+    if (obs->corpus()->datastoreAnnotations()->renameAnnotationAttribute(levelID, oldID, newID)) {
+        obs->corpus()->annotationStructure()->level(levelID)->attribute(oldID)->setID(newID);
+    }
+}
+
+void CorpusStructureEditorWidget::cloneAnnotationStructureLevel()
+{
 
 }

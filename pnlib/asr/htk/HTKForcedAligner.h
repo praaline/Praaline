@@ -2,7 +2,7 @@
 #define HTKFORCEDALIGNER_H
 
 #include <QObject>
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "SpeechToken.h"
 
 struct HTKForcedAlignerData;
@@ -14,7 +14,10 @@ public:
     explicit HTKForcedAligner(QObject *parent = 0);
     ~HTKForcedAligner();
 
-    void alignUtterances(QString waveFile, IntervalTier *tier_utterances, IntervalTier *tier_tokens, IntervalTier *tier_phones);
+    void alignUtterances(QString waveFile,
+                         Praaline::Core::IntervalTier *tier_utterances,
+                         Praaline::Core::IntervalTier *tier_tokens,
+                         Praaline::Core::IntervalTier *tier_phones);
 
 signals:
 

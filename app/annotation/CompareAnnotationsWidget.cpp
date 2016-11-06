@@ -5,8 +5,10 @@
 #include "CompareAnnotationsWidget.h"
 #include "ui_CompareAnnotationsWidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
+
 #include "pnlib/diff/diffintervals.h"
 #include "pngui/model/diff/diffsesforintervalstablemodel.h"
 #include "pngui/widgets/checkboxlist.h"

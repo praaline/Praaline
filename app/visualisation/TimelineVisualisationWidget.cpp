@@ -5,7 +5,11 @@
 #include <QString>
 #include <QPair>
 #include <QModelIndex>
-#include "pncore/corpus/corpus.h"
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+using namespace Praaline::Core;
+
 #include "pngui/widgets/corpusitemselectorwidget.h"
 #include "pngui/widgets/timelineeditorconfigwidget.h"
 #include "pngui/widgets/annotationtimelineeditor.h"

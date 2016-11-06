@@ -41,7 +41,7 @@ namespace Structure {
  * Columns are default NULL (as in SQLite, MySQL and PostgreSQL).
  * According to the SQL standard, PRIMARY KEY should always imply NOT NULL.
  * UNIQUE columns can contain several NULL values (as in SQLite, MySQL and PostgreSQL)
- * AutoIncrement is special: every DBMS handles some sort auf auto increment in it's own way.
+ * AutoIncrement is special: every DBMS handles some sort of auto increment in its own way.
  */
 class Column
 {
@@ -50,7 +50,7 @@ public:
         None = 0,
         NotNullable = (1 << 0),
         Unique = (1 << 1),
-        Primary = (1 << 2) | NotNullable | Unique,
+        Primary = (1 << 2) | NotNullable,
         AutoIncrement = (1 << 3)
     };
     typedef QFlags<Attribute> Attributes;

@@ -122,12 +122,12 @@
 #include <cstdio>
 #include <errno.h>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusrecording.h"
-#include "pncore/corpus/corpusannotation.h"
-
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusRecording.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
 
 #include "pngui/model/annotation/AnnotationGridModel.h"
 #include "pngui/model/annotation/ProsogramModel.h"

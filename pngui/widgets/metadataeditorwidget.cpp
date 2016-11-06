@@ -5,7 +5,10 @@
 #include <QDate>
 #include <QGridLayout>
 
-#include "corpus/corpusparticipation.h"
+#include "pncore/corpus/CorpusParticipation.h"
+#include "pncore/corpus/CorpusObject.h"
+#include "pncore/structure/MetadataStructure.h"
+using namespace Praaline::Core;
 
 // Qt property browser
 #include "qtpropertymanager.h"
@@ -67,7 +70,8 @@ MetadataEditorWidget::~MetadataEditorWidget()
 {
 }
 
-void MetadataEditorWidget::addProperty(QtProperty *property, CorpusObject::Type type, const QString &itemID, const QString &attributeID, QtProperty *group)
+void MetadataEditorWidget::addProperty(QtProperty *property, CorpusObject::Type type,
+                                       const QString &itemID, const QString &attributeID, QtProperty *group)
 {
     m_propertyToId[property] = PropertyID(type, itemID, attributeID);
     m_idToProperty[PropertyID(type, itemID, attributeID)] = property;
@@ -119,7 +123,7 @@ QtProperty *MetadataEditorWidget::addProperties(QPointer<MetadataStructure> mstr
         if (i != 0) group = m_groupManager->addProperty(sec->name());
         foreach (QPointer<MetadataStructureAttribute> attr, sec->attributes()) {
             if (!attr) continue;
-            if (attr->datatype() == "datetime") {
+            if (attr->datatype().base() == DataType::DateTime) {
                 property = m_dateManager->addProperty(attr->name());
                 m_dateManager->setValue(property, item->property(attr->ID()).toDate());
                 addProperty(property, item->type(), itemID, QLatin1String(attr->ID().toLatin1()), group);

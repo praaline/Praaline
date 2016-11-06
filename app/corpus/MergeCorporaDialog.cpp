@@ -3,7 +3,8 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 #include "MergeCorporaDialog.h"
 #include "ui_MergeCorporaDialog.h"

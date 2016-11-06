@@ -4,14 +4,14 @@
 #include <QObject>
 #include <QPointer>
 #include <QAbstractTableModel>
-#include "pncore/query/querydefinition.h"
-#include "pncore/query/queryfiltersequence.h"
+#include "pncore/query/QueryDefinition.h"
+#include "pncore/query/QueryFilterSequence.h"
 
 class QueryFilterSequenceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit QueryFilterSequenceTableModel(QueryFilterSequence &filterSequence, QObject *parent = 0);
+    explicit QueryFilterSequenceTableModel(Praaline::Core::QueryFilterSequence &filterSequence, QObject *parent = 0);
     ~QueryFilterSequenceTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;
@@ -26,7 +26,7 @@ signals:
 
 public slots:
 private:
-    QueryFilterSequence &m_filterSequence;
+    Praaline::Core::QueryFilterSequence &m_filterSequence;
 };
 
 #endif // QUERYFILTERSEQUENCETABLEMODEL_H

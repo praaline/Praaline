@@ -4,6 +4,9 @@
 #include <QString>
 #include <QVariant>
 
+namespace Praaline {
+namespace Core {
+
 class StatisticalMeasureDefinition
 {
 public:
@@ -31,5 +34,9 @@ private:
     QString m_description;
     QVariant::Type m_type;
 };
+
+} // namespace Core
+} // namespace Praaline
+
 
 #endif // STATISTICALMEASUREDEFINITION_H

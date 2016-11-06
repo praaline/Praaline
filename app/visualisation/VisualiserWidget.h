@@ -10,11 +10,17 @@ class QScrollArea;
 class KeyReference;
 class ActivityLog;
 
+namespace Praaline {
+namespace Core {
 class CorpusCommunication;
 class CorpusRecording;
-class AnnotationTierModel;
 class IntervalTier;
 class AnnotationTierGroup;
+}
+}
+using namespace Praaline::Core;
+
+class AnnotationTierModel;
 
 class VisualiserWidget : public SimpleVisualiserWidget
 {
@@ -43,7 +49,7 @@ public slots:
 
     void addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                     const QList<QPair<QString, QString> > &attributes);
-    void addProsogramPaneToSession(QPointer<CorpusRecording> rec);
+    void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
     void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
     void exportPDF(const QString &filename);
 

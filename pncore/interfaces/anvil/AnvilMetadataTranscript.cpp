@@ -2,7 +2,10 @@
 #include <QXmlStreamReader>
 #include "AnvilMetadataTranscript.h"
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+
+namespace Praaline {
+namespace Core {
 
 QString AnvilMetadataTranscript::xmlElementName_Location("Location");
 QString AnvilMetadataTranscript::xmlElementName_Contact("Contact");
@@ -285,3 +288,5 @@ bool AnvilMetadataTranscript::save(const QString &filename, Corpus *corpus)
     return false;
 }
 
+} // namespace Core
+} // namespace Praaline

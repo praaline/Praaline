@@ -3,13 +3,13 @@
 
 #include <QObject>
 #include <QAbstractItemModel>
-#include "pncore/query/querydefinition.h"
+#include "pncore/query/QueryDefinition.h"
 
 class QueryDefinitionTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit QueryDefinitionTreeModel(QueryDefinition &definition, QObject *parent = 0);
+    explicit QueryDefinitionTreeModel(Praaline::Core::QueryDefinition &definition, QObject *parent = 0);
     ~QueryDefinitionTreeModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -31,7 +31,7 @@ signals:
 public slots:
 
 private:
-    QueryDefinition &m_definition;
+    Praaline::Core::QueryDefinition &m_definition;
 };
 
 #endif // QUERYDEFINITIONTREEMODEL_H

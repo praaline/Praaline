@@ -13,16 +13,22 @@
 #include "AnnotationGridPointModel.h"
 #include "ProsogramTonalSegmentModel.h"
 
-struct ProsogramModelData;
+namespace Praaline {
+namespace Core {
 class CorpusRecording;
+}
+}
+
 class SparseTimeValueModel;
+
+struct ProsogramModelData;
 
 class ProsogramModel : public Model
 {
     Q_OBJECT
 
 public:
-    ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecording> rec);
+    ProsogramModel(sv_samplerate_t sampleRate, QPointer<Praaline::Core::CorpusRecording> rec);
     virtual ~ProsogramModel();
 
     virtual std::string getType() const { return "ProsogramModel"; }

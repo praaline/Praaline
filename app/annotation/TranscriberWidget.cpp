@@ -18,10 +18,13 @@
 #include "svgui/widgets/CommandHistory.h"
 #include "svapp/framework/Document.h"
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
+
 #include "pngui/widgets/corpusitemselectorwidget.h"
-#include "../visualisation/SimpleVisualiserWidget.h"
 #include "pngui/widgets/annotationtimelineeditor.h"
+
+#include "../visualisation/SimpleVisualiserWidget.h"
 
 #include "TranscriberWidget.h"
 #include "ui_TranscriberWidget.h"

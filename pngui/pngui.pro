@@ -90,21 +90,11 @@ HEADERS += \
     grid/spinboxitemdelegate.h \
     model/checkableproxymodel.h \
     model/delayedexecutiontimer.h \
-    model/corpus/metadatastructuretreemodel.h \
-    model/corpus/annotationstructuretreemodel.h \
-    model/corpus/corpuscommunicationtablemodel.h \
-    model/corpus/corpusspeakertablemodel.h \
-    model/corpus/corpusrecordingtablemodel.h \
-    model/corpus/corpusannotationtablemodel.h \
-    model/corpus/corpusparticipationtablemodel.h \
-    model/corpus/corpusbookmarkmodel.h \
-    model/corpus/corpusexplorertreemodel.h \
     widgets/selectiondialog.h \
     widgets/corpuslevelsattributesselector.h \
     widgets/selectionlistdataproviderproxy.h \
     widgets/metadataeditorwidget.h \
     observers/corpusobserver.h \
-    model/query/queryoccurrencetablemodel.h \
     model/query/queryfiltersequencetablemodel.h \
     model/query/querydefinitiontreemodel.h \
     model/annotation/annotationtiermodel.h \
@@ -168,7 +158,17 @@ HEADERS += \
     xlsx/xlsxabstractsheet.h \
     xlsx/xlsxabstractsheet_p.h \
     xlsx/xlsxabstractooxmlfile.h \
-    xlsx/xlsxabstractooxmlfile_p.h
+    xlsx/xlsxabstractooxmlfile_p.h \
+    model/corpus/CorpusCommunicationTableModel.h \
+    model/corpus/AnnotationStructureTreeModel.h \
+    model/corpus/CorpusAnnotationTableModel.h \
+    model/corpus/CorpusBookmarkModel.h \
+    model/corpus/CorpusExplorerTreeModel.h \
+    model/corpus/CorpusParticipationTableModel.h \
+    model/corpus/CorpusRecordingTableModel.h \
+    model/corpus/CorpusSpeakerTableModel.h \
+    model/corpus/MetadataStructureTreeModel.h \
+    model/query/QueryOccurrenceTableModel.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -209,21 +209,11 @@ SOURCES += \
     grid/spinboxitemdelegate.cpp \
     model/checkableproxymodel.cpp \
     model/delayedexecutiontimer.cpp \
-    model/corpus/metadatastructuretreemodel.cpp \
-    model/corpus/annotationstructuretreemodel.cpp \
-    model/corpus/corpuscommunicationtablemodel.cpp \
-    model/corpus/corpusspeakertablemodel.cpp \
-    model/corpus/corpusrecordingtablemodel.cpp \
-    model/corpus/corpusannotationtablemodel.cpp \
-    model/corpus/corpusparticipationtablemodel.cpp \
-    model/corpus/corpusbookmarkmodel.cpp \
-    model/corpus/corpusexplorertreemodel.cpp \
     widgets/selectiondialog.cpp \
     widgets/corpuslevelsattributesselector.cpp \
     widgets/selectionlistdataproviderproxy.cpp \
     widgets/metadataeditorwidget.cpp \
     observers/corpusobserver.cpp \
-    model/query/queryoccurrencetablemodel.cpp \
     model/query/queryfiltersequencetablemodel.cpp \
     model/query/querydefinitiontreemodel.cpp \
     model/annotation/annotationtiermodel.cpp \
@@ -272,4 +262,14 @@ SOURCES += \
     xlsx/xlsxcellformula.cpp \
     xlsx/xlsxcell.cpp \
     xlsx/xlsxabstractsheet.cpp \
-    xlsx/xlsxabstractooxmlfile.cpp
+    xlsx/xlsxabstractooxmlfile.cpp \
+    model/corpus/CorpusCommunicationTableModel.cpp \
+    model/corpus/AnnotationStructureTreeModel.cpp \
+    model/corpus/CorpusAnnotationTableModel.cpp \
+    model/corpus/CorpusBookmarkModel.cpp \
+    model/corpus/CorpusExplorerTreeModel.cpp \
+    model/corpus/CorpusParticipationTableModel.cpp \
+    model/corpus/CorpusRecordingTableModel.cpp \
+    model/corpus/CorpusSpeakerTableModel.cpp \
+    model/corpus/MetadataStructureTreeModel.cpp \
+    model/query/QueryOccurrenceTableModel.cpp

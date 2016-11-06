@@ -11,11 +11,12 @@
 #include "corpusitemselectorwidget.h"
 #include "ui_corpusitemselectorwidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+using namespace Praaline::Core;
 
 #include "pngui/observers/corpusobserver.h"
-#include "pngui/model/corpus/corpusbookmarkmodel.h"
+#include "pngui/model/corpus/CorpusBookmarkModel.h"
 
 struct CorpusItemSelectorWidgetData {
     CorpusItemSelectorWidgetData() :

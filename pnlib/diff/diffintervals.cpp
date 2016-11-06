@@ -1,9 +1,10 @@
 #include <QString>
 #include <QList>
 #include <QVector>
-#include "pncore/annotation/interval.h"
+#include "pncore/annotation/Interval.h"
 #include "dtl.h"
 using namespace std;
+using namespace Praaline::Core;
 using dtl::Diff;
 
 #include "diffintervals.h"

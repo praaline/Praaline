@@ -3,7 +3,10 @@
 
 #include <QString>
 #include <QMap>
-class AnnotationTierGroup;
+#include <QPointer>
+
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
 
 class CorpusImporter
 {

@@ -2,6 +2,10 @@
 #include <QStringList>
 #include <QProcess>
 #include <QCoreApplication>
+
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
+
 #include "AudioSegmenter.h"
 
 // Audio Segmenter

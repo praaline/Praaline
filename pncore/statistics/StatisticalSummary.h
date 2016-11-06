@@ -17,6 +17,9 @@
 #include "pncore_global.h"
 #include <QMap>
 
+namespace Praaline {
+namespace Core {
+
 class PRAALINE_CORE_SHARED_EXPORT StatisticalSummary
 {
 public:
@@ -90,5 +93,8 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(StatisticalSummary::Statistics)
+
+} // namespace Core
+} // namespace Praaline
 
 #endif // STATISTICALSUMMARY_H

@@ -19,6 +19,9 @@
 #include <QString>
 #include <QObject>
 
+namespace Praaline {
+namespace Core {
+
 StatisticalSummary::StatisticalSummary(const Statistics& stats)
     : m_statistics(stats)
 {
@@ -237,3 +240,5 @@ QString StatisticalSummary::displayName(StatisticalSummary::Statistic statistic)
     return QString();
 }
 
+} // namespace Core
+} // namespace Praaline

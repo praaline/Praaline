@@ -8,8 +8,9 @@
 #include <QPair>
 #include <QMultiHash>
 #include "ImportAnnotations.h"
-#include "pncore/corpus/corpus.h"
 
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class ImportCorpusItemsWizardFinalPage;

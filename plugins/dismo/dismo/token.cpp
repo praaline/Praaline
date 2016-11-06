@@ -14,7 +14,7 @@
 
 #include <QString>
 #include <QList>
-#include "annotation/interval.h"
+#include "annotation/Interval.h"
 #include "tokenunit.h"
 #include "token.h"
 using namespace DisMoAnnotator;

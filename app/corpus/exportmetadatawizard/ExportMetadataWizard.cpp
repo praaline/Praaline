@@ -1,7 +1,7 @@
 #include "ExportMetadataWizard.h"
 #include "ui_ExportMetadataWizard.h"
 
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 
 struct ExportMetadataWizardData {
     ExportMetadataWizardData() : corpus(0) {}

@@ -18,10 +18,15 @@
 #include "grid/qtextfilter.h"
 #include "grid/qvaluefilter.h"
 
-#include "pngui/model/corpus/corpuscommunicationtablemodel.h"
-#include "pngui/model/corpus/corpusspeakertablemodel.h"
-#include "pngui/model/corpus/corpusrecordingtablemodel.h"
-#include "pngui/model/corpus/corpusannotationtablemodel.h"
+#include "pncore/corpus/CorpusObject.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+using namespace Praaline::Core;
+
+#include "pngui/model/corpus/CorpusCommunicationTableModel.h"
+#include "pngui/model/corpus/CorpusSpeakerTableModel.h"
+#include "pngui/model/corpus/CorpusRecordingTableModel.h"
+#include "pngui/model/corpus/CorpusAnnotationTableModel.h"
 #include "pngui/widgets/selectionlistdataproviderproxy.h"
 #include "pngui/widgets/gridviewwidget.h"
 

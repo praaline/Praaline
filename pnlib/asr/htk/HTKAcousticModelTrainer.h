@@ -2,8 +2,8 @@
 #define HTKACOUSTICMODELTRAINER_H
 
 #include <QObject>
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
 
 struct HTKAcousticModelTrainerData;
 
@@ -19,14 +19,14 @@ signals:
 public slots:
 
 private:
-    bool createMasterLabelFileFromTokensAndPhones(const QString &filename, Corpus *trainingCorpus,
-                                                  QList<QPointer<CorpusCommunication> > trainingCommunications,
+    bool createMasterLabelFileFromTokensAndPhones(const QString &filename, Praaline::Core::Corpus *trainingCorpus,
+                                                  QList<QPointer<Praaline::Core::CorpusCommunication> > trainingCommunications,
                                                   const QString &levelSegment, const QString &levelToken, const QString &levelPhone);
-    bool createMasterLabelFileFromTokens(const QString &filename, Corpus *trainingCorpus,
-                                         QList<QPointer<CorpusCommunication> > trainingCommunications,
+    bool createMasterLabelFileFromTokens(const QString &filename, Praaline::Core::Corpus *trainingCorpus,
+                                         QList<QPointer<Praaline::Core::CorpusCommunication> > trainingCommunications,
                                          const QString &levelSegment, const QString &levelToken, const QString &attributePhonetisation);
-    bool createMLF(const QString &filename, Corpus *trainingCorpus,
-                   QList<QPointer<CorpusCommunication> > trainingCommunications,
+    bool createMLF(const QString &filename, Praaline::Core::Corpus *trainingCorpus,
+                   QList<QPointer<Praaline::Core::CorpusCommunication> > trainingCommunications,
                    const QString &levelSegment, const QString &levelToken, const QString &levelPhone,
                    const QString &attributePhonetisation);
 

@@ -1,7 +1,7 @@
 #include <QTemporaryDir>
 #include <QFileInfo>
 #include "prosoboxscript.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 ProsoboxScript::ProsoboxScript(QObject *parent) : AnnotationPluginPraatScript(parent)
 {

@@ -6,7 +6,7 @@
 #include <QSet>
 #include <QMultiHash>
 #include <QStandardItemModel>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "ImportCorpusItemsWizardAnalysePage.h"
 #include "ImportAnnotations.h"
 

@@ -6,12 +6,18 @@
 #include <QString>
 #include <QList>
 #include <QStandardItemModel>
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
 
-struct AnalyserPitchData;
+namespace Praaline {
+namespace Core {
 class Corpus;
 class CorpusCommunication;
 class Interval;
+class IntervalTier;
+class StatisticalMeasureDefinition;
+}
+}
+
+struct AnalyserPitchData;
 
 class AnalyserPitch : public QObject
 {
@@ -22,15 +28,15 @@ public:
 
     static QList<QString> groupingLevels();
     static QList<QString> measureIDs(const QString &groupingLevel);
-    static StatisticalMeasureDefinition measureDefinition(const QString &groupingLevel, const QString &measureID);
+    static Praaline::Core::StatisticalMeasureDefinition measureDefinition(const QString &groupingLevel, const QString &measureID);
 
     double measure(const QString &groupingLevel, const QString &key, const QString &measureID) const;
 
     QPointer<QStandardItemModel> model();
 
-    QString calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
-    QString calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID,
-                      const QList<Interval *> &units = QList<Interval *>());
+    QString calculate(QPointer<Praaline::Core::Corpus> corpus, QPointer<Praaline::Core::CorpusCommunication> com);
+    QString calculate(QPointer<Praaline::Core::Corpus> corpus, const QString &communicationID, const QString &annotationID,
+                      const QList<Praaline::Core::Interval *> &units = QList<Praaline::Core::Interval *>());
 
 
 signals:

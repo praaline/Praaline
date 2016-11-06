@@ -5,7 +5,8 @@
 #include <QPointer>
 #include <QStringList>
 #include <QStandardItemModel>
-#include "pncore/structure/metadatastructure.h"
+#include "pncore/structure/MetadataStructure.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class CorpusExplorerOptionsDialog;

@@ -4,10 +4,10 @@
 #include <QString>
 #include <QList>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/annotationtiergroup.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "prosodicboundaries.h"
 #include "ProsodyCourse.h"

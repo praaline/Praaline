@@ -8,13 +8,13 @@
 #include <QMutex>
 #include <QCoreApplication>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusannotation.h"
-#include "pncore/annotation/annotationtiergroup.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/annotation/interval.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/Interval.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
 #include "EasyAlignBasic.h"

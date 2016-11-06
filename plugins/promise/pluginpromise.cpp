@@ -9,15 +9,15 @@
 #include <QTextStream>
 
 #include "pluginpromise.h"
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "pluginpromisefeatures.h"
 #include "pluginprosobox5.h"
 #include "pluginpromisefeatures.h"
 
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
-#include "pncore/corpus/corpusbookmark.h"
-#include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
+#include "pncore/corpus/CorpusBookmark.h"
+#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;

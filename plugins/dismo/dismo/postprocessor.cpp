@@ -14,7 +14,7 @@
 
 #include <QString>
 #include <QStringList>
-#include "annotation/intervaltier.h"
+#include "annotation/IntervalTier.h"
 #include "token.h"
 #include "tokenlist.h"
 #include "postprocessor.h"

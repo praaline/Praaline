@@ -4,6 +4,9 @@
 #include <QString>
 #include "pncore/base/RealTime.h"
 
+//namespace Praaline {
+//namespace Lib {
+
 class SpeechToken
 {
 public:
@@ -28,5 +31,8 @@ public:
     double scoreAM;
     QString token;
 };
+
+//} // namespace Lib
+//} // namespace Praaline
 
 #endif // SPEECHTOKEN_H

@@ -4,7 +4,7 @@
 #include <QSet>
 #include <QPointer>
 #include <QDebug>
-#include "pncore/corpus/corpusbookmark.h"
+#include "pncore/corpus/CorpusBookmark.h"
 
 #include "disfluencypatterndetector.h"
 

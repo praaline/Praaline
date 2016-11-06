@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QPointer>
-class Corpus;
-class CorpusCommunication;
+
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 struct LongSoundAlignerData;
 

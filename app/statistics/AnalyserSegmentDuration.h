@@ -7,8 +7,13 @@
 #include "pncore/base/RealTime.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 
+namespace Praaline {
+namespace Core {
 class Interval;
 class IntervalTier;
+}
+}
+using namespace Praaline::Core;
 
 struct AnalyserSegmentDurationData;
 

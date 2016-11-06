@@ -5,8 +5,8 @@
 #include <QList>
 
 #include "annotationpluginpraatscript.h"
-#include "pncore/corpus/corpus.h"
-
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 class MBROLAFileManager : public AnnotationPluginPraatScript
 {

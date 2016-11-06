@@ -3,10 +3,12 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/annotation/annotationtiergroup.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
+
+using namespace Praaline::Core;
 
 #include "HTKAcousticModelTrainer.h"
 

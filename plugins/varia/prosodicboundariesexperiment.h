@@ -3,12 +3,10 @@
 
 #include <QString>
 #include <QPointer>
-class Interval;
-class IntervalTier;
-class CorpusAnnotation;
-class CorpusCommunication;
-class Corpus;
 
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 class PBExpe
 {

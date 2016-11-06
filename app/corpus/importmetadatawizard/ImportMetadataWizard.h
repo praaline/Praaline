@@ -7,7 +7,9 @@
 #include <QStandardItemModel>
 #include <QItemSelection>
 #include <QLineEdit>
-#include "pncore/corpus/corpus.h"
+
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class ImportMetadataWizard;

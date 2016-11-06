@@ -2,7 +2,7 @@
 #define AUTOMATICANNOTATIONWIDGET_H
 
 #include <QMainWindow>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "IAnnotationPlugin.h"
 using namespace Praaline::Plugins;
 

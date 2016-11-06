@@ -46,10 +46,7 @@ QString BaseSqlColumnService::buildColumnTypeSql(const Column &column) const
 void BaseSqlColumnService::buildColumnOptionsSql(const Column &column,
                                                  const BaseSqlColumnService::StringOutputFunction &addOption) const
 {
-    if (column.isPrimary()) {
-        addOption("PRIMARY KEY");
-    }
-    else if (!column.isNullable()) {
+    if (!column.isNullable()) {
         addOption("NOT NULL");
     }
     if (column.isUnique()) {
@@ -73,10 +70,16 @@ QString BaseSqlColumnService::generateColumnDefinitionSql(const Column &column) 
 QString BaseSqlColumnService::generateColumnsDefinitionSql(const QList<Column> &columnList) const
 {
     QStringList sqlColumnDefinitions;
+    QStringList sqlPrimaryKey;
     foreach (Column column, columnList) {
         sqlColumnDefinitions << generateColumnDefinitionSql(column);
+        if (column.isPrimary()) sqlPrimaryKey << column.name();
     }
-    return sqlColumnDefinitions.join(", ");
+    QString ret = sqlColumnDefinitions.join(", ");
+    if (!sqlPrimaryKey.isEmpty()) {
+        ret = ret.append(", PRIMARY KEY (").append(sqlPrimaryKey.join(", ").append(")"));
+    }
+    return ret;
 }
 
 QString BaseSqlColumnService::generateIndexColumnDefinitionSql(const Index::Column& column) const

@@ -2,7 +2,8 @@
 #define SVBRIDGE_H
 
 #include <QString>
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
 
 class SVBridge
 {

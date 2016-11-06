@@ -7,12 +7,13 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
+using namespace Praaline::Core;
 
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "AnalyserTemporal.h"
 

@@ -10,9 +10,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include "pluginpromisefeatures.h"
-#include "annotation/annotationtiergroup.h"
+#include "annotation/AnnotationTierGroup.h"
 
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 PluginProminenceFeatures::PluginProminenceFeatures(QObject *parent) :
     QObject(parent)

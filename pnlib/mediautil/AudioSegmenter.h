@@ -3,16 +3,22 @@
 
 #include <QString>
 #include <QList>
-#include "pncore/annotation/interval.h"
+
+namespace Praaline {
+namespace Core {
+    class Interval;
+}
+}
 
 class AudioSegmenter
 {
 public:
     static bool segment(const QString &filenameIn, const QString &pathOut,
-                        QList<Interval *> segments, const QString &attribute = QString(),
+                        QList<Praaline::Core::Interval *> segments, const QString &attribute = QString(),
                         uint newSamplingRate = 0, bool normalise = false, int channels = 1);
+
     static QList<QStringList> script(const QString &filenameIn, const QString &pathOut,
-                                     QList<Interval *> segments, const QString &attribute = QString(),
+                                     QList<Praaline::Core::Interval *> segments, const QString &attribute = QString(),
                                      uint newSamplingRate = 0, bool normalise = false, int channels = 1);
 private:
     AudioSegmenter() {}

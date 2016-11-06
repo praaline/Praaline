@@ -11,8 +11,13 @@ class QScrollArea;
 class KeyReference;
 class ActivityLog;
 
+namespace Praaline {
+namespace Core {
 class CorpusCommunication;
 class CorpusRecording;
+}
+}
+using namespace Praaline::Core;
 
 class SimpleVisualiserWidget : public VisualiserWindowBase
 {

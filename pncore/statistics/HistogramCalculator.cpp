@@ -8,10 +8,12 @@
 // (at your option) any later version.
 
 #include <qmath.h>
-#include "annotation/annotationtier.h"
+#include "annotation/AnnotationTier.h"
 #include "StatisticalSummary.h"
 #include "HistogramCalculator.h"
 
+namespace Praaline {
+namespace Core {
 
 HistogramCalculator::HistogramCalculator()
     : m_max(0), m_min(0), m_IQR(0)
@@ -88,4 +90,5 @@ QList<int> HistogramCalculator::counts(int bins) const
     return binCounts;
 }
 
-
+} // namespace Core
+} // namespace Praaline

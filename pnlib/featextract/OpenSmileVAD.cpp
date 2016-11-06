@@ -7,9 +7,12 @@
 #include <QCoreApplication>
 #include <QFile>
 #include <QTemporaryFile>
+
 #include "pncore/base/RealTime.h"
-#include "pncore/corpus/corpusrecording.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/CorpusRecording.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
+
 #include "OpenSmileVAD.h"
 
 OpenSmileVAD::OpenSmileVAD(QObject *parent) : QObject(parent)

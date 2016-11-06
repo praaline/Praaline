@@ -4,10 +4,10 @@
 #include <QString>
 #include <QPair>
 #include <QTextStream>
-#include "pncore/corpus/corpus.h"
 
-class Inteval;
-class IntervalTier;
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
 
 class ProsodicBoundaries
 {

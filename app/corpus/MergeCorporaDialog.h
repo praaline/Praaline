@@ -4,7 +4,11 @@
 #include <QString>
 #include <QDialog>
 
+namespace Praaline {
+namespace Core {
 class Corpus;
+}
+}
 
 namespace Ui {
 class MergeCorporaDialog;
@@ -27,7 +31,7 @@ private slots:
     void mergeCorpora();
 
 private:
-    Corpus *openCorpusFile(const QString &filename);
+    Praaline::Core::Corpus *openCorpusFile(const QString &filename);
 
     Ui::MergeCorporaDialog *ui;
     MergeCorporaDialogData *d;

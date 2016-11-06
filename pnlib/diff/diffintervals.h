@@ -2,12 +2,12 @@
 #define DIFFINTERVALS_H
 
 #include <QString>
-#include "pncore/annotation/interval.h"
+#include "pncore/annotation/Interval.h"
 #include "dtl.h"
 using namespace std;
 using dtl::Diff;
 
-class CompareInterval : dtl::Compare<Interval *>
+class CompareInterval : dtl::Compare<Praaline::Core::Interval *>
 {
 public:
     CompareInterval(bool compareBoundaries, const QString &attributeID_A, const QString &attributeID_B) :
@@ -19,7 +19,7 @@ public:
     QString attributeID_A() const { return m_attributeID_A; }
     QString attributeID_B() const { return m_attributeID_B; }
 
-    virtual inline bool impl (Interval *e1, Interval *e2) const {
+    virtual inline bool impl (Praaline::Core::Interval *e1, Praaline::Core::Interval *e2) const {
         bool ret;
         ret = (m_compareBoundaries) ? (e1->tMin() == e2->tMin() && e1->tMax() == e2->tMax()) : true;
         if (m_attributeID_A.isEmpty() && m_attributeID_B.isEmpty())
@@ -45,13 +45,14 @@ public:
     DiffIntervals();
     ~DiffIntervals();
 
-    static Diff<string> stringDiff(QList<Interval *> listA, QList<Interval *> listB,
+    static Diff<string> stringDiff(QList<Praaline::Core::Interval *> listA, QList<Praaline::Core::Interval *> listB,
                                    QString attributeID_A = QString(), QString attributeID_B = QString());
-    static Diff<Interval *, vector<Interval *>, CompareInterval>
-    intervalDiff(QList<Interval *> listA, QList<Interval *> listB, bool compareBoundaries = false,
+    static Diff<Praaline::Core::Interval *, vector<Praaline::Core::Interval *>, CompareInterval>
+    intervalDiff(QList<Praaline::Core::Interval *> listA, QList<Praaline::Core::Interval *> listB,
+                 bool compareBoundaries = false,
                  QString attributeID_A = QString(), QString attributeID_B = QString());
 
-    static QString diffTable(Diff<Interval *, vector<Interval *>, CompareInterval> &diff);
+    static QString diffTable(Diff<Praaline::Core::Interval *, vector<Praaline::Core::Interval *>, CompareInterval> &diff);
 };
 
 #endif // DIFFINTERVALS_H

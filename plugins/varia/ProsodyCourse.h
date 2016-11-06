@@ -6,8 +6,8 @@
 #include <QString>
 #include <QList>
 
-class Corpus;
-class CorpusCommunication;
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 class ProsodyCourse
 {

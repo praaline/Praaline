@@ -8,11 +8,11 @@
 #include <QDebug>
 #include "NewCorpusWizard.h"
 #include "ui_NewCorpusWizard.h"
-#include "pncore/serialisers/datastoreinfo.h"
-#include "pncore/structure/metadatastructure.h"
-#include "pncore/structure/annotationstructure.h"
-#include "pncore/serialisers/xml/xmlserialisermetadatastructure.h"
-#include "pncore/serialisers/xml/xmlserialiserannotationstructure.h"
+#include "pncore/serialisers/DatastoreInfo.h"
+#include "pncore/structure/MetadataStructure.h"
+#include "pncore/structure/AnnotationStructure.h"
+#include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
+#include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
 
 struct NewCorpusWizardData {
     NewCorpusWizardData() : newCorpus(0), modelMetadataTemplates(0), modelAnnotationTemplates(0)

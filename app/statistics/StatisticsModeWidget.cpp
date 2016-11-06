@@ -15,8 +15,11 @@
 #include "AnalyserTemporal.h"
 #include "AnalyserPitch.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/annotationtier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/AnnotationTier.h"
+#include "pncore/structure/MetadataStructure.h"
+using namespace Praaline::Core;
+
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/widgets/gridviewwidget.h"
 #include "CorporaManager.h"

@@ -2,7 +2,8 @@
 #include <QObject>
 #include <QList>
 #include <QAbstractTableModel>
-#include "pncore/annotation/interval.h"
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
 using namespace std;
 #include "pnlib/diff/dtl.h"
 using namespace dtl;

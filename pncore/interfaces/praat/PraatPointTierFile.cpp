@@ -5,12 +5,14 @@
 #include <QFile>
 #include <QTextStream>
 #include <QRegularExpression>
-#include "annotation/annotationtier.h"
-#include "annotation/pointtier.h"
-#include "annotation/point.h"
-#include "praattextfile.h"
+#include "annotation/AnnotationTier.h"
+#include "annotation/PointTier.h"
+#include "annotation/Point.h"
+#include "PraatTextFile.h"
 #include "PraatPointTierFile.h"
 
+namespace Praaline {
+namespace Core {
 
 bool PraatPointTierFile::readPoint(bool isShortFile, QTextStream &stream, QString &line,
                                    double &timePoint, double &value)
@@ -106,3 +108,5 @@ bool PraatPointTierFile::save(const QString &filename, const QString &praatObjec
     return true;
 }
 
+} // namespace Core
+} // namespace Praaline

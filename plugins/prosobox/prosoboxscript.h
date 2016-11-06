@@ -5,10 +5,13 @@
 #include <QPointer>
 #include <QString>
 #include <QStringList>
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusannotation.h"
-#include "pncore/annotation/annotationtiergroup.h"
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
+
 #include "annotationpluginpraatscript.h"
 
 class ProsoboxScript : public AnnotationPluginPraatScript

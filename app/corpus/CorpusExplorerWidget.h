@@ -2,6 +2,10 @@
 #define CORPUSEXPLORERWIDGET_H
 
 #include <QWidget>
+
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
+
 #include "pngui/observers/corpusobserver.h"
 
 namespace Ui {

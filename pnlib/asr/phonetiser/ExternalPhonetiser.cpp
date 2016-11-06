@@ -7,6 +7,8 @@
 
 #include "SpeechToken.h"
 #include "ExternalPhonetiser.h"
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
 
 class PUtterance {
 public:

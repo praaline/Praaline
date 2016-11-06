@@ -2,7 +2,8 @@
 #define NEWCORPUSWIZARD_H
 
 #include <QWizard>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class NewCorpusWizard;

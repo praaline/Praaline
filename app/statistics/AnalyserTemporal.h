@@ -7,9 +7,15 @@
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 
 struct AnalyserTemporalData;
+
+namespace Praaline {
+namespace Core {
 class Corpus;
 class CorpusCommunication;
 class IntervalTier;
+}
+}
+using namespace Praaline::Core;
 
 class AnalyserTemporal : public QObject
 {

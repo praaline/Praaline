@@ -49,7 +49,8 @@ const QString &BaseSqlCreateTableService::commandType() const
 bool BaseSqlCreateTableService::execute(const Commands::CreateTable &createTable,
                                         const CommandExecutionContext &context)
 {
-    const QString columnDefinition = context.helperRepository().columnService().generateColumnsDefinitionSql(createTable.table().columns());
+    const QString columnDefinition = context.helperRepository().columnService()
+            .generateColumnsDefinitionSql(createTable.table().columns());
     const QString createQuery =
             QString("CREATE TABLE %1 (%2)")
             .arg(context.helperRepository().quoteService().quoteTableName(createTable.table().name()))

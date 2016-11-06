@@ -19,8 +19,8 @@
 #include <QList>
 #include <QTextStream>
 // Praaline.Core
-#include "annotation/annotationtiergroup.h"
-#include "annotation/intervaltier.h"
+#include "annotation/AnnotationTierGroup.h"
+#include "annotation/IntervalTier.h"
 // DisMo
 #include "token.h"
 

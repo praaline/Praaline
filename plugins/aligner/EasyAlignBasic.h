@@ -3,8 +3,11 @@
 
 #include <QObject>
 #include <QString>
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/annotation/annotationtiergroup.h"
+
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
+
 #include "annotationpluginpraatscript.h"
 
 class EasyAlignBasic : public AnnotationPluginPraatScript

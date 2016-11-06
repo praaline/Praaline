@@ -9,12 +9,17 @@ namespace Ui {
 class TranscriberWidget;
 }
 
-struct TranscriberWidgetData;
-
+namespace Praaline {
+namespace Core {
 class Corpus;
 class CorpusCommunication;
 class CorpusRecording;
 class CorpusAnnotation;
+}
+}
+using namespace Praaline::Core;
+
+struct TranscriberWidgetData;
 
 class TranscriberWidget : public SimpleVisualiserWidget
 {
@@ -27,10 +32,14 @@ public:
 protected slots:
     virtual void newSession();
     void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>);
-    void selectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
-    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>, RealTime);
+    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                                 QPointer<CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                                  QPointer<CorpusAnnotation>);
+    void selectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                          QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
+    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                              QPointer<CorpusAnnotation>, RealTime);
 
 
 private:

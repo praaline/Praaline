@@ -18,8 +18,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
-#include "annotation/intervaltier.h"
-#include "annotation/annotationtiergroup.h"
+#include "annotation/IntervalTier.h"
+#include "annotation/AnnotationTierGroup.h"
 #include "tokenlist.h"
 using namespace DisMoAnnotator;
 

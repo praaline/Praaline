@@ -6,10 +6,10 @@
 #include <ExtensionSystemConstants>
 
 #include "plugindisfluencyanalyser.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpusbookmark.h"
-#include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusBookmark.h"
+#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "disfluency.h"
 #include "disfluencyanalysertool.h"

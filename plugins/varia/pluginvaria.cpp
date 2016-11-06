@@ -13,7 +13,7 @@
 
 #include "chunkannotator.h"
 #include "svbridge.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
 

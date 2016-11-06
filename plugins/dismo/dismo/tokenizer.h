@@ -20,8 +20,8 @@
 #include <QStringList>
 #include <QHash>
 // Praaline.Core
-#include "annotation/interval.h"
-#include "annotation/intervaltier.h"
+#include "annotation/Interval.h"
+#include "annotation/IntervalTier.h"
 // DisMo
 #include "token.h"
 #include "tokenunit.h"

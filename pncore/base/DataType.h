@@ -18,37 +18,31 @@ public:
      */
     enum Base {
         Invalid,
-        Char,                       //!< precision is length (defaults to 1)
-        VarChar,                    //!< precision is maximum length (defaults to 255)
-        String = VarChar,
-        Binary,                     //!< precision represents length in bytes (required)
-        VarBinary,                  //!< precision represents maximum bytes
-        ByteArray = VarBinary,      //!< Alias vor VarBinary
+        Char,               //!< precision is length (defaults to 1)
+        VarChar,            //!< precision is maximum length (defaults to 255)
+        Binary,             //!< precision represents length in bytes (required)
+        VarBinary,          //!< precision represents maximum bytes
         Boolean,
-        SmallInt,                   //!< precision is 5
-        Integer,                    //!< precision defaults to 10
-        BigInt,                     //!< precision is 19
-        Decimal,                    //!< precision and scale required (total digits, digits after comma)
-        Numeric = Decimal,          //!< Alias for Decimal
+        SmallInt,           //!< precision is 5
+        Integer,            //!< precision defaults to 10
+        BigInt,             //!< precision is 19
+        Decimal,            //!< precision and scale required (total digits, digits after comma)
         Float,
-        DoublePrecision,
-        Double = DoublePrecision,   //!< Alias for Double Precision
+        Double,
         Date,
         Time,
-        Timestamp,
-        DateTime = Timestamp,       //!< Alias for Timestamp
+        DateTime,
         Interval,
         Array,
         Multiset,
-        Xml,
-        Custom = 100, //!< Custom Types start here (the database adapter has to be able to convert this)
+        Xml
     };
 
     /*!
      * \brief Construct the type from
      * \param string the string representation of an sql type
      */
-    DataType(const QString& string);
+    DataType(const QString &string);
 
     /*!
      * \brief Constructs the type
@@ -58,14 +52,8 @@ public:
      */
     DataType(Base base, quint64 precision = 0, int scale = 0);
 
-    //! \return true, if the string based type is used
-    bool isString() const;
-
-    //! \return true, if the base type is used
-    bool isBaseType() const;
-
-    //! \return the string representation of the sql type (if string form is used)
-    const QString& string() const;
+    //! \return the string representation of the data type
+    const QString string() const;
 
     //! \return the base type (if base form is used)
     Base base() const;
@@ -86,7 +74,6 @@ private:
     Base m_base;
     quint64 m_precision;
     int m_scale;
-    QString m_string;
 };
 
 } // namespace Core

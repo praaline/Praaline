@@ -3,7 +3,7 @@
 
 #include <QStandardItemModel>
 #include "pngui/model/checkableproxymodel.h"
-#include "pngui/model/corpus/annotationstructuretreemodel.h"
+#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 
 struct ExportAnnotationsWizardPraatPageData {
     ExportAnnotationsWizardPraatPageData () :

@@ -8,9 +8,10 @@
 #include <QPair>
 #include <QTextStream>
 #include "pncore/base/RealValueList.h"
-#include "pncore/annotation/interval.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/annotation/annotationtiergroup.h"
+#include "pncore/annotation/Interval.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
 
 class PluginProminenceFeatures : public QObject
 {

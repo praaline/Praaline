@@ -3,7 +3,8 @@
 
 #include <QWizard>
 #include <QPointer>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class ImportCorpusItemsWizard;

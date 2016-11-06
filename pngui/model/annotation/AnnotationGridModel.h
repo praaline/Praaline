@@ -36,7 +36,7 @@ public:
     };
 
     AnnotationGridModel(sv_samplerate_t sampleRate,
-                        QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                        QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
                         const QList<QPair<QString, QString> > &attributes);
     virtual ~AnnotationGridModel();
 

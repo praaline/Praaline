@@ -11,10 +11,11 @@
 #include "dismo/dismoannotator.h"
 #include "dismo/dismotrainer.h"
 #include "serialisers/dismoserialisersql.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
+using namespace Praaline::Core;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::DisMo::PluginDisMoPrivateData {
@@ -136,10 +137,12 @@ void Praaline::Plugins::DisMo::PluginDisMo::setParameters(QHash<QString, QVarian
 
 void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QString &prefix,
                      const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                     const QString &datatype = "varchar", int datalength = 256, bool indexed = false, const QString &nameValueList = QString())
+                     const DataType &datatype = DataType(DataType::VarChar, 255),
+                     bool indexed = false, const QString &nameValueList = QString())
 {
     if (level->hasAttribute(ID)) return;
-    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype, datalength, indexed, nameValueList);
+    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
+                                                                          indexed, nameValueList);
     if (corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr))
         level->addAttribute(attr);
 }
@@ -156,12 +159,12 @@ void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpu
         corpus->annotationStructure()->addLevel(level_tok_min);
     }
     // Create tok_min attributes where necessary
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_min", "Part-of-Speech (min)", "", "varchar", 32);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "disfluency", "Disfluency", "", "varchar", 32);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "lemma_min", "Lemma (min)", "", "varchar", 256);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_ext_min", "POS extended (min)", "", "varchar", 32);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", "double", 0);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_method", "DisMo method", "", "varchar", 64);
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_min", "Part-of-Speech (min)", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "disfluency", "Disfluency", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "lemma_min", "Lemma (min)", "", DataType(DataType::VarChar, 256));
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_ext_min", "POS extended (min)", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
+    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
     // If needed, create tok_mwu level
     AnnotationStructureLevel *level_tok_mwu = corpus->annotationStructure()->level(d->levelTokMWU);
     if (!level_tok_mwu) {
@@ -170,12 +173,12 @@ void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpu
         corpus->annotationStructure()->addLevel(level_tok_mwu);
     }
     // Create tok_mwu attributes where necessary
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_mwu", "Part-of-Speech (MWU)", "", "varchar", 32);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "discourse", "Discourse", "", "varchar", 32);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "lemma_mwu", "Lemma (MWU)", "", "varchar", 256);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_ext_mwu", "POS extended (MWU)", "", "varchar", 32);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", "double", 0);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_method", "DisMo method", "", "varchar", 64);
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_mwu", "Part-of-Speech (MWU)", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "discourse", "Discourse", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "lemma_mwu", "Lemma (MWU)", "", DataType(DataType::VarChar, 256));
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_ext_mwu", "POS extended (MWU)", "", DataType(DataType::VarChar, 32));
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
+    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
     // Save corpus
     corpus->save();
 }

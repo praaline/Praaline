@@ -56,11 +56,13 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command,
     Structure::Table table( context.helperRepository().sqlStructureService().getTableDefinition(dropColumn->tableName(), context.database()) );
     Structure::Table::Builder alteredTable(dropColumn->tableName());
     const Structure::Column* originalColumn = Q_NULLPTR;
+    QStringList alteredTableColumnNames;
     foreach (const Structure::Column &column, table.columns()) {
         if (column.name() == dropColumn->columnName()) {
             originalColumn = &column;
         } else {
             alteredTable << column;
+            alteredTableColumnNames << column.name();
         }
     }
     if (!originalColumn) {
@@ -81,7 +83,7 @@ bool SqliteDropColumnService::execute(const Commands::ConstCommandPtr &command,
     const QString copyQuery =
             QString("INSERT INTO %1 SELECT %2 FROM %3")
             .arg(table.name())
-            .arg(table.columnNames().join(", "))
+            .arg(alteredTableColumnNames.join(", "))
             .arg(tempTableName);
     success = CommandExecution::BaseCommandExecutionService::executeQuery(copyQuery, context);
     if (!success)

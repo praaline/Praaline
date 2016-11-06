@@ -19,8 +19,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
-#include "interfaces/praat/praattextgrid.h"
-#include "annotation/annotationtiergroup.h"
+#include "interfaces/praat/PraatTextGrid.h"
+#include "annotation/AnnotationTierGroup.h"
 #include "tokenlist.h"
 #include "preprocessor.h"
 #include "postagger.h"

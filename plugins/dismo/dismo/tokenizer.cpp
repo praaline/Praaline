@@ -23,8 +23,8 @@
 #include <QPointer>
 #include <QDebug>
 
-#include "annotation/interval.h"
-#include "annotation/intervaltier.h"
+#include "annotation/Interval.h"
+#include "annotation/IntervalTier.h"
 #include "token.h"
 #include "tokenunit.h"
 #include "tokenizer.h"

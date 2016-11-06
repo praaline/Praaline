@@ -4,9 +4,11 @@
 #include <QPair>
 #include <QString>
 #include <QList>
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/annotation/annotationtiergroup.h"
-#include "pncore/corpus/corpusbookmark.h"
+
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/corpus/CorpusBookmark.h"
+using namespace Praaline::Core;
 
 class DisfluencyPatternDetector
 {

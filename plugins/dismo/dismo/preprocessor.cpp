@@ -19,7 +19,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
-#include "annotation/intervaltier.h"
+#include "annotation/IntervalTier.h"
 #include "tokenlist.h"
 #include "tokenizer.h"
 #include "dictionaryentry.h"

@@ -5,6 +5,9 @@
 #include <QString>
 #include <QList>
 
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
+
 #include "annotationtiermodel.h"
 
 struct TimelineData {

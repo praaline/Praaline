@@ -6,8 +6,10 @@
 #include <QList>
 #include "SphinxConfiguration.h"
 
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
+
 struct SphinxOfflineRecogniserData;
-class Interval;
 
 class SphinxOfflineRecogniser : public QObject
 {

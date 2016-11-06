@@ -7,7 +7,7 @@
 #include "ImportCorpusItemsWizardAnalysePage.h"
 #include "ui_ImportCorpusItemsWizardAnalysePage.h"
 
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 QString speakerPolicyToString(int policy) {
     if (policy == SpeakerPolicySingle) return "Single Speaker";

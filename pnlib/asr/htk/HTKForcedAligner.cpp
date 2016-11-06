@@ -5,6 +5,9 @@
 #include <QTextStream>
 #include <QCoreApplication>
 
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
+
 #include "pnlib/mediautil/AudioSegmenter.h"
 #include "SpeechToken.h"
 #include "HTKForcedAligner.h"

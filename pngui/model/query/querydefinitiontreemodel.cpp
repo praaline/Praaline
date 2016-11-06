@@ -1,3 +1,6 @@
+#include "pncore/query/QueryDefinition.h"
+using namespace Praaline::Core;
+
 #include "querydefinitiontreemodel.h"
 
 QueryDefinitionTreeModel::QueryDefinitionTreeModel(QueryDefinition &definition, QObject *parent) :

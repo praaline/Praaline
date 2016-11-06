@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+namespace Praaline {
+namespace Lib {
+
 class AbstractRecogniser : public QObject
 {
     Q_OBJECT
@@ -14,5 +17,8 @@ signals:
 
 public slots:
 };
+
+} // namespace Lib
+} // namespace Praaline
 
 #endif // ABSTRACTRECOGNISER_H

@@ -2,7 +2,8 @@
 #define CORPUSDATABASECONNECTIONDIALOG_H
 
 #include <QDialog>
-#include "pncore/serialisers/corpusdefinition.h"
+#include "pncore/serialisers/CorpusDefinition.h"
+using namespace Praaline::Core;
 
 namespace Ui {
 class CorpusDatabaseConnectionDialog;

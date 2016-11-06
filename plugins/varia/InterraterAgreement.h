@@ -7,7 +7,9 @@
 #include <QHash>
 #include <QMap>
 #include <QStandardItemModel>
-#include "pncore/annotation/interval.h"
+
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
 
 class InterraterAgreement
 {

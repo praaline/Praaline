@@ -5,8 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/corpus/corpus.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/corpus/Corpus.h"
 #include "pnlib/asr/sphinx/SphinxAcousticModelTrainer.h"
 #include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
 

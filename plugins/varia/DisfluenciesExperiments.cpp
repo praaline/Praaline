@@ -6,9 +6,9 @@
 
 #include "pncore/base/RealTime.h"
 #include "pncore/base/RealValueList.h"
-#include "pncore/annotation/interval.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/corpus/corpus.h"
+#include "pncore/annotation/Interval.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/corpus/Corpus.h"
 
 #include "DisfluenciesExperiments.h"
 
@@ -75,7 +75,7 @@ bool createRTAttribute(const QString &attributeID, const QString &attributeName,
 {
     if (!section->hasAttribute(attributeID)) {
         MetadataStructureAttribute *attr = new MetadataStructureAttribute(
-                    attributeID, attributeName, "", "double", 0);
+                    attributeID, attributeName, "", DataType::Double);
         if (corpus->datastoreMetadata()->createMetadataAttribute(CorpusObject::Type_Speaker, attr)) {
             section->addAttribute(attr);
             return true;

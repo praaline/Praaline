@@ -9,7 +9,7 @@
 #include <QTextStream>
 
 #include "pluginprosogram.h"
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "prosogram.h"
 
 using namespace Qtilities::ExtensionSystem;
@@ -195,10 +195,12 @@ void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
 
 void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QString &prefix,
                      const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                     const QString &datatype = "varchar", int datalength = 256, bool indexed = false, const QString &nameValueList = QString())
+                     const DataType &datatype = DataType(DataType::VarChar, 256),
+                     bool indexed = false, const QString &nameValueList = QString())
 {
     if (level->hasAttribute(ID)) return;
-    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype, datalength, indexed, nameValueList);
+    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
+                                                                          indexed, nameValueList);
     if (corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr))
         level->addAttribute(attr);
 }
@@ -216,30 +218,30 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     }
     // Create syllable attributes where necessary
     // ...identification
-    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t1", "Nucleus t1", "Syllabic nucleus start", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t2", "Nucleus t2", "Syllabic nucleus end", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t1", "Nucleus t1", "Syllabic nucleus start", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_t2", "Nucleus t2", "Syllabic nucleus end", DataType::Double);
     // ...before stylisation
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", DataType::Double);
     // ...after stylisation
-    createAttribute(corpus, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "intersyllab", "Intersyllabic mvt", "Intersyllabic interval (ST) between end of previous nucleus and start of current one", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabdown", "Intrasyllabic mvt down", "Sum of downward pitch interval (ST) of tonal segments in nucleus", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", "int", 1);
+    createAttribute(corpus, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intersyllab", "Intersyllabic mvt", "Intersyllabic interval (ST) between end of previous nucleus and start of current one", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabdown", "Intrasyllabic mvt down", "Sum of downward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", DataType::Integer);
     // ...intensity
-    createAttribute(corpus, level_syll, d->attributePrefix, "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", DataType::Double);
     // ...durations
-    createAttribute(corpus, level_syll, d->attributePrefix, "syll_dur", "Syllable duration", "Syllable duration (msec)", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", "double", 0);
-    createAttribute(corpus, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", "double", 0);
+    createAttribute(corpus, level_syll, d->attributePrefix, "syll_dur", "Syllable duration", "Syllable duration (msec)", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", DataType::Double);
+    createAttribute(corpus, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", DataType::Double);
     // Save
     corpus->save();
 }

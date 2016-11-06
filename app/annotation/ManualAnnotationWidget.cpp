@@ -12,12 +12,12 @@
 #include "ManualAnnotationWidget.h"
 #include "ui_ManualAnnotationWidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/annotationtiergroup.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/model/checkableproxymodel.h"
-#include "pngui/model/corpus/corpusbookmarkmodel.h"
+#include "pngui/model/corpus/CorpusBookmarkModel.h"
 #include "pngui/widgets/annotationtimelineeditor.h"
 #include "pngui/widgets/corpusitemselectorwidget.h"
 #include "pngui/widgets/timelineeditorconfigwidget.h"

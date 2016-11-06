@@ -4,9 +4,11 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/interval.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/Interval.h"
+#include "pncore/annotation/IntervalTier.h"
+
+using namespace Praaline::Core;
 
 #include "SphinxSegmentation.h"
 

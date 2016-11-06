@@ -9,12 +9,12 @@
 #include <QCoreApplication>
 #include <QTemporaryDir>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusannotation.h"
-#include "pncore/structure/annotationstructurelevel.h"
-#include "pncore/annotation/annotationdatatable.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/structure/AnnotationStructureLevel.h"
+#include "pncore/annotation/AnnotationDataTable.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "annotationpluginpraatscript.h"
 #include "prosogram.h"

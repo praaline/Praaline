@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QString>
-#include "annotation/intervaltier.h"
-#include "annotation/interval.h"
+#include "annotation/IntervalTier.h"
+#include "annotation/Interval.h"
+using namespace Praaline::Core;
 
 class TokenSequence : public QObject
 {
@@ -30,8 +31,6 @@ protected:
     int m_start;
     int m_end;
     QString m_tag;
-
-
 };
 
 #endif // TOKENSEQUENCE_H

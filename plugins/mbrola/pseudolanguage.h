@@ -2,7 +2,8 @@
 #define PSEUDOLANGUAGE_H
 
 #include <QPointer>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
 
 class PseudoLanguage
 {

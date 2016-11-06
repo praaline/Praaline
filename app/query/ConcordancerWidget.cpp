@@ -6,14 +6,16 @@
 #include "ConcordancerWidget.h"
 #include "ui_ConcordancerWidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/query/querydefinition.h"
-#include "pncore/serialisers/xml/xmlserialisercorpusbookmark.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/query/QueryDefinition.h"
+#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+using namespace Praaline::Core;
+
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/model/checkableproxymodel.h"
-#include "pngui/model/query/queryoccurrencetablemodel.h"
+#include "pngui/model/query/QueryOccurrenceTableModel.h"
 #include "pngui/model/query/queryfiltersequencetablemodel.h"
-#include "pngui/model/corpus/annotationstructuretreemodel.h"
+#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "CorporaManager.h"
 
 struct ConcordancerWidgetData {

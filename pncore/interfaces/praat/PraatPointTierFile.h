@@ -11,7 +11,10 @@
 #include <QTextStream>
 #include <QRegExp>
 #include "base/RealTime.h"
-#include "praattextfile.h"
+#include "PraatTextFile.h"
+
+namespace Praaline {
+namespace Core {
 
 class PRAALINE_CORE_SHARED_EXPORT PraatPointTierFile : PraatTextFile
 {
@@ -26,5 +29,8 @@ private:
                           double &timePoint, double &value);
     PraatPointTierFile() {}
 };
+
+} // namespace Core
+} // namespace Praaline
 
 #endif // PRAATPOINTTIERFILE_H

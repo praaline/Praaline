@@ -3,7 +3,7 @@
 #include <QCloseEvent>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
 #include "pnlib/mediautil/SoundInfo.h"
 
 #include "ImportCorpusItemsWizardProcessMediaPage.h"

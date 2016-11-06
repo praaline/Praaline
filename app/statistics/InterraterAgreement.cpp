@@ -1,3 +1,6 @@
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
+
 #include "InterraterAgreement.h"
 
 InterraterAgreement::InterraterAgreement()

@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QString>
-#include "annotation/intervaltier.h"
-#include "annotation/interval.h"
+#include "annotation/IntervalTier.h"
+#include "annotation/Interval.h"
 #include "tokensequence.h"
 
 class Disfluency : public TokenSequence

@@ -11,6 +11,8 @@
 #include "pncore_global.h"
 #include <QList>
 
+namespace Praaline {
+namespace Core {
 
 class PRAALINE_CORE_SHARED_EXPORT HistogramCalculator
 {
@@ -35,5 +37,9 @@ private:
 
     void prepareValues();
 };
+
+} // namespace Core
+} // namespace Praaline
+
 
 #endif // HISTOGRAMCALCULATOR_H

@@ -27,68 +27,7 @@ DEPENDPATH += . ..
 HEADERS += \
     base/BaseTypes.h \
     base/RealTime.h \
-    annotation/point.h \
-    annotation/interval.h \
-    annotation/annotationtier.h \
-    annotation/intervaltier.h \
-    annotation/pointtier.h \
-    annotation/annotationtiergroup.h \
-    corpus/corpusobject.h \
-    corpus/corpuscommunication.h \
-    corpus/corpusannotation.h \
-    corpus/corpusrecording.h \
-    corpus/corpus.h \
-    corpus/corpusspeaker.h \
-    corpus/corpusparticipation.h \
-    corpus/corpusbookmark.h \
-    structure/annotationstructure.h \
-    structure/annotationstructureattribute.h \
-    structure/annotationstructurelevel.h \
-    structure/metadatastructureattribute.h \
-    structure/metadatastructure.h \
-    structure/metadatastructuresection.h \
-    interfaces/praat/praattextfile.h \
-    interfaces/praat/praattextgrid.h \
-    interfaces/exmaralda/exmaraldabasictranscription.h \
-    interfaces/exmaralda/exmaraldatranscriptionbridge.h \
-    serialisers/xml/xmlserialiserannotationstructure.h \
-    serialisers/xml/xmlserialisermetadatastructure.h \
-    serialisers/xml/xmlserialiserbase.h \
-    serialisers/xml/xmlserialisercorpus.h \
-    serialisers/sql/sqlserialiserbase.h \
-    serialisers/sql/sqlserialisercorpus.h \
-    serialisers/sql/sqlserialisermetadatastructure.h \
-    serialisers/sql/sqlserialiserannotationstructure.h \
-    serialisers/sql/sqlschemaproxymetadata.h \
-    serialisers/sql/sqlschemaproxyannotation.h \
-    serialisers/sql/sqlserialiserannotation.h \
-    query/querydefinition.h \
-    serialisers/datastoreinfo.h \
-    serialisers/abstractmetadatadatastore.h \
-    serialisers/abstractannotationdatastore.h \
-    serialisers/sql/sqlannotationdatastore.h \
-    serialisers/datastorefactory.h \
-    serialisers/sql/sqlmetadatadatastore.h \
-    serialisers/sql/sqlschemaproxybase.h \
-    serialisers/xml/xmlannotationdatastore.h \
-    serialisers/xml/xmlmetadatadatastore.h \
-    serialisers/xml/xmlserialiserannotation.h \
-    serialisers/corpusdefinition.h \
     pncore_global.h \
-    annotation/annotationdatatable.h \
-    annotation/speakertimeline.h \
-    serialisers/xml/xmlserialisercorpusbookmark.h \
-    structure/structurebase.h \
-    query/queryoccurrence.h \
-    serialisers/sql/sqlqueryengineannotation.h \
-    query/queryfiltergroup.h \
-    query/queryfiltersequence.h \
-    interfaces/subtitles/subtitlesfile.h \
-    interfaces/interfacetextfile.h \
-    annotation/annotationelement.h \
-    annotation/relationtier.h \
-    annotation/treetier.h \
-    interfaces/transcriber/transcriberannotationgraph.h \
     interfaces/praat/PraatPointTierFile.h \
     interfaces/anvil/AnvilMetadataTranscript.h \
     base/RealValueList.h \
@@ -187,67 +126,71 @@ HEADERS += \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlStructureService.h \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h \
     base/DataType.h \
-    QSqlMigrator/Structure/SqlType.h
+    QSqlMigrator/Structure/SqlType.h \
+    structure/StructureBase.h \
+    structure/AnnotationStructureAttribute.h \
+    structure/AnnotationStructureLevel.h \
+    structure/AnnotationStructure.h \
+    structure/MetadataStructureAttribute.h \
+    structure/MetadataStructureSection.h \
+    structure/MetadataStructure.h \
+    serialisers/AbstractAnnotationDatastore.h \
+    serialisers/AbstractMetadataDatastore.h \
+    serialisers/DatastoreFactory.h \
+    corpus/Corpus.h \
+    corpus/CorpusCommunication.h \
+    corpus/CorpusParticipation.h \
+    corpus/CorpusAnnotation.h \
+    corpus/CorpusObject.h \
+    corpus/CorpusRecording.h \
+    corpus/CorpusSpeaker.h \
+    corpus/CorpusBookmark.h \
+    annotation/AnnotationDataTable.h \
+    annotation/AnnotationElement.h \
+    annotation/AnnotationTier.h \
+    annotation/AnnotationTierGroup.h \
+    annotation/Interval.h \
+    annotation/IntervalTier.h \
+    annotation/Point.h \
+    annotation/PointTier.h \
+    annotation/RelationTier.h \
+    annotation/SpeakerTimeline.h \
+    annotation/TreeTier.h \
+    interfaces/praat/PraatTextFile.h \
+    interfaces/praat/PraatTextGrid.h \
+    interfaces/exmaralda/ExmaraldaBasicTranscription.h \
+    interfaces/exmaralda/ExmaraldaTranscriptionBridge.h \
+    interfaces/subtitles/SubtitlesFile.h \
+    interfaces/transcriber/TranscriberAnnotationGraph.h \
+    interfaces/InterfaceTextFile.h \
+    serialisers/DatastoreInfo.h \
+    serialisers/CorpusDefinition.h \
+    serialisers/xml/XMLAnnotationDatastore.h \
+    serialisers/xml/XMLMetadataDatastore.h \
+    serialisers/xml/XMLSerialiserAnnotation.h \
+    serialisers/xml/XMLSerialiserAnnotationStructure.h \
+    serialisers/xml/XMLSerialiserBase.h \
+    serialisers/xml/XMLSerialiserCorpus.h \
+    serialisers/xml/XMLSerialiserCorpusBookmark.h \
+    serialisers/xml/XMLSerialiserMetadataStructure.h \
+    query/QueryDefinition.h \
+    query/QueryFilterGroup.h \
+    query/QueryFilterSequence.h \
+    query/QueryOccurrence.h \
+    serialisers/sql/SQLAnnotationDatastore.h \
+    serialisers/sql/SQLMetadataDatastore.h \
+    serialisers/sql/SQLQueryEngineAnnotation.h \
+    serialisers/sql/SQLSchemaProxyAnnotation.h \
+    serialisers/sql/SQLSchemaProxyBase.h \
+    serialisers/sql/SQLSchemaProxyMetadata.h \
+    serialisers/sql/SQLSerialiserAnnotation.h \
+    serialisers/sql/SQLSerialiserAnnotationStructure.h \
+    serialisers/sql/SQLSerialiserBase.h \
+    serialisers/sql/SQLSerialiserCorpus.h \
+    serialisers/sql/SQLSerialiserMetadataStructure.h
 
 SOURCES += \
     base/RealTime.cpp \
-    annotation/point.cpp \
-    annotation/interval.cpp \
-    annotation/annotationtier.cpp \
-    annotation/intervaltier.cpp \
-    annotation/pointtier.cpp \
-    annotation/annotationtiergroup.cpp \
-    corpus/corpuscommunication.cpp \
-    corpus/corpusannotation.cpp \
-    corpus/corpusrecording.cpp \
-    corpus/corpus.cpp \
-    corpus/corpusspeaker.cpp \
-    corpus/corpusobject.cpp \
-    corpus/corpusparticipation.cpp \
-    corpus/corpusbookmark.cpp \
-    structure/annotationstructure.cpp \
-    structure/annotationstructureattribute.cpp \
-    structure/annotationstructurelevel.cpp \
-    structure/metadatastructureattribute.cpp \
-    structure/metadatastructure.cpp \
-    structure/metadatastructuresection.cpp \
-    interfaces/praat/praattextfile.cpp \
-    interfaces/praat/praattextgrid.cpp \
-    interfaces/exmaralda/exmaraldabasictranscription.cpp \
-    interfaces/exmaralda/exmaraldatranscriptionbridge.cpp \
-    serialisers/xml/xmlserialiserannotationstructure.cpp \
-    serialisers/xml/xmlserialisermetadatastructure.cpp \
-    serialisers/xml/xmlserialiserbase.cpp \
-    serialisers/xml/xmlserialisercorpus.cpp \
-    serialisers/sql/sqlserialiserbase.cpp \
-    serialisers/sql/sqlserialisercorpus.cpp \
-    serialisers/sql/sqlserialisermetadatastructure.cpp \
-    serialisers/sql/sqlserialiserannotationstructure.cpp \
-    serialisers/sql/sqlschemaproxyannotation.cpp \
-    serialisers/sql/sqlserialiserannotation.cpp \
-    query/querydefinition.cpp \
-    serialisers/sql/sqlannotationdatastore.cpp \
-    serialisers/datastorefactory.cpp \
-    serialisers/sql/sqlmetadatadatastore.cpp \
-    serialisers/sql/sqlschemaproxybase.cpp \
-    serialisers/xml/xmlannotationdatastore.cpp \
-    serialisers/xml/xmlmetadatadatastore.cpp \
-    serialisers/xml/xmlserialiserannotation.cpp \
-    serialisers/corpusdefinition.cpp \
-    annotation/annotationdatatable.cpp \
-    annotation/speakertimeline.cpp \
-    serialisers/xml/xmlserialisercorpusbookmark.cpp \
-    structure/structurebase.cpp \
-    query/queryoccurrence.cpp \
-    serialisers/sql/sqlqueryengineannotation.cpp \
-    query/queryfiltergroup.cpp \
-    query/queryfiltersequence.cpp \
-    interfaces/subtitles/subtitlesfile.cpp \
-    interfaces/interfacetextfile.cpp \
-    annotation/annotationelement.cpp \
-    annotation/relationtier.cpp \
-    annotation/treetier.cpp \
-    interfaces/transcriber/transcriberannotationgraph.cpp \
     interfaces/praat/PraatPointTierFile.cpp \
     interfaces/anvil/AnvilMetadataTranscript.cpp \
     base/RealValueList.cpp \
@@ -337,9 +280,66 @@ SOURCES += \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlQuoteService.cpp \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlStructureService.cpp \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.cpp \
-    serialisers/sql/sqlschemaproxymetadata.cpp \
     base/DataType.cpp \
-    QSqlMigrator/Structure/SqlType.cpp
+    QSqlMigrator/Structure/SqlType.cpp \
+    structure/StructureBase.cpp \
+    structure/AnnotationStructureAttribute.cpp \
+    structure/AnnotationStructureLevel.cpp \
+    structure/AnnotationStructure.cpp \
+    structure/MetadataStructureAttribute.cpp \
+    structure/MetadataStructureSection.cpp \
+    structure/MetadataStructure.cpp \
+    serialisers/DatastoreFactory.cpp \
+    corpus/Corpus.cpp \
+    corpus/CorpusCommunication.cpp \
+    corpus/CorpusParticipation.cpp \
+    corpus/CorpusObject.cpp \
+    corpus/CorpusAnnotation.cpp \
+    corpus/CorpusRecording.cpp \
+    corpus/CorpusSpeaker.cpp \
+    corpus/CorpusBookmark.cpp \
+    annotation/AnnotationDataTable.cpp \
+    annotation/AnnotationElement.cpp \
+    annotation/AnnotationTier.cpp \
+    annotation/AnnotationTierGroup.cpp \
+    annotation/Interval.cpp \
+    annotation/IntervalTier.cpp \
+    annotation/Point.cpp \
+    annotation/PointTier.cpp \
+    annotation/RelationTier.cpp \
+    annotation/SpeakerTimeline.cpp \
+    annotation/TreeTier.cpp \
+    interfaces/praat/PraatTextFile.cpp \
+    interfaces/praat/PraatTextGrid.cpp \
+    interfaces/exmaralda/ExmaraldaBasicTranscription.cpp \
+    interfaces/exmaralda/ExmaraldaTranscriptionBridge.cpp \
+    interfaces/subtitles/SubtitlesFile.cpp \
+    interfaces/transcriber/TranscriberAnnotationGraph.cpp \
+    interfaces/InterfaceTextFile.cpp \
+    serialisers/CorpusDefinition.cpp \
+    serialisers/xml/XMLAnnotationDatastore.cpp \
+    serialisers/xml/XMLMetadataDatastore.cpp \
+    serialisers/xml/XMLSerialiserAnnotation.cpp \
+    serialisers/xml/XMLSerialiserAnnotationStructure.cpp \
+    serialisers/xml/XMLSerialiserBase.cpp \
+    serialisers/xml/XMLSerialiserCorpus.cpp \
+    serialisers/xml/XMLSerialiserCorpusBookmark.cpp \
+    serialisers/xml/XMLSerialiserMetadataStructure.cpp \
+    query/QueryDefinition.cpp \
+    query/QueryFilterGroup.cpp \
+    query/QueryFilterSequence.cpp \
+    query/QueryOccurrence.cpp \
+    serialisers/sql/SQLAnnotationDatastore.cpp \
+    serialisers/sql/SQLMetadataDatastore.cpp \
+    serialisers/sql/SQLQueryEngineAnnotation.cpp \
+    serialisers/sql/SQLSchemaProxyAnnotation.cpp \
+    serialisers/sql/SQLSchemaProxyBase.cpp \
+    serialisers/sql/SQLSchemaProxyMetadata.cpp \
+    serialisers/sql/SQLSerialiserAnnotation.cpp \
+    serialisers/sql/SQLSerialiserAnnotationStructure.cpp \
+    serialisers/sql/SQLSerialiserBase.cpp \
+    serialisers/sql/SQLSerialiserCorpus.cpp \
+    serialisers/sql/SQLSerialiserMetadataStructure.cpp
 
 DISTFILES += \
     pncore.qmodel

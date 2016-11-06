@@ -2,8 +2,8 @@
 #include "pocketsphinx.h"
 #include "sphinxbase/byteorder.h"
 
-#include "pncore/corpus/corpusrecording.h"
-#include "pncore/annotation/intervaltier.h"
+#include "pncore/corpus/CorpusRecording.h"
+#include "pncore/annotation/IntervalTier.h"
 
 #include "SphinxConfiguration.h"
 #include "SphinxOfflineRecogniser.h"

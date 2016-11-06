@@ -3,7 +3,14 @@
 
 #include <QObject>
 #include <QMap>
-#include "pncore/corpus/corpus.h"
+#include <QPointer>
+
+namespace Praaline {
+namespace Core {
+class Corpus;
+}
+}
+
 #include "pngui/observers/corpusobserver.h"
 
 class CorporaManager : public QObject
@@ -16,11 +23,11 @@ public:
     QStringList listCorporaIDs();
     QStringList listCorporaNames();
 
-    QPointer<Corpus> activeCorpus();
-    QPointer<Corpus> corpusByID(const QString &corpusID);
-    QPointer<Corpus> corpusByName(const QString &corpusName);
+    QPointer<Praaline::Core::Corpus> activeCorpus();
+    QPointer<Praaline::Core::Corpus> corpusByID(const QString &corpusID);
+    QPointer<Praaline::Core::Corpus> corpusByName(const QString &corpusName);
 
-    void addCorpus(QPointer<Corpus> corpus);
+    void addCorpus(QPointer<Praaline::Core::Corpus> corpus);
     void removeCorpus(const QString &corpusID);
 
     void setActiveCorpus(const QString &corpusID);
@@ -36,7 +43,7 @@ signals:
 public slots:
 
 private:
-    QMap<QString, QPointer<Corpus> > m_corpora;
+    QMap<QString, QPointer<Praaline::Core::Corpus> > m_corpora;
     QString m_activeCorpusID;
 };
 

@@ -1,5 +1,10 @@
-#include "CorporaManager.h"
+#include "pncore/corpus/Corpus.h"
+using namespace Praaline::Core;
+
 #include "pngui/observers/corpusobserver.h"
+
+#include "CorporaManager.h"
+
 
 CorporaManager::CorporaManager(QObject *parent) : QObject(parent)
 {

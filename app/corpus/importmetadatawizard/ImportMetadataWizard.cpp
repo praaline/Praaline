@@ -8,12 +8,12 @@
 #include "ImportMetadataWizard.h"
 #include "ui_ImportMetadataWizard.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pngui/model/corpus/corpuscommunicationtablemodel.h"
-#include "pngui/model/corpus/corpusspeakertablemodel.h"
-#include "pngui/model/corpus/corpusrecordingtablemodel.h"
-#include "pngui/model/corpus/corpusannotationtablemodel.h"
-#include "pngui/model/corpus/corpusparticipationtablemodel.h"
+#include "pncore/corpus/Corpus.h"
+#include "pngui/model/corpus/CorpusCommunicationTableModel.h"
+#include "pngui/model/corpus/CorpusSpeakerTableModel.h"
+#include "pngui/model/corpus/CorpusRecordingTableModel.h"
+#include "pngui/model/corpus/CorpusAnnotationTableModel.h"
+#include "pngui/model/corpus/CorpusParticipationTableModel.h"
 
 
 ImportMetadataWizard::ImportMetadataWizard(const QString &filename, Corpus *corpus, QWidget *parent) :
@@ -144,7 +144,7 @@ void ImportMetadataWizard::objectTypeChanged()
     }
     foreach (QPointer<MetadataStructureAttribute> mattr, mstr->attributes(m_corpusObjectType)) {
         if (!mattr) continue;
-        m_ColumnCorrespondances.insert(mattr->ID(), ColumnCorrespondance(mattr->ID(), mattr->name(), mattr->datatype()));
+        m_ColumnCorrespondances.insert(mattr->ID(), ColumnCorrespondance(mattr->ID(), mattr->name(), mattr->datatypeString()));
         ui->comboAttribute->addItem(mattr->name(), mattr->ID());
     }
     guessCorrespondances();
@@ -448,11 +448,11 @@ void ImportMetadataWizard::previewImport()
             else {
                 QString field = line.section(m_delimiter, correspondance.column, correspondance.column);
                 if (mstr->attribute(m_corpusObjectType, attributeID)) {
-                    if (mstr->attribute(m_corpusObjectType, attributeID)->datatype() == "int")
+                    if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::Integer)
                         item = new QStandardItem(QString::number(field.toInt()));
-                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype() == "double")
+                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::Double)
                         item = new QStandardItem(QString::number(field.toDouble()));
-                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype() == "datetime")
+                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::DateTime)
                         item = new QStandardItem(QDate::fromString(field, correspondance.formatString).toString());
                     else
                         item = new QStandardItem(field);
@@ -554,11 +554,11 @@ void ImportMetadataWizard::doImport()
                 continue; // this attribute is not linked to a column, skip
             QString field = line.section(m_delimiter, correspondance.column, correspondance.column);
             if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)) {
-                if  (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype() == "int")
+                if  (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Integer)
                     item->setProperty(correspondance.attributeID, field.toInt());
-                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype() == "double")
+                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Double)
                     item->setProperty(correspondance.attributeID, field.toDouble());
-                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype() == "datetime")
+                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::DateTime)
                     item->setProperty(correspondance.attributeID, QDate::fromString(field, correspondance.formatString));
                 else
                     item->setProperty(correspondance.attributeID, field);

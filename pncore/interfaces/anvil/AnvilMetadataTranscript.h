@@ -8,10 +8,14 @@
 #include <QMap>
 #include <QString>
 #include "base/RealTime.h"
-#include "corpus/corpusspeaker.h"
-#include "interfaces/interfacetextfile.h"
+#include "corpus/CorpusSpeaker.h"
+#include "interfaces/InterfaceTextFile.h"
 
 class QXmlStreamReader;
+
+namespace Praaline {
+namespace Core {
+
 class Corpus;
 
 class PRAALINE_CORE_SHARED_EXPORT AnvilMetadataTranscript : InterfaceTextFile
@@ -127,5 +131,8 @@ private:
     static QString xmlElementName_MDGroup;
     static QString xmlElementName_Session;
 };
+
+} // namespace Core
+} // namespace Praaline
 
 #endif // ANVILMETADATATRANSCRIPT_H

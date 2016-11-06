@@ -14,9 +14,9 @@
 using namespace QtilitiesProjectManagement;
 
 #include "svcore/base/RecentFiles.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/serialisers/corpusdefinition.h"
-#include "pngui/model/corpus/corpusexplorertreemodel.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/serialisers/CorpusDefinition.h"
+#include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/selectiondialog.h"
 #include "pngui/widgets/metadataeditorwidget.h"
 #include "pngui/observers/corpusobserver.h"

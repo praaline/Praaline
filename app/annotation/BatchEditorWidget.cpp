@@ -5,8 +5,10 @@
 #include "BatchEditorWidget.h"
 #include "ui_BatchEditorWidget.h"
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/annotation/annotationtier.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/AnnotationTier.h"
+using namespace Praaline::Core;
+
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/widgets/gridviewwidget.h"
 #include "CorporaManager.h"

@@ -9,9 +9,9 @@
 #include <QTextStream>
 
 #include "pluginwebsimplecms.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/structure/metadatastructure.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/structure/MetadataStructure.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -139,9 +139,9 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     xml.writeAttribute("duration", QString::number(rec->duration().toDouble()));
     foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Communication)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            if (attribute->datatype() == "datetime")
+            if (attribute->datatype().base() == DataType::DateTime)
                 xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-            else if (attribute->datatype() == "int")
+            else if (attribute->datatype().base() == DataType::Integer)
                 xml.writeAttribute(attribute->ID(), QString::number(com->property(attribute->ID()).toInt()));
             else
                 xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toString());
@@ -149,9 +149,9 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     }
     foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Recording)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            if (attribute->datatype() == "datetime")
+            if (attribute->datatype().base() == DataType::DateTime)
                 xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-            else if (attribute->datatype() == "int")
+            else if (attribute->datatype().base() == DataType::Integer)
                 xml.writeAttribute(attribute->ID(), QString::number(rec->property(attribute->ID()).toInt()));
             else
                 xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toString());
@@ -193,9 +193,9 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
         xml.writeAttribute("name", spk->name());
         foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Speaker)) {
             foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-                if (attribute->datatype() == "datetime")
+                if (attribute->datatype().base() == DataType::DateTime)
                     xml.writeAttribute(attribute->ID(), spk->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-                else if (attribute->datatype() == "int")
+                else if (attribute->datatype().base() == DataType::Integer)
                     xml.writeAttribute(attribute->ID(), QString::number(spk->property(attribute->ID()).toInt()));
                 else
                     xml.writeAttribute(attribute->ID(), spk->property(attribute->ID()).toString());

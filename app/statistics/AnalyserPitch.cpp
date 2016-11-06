@@ -3,11 +3,14 @@
 #include <QList>
 #include <QStandardItemModel>
 #include "math.h"
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/annotation/intervaltier.h"
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
+using namespace Praaline::Core;
+
 #include "AnalyserPitch.h"
 
 struct AnalyserPitchData {

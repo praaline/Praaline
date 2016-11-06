@@ -3,13 +3,16 @@
 
 #include <QString>
 #include <QList>
+#include <QPointer>
 #include <QFileDialog>
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusrecording.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusRecording.h"
+using namespace Praaline::Core;
+
 #include "pngui/widgets/gridviewwidget.h"
 #include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/mediautil/SoundInfo.h"
@@ -22,7 +25,7 @@ struct ExtractSoundBitesWidgetData {
     GridViewWidget *manualSelectionTable;
     QStandardItemModel *manualSelectionModel;
     CorporaManager *corporaManager;
-    QPointer<Corpus> corpusCopyOver;
+    QPointer<Praaline::Core::Corpus> corpusCopyOver;
 };
 
 

@@ -10,11 +10,17 @@ namespace Ui {
 class TimelineVisualisationWidget;
 }
 
-struct TimelineVisualisationWidgetData;
+namespace Praaline {
+namespace Core {
 class Corpus;
 class CorpusCommunication;
 class CorpusRecording;
 class CorpusAnnotation;
+}
+}
+using namespace Praaline::Core;
+
+struct TimelineVisualisationWidgetData;
 
 class TimelineVisualisationWidget : public QMainWindow
 {
@@ -27,9 +33,12 @@ public:
 protected slots:
     // Corpus item selection
     void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>);
-    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>, RealTime);
+    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                                 QPointer<CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                                  QPointer<CorpusAnnotation>);
+    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                              QPointer<CorpusAnnotation>, RealTime);
     // Timeline configuration changes
     void selectedLevelsAttributesChanged();
     void speakerAdded(const QString &speakerID);
@@ -45,7 +54,8 @@ private:
     Ui::TimelineVisualisationWidget *ui;
     TimelineVisualisationWidgetData *d;
 
-    void corpusItemSelectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
+    void corpusItemSelectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>,
+                                    QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
     void visualiserNewSession(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void annotationTimelineEditorOpen(QPointer<Corpus>, const QString &);
 };

@@ -28,7 +28,6 @@
 
 struct timeval;
 
-
 /**
  * RealTime represents time values to nanosecond precision
  * with accurate arithmetic and frame-rate conversion functions.

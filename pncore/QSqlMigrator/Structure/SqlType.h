@@ -1,6 +1,7 @@
 #ifndef STRUCTURE_SQLTYPE_H
 #define STRUCTURE_SQLTYPE_H
 
+#include "base/DataType.h"
 #include "QSqlMigrator/QSqlMigratorConfig.h"
 
 #include <QString>
@@ -50,6 +51,12 @@ public:
      * \param string the string representation of an sql type
      */
     SqlType(const QString& string);
+
+    /*!
+     * \brief Construct the type from
+     * \param datatype the Praaline data tyep
+     */
+    SqlType(const Praaline::Core::DataType& datatype);
 
     /*!
      * \brief Constructs the type

@@ -4,9 +4,9 @@
 #include "ImportCorpusItemsWizardFinalPage.h"
 #include "ui_ImportCorpusItemsWizardFinalPage.h"
 
-#include "pncore/interfaces/praat/praattextgrid.h"
-#include "pncore/interfaces/transcriber/transcriberannotationgraph.h"
-#include "pncore/interfaces/subtitles/subtitlesfile.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "pncore/interfaces/transcriber/TranscriberAnnotationGraph.h"
+#include "pncore/interfaces/subtitles/SubtitlesFile.h"
 
 ImportCorpusItemsWizardFinalPage::ImportCorpusItemsWizardFinalPage(
         QPointer<Corpus> corpus,

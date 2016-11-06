@@ -6,10 +6,13 @@
 #include <QString>
 #include <QList>
 
+namespace Praaline {
+namespace Core {
 class Corpus;
 class CorpusCommunication;
+}
+}
 class SphinxPronunciationDictionary;
-
 struct SphinxAcousticModelTrainerData;
 
 class SphinxAcousticModelTrainer : public QObject
@@ -26,7 +29,7 @@ public:
     void setSpeakersIncludeFilter(const QStringList &speakerIDs);
     void setSpeakersExcludeFilter(const QStringList &speakerIDs);
 
-    bool createFiles(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > &communications,
+    bool createFiles(QPointer<Praaline::Core::Corpus> corpus, QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
                      QStringList &outUnknownWordsList, bool splitTrainTest = false, bool createSoundSegments = false);
 
 signals:

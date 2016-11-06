@@ -2,7 +2,9 @@
 #define CONLLUREADER_H
 
 #include <QString>
-class AnnotationTierGroup;
+
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
 
 class CoNLLUReader
 {

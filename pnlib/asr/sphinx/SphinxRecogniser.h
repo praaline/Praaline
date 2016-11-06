@@ -2,7 +2,9 @@
 #define SPHINXRECOGNISER_H
 
 #include <QObject>
-#include "pncore/corpus/corpus.h"
+#include "pncore/corpus/Corpus.h"
+
+using namespace Praaline::Core;
 
 struct SphinxRecogniserData;
 

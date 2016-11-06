@@ -20,7 +20,7 @@
 #include <QStringList>
 // Praaline.Core
 #include "pncore/base/RealTime.h"
-#include "pncore/annotation/interval.h"
+#include "pncore/annotation/Interval.h"
 // DisMo
 #include "tokenunit.h"
 

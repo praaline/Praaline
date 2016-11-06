@@ -6,11 +6,11 @@
 #include <QStringList>
 #include <QFileInfo>
 
-#include "pncore/corpus/corpus.h"
-#include "pncore/corpus/corpuscommunication.h"
-#include "pncore/corpus/corpusrecording.h"
-#include "pncore/annotation/intervaltier.h"
-#include "pncore/interfaces/praat/praattextgrid.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/corpus/CorpusRecording.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "MyExperiments.h"
 
