@@ -31,7 +31,7 @@
 namespace QSqlMigrator {
 namespace Structure {
 
-Structure::Index::Builder::Builder(const QString &name, const QString &tableName)
+Index::Builder::Builder(const QString &name, const QString &tableName)
     : m_name(name),
       m_tableName(tableName)
 {

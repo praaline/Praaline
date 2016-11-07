@@ -10,7 +10,7 @@ QMAKE_CFLAGS += -std=gnu99 -O1
 
 win32 {
     QMAKE_CXXFLAGS += -std=c++0x -Wshadow
-    DEFINES += PRAAT_LIB "WINVER=0x0600" "_WIN32_WINNT=0x0600" "_WIN32_IE=0x0700" UNICODE "_FILE_OFFSET_BITS=64" "main=wingwmain"
+    DEFINES += PRAAT_LIB "WINVER=0x0600" "_WIN32_WINNT=0x0600" "_WIN32_IE=0x0700" UNICODE "_FILE_OFFSET_BITS=64" #"main=wingwmain"
 }
 unix {
     QMAKE_CFLAGS += -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -g1 -pthread

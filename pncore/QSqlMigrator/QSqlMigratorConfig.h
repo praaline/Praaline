@@ -30,18 +30,14 @@
 #define QSQLMIGRATOR_LOG_PREFIX "[QSqlMigrator] "
 
 #include <Qt>
+#include <QtCore/qglobal.h>
 
-#ifndef QSQLMIGRATOR_DLL_EXPORT
-#   ifdef Q_OS_WIN
-#       ifdef _BUILDING_QSQLMIGRATOR_DLL
-#           define QSQLMIGRATOR_DLL_EXPORT __declspec(dllexport)
-#       else
-#           define QSQLMIGRATOR_DLL_EXPORT __declspec(dllimport)
-#       endif
-#   else
-#       define QSQLMIGRATOR_DLL_EXPORT __attribute__ ((visibility("default")))
-#   endif // Q_OS_WIN
-#endif // QSQLMIGRATOR_DLL_EXPORT
+//#if defined(_BUILDING_QSQLMIGRATOR_DLL)
+//#  define QSQLMIGRATOR_DLL_EXPORT Q_DECL_EXPORT
+//#else
+//#  define QSQLMIGRATOR_DLL_EXPORT Q_DECL_IMPORT
+//#endif
+#define QSQLMIGRATOR_DLL_EXPORT
 
 #ifndef Q_DECL_OVERRIDE
 #   define Q_DECL_OVERRIDE

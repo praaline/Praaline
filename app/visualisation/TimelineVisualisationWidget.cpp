@@ -228,7 +228,7 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
     d->visualiser->addAnnotationPaneToSession(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
-    d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
+    // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
 }
 
 // ====================================================================================================================
