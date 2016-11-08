@@ -70,14 +70,19 @@ ConcordancerWidget::ConcordancerWidget(QWidget *parent) :
     // Toolbars
     d->toolbarMain = new QToolBar(this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMain->setIconSize(QSize(24, 24));
     d->toolbarMetadataFilters = new QToolBar(this);
     d->toolbarMetadataFilters->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMetadataFilters->setIconSize(QSize(24, 24));
     d->toolbarQueryDefinition = new QToolBar(this);
     d->toolbarQueryDefinition->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarQueryDefinition->setIconSize(QSize(24, 24));
     d->toolbarLevelsAttributes = new QToolBar(this);
     d->toolbarLevelsAttributes->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarLevelsAttributes->setIconSize(QSize(24, 24));
     d->toolbarResults = new QToolBar(this);
     d->toolbarResults->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarResults->setIconSize(QSize(24, 24));
     this->addToolBar(d->toolbarMain);
 
     // Metadata filters

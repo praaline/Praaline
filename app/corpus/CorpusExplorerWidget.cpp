@@ -116,6 +116,7 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     // Menu and Toolbar actions
     d->toolbarCorpusExplorer = new QToolBar("Corpus Explorer", this);
     d->toolbarCorpusExplorer->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarCorpusExplorer->setIconSize(QSize(24, 24));
     setupActions();
     this->addToolBar(d->toolbarCorpusExplorer);
 

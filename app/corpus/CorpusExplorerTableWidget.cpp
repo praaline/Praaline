@@ -70,6 +70,7 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
     // Menu and Toolbar actions
 //    d->toolbarCorpusExplorerTable = new QToolBar("Corpus Explorer Tables", this);
 //    d->toolbarCorpusExplorerTable->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+//    d->toolbarCorpusExplorerTable->setIconSize(QSize(24, 24));
 //    this->addToolBar(d->toolbarCorpusExplorerTable);
 }
 

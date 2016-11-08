@@ -12,7 +12,7 @@ win32 {
     QMAKE_CXXFLAGS += -std=c++0x -Wshadow
     DEFINES += PRAAT_LIB "WINVER=0x0600" "_WIN32_WINNT=0x0600" "_WIN32_IE=0x0700" UNICODE "_FILE_OFFSET_BITS=64" #"main=wingwmain"
 }
-unix {
+unix:!macx {
     QMAKE_CFLAGS += -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -g1 -pthread
     CONFIG += link_pkgconfig
     PKGCONFIG += gtk+-2.0
@@ -20,6 +20,8 @@ unix {
     DEFINES += PRAAT_LIB UNIX linux ALSA "_FILE_OFFSET_BITS=64"
 }
 mac {
+    DEFINES += PRAAT_LIB macintosh "_FILE_OFFSET_BITS=64"
+    QMAKE_CXXFLAGS += -std=c++11 -Wshadow
 }
 # For a shared libary:
 DEFINES += PRAAT_LIB_SHARED_LIBRARY

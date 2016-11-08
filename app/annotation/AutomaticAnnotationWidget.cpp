@@ -127,6 +127,7 @@ AutomaticAnnotationWidget::~AutomaticAnnotationWidget()
 void AutomaticAnnotationWidget::setupActions()
 {
     ui->toolbarOutput->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    ui->toolbarOutput->setIconSize(QSize(24, 24));
     connect(ui->commandAnnotate, SIGNAL(clicked()), this, SLOT(actionAnnotate()));
     d->actionSaveOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), "Save output");
     connect(d->actionSaveOutput, SIGNAL(triggered()), this, SLOT(actionSaveOutput()));

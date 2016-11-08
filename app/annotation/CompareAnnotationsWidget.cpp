@@ -40,6 +40,7 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
     // Setup user interfacce
     d->toolbarMain = new QToolBar("Compare Annotations", this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMain->setIconSize(QSize(24, 24));
     this->addToolBar(d->toolbarMain);
 
     d->gridviewResults = new GridViewWidget(this);

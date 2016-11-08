@@ -114,8 +114,10 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     // Toolbars and actions
     d->toolbarMain = new QToolBar("Manual annotation", this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMain->setIconSize(QSize(24, 24));
     d->toolbarEditor = new QToolBar("Vertical timeline editor", this);
     d->toolbarEditor->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarEditor->setIconSize(QSize(24, 24));
     this->addToolBar(d->toolbarMain);
 
     // Editor

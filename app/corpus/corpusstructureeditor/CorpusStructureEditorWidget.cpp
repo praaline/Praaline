@@ -66,8 +66,10 @@ CorpusStructureEditorWidget::CorpusStructureEditorWidget(QWidget *parent) :
     // Toolbars and actions
     d->toolbarMetadataStructure = new QToolBar("Metadata Structure", this);
     d->toolbarMetadataStructure->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMetadataStructure->setIconSize(QSize(24, 24));
     d->toolbarAnnotationStructure = new QToolBar("Annotation Structure", this);
     d->toolbarAnnotationStructure->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarAnnotationStructure->setIconSize(QSize(24, 24));
     setupActions();
 
     // Set up structure editor
