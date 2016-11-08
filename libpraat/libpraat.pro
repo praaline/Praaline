@@ -12,10 +12,10 @@ SUBDIRS += external/gsl \
            external/espeak \
            kar \
            num \
-           sys \
-           dwsys \
            stat \
            fon \
+           sys \
+           dwsys \
            dwtools \
            LPC \
            EEG \

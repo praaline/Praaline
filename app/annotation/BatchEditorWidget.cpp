@@ -37,7 +37,6 @@ BatchEditorWidget::BatchEditorWidget(QWidget *parent) :
     }
     connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
     connect(ui->comboBoxLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelChanged(QString)));
-    connect(ui->comboBoxAttributes, SIGNAL(currentTextChanged(QString)), this, SLOT(selectedAttributesChanged(QString)));
 
     // Manual selection model - table
     d->tableDistinctValues = new GridViewWidget(this);

@@ -139,9 +139,9 @@ public:
 
 signals:
     void corpusChanged();
-    void corpusCommunicationAdded(QPointer<CorpusCommunication> communication);
+    void corpusCommunicationAdded(QPointer<Praaline::Core::CorpusCommunication> communication);
     void corpusCommunicationDeleted(QString ID);
-    void corpusSpeakerAdded(QPointer<CorpusSpeaker> speaker);
+    void corpusSpeakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
     void corpusSpeakerDeleted(QString ID);
 
 public slots:

@@ -114,6 +114,7 @@ protected slots:
 
     virtual void saveSessionAsTemplate();
     virtual void manageSavedTemplates();
+    virtual void selectDefaultTemplate();
 
 protected:
     bool                     m_mainMenusCreated;

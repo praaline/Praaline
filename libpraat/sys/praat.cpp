@@ -1487,8 +1487,8 @@ void praat_lib_init()
 		}
 	}
 
-	INCLUDE_LIB_LIBRARY(praat_lib_uvafon_stat_init)
-	INCLUDE_LIB_LIBRARY(praat_lib_uvafon_init)
+    INCLUDE_LIB_LIBRARY(praat_lib_uvafon_stat_init)
+    INCLUDE_LIB_LIBRARY(praat_lib_uvafon_init)
 }
 
 static void executeStartUpFile (MelderDir startUpDirectory, const char32 *fileNameHead, const char32 *fileNameTail) {

@@ -67,9 +67,9 @@ public:
     QList<QString> deletedRecordingIDs;
 
 signals:
-    void corpusRecordingAdded(QPointer<CorpusRecording> recording);
+    void corpusRecordingAdded(QPointer<Praaline::Core::CorpusRecording> recording);
     void corpusRecordingDeleted(QString communicationID, QString recordingID);
-    void corpusAnnotationAdded(QPointer<CorpusAnnotation> annotation);
+    void corpusAnnotationAdded(QPointer<Praaline::Core::CorpusAnnotation> annotation);
     void corpusAnnotationDeleted(QString communicationID, QString annotationID);
 
 public slots:

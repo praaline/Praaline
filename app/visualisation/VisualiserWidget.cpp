@@ -1609,7 +1609,7 @@ void VisualiserWidget::setupTemplatesMenu()
 
     QAction *setDefaultAction = new QAction(tr("Choose Default Template..."), this);
     setDefaultAction->setObjectName("set_default_template");
-    connect(setDefaultAction, SIGNAL(triggered()), this, SLOT(preferences()));
+    connect(setDefaultAction, SIGNAL(triggered()), this, SLOT(selectDefaultTemplate()));
     m_templatesMenu->addSeparator();
     m_templatesMenu->addAction(setDefaultAction);
 
@@ -2548,17 +2548,13 @@ VisualiserWidget::manageSavedTemplates()
 void VisualiserWidget::paneDropAccepted(Pane *pane, QStringList uriList)
 {
     if (pane) m_paneStack->setCurrentPane(pane);
-
     for (QStringList::iterator i = uriList.begin(); i != uriList.end(); ++i) {
-
         FileOpenStatus status;
-
         if (i == uriList.begin()) {
             status = openPath(*i, ReplaceCurrentPane);
         } else {
             status = openPath(*i, CreateAdditionalModel);
         }
-
         if (status == FileOpenFailed) {
             QMessageBox::critical(this, tr("Failed to open dropped URL"),
                                   tr("<b>Open failed</b><p>Dropped URL \"%1\" could not be opened").arg(*i));
@@ -2573,8 +2569,12 @@ void VisualiserWidget::paneDropAccepted(Pane *pane, QStringList uriList)
     }
 }
 
-void
-VisualiserWidget::paneDropAccepted(Pane *pane, QString text)
+void VisualiserWidget::selectDefaultTemplate()
+{
+
+}
+
+void VisualiserWidget::paneDropAccepted(Pane *pane, QString text)
 {
     if (pane) m_paneStack->setCurrentPane(pane);
 
@@ -2592,8 +2592,7 @@ VisualiserWidget::paneDropAccepted(Pane *pane, QString text)
     //to a text layer?
 }
 
-void
-VisualiserWidget::closeEvent(QCloseEvent *e)
+void VisualiserWidget::closeEvent(QCloseEvent *e)
 {
     //    cerr << "VisualiserWidget::closeEvent" << endl;
 
@@ -2625,8 +2624,7 @@ VisualiserWidget::closeEvent(QCloseEvent *e)
     return;
 }
 
-bool
-VisualiserWidget::commitData(bool mayAskUser)
+bool VisualiserWidget::commitData(bool mayAskUser)
 {
     if (mayAskUser) {
         bool rv = checkSaveModified();
@@ -2667,8 +2665,7 @@ VisualiserWidget::commitData(bool mayAskUser)
     }
 }
 
-bool
-VisualiserWidget::checkSaveModified()
+bool VisualiserWidget::checkSaveModified()
 {
     // Called before some destructive operation (e.g. new session,
     // exit program).  Return true if we can safely proceed, false to
@@ -2699,8 +2696,7 @@ VisualiserWidget::checkSaveModified()
     return false;
 }
 
-bool
-VisualiserWidget::shouldCreateNewSessionForRDFAudio(bool *cancel)
+bool VisualiserWidget::shouldCreateNewSessionForRDFAudio(bool *cancel)
 {
     //!!! This is very similar to part of VisualiserWidgetBase::openAudio --
     //!!! make them a bit more uniform
@@ -2735,8 +2731,7 @@ VisualiserWidget::shouldCreateNewSessionForRDFAudio(bool *cancel)
     else return false;
 }
 
-void
-VisualiserWidget::saveSession()
+void VisualiserWidget::saveSession()
 {
     if (m_sessionFile != "") {
         if (!saveSessionFile(m_sessionFile)) {
@@ -2751,8 +2746,7 @@ VisualiserWidget::saveSession()
     }
 }
 
-void
-VisualiserWidget::saveSessionAs()
+void VisualiserWidget::saveSessionAs()
 {
     QString orig = m_audioFile;
     if (orig == "") orig = ".";
@@ -2777,8 +2771,7 @@ VisualiserWidget::saveSessionAs()
     }
 }
 
-void
-VisualiserWidget::propertyStacksResized(int width)
+void VisualiserWidget::propertyStacksResized(int width)
 {
     // cerr << "VisualiserWidget::propertyStacksResized(" << width << ")" << endl;
     if (!m_playControlsSpacer) return;
