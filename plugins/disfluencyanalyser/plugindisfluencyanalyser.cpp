@@ -29,6 +29,7 @@ struct Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyserPrivateDat
     bool commandPatternsSUB;
     bool commandExportMultiTierTextgrids;
     bool commandConcordances;
+    bool commandCreateSequences;
 };
 
 Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::PluginDisfluencyAnalyser(QObject* parent) : QObject(parent)
@@ -104,6 +105,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisfluencyAnalyser:
     parameters << PluginParameter("commandPatternsSUB", "Patterns-based detection: Substitutions", QVariant::Bool, d->commandPatternsSUB);
     parameters << PluginParameter("commandExportMultiTierTextgrids", "Export multi-tier textgrids", QVariant::Bool, d->commandExportMultiTierTextgrids);
     parameters << PluginParameter("commandConcordances", "Create Concordances", QVariant::Bool, d->commandConcordances);
+    parameters << PluginParameter("commandCreateSequences", "Create Sequences in database", QVariant::Bool, d->commandCreateSequences);
     return parameters;
 }
 
@@ -114,6 +116,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParamet
     if (parameters.contains("commandPatternsSUB")) d->commandPatternsSUB = parameters.value("commandPatternsSUB").toBool();
     if (parameters.contains("commandExportMultiTierTextgrids")) d->commandExportMultiTierTextgrids = parameters.value("commandExportMultiTierTextgrids").toBool();
     if (parameters.contains("commandConcordances")) d->commandConcordances = parameters.value("commandConcordances").toBool();
+    if (parameters.contains("commandCreateSequences")) d->commandCreateSequences = parameters.value("commandCreateSequences").toBool();
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
@@ -147,14 +150,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
                     // Only repetitions
                     if (disf->globalTag() != "REP") continue;
 
-                    result.append(annotationID).append("\t");
-                    result.append(speakerID).append("\t");
-                    // result.append(disf->globalTag()).append("\t");
-                    // interval indices
-                    result.append(QString::number(disf->indexStart())).append("\t");
-                    result.append(QString::number(disf->indexInterruptionPoint())).append("\t");
-                    result.append(QString::number(disf->indexEnd())).append("\t");
-
+                    // CALCULATIONS
                     // structure
                     QList<Interval *> reparandum = disf->reparandumIntervals();
                     QList<Interval *> interregnum = disf->interregnumIntervals();
@@ -210,7 +206,17 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
                     if (numberOfTokensInReparans > 0)
                         numberOfRepetitions = numberOfTokensInReparandum / numberOfTokensInReparans;
 
-                    // Export results
+                    // OUTPUT: Export results
+                    result.append(annotationID).append("\t");
+                    result.append(speakerID).append("\t");
+                    // The entire sequence: from the tMin of the reparandum to the tMax of the reparans
+                    result.append(QString::number(disf->timeReparandumStart().toDouble())).append("\t");
+                    result.append(QString::number(disf->timeReparansEnd().toDouble())).append("\t");
+                    // result.append(disf->globalTag()).append("\t");
+                    // interval indices
+                    result.append(QString::number(disf->indexStart())).append("\t");
+                    result.append(QString::number(disf->indexInterruptionPoint())).append("\t");
+                    result.append(QString::number(disf->indexEnd())).append("\t");
 
                     result.append(QString::number(startReparandum.toDouble())).append("\t");
                     result.append(QString::number(endReparandum.toDouble())).append("\t");
@@ -232,15 +238,67 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
 
                     result.append(QString::number(numberOfRepetitions)).append("\t");
 
+                    QString contextLeft = disf->contextText(-10).trimmed();
+                    QString contextRight = disf->contextText(10).trimmed();
 
-                    result.append(disf->contextText(-5)).append("\t");
-                    result.append(disf->formatted()).append("\t");
-                    result.append(disf->contextText(5)).append("\n");
+
+                    result.append(contextLeft).append("\t");
+                    result.append(contextLeft.right(1) == "_" ? "SIL" : "").append("\t");
+                    result.append(disf->reparandumText()).append("\t");
+                    result.append(disf->interregnumText()).append("\t");
+                    result.append(disf->interregnumAttribute("pos_min", " ")).append("\t");
+                    result.append(disf->interregnumAttribute("disfluency", " ")).append("\t");
+                    result.append(disf->reparansText().left(1) == "_" ? "SIL" : "").append("\t");
+                    result.append(disf->reparansText()).append("\t");
+                    result.append(contextRight).append("\t");
+
+                    result.append(disf->reparandumAttribute("disfluency_man", " ")).append("\t");
+                    result.append(disf->interregnumAttribute("disfluency_man", " ")).append("\t");
+                    result.append(disf->reparansAttribute("disfluency_man", " ")).append("\n");
+                    // result.append(disf->formatted()).append("\t");
                 }
                 delete DA;
                 if (result.length() > 1) result.chop(1);
                 if (!result.isEmpty()) printMessage(result);
                 result.clear();
+
+            }
+            qDeleteAll(tiersAll);
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+}
+
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequences
+    (Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+{
+    int countDone = 0;
+    madeProgress(0);
+    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Creating sequences in database"));
+
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+
+                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+                if (!tier_tok_min) continue;
+
+                DisfluencyAnalyserTool *DA = new DisfluencyAnalyserTool(tier_tok_min, this);
+                DA->readFromTier(tier_tok_min, "disfluency");
+                QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+                foreach (Disfluency *disf, DA->disfluencies()) {
+                    // THIS IS WHERE WE WOULD CREATE A SEQUENCE RECORD IN THE DATABASE
+
+                }
+                delete DA;
 
             }
             qDeleteAll(tiersAll);
@@ -276,8 +334,8 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
                 DisfluencyPatternDetector *PD = new DisfluencyPatternDetector();
                 PD->setTiers(tiers);
                 if (codes.contains("REP")) {
+                    PD->revertToDisfluenciesLevel1();
                     QList<DisfluencyPatternDetector::RepetitionInfo> repetitions = PD->detectRepetitionPatterns();
-                    PD->codeRepetitions(repetitions);
                 }
                 if (codes.contains("INS")) {
                     QList<DisfluencyPatternDetector::InsertionInfo> insertions = PD->detectInsertionPatterns();
@@ -436,16 +494,22 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(Co
     if (!patternsToAnnotate.isEmpty())
         patterns(corpus, communications, patternsToAnnotate);
     if (d->commandConcordances) {
-        QString title = "annotationID\tspeakerID\tindexStart\tindexInterruption\tindexEnd\t";
+        QString title = "annotationID\tspeakerID\ttMinSeqence\ttMaxSequence\tindexStart\tindexInterruption\tindexEnd\t";
         title = title.append("startReparandum\tendReparandum\tstartInterregnum\tendInterregnum\tstartReparans\tendReparans\t");
         title = title.append("numberOfTokensInReparandum\tnumberOf_SIL_InReparandum\tnumberOf_FIL_InReparandum\t");
         title = title.append("numberOf_SIL_InInterregnum\tnumberOf_FIL_InInterregnum\t");
         title = title.append("numberOfTokensInReparans\tnumberOf_SIL_InReparans\tnumberOf_FIL_InReparans\t");
         title = title.append("numberOfRepetitions\t");
-        title = title.append("leftContext\tdisfluencySequence\trightContext");
+        title = title.append("leftContext\tleftContext_SIL\t");
+        title = title.append("reparandum\tinterregnum\tinterregnum_pos\tinterregnum_disfluency\treparans\t");
+        title = title.append("rightContext\trightContext_SIL\t");
+        title = title.append("reparans_arc\tinterregnum_arc\treparans_arc");
         printMessage(title);
 
         concordances(corpus, communications);
+    }
+    if (d->commandCreateSequences) {
+        createSequences(corpus, communications);
     }
     if (d->commandExportMultiTierTextgrids)
         exportMultiTierTextgrids(corpus, communications);

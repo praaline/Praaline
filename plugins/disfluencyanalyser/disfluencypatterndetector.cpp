@@ -3,81 +3,127 @@
 #include <QList>
 #include <QSet>
 #include <QPointer>
+#include <QFile>
+#include <QTextStream>
 #include <QDebug>
+#include <QApplication>
 #include "pncore/corpus/CorpusBookmark.h"
 
 #include "disfluencypatterndetector.h"
 
+struct DisfluencyPatternDetectorData {
+    DisfluencyPatternDetectorData() :
+        tierinfoToken(QPair<QString, QString>("tok_min", "")),
+        tierinfoPOS(QPair<QString, QString>("tok_min", "pos_min")),
+        tierinfoDisfluency(QPair<QString, QString>("tok_min", "disfluency")),
+        tierToken(0), tierPOS(0), tierDisfluency(0)
+    {}
+
+    QPair<QString, QString> tierinfoToken;
+    QPair<QString, QString> tierinfoPOS;
+    QPair<QString, QString> tierinfoDisfluency;
+    IntervalTier *tierToken;
+    IntervalTier *tierPOS;
+    IntervalTier *tierDisfluency;
+    QStringList skipDiscourseMarkers;
+};
 
 DisfluencyPatternDetector::DisfluencyPatternDetector() :
-    m_tierinfoToken(QPair<QString, QString>("tok_min", "")),
-    m_tierinfoPOS(QPair<QString, QString>("tok_min", "pos_min")),
-    m_tierinfoDisfluency(QPair<QString, QString>("tok_min", "disfluency")),
-    m_tierToken(0), m_tierPOS(0), m_tierDisfluency(0)
+    d(new DisfluencyPatternDetectorData)
 {
+    // Read file of discourse markers to skip in the pattern detection
+    QString filenameSkip = QApplication::applicationDirPath() + "/plugins/dismo/dis/discoursemarkerstoskip.txt";
+    QFile file(filenameSkip);
+    if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) {
+        qDebug() << "Error: could not read file " << filenameSkip;
+        return;
+    }
+    QTextStream stream(&file);
+    do {
+        QString line = stream.readLine().trimmed();
+        if (line.startsWith("#")) continue;
+        d->skipDiscourseMarkers.append(line);
+    } while (!stream.atEnd());
+    file.close();
 }
 
 DisfluencyPatternDetector::~DisfluencyPatternDetector()
 {
+    delete d;
 }
 
 void DisfluencyPatternDetector::setTierInfoToken(const QString &levelID, const QString &attributeID)
 {
-    m_tierinfoToken.first = levelID; m_tierinfoToken.second = attributeID;
+    d->tierinfoToken.first = levelID; d->tierinfoToken.second = attributeID;
 }
 
 void DisfluencyPatternDetector::setTierInfoPOS(const QString &levelID, const QString &attributeID)
 {
-    m_tierinfoPOS.first = levelID; m_tierinfoPOS.second = attributeID;
+    d->tierinfoPOS.first = levelID; d->tierinfoPOS.second = attributeID;
 }
 
 void DisfluencyPatternDetector::setTierInfoDisfluecny(const QString &levelID, const QString &attributeID)
 {
-    m_tierinfoDisfluency.first = levelID; m_tierinfoDisfluency.second = attributeID;
+    d->tierinfoDisfluency.first = levelID; d->tierinfoDisfluency.second = attributeID;
 }
 
 void DisfluencyPatternDetector::setTiers(AnnotationTierGroup *tiergroup)
 {
-    m_tierToken = tiergroup->getIntervalTierByName(m_tierinfoToken.first);
-    m_tierPOS = tiergroup->getIntervalTierByName(m_tierinfoPOS.first);
-    m_tierDisfluency = tiergroup->getIntervalTierByName(m_tierinfoDisfluency.first);
+    d->tierToken = tiergroup->getIntervalTierByName(d->tierinfoToken.first);
+    d->tierPOS = tiergroup->getIntervalTierByName(d->tierinfoPOS.first);
+    d->tierDisfluency = tiergroup->getIntervalTierByName(d->tierinfoDisfluency.first);
 }
 
 void DisfluencyPatternDetector::setTiers(IntervalTier *tierToken, IntervalTier *tierPOS, IntervalTier *tierDisfluecny)
 {
-    m_tierToken = tierToken; m_tierPOS = tierPOS; m_tierDisfluency = tierDisfluecny;
+    d->tierToken = tierToken; d->tierPOS = tierPOS; d->tierDisfluency = tierDisfluecny;
 }
 
 inline QString DisfluencyPatternDetector::token(QList<int> &indices, int i) const
 {
     if (i < 0 || i >= indices.count()) return QString("###");
-    if (m_tierinfoToken.second.isEmpty()) return m_tierToken->interval(indices.at(i))->text();
-    else return m_tierToken->interval(indices.at(i))->attribute(m_tierinfoToken.second).toString();
+    if (d->tierinfoToken.second.isEmpty()) return d->tierToken->interval(indices.at(i))->text();
+    else return d->tierToken->interval(indices.at(i))->attribute(d->tierinfoToken.second).toString();
 }
 
 inline QString DisfluencyPatternDetector::pos(QList<int> &indices, int i) const
 {
     if (i < 0 || i >= indices.count()) return QString("###");
-    if (m_tierinfoPOS.second.isEmpty()) return m_tierPOS->interval(indices.at(i))->text();
-    else return m_tierPOS->interval(indices.at(i))->attribute(m_tierinfoPOS.second).toString();
+    if (d->tierinfoPOS.second.isEmpty()) return d->tierPOS->interval(indices.at(i))->text();
+    else return d->tierPOS->interval(indices.at(i))->attribute(d->tierinfoPOS.second).toString();
 }
 
 inline QString DisfluencyPatternDetector::disfluency(QList<int> &indices, int i) const
 {
     if (i < 0 || i >= indices.count()) return QString("###");
-    if (m_tierinfoDisfluency.second.isEmpty()) return m_tierDisfluency->interval(indices.at(i))->text();
-    else return m_tierDisfluency->interval(indices.at(i))->attribute(m_tierinfoDisfluency.second).toString();
+    if (d->tierinfoDisfluency.second.isEmpty()) return d->tierDisfluency->interval(indices.at(i))->text();
+    else return d->tierDisfluency->interval(indices.at(i))->attribute(d->tierinfoDisfluency.second).toString();
 }
 
-QList<int> DisfluencyPatternDetector::indicesWithoutSimpleDisfluencies(int from, int to)
+QList<int> DisfluencyPatternDetector::indicesWithoutSimpleDisfluencies(bool withDMlist, int from, int to)
 {
+    // Token skipping happens here
     QList<int> list;
-    if (to < 0) to = m_tierDisfluency->countItems() - 1;
+    if (to < 0) to = d->tierDisfluency->countItems() - 1;
     for (int i = from; i <= to; ++i) {
-        QString dis = (m_tierinfoDisfluency.second.isEmpty()) ?
-                    m_tierDisfluency->interval(i)->text() :
-                    m_tierDisfluency->interval(i)->attribute(m_tierinfoDisfluency.second).toString();
-        if (dis.startsWith("SIL") || dis.startsWith("FIL") || dis.startsWith("FST") || dis.startsWith("PARA")) continue;
+        QString tok = (d->tierinfoToken.second.isEmpty()) ?
+                    d->tierToken->interval(i)->text() :
+                    d->tierToken->interval(i)->attribute(d->tierinfoToken.second).toString();
+        QString pos = (d->tierinfoPOS.second.isEmpty()) ?
+                    d->tierPOS->interval(i)->text() :
+                    d->tierPOS->interval(i)->attribute(d->tierinfoPOS.second).toString();
+        QString dis = (d->tierinfoDisfluency.second.isEmpty()) ?
+                    d->tierDisfluency->interval(i)->text() :
+                    d->tierDisfluency->interval(i)->attribute(d->tierinfoDisfluency.second).toString();
+        // Skip (already annotated) simple disfluencies
+        if (dis.contains("SIL") || dis.contains("FIL") || dis.contains("FST") || dis.contains("PARA")) continue;
+        if (withDMlist && d->skipDiscourseMarkers.contains(tok)) {
+            d->tierDisfluency->interval(i)->setAttribute("__DMskip", true);
+            continue;
+        }
+        if (pos.startsWith("ITJ")) continue;
+        if (withDMlist) qDebug() << tok << pos << dis;
+        // otherwise, do not skip
         list << i;
     }
     return list;
@@ -87,7 +133,10 @@ bool DisfluencyPatternDetector::matchAll(QList<int> &indices, int start, int win
 {
     bool match = true;
     for (int i = 0; i < window; ++i) {
-        if (token(indices, start + i) != token(indices, start + i + window)) {
+        QString tok1 = token(indices, start + i);
+        QString tok2 = token(indices, start + i + window);
+        qDebug() << tok1 << tok2;
+        if (tok1 != tok2) {
             match = false;
             break;
         }
@@ -95,69 +144,111 @@ bool DisfluencyPatternDetector::matchAll(QList<int> &indices, int start, int win
     return match;
 }
 
-QList<DisfluencyPatternDetector::RepetitionInfo> DisfluencyPatternDetector::detectRepetitionPatterns()
+void DisfluencyPatternDetector::revertToDisfluenciesLevel1()
 {
-    QList<RepetitionInfo> hits;
-    if (!m_tierDisfluency) return hits;
-    if (!m_tierToken) return hits;
-
-    QList<int> indices = indicesWithoutSimpleDisfluencies();
-    QSet<int> indicesAlreadyAnnotated;
-
-    for (int window = 8; window >= 1; --window) {
-        for (int i = 0; i < indices.count(); ++i) {
-            if (indicesAlreadyAnnotated.contains(indices.at(i))) continue;
-            if (matchAll(indices, i, window)) {
-                // how many times was that repeated ?
-                int times = 2;
-                while (matchAll(indices, i + (times - 1) * window, window)) {
-                    times++;
-                }
-                // simplify identical strings (a a a a)
-                bool identical = true;
-                for (int j = i; j < i + (times * window) - 1; ++j) {
-                    if (token(indices, j) != token(indices, j + 1)) {
-                        identical = false;
-                        break;
-                    }
-                }
-                RepetitionInfo rep;
-                for (int j = i; j < i + (times * window); ++j) {
-                    rep.indices << indices.at(j);
-                    indicesAlreadyAnnotated.insert(indices.at(j));
-                }
-                if (identical) {
-                    rep.window = 1;
-                    rep.times = times * window;
-                } else {
-                    rep.window = window;
-                    rep.times = times;
-                }
-                QString text;
-                for (int j = i; j < i + (times * window); ++j) {
-                    text.append(token(indices, j)).append(" ");
-                }
-                rep.text = text;
-                hits << rep;
-
-                qDebug() << rep.window << "\t" << rep.times << "\t" << rep.text;
-            }
-        }
+    for (int index = 0; index < d->tierDisfluency->countItems(); ++index) {
+        QString dis = (d->tierinfoDisfluency.second.isEmpty()) ?
+                    d->tierDisfluency->interval(index)->text() :
+                    d->tierDisfluency->interval(index)->attribute(d->tierinfoDisfluency.second).toString();
+        QString updated;
+        if (dis.contains("SIL")) updated = "SIL";
+        if (dis.contains("FIL")) updated = "FIL";
+        if (dis.contains("FST")) updated = "FST";
+        if (dis.contains("LEN")) updated = "LEN";
+        if (dis.contains("WDP")) updated = "WDP";
+        if (dis.contains("PARA")) updated = "PARA";
+        if (d->tierinfoDisfluency.second.isEmpty())
+            d->tierDisfluency->interval(index)->setText(updated);
+        else
+            d->tierDisfluency->interval(index)->setAttribute(d->tierinfoDisfluency.second, updated);
     }
-    return hits;
 }
 
-void DisfluencyPatternDetector::codeRepetitions(QList<DisfluencyPatternDetector::RepetitionInfo> &repetitions)
+QList<DisfluencyPatternDetector::RepetitionInfo> DisfluencyPatternDetector::detectRepetitionPatterns()
+{
+    QList<RepetitionInfo> hitsAll;
+    if (!d->tierDisfluency) return hitsAll;
+    if (!d->tierToken) return hitsAll;
+
+    QSet<int> indicesAlreadyAnnotated;
+
+    QList<bool> withDMseq; withDMseq << false << true;
+    foreach (bool withDM, withDMseq) {
+        qDebug() << withDM;
+        QList<RepetitionInfo> hits;
+        QList<int> indices = indicesWithoutSimpleDisfluencies(withDM);
+        for (int window = 8; window >= 1; --window) {
+            for (int i = 0; i < indices.count(); ++i) {
+                if (indicesAlreadyAnnotated.contains(indices.at(i))) continue;
+                if (matchAll(indices, i, window)) {
+                    // how many times was that repeated ?
+                    int times = 2;
+                    while (matchAll(indices, i + (times - 1) * window, window)) {
+                        times++;
+                    }
+                    // simplify identical strings (a a a a)
+                    bool identical = true;
+                    for (int j = i; j < i + (times * window) - 1; ++j) {
+                        if (token(indices, j) != token(indices, j + 1)) {
+                            identical = false;
+                            break;
+                        }
+                    }
+                    RepetitionInfo rep;
+                    for (int j = i; j < i + (times * window); ++j) {
+                        rep.indices << indices.at(j);
+                        indicesAlreadyAnnotated.insert(indices.at(j));
+                    }
+                    if (identical) {
+                        rep.window = 1;
+                        rep.times = times * window;
+                    } else {
+                        rep.window = window;
+                        rep.times = times;
+                    }
+                    QString text;
+                    for (int j = i; j < i + (times * window); ++j) {
+                        text.append(token(indices, j)).append(" ");
+                    }
+                    rep.text = text;
+                    hits << rep;
+
+                    qDebug() << rep.window << "\t" << rep.times << "\t" << rep.text;
+                }
+            }
+        }
+        codeRepetitions(hits, withDM);
+        hitsAll << hits;
+    }
+    return hitsAll;
+
+}
+
+void DisfluencyPatternDetector::codeRepetitions(QList<DisfluencyPatternDetector::RepetitionInfo> &repetitions, bool withDM)
 {
     foreach (RepetitionInfo rep, repetitions) {
         int counterToken = 1; int counterTimes = 1;
         for (int index = rep.indices.first(); index <= rep.indices.last(); ++index) {
-            QString dis = (m_tierinfoDisfluency.second.isEmpty()) ?
-                        m_tierDisfluency->interval(index)->text() :
-                        m_tierDisfluency->interval(index)->attribute(m_tierinfoDisfluency.second).toString();
+            QString tok = (d->tierinfoToken.second.isEmpty()) ?
+                        d->tierToken->interval(index)->text() :
+                        d->tierToken->interval(index)->attribute(d->tierinfoToken.second).toString();
+            QString pos = (d->tierinfoPOS.second.isEmpty()) ?
+                        d->tierPOS->interval(index)->text() :
+                        d->tierPOS->interval(index)->attribute(d->tierinfoPOS.second).toString();
+            QString dis = (d->tierinfoDisfluency.second.isEmpty()) ?
+                        d->tierDisfluency->interval(index)->text() :
+                        d->tierDisfluency->interval(index)->attribute(d->tierinfoDisfluency.second).toString();
+            qDebug() << tok << pos << dis;
             if      (dis.contains("SIL"))   dis = "REP+SIL";
             else if (dis.contains("FIL"))   dis = "REP+FIL";
+            else if (dis.contains("FST"))   dis = "REP+FST";
             else if (dis.contains("PARA"))  dis = "REP+PARA";
+            else if (withDM && (d->skipDiscourseMarkers.contains(tok))) {
+                dis = "REP+DM";
+            }
+            else if (pos.startsWith("ITJ")) {
+                dis = "REP+ITJ";
+            }
             else {
                 if (counterTimes == rep.times) dis = "REP_";
                 else {
@@ -171,10 +262,10 @@ void DisfluencyPatternDetector::codeRepetitions(QList<DisfluencyPatternDetector:
                 counterToken++;
                 if (counterToken > rep.window) { counterToken = 1; counterTimes++; }
             }
-            if (m_tierinfoDisfluency.second.isEmpty())
-                m_tierDisfluency->interval(index)->setText(dis);
+            if (d->tierinfoDisfluency.second.isEmpty())
+                d->tierDisfluency->interval(index)->setText(dis);
             else
-                m_tierDisfluency->interval(index)->setAttribute(m_tierinfoDisfluency.second, dis);
+                d->tierDisfluency->interval(index)->setAttribute(d->tierinfoDisfluency.second, dis);
         }
     }
 }
@@ -194,8 +285,8 @@ bool DisfluencyPatternDetector::match(QList<int> &indices, int startA, int start
 QList<DisfluencyPatternDetector::InsertionInfo> DisfluencyPatternDetector::detectInsertionPatterns()
 {
     QList<InsertionInfo> hits;
-    if (!m_tierDisfluency) return hits;
-    if (!m_tierToken) return hits;
+    if (!d->tierDisfluency) return hits;
+    if (!d->tierToken) return hits;
 
     QList<int> indices = indicesWithoutSimpleDisfluencies();
     QSet<int> indicesAlreadyAnnotated;
@@ -262,8 +353,8 @@ void DisfluencyPatternDetector::codeInsertions(QList<DisfluencyPatternDetector::
 QList<DisfluencyPatternDetector::SubstitutionInfo> DisfluencyPatternDetector::detectSubstitutionPatterns()
 {
     QList<SubstitutionInfo> hits;
-    if (!m_tierDisfluency) return hits;
-    if (!m_tierToken) return hits;
+    if (!d->tierDisfluency) return hits;
+    if (!d->tierToken) return hits;
 
     QList<int> indices = indicesWithoutSimpleDisfluencies();
     QSet<int> indicesAlreadyAnnotated;
@@ -328,11 +419,11 @@ void DisfluencyPatternDetector::codeSubstitutions(QList<SubstitutionInfo> &subst
 QPointer<CorpusBookmark> DisfluencyPatternDetector::createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                                    const DisfluencyPatternDetector::PatternInfoBase &pattern)
 {
-    if (!m_tierToken) return 0;
+    if (!d->tierToken) return 0;
     if (pattern.indices.isEmpty()) return 0;
     int i = pattern.indices.first();
-    if (i < 0 || i >= m_tierToken->countItems()) return 0;
-    RealTime t = m_tierToken->interval(i)->tMin();
+    if (i < 0 || i >= d->tierToken->countItems()) return 0;
+    RealTime t = d->tierToken->interval(i)->tMin();
     return new CorpusBookmark(corpusID, communicationID, annotationID, t, pattern.type(), pattern.text);
 }
 
@@ -341,7 +432,7 @@ DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QStrin
                                            QList<DisfluencyPatternDetector::RepetitionInfo> &repetitions)
 {
     QList<QPointer<CorpusBookmark> > bookmarks;
-    if (!m_tierToken) return bookmarks;
+    if (!d->tierToken) return bookmarks;
     foreach (RepetitionInfo rep, repetitions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, rep);
     }
@@ -353,7 +444,7 @@ DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QStrin
                                            QList<DisfluencyPatternDetector::InsertionInfo> &insertions)
 {
     QList<QPointer<CorpusBookmark> > bookmarks;
-    if (!m_tierToken) return bookmarks;
+    if (!d->tierToken) return bookmarks;
     foreach (InsertionInfo ins, insertions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, ins);
     }
@@ -365,7 +456,7 @@ DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QStrin
                                            QList<DisfluencyPatternDetector::SubstitutionInfo> &substitutions)
 {
     QList<QPointer<CorpusBookmark> > bookmarks;
-    if (!m_tierToken) return bookmarks;
+    if (!d->tierToken) return bookmarks;
     foreach (SubstitutionInfo sub, substitutions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, sub);
     }

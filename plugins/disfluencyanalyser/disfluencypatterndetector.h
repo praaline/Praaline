@@ -10,11 +10,14 @@
 #include "pncore/corpus/CorpusBookmark.h"
 using namespace Praaline::Core;
 
+struct DisfluencyPatternDetectorData;
+
 class DisfluencyPatternDetector
 {
 public:
     class PatternInfoBase {
     public:
+        virtual ~PatternInfoBase() {}
         QList<int> indices;
         QString text;
         virtual QString type() const = 0;
@@ -22,6 +25,7 @@ public:
 
     class RepetitionInfo : public PatternInfoBase {
     public:
+        virtual ~RepetitionInfo() {}
         int window;
         int times;
         QString type() const { return "REP"; }
@@ -29,6 +33,7 @@ public:
 
     class InsertionInfo : public PatternInfoBase {
     public:
+        virtual ~InsertionInfo() {}
         int lengthBefore;
         int lengthInsertion;
         int lengthAfter;
@@ -37,6 +42,7 @@ public:
 
     class SubstitutionInfo : public PatternInfoBase {
     public:
+        virtual ~SubstitutionInfo() {}
         int lengthBefore;
         int lengthOldTokens;
         int lengthNewTokens;
@@ -45,7 +51,7 @@ public:
     };
 
     DisfluencyPatternDetector();
-    ~DisfluencyPatternDetector();
+    virtual ~DisfluencyPatternDetector();
 
     void setTierInfoToken(const QString &levelID, const QString &attributeID);
     void setTierInfoPOS(const QString &levelID, const QString &attributeID);
@@ -53,10 +59,10 @@ public:
     void setTiers(AnnotationTierGroup *tiergroup);
     void setTiers(IntervalTier *tierToken, IntervalTier *tierPOS, IntervalTier *tierDisfluecny);
 
-    QList<int> indicesWithoutSimpleDisfluencies(int from = 0, int to = -1);
+    QList<int> indicesWithoutSimpleDisfluencies(bool withDMlist = false, int from = 0, int to = -1);
 
+    void revertToDisfluenciesLevel1();
     QList<RepetitionInfo> detectRepetitionPatterns();
-    void codeRepetitions(QList<RepetitionInfo> &repetitions);
 
     QList<InsertionInfo> detectInsertionPatterns();
     void codeInsertions(QList<InsertionInfo> &insertions);
@@ -71,12 +77,7 @@ public:
     QList<QPointer<CorpusBookmark> > createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                      QList<SubstitutionInfo> &substitutions);
 private:
-    QPair<QString, QString> m_tierinfoToken;
-    QPair<QString, QString> m_tierinfoPOS;
-    QPair<QString, QString> m_tierinfoDisfluency;
-    IntervalTier *m_tierToken;
-    IntervalTier *m_tierPOS;
-    IntervalTier *m_tierDisfluency;
+    DisfluencyPatternDetectorData *d;
 
     inline QString token(QList<int> &indices, int i) const;
     inline QString pos(QList<int> &indices, int i) const;
@@ -84,6 +85,8 @@ private:
 
     bool matchAll(QList<int> &indices, int start, int window);
     bool match(QList<int> &indices, int startA, int startB, int length);
+
+    void codeRepetitions(QList<RepetitionInfo> &repetitions, bool withDM);
 
     QPointer<CorpusBookmark> createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                             const PatternInfoBase &pattern);

@@ -47,10 +47,15 @@ public:
     QList<Interval *> interregnumIntervals() const;
     QList<Interval *> editTermIntervals() const;
     QList<Interval *> reparansIntervals(int startFrom = 0) const;
-    QString reparandumText() const;
-    QString interregnumText() const;
-    QString editTermText() const;
-    QString reparansText() const;
+    QString reparandumText(const QString &separator = " ") const;
+    QString interregnumText(const QString &separator = " ") const;
+    QString editTermText(const QString &separator = " ") const;
+    QString reparansText(const QString &separator = " ") const;
+    QString reparandumAttribute(const QString &attributeID, const QString &separator = " ") const;
+    QString interregnumAttribute(const QString &attributeID, const QString &separator = " ") const;
+    QString editTermAttribute(const QString &attributeID, const QString &separator = " ") const;
+    QString reparansAttribute(const QString &attributeID, const QString &separator = " ") const;
+
 
     QString formatted(const QString &leftS = "(", const QString &rightS = ")",
                       const QString &intpt = "* ",

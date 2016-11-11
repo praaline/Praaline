@@ -130,45 +130,66 @@ QList<Interval *> Disfluency::reparansIntervals(int startFrom) const
     return ret;
 }
 
-QString Disfluency::reparandumText() const
+QString Disfluency::reparandumAttribute(const QString &attributeID, const QString &separator) const
 {
     QString ret;
     foreach (Interval *intv, reparandumIntervals()) {
-        ret.append(intv->text()).append(" ");
+        ret.append(intv->attribute(attributeID).toString()).append(separator);
     }
-    if (!ret.isEmpty()) ret.chop(1);
+    if ((!ret.isEmpty()) && (!separator.isEmpty())) ret.chop(separator.length());
     return ret;
 }
 
-QString Disfluency::interregnumText() const
+QString Disfluency::interregnumAttribute(const QString &attributeID, const QString &separator) const
 {
     QString ret;
     foreach (Interval *intv, interregnumIntervals()) {
-        ret.append(intv->text()).append(" ");
+        ret.append(intv->attribute(attributeID).toString()).append(separator);
     }
-    if (!ret.isEmpty()) ret.chop(1);
+    if ((!ret.isEmpty()) && (!separator.isEmpty())) ret.chop(separator.length());
     return ret;
 }
 
-QString Disfluency::editTermText() const
+QString Disfluency::editTermAttribute(const QString &attributeID, const QString &separator) const
 {
     QString ret;
     foreach (Interval *intv, editTermIntervals()) {
-        ret.append(intv->text()).append(" ");
+        ret.append(intv->attribute(attributeID).toString()).append(separator);
     }
-    if (!ret.isEmpty()) ret.chop(1);
+    if ((!ret.isEmpty()) && (!separator.isEmpty())) ret.chop(separator.length());
     return ret;
 }
 
-QString Disfluency::reparansText() const
+QString Disfluency::reparansAttribute(const QString &attributeID, const QString &separator) const
 {
     QString ret;
     foreach (Interval *intv, reparansIntervals()) {
-        ret.append(intv->text()).append(" ");
+        ret.append(intv->attribute(attributeID).toString()).append(separator);
     }
-    if (!ret.isEmpty()) ret.chop(1);
+    if ((!ret.isEmpty()) && (!separator.isEmpty())) ret.chop(separator.length());
     return ret;
 }
+
+QString Disfluency::reparandumText(const QString &separator) const
+{
+    return reparandumAttribute("text", separator);
+}
+
+QString Disfluency::interregnumText(const QString &separator) const
+{
+    return interregnumAttribute("text", separator);
+}
+
+QString Disfluency::editTermText(const QString &separator) const
+{
+    return editTermAttribute("text", separator);
+}
+
+QString Disfluency::reparansText(const QString &separator) const
+{
+    return reparansAttribute("text", separator);
+}
+
 
 QString Disfluency::formatted(const QString &leftS, const QString &rightS, const QString &intpt,
                               const QString &leftE, const QString &rightE)
@@ -185,7 +206,9 @@ QString Disfluency::formatted(const QString &leftS, const QString &rightS, const
 //        ret.append(rightE);
 //    }
     if (!interregnumText().isEmpty())
-        ret.append(interregnumText()).append(" |");
+        ret.append(interregnumText());
+    if (!reparansText().isEmpty())
+        ret.append(" |");
     ret.append(reparansText());
     ret.append(rightS);
     return ret;

@@ -65,6 +65,7 @@ namespace Praaline {
 
                 void concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
                 void patterns(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications, const QStringList &codes);
+                void createSequences(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
                 void exportMultiTierTextgrids(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
             };
         }
