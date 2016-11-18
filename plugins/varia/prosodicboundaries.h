@@ -12,12 +12,6 @@ using namespace Praaline::Core;
 class ProsodicBoundaries
 {
 public:
-
-    static QPair<int, int> windowNoPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight);
-    static bool mean(double &mean, IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-                     bool checkStylized);
-    static double relative(IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-                           bool checkStylized, bool logarithmic);
     static bool isLexical(Interval *token);
     static QString categorise_CLI_INT_LEX(Interval *token);
 

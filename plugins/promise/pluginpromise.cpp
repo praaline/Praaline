@@ -3,21 +3,19 @@
 #include <QtPlugin>
 #include <QIcon>
 #include <QApplication>
-#include <ExtensionSystemConstants>
-
 #include <QFile>
 #include <QTextStream>
+#include <ExtensionSystemConstants>
 
-#include "pluginpromise.h"
 #include "pncore/corpus/Corpus.h"
-#include "pluginpromisefeatures.h"
-#include "pluginprosobox5.h"
-#include "pluginpromisefeatures.h"
-
-#include "pncore/interfaces/praat/PraatTextGrid.h"
-
 #include "pncore/corpus/CorpusBookmark.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
+
+#include "ProsodicBoundariesAnnotator.h"
+#include "SyllableProminenceAnnotator.h"
+#include "pluginpromise.h"
+
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -95,22 +93,6 @@ QString Praaline::Plugins::Promise::PluginPromise::pluginLicense() const {
     return tr("GPL v.3");
 }
 
-
-void prosogram(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
-{
-    PluginProsobox5 *prosobox = new PluginProsobox5();
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-                prosobox->ProsoGram(corpus, rec, annot);
-            }
-        }
-    }
-    delete prosobox;
-}
-
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Promise::PluginPromise::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
@@ -129,7 +111,7 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
     QString filenameModelCrossNoPOS = appPath + "/plugins/promise/cross_nopos.model";
     QString filenameModelCrossPOS = appPath + "/plugins/promise/cross_pos.model";
 
-    PluginProminenceFeatures *promise = new PluginProminenceFeatures();
+    SyllableProminenceAnnotator *promise = new SyllableProminenceAnnotator();
 
     QPointer<IntervalTier> tier_syll;
     QPointer<IntervalTier> tier_token;

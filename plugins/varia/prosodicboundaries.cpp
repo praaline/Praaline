@@ -3,6 +3,7 @@
 #include <QDebug>
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/query/Measures.h"
 #include "pncore/base/RealValueList.h"
 #include "prosodicboundaries.h"
 
@@ -19,71 +20,6 @@ QStringList ProsodicBoundaries::POS_LEX = QStringList( { "ADJ", "ADV", "ADV:comp
                                                          "PRO:per:ton", "PRO:pos",
                                                          "VER:cond", "VER:fut", "VER:impe", "VER:impf", "VER:inf", "VER:ppas",
                                                          "VER:ppre", "VER:pres", "VER:simp", "VER:subi", "VER:subp" } );
-
-
-QPair<int, int> ProsodicBoundaries::windowNoPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight)
-{
-    QPair<int, int> ret;
-    ret.first = i; ret.second = i;
-    // Checks
-    if (!tier_syll) return ret;
-    if (i < 0 || i >= tier_syll->countItems()) return ret;
-    if (tier_syll->interval(i)->isPauseSilent()) return ret;
-    // Calculation
-    ret.first = i - windowLeft;
-    if (ret.first < 0) ret.first = 0;
-    while (tier_syll->interval(ret.first)->isPauseSilent() && ret.first < i) ret.first++;
-    ret.second = i + windowRight;
-    if (ret.second >= tier_syll->countItems()) ret.second = tier_syll->countItems() - 1;
-    while (tier_syll->interval(ret.second)->isPauseSilent() && ret.second > i) ret.second--;
-    return ret;
-}
-
-bool ProsodicBoundaries::mean(double &mean, IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-                              bool checkStylized)
-{
-    if (!tier_syll) return 0.0;
-    QPair<int, int> window = windowNoPause(tier_syll, i, windowLeft, windowRight);
-    double sum = 0.0;
-    int count = 0;
-    for (int j = window.first; j <= window.second; j++) {
-        Interval *syll = tier_syll->interval(j);
-        if (checkStylized) {
-            if (syll->attribute("f0_min").toInt() == 0) continue; // check if stylised
-        }
-        double x = syll->attribute(attributeName).toDouble();
-        sum = sum + x;
-        count++;
-    }
-    if (count == 0) return false;
-    mean = sum / ((double)count);
-    return true;
-}
-
-double ProsodicBoundaries::relative(IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-                                    bool checkStylized, bool logarithmic)
-{
-    // When it is impossible to calculate a relative value, return 1 for ratios or 0=log(1) for logarithmic attributes
-    if (!tier_syll) return (logarithmic) ? 0.0 : 1.0;
-    Interval *syll = tier_syll->interval(i);
-    if (!syll) return (logarithmic) ? 0.0 : 1.0;
-    // Check if attribute has to be stylised and if not, try to interpolate
-    double value = syll->attribute(attributeName).toDouble();
-    if (checkStylized && (syll->attribute("f0_min").toInt() == 0)) {
-        if (!mean(value, tier_syll, attributeName, i, 1, 1, true))
-            return (logarithmic) ? 0.0 : 1.0; // no luck
-    }
-    // Get mean in window
-    double windowMean = 0.0;
-    if (!mean(windowMean, tier_syll, attributeName, i, windowLeft, windowRight, checkStylized))
-        return (logarithmic) ? 0.0 : 1.0; // no luck
-    // Calculate relative value
-    if (logarithmic) {
-        return value - windowMean;
-    }
-    // else linear
-    return value / windowMean;
-}
 
 bool ProsodicBoundaries::isLexical(Interval *token)
 {
@@ -183,22 +119,22 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
                 }
             }
             double durSyllRel20 = 0.0, durSyllRel30 = 0.0, durSyllRel40 = 0.0, durSyllRel50 = 0.0;
-            durSyllRel20 = relative(tier_syll, "duration", isyll, 2, 0, false, false);
-            durSyllRel30 = relative(tier_syll, "duration", isyll, 3, 0, false, false);
-            durSyllRel40 = relative(tier_syll, "duration", isyll, 4, 0, false, false);
-            durSyllRel50 = relative(tier_syll, "duration", isyll, 5, 0, false, false);
+            durSyllRel20 = Measures::relative(tier_syll, "duration", isyll, 2, 0, true, "", false);
+            durSyllRel30 = Measures::relative(tier_syll, "duration", isyll, 3, 0, true, "", false);
+            durSyllRel40 = Measures::relative(tier_syll, "duration", isyll, 4, 0, true, "", false);
+            durSyllRel50 = Measures::relative(tier_syll, "duration", isyll, 5, 0, true, "", false);
 
             double logdurSyllRel20 = 0.0, logdurSyllRel30 = 0.0, logdurSyllRel40 = 0.0, logdurSyllRel50 = 0.0;
-            logdurSyllRel20 = relative(tier_syll, "duration_log", isyll, 2, 0, false, false);
-            logdurSyllRel30 = relative(tier_syll, "duration_log", isyll, 3, 0, false, false);
-            logdurSyllRel40 = relative(tier_syll, "duration_log", isyll, 4, 0, false, false);
-            logdurSyllRel50 = relative(tier_syll, "duration_log", isyll, 5, 0, false, false);
+            logdurSyllRel20 = Measures::relative(tier_syll, "duration_log", isyll, 2, 0, true, "", false);
+            logdurSyllRel30 = Measures::relative(tier_syll, "duration_log", isyll, 3, 0, true, "", false);
+            logdurSyllRel40 = Measures::relative(tier_syll, "duration_log", isyll, 4, 0, true, "", false);
+            logdurSyllRel50 = Measures::relative(tier_syll, "duration_log", isyll, 5, 0, true, "", false);
 
             double f0meanSyllRel20 = 0.0, f0meanSyllRel30 = 0.0, f0meanSyllRel40 = 0.0, f0meanSyllRel50 = 0.0;
-            f0meanSyllRel20 = relative(tier_syll, "f0_mean", isyll, 2, 0, true, true);
-            f0meanSyllRel30 = relative(tier_syll, "f0_mean", isyll, 3, 0, true, true);
-            f0meanSyllRel40 = relative(tier_syll, "f0_mean", isyll, 4, 0, true, true);
-            f0meanSyllRel50 = relative(tier_syll, "f0_mean", isyll, 5, 0, true, true);
+            f0meanSyllRel20 = Measures::relative(tier_syll, "f0_mean", isyll, 2, 0, true, "f0_min", true);
+            f0meanSyllRel30 = Measures::relative(tier_syll, "f0_mean", isyll, 3, 0, true, "f0_min", true);
+            f0meanSyllRel40 = Measures::relative(tier_syll, "f0_mean", isyll, 4, 0, true, "f0_min", true);
+            f0meanSyllRel50 = Measures::relative(tier_syll, "f0_mean", isyll, 5, 0, true, "f0_min", true);
 
             double intrasyllab_up = tier_syll->interval(isyll)->attribute("intrasyllabup").toDouble();
             double intrasyllab_down = tier_syll->interval(isyll)->attribute("intrasyllabdown").toDouble();

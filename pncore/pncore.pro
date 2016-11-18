@@ -187,7 +187,9 @@ HEADERS += \
     serialisers/sql/SQLSerialiserAnnotationStructure.h \
     serialisers/sql/SQLSerialiserBase.h \
     serialisers/sql/SQLSerialiserCorpus.h \
-    serialisers/sql/SQLSerialiserMetadataStructure.h
+    serialisers/sql/SQLSerialiserMetadataStructure.h \
+    query/Dataset.h \
+    query/Measures.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -339,7 +341,9 @@ SOURCES += \
     serialisers/sql/SQLSerialiserAnnotationStructure.cpp \
     serialisers/sql/SQLSerialiserBase.cpp \
     serialisers/sql/SQLSerialiserCorpus.cpp \
-    serialisers/sql/SQLSerialiserMetadataStructure.cpp
+    serialisers/sql/SQLSerialiserMetadataStructure.cpp \
+    query/Dataset.cpp \
+    query/Measures.cpp
 
 DISTFILES += \
     pncore.qmodel
