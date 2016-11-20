@@ -35,7 +35,8 @@ public:
         Interval,
         Array,
         Multiset,
-        Xml
+        Xml,
+        Geometry
     };
 
     /*!

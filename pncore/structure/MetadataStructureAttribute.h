@@ -4,6 +4,7 @@
 #include "pncore_global.h"
 #include <QObject>
 #include <QString>
+#include <QVariant>
 #include "StructureBase.h"
 
 namespace Praaline {
@@ -13,7 +14,7 @@ class PRAALINE_CORE_SHARED_EXPORT MetadataStructureAttribute : public StructureB
 {
     Q_OBJECT
     Q_PROPERTY(bool mandatory READ mandatory WRITE setMandatory)
-    Q_PROPERTY(QString defaultValue READ defaultValue WRITE setDefaultValue)
+    Q_PROPERTY(QVariant defaultValue READ defaultValue WRITE setDefaultValue)
 
 public:
     explicit MetadataStructureAttribute(QObject *parent = 0);
@@ -25,8 +26,8 @@ public:
     // Data
     bool mandatory() const { return m_mandatory; }
     void setMandatory(bool mandatory) { m_mandatory = mandatory; }
-    QString defaultValue() const { return m_defaultValue; }
-    void setDefaultValue(const QString &defaultValue) { m_defaultValue = defaultValue; }
+    QVariant defaultValue() const { return m_defaultValue; }
+    void setDefaultValue(const QVariant &defaultValue) { m_defaultValue = defaultValue; }
 
 signals:
 
@@ -34,7 +35,7 @@ public slots:
 
 protected:
     bool m_mandatory;
-    QString m_defaultValue;
+    QVariant m_defaultValue;
 };
 
 } // namespace Core

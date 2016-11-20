@@ -20,10 +20,11 @@ public:
     static bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID, QSqlDatabase &db);
     static bool deleteAnnotationLevel(const QString &levelID, QSqlDatabase &db);
 
-    static bool createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute, QSqlDatabase &db);
-    static bool updateAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> updatedAttribute, QSqlDatabase &db);
-    static bool renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID, QSqlDatabase &db);
-    static bool deleteAnnotationAttribute(QString levelID, QString attributeID, QSqlDatabase &db);
+    static bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute, QSqlDatabase &db);
+    static bool updateAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> updatedAttribute, QSqlDatabase &db);
+    static bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID, QSqlDatabase &db);
+    static bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDataType, QSqlDatabase &db);
+    static bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID, QSqlDatabase &db);
 
 private:
     SQLSerialiserAnnotationStructure() {}

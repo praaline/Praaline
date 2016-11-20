@@ -225,7 +225,7 @@ bool SQLSerialiserAnnotationStructure::deleteAnnotationLevel(const QString &leve
 }
 
 // static
-bool SQLSerialiserAnnotationStructure::createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute,
+bool SQLSerialiserAnnotationStructure::createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute,
                                                                  QSqlDatabase &db)
 {
     if (levelID.isEmpty()) return false;
@@ -257,14 +257,14 @@ bool SQLSerialiserAnnotationStructure::createAnnotationAttribute(QString levelID
 }
 
 // static
-bool SQLSerialiserAnnotationStructure::updateAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> updatedAttribute,
+bool SQLSerialiserAnnotationStructure::updateAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> updatedAttribute,
                                                                  QSqlDatabase &db)
 {
     return false;
 }
 
 // static
-bool SQLSerialiserAnnotationStructure::renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID, QSqlDatabase &db)
+bool SQLSerialiserAnnotationStructure::renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID, QSqlDatabase &db)
 {
     bool result = renameColumn(levelID, attributeID, newAttributeID, db);
     if (result) {
@@ -281,7 +281,13 @@ bool SQLSerialiserAnnotationStructure::renameAnnotationAttribute(QString levelID
 }
 
 // static
-bool SQLSerialiserAnnotationStructure::deleteAnnotationAttribute(QString levelID, QString attributeID, QSqlDatabase &db)
+bool SQLSerialiserAnnotationStructure::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDataType, QSqlDatabase &db)
+{
+    return false;
+}
+
+// static
+bool SQLSerialiserAnnotationStructure::deleteAnnotationAttribute(const QString &levelID, const QString &attributeID, QSqlDatabase &db)
 {
     bool result = deleteColumn(levelID, attributeID, db);
     if (result) {
