@@ -129,11 +129,11 @@ bool readFromDatabase(MetadataStructure *structure, QSqlDatabase &db, QString ob
     QSqlQuery q1(db), q2(db);
     q1.setForwardOnly(true);
     if (objectTypeFilter.isEmpty())
-        q1.prepare("SELECT objectType, sectionID, name, description FROM praalineMetadataSections");
+        q1.prepare("SELECT * FROM praalineMetadataSections");
     else
-        q1.prepare(QString("SELECT objectType, sectionID, name, description FROM praalineMetadataSections WHERE objectType = '%1'").arg(objectTypeFilter));
+        q1.prepare(QString("SELECT * FROM praalineMetadataSections WHERE objectType = '%1'").arg(objectTypeFilter));
     q2.setForwardOnly(true);
-    q2.prepare("SELECT attributeID, name, description, datatype, length, isIndexed, nameValueList FROM praalineMetadataAttributes WHERE sectionID = :sectionID");
+    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE sectionID = :sectionID");
     //
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
@@ -145,20 +145,20 @@ bool readFromDatabase(MetadataStructure *structure, QSqlDatabase &db, QString ob
         else if (objectType == "R") object = CorpusObject::Type_Recording;
         else if (objectType == "A") object = CorpusObject::Type_Annotation;
         else if (objectType == "P") object = CorpusObject::Type_Participation;
-        MetadataStructureSection *section = new MetadataStructureSection(q1.value(1).toString(),
-                                                                         q1.value(2).toString(),
-                                                                         q1.value(3).toString());
+        MetadataStructureSection *section = new MetadataStructureSection(q1.value("sectionID").toString(),
+                                                                         q1.value("name").toString(),
+                                                                         q1.value("description").toString());
         q2.bindValue(":sectionID", section->ID());
         q2.exec();
         while (q2.next()) {
             MetadataStructureAttribute *attribute = new MetadataStructureAttribute();
-            attribute->setID(q2.value(0).toString());
-            attribute->setName(q2.value(1).toString());
-            attribute->setDescription(q2.value(2).toString());
-            attribute->setDatatype(DataType(q2.value(3).toString()));
-            attribute->setDatatype(DataType(attribute->datatype().base(), q2.value(4).toInt()));
-            if (q2.value(5).toInt() > 0) attribute->setIndexed(true); else attribute->setIndexed(false);
-            attribute->setNameValueList(q2.value(6).toString());
+            attribute->setID(q2.value("attributeID").toString());
+            attribute->setName(q2.value("name").toString());
+            attribute->setDescription(q2.value("description").toString());
+            attribute->setDatatype(DataType(q2.value("datatype").toString()));
+            attribute->setDatatype(DataType(attribute->datatype().base(), q2.value("length").toInt()));
+            if (q2.value("isIndexed").toInt() > 0) attribute->setIndexed(true); else attribute->setIndexed(false);
+            attribute->setNameValueList(q2.value("nameValueList").toString());
             attribute->setParent(section);
             section->addAttribute(attribute);
         }

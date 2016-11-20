@@ -31,8 +31,8 @@ public:
     AnnotationStructureLevel(const QString &ID, LevelType type = IndependentLevel,
                              const QString &name = QString(), const QString &description = QString(),
                              const QString &parentLevelID = QString(),
-                             const DataType &datatype = DataType(DataType::VarChar, 1024), bool indexed = false,
-                             const QString &nameValueList = QString(),
+                             const DataType &datatype = DataType(DataType::VarChar, 1024),
+                             int order = 0, bool indexed = false, const QString &nameValueList = QString(),
                              QObject *parent = 0);
 
     // Data

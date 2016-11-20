@@ -18,7 +18,7 @@ public:
     explicit AnnotationStructureAttribute(QObject *parent = 0);
     AnnotationStructureAttribute(const AnnotationStructureAttribute *other, QObject *parent = 0);
     AnnotationStructureAttribute(const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                                 const DataType &datatype = DataType(DataType::VarChar, 255),
+                                 const DataType &datatype = DataType(DataType::VarChar, 255), int order = 0,
                                  bool indexed = false, const QString &nameValueList = QString(),
                                  QObject *parent = 0);
 

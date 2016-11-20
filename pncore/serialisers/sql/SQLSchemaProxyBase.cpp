@@ -1,5 +1,6 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QDateTime>
 
 #include "QSqlMigrator/QSqlMigrator.h"
 using namespace QSqlMigrator;
@@ -19,7 +20,7 @@ bool SQLSchemaProxyBase::addColumnToTable(QString tableName, QString columnName,
     Migrations::Migration migration;
     migration.add(new AddColumn(Column(columnName, SqlType(datatype)), tableName));
     return SQLSerialiserBase::applyMigration(
-                QString("addcolumn_%1_%2").arg(tableName).arg(columnName),
+                QString("%1_addcolumn_%2_%3").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName).arg(columnName),
                 &migration, db);
 }
 
@@ -28,7 +29,7 @@ bool SQLSchemaProxyBase::renameColumn(QString tableName, QString oldName, QStrin
     Migrations::Migration migration;
     migration.add(new RenameColumn(oldName, newName, tableName));
     return SQLSerialiserBase::applyMigration(
-                QString("renamecolumn_%1_%2_%3").arg(tableName).arg(oldName).arg(newName),
+                QString("%1_renamecolumn_%2_%3_%4").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName).arg(oldName).arg(newName),
                 &migration, db);
 }
 
@@ -37,7 +38,7 @@ bool SQLSchemaProxyBase::renameTable(QString oldTableName, QString newTableName,
     Migrations::Migration migration;
     migration.add(new RenameTable(oldTableName, newTableName));
     return SQLSerialiserBase::applyMigration(
-                QString("renametable_%1_%2").arg(oldTableName).arg(newTableName),
+                QString("%1_renametable_%2_%3").arg(QDateTime::currentDateTimeUtc().toString()).arg(oldTableName).arg(newTableName),
                 &migration, db);
 }
 
@@ -46,7 +47,7 @@ bool SQLSchemaProxyBase::deleteColumn(QString tableName, QString columnName, QSq
     Migrations::Migration migration;
     migration.add(new DropColumn(columnName, tableName));
     return SQLSerialiserBase::applyMigration(
-                QString("dropcolumn_%1_%2").arg(tableName).arg(columnName),
+                QString("%1_dropcolumn_%2_%3").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName).arg(columnName),
                 &migration, db);
 }
 
@@ -55,7 +56,7 @@ bool SQLSchemaProxyBase::deleteTable(QString tableName, QSqlDatabase &db)
     Migrations::Migration migration;
     migration.add(new DropTable(tableName));
     return SQLSerialiserBase::applyMigration(
-                QString("droptable_%1").arg(tableName),
+                QString("%1_droptable_%2").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName),
                 &migration, db);
 }
 

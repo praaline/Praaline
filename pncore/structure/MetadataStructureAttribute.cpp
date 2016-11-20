@@ -16,8 +16,8 @@ MetadataStructureAttribute::MetadataStructureAttribute(const QString &ID, QObjec
 }
 
 MetadataStructureAttribute::MetadataStructureAttribute(const QString &ID, const QString &name, const QString &description,
-                                                       const DataType &datatype, QObject *parent) :
-    StructureBase(ID, name, description, datatype, parent)
+                                                       const DataType &datatype, int order, QObject *parent) :
+    StructureBase(ID, name, description, datatype, order, parent)
 {
 }
 

@@ -134,6 +134,7 @@ bool SQLSerialiserCorpus::execSaveSpeaker(CorpusSpeaker *spk, MetadataStructure 
                 q.bindValue(QString(":%1").arg(attribute->ID()), spk->property(attribute->ID()));
         }
     }
+
     q.exec();
     if (q.lastError().isValid()) {
         qDebug() << q.lastError().text();

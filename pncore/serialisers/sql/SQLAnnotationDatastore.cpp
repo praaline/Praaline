@@ -3,7 +3,6 @@
 #include "SQLAnnotationDatastore.h"
 #include "SQLSerialiserAnnotation.h"
 #include "SQLSerialiserAnnotationStructure.h"
-#include "SQLSchemaProxyAnnotation.h"
 #include "SQLQueryEngineAnnotation.h"
 
 namespace Praaline {
@@ -34,7 +33,6 @@ bool SQLAnnotationDatastore::createDatastore(const DatastoreInfo &info)
     }
     // Initialise database
     SQLSerialiserAnnotationStructure::initialiseAnnotationStructureTables(m_database);
-    SQLSchemaProxyAnnotation::createSchema(m_structure, m_database);
     return true;
 }
 
@@ -65,47 +63,47 @@ bool SQLAnnotationDatastore::closeDatastore()
 
 bool SQLAnnotationDatastore::loadAnnotationStructure()
 {
-    return SQLSerialiserAnnotationStructure::read(m_structure, m_database);
+    return SQLSerialiserAnnotationStructure::loadAnnotationStructure(m_structure, m_database);
 }
 
 bool SQLAnnotationDatastore::saveAnnotationStructure()
 {
-    return SQLSerialiserAnnotationStructure::write(m_structure, m_database);
+    return true;
 }
 
 bool SQLAnnotationDatastore::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel)
 {
-    return SQLSchemaProxyAnnotation::createAnnotationLevel(newLevel, m_database);
+    return SQLSerialiserAnnotationStructure::createAnnotationLevel(newLevel, m_database);
 }
 
 bool SQLAnnotationDatastore::renameAnnotationLevel(QString levelID, QString newLevelID)
 {
-    return SQLSchemaProxyAnnotation::renameAnnotationLevel(levelID, newLevelID, m_database);
+    return SQLSerialiserAnnotationStructure::renameAnnotationLevel(levelID, newLevelID, m_database);
 }
 
 bool SQLAnnotationDatastore::deleteAnnotationLevel(QString levelID)
 {
-    return SQLSchemaProxyAnnotation::deleteAnnotationLevel(levelID, m_database);
+    return SQLSerialiserAnnotationStructure::deleteAnnotationLevel(levelID, m_database);
 }
 
 bool SQLAnnotationDatastore::createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute)
 {
-    return SQLSchemaProxyAnnotation::createAnnotationAttribute(levelID, newAttribute, m_database);
+    return SQLSerialiserAnnotationStructure::createAnnotationAttribute(levelID, newAttribute, m_database);
 }
 
 bool SQLAnnotationDatastore::renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID)
 {
-    return SQLSchemaProxyAnnotation::renameAnnotationAttribute(levelID, attributeID, newAttributeID, m_database);
+    return SQLSerialiserAnnotationStructure::renameAnnotationAttribute(levelID, attributeID, newAttributeID, m_database);
 }
 
 bool SQLAnnotationDatastore::deleteAnnotationAttribute(QString levelID, QString attributeID)
 {
-    return SQLSchemaProxyAnnotation::deleteAnnotationAttribute(levelID, attributeID, m_database);
+    return SQLSerialiserAnnotationStructure::deleteAnnotationAttribute(levelID, attributeID, m_database);
 }
 
 bool SQLAnnotationDatastore::retypeAnnotationAttribute(QString levelID, QString attributeID, QString newDatatype, int newDatalength)
 {
-    return SQLSchemaProxyAnnotation::retypeAnnotationAttribute(levelID, attributeID, newDatatype, newDatalength, m_database);
+    // return SQLSerialiserAnnotationStructure::retypeAnnotationAttribute(levelID, attributeID, newDatatype, newDatalength, m_database);
 }
 
 // ------------------------------------------------------------------------------------------------------------------------------

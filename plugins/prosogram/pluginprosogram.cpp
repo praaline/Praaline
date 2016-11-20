@@ -195,12 +195,12 @@ void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
 
 void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QString &prefix,
                      const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                     const DataType &datatype = DataType(DataType::VarChar, 256),
+                     const DataType &datatype = DataType(DataType::VarChar, 256), int order = 0,
                      bool indexed = false, const QString &nameValueList = QString())
 {
     if (level->hasAttribute(ID)) return;
     AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
-                                                                          indexed, nameValueList);
+                                                                          order, indexed, nameValueList);
     if (corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr))
         level->addAttribute(attr);
 }

@@ -11,9 +11,9 @@ AnnotationStructureAttribute::AnnotationStructureAttribute(QObject *parent) :
 }
 
 AnnotationStructureAttribute::AnnotationStructureAttribute(const QString &ID, const QString &name, const QString &description,
-                                                           const DataType &datatype, bool indexed, const QString &nameValueList,
+                                                           const DataType &datatype, int order, bool indexed, const QString &nameValueList,
                                                            QObject *parent) :
-    StructureBase(ID, name, description, datatype, indexed, nameValueList, parent)
+    StructureBase(ID, name, description, datatype, order, indexed, nameValueList, parent)
 {
 }
 

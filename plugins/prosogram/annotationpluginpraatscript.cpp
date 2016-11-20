@@ -24,8 +24,8 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     if (m_process) delete m_process;
     m_process = new QProcess(this);
     m_process->setReadChannel(QProcess::StandardOutput);
-    connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
-    connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
+    //connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
+    //connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
     QString praatCommand;
 #ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();

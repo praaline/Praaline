@@ -17,16 +17,11 @@ AnnotationStructureLevel::AnnotationStructureLevel(QObject *parent) :
 AnnotationStructureLevel::AnnotationStructureLevel(const QString &ID, AnnotationStructureLevel::LevelType levelType,
                                                    const QString &name, const QString &description,
                                                    const QString &parentLevelID,
-                                                   const DataType &datatype, bool indexed, const QString &nameValueList,
+                                                   const DataType &datatype, int order, bool indexed, const QString &nameValueList,
                                                    QObject *parent) :
-    StructureBase(ID, name, description, datatype, indexed, nameValueList, parent),
+    StructureBase(ID, name, description, datatype, order, indexed, nameValueList, parent),
     m_levelType(levelType), m_parentLevelID(parentLevelID)
 {
-    if (name.isEmpty())
-        m_name = ID;
-    else
-        m_name = name;
-    m_description = description;
 }
 
 // ==========================================================================================================

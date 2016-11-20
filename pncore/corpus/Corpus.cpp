@@ -327,7 +327,8 @@ void Corpus::importAnnotationStructure(AnnotationStructure *otherStructure)
             // Copy level from other
             myLevel = new AnnotationStructureLevel(otherLevel->ID(), otherLevel->levelType(), otherLevel->name(),
                                                    otherLevel->description(), otherLevel->parentLevelID(),
-                                                   otherLevel->datatype(), otherLevel->indexed(), otherLevel->nameValueList());
+                                                   otherLevel->datatype(), otherLevel->order(),
+                                                   otherLevel->indexed(), otherLevel->nameValueList());
             if (m_datastoreAnnotations->createAnnotationLevel(myLevel)) {
                 m_annotationStructure->addLevel(myLevel);
                 foreach (AnnotationStructureAttribute *otherAttribute, otherLevel->attributes()) {
