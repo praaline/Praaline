@@ -84,8 +84,8 @@ bool MocaDBSerialiserMetadataStructure::createMetadataAttribute(CorpusObject::Ty
     q.bindValue(":name", newAttribute->name());
     q.bindValue(":description", newAttribute->description());
     q.bindValue(":default_value", newAttribute->defaultValue());
-    q.bindValue(":mandatory", newAttribute->mandatory());
-    q.bindValue(":system", newAttribute->property(":system"));
+    q.bindValue(":mandatory", newAttribute->mandato<ry());
+    q.bindValue(":system", newAttribute->property("system"));
     q.bindValue(":order_metadata", newAttribute->order());
     q.bindValue(":share_opts_meta_id", newAttribute->property("share_opts_meta_id"));
     q.exec();

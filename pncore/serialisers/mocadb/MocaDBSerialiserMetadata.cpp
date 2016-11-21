@@ -123,6 +123,12 @@ bool MocaDBSerialiserMetadata::loadAnnotation(QPointer<CorpusAnnotation> annotat
     return loadCorpusObjectMetadata(annotation, structure, db);
 }
 
+// static
+bool MocaDBSerialiserMetadata::loadParticipation(QPointer<CorpusParticipation> participation, QPointer<MetadataStructure> structure, QSqlDatabase &db)
+{
+    return loadCorpusObjectMetadata(participation, structure, db);
+}
+
 //// static
 //bool MocaDBSerialiserMetadata::loadCommunications(QList<QPointer<CorpusCommunication> > &communications,
 //                                                  QPointer<MetadataStructure> structure, QSqlDatabase &db)
@@ -150,6 +156,33 @@ bool MocaDBSerialiserMetadata::loadAnnotation(QPointer<CorpusAnnotation> annotat
 //{
 //    return false;
 //}
+
+// static
+bool MocaDBSerialiserMetadata::saveCorpusObject(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db)
+{
+    if (!obj) return false;
+    QString baseTable = MocaDBSerialiserSystem::getMocaBaseTableForPraalineCorpusObjectType(obj->type());
+    if (baseTable.isEmpty()) return false;
+    QSqlQuery q(db);
+    q.prepare("SELECT data_id, last_update_by, last_update_timestamp "
+              "FROM master_data WHERE data_type=:data_type AND data_id=:data_id ");
+    q.bindValue(":data_type", MocaDBSerialiserSystem::getMocaDataTypeIdForPraalineCorpusObjectType(obj->type()));
+    q.bindValue(":data_id", obj->ID());
+    q.exec();
+    bool exists = false;
+    while (q.next()) {
+        exists = true;
+        QDateTime lastUpdateInDb = q.value("last_update_timestamp");
+        QString lastUpdateBy = q.value("last_update_by");
+        // Check if there is a newer update in the database => refuse update (optimistic concurrency check)
+    }
+    db.transaction();
+    if (exists) {
+        q.prepare(QString("UPDATE %1 SET name = :name, description = :description WHERE data_id = :data_id ").arg(baseTable));
+
+    }
+    db.commit();
+}
 
 // static
 bool MocaDBSerialiserMetadata::saveCommunication(QPointer<CorpusCommunication> com, QPointer<MetadataStructure> structure, QSqlDatabase &db)

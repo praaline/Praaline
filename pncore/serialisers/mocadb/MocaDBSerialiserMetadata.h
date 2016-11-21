@@ -28,6 +28,7 @@ public:
     static bool loadSpeaker(QPointer<CorpusSpeaker> speaker, QPointer<MetadataStructure> structure, QSqlDatabase &db);
     static bool loadRecording(QPointer<CorpusRecording> recording, QPointer<MetadataStructure> structure, QSqlDatabase &db);
     static bool loadAnnotation(QPointer<CorpusAnnotation> annotation, QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool loadParticipation(QPointer<CorpusParticipation> participation, QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
     // Save means insert or update, appropriately
     static bool saveCommunication(QPointer<CorpusCommunication> com, QPointer<MetadataStructure> structure, QSqlDatabase &db);
@@ -46,6 +47,7 @@ public:
 
 protected:
     static bool loadCorpusObjectMetadata(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool saveCorpusObject(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
 private:
     MocaDBSerialiserMetadata() {}

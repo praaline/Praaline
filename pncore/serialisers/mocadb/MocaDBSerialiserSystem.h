@@ -30,6 +30,8 @@ public:
         Geometry        = 7
     };
 
+    static QString getMocaBaseTableForPraalineCorpusObjectType(CorpusObject::Type type);
+
     static MocaDataType getMocaDataTypeIdForPraalineCorpusObjectType(CorpusObject::Type type);
     static CorpusObject::Type getPraalineCorpusObjectTypeForMocaDataTypeId(int mocaDataTypeId);
 

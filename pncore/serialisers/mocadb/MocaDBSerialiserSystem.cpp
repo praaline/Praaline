@@ -4,6 +4,20 @@ namespace Praaline {
 namespace Core {
 
 // static
+QString MocaDBSerialiserSystem::getMocaBaseTableForPraalineCorpusObjectType(CorpusObject::Type type)
+{
+    switch (type) {
+    case CorpusObject::Type_Corpus:         return "data_corpus";       break;
+    case CorpusObject::Type_Communication:  return "data_sample";       break;
+    case CorpusObject::Type_Speaker:        return "data_speaker";      break;
+    case CorpusObject::Type_Recording:      return "data_recording";    break;
+    case CorpusObject::Type_Annotation:     return "data_annotation";   break;
+    default:                                return QString();           break;
+    }
+    return QString();
+}
+
+// static
 MocaDBSerialiserSystem::MocaDataType MocaDBSerialiserSystem::getMocaDataTypeIdForPraalineCorpusObjectType(CorpusObject::Type type)
 {
     switch (type) {
