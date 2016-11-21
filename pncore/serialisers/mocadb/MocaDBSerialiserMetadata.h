@@ -24,14 +24,10 @@ public:
     static QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID, QSqlDatabase &db);
 
     // These functions load metadata information in already created corpus objects
-    static bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications,
-                                   QPointer<MetadataStructure> structure, QSqlDatabase &db);
-    static bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers,
-                             QPointer<MetadataStructure> structure, QSqlDatabase &db);
-    static bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings,
-                               QPointer<MetadataStructure> structure, QSqlDatabase &db);
-    static bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations,
-                                QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool loadCommunication(QPointer<CorpusCommunication> communication, QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool loadSpeaker(QPointer<CorpusSpeaker> speaker, QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool loadRecording(QPointer<CorpusRecording> recording, QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool loadAnnotation(QPointer<CorpusAnnotation> annotation, QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
     // Save means insert or update, appropriately
     static bool saveCommunication(QPointer<CorpusCommunication> com, QPointer<MetadataStructure> structure, QSqlDatabase &db);
@@ -47,6 +43,9 @@ public:
     static bool deleteAnnotation(const QString &annotationID, QPointer<MetadataStructure> structure, QSqlDatabase &db);
     static bool deleteParticipation(const QString &communicationID, const QString &speakerID,
                                     QPointer<MetadataStructure> structure, QSqlDatabase &db);
+
+protected:
+    static bool loadCorpusObjectMetadata(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
 private:
     MocaDBSerialiserMetadata() {}

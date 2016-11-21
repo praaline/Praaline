@@ -2,6 +2,7 @@
 #define CORPUSOBJECTINFO_H
 
 #include <QString>
+#include <QDateTime>
 #include "CorpusObject.h"
 
 namespace Praaline {
@@ -10,18 +11,31 @@ namespace Core {
 class PRAALINE_CORE_SHARED_EXPORT CorpusObjectInfo
 {
 public:
-    CorpusObjectInfo(const QString &ID, const QString &corpusID, const QString &name, CorpusObject::Type type);
+    CorpusObjectInfo(CorpusObject::Type type, const QString &ID, const QString &parentID, const QString &name, const QString &description);
 
-    QString ID() const;
-    QString corpusID() const;
-    QString name() const;
     CorpusObject::Type type() const;
+    QString ID() const;
+    QString parentID() const;
+    QString name() const;
+    QString description() const;
+
+    QString createdBy() const;
+    QDateTime createdTimestamp() const;
+    QString lastUpdatedBy() const;
+    QDateTime lastUpdatedTimestamp() const;
+    void setCreated(const QString &createdBy, const QDateTime &createdTimestamp);
+    void setUpdated(const QString &updatedBy, const QDateTime &updatedTimestamp);
 
 private:
-    QString m_ID;
-    QString m_corpusID;
-    QString m_name;
     CorpusObject::Type m_type;
+    QString m_ID;
+    QString m_parentID;
+    QString m_name;
+    QString m_description;
+    QString m_createdBy;
+    QDateTime m_createdTimestamp;
+    QString m_lastUpdatedBy;
+    QDateTime m_lastUpdatedTimestamp;
 };
 
 } // namespace Core

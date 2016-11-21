@@ -1,3 +1,10 @@
+#include <QString>
+#include <QList>
+#include <QDebug>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlError>
+#include "MocaDBSerialiserSystem.h"
 #include "MocaDBSerialiserMetadata.h"
 
 namespace Praaline {
@@ -8,36 +15,141 @@ QList<CorpusObjectInfo> MocaDBSerialiserMetadata::getCorpusObjectInfoList(Corpus
                                                                           QSqlDatabase &db)
 {
     QList<CorpusObjectInfo> list;
+    QSqlQuery q(db);
+    q.setForwardOnly(true);
+    if      (type == CorpusObject::Type_Corpus) {
+        q.prepare("SELECT m.data_id, NULL AS parent_id, x.name, x.description, m.created_by, m.created_timestamp, m.last_update_by, m.last_update_timestamp "
+                  "FROM data_corpus x "
+                  "INNER JOIN master_data m ON x.data_type=m.data_type AND x.corpus_id=m.data_id ");
+    }
+    else if (type == CorpusObject::Type_Communication) {
+        q.prepare("SELECT m.data_id, r.data_id1 AS parent_id, x.name, x.description, m.created_by, m.created_timestamp, m.last_update_by, m.last_update_timestamp "
+                  "FROM data_sample x "
+                  "INNER JOIN master_data m ON x.data_type=m.data_type AND x.sample_id=m.data_id "
+                  "INNER JOIN rel_data_data r ON x.data_type=r.data_type2 AND x.sample_id=r.data_id2 "
+                  "WHERE r.data_type1 = :parent_data_type AND r.data_id1 = :parent_id ");
+        q.bindValue(":parent_data_type", MocaDBSerialiserSystem::Corpus);
+        q.bindValue(":parent_id", parentID);
+    }
+    else if (type == CorpusObject::Type_Speaker) {
+        q.prepare("SELECT m.data_id, r.data_id1 AS parent_id, x.name, x.description, m.created_by, m.created_timestamp, m.last_update_by, m.last_update_timestamp "
+                  "FROM data_speaker x "
+                  "INNER JOIN master_data m ON x.data_type=m.data_type AND x.speaker_id=m.data_id "
+                  "INNER JOIN rel_data_data r ON x.data_type=r.data_type2 AND x.speaker_id=r.data_id2 "
+                  "WHERE r.data_type1 = :parent_data_type AND r.data_id1 = :parent_id ");
+        q.bindValue(":parent_data_type", MocaDBSerialiserSystem::Corpus);
+        q.bindValue(":parent_id", parentID);
+    }
+    else if (type == CorpusObject::Type_Recording) {
+        q.prepare("SELECT m.data_id, r.data_id1 AS parent_id, x.name, x.description, m.created_by, m.created_timestamp, m.last_update_by, m.last_update_timestamp "
+                  "FROM data_media x "
+                  "INNER JOIN master_data m ON x.data_type=m.data_type AND x.media_id=m.data_id "
+                  "INNER JOIN rel_data_data r ON x.data_type=r.data_type2 AND x.media_id=r.data_id2 "
+                  "WHERE r.data_type1 = :parent_data_type AND r.data_id1 = :parent_id ");
+        q.bindValue(":parent_data_type", MocaDBSerialiserSystem::Communication);
+        q.bindValue(":parent_id", parentID);
+    }
+    else if (type == CorpusObject::Type_Annotation) {
+        q.prepare("SELECT m.data_id, r.data_id1 AS parent_id, x.name, x.description, m.created_by, m.created_timestamp, m.last_update_by, m.last_update_timestamp "
+                  "FROM data_annotation x "
+                  "INNER JOIN master_data m ON x.data_type=m.data_type AND x.annotation_id=m.data_id "
+                  "INNER JOIN rel_data_data r ON x.data_type=r.data_type2 AND x.annotation_id=r.data_id2 "
+                  "WHERE r.data_type1 = :parent_data_type AND r.data_id1 = :parent_id ");
+        q.bindValue(":parent_data_type", MocaDBSerialiserSystem::Communication);
+        q.bindValue(":parent_id", parentID);
+    }
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return list; }
+    while (q.next()) {
+        CorpusObjectInfo item(type, q.value("data_id").toString(), q.value("parent_id").toString(),
+                              q.value("name").toString(), q.value("description").toString());
+        item.setCreated(q.value("created_by").toString(), q.value("created_timestamp").toDateTime());
+        item.setUpdated(q.value("last_update_by").toString(), q.value("last_update_timestamp").toDateTime());
+        list << item;
+    }
     return list;
 }
 
-// static
-bool MocaDBSerialiserMetadata::loadCommunications(QList<QPointer<CorpusCommunication> > &communications,
-                                                  QPointer<MetadataStructure> structure, QSqlDatabase &db)
+// static, protected
+bool MocaDBSerialiserMetadata::loadCorpusObjectMetadata(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
-    return false;
+    if (!obj) return false;
+    QSqlQuery q(db);
+    q.setForwardOnly(true);
+    q.prepare("SELECT * FROM metadata_values WHERE data_type=:data_type AND data_id=:data_id ");
+    q.bindValue(":data_type", MocaDBSerialiserSystem::getMocaDataTypeIdForPraalineCorpusObjectType(obj->type()));
+    q.bindValue(":data_id", obj->ID());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    while (q.next()) {
+        QString attributeID = q.value("metadata_def_id").toString();
+        QPointer<MetadataStructureAttribute> attribute = structure->attribute(obj->type(), attributeID);
+        if (attribute) {
+            MocaDBSerialiserSystem::MocaValueType mocaValueType = MocaDBSerialiserSystem::getMocaValueTypeIdForPraalineDataType(attribute->datatype());
+            if      (mocaValueType == MocaDBSerialiserSystem::Bool)     obj->setProperty(attributeID, q.value("value_bool").toBool());
+            else if (mocaValueType == MocaDBSerialiserSystem::Text)     obj->setProperty(attributeID, q.value("value_text").toString());
+            else if (mocaValueType == MocaDBSerialiserSystem::LongText) obj->setProperty(attributeID, q.value("value_longtext").toString());
+            else if (mocaValueType == MocaDBSerialiserSystem::Integer)  obj->setProperty(attributeID, q.value("value_int").toInt());
+            else if (mocaValueType == MocaDBSerialiserSystem::DateTime) obj->setProperty(attributeID, q.value("value_datetime").toDateTime());
+            else if (mocaValueType == MocaDBSerialiserSystem::Double)   obj->setProperty(attributeID, q.value("value_double").toDouble());
+            else if (mocaValueType == MocaDBSerialiserSystem::Geometry) obj->setProperty(attributeID, q.value("value_geometry"));
+            else { qDebug() << "Unknown type"; }
+        }
+    }
+    return true;
 }
 
 // static
-bool MocaDBSerialiserMetadata::loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers,
-                                            QPointer<MetadataStructure> structure, QSqlDatabase &db)
+bool MocaDBSerialiserMetadata::loadCommunication(QPointer<CorpusCommunication> communication, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
-    return false;
+    return loadCorpusObjectMetadata(communication, structure, db);
 }
 
 // static
-bool MocaDBSerialiserMetadata::loadRecordings(QList<QPointer<CorpusRecording> > &recordings,
-                                              QPointer<MetadataStructure> structure, QSqlDatabase &db)
+bool MocaDBSerialiserMetadata::loadSpeaker(QPointer<CorpusSpeaker> speaker, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
-    return false;
+    return loadCorpusObjectMetadata(speaker, structure, db);
 }
 
 // static
-bool MocaDBSerialiserMetadata::loadAnnotations(QList<QPointer<CorpusAnnotation> > &annotations,
-                                               QPointer<MetadataStructure> structure, QSqlDatabase &db)
+bool MocaDBSerialiserMetadata::loadRecording(QPointer<CorpusRecording> recording, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
-    return false;
+    return loadCorpusObjectMetadata(recording, structure, db);
 }
+
+// static
+bool MocaDBSerialiserMetadata::loadAnnotation(QPointer<CorpusAnnotation> annotation, QPointer<MetadataStructure> structure, QSqlDatabase &db)
+{
+    return loadCorpusObjectMetadata(annotation, structure, db);
+}
+
+//// static
+//bool MocaDBSerialiserMetadata::loadCommunications(QList<QPointer<CorpusCommunication> > &communications,
+//                                                  QPointer<MetadataStructure> structure, QSqlDatabase &db)
+//{
+//    return false;
+//}
+
+//// static
+//bool MocaDBSerialiserMetadata::loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers,
+//                                            QPointer<MetadataStructure> structure, QSqlDatabase &db)
+//{
+//    return false;
+//}
+
+//// static
+//bool MocaDBSerialiserMetadata::loadRecordings(QList<QPointer<CorpusRecording> > &recordings,
+//                                              QPointer<MetadataStructure> structure, QSqlDatabase &db)
+//{
+//    return false;
+//}
+
+//// static
+//bool MocaDBSerialiserMetadata::loadAnnotations(QList<QPointer<CorpusAnnotation> > &annotations,
+//                                               QPointer<MetadataStructure> structure, QSqlDatabase &db)
+//{
+//    return false;
+//}
 
 // static
 bool MocaDBSerialiserMetadata::saveCommunication(QPointer<CorpusCommunication> com, QPointer<MetadataStructure> structure, QSqlDatabase &db)

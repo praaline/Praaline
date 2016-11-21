@@ -144,9 +144,11 @@ bool MocaDBSerialiserMetadataStructure::deleteMetadataAttribute(CorpusObject::Ty
 {
     Q_UNUSED(type)
     QSqlQuery q(db);
-
-
-    return false;
+    q.prepare("DELETE FROM metadata_def WHERE metadata_def_id = :metadata_def_id");
+    q.bindValue(":metadata_def_id", attributeID);
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
 }
 
 } // namespace Core
