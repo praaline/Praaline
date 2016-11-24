@@ -18,18 +18,18 @@ ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondanc
     m_corpus(corpus), m_tierCorrespondances(tierCorrespondances), m_tierNamesCommon(tierNamesCommon)
 {
     ui->setupUi(this);
-    setTitle("Correspondances between annotation files and Annotation Levels/Attributes");
-    setSubTitle("In this step you can specify how the different annotation tiers found in the files to be imported correspond to the "
-                "Annotation Levels and Attributes defined for your Corpus. You may also select the policy used to indicate the current speaker.");
+    setTitle(tr("Correspondances between annotation files and Annotation Levels/Attributes"));
+    setSubTitle(tr("In this step you can specify how the different annotation tiers found in the files to be imported correspond to the "
+                   "Annotation Levels and Attributes defined for your Corpus. You may also select the policy used to indicate the current speaker."));
     ui->tableviewTiers->verticalHeader()->setDefaultSectionSize(20);
 
     QStringList filters;
-    filters << "no filter" << "contains" << "does not contain" << "starts with" << "does not start with"
-            << "ends with" << "does not end with";
+    filters << tr("no filter") << tr("contains") << tr("does not contain") << tr("starts with") << tr("does not start with")
+            << tr("ends with") << tr("does not end with");
     ui->comboFilter->addItems(filters);
 
     QStringList encodings;
-    encodings << "UTF-8" << "ISO 8859-1";
+    encodings << tr("UTF-8") << tr("ISO 8859-1");
     ui->comboEncoding->addItems(encodings);
 
     connect(ui->commandBatchUpdate, SIGNAL(clicked()), this, SLOT(batchUpdate()));
@@ -71,13 +71,13 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
         m_modelTiers->setItem(i, 1, new QStandardItem());
         m_modelTiers->setItem(i, 2, new QStandardItem());
         if (m_tierNamesCommon.contains(tier))
-            m_modelTiers->setItem(i, 3, new QStandardItem("All files"));
+            m_modelTiers->setItem(i, 3, new QStandardItem(tr("All files")));
         else {
             m_modelTiers->setItem(i, 3, new QStandardItem(tierNamesPresence[tier].join(", ")));
         }
         i++;
     }
-    labels << "Tier Name" << "Annotation Level" << "Annotation Attribute" << "Presence";
+    labels << tr("Tier Name") << tr("Annotation Level") << tr("Annotation Attribute") << tr("Presence");
     m_modelTiers->setHorizontalHeaderLabels(labels);
     ui->tableviewTiers->setModel(m_modelTiers);
 
@@ -86,25 +86,25 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
 
 bool filterTierName(QString tierName, QString filterOperator, QString filter)
 {
-    if (filterOperator == "no filter") {
+    if (filterOperator == tr("no filter")) {
         return true;
     }
-    else if (filterOperator == "contains") {
+    else if (filterOperator == tr("contains")) {
         if (tierName.contains(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == "does not contain") {
+    else if (filterOperator == tr("does not contain")) {
         if (!tierName.contains(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == "starts with") {
+    else if (filterOperator == tr("starts with")) {
         if (tierName.startsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == "does not start with") {
+    else if (filterOperator == tr("does not start with")) {
         if (!tierName.startsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == "ends with") {
+    else if (filterOperator == tr("ends with")) {
         if (tierName.endsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == "does not end with") {
+    else if (filterOperator == tr("does not end with")) {
         if (!tierName.endsWith(filter, Qt::CaseInsensitive)) return true;
     }
     return false;

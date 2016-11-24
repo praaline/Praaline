@@ -70,19 +70,19 @@ void CorpusModeWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowCorpusExplorer = new QAction("Show Corpus Explorer", this);
+    d->actionShowCorpusExplorer = new QAction(tr("Show Corpus Explorer"), this);
     connect(d->actionShowCorpusExplorer, SIGNAL(triggered()), SLOT(showCorpusExplorer()));
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorer", d->actionShowCorpusExplorer, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCorpusExplorerTables = new QAction("Show Corpus Explorer (tabular)", this);
+    d->actionShowCorpusExplorerTables = new QAction(tr("Show Corpus Explorer (tabular)"), this);
     connect(d->actionShowCorpusExplorerTables, SIGNAL(triggered()), SLOT(showCorpusExplorerTables()));
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorerTables", d->actionShowCorpusExplorerTables, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCorpusStructureEditor = new QAction("Show Corpus Structure Editor", this);
+    d->actionShowCorpusStructureEditor = new QAction(tr("Show Corpus Structure Editor"), this);
     connect(d->actionShowCorpusStructureEditor, SIGNAL(triggered()), SLOT(showCorpusStructureEditor()));
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusStructureEditor", d->actionShowCorpusStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));

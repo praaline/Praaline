@@ -66,14 +66,15 @@ Corpus *MergeCorporaDialog::openCorpusFile(const QString &filename)
     // Open the corpus and register it in the global object pool
     CorpusDefinition definition;
     if (!definition.load(filename)) {
-        QMessageBox::warning(this, "Cannot open corpus",
-                             QString("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?").arg(filename), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Cannot open corpus"),
+                             QString(tr("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?")).arg(filename),
+                             QMessageBox::Ok);
         return 0;
     }
     // Ask for password, if needed
     QString password;
     if (definition.datastoreMetadata.usePassword == true || definition.datastoreAnnotations.usePassword) {
-        password = QInputDialog::getText(this, "Enter password", "Enter password to connect to this corpus",
+        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus"),
                                          QLineEdit::Password);
         if (definition.datastoreMetadata.usePassword) definition.datastoreMetadata.password = password;
         if (definition.datastoreAnnotations.usePassword) definition.datastoreAnnotations.password = password;
@@ -82,7 +83,7 @@ Corpus *MergeCorporaDialog::openCorpusFile(const QString &filename)
     QString errorMessages;
     Corpus *corpus = Corpus::open(definition, errorMessages);
     if (!errorMessages.isEmpty()) {
-        QMessageBox::warning(this, "Error opening corpus", errorMessages, QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Error opening corpus"), errorMessages, QMessageBox::Ok);
         return 0;
     }
     return corpus;

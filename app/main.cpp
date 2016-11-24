@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QTranslator>
 #include "PraalineMainWindow.h"
 
 #include "plugins/dismo/dismo/dismotrainer.h"

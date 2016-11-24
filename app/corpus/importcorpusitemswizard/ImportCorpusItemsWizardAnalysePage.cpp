@@ -10,18 +10,18 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 QString speakerPolicyToString(int policy) {
-    if (policy == SpeakerPolicySingle) return "Single Speaker";
-    else if (policy == SpeakerPolicyTierNames) return "Each tier is a Speaker";
-    else if (policy == SpeakerPolicyIntervals) return "Get Speaker ID from tier";
-    else if (policy == SpeakerPolicyPrimaryAndSecondary) return "Primary and Secondary";
-    return "Unknown";
+    if      (policy == SpeakerPolicySingle)              return QObject::tr("Single Speaker");
+    else if (policy == SpeakerPolicyTierNames)           return QObject::tr("Each tier is a Speaker");
+    else if (policy == SpeakerPolicyIntervals)           return QObject::tr("Get Speaker ID from tier");
+    else if (policy == SpeakerPolicyPrimaryAndSecondary) return QObject::tr("Primary and Secondary");
+    return tr("Unknown");
 }
 
 int speakerPolicyToInt(QString policy) {
-    if (policy == "Single Speaker") return SpeakerPolicySingle;
-    else if (policy == "Each tier is a Speaker") return SpeakerPolicyTierNames;
-    else if (policy == "Get Speaker ID from tier") return SpeakerPolicyIntervals;
-    else if (policy == "Primary and Secondary") return SpeakerPolicyPrimaryAndSecondary;
+    if      (policy == QObject::tr("Single Speaker"))           return SpeakerPolicySingle;
+    else if (policy == QObject::tr("Each tier is a Speaker"))   return SpeakerPolicyTierNames;
+    else if (policy == QObject::tr("Get Speaker ID from tier")) return SpeakerPolicyIntervals;
+    else if (policy == QObject::tr("Primary and Secondary"))    return SpeakerPolicyPrimaryAndSecondary;
     return 0;
 }
 
@@ -30,10 +30,10 @@ QWidget *ImportCorpusItemsDelegateSpeakerPolicy::createEditor(QWidget *parent, c
     if(index.column() != 3)
         return QStyledItemDelegate::createEditor(parent, option, index);
     QComboBox *cb = new QComboBox(parent);
-    cb->addItem(QString("Single Speaker"));
-    cb->addItem(QString("Each tier is a Speaker"));
-    cb->addItem(QString("Get Speaker ID from tier"));
-    cb->addItem(QString("Primary and Secondary"));
+    cb->addItem(QString(tr("Single Speaker")));
+    cb->addItem(QString(tr("Each tier is a Speaker")));
+    cb->addItem(QString(tr("Get Speaker ID from tier")));
+    cb->addItem(QString(tr("Primary and Secondary")));
     return cb;
 }
 void ImportCorpusItemsDelegateSpeakerPolicy::setEditorData(QWidget *editor, const QModelIndex &index) const
@@ -70,8 +70,8 @@ ImportCorpusItemsWizardAnalysePage::ImportCorpusItemsWizardAnalysePage(
 {
     ui->setupUi(this);
     connect(ui->commandStopFiles, SIGNAL(clicked()), this, SLOT(stopProcess()));
-    setTitle("Analysing annotation files");
-    setSubTitle("Please wait while your annotation files are being analysed.");
+    setTitle(tr("Analysing annotation files"));
+    setSubTitle(tr("Please wait while your annotation files are being analysed."));
     ui->progressBarFiles->setValue(0);
     ui->tableviewAnnotations->verticalHeader()->setDefaultSectionSize(20);
 
@@ -104,7 +104,8 @@ void ImportCorpusItemsWizardAnalysePage::initializePage()
     }
     m_modelAnnotations->setRowCount(i);
     QStringList headers;
-    headers << "Communication ID" << "Filename" << "Annotation ID" << "Speaker Policy" << "Speaker ID or Tier" << "Contents";
+    headers << tr("Communication ID") << tr("Filename") << tr("Annotation ID") << tr("Speaker Policy")
+            << tr("Speaker ID or Tier") << tr("Contents");
     m_modelAnnotations->setHorizontalHeaderLabels(headers);
     ui->tableviewAnnotations->setModel(m_modelAnnotations);
     ImportCorpusItemsDelegateSpeakerPolicy *delegate = new ImportCorpusItemsDelegateSpeakerPolicy(ui->tableviewAnnotations);
@@ -164,7 +165,7 @@ bool ImportCorpusItemsWizardAnalysePage::loadTextgrids()
         if (m_stop) return false;
         QList<PraatTierData> tiers = PraatTextGrid::getTierData(filename);
         if (tiers.isEmpty()) {
-            m_modelAnnotations->setItem(i - 1, 5, new QStandardItem("Cannot read file"));
+            m_modelAnnotations->setItem(i - 1, 5, new QStandardItem(tr("Cannot read file")));
             continue;
         }
         QSet<QString> tierNames;
@@ -179,7 +180,7 @@ bool ImportCorpusItemsWizardAnalysePage::loadTextgrids()
         // update UI
         QStringList tierNamesList = tierNames.toList();
         qSort(tierNamesList);
-        m_modelAnnotations->setItem(i - 1, 5, new QStandardItem(QString("%1 tiers: %2").arg(tiers.count()).arg(tierNamesList.join(", "))));
+        m_modelAnnotations->setItem(i - 1, 5, new QStandardItem(QString(tr("%1 tiers: %2")).arg(tiers.count()).arg(tierNamesList.join(", "))));
         ui->progressBarFiles->setValue(i);
         QApplication::processEvents();
         i++;

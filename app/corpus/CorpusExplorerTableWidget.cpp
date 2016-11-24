@@ -64,8 +64,8 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
     ui->gridLayoutTable->addWidget(d->tableView);
     d->tableView->tableView()->verticalHeader()->setDefaultSectionSize(20);
     // Corpus object types
-    ui->comboItemType->addItems(QStringList() << "Communications" << "Speakers" << "Recordings" << "Annotations");
-    ui->comboItemType->setCurrentText("Communications");
+    ui->comboItemType->addItems(QStringList() << tr("Communications") << tr("Speakers") << tr("Recordings") << tr("Annotations"));
+    ui->comboItemType->setCurrentText(tr("Communications"));
     connect(ui->comboItemType, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusObjectTypeChanged(QString)));
     // Menu and Toolbar actions
 //    d->toolbarCorpusExplorerTable = new QToolBar("Corpus Explorer Tables", this);
@@ -82,13 +82,13 @@ CorpusExplorerTableWidget::~CorpusExplorerTableWidget()
 
 void CorpusExplorerTableWidget::corpusObjectTypeChanged(const QString &text)
 {
-    if (text == "Communications")
+    if (text == tr("Communications"))
         d->corpuObjectType = CorpusObject::Type_Communication;
-    else if (text == "Speakers")
+    else if (text == tr("Speakers"))
         d->corpuObjectType = CorpusObject::Type_Speaker;
-    else if (text == "Recordings")
+    else if (text == tr("Recordings"))
         d->corpuObjectType = CorpusObject::Type_Recording;
-    else if (text == "Annotations")
+    else if (text == tr("Annotations"))
         d->corpuObjectType = CorpusObject::Type_Annotation;
     refreshModel();
 }

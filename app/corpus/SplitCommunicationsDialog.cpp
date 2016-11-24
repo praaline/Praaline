@@ -43,7 +43,7 @@ SplitCommunicationsDialog::SplitCommunicationsDialog(QPointer<Corpus> corpus, QW
         d->modelCorpusCommunications->setItem(row, 0, item);
         row++;
     }
-    d->modelCorpusCommunications->setHorizontalHeaderLabels(QStringList() << "Communication ID");
+    d->modelCorpusCommunications->setHorizontalHeaderLabels(QStringList() << tr("Communication ID"));
     ui->treeViewCorpusItems->setModel(d->modelCorpusCommunications);
 
     ui->comboBoxLevel->addItems(d->corpus->annotationStructure()->levelIDs());
@@ -86,7 +86,7 @@ void SplitCommunicationsDialog::annotationAttributeChanged()
         }
         d->modelDistinctValues->setItem(row, attributeValues.count(), new QStandardItem(QString::number(tuples[row].second)));
     }
-    d->modelDistinctValues->setHorizontalHeaderLabels(QStringList() << "Value" << "No of occurrences");
+    d->modelDistinctValues->setHorizontalHeaderLabels(QStringList() << tr("Value") << tr("No of occurrences"));
     ui->treeViewDistinctValues->setModel(d->modelDistinctValues);
 }
 

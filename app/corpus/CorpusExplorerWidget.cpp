@@ -94,7 +94,7 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
         if (manager) d->corporaManager = manager;
     }
 
-    d->corporaTopLevelNode = new TreeNode("Corpus Explorer");
+    d->corporaTopLevelNode = new TreeNode(tr("Corpus Explorer"));
     d->corporaTopLevelNode->enableNamingControl(ObserverHints::EditableNames, NamingPolicyFilter::ProhibitDuplicateNames,
                                                 NamingPolicyFilter::AutoRename);
     d->corporaTopLevelNode->displayHints()->setActionHints(ObserverHints::ActionNoHints);
@@ -114,7 +114,7 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     d->recentFiles = new RecentFiles("RecentCorpusFiles", 20);
 
     // Menu and Toolbar actions
-    d->toolbarCorpusExplorer = new QToolBar("Corpus Explorer", this);
+    d->toolbarCorpusExplorer = new QToolBar(tr("Corpus Explorer"), this);
     d->toolbarCorpusExplorer->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarCorpusExplorer->setIconSize(QSize(24, 24));
     setupActions();
@@ -161,25 +161,25 @@ void CorpusExplorerWidget::setupActions()
     ActionContainer* menu_bar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
     ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
     if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
-    ActionContainer* corpus_menu = ACTION_MANAGER->createMenu("&Corpus", existed);
+    ActionContainer* corpus_menu = ACTION_MANAGER->createMenu(tr("&Corpus"), existed);
     if (!existed) menu_bar->addMenu(corpus_menu, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
     // FILE MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionNewCorpus = new QAction("New Corpus...", this);
+    d->actionNewCorpus = new QAction(tr("New Corpus..."), this);
     connect(d->actionNewCorpus, SIGNAL(triggered()), SLOT(newCorpus()));
     command = ACTION_MANAGER->registerAction("File.NewCorpus", d->actionNewCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    d->actionOpenCorpusFile = new QAction("Open Corpus...", this);
+    d->actionOpenCorpusFile = new QAction(tr("Open Corpus..."), this);
     connect(d->actionOpenCorpusFile, SIGNAL(triggered()), SLOT(openCorpusFile()));
     command = ACTION_MANAGER->registerAction("File.OpenCorpus", d->actionOpenCorpusFile, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    d->actionOpenCorpusDbConnection = new QAction("Open Corpus database connection...", this);
+    d->actionOpenCorpusDbConnection = new QAction(tr("Open Corpus database connection..."), this);
     connect(d->actionOpenCorpusDbConnection, SIGNAL(triggered()), SLOT(openCorpusDbConnection()));
     command = ACTION_MANAGER->registerAction("File.OpenCorpusDbConnection", d->actionOpenCorpusDbConnection, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -192,19 +192,19 @@ void CorpusExplorerWidget::setupActions()
 
     file_menu->addSeperator(qti_action_FILE_SETTINGS);
 
-    d->actionSaveCorpus = new QAction("Save Corpus", this);
+    d->actionSaveCorpus = new QAction(tr("Save Corpus"), this);
     connect(d->actionSaveCorpus, SIGNAL(triggered()), SLOT(saveCorpus()));
     command = ACTION_MANAGER->registerAction("File.SaveCorpus", d->actionSaveCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    d->actionSaveCorpusAs = new QAction("Save Corpus as file...", this);
+    d->actionSaveCorpusAs = new QAction(tr("Save Corpus as file..."), this);
     connect(d->actionSaveCorpusAs, SIGNAL(triggered()), SLOT(saveCorpusAs()));
     command = ACTION_MANAGER->registerAction("File.SaveCorpusAs", d->actionSaveCorpusAs, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    d->actionCloseCorpus = new QAction("Close Corpus", this);
+    d->actionCloseCorpus = new QAction(tr("Close Corpus"), this);
     connect(d->actionCloseCorpus, SIGNAL(triggered()), SLOT(closeCorpus()));
     command = ACTION_MANAGER->registerAction("File.CloseCorpus", d->actionCloseCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -212,7 +212,7 @@ void CorpusExplorerWidget::setupActions()
 
     file_menu->addSeperator(qti_action_FILE_SETTINGS);
 
-    d->actionImportCorpus = new QAction("Import Corpus...", this);
+    d->actionImportCorpus = new QAction(tr("Import Corpus..."), this);
     connect(d->actionImportCorpus, SIGNAL(triggered()), SLOT(importCorpus()));
     command = ACTION_MANAGER->registerAction("File.ImportCorpus", d->actionImportCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -223,42 +223,42 @@ void CorpusExplorerWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // CORPUS MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionAddCommunication = new QAction(QIcon(":icons/actions/list_add.png"), "Add Communication...", this);
+    d->actionAddCommunication = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Communication..."), this);
     connect(d->actionAddCommunication, SIGNAL(triggered()), SLOT(addCommunication()));
     command = ACTION_MANAGER->registerAction("Corpus.AddCommunication", d->actionAddCommunication, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddCommunication);
 
-    d->actionAddSpeaker = new QAction(QIcon(":icons/actions/list_add.png"), "Add Speaker...", this);
+    d->actionAddSpeaker = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Speaker..."), this);
     connect(d->actionAddSpeaker, SIGNAL(triggered()), SLOT(addSpeaker()));
     command = ACTION_MANAGER->registerAction("Corpus.AddSpeaker", d->actionAddSpeaker, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddSpeaker);
 
-    d->actionAddRecording = new QAction(QIcon(":icons/actions/list_add.png"), "Add Media Recording...", this);
+    d->actionAddRecording = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Media Recording..."), this);
     connect(d->actionAddRecording, SIGNAL(triggered()), SLOT(addRecording()));
     command = ACTION_MANAGER->registerAction("Corpus.AddRecording", d->actionAddRecording, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddRecording);
 
-    d->actionAddAnnotation = new QAction(QIcon(":icons/actions/list_add.png"), "Add Annotation...", this);
+    d->actionAddAnnotation = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Annotation..."), this);
     connect(d->actionAddAnnotation, SIGNAL(triggered()), SLOT(addAnnotation()));
     command = ACTION_MANAGER->registerAction("Corpus.AddAnnotation", d->actionAddAnnotation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddAnnotation);
 
-    d->actionRemoveCorpusItems = new QAction(QIcon(":icons/actions/list_remove.png"), "Remove Corpus Item(s)", this);
+    d->actionRemoveCorpusItems = new QAction(QIcon(":icons/actions/list_remove.png"), tr("Remove Corpus Item(s)"), this);
     connect(d->actionRemoveCorpusItems, SIGNAL(triggered()), SLOT(removeCorpusItems()));
     command = ACTION_MANAGER->registerAction("Corpus.RemoveCorpusItems", d->actionRemoveCorpusItems, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionRemoveCorpusItems);
 
-    d->actionRelinkCorpusItem = new QAction("Link Item to another Communication...", this);
+    d->actionRelinkCorpusItem = new QAction(tr("Link Item to another Communication..."), this);
     connect(d->actionRelinkCorpusItem, SIGNAL(triggered()), SLOT(relinkCorpusItem()));
     command = ACTION_MANAGER->registerAction("Corpus.RelinkCorpusItem", d->actionRelinkCorpusItem, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -268,25 +268,25 @@ void CorpusExplorerWidget::setupActions()
 
     // Import - export functionality
 
-    d->actionImportMetadata = new QAction("Import corpus metadata...", this);
+    d->actionImportMetadata = new QAction(tr("Import corpus metadata..."), this);
     connect(d->actionImportMetadata, SIGNAL(triggered()), SLOT(importMetadata()));
     command = ACTION_MANAGER->registerAction("Corpus.ImportMetadata", d->actionImportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionExportMetadata = new QAction("Export corpus metadata...", this);
+    d->actionExportMetadata = new QAction(tr("Export corpus metadata..."), this);
     connect(d->actionExportMetadata, SIGNAL(triggered()), SLOT(exportMetadata()));
     command = ACTION_MANAGER->registerAction("Corpus.ExportMetadata", d->actionExportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionAddItemsFromFolder = new QAction("Add corpus items from folder...", this);
+    d->actionAddItemsFromFolder = new QAction(tr("Add corpus items from folder..."), this);
     connect(d->actionAddItemsFromFolder, SIGNAL(triggered()), SLOT(addItemsFromFolder()));
     command = ACTION_MANAGER->registerAction("Corpus.AddItemsFromFolder", d->actionAddItemsFromFolder, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionExportAnnotations = new QAction("Export annotations...", this);
+    d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
     connect(d->actionExportAnnotations, SIGNAL(triggered()), SLOT(exportAnnotations()));
     command = ACTION_MANAGER->registerAction("Corpus.ExportAnnotations", d->actionExportAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -294,31 +294,31 @@ void CorpusExplorerWidget::setupActions()
 
     corpus_menu->addSeperator();
 
-    d->actionCheckMediaFiles = new QAction("Check files of Media Recordings...", this);
+    d->actionCheckMediaFiles = new QAction(tr("Check files of Media Recordings..."), this);
     connect(d->actionCheckMediaFiles, SIGNAL(triggered()), SLOT(checkMediaFiles()));
     command = ACTION_MANAGER->registerAction("Corpus.CheckMediaFiles", d->actionCheckMediaFiles, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionSplitCommunications = new QAction("Split Communications based on annotation...", this);
+    d->actionSplitCommunications = new QAction(tr("Split Communications based on annotation..."), this);
     connect(d->actionSplitCommunications, SIGNAL(triggered()), SLOT(splitCommunications()));
     command = ACTION_MANAGER->registerAction("Corpus.SplitCommunications", d->actionSplitCommunications, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionCreateAnnotationsFromRecordings = new QAction("Create Annotations for Recordings not having one...", this);
+    d->actionCreateAnnotationsFromRecordings = new QAction(tr("Create Annotations for Recordings not having one..."), this);
     connect(d->actionCreateAnnotationsFromRecordings, SIGNAL(triggered()), SLOT(createAnnotationsFromRecordings()));
     command = ACTION_MANAGER->registerAction("Corpus.AnnotationsFromRecordings", d->actionCreateAnnotationsFromRecordings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionCreateSpeakersFromAnnotations = new QAction("Create Speakers and Participations from Annotations...", this);
+    d->actionCreateSpeakersFromAnnotations = new QAction(tr("Create Speakers and Participations from Annotations..."), this);
     connect(d->actionCreateSpeakersFromAnnotations, SIGNAL(triggered()), SLOT(createSpeakersFromAnnotations()));
     command = ACTION_MANAGER->registerAction("Corpus.SpeakersParticipationsFromAnnotations", d->actionCreateSpeakersFromAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionCleanUpParticipations = new QAction("Clean-up Participations based on Annotations...", this);
+    d->actionCleanUpParticipations = new QAction(tr("Clean-up Participations based on Annotations..."), this);
     connect(d->actionCleanUpParticipations, SIGNAL(triggered()), SLOT(cleanUpParticipationsFromAnnotations()));
     command = ACTION_MANAGER->registerAction("Corpus.CleanUpParticipationsFromAnnotations", d->actionCleanUpParticipations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -327,7 +327,7 @@ void CorpusExplorerWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionAttributesAndGroupings = new QAction("Select Attributes and Groupings", this);
+    d->actionAttributesAndGroupings = new QAction(tr("Select Attributes and Groupings"), this);
     connect(d->actionAttributesAndGroupings, SIGNAL(triggered()), SLOT(attributesAndGroupings()));
     command = ACTION_MANAGER->registerAction("Corpus.AttributesAndGroupings", d->actionAttributesAndGroupings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -462,14 +462,15 @@ Corpus *CorpusExplorerWidget::openCorpus(const QString &filename, CorpusDefiniti
 {
     // Open the corpus definition
     if (!definition.load(filename)) {
-        QMessageBox::warning(this, "Cannot open corpus",
-                             QString("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?").arg(filename), QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Cannot open corpus"),
+                             QString(tr("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?")).arg(filename),
+                             QMessageBox::Ok);
         return 0;
     }
     // Ask for password, if needed
     QString password;
     if (definition.datastoreMetadata.usePassword == true || definition.datastoreAnnotations.usePassword) {
-        password = QInputDialog::getText(this, "Enter password", "Enter password to connect to this corpus",
+        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus"),
                                          QLineEdit::Password);
         if (definition.datastoreMetadata.usePassword) definition.datastoreMetadata.password = password;
         if (definition.datastoreAnnotations.usePassword) definition.datastoreAnnotations.password = password;
@@ -478,7 +479,7 @@ Corpus *CorpusExplorerWidget::openCorpus(const QString &filename, CorpusDefiniti
     QString errorMessages;
     Corpus *corpus = Corpus::open(definition, errorMessages);
     if (!errorMessages.isEmpty()) {
-        QMessageBox::warning(this, "Error opening corpus", errorMessages, QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Error opening corpus"), errorMessages, QMessageBox::Ok);
         return 0;
     }
     return corpus;
@@ -495,8 +496,8 @@ void CorpusExplorerWidget::openCorpusFile(const QString &filename)
         if (obs) {
             countCorpora++;
             if (obs->definition().filenameDefinition == filename) {
-                QMessageBox::warning(this, "Corpus already open",
-                                     QString("This corpus (%1) is already open.").arg(filename), QMessageBox::Ok);
+                QMessageBox::warning(this, tr("Corpus already open"),
+                                     QString(tr("This corpus (%1) is already open.")).arg(filename), QMessageBox::Ok);
                 return;
             }
         }
@@ -524,7 +525,7 @@ void CorpusExplorerWidget::openCorpusDbConnection()
     QString errorMessages;
     Corpus *corpus = Corpus::open(definition, errorMessages);
     if (!errorMessages.isEmpty()) {
-        QMessageBox::warning(this, "Error opening corpus", errorMessages, QMessageBox::Ok);
+        QMessageBox::warning(this, tr("Error opening corpus"), errorMessages, QMessageBox::Ok);
         return;
     }
     if (!corpus) return;
@@ -644,8 +645,8 @@ void CorpusExplorerWidget::addRecording()
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
     }
     if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication))) {
-        QMessageBox::warning(this, "Add Recording to Communication",
-                             "Please select the corpus Communication to which the Media Recordings will be added.",
+        QMessageBox::warning(this, tr("Add Recording to Communication"),
+                             tr("Please select the corpus Communication to which the Media Recordings will be added."),
                              QMessageBox::Ok);
         return;
     }
@@ -674,8 +675,8 @@ void CorpusExplorerWidget::addAnnotation()
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
     }
     if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication))) {
-        QMessageBox::warning(this, "Add Recording to Communication",
-                             "Please select the corpus Communication to which the Annotation will be added.",
+        QMessageBox::warning(this, tr("Add Recording to Communication"),
+                             tr("Please select the corpus Communication to which the Annotation will be added."),
                              QMessageBox::Ok);
         return;
     }
@@ -725,21 +726,6 @@ QList<CorpusObject *> CorpusExplorerWidget::selectedCorpusItems()
     return selected;
 }
 
-QString corpusObjectTypeToString(CorpusObject::Type type)
-{
-    switch (type) {
-    case CorpusObject::Type_Corpus: return "Corpus"; break;
-    case CorpusObject::Type_Communication: return "Communication"; break;
-    case CorpusObject::Type_Speaker: return "Speaker"; break;
-    case CorpusObject::Type_Recording: return "Recording"; break;
-    case CorpusObject::Type_Annotation: return "Annotation"; break;
-    case CorpusObject::Type_Participation: return "Participation"; break;
-    case CorpusObject::Type_Bookmark: return "Bookmark"; break;
-    case CorpusObject::Type_Undefined: return "Corpus Item"; break;
-    }
-    return QString();
-}
-
 void CorpusExplorerWidget::removeCorpusItems()
 {
     QList<CorpusObject *> selected = selectedCorpusItems();
@@ -750,11 +736,11 @@ void CorpusExplorerWidget::removeCorpusItems()
             Corpus *corpus = qobject_cast<Corpus *>(com->parent());
             if (!corpus) return;
             bool alsoDeleteData = false;
-            if (QMessageBox::warning(this, "Remove communication from corpus?",
-                                     QString("Do you want to remove Communication %1 from Corpus %2?")
+            if (QMessageBox::warning(this, tr("Remove communication from corpus?"),
+                                     QString(tr("Do you want to remove Communication %1 from Corpus %2?"))
                                      .arg(com->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
-            if (QMessageBox::warning(this, "Permanently delete data?",
-                                     QString("Do you also want to delete all the annotation data associated with Communication %1 from Corpus %2?")
+            if (QMessageBox::warning(this, tr("Permanently delete data?"),
+                                     QString(tr("Do you also want to delete all the annotation data associated with Communication %1 from Corpus %2?"))
                                      .arg(com->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
                 alsoDeleteData = true;
             }
@@ -773,8 +759,8 @@ void CorpusExplorerWidget::removeCorpusItems()
         if (spk) {
             Corpus *corpus = qobject_cast<Corpus *>(spk->parent());
             if (!corpus) return;
-            if (QMessageBox::warning(this, "Remove speaker from corpus?",
-                                     QString("Do you want to remove Speaker %1 from Corpus %2?")
+            if (QMessageBox::warning(this, tr("Remove speaker from corpus?"),
+                                     QString(tr("Do you want to remove Speaker %1 from Corpus %2?"))
                                      .arg(spk->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             corpus->removeSpeaker(spk->ID());
             return;
@@ -783,8 +769,8 @@ void CorpusExplorerWidget::removeCorpusItems()
         if (rec) {
             CorpusCommunication *com = qobject_cast<CorpusCommunication *>(rec->parent());
             if (!com) return;
-            if (QMessageBox::warning(this, "Remove recording from communication?",
-                                     QString("Do you want to remove Recording %1 from Communication %2?")
+            if (QMessageBox::warning(this, tr("Remove recording from communication?"),
+                                     QString(tr("Do you want to remove Recording %1 from Communication %2?"))
                                      .arg(rec->name()).arg(rec->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             com->removeRecording(rec->ID());
             return;
@@ -794,11 +780,11 @@ void CorpusExplorerWidget::removeCorpusItems()
             CorpusCommunication *com = qobject_cast<CorpusCommunication *>(annot->parent());
             if (!com) return;
             bool alsoDeleteData = false;
-            if (QMessageBox::warning(this, "Remove annotation from communication?",
-                                     QString("Do you want to remove Annotation %1 from Communication %2?")
+            if (QMessageBox::warning(this, tr("Remove annotation from communication?"),
+                                     QString(tr("Do you want to remove Annotation %1 from Communication %2?"))
                                      .arg(annot->name()).arg(annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
-            if (QMessageBox::warning(this, "Permanently delete data?",
-                                     QString("Do you also want to delete all the annotation data associated with Annotation %1 in Communication %2?")
+            if (QMessageBox::warning(this, tr("Permanently delete data?"),
+                                     QString(tr("Do you also want to delete all the annotation data associated with Annotation %1 in Communication %2?"))
                                      .arg(annot->name()).arg(annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
                 alsoDeleteData = true;
             }
@@ -817,23 +803,23 @@ void CorpusExplorerWidget::removeCorpusItems()
         QPointer<QStandardItemModel> modelDel = new QStandardItemModel(this);
         modelDel->setColumnCount(2);
         modelDel->setRowCount(selected.count());
-        modelDel->setHorizontalHeaderLabels(QStringList() << "ID" << "Type");
+        modelDel->setHorizontalHeaderLabels(QStringList() << tr("ID") << tr("Type"));
         int i = 0;
         foreach (CorpusObject *cobj, selected) {
             QStandardItem *item = new QStandardItem(cobj->ID());
             item->setCheckable(true);
             item->setCheckState(Qt::Checked);
             modelDel->setItem(i, 0, item);
-            modelDel->setItem(i, 1, new QStandardItem(corpusObjectTypeToString(cobj->type())));
+            modelDel->setItem(i, 1, new QStandardItem(CorpusObject::typeToString(cobj->type())));
             i++;
         }
         // Confirmations
-        QPointer<SelectionDialog> sel = new SelectionDialog("Confirm deletion of corpus items", modelDel, this);
+        QPointer<SelectionDialog> sel = new SelectionDialog(tr("Confirm deletion of corpus items"), modelDel, this);
         if (sel->exec() == QDialog::Rejected)
             return;
         bool alsoDeleteData = false;
-        if (QMessageBox::warning(this, "Permanently delete data?",
-                                 QString("Do you also want to delete the associated annotation data?"),
+        if (QMessageBox::warning(this, tr("Permanently delete data?"),
+                                 QString(tr("Do you also want to delete the associated annotation data?")),
                                  QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             alsoDeleteData = true;
         }
@@ -892,15 +878,15 @@ void CorpusExplorerWidget::relinkCorpusItem()
     QList<CorpusObject *> selected = selectedCorpusItems();
 
     if (selected.count() < 1) {
-        QMessageBox::warning(this, "Relink Corpus Items",
-                             "Please select Recording(s) and Annotation(s) to change their association with a Communication.",
+        QMessageBox::warning(this, tr("Relink Corpus Items"),
+                             tr("Please select Recording(s) and Annotation(s) to change their association with a Communication."),
                              QMessageBox::Ok);
         return;
     }
     // Get destination communication
     bool ok;
-    QString communicationID = QInputDialog::getItem (this, "Relink Corpus Item",
-                                                    "Please select the ID of the Communication to which you want to move the selected Recording",
+    QString communicationID = QInputDialog::getItem (this, tr("Relink Corpus Item"),
+                                                    tr("Please select the ID of the Communication to which you want to move the selected Recording"),
                                                     corpus->communicationIDs(), 0, false, &ok);
     if (!ok || communicationID.isEmpty()) return;
     // Relink
@@ -1028,8 +1014,8 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
     if (!corpus) return;
 
     bool deleteSpeakers = false;
-    if (QMessageBox::question(this, "Clean up Speakers as well?", "When a speaker does not participate in a Communication, based on its Annotations, "
-                              "the Participation will be deleted. Should the Speaker metadata also be deleted? (Caution: this operation cannot be undone!)")
+    if (QMessageBox::question(this, tr("Clean up Speakers as well?"), tr("When a speaker does not participate in a Communication, based on its Annotations, "
+                              "the Participation will be deleted. Should the Speaker metadata also be deleted? (Caution: this operation cannot be undone!)"))
             == QMessageBox::Yes) {
         deleteSpeakers = true;
     }

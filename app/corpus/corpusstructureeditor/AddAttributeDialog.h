@@ -7,6 +7,8 @@ namespace Ui {
 class AddAttributeDialog;
 }
 
+struct AddAttributeDialogData;
+
 class AddAttributeDialog : public QDialog
 {
     Q_OBJECT
@@ -24,6 +26,7 @@ private slots:
 
 private:
     Ui::AddAttributeDialog *ui;
+    AddAttributeDialogData *d;
 };
 
 #endif // ADDATTRIBUTEDIALOG_H

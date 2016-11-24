@@ -34,7 +34,7 @@ CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
         }
     }
     m_model->setRowCount(countRecordings);
-    QStringList headerLabels; headerLabels << "Communication ID" << "Recording ID" << "Filename" << "Status";
+    QStringList headerLabels; headerLabels << tr("Communication ID") << tr("Recording ID") << tr("Filename") << tr("Status");
     m_model->setHorizontalHeaderLabels(headerLabels);
     ui->treeviewRecordings->setModel(m_model);
     for (int i = 0; i < 3; ++i) ui->treeviewRecordings->resizeColumnToContents(i);
@@ -69,22 +69,22 @@ void CheckMediaFilesDialog::process()
         QString filename = m_model->data(m_model->index(i, 2)).toString();
         QPointer<CorpusCommunication> com = m_corpus->communication(communicationID);
         if (!com) {
-            m_model->setItem(i, 3, new QStandardItem("Communication deleted"));
+            m_model->setItem(i, 3, new QStandardItem(tr("Communication deleted")));
             continue;
         }
         QPointer<CorpusRecording> rec = com->recording(recordingID);
         if (!rec) {
-            m_model->setItem(i, 3, new QStandardItem("Recording deleted"));
+            m_model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
             continue;
         }
         SoundInfo info;
         bool ok = SoundInfo::getSoundInfo(m_corpus->baseMediaPath() + "/" + filename, info);
         if (!ok) {
-            m_model->setItem(i, 3, new QStandardItem("File not found!"));
+            m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;
         }
         if (rec->checksumMD5() == info.checksumMD5) {
-            m_model->setItem(i, 3, new QStandardItem("OK"));
+            m_model->setItem(i, 3, new QStandardItem(tr("OK")));
         }
         else {
             QFileInfo fileinfo(filename);
@@ -97,7 +97,7 @@ void CheckMediaFilesDialog::process()
             rec->setEncoding(info.encoding);
             rec->setFileSize(info.filesize);
             rec->setChecksumMD5(info.checksumMD5);
-            m_model->setItem(i, 3, new QStandardItem("UPDATED"));
+            m_model->setItem(i, 3, new QStandardItem(tr("UPDATED")));
         }
         ui->progressBar->setValue(i);
         QApplication::processEvents();

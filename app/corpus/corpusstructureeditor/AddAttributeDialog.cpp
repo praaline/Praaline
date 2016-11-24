@@ -1,9 +1,16 @@
+#include <QString>
+#include <QMap>
 #include "AddAttributeDialog.h"
 #include "ui_AddAttributeDialog.h"
 
+struct AddAttributeDialogData {
+
+};
+
 AddAttributeDialog::AddAttributeDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AddAttributeDialog)
+    ui(new Ui::AddAttributeDialog),
+    d(new AddAttributeDialogData)
 {
     ui->setupUi(this);
     QStringList datatypes;
@@ -20,6 +27,7 @@ AddAttributeDialog::AddAttributeDialog(QWidget *parent) :
 AddAttributeDialog::~AddAttributeDialog()
 {
     delete ui;
+    delete d;
 }
 
 QString AddAttributeDialog::attributeID() const
@@ -29,7 +37,7 @@ QString AddAttributeDialog::attributeID() const
 
 QString AddAttributeDialog::datatype() const
 {
-    if (ui->comboDatatype->currentText() == "Text")                     return "varchar";
+    if      (ui->comboDatatype->currentText() == "Text")                return "varchar";
     else if (ui->comboDatatype->currentText() == "Number (real)")       return "double";
     else if (ui->comboDatatype->currentText() == "Number (integer)")    return "int";
     else if (ui->comboDatatype->currentText() == "Yes/No (boolean)")    return "bool";

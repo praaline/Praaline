@@ -70,5 +70,21 @@ void CorpusObject::copyPropertiesFrom(CorpusObject *other)
     setDirty(true);
 }
 
+// static
+QString CorpusObject::typeToString(CorpusObject::Type type)
+{
+    switch (type) {
+    case CorpusObject::Type_Corpus:         return tr("Corpus");        break;
+    case CorpusObject::Type_Communication:  return tr("Communication"); break;
+    case CorpusObject::Type_Speaker:        return tr("Speaker");       break;
+    case CorpusObject::Type_Recording:      return tr("Recording");     break;
+    case CorpusObject::Type_Annotation:     return tr("Annotation");    break;
+    case CorpusObject::Type_Participation:  return tr("Participation"); break;
+    case CorpusObject::Type_Bookmark:       return tr("Bookmark");      break;
+    case CorpusObject::Type_Undefined:      return tr("Corpus Item");   break;
+    }
+    return QString();
+}
+
 } // namespace Core
 } // namespace Praaline

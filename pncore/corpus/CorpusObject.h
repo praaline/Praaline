@@ -28,6 +28,9 @@ public:
         Type_Undefined
     };
 
+    // User-friendly and translated names
+    static QString typeToString(CorpusObject::Type type);
+
     explicit CorpusObject(QObject *parent = 0);
     CorpusObject(const QString &ID, QObject *parent = 0);
     virtual ~CorpusObject() {}

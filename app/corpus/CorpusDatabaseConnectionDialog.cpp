@@ -13,7 +13,7 @@ CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) 
     connect(ui->commandConnect, SIGNAL(clicked(bool)), this, SLOT(accept()));
     connect(ui->commandCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
     // Database types
-    QStringList databaseTypeNames; databaseTypeNames << "MySQL database" << "PostgreSQL database";
+    QStringList databaseTypeNames; databaseTypeNames << tr("MySQL database") << tr("PostgreSQL database");
     QStringList databaseTypeDrivers; databaseTypeDrivers << "QMYSQL" << "QPSQL";
     for (int i = 0; i < databaseTypeDrivers.count(); ++i) {
         ui->comboBoxDatabaseTypeMetadata->addItem(databaseTypeNames.at(i), databaseTypeDrivers.at(i));

@@ -172,8 +172,8 @@ bool MocaDBSerialiserMetadata::saveCorpusObject(CorpusObject *obj, QPointer<Meta
     bool exists = false;
     while (q.next()) {
         exists = true;
-        QDateTime lastUpdateInDb = q.value("last_update_timestamp");
-        QString lastUpdateBy = q.value("last_update_by");
+        QDateTime lastUpdateInDb = q.value("last_update_timestamp").toDateTime();
+        QString lastUpdateBy = q.value("last_update_by").toString();
         // Check if there is a newer update in the database => refuse update (optimistic concurrency check)
     }
     db.transaction();

@@ -101,7 +101,7 @@ void PraalineMainWindow::initialise()
     // Add a formatting hint to the RichText formatting engine.
     AbstractFormattingEngine* rich_text_engine = Log->formattingEngineReference(qti_def_FORMATTING_ENGINE_RICH_TEXT);
     if (rich_text_engine) {
-        QRegExp reg_exp_success_color = QRegExp(QObject::tr("Successfully") + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
+        QRegExp reg_exp_success_color = QRegExp(tr("Successfully") + "*", Qt::CaseInsensitive, QRegExp::Wildcard);
         CustomFormattingHint success_message_hint(reg_exp_success_color, "green", Logger::Info);
         rich_text_engine->addColorFormattingHint(success_message_hint);
     }
@@ -235,10 +235,10 @@ void PraalineMainWindow::initialise()
     // Now that all the modes have been loaded from the plugins, add them to the main window:
     m_mainWindow->modeManager()->initialize();
     QStringList mode_order;
-    mode_order << "Corpus" << "Annotation" << "Visualisation" << "Query" << "Statistics" << "Scripting";
-    mode_order << "Session Log";
+    mode_order << tr("Corpus") << tr("Annotation") << tr("Visualisation") << tr("Query") << tr("Statistics") << tr("Scripting");
+    mode_order << tr("Session Log");
     m_mainWindow->modeManager()->setPreferredModeOrder(mode_order);
-    m_mainWindow->modeManager()->setActiveMode("Corpus");
+    m_mainWindow->modeManager()->setActiveMode(tr("Corpus"));
 
     // Register command editor config page.
     OBJECT_MANAGER->registerObject(ACTION_MANAGER->commandEditor(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));

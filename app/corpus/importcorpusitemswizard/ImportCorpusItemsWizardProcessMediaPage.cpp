@@ -17,9 +17,9 @@ ImportCorpusItemsWizardProcessMediaPage::ImportCorpusItemsWizardProcessMediaPage
 {
     ui->setupUi(this);
 
-    setTitle("Analyse media files");
-    setSubTitle("In this first step the media file Recordings will be analysed, so that their properties can be saved into Praaline's corpus database. "
-                "This information allows Praaline to detect if changes were made on them at a later stage.");
+    setTitle(tr("Analyse media files"));
+    setSubTitle(tr("In this first step the media file Recordings will be analysed, so that their properties can be saved into Praaline's corpus database. "
+                   "This information allows Praaline to detect if changes were made on them at a later stage."));
     connect(ui->commandStop, SIGNAL(clicked()), this, SLOT(stopProcess()));
 }
 
@@ -38,14 +38,14 @@ void ImportCorpusItemsWizardProcessMediaPage::initializePage()
     for (i = m_candidateRecordings.begin(); i != m_candidateRecordings.end(); ++i) {
         if (!i.value()) continue;
         QList<QStandardItem *> items;
-        items << new QStandardItem(i.key().first); // Communication ID
+        items << new QStandardItem(i.key().first);  // Communication ID
         items << new QStandardItem(i.key().second); // Recording ID
         items << new QStandardItem(i.value()->filename());
         items << new QStandardItem("");
         m_model->appendRow(items);
     }
     m_model->setRowCount(m_candidateRecordings.count());
-    QStringList headerLabels; headerLabels << "Communication ID" << "Recording ID" << "Filename" << "Status";
+    QStringList headerLabels; headerLabels << tr("Communication ID") << tr("Recording ID") << tr("Filename") << tr("Status");
     m_model->setHorizontalHeaderLabels(headerLabels);
     ui->treeviewRecordings->setModel(m_model);
     for (int i = 0; i < 3; ++i) ui->treeviewRecordings->resizeColumnToContents(i);
@@ -73,17 +73,17 @@ bool ImportCorpusItemsWizardProcessMediaPage::validatePage()
 
         QPointer<CorpusRecording> rec = m_candidateRecordings.value(QPair<QString, QString>(communicationID, recordingID));
         if (!rec) {
-            m_model->setItem(i, 3, new QStandardItem("Recording deleted"));
+            m_model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
             continue;
         }
         SoundInfo info;
         bool ok = SoundInfo::getSoundInfo(filename, info);
         if (!ok) {
-            m_model->setItem(i, 3, new QStandardItem("File not found!"));
+            m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;
         }
         if (rec->checksumMD5() == info.checksumMD5) {
-            m_model->setItem(i, 3, new QStandardItem("OK"));
+            m_model->setItem(i, 3, new QStandardItem(tr("OK")));
         }
         else {
             QFileInfo fileinfo(filename);
@@ -96,7 +96,7 @@ bool ImportCorpusItemsWizardProcessMediaPage::validatePage()
             rec->setEncoding(info.encoding);
             rec->setFileSize(info.filesize);
             rec->setChecksumMD5(info.checksumMD5);
-            m_model->setItem(i, 3, new QStandardItem("UPDATED"));
+            m_model->setItem(i, 3, new QStandardItem(tr("UPDATED")));
         }
         ui->progressBar->setValue(i);
         if ((i % 100) == 0) QApplication::processEvents();
