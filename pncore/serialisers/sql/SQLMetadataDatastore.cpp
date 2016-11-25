@@ -2,8 +2,6 @@
 #include <QSqlError>
 #include "SQLSerialiserCorpus.h"
 #include "SQLSerialiserMetadataStructure.h"
-#include "SQLSchemaProxyMetadata.h"
-
 #include "SQLMetadataDatastore.h"
 
 namespace Praaline {
@@ -34,7 +32,7 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
     }
     // Initialise database
     SQLSerialiserMetadataStructure::initialiseMetadataStructureTables(m_database);
-    SQLSchemaProxyMetadata::createSchema(m_structure, m_database);
+    SQLSerialiserMetadataStructure::createMetadataSchema(m_structure, m_database);
     return true;
 }
 
@@ -63,27 +61,27 @@ bool SQLMetadataDatastore::closeDatastore()
 
 bool SQLMetadataDatastore::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute)
 {
-    return SQLSchemaProxyMetadata::createMetadataAttribute(type, newAttribute, m_database);
+    return SQLSerialiserMetadataStructure::createMetadataAttribute(type, newAttribute, m_database);
 }
 
 bool SQLMetadataDatastore::renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID)
 {
-    return SQLSchemaProxyMetadata::renameMetadataAttribute(type, attributeID, newAttributeID, m_database);
+    return SQLSerialiserMetadataStructure::renameMetadataAttribute(type, attributeID, newAttributeID, m_database);
 }
 
 bool SQLMetadataDatastore::deleteMetadataAttribute(CorpusObject::Type type, QString attributeID)
 {
-    return SQLSchemaProxyMetadata::deleteMetadataAttribute(type, attributeID, m_database);
+    return SQLSerialiserMetadataStructure::deleteMetadataAttribute(type, attributeID, m_database);
 }
 
 bool SQLMetadataDatastore::loadMetadataStructure()
 {
-    return SQLSerialiserMetadataStructure::read(m_structure, m_database);
+    return SQLSerialiserMetadataStructure::loadMetadataStructure(m_structure, m_database);
 }
 
 bool SQLMetadataDatastore::saveMetadataStructure()
 {
-    return SQLSerialiserMetadataStructure::write(m_structure, m_database);
+    //return SQLSerialiserMetadataStructure::write(m_structure, m_database);
 }
 
 bool SQLMetadataDatastore::loadCorpus(Corpus *corpus)

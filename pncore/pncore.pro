@@ -182,7 +182,6 @@ HEADERS += \
     serialisers/sql/SQLQueryEngineAnnotation.h \
     serialisers/sql/SQLSchemaProxyAnnotation.h \
     serialisers/sql/SQLSchemaProxyBase.h \
-    serialisers/sql/SQLSchemaProxyMetadata.h \
     serialisers/sql/SQLSerialiserAnnotation.h \
     serialisers/sql/SQLSerialiserAnnotationStructure.h \
     serialisers/sql/SQLSerialiserBase.h \
@@ -194,7 +193,8 @@ HEADERS += \
     serialisers/mocadb/MocaDBSerialiserMetadataStructure.h \
     serialisers/sql/SQLSerialiserMetadata.h \
     serialisers/sql/SQLSerialiserMetadataStructure.h \
-    serialisers/mocadb/MocaDBSerialiserSystem.h
+    serialisers/mocadb/MocaDBSerialiserSystem.h \
+    serialisers/sql/SQLSerialiserSystem.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -340,7 +340,6 @@ SOURCES += \
     serialisers/sql/SQLMetadataDatastore.cpp \
     serialisers/sql/SQLQueryEngineAnnotation.cpp \
     serialisers/sql/SQLSchemaProxyBase.cpp \
-    serialisers/sql/SQLSchemaProxyMetadata.cpp \
     serialisers/sql/SQLSerialiserAnnotation.cpp \
     serialisers/sql/SQLSerialiserAnnotationStructure.cpp \
     serialisers/sql/SQLSerialiserBase.cpp \
@@ -353,7 +352,8 @@ SOURCES += \
     serialisers/mocadb/MocaDBSerialiserAnnotationStructure.cpp \
     query/Dataset.cpp \
     query/Measures.cpp \
-    serialisers/mocadb/MocaDBSerialiserSystem.cpp
+    serialisers/mocadb/MocaDBSerialiserSystem.cpp \
+    serialisers/sql/SQLSerialiserSystem.cpp
 
 DISTFILES += \
     pncore.qmodel

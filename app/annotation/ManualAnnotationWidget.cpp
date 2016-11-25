@@ -112,10 +112,10 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
             this, SLOT(speakerRemoved(QString)));
 
     // Toolbars and actions
-    d->toolbarMain = new QToolBar("Manual annotation", this);
+    d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarMain->setIconSize(QSize(24, 24));
-    d->toolbarEditor = new QToolBar("Vertical timeline editor", this);
+    d->toolbarEditor = new QToolBar(tr("Vertical timeline editor"), this);
     d->toolbarEditor->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarEditor->setIconSize(QSize(24, 24));
     this->addToolBar(d->toolbarMain);
@@ -175,26 +175,26 @@ void ManualAnnotationWidget::setupActions()
 
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
-    d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), "Save Annotations", this);
+    d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
     connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotations()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionSave);
     d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
-    d->actionPlay = new QAction(QIcon(":/icons/media/media_play.png"), "Play", this);
+    d->actionPlay = new QAction(QIcon(":/icons/media/media_play.png"), tr("Play"), this);
     connect(d->actionPlay, SIGNAL(triggered()), SLOT(mediaPlay()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Play", d->actionPlay, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPlay);
 
-    d->actionPause = new QAction(QIcon(":/icons/media/media_pause.png"), "Pause", this);
+    d->actionPause = new QAction(QIcon(":/icons/media/media_pause.png"), tr("Pause"), this);
     connect(d->actionPause, SIGNAL(triggered()), SLOT(mediaPause()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Pause", d->actionPause, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPause);
 
-    d->actionStop = new QAction(QIcon(":/icons/media/media_stop.png"), "Stop", this);
+    d->actionStop = new QAction(QIcon(":/icons/media/media_stop.png"), tr("Stop"), this);
     connect(d->actionStop, SIGNAL(triggered()), SLOT(mediaStop()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Stop", d->actionStop, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -202,25 +202,25 @@ void ManualAnnotationWidget::setupActions()
 
     // EDITOR
     // ----------------------------------------------------------------------------------------------------------------
-    d->actionEditorIntervalJoin = new QAction(QIcon(":/icons/actions/interval_join.png"), "Join Intervals", this);
+    d->actionEditorIntervalJoin = new QAction(QIcon(":/icons/actions/interval_join.png"), tr("Join Intervals"), this);
     connect(d->actionEditorIntervalJoin, SIGNAL(triggered()), this, SLOT(intervalJoin()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalJoin", d->actionEditorIntervalJoin, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionEditorIntervalJoin);
 
-    d->actionEditorIntervalSplit = new QAction(QIcon(":/icons/actions/interval_split.png"), "Split Intervals", this);
+    d->actionEditorIntervalSplit = new QAction(QIcon(":/icons/actions/interval_split.png"), tr("Split Intervals"), this);
     connect(d->actionEditorIntervalSplit, SIGNAL(triggered()), this, SLOT(intervalSplit()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalSplit", d->actionEditorIntervalSplit, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionEditorIntervalSplit);
 
-    d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), "Change orientation", this);
+    d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), tr("Change orientation"), this);
     connect(d->actionToggleOrientation, SIGNAL(triggered()), this, SLOT(toggleOrientation()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleOrientation", d->actionToggleOrientation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleOrientation);
 
-    d->actionRemoveSorting = new QAction(QIcon(":/icons/actions/sort_remove.png"), "Remove Sort", this);
+    d->actionRemoveSorting = new QAction(QIcon(":/icons/actions/sort_remove.png"), tr("Remove Sort"), this);
     connect(d->actionRemoveSorting, SIGNAL(triggered()), d->editor, SLOT(removeSorting()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.RemoveSorting", d->actionRemoveSorting, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -228,14 +228,14 @@ void ManualAnnotationWidget::setupActions()
 
     // SYNC ACTIONS
     // ----------------------------------------------------------------------------------------------------------------
-    d->actionMoveMinBoundaryLeft = new QAction("Move min boundary left", this);
+    d->actionMoveMinBoundaryLeft = new QAction(tr("Move min boundary left"), this);
     connect(d->actionMoveMinBoundaryLeft, SIGNAL(triggered()), this, SLOT(moveMinBoundaryLeft()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMinBoundaryLeft", d->actionMoveMinBoundaryLeft, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->editor->addAction(d->actionMoveMinBoundaryLeft);
     d->actionMoveMinBoundaryLeft->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
 
-    d->actionMoveMaxBoundaryRight = new QAction("Move max boundary right", this);
+    d->actionMoveMaxBoundaryRight = new QAction(tr("Move max boundary right"), this);
     connect(d->actionMoveMaxBoundaryRight, SIGNAL(triggered()), this, SLOT(moveMaxBoundaryRight()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMaxBoundaryRight", d->actionMoveMaxBoundaryRight, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));

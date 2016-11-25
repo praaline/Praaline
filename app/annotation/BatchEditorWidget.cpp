@@ -75,14 +75,14 @@ void BatchEditorWidget::levelChanged(const QString &text)
     AnnotationStructureLevel *level = corpus->annotationStructure()->level(levelID);
     if (!level) return;
     ui->comboBoxAttributes->clear();
-    ui->comboBoxAttributes->insertItem(0, "(text)", true);
+    ui->comboBoxAttributes->insertItem(0, tr("(text)"), true);
     int i = 1;
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
         ui->comboBoxAttributes->insertItem(i, attribute->name(), false);
         i++;
     }
     ui->comboBoxAttributeToUpdate->clear();
-    ui->comboBoxAttributeToUpdate->addItem("(text)", "");
+    ui->comboBoxAttributeToUpdate->addItem(tr("(text)"), "");
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
         ui->comboBoxAttributeToUpdate->addItem(attribute->name(), attribute->ID());
     }
@@ -102,9 +102,9 @@ void BatchEditorWidget::actionGetDistinctValues()
     d->modelAttributeIDs.clear();
     for (int i = 0; i < ui->comboBoxAttributes->count(); ++i) {
         if (ui->comboBoxAttributes->itemData(i).toBool() == true) {
-            if (ui->comboBoxAttributes->itemText(i) == "(text)") {
+            if (ui->comboBoxAttributes->itemText(i) == tr("(text)")) {
                 attributeIDs << "";
-                headers << "(text)";
+                headers << tr("(text)");
                 d->modelAttributeIDs << "";
             } else {
                 // (i - 1) is taken because the first item is always the "(text)" item
@@ -116,7 +116,7 @@ void BatchEditorWidget::actionGetDistinctValues()
             }
         }
     }
-    headers << "Count" << "Update?" << "New Value";
+    headers << tr("Count") << tr("Update?") << tr("New Value");
 
     QList<QPair<QList<QVariant>, long> > data = corpus->datastoreAnnotations()->getDistinctLabels(levelID, attributeIDs);
     QPair<QList<QVariant>, long> rowData;

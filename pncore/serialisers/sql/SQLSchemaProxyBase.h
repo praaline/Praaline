@@ -16,6 +16,7 @@ protected:
     static bool renameTable(QString oldTable, QString newTable, QSqlDatabase &db);
     static bool deleteColumn(QString table, QString column, QSqlDatabase &db);
     static bool deleteTable(QString table, QSqlDatabase &db);
+    static bool retypeColumn(QString tableName, QString columnName, DataType oldDataType, DataType newDataType, QSqlDatabase &db);
 };
 
 } // namespace Core

@@ -52,7 +52,8 @@ ExtractSoundBitesWidget::ExtractSoundBitesWidget(QWidget *parent) :
     ui->gridLayoutManualSelection->addWidget(d->manualSelectionTable);
     d->manualSelectionModel = new QStandardItemModel(200, 5, this);
     d->manualSelectionModel->setHorizontalHeaderLabels(
-                QStringList() << "Sound Bite Name" << "Communication ID" << "Recording ID" << "Start Time (s)" << "End Time (s)");
+                QStringList() << tr("Sound Bite Name") << tr("Communication ID") << tr("Recording ID")
+                << tr("Start Time (s)") << tr("End Time (s)"));
     d->manualSelectionTable->tableView()->setModel(d->manualSelectionModel);
 }
 

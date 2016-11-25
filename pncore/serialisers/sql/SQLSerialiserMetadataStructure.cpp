@@ -11,18 +11,38 @@ using namespace QSqlMigrator;
 using namespace QSqlMigrator::Structure;
 using namespace QSqlMigrator::Commands;
 
+#include "SQLSerialiserSystem.h"
 #include "SQLSerialiserBase.h"
 #include "SQLSerialiserMetadataStructure.h"
 
 namespace Praaline {
 namespace Core {
 
-SQLSerialiserMetadataStructure::SQLSerialiserMetadataStructure()
+CorpusObject::Type corpusObjectTypeFromCode(const QString &code)
 {
+    CorpusObject::Type objectType = CorpusObject::Type_Undefined;
+    if      (code == "X") objectType = CorpusObject::Type_Corpus;
+    else if (code == "C") objectType = CorpusObject::Type_Communication;
+    else if (code == "S") objectType = CorpusObject::Type_Speaker;
+    else if (code == "R") objectType = CorpusObject::Type_Recording;
+    else if (code == "A") objectType = CorpusObject::Type_Annotation;
+    else if (code == "P") objectType = CorpusObject::Type_Participation;
+    return objectType;
+}
+
+QString corpusObjectCodeFromType(const CorpusObject::Type type)
+{
+    if      (type == CorpusObject::Type_Corpus)         return "X";
+    else if (type == CorpusObject::Type_Communication)  return "C";
+    else if (type == CorpusObject::Type_Speaker)        return "S";
+    else if (type == CorpusObject::Type_Recording)      return "R";
+    else if (type == CorpusObject::Type_Annotation)     return "A";
+    else if (type == CorpusObject::Type_Participation)  return "P";
+    return QString();
 }
 
 // static
-void SQLSerialiserMetadataStructure::initialiseMetadataStructureTables(QSqlDatabase &db)
+bool SQLSerialiserMetadataStructure::initialiseMetadataStructureTables(QSqlDatabase &db)
 {
     Migrations::Migration initializeMetadataStructure;
     Table::Builder tableMetadataSections("praalineMetadataSections");
@@ -42,109 +62,110 @@ void SQLSerialiserMetadataStructure::initialiseMetadataStructureTables(QSqlDatab
             << Column("datatype", SqlType(SqlType::VarChar, 32))
             << Column("length", SqlType::Integer)
             << Column("isIndexed", SqlType::Boolean)
-            << Column("nameValueList", SqlType(SqlType::VarChar, 32));
+            << Column("nameValueList", SqlType(SqlType::VarChar, 32))
+            << Column("mandatory", SqlType::Boolean)
+            << Column("order", SqlType::Integer);
     initializeMetadataStructure.add(new CreateTable(tableMetadataAttributes));
 
     SQLSerialiserBase::applyMigration("initializeMetadataStructure", &initializeMetadataStructure, db);
 }
 
-// -------------------------------------------------------------------------------------------------------------------------
-
-bool updateDatabase(MetadataStructure *structure, CorpusObject::Type what, QSqlDatabase &db)
+bool createNewSchema(MetadataStructure *structure, CorpusObject::Type what, QSqlDatabase &db)
 {
-    QString objectType;
-    switch (what) {
-        case CorpusObject::Type_Communication : objectType = "C"; break;
-        case CorpusObject::Type_Speaker : objectType = "S"; break;
-        case CorpusObject::Type_Recording : objectType = "R"; break;
-        case CorpusObject::Type_Annotation : objectType = "A"; break;
-        case CorpusObject::Type_Participation : objectType = "P"; break;
-        default: return false;
+    Migrations::Migration initializeTable;
+    QString tableName;
+    ColumnList columns;
+    if (what == CorpusObject::Type_Corpus) {
+        tableName = "corpus";
+        columns << Column("corpusID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("corpusName", SqlType(SqlType::VarChar, 128)) <<
+                   Column("description", SqlType(SqlType::VarChar, 128));
     }
-    QSqlQuery q1(db), q2(db), qdel(db);
-    q1.prepare("INSERT INTO praalineMetadataSections (objectType, sectionID, name, description) VALUES "
-               "(:objectType, :sectionID, :name, :description)");
-    q1.bindValue(":objectType", objectType);
-    q2.prepare("INSERT INTO praalineMetadataAttributes (objectType, attributeID, sectionID, name, description, datatype, length, isIndexed, nameValueList) VALUES "
-               "(:objectType, :attributeID, :sectionID, :name, :description, :datatype, :length, :isIndexed, :nameValueList)");
-    q2.bindValue(":objectType", objectType);
-    //
-    qdel.prepare("DELETE FROM praalineMetadataSections WHERE objectType = :objectType");
-    qdel.bindValue(":objectType", objectType);
-    qdel.exec();
-    if (qdel.lastError().isValid()) { qDebug() << qdel.lastError(); return false; }
-    qdel.prepare("DELETE FROM praalineMetadataAttributes WHERE objectType = :objectType");
-    qdel.bindValue(":objectType", objectType);
-    qdel.exec();
-    if (qdel.lastError().isValid()) { qDebug() << qdel.lastError(); return false; }
+    else if (what == CorpusObject::Type_Communication) {
+        tableName = "communication";
+        columns << Column("communicationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("communicationName", SqlType(SqlType::VarChar, 128));
+    }
+    else if (what == CorpusObject::Type_Speaker) {
+        tableName = "speaker";
+        columns << Column("speakerID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("speakerName", SqlType(SqlType::VarChar, 128));
+    }
+    else if (what == CorpusObject::Type_Recording) {
+        tableName = "recording";
+        columns << Column("recordingID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("recordingName", SqlType(SqlType::VarChar, 128)) <<
+                   Column("filename", SqlType(SqlType::VarChar, 256)) <<
+                   Column("format", SqlType(SqlType::VarChar, 32)) <<
+                   Column("duration", SqlType::BigInt) <<
+                   Column("channels", SqlType::SmallInt, "1") <<
+                   Column("sampleRate", SqlType::Integer) <<
+                   Column("precisionBits", SqlType::SmallInt) <<
+                   Column("bitRate", SqlType::Integer) <<
+                   Column("encoding", SqlType(SqlType::VarChar, 256)) <<
+                   Column("fileSize", SqlType::BigInt) <<
+                   Column("checksumMD5", SqlType(SqlType::VarChar, 64));
+    }
+    else if (what == CorpusObject::Type_Annotation) {
+        tableName = "annotation";
+        columns << Column("annotationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("recordingID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("annotationName", SqlType(SqlType::VarChar, 64));
+    }
+    else if (what == CorpusObject::Type_Participation) {
+        tableName = "participation";
+        columns << Column("corpusID", SqlType(SqlType::VarChar, 64)) <<
+                   Column("communicationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("speakerID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
+                   Column("role", SqlType(SqlType::VarChar, 128));
+    }
+    else return false;
+
     foreach (MetadataStructureSection *section, structure->sections(what)) {
-        q1.bindValue(":sectionID", section->ID());
-        q1.bindValue(":name", section->name());
-        q1.bindValue(":description", section->description());
-        q1.exec();
-        if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            q2.bindValue(":attributeID", attribute->ID());
-            q2.bindValue(":sectionID", section->ID());
-            q2.bindValue(":name", attribute->name());
-            q2.bindValue(":description", attribute->description());
-            q2.bindValue(":datatype", attribute->datatypeString());
-            q2.bindValue(":length", attribute->datatypePrecision());
-            q2.bindValue(":isIndexed", (attribute->indexed()) ? 1 : 0);
-            q2.bindValue(":nameValueList", attribute->nameValueList());
-            q2.exec();
-            if (q2.lastError().isValid()) { qDebug() << q2.lastError(); return false; }
+            columns << Column(attribute->ID(), SqlType(attribute->datatype()));
         }
     }
-    return true;
+
+    Table::Builder table(tableName, columns);
+    initializeTable.add(new CreateTable(table));
+    return SQLSerialiserBase::applyMigration(QString("initialize_%1").arg(tableName),
+                                             &initializeTable, db);
 }
 
 // static
-bool SQLSerialiserMetadataStructure::write(MetadataStructure *structure, QSqlDatabase &db)
+bool SQLSerialiserMetadataStructure::createMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
     db.transaction();
-    if (!updateDatabase(structure, CorpusObject::Type_Communication, db)) { db.rollback(); return false; }
-    if (!updateDatabase(structure, CorpusObject::Type_Speaker, db)) { db.rollback(); return false; }
-    if (!updateDatabase(structure, CorpusObject::Type_Recording, db)) { db.rollback(); return false; }
-    if (!updateDatabase(structure, CorpusObject::Type_Annotation, db)) { db.rollback(); return false; }
-    if (!updateDatabase(structure, CorpusObject::Type_Participation, db)) { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Corpus, db))         { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Communication, db))  { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Speaker, db))        { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Recording, db))      { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Annotation, db))     { db.rollback(); return false; }
+    if (!createNewSchema(structure, CorpusObject::Type_Participation, db))  { db.rollback(); return false; }
     db.commit();
     return true;
 }
 
 // static
-bool SQLSerialiserMetadataStructure::writePartial(MetadataStructure *structure, CorpusObject::Type what, QSqlDatabase &db)
-{
-    db.transaction();
-    if (!updateDatabase(structure, what, db)) { db.rollback(); return false; }
-    db.commit();
-    return true;
-}
-
-// -------------------------------------------------------------------------------------------------------------------------
-
-bool readFromDatabase(MetadataStructure *structure, QSqlDatabase &db, QString objectTypeFilter)
+bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
     if (!structure) return false;
     QSqlQuery q1(db), q2(db);
     q1.setForwardOnly(true);
-    if (objectTypeFilter.isEmpty())
-        q1.prepare("SELECT * FROM praalineMetadataSections");
-    else
-        q1.prepare(QString("SELECT * FROM praalineMetadataSections WHERE objectType = '%1'").arg(objectTypeFilter));
+    q1.prepare("SELECT * FROM praalineMetadataSections");
     q2.setForwardOnly(true);
-    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE sectionID = :sectionID");
+    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE sectionID = :sectionID ORDER BY order");
     //
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
+    structure->clearAll();
     while (q1.next()) {
-        QString objectType = q1.value(0).toString();
-        CorpusObject::Type object = CorpusObject::Type_Undefined;
-        if (objectType == "C") object = CorpusObject::Type_Communication;
-        else if (objectType == "S") object = CorpusObject::Type_Speaker;
-        else if (objectType == "R") object = CorpusObject::Type_Recording;
-        else if (objectType == "A") object = CorpusObject::Type_Annotation;
-        else if (objectType == "P") object = CorpusObject::Type_Participation;
+        CorpusObject::Type objectType = corpusObjectTypeFromCode(q1.value("objectType").toString());
         MetadataStructureSection *section = new MetadataStructureSection(q1.value("sectionID").toString(),
                                                                          q1.value("name").toString(),
                                                                          q1.value("description").toString());
@@ -159,38 +180,138 @@ bool readFromDatabase(MetadataStructure *structure, QSqlDatabase &db, QString ob
             attribute->setDatatype(DataType(attribute->datatype().base(), q2.value("length").toInt()));
             if (q2.value("isIndexed").toInt() > 0) attribute->setIndexed(true); else attribute->setIndexed(false);
             attribute->setNameValueList(q2.value("nameValueList").toString());
+            attribute->setMandatory(q2.value("mandatory").toBool());
+            attribute->setOrder(q2.value("order").toInt());
             attribute->setParent(section);
             section->addAttribute(attribute);
         }
         section->setParent(structure);
-        structure->addSection(object, section);
+        structure->addSection(objectType, section);
     }
     return true;
 }
 
 // static
-bool SQLSerialiserMetadataStructure::read(MetadataStructure *structure, QSqlDatabase &db)
+bool SQLSerialiserMetadataStructure::createMetadataSection(QPointer<MetadataStructureSection> newSection, QSqlDatabase &db)
 {
-    if (!structure) return false;
-    structure->clearAll();
-    return readFromDatabase(structure, db, "");
+    if (!newSection) return false;
+    QSqlQuery q(db);
+    q.prepare("INSERT INTO praalineMetadataSections (sectionID, name, description) VALUES (:sectionID, :name, :description) ");
+    q.bindValue(":sectionID", newSection->ID());
+    q.bindValue(":name", newSection->name());
+    q.bindValue(":description", newSection->description());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
 }
 
 // static
-bool SQLSerialiserMetadataStructure::readPartial(MetadataStructure *structure, CorpusObject::Type what, QSqlDatabase &db)
+bool SQLSerialiserMetadataStructure::updateMetadataSection(QPointer<MetadataStructureSection> updatedSection, QSqlDatabase &db)
 {
-    if (!structure) return false;
-    structure->clear(what);
-    QString objectTypeFilter;
-    switch (what) {
-        case CorpusObject::Type_Communication : objectTypeFilter = "C"; break;
-        case CorpusObject::Type_Speaker : objectTypeFilter = "S"; break;
-        case CorpusObject::Type_Recording : objectTypeFilter = "R"; break;
-        case CorpusObject::Type_Annotation : objectTypeFilter = "A"; break;
-        case CorpusObject::Type_Participation : objectTypeFilter = "P"; break;
-        default: objectTypeFilter = "";
-    }
-    return readFromDatabase(structure, db, objectTypeFilter);
+    if (!updatedSection) return false;
+    QSqlQuery q(db);
+    q.prepare("UPDATE praalineMetadataSections SET name=:name, description=:description WHERE sectionID=:sectionID ");
+    q.bindValue(":sectionID", updatedSection->ID());
+    q.bindValue(":name", updatedSection->name());
+    q.bindValue(":description", updatedSection->description());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::deleteMetadataSection(const QString &sectionID, QSqlDatabase &db)
+{
+    return false;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute,
+                                                             QSqlDatabase &db)
+{
+    QString tableName = SQLSerialiserSystem::tableNameForCorpusObjectType(type);
+    if (tableName.isEmpty()) return false;
+    if (!newAttribute) return false;
+    bool result = addColumnToTable(tableName, newAttribute->ID(), newAttribute->datatype(), db);
+    if (!result) return false;
+    QSqlQuery q(db);
+    q.prepare("INSERT INTO praalineMetadataAttributes "
+              "(objectType, attributeID, sectionID, name, description, datatype, length, isIndexed, nameValueList, mandatory, order) "
+              "VALUES (:objectType, :attributeID, :sectionID, :name, :description, :datatype, :length, :isIndexed, :nameValueList, :mandatory, :order) ");
+    q.bindValue(":objectType", corpusObjectCodeFromType(type));
+    q.bindValue(":attributeID", newAttribute->ID());
+    q.bindValue(":sectionID", newAttribute->sectionID());
+    q.bindValue(":name", newAttribute->name());
+    q.bindValue(":description", newAttribute->description());
+    q.bindValue(":datatype", newAttribute->datatypeString());
+    q.bindValue(":length", newAttribute->datatypePrecision());
+    q.bindValue(":isIndexed", (newAttribute->indexed()) ? 1 : 0);
+    q.bindValue(":nameValueList", newAttribute->nameValueList());
+    q.bindValue(":mandatory", (newAttribute->mandatory()) ? 1 : 0);
+    q.bindValue(":order", newAttribute->order());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::updateMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> updatedAttribute,
+                                                             QSqlDatabase &db)
+{
+    if (!updatedAttribute) return false;
+    QSqlQuery q(db);
+    q.prepare("UPDATE praalineMetadataAttributes SET sectionID=:sectionID, name=:name, description=:description, "
+              "nameValueList=:nameValueList, mandatory=:mandatory, order=:order "
+              "WHERE objectType=:objectType AND attributeID=:attributeID");
+    q.bindValue(":objectType", corpusObjectCodeFromType(type));
+    q.bindValue(":attributeID", updatedAttribute->ID());
+    q.bindValue(":sectionID", updatedAttribute->sectionID());
+    q.bindValue(":name", updatedAttribute->name());
+    q.bindValue(":description", updatedAttribute->description());
+    q.bindValue(":nameValueList", updatedAttribute->nameValueList());
+    q.bindValue(":mandatory", (updatedAttribute->mandatory()) ? 1 : 0);
+    q.bindValue(":order", updatedAttribute->order());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID,
+                                                             QSqlDatabase &db)
+{
+    QString tableName = SQLSerialiserSystem::tableNameForCorpusObjectType(type);
+    if (tableName.isEmpty()) return false;
+    bool result = renameColumn(tableName, attributeID, newAttributeID, db);
+    if (!result) return false;
+    QSqlQuery q(db);
+    q.prepare("UPDATE praalineMetadataAttributes SET attributeID=:newAttributeID WHERE objectType=:objectType AND attributeID=:attributeID ");
+    q.bindValue(":objectType", corpusObjectCodeFromType(type));
+    q.bindValue(":attributeID", attributeID);
+    q.bindValue(":newAttributeID", newAttributeID);
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID,
+                                                             const DataType &oldDataType, const DataType &newDataType, QSqlDatabase &db)
+{
+    QString tableName = SQLSerialiserSystem::tableNameForCorpusObjectType(type);
+    if (tableName.isEmpty()) return false;
+    bool result = retypeColumn(tableName, attributeID, oldDataType, newDataType, db);
+    if (!result) return false;
+    QSqlQuery q(db);
+
+}
+
+// static
+bool SQLSerialiserMetadataStructure::deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID, QSqlDatabase &db)
+{
+    QString tableName = SQLSerialiserSystem::tableNameForCorpusObjectType(type);
+    if (tableName.isEmpty()) return false;
+    return deleteColumn(tableName, attributeID, db);
 }
 
 } // namespace Core

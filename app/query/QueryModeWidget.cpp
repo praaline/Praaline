@@ -70,25 +70,25 @@ void QueryModeWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowCorcondancer = new QAction("Concordancer", this);
+    d->actionShowCorcondancer = new QAction(tr("Concordancer"), this);
     connect(d->actionShowCorcondancer, SIGNAL(triggered()), SLOT(showConcordancer()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowConcordancer", d->actionShowCorcondancer, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCreateDataset = new QAction("Dataset Creator", this);
+    d->actionShowCreateDataset = new QAction(tr("Dataset Creator"), this);
     connect(d->actionShowCreateDataset, SIGNAL(triggered()), SLOT(showCreateDataset()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowCreateDataset", d->actionShowCreateDataset, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowAdvancedQueries = new QAction("Advanced Queries", this);
+    d->actionShowAdvancedQueries = new QAction(tr("Advanced Queries"), this);
     connect(d->actionShowAdvancedQueries, SIGNAL(triggered()), SLOT(showAdvancedQueries()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowAdvancedQueries", d->actionShowAdvancedQueries, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowExtractSamples = new QAction("Sample Extraction Tool", this);
+    d->actionShowExtractSamples = new QAction(tr("Sample Extraction Tool"), this);
     connect(d->actionShowExtractSamples, SIGNAL(triggered()), SLOT(showExtractSamples()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowExtractSamples", d->actionShowExtractSamples, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));

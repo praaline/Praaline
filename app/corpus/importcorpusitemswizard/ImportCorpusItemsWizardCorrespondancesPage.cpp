@@ -86,25 +86,25 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
 
 bool filterTierName(QString tierName, QString filterOperator, QString filter)
 {
-    if (filterOperator == tr("no filter")) {
+    if (filterOperator == QObject::tr("no filter")) {
         return true;
     }
-    else if (filterOperator == tr("contains")) {
+    else if (filterOperator == QObject::tr("contains")) {
         if (tierName.contains(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == tr("does not contain")) {
+    else if (filterOperator == QObject::tr("does not contain")) {
         if (!tierName.contains(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == tr("starts with")) {
+    else if (filterOperator == QObject::tr("starts with")) {
         if (tierName.startsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == tr("does not start with")) {
+    else if (filterOperator == QObject::tr("does not start with")) {
         if (!tierName.startsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == tr("ends with")) {
+    else if (filterOperator == QObject::tr("ends with")) {
         if (tierName.endsWith(filter, Qt::CaseInsensitive)) return true;
     }
-    else if (filterOperator == tr("does not end with")) {
+    else if (filterOperator == QObject::tr("does not end with")) {
         if (!tierName.endsWith(filter, Qt::CaseInsensitive)) return true;
     }
     return false;

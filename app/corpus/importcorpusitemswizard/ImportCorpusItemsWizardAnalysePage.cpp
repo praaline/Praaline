@@ -14,7 +14,7 @@ QString speakerPolicyToString(int policy) {
     else if (policy == SpeakerPolicyTierNames)           return QObject::tr("Each tier is a Speaker");
     else if (policy == SpeakerPolicyIntervals)           return QObject::tr("Get Speaker ID from tier");
     else if (policy == SpeakerPolicyPrimaryAndSecondary) return QObject::tr("Primary and Secondary");
-    return tr("Unknown");
+    return QObject::tr("Unknown");
 }
 
 int speakerPolicyToInt(QString policy) {

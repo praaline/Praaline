@@ -1,5 +1,6 @@
 #include <QObject>
 #include "StructureBase.h"
+#include "MetadataStructureSection.h"
 #include "MetadataStructureAttribute.h"
 
 namespace Praaline {
@@ -24,6 +25,13 @@ MetadataStructureAttribute::MetadataStructureAttribute(const QString &ID, const 
 MetadataStructureAttribute::MetadataStructureAttribute(const MetadataStructureAttribute *other, QObject *parent) :
     StructureBase(other, parent)
 {
+}
+
+QString MetadataStructureAttribute::sectionID() const
+{
+    MetadataStructureSection *section = qobject_cast<MetadataStructureSection *>(this->parent());
+    if (section) return section->ID();
+    return QString();
 }
 
 } // namespace Core

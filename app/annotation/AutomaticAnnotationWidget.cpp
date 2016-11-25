@@ -63,7 +63,7 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
     list = OBJECT_MANAGER->registeredInterfaces("Qtilities::CoreGui::TreeNode");
     foreach (QObject* obj, list) {
         TreeNode *node = qobject_cast<TreeNode *>(obj);
-        if (node && node->observerName() == "Corpus Explorer") {
+        if (node && node->observerName() == tr("Corpus Explorer")) {
             d->corporaTopLevelNode = node;
         }
     }
@@ -108,7 +108,7 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
         d->modelAnnotationPlugins->setItem(i, 0, new QStandardItem(plugin->pluginName()));
         i++;
     }
-    d->modelAnnotationPlugins->setHorizontalHeaderLabels(QStringList() << "Plugin Name");
+    d->modelAnnotationPlugins->setHorizontalHeaderLabels(QStringList() << tr("Plugin Name"));
     d->checkableProxyModelAnnotationPlugins = new CheckableProxyModel(this);
     d->checkableProxyModelAnnotationPlugins->setSourceModel(d->modelAnnotationPlugins);
     d->checkableProxyModelAnnotationPlugins->setDefaultCheckState(false);
@@ -129,9 +129,9 @@ void AutomaticAnnotationWidget::setupActions()
     ui->toolbarOutput->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     ui->toolbarOutput->setIconSize(QSize(24, 24));
     connect(ui->commandAnnotate, SIGNAL(clicked()), this, SLOT(actionAnnotate()));
-    d->actionSaveOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), "Save output");
+    d->actionSaveOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), tr("Save output"));
     connect(d->actionSaveOutput, SIGNAL(triggered()), this, SLOT(actionSaveOutput()));
-    d->actionClearOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/clear.png"), "Clear output");
+    d->actionClearOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/clear.png"), tr("Clear output"));
     connect(d->actionClearOutput, SIGNAL(triggered()), this, SLOT(actionClearOutput()));
 }
 
@@ -182,7 +182,7 @@ void AutomaticAnnotationWidget::actionSaveOutput()
     QFileDialog::Options options;
     QString selectedFilter;
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Automatic Annotation Output"),
-                                "praaline_report.txt", tr("Text File (*.txt);;All Files (*)"),
+                                tr("praaline_report.txt"), tr("Text File (*.txt);;All Files (*)"),
                                 &selectedFilter, options);
     if (fileName.isEmpty()) return;
     QFile fileOut(fileName);
@@ -261,7 +261,8 @@ void AutomaticAnnotationWidget::actionAnnotate()
     QList<IAnnotationPlugin *> plugins = selectedPlugins();
 
     if (plugins.isEmpty()) {
-        QMessageBox::warning(this, "Automatic Annotation", "No annotation plugins selected. Select at least one automatic annotation plugin to run!");
+        QMessageBox::warning(this, tr("Automatic Annotation"),
+                             tr("No annotation plugins selected. Select at least one automatic annotation plugin to run!"));
         return;
     }
     Corpus *corpus = 0;

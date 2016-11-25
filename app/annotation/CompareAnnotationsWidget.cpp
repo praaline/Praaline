@@ -38,7 +38,7 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
     ui->setupUi(this);
 
     // Setup user interfacce
-    d->toolbarMain = new QToolBar("Compare Annotations", this);
+    d->toolbarMain = new QToolBar(tr("Compare Annotations"), this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarMain->setIconSize(QSize(24, 24));
     this->addToolBar(d->toolbarMain);
@@ -78,7 +78,7 @@ void CompareAnnotationsWidget::setupActions()
     context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
     Command* command;
 
-    d->actionExport = new QAction(QIcon(":/icons/actions/action_export.png"), "Export", this);
+    d->actionExport = new QAction(QIcon(":/icons/actions/action_export.png"), tr("Export"), this);
     connect(d->actionExport, SIGNAL(triggered()), SLOT(exportResults()));
     command = ACTION_MANAGER->registerAction("Annotation.CompareAnnotations.Export", d->actionExport, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -186,8 +186,8 @@ void CompareAnnotationsWidget::compare()
                 annotationID_left, speakerID_left, QStringList() << levelID_left);
     IntervalTier *tier_left = group_left->getIntervalTierByName(levelID_left);
     if (!tier_left) {
-        QMessageBox::warning(this, "Cannot find left data",
-                             QString("No data for left pane: annotation %1, speaker %2 and annotation level %3.")
+        QMessageBox::warning(this, tr("Cannot find left data"),
+                             QString(tr("No data for left pane: annotation %1, speaker %2 and annotation level %3."))
                              .arg(annotationID_left).arg(speakerID_left).arg(levelID_left), QMessageBox::Ok);
         return;
     }
@@ -195,8 +195,8 @@ void CompareAnnotationsWidget::compare()
                 annotationID_right, speakerID_right, QStringList() << levelID_right);
     IntervalTier *tier_right = group_right->getIntervalTierByName(levelID_right);
     if (!tier_right) {
-        QMessageBox::warning(this, "Cannot find right data",
-                             QString("No data for right pane: annotation %1, speaker %2 and annotation level %3.")
+        QMessageBox::warning(this, tr("Cannot find right data"),
+                             QString(tr("No data for right pane: annotation %1, speaker %2 and annotation level %3."))
                              .arg(annotationID_right).arg(speakerID_right).arg(levelID_right), QMessageBox::Ok);
         return;
     }
@@ -233,7 +233,7 @@ void CompareAnnotationsWidget::exportResults()
     QFileDialog::Options options;
     QString selectedFilter;
     QString fileName = QFileDialog::getSaveFileName(this, tr("Export Results"),
-                                                    "praaline_compare.txt", tr("Tab-separated Text File (*.txt);;All Files (*)"),
+                                                    tr("praaline_compare.txt"), tr("Tab-separated Text File (*.txt);;All Files (*)"),
                                                     &selectedFilter, options);
     if (fileName.isEmpty()) return;
     d->gridviewResults->exportToTabSeparated(fileName);

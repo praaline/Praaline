@@ -75,37 +75,37 @@ void AnnotationModeWidget::setupActions()
     Command* command;
 
     ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
-    ActionContainer* menu_window = ACTION_MANAGER->createMenu("&Window", existed);
+    ActionContainer* menu_window = ACTION_MANAGER->createMenu(tr("&Window"), existed);
     if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
     // WINDOW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowAutomaticAnnotation = new QAction("Automatic Annotation", this);
+    d->actionShowAutomaticAnnotation = new QAction(tr("Automatic Annotation"), this);
     connect(d->actionShowAutomaticAnnotation, SIGNAL(triggered()), SLOT(showAutomaticAnnotation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowAutomatic", d->actionShowAutomaticAnnotation, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowTranscriber = new QAction("Transcriber", this);
+    d->actionShowTranscriber = new QAction(tr("Transcriber"), this);
     connect(d->actionShowTranscriber, SIGNAL(triggered()), SLOT(showTranscriber()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowTranscriber", d->actionShowTranscriber, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowManualAnnotation = new QAction("Timeline Editor", this);
+    d->actionShowManualAnnotation = new QAction(tr("Timeline Editor"), this);
     connect(d->actionShowManualAnnotation, SIGNAL(triggered()), SLOT(showManualAnnotation()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowManual", d->actionShowManualAnnotation, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowBatchEditor = new QAction("Batch Annotation Editor", this);
+    d->actionShowBatchEditor = new QAction(tr("Batch Annotation Editor"), this);
     connect(d->actionShowBatchEditor, SIGNAL(triggered()), SLOT(showBatchEditor()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowBatch", d->actionShowBatchEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCompareAnnotations = new QAction("Compare Annotations", this);
+    d->actionShowCompareAnnotations = new QAction(tr("Compare Annotations"), this);
     connect(d->actionShowCompareAnnotations, SIGNAL(triggered()), SLOT(showCompareAnnotations()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowCompareAnnotations", d->actionShowCompareAnnotations, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));

@@ -67,11 +67,11 @@ bool SQLSerialiserAnnotationStructure::loadAnnotationStructure(QPointer<Annotati
         AnnotationStructureLevel *level = new AnnotationStructureLevel();
         level->setID(q1.value("levelID").toString());
         switch (q1.value("levelType").toInt()) {
-        case 0:     level->setLevelType(AnnotationStructureLevel::IndependentLevel); break;
-        case 1: level->setLevelType(AnnotationStructureLevel::GroupingLevel); break;
-        case 2: level->setLevelType(AnnotationStructureLevel::SequencesLevel); break;
-        case 3: level->setLevelType(AnnotationStructureLevel::TreeLevel); break;
-        default: level->setLevelType(AnnotationStructureLevel::IndependentLevel); break;
+        case 0:     level->setLevelType(AnnotationStructureLevel::IndependentLevel);    break;
+        case 1:     level->setLevelType(AnnotationStructureLevel::GroupingLevel);       break;
+        case 2:     level->setLevelType(AnnotationStructureLevel::SequencesLevel);      break;
+        case 3:     level->setLevelType(AnnotationStructureLevel::TreeLevel);           break;
+        default:    level->setLevelType(AnnotationStructureLevel::IndependentLevel);    break;
         }
         level->setParentLevelID(q1.value("parentLevelID").toString());
         level->setDescription(q1.value("description").toString());

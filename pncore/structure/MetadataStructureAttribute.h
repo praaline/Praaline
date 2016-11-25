@@ -24,6 +24,7 @@ public:
     MetadataStructureAttribute(const MetadataStructureAttribute *other, QObject *parent = 0);
 
     // Data
+    QString sectionID() const;
     bool mandatory() const { return m_mandatory; }
     void setMandatory(bool mandatory) { m_mandatory = mandatory; }
     QVariant defaultValue() const { return m_defaultValue; }

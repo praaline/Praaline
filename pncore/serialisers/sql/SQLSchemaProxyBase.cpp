@@ -33,6 +33,16 @@ bool SQLSchemaProxyBase::renameColumn(QString tableName, QString oldName, QStrin
                 &migration, db);
 }
 
+bool SQLSchemaProxyBase::retypeColumn(QString tableName, QString columnName,
+                                      DataType oldDataType, DataType newDataType, QSqlDatabase &db)
+{
+    Migrations::Migration migration;
+    migration.add(new AlterColumnType(columnName, tableName, SqlType(newDataType), SqlType(oldDataType)));
+    return SQLSerialiserBase::applyMigration(
+                QString("%1_retypecolumn_%2_%3").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName).arg(columnName),
+                &migration, db);
+}
+
 bool SQLSchemaProxyBase::renameTable(QString oldTableName, QString newTableName, QSqlDatabase &db)
 {
     Migrations::Migration migration;

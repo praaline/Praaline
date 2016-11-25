@@ -140,7 +140,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
     // Step 1b: Add participations of speakers
     foreach (QString spkID, tiersAll.keys()) {
         if (!corpus->hasParticipation(com->ID(), spkID)) {
-            corpus->addParticipation(com->ID(), spkID, tr("Participant"));
+            corpus->addParticipation(com->ID(), spkID, QObject::tr("Participant"));
         }
     }
     // Step 2: Update attributes for each level and speaker
