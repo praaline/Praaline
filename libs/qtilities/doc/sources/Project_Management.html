@@ -1,0 +1,183 @@
+/**
+\page page_project_management Project Management
+
+<table CELLPADDING=0 style="width:100%;
+  table-layout:fixed;
+	margin:0px 0px 0px 0px;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;">
+<tr> 
+
+<td style="width:80%; padding:0px 5px 0px 0px; vertical-align: text-top; text-align: left">
+<h1 style="margin:0px; padding:0px">Overview</h1>
+
+Projects forms a vital part of most software packages. It allows the user to save the current state of an application to a file and later restore the state of the application from the saved state. %Qtilities provides a library dedicated to project management which can easily be added to any Qt application.
+
+Table of contents:
+- \ref project_structure
+- \ref project_management_first_steps
+	- \ref initialize_finalize
+	- \ref project_items
+	- \ref project_file_version
+	.
+- \ref using_projects
+	- \ref working_with_projects
+	- \ref project_options
+	- \ref observer_project_items
+  .
+</td>
+
+<td style="width:20%; vertical-align: top; margin:0px 0px 0px 0px;">
+<table style="table-layout:auto;
+	margin:0px 0px 0px 0px; 
+  width: 100%;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;
+  background-color: #d1d3d4;">
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">First Steps</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_getting_started.html">Getting Started</a><br>
+- <a href="page_the_basics.html">The Basics</a><br>
+- <a href="page_examples_and_plugins.html">Examples and Plugins</a><br>
+</td>
+</tr>
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Overviews</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_action_management.html">Action Management</a><br>
+- <a href="page_tree_structures.html">Building Trees</a><br>
+- <a href="page_debugging.html">Debugging Applications</a><br>
+- <a href="page_extension_system.html">Extension System</a><br>
+- <a href="page_factories.html">Factories</a><br>
+- <a href="page_logging.html">Logging</a><br>
+- <a href="page_modules_overview.html">Modules</a><br>
+- <a href="page_object_management.html">Object Management</a><br>
+- <a href="page_observers.html">Observers</a><br>
+- <a href="page_observer_widgets.html">Observer Widgets</a><br>
+- <a href="page_project_management.html">Project Management</a><br>
+- <a href="page_tasking.html">Tasking</a><br>
+- <a href="page_widget_set.html">Widget Set</a><br>
+</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table>
+
+\section project_structure The structure of a Qtilities project
+
+A project is a class which implements the Qtilities::ProjectManagement::Interfaces::IProject interface. Each project can consist of any number of project items. Project items are classes which implement the Qtilities::ProjectManagement::Interfaces::IProjectItem interface. The Qtilities::ProjectManagement::ProjectManager singleton is responsible to manage open projects. At present only one project can be open (active) at any time. 
+
+The diagram below shows this structure graphically.
+
+\image html project_structure.jpg "Project Structure"
+
+\section project_management_first_steps First steps: Setting up the project manager
+
+\subsection initialize_finalize Initializing and finalizing the project manager
+The project manager provides macros to initialize it on application startup and to finalize the manager when the application exists. During initialization the project manager will restore its settings from the previous session and load the last project if needed, or create a new project if needed. The finalization does the opposite: it saves the current settings and checks if the open project (if any) must be saved before exit. Lets look at the correct way to initialize and finalize the project manager:
+
+\code
+#include <QtilitiesProjectManagement>
+using namespace Qtilities::CoreGui;
+using namespace Qtilities::ProjectManagement;
+
+int main(int argc, char *argv[])
+{
+  QtilitiesApplication a(argc, argv);   
+
+  // Add project items in the application to the project manager.
+
+  // Initialize the project manager:
+  PROJECT_MANAGER_INITIALIZE();
+
+  // Register project management config page. If the configuration widget is used in the application this is needed, if not you can skip this line.
+  OBJECT_MANAGER->registerObject(PROJECT_MANAGER->configWidget());
+
+  int result = a.exec();
+  PROJECT_MANAGER_FINALIZE();
+  return results;
+}
+\endcode
+
+\subsection project_items Registering project items in the project manager
+
+Project items must be added to the project manager before initialization. When the project manager creates a new project it will attach all known project items to the project. The recommended way to do this is to register all your project items in the global object pool (see \ref page_object_management for more information on this topic) and then get all the project items once the application is stable (all plugins were initialized etc.). When using the Qtilities::Plugins::ProjectManagement plugin in the \p QtilitiesPlugins project this will be done automatically when the plugin initializes its dependencies. Alternatively when not using the plugin, \p PROJECT_MANAGER->refreshPartList() can be used to inspect the object pool.
+
+\subsection project_file_version Project file type and versioning
+
+The project manager is able to save projects in either binary or XML formats where the suffices used for these different types can be set as follows:
+
+\code
+PROJECT_MANAGER->setDefaultProjectType(IExportable::XML);
+PROJECT_MANAGER->setAllowedProjectTypes(IExportable::XML);
+// Lets say we want our project files to be save with the following extension: my_file.my_project_suffix
+PROJECT_MANAGER->setProjectTypeSuffix(IExportable::XML,"my_project_suffix");
+
+// Once the project type parameters were set, we can initialize the project manager.
+PROJECT_MANAGER_INITIALIZE();
+\endcode
+
+%Qtilities make it easy to control different versions of project files since projects implement Qtilities::Core::Interfaces::IExportable which supports different versions of output formats. See the \p IExportable class documentation for a complete example of how the versioning implementation works.
+
+\section using_projects Projects in action: Using projects in your application
+
+\subsection working_with_projects Working with projects (creating, saving and loading)
+
+The project manager can manage one open project at a time, accessible through Qtilities::ProjectManagement::ProjectManager::currentProject(). If no project is open, a new project can be created using Qtilities::ProjectManagement::ProjectManager::newProject(). This function can also be used to create a new project, thus closing and prompting to save the current project (if necessary) and creating a new project. If the current project must be closed without creating a new project call the Qtilities::ProjectManagement::ProjectManager::closeProject() function.
+
+To open projects is straight forward. Below is an example of how the user can be prompted to open a project file:
+\code
+QString filter = PROJECT_MANAGER->allowedProjectTypesFilter();
+QString project_path;
+if (PROJECT_MANAGER->useCustomProjectsPath())
+    project_path = PROJECT_MANAGER->customProjectsPath();
+else
+    project_path = QCoreApplication::applicationDirPath() + tr("/Projects");
+QString file_name = QFileDialog::getOpenFileName(0, tr("Open Existing Project"), project_path, filter);
+if (file_name.isEmpty())
+    return;
+
+if (!PROJECT_MANAGER->isAllowedFileName(file_name))
+    file_name.append("." + PROJECT_MANAGER->projectTypeSuffix(PROJECT_MANAGER->defaultProjectType()));
+
+PROJECT_MANAGER->openProject(file_name);
+\endcode
+
+The project manager contains functions to open saved projects and it keeps track of recent project paths and names. It also implements the Qtilities::Core::Interfaces::IModificationNotifier interface which can be used directly to control the modification state of the open project in the project manager.
+
+\subsection project_options Project management options
+
+The project manager provides various options on how projects must be managed. See the Qtilities::ProjectManagement::ProjectManager class documentation for the access functions of these options. The screen shot below (taken from the \p ObjectManagementExample) shows the available settings in the project management configuration dialog:
+
+\image html project_configuration_widget.jpg "Project Management Configuration Widget"
+
+\subsection observer_project_items Adding other classes as project items
+
+The Qtilities::ProjectManagement::ObserverProjectItemWrapper class provides a wrapper which can be used to add an observer (tree) as a project item in your application.
+Below is an example which shows how to use this wrapper.
+
+\code
+Observer* observerA = new Observer("Observer A","Example observer");
+ObserverProjectItemWrapper* project_item = new ObserverProjectItemWrapper(this);
+project_item->setObserverContext(observerA);
+OBJECT_MANAGER->registerObject(project_item);
+\endcode
+
+Qtilities::ProjectManagement::CodeEditorProjectItemWrapper as be used in a similar way to make any Qtilities::CoreGui::CodeEditorWidget part of a project.
+
+\subsection project_management_plugin The example project management plugin
+
+In the \p QtilitiesExamples project there is a project management plugin which can be built against your application (this is necessary for the plugin to know which version of the application must be used during plugin compatibility checking). For more information see the \ref plugins_overview section of the \ref page_examples_and_plugins page.
+
+*/

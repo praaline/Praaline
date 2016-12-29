@@ -1,0 +1,289 @@
+/**
+\page page_action_management Action Management
+
+<table CELLPADDING=0 style="width:100%;
+  table-layout:fixed;
+	margin:0px 0px 0px 0px;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;">
+<tr> 
+
+<td style="width:80%; padding:0px 5px 0px 0px; vertical-align: text-top; text-align: left">
+<h1 style="margin:0px; padding:0px">Overview</h1>
+
+%Qtilities provides classes to allow management of actions and shortcuts in a Qt application. In small applications it is easy to do action management manually but as applications get bigger, its useful an it saves time to use a proper action management system. The action manager allows actions and shortcuts to be linked with contexts and to change their behavior depending on the active contexts. An command editor widget is provided to allow users to change their application wide shortcut settings, or to export and import previous sessions.
+
+The action provider concept is introduced where objects can provide actions to other objects or views and lastly, a clipboard manager is provided allowing management of the application clipboard.
+
+This article will explore these features and show how to include the functionality in your application.
+
+Table of contents:
+- \ref context_manager
+- \ref action_manager
+    - \ref menus_and_menubars
+    - \ref actions_and_shortcuts
+        - \ref actions_and_shortcuts_registering_actions
+        - \ref actions_and_shortcuts_proxy_actions
+        - \ref actions_and_shortcuts_action_place_holders
+        - \ref actions_and_shortcuts_defined_actions
+        - \ref actions_and_shortcuts_configurations
+        - \ref actions_and_shortcuts_debugging
+        .
+    .
+- \ref clipboard_manager
+
+</td>
+
+<td style="width:20%; vertical-align: top; margin:0px 0px 0px 0px;">
+<table style="table-layout:auto;
+	margin:0px 0px 0px 0px; 
+  width: 100%;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;
+  background-color: #d1d3d4;">
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">First Steps</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_getting_started.html">Getting Started</a><br>
+- <a href="page_the_basics.html">The Basics</a><br>
+- <a href="page_examples_and_plugins.html">Examples and Plugins</a><br>
+</td>
+</tr>
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Overviews</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_action_management.html">Action Management</a><br>
+- <a href="page_tree_structures.html">Building Trees</a><br>
+- <a href="page_debugging.html">Debugging Applications</a><br>
+- <a href="page_extension_system.html">Extension System</a><br>
+- <a href="page_factories.html">Factories</a><br>
+- <a href="page_logging.html">Logging</a><br>
+- <a href="page_modules_overview.html">Modules</a><br>
+- <a href="page_object_management.html">Object Management</a><br>
+- <a href="page_observers.html">Observers</a><br>
+- <a href="page_observer_widgets.html">Observer Widgets</a><br>
+- <a href="page_project_management.html">Project Management</a><br>
+- <a href="page_tasking.html">Tasking</a><br>
+- <a href="page_widget_set.html">Widget Set</a><br>
+</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table>
+
+\section context_manager The Context Manager
+
+Since actions registered in the action manager are associated with specific contexts it makes sense to provide an overview of the context manager first.
+
+A context represents a set of conditions under which actions must be enabled or disabled. Thus depending on your application's state you would like different actions to be enabled and others to be disabled, or a specific shortcuts must trigger different slots in your code depending on the application state.
+
+Contexts can easily be registered and for each context an unique ID is retured, for example:
+
+\code
+int context_id = CONTEXT_MANAGER->registerContext("My Context");
+\endcode
+
+It is possible to access and control a context through either its name or id. At any given time one or more contexts can be active and you can change the active contexts at any time:
+
+\code
+// Using the context name:
+CONTEXT_MANAGER->setNewContext("My Context");
+// Using the context ID:
+CONTEXT_MANAGER->setNewContext(1);
+
+// New contexts can be appended to the active set of contexts:
+CONTEXT_MANAGER->appendContext("Another Context");
+\endcode
+
+%Qtilities provides the Qtilities::Core::Constants::qti_def_CONTEXT_STANDARD context which is always active. Thus if it is needed to use a context which will always be active, the standard context must be used.
+
+The Qtilities::Core::Interfaces::IContext interface allows objects to indicate that they represent an context. When objects representing this interface are registered in the global object pool their context will automatically be added to the context manager.
+
+The %Qtilities Debug Plugin provides an overview of the context manager's state at any time and allows you to change active contexts in your application at runtime for debugging purposes.
+
+\image html debugging_state_contexts.jpg "Context Manager Overview"
+
+For more information see the Qtilities::Core::Interfaces::IContextManager documentation.
+
+\section action_manager The Action Manager 
+
+%Qtilities provides an action manager which greatly simplifies action and shortcut management in Qt applications. The architecture of the action manager was inspired by the action management architecture used in Qt Creator and has proven to work very well.
+
+The action manager is used to manage action related items in applications using the %Qtilities libraries. These items includes:
+- Menus
+- Menu Bars
+- Actions
+- Shortcuts
+
+All items are referenced using a string ID through the action manager interface.
+
+\subsection menus_and_menubars Menus and Menu Bars
+
+For the actions which are placed in menus appropriate menu bars and menus must first be created. The following example creates a simple menu bar with some default menus:
+
+\code
+// Create a main window:
+QtilitiesMainWindow exampleMainWindow;
+
+// Create the menu bar and some standard menus:
+bool existed;
+ActionContainer* menu_bar = ACTION_MANAGER->createMenuBar("MainMenuBar",existed);
+exampleMainWindow.setMenuBar(menu_bar->menuBar());
+ActionContainer* file_menu = ACTION_MANAGER->createMenu("File",existed);
+ActionContainer* edit_menu = ACTION_MANAGER->createMenu("Edit",existed);
+ActionContainer* view_menu = ACTION_MANAGER->createMenu("View",existed);
+ActionContainer* about_menu = ACTION_MANAGER->createMenu("About",existed);
+menu_bar->addMenu(file_menu);
+menu_bar->addMenu(edit_menu);
+menu_bar->addMenu(view_menu);
+menu_bar->addMenu(about_menu);
+\endcode
+
+Managed menus and menu bars implements the Qtilities::CoreGui::ActionContainer base class and access functions for these items will return an action container reference. Menus can be accessed using the Qtilities::CoreGui::ActionContainer::menu() function and menu bars through the Qtilities::CoreGui::ActionContainer::menuBar() function. For menus the menu bar function will return 0, and for menu bars the menu function will return 0.
+
+\subsection actions_and_shortcuts Actions and Shortcuts
+
+Actions and shortcuts are created in the normal way and then registered in the action manager. To start of, lets consider a simple action which must be enabled if a specific context (called "My Context" in this example) is active, and disabled otherwise.
+
+\subsubsection actions_and_shortcuts_registering_actions Registering Actions and Shortcuts
+
+\code
+// Create a standard action:
+QAction* actionCollapseAll = new QAction(tr("Collapse All"),this);
+actionCollapseAll->setShortcut(QKeySequence("Ctrl+<"));
+connect(actionCollapseAll,SIGNAL(triggered()),SLOT(mySlot()));
+
+// Since actions are associated with contexts, we provide the contexts in which it must be active:
+QList<int> contexts;
+contexts.push_front(CONTEXT_MANAGER->contextID("My Context"));
+
+// Register the action in the action manager:
+ACTION_MANAGER->registerAction("MyActions.CollapseAll",actionCollapseAll,contexts);
+\endcode
+
+All actions have a Command ID and an appropriate user visible string called an "User Text ID" associated with them. In the above example the Command ID is defined by \p MyActions.CollapseAll and the User Text ID is defined by the text() function on \p actionCollapseAll, thus "Collapse All". Actions and shortcuts implement the Qtilities::CoreGui::Command base class and will be called commands in the rest of this article. Actions can be accessed using the Qtilities::CoreGui::Command::action() function and shortcuts through the Qtilities::CoreGui::Command::shortcut() function. For shortcuts the action function will return 0, and for actions the shortcut function will return 0. Shortcuts are registered in the same way as actions as shown in the above example.
+
+As mentioned already, actions and shortcuts are linked to contexts, thus they react differently when different contexts are active. This allows customization in two ways:
+- A single action can be enabled or disabled depending on the context manager's active contexts. This approach was shown in the above example.
+- A specialized proxy action can be used which triggers one of several back-end actions depending on the context manager's active contexts. In fact, all actions registered in the action manager are proxy actions. The first point above just uses a proxy action with a single back-end action.
+
+Lets look at the proxy action approach in more detail.
+
+\subsubsection actions_and_shortcuts_proxy_actions Proxy Actions
+
+The Qtilities::CoreGui::ProxyAction class represents an proxy action which is triggered when the command's shortcut is triggered, and any number of back-end actions which each represent a different context. When context changes happen in the application, the proxy action will be updated to route shortcut triggers to the correct back-end action.
+
+Proxy actions are easily created, for example:
+
+\code
+// Create a standard action:
+QAction* proxyAction = new QAction(tr("Proxy Action"),this);
+QAction* backendAction1 = new QAction(tr("Back-end 1"),this);
+QAction* backendAction2 = new QAction(tr("Back-end 2"),this);
+
+// Get the contexts for the back-end actions ready:
+QList<int> contextAction1;
+contextAction1.push_front(CONTEXT_MANAGER->contextID("Context 1"));
+QList<int> contextAction2;
+contextAction2.push_front(CONTEXT_MANAGER->contextID("Context 2"));
+
+// Register the proxy action. Note that we do not assign a context for the proxy action:
+ACTION_MANAGER->registerAction("MyActions.MyProxyAction",proxyAction);
+
+// Now register the back-end actions:
+ACTION_MANAGER->registerAction("MyActions.MyProxyAction",backendAction1,contextAction1);
+ACTION_MANAGER->registerAction("MyActions.MyProxyAction",backendAction2,contextAction2);
+\endcode
+
+In the above example \p backedAction1 will trigger when "Context 1" is active, and \p backendAction2 will trigger when "Context 2" is active. Note that no back-end actions will be triggered if neither of these contexts are active.
+
+The first example presented where we regster a single action with a context (called "Collapse All" in that example), will create a proxy action and register the given action as a back-end action in it. Thus we can add more back-end actions for the "Collapse All" action by registering more actions for the same Command ID.
+
+\subsubsection actions_and_shortcuts_action_place_holders Action Placeholders
+
+In some scenarions, especially pluginable applications, it is desirable to add action place holders in your application's menus in order to have control over the layout of menus. In this way, you can add place holders (which are implemented as proxy actions without any back-end actions) and plugins can register the back-end actions when they are loaded.
+
+Place holders are easily registered like this:
+
+\code
+ACTION_MANAGER->registerActionPlaceHolder("MyActions.PlaceHolder","Example Placeholder");
+
+// Plugins can now add back-end actions to the above proxy action like this:
+QAction* backendAction1 = new QAction(tr("Back-end 1"),this);
+QAction* backendAction2 = new QAction(tr("Back-end 2"),this);
+
+// Get the contexts for the back-end actions ready:
+QList<int> contextAction1;
+contextAction1.push_front(CONTEXT_MANAGER->contextID("Context 1"));
+QList<int> contextAction2;
+contextAction2.push_front(CONTEXT_MANAGER->contextID("Context 2"));
+
+// Now register the back-end actions:
+ACTION_MANAGER->registerAction("MyActions.PlaceHolder",backendAction1,contextAction1);
+ACTION_MANAGER->registerAction("MyActions.PlaceHolder",backendAction2,contextAction2);
+\endcode
+
+It is also possible to create an action place holder which is not a proxy action. This is very usefull in cases where you don't want to store a reference to an action yourself. For example if you want to add an \p Exit action to your \p File menu, you can do it directly in your \p main() function. The trick here is to specify a context for your place holder so that it will be enabled for that context:
+
+\code
+QList<int> contexts;
+contexts.push_front(CONTEXT_MANAGER->contextID("Context 1"));
+
+command = ACTION_MANAGER->registerActionPlaceHolder("MyActions.Exit","Exit",QKeySequence(QKeySequence::Close),contexts);
+QObject::connect(command->action(),SIGNAL(triggered()),QCoreApplication::instance(),SLOT(quit()));
+\endcode
+
+Behind the scenes this will create a default back-end action for the specified context.
+
+For more details on registering actions, see the Qtilities::CoreGui::Interfaces::IActionManager documentation.
+
+\subsubsection actions_and_shortcuts_defined_actions Defined Actions
+
+The Qtilities::CoreGui::Actions namespace contains a set of ready to use action and action container Command IDs. Using the defined set of Command IDs makes it is easy to place new actions before or after them when adding actions to your menus. For more information see Qtilities::CoreGui::ActionContainer::addAction() and Qtilities::CoreGui::ActionContainer::addSeparator().
+
+\subsubsection actions_and_shortcuts_configurations Shortcut Configurations
+
+%Qtilities has the ability to remember shortcut configurations between different application sessions. The Qtilities::CoreGui::Interfaces::IActionManager::loadShortcutMapping() and Qtilities::CoreGui::Interfaces::IActionManager::saveShortcutMapping() functions provide this functionality. See the %Qtilities examples where these functions are used to save shortcuts configurations between sessions.
+
+The Qtilities::CoreGui::CommandEditor class provides a shortcuts page which can be added to your application's configuration widget like this:
+
+\code
+// Register extension system config page.
+OBJECT_MANAGER->registerObject(ACTION_MANAGER->commandEditor());
+\endcode
+
+This widgets lists all the registered commands in the action manager where the "Command Name" column refers to the commands' string id and the "Label" column refers to the user text id of actions.
+
+The figure below shows an example of the command editor, taken from the \p ObjectManagementExample.
+
+\image html command_editor.jpg "Command Editor"
+
+The command editor shows actions in a categorized tree view. A category is assigned to a command like this:
+
+\code
+Command* command = ACTION_MANAGER->registerAction("MyActions.CollapseAll",actionCollapseAll,contexts);
+command->setCategory(QtilitiesCategory("My Action Category"));
+\endcode
+
+The command editor also allows users to edit shortcuts for the displayed commands and highlights ambigious shortcuts (used more than once) in red.
+
+\subsubsection actions_and_shortcuts_debugging Debugging Actions
+
+The %Qtilities Debug Plugin provides an overview of the action manager's state at any time and allows you view detailed information about registered commands.
+
+\image html debugging_state_actions.jpg "Action Manager Overview"
+
+\section clipboard_manager The Clipboard Manager
+
+The goal of the clipboard manager is to register back-ends (associated with the standard context) for the Qtilities::CoreGui::Actions::qti_action_EDIT_COPY, Qtilities::CoreGui::Actions::qti_action_EDIT_CUT and Qtilities::CoreGui::Actions::qti_action_EDIT_PASTE action placeholders. This is done when the CLIPBOARD_MANAGER->initialize() function is called, allowing control over disabling and enabling these three actions in %Qtilities applications. For example, the paste action should only be enabled if something exists in the the clipboard. Also, when you perform a paste operation, the paste action must become disabled again. The clipboard manager provides this functionality. See the Qtilities::CoreGui::Interfaces::IClipboard class description for more details.
+*/

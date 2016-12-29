@@ -1,0 +1,64 @@
+#ifndef QTILITIES_CORE_MODULE_H
+#define QTILITIES_CORE_MODULE_H
+
+#include <QtilitiesLogging/QtilitiesLogging>
+
+#include "AbstractSubjectFilter.h"
+#include "ActivityPolicyFilter.h"
+#include "ContextManager"
+#include "Factory"
+#include "IContext.h"
+#include "IContextManager.h"
+#include "IExportable.h"
+#include "IFactoryProvider.h"
+#include "IModificationNotifier.h"
+#include "IObjectBase.h"
+#include "IObjectManager.h"
+#include "ObjectManager.h"
+#include "Observer.h"
+#include "ObserverData.h"
+#include "ObserverMimeData.h"
+#include "QtilitiesProperty.h"
+#include "ObserverRelationalTable.h"
+#include "PointerList.h"
+#include "QtilitiesCoreApplication.h"
+#include "QtilitiesCore_global.h"
+#include "QtilitiesCoreConstants.h"
+#include "QtilitiesPropertyChangeEvent.h"
+#include "SubjectTypeFilter.h"
+#include "QtilitiesCategory.h"
+#include "IExportableFormatting.h"
+#include "ObserverDotWriter.h"
+#include "FileUtils.h"
+#include "QtilitiesFileInfo.h"
+#include "VersionInformation.h"
+#include "InstanceFactoryInfo.h"
+#include "IIterator.h"
+#include "SubjectIterator.h"
+#include "TreeIterator.h"
+#include "IExportableObserver.h"
+#include "TaskManager.h"
+#include "ITask.h"
+#include "ITaskContainer.h"
+#include "Task.h"
+#include "QtilitiesProcess.h"
+#include "FileSetInfo.h"
+#include "FileLocker.h"
+#include "IAvailablePropertyProvider.h"
+#include "GenericProperty.h"
+#include "GenericPropertyManager.h"
+#include "Zipper.h"
+
+//! Namespace which encapsulates all namespaces and sub namespaces for the Core module.
+namespace QtilitiesCore { 
+    using namespace Qtilities;
+    using namespace Qtilities::Logging;
+    using namespace Qtilities::Logging::Constants;
+    using namespace Qtilities::Logging::Interfaces;
+    using namespace Qtilities::Core;
+    using namespace Qtilities::Core::Constants;
+    using namespace Qtilities::Core::Interfaces;
+    using namespace Qtilities::Core::Properties;
+} 
+
+#endif

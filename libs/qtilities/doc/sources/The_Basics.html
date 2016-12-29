@@ -1,0 +1,258 @@
+/**
+\page page_the_basics The Basics: A Simple %Qtilities Application
+
+<table CELLPADDING=0 style="width:100%;
+  table-layout:fixed;
+	margin:0px 0px 0px 0px;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;">
+<tr> 
+
+<td style="width:80%; padding:0px 5px 0px 0px; vertical-align: text-top; text-align: left">
+<h1 style="margin:0px; padding:0px">Overview</h1>
+
+The goal of this article is to introduce %Qtilities to someone who has never used it before. Basic principles will be covered and a basic example is presented which demonstrates many features and concepts. This article is not intended to give an overview of the different modules, for that see \ref page_modules_overview.
+
+Table of contents:
+- \ref basics_constructing_application_object
+- \ref basics_macros
+- \ref basics_includes_and_namespaces
+- \ref basics_simple_app
+
+</td>
+
+<td style="width:20%; vertical-align: top; margin:0px 0px 0px 0px;">
+<table style="table-layout:auto;
+	margin:0px 0px 0px 0px; 
+  width: 100%;
+	border-width:0px 0px 0px 0px; 
+	border-color:#7F7F7F;
+  background-color: #d1d3d4;">
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">First Steps</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_getting_started.html">Getting Started</a><br>
+- <a href="page_the_basics.html">The Basics</a><br>
+- <a href="page_examples_and_plugins.html">Examples and Plugins</a><br>
+</td>
+</tr>
+<tr>
+<td style="background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Overviews</h2>
+</td>
+</tr>
+<tr>
+<td>
+- <a href="page_action_management.html">Action Management</a><br>
+- <a href="page_tree_structures.html">Building Trees</a><br>
+- <a href="page_debugging.html">Debugging Applications</a><br>
+- <a href="page_extension_system.html">Extension System</a><br>
+- <a href="page_factories.html">Factories</a><br>
+- <a href="page_logging.html">Logging</a><br>
+- <a href="page_modules_overview.html">Modules</a><br>
+- <a href="page_object_management.html">Object Management</a><br>
+- <a href="page_observers.html">Observers</a><br>
+- <a href="page_observer_widgets.html">Observer Widgets</a><br>
+- <a href="page_project_management.html">Project Management</a><br>
+- <a href="page_tasking.html">Tasking</a><br>
+- <a href="page_widget_set.html">Widget Set</a><br>
+</td>
+</tr>
+</table>
+</td>
+
+</tr>
+</table>
+
+\section basics_constructing_application_object Constructing your QApplication object
+
+A %Qtilities application is just a normal Qt application with one small difference. The recommended way to construct your QApplication object is to use Qtilities::CoreGui::QtilitiesApplication which initializes some internal %Qtilities features, and extends QApplication. Thus it would look something like this:
+
+\code
+QtilitiesApplication a(argc, argv);
+
+// If you use a different class that inherits from QApplication and it is not possible to use QtilitiesApplication as shown above, it should be initialized directly after QApplication construction, as follows:
+QApplication a(argc, argv);
+QtilitiesApplication::initialize();
+\endcode
+
+This is the only difference between a %Qtilities application and a normal Qt application. If you don't use any GUI related classes, you can keep using QCoreApplication without the need to do anything different.
+
+\section basics_macros Macros made available to you
+
+When using %Qtilities you have access to a set of macros. The table below provides an overview of the most important ones:
+
+<div align="center">
+<table CELLPADDING=0 style="width:1000px;
+  table-layout:auto;
+        margin:0px 0px 0px 0px;
+        border-width:0px 0px 0px 0px;
+        border-color:#7F7F7F;">
+<tr>
+<td style="width:100%; vertical-align: top; margin:0px 0px 0px 0px;">
+<table style="table-layout:auto;
+        margin:0px 0px 0px 0px;
+  width: 100%;
+        border-width:0px 0px 0px 0px;
+  background-color: #d1d3d4;
+        border-color:#7F7F7F;">
+<tr>
+<td style="width:25%; background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Object Manager</h2>
+</td>
+<td style="width:25%; background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Context Manager</h2>
+</td>
+<td style="width:25%; background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Action Manager</h2>
+</td>
+<td style="width:25%; background-color: #5a5c5e; text-align: center">
+<h2 style ="color:#FFFFFF">Logging</h2>
+</td>
+</tr>
+<tr>
+<td style="vertical-align:top">
+The OBJECT_MANAGER macro provides object management functionality in your application. The most important feature is the global object pool in which objects can be registered either by the main application, or by plugins. For more information about the object manager see the the \ref page_object_management article.
+</td>
+<td style="vertical-align:top">
+The CONTEXT_MANAGER macro allows management of contexts in an application. For more information about the context manager see the \ref context_manager section of the \ref page_action_management article.
+</td>
+<td style="vertical-align:top">
+The ACTION_MANAGER macro allows management of actions, shortcuts and menu related items in an application. For more information about the action manager see the \ref action_manager section of the \ref page_action_management article.
+</td>
+<td style="vertical-align:top">
+A set of logging macros are available, for more information see \ref page_logging.
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+\section basics_includes_and_namespaces Includes and namespaces
+
+In your \p .pro file you need to define the %Qtilities module you would like to use in your application. This will include all the needed header files and link your application to the correct libraries. The exact details to use for the different modules are provided in the \ref page_modules_overview article. Note that all dependent %Qtilities modules will be added automatically for you and details about the used dependencies are printed as output during compilation.
+
+\code
+// In your .pro file:
+QTILITIES += coregui
+QTILITIES_BASE  = your_path/qtilities/trunk
+include($$QTILITIES_BASE/src/Qtilities.pri)
+\endcode
+
+For the above example we set the \p QTILITIES variable to \p coregui indicating that we are using the CoreGui module, and the following will be printed during compilation:
+
+\code
+Project MESSAGE: Using Qtilities CoreGui module...
+Project MESSAGE: CoreGui Dependency: Using Qtilities Logging module...
+Project MESSAGE: CoreGui Dependency: Using Qtilities Core module...
+\endcode
+
+In the source files where you want to use %Qtilities you need to include the name of the module and then specify the namespaces we want to use. All the required namespaces of all the dependent modules will be made available through automatically. For example:
+
+\code
+// In your source files:
+#include <QtilitiesCoreGui>
+using namespace QtilitiesCoreGui;
+\endcode
+
+\section basics_simple_app A basic example application
+
+Next we will look at a basic example which you can build and play around with. The example will not do a lot but it introduces many features and concepts. To run this example, launch the \p TheBasicsExample application in the \p QtilitiesExample project.
+
+\code
+#include <QtGui>
+#include <QtilitiesCoreGui>
+using namespace QtilitiesCoreGui;
+
+int main(int argc, char *argv[])
+{
+    QtilitiesApplication a(argc, argv);
+    QtilitiesApplication::setOrganizationName("Jaco Naudé");
+    QtilitiesApplication::setOrganizationDomain("Qtilities");
+    QtilitiesApplication::setApplicationName("Simple Example");
+    QtilitiesApplication::setApplicationVersion("1.0");
+
+    // Create a main window for our application:
+    QMainWindow* main_window = new QMainWindow;
+    QtilitiesApplication::setMainWindow(main_window);
+
+    // Create a settings window for our application:
+    ConfigurationWidget* config_widget = new ConfigurationWidget;
+    QtilitiesApplication::setConfigWidget(config_widget);
+
+    // Initialize the application session path in QtilitiesCoreApplication.
+    QtilitiesApplication::applicationSessionPath();
+
+    // Initialize the logger:
+    LOG_INITIALIZE();
+
+    // Add a menu bar to our main window with a File menu:
+    bool existed;
+    ActionContainer* menu_bar = ACTION_MANAGER->createMenuBar(qti_action_MENUBAR_STANDARD,existed);
+    main_window->setMenuBar(menu_bar->menuBar());
+    ActionContainer* file_menu = ACTION_MANAGER->createMenu(qti_action_FILE,existed);
+    menu_bar->addMenu(file_menu);
+
+    // Our menu items will need to be associated with a context.
+    // A good idea is to use the standard context which is always active:
+    QList<int> std_context;
+    std_context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+
+    // Create File->Settings and File->Exit menu items:
+    Command* command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_SETTINGS,QObject::tr("Settings"),QKeySequence(),std_context);
+    QObject::connect(command->action(),SIGNAL(triggered()),config_widget,SLOT(show()));
+    file_menu->addAction(command);
+    file_menu->addSeparator();
+    command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_EXIT,QObject::tr("Exit"),QKeySequence(QKeySequence::Close),std_context);
+    QObject::connect(command->action(),SIGNAL(triggered()),QCoreApplication::instance(),SLOT(quit()));
+    file_menu->addAction(command);
+
+    // Lets add a couple of pages to our setting page which handles shortcuts and logging in our application:
+    OBJECT_MANAGER->registerObject(ACTION_MANAGER->commandEditor());
+    OBJECT_MANAGER->registerObject(LoggerGui::createLoggerConfigWidget());
+    // Initializing the configuration widget will search the global object pool for objects implementing IConfigPage, and automatically add them:
+    config_widget->initialize();
+
+    // Now build an example tree which will tell all views to provide some actions for the tree items:
+    TreeNode* node = new TreeNode("Root Node");
+    node->displayHints()->setActionHints(ObserverHints::ActionAllHints);
+    node->displayHints()->setDisplayFlagsHint(ObserverHints::AllDisplayFlagHint);
+
+    TreeNode* nodeA = node->addNode("Node A");
+    nodeA->displayHints()->setActionHints(ObserverHints::ActionAllHints);
+    nodeA->displayHints()->setDisplayFlagsHint(ObserverHints::AllDisplayFlagHint);
+    nodeA->addItem("Item 1");
+    nodeA->addItem("Item 2");
+    TreeItem* sharedItem = nodeA->addItem("Shared Item");
+
+    TreeNode* nodeB = node->addNode("Node B");
+    nodeB->displayHints()->setActionHints(ObserverHints::ActionPushUp | ObserverHints::ActionSwitchView);
+    nodeB->displayHints()->setDisplayFlagsHint(ObserverHints::ItemView | ObserverHints::ActionToolBar);
+    nodeB->attachSubject(sharedItem);
+    nodeB->addItem("Item 3");
+    nodeB->addItem("Item 4");
+    // Notice we added different display hints on Node B, it will behave different.
+
+    // We show the tree using an ObserverWidget:
+    ObserverWidget* tree_widget = new ObserverWidget(node);
+    tree_widget->show();
+
+    // Finally, set the ObserverWidget as the main window's central widget and show it:
+    main_window->setCentralWidget(tree_widget);
+    main_window->show();
+    return a.exec();
+}
+\endcode
+
+This example introduced some of the core concepts in %Qtilities and most of the other features uses these concepts in one way or another. For example, the Qtilities::CoreGui::ObserverWidget object in the above example automatically adds its actions to the action manager and registers their its own contexts in the context manager for these actions.
+
+Now that the basics are covered check out the \ref page_examples_and_plugins and take a look at some of the articles which provides in depth overviews of feature areas found in %Qtilities at the <a href="#top" title="Back to top">top</a> of this page.
+
+If you run into something that does not make sense, post a question on the <a href="http://groups.google.com/group/qtilities?hl=en?hl=en/">mailing list</a>.
+ */

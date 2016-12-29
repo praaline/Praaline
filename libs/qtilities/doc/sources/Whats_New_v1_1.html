@@ -1,0 +1,133 @@
+/**
+\page page_whats_new_v1_1 What's New In %Qtilities v1.1
+
+This page and overview of new classes, and functions added to existing classes in the v1.1 release.
+
+A detailed overview of changes and bug fixes can be found in the <a href="http://raw.github.com/JPNaude/Qtilities/v1.1/Changelog.txt">detailed change log</a>. The change log uses the following legend to list items.
+- [+] New feature added
+- [*] Bug fix
+- [#] Change/improvement to old code
+
+For comment, queries or bug reports please get in touch.
+- Support & Mailing List: http://groups.google.com/group/qtilities?hl=en?hl=en/
+- Issue List: https://github.com/JPNaude/Qtilities/issues
+
+\section whats_new_v1_1_classes New Classes
+
+%Qtilities v1.1 provides the following new classes:
+
+- Qtilities::CoreGui::HelpManager
+- Qtilities::CoreGui::GroupedConfigPage
+- Qtilities::CoreGui::Interfaces::IGroupedConfigPageInfoProvider
+- Qtilities::ProjectManagement::ProjectsBrowser
+
+The help manager class is complimented through a Help plugin which contains a set of classes, all grouped under the Qtilities::Plugins::Help namespace.
+
+\section whats_new_v1_1_functions New Functions
+
+- Qtilities::Logging::AbstractFormattingEngine::addColorFormattingHint()
+- Qtilities::Logging::AbstractFormattingEngine::colorFormattingHints()
+- Qtilities::Logging::AbstractFormattingEngine::clearColorFormattingHints()
+- Qtilities::Logging::AbstractFormattingEngine::removeColorFormattingHint()
+- Qtilities::Logging::AbstractFormattingEngine::matchColorFormattingHint()
+
+- Qtilities::CoreGui::AbstractObserverItemModel::toggleLazyInit()
+- Qtilities::CoreGui::AbstractObserverItemModel::lazyInitEnabled()
+- Qtilities::CoreGui::AbstractObserverItemModel::setRespondToObserverChanges()
+- Qtilities::CoreGui::AbstractObserverItemModel::respondToObserverChanges()
+- Qtilities::CoreGui::AbstractObserverItemModel::setReadOnly()
+- Qtilities::CoreGui::AbstractObserverItemModel::readOnly()
+- Qtilities::CoreGui::AbstractObserverItemModel::setColumnChildCountBaseClass()
+- Qtilities::CoreGui::AbstractObserverItemModel::columnChildCountBaseClass()
+- Qtilities::CoreGui::AbstractObserverItemModel::setColumnChildCountLimit()
+- Qtilities::CoreGui::AbstractObserverItemModel::columnChildCountLimit()
+- Qtilities::CoreGui::AbstractObserverItemModel::refresh()
+
+- Qtilities::CoreGui::CodeEditorWidget::fileRemovedOutsideHandlingPolicy()
+- Qtilities::CoreGui::CodeEditorWidget::setFileRemovedOutsideHandlingPolicy()
+- Qtilities::CoreGui::CodeEditorWidget::setDisplayFlagsHint()
+- Qtilities::CoreGui::CodeEditorWidget::actionFlagsHint()
+- Qtilities::CoreGui::CodeEditorWidget::setActionFlagsHint()
+- Qtilities::CoreGui::CodeEditorWidget::initialize()
+- Qtilities::CoreGui::CodeEditorWidget::fileNameChanged()
+- Qtilities::CoreGui::CodeEditorWidget::closeFile()
+- Qtilities::CoreGui::CodeEditorWidget::setDefaultPath()
+- Qtilities::CoreGui::CodeEditorWidget::defaultPath()
+
+- Qtilities::CoreGui::Interfaces::IConfigPage::setConfigPageIcon()
+- Qtilities::CoreGui::Interfaces::IConfigPage::configPageHelpID()
+- Qtilities::CoreGui::Interfaces::IConfigPage::setConfigPageHelpID()
+- Qtilities::CoreGui::Interfaces::IConfigPage::setConfigPageCategory()
+- Qtilities::CoreGui::Interfaces::IConfigPage::configPageRestoreDefaults()
+- Qtilities::CoreGui::Interfaces::IConfigPage::supportsRestoreDefaults()
+
+- Qtilities::CoreGui::ObserverWidget::toggleLazyInit()
+- Qtilities::CoreGui::ObserverWidget::lazyInitEnabled()
+- Qtilities::CoreGui::ObserverWidget::findExpandedItems()
+- Qtilities::CoreGui::ObserverWidget::lastExpandedItemsResults()
+- Qtilities::CoreGui::ObserverWidget::expandNodes()
+- Qtilities::CoreGui::ObserverWidget::selectedObjectsContextMatch()
+- Qtilities::CoreGui::ObserverWidget::selectedObjectsHintsMatch()
+- Qtilities::CoreGui::ObserverWidget::selectCategories()
+- Qtilities::CoreGui::ObserverWidget::selectCategory()
+- Qtilities::CoreGui::ObserverWidget::expandedNodesChanged()
+- Qtilities::CoreGui::ObserverWidget::dynamicPropertyBrowser()
+- Qtilities::CoreGui::ObserverWidget::dynamicPropertyBrowserDock()
+- Qtilities::CoreGui::ObserverWidget::setPreferredDynamicPropertyEditorDockArea()
+- Qtilities::CoreGui::ObserverWidget::setPreferredDynamicPropertyEditorType()
+- Qtilities::CoreGui::ObserverWidget::constructDynamicPropertyBrowser()
+- Qtilities::CoreGui::ObserverWidget::refreshDynamicPropertyBrowser()
+
+- Qtilities::CoreGui::QtilitiesMainWindow::taskSummaryWidget()
+- Qtilities::CoreGui::QtilitiesMainWindow::priorityMessageLabel()
+
+- Qtilities::CoreGui::SideWidgetFileSystem::filePath()
+- Qtilities::CoreGui::SideWidgetFileSystem::toggleDoubleClickFileOpen()
+
+- Qtilities::CoreGui::SingleTaskWidget::setShowLogButtonVisible()
+- Qtilities::CoreGui::SingleTaskWidget::showLogButtonVisible()
+- Qtilities::CoreGui::SingleTaskWidget::setPauseButtonEnabled()
+- Qtilities::CoreGui::SingleTaskWidget::setStopButtonEnabled()
+- Qtilities::CoreGui::SingleTaskWidget::setStartButtonEnabled()
+
+- Qtilities::CoreGui::StringListWidget::setOpenOnDoubleClick()
+- Qtilities::CoreGui::StringListWidget::openOnDoubleClick()
+
+- Qtilities::CoreGui::TaskManagerGui::disableTaskProgressUpdating()
+- Qtilities::CoreGui::TaskManagerGui::enableTaskProgressUpdating()
+- Qtilities::CoreGui::TaskManagerGui::taskProgressUpdatingEnabled()
+
+- Qtilities::CoreGui::TaskSummaryWidget::taskSummaryEnabled()
+- Qtilities::CoreGui::TaskSummaryWidget::setTaskSummaryEnabled()
+
+- Qtilities::CoreGui::TreeFileItem::setFileForce()
+
+- Qtilities::Core::FileUtils::comparePaths()
+
+- Qtilities::Core::Interfaces::ITask::elapsedTime()
+- Qtilities::Core::Interfaces::ITask::elapsedTimeString()
+- Qtilities::Core::Interfaces::ITask::subTaskPerformanceIndication()
+- Qtilities::Core::Interfaces::ITask::setSubTaskPerformanceIndication()
+- Qtilities::Core::Interfaces::ITask::logMessageToTask()
+- Qtilities::Core::Interfaces::ITask::logPriorityMessageToTask()
+
+- Qtilities::Core::ObjectManager::convSafeObjectsToNormal()
+- Qtilities::Core::ObjectManager::convNormalObjectsToSafe()
+
+- Qtilities::Core::QtilitiesProcess::setLineBreakStrings()
+- Qtilities::Core::QtilitiesProcess::lineBreakStrings()
+
+- Qtilities::ProjectManagement::ProjectManager::setDefaultCustomProjectsCategory()
+- Qtilities::ProjectManagement::ProjectManager::defaultCustomProjectsCategory()
+- Qtilities::ProjectManagement::ProjectManager::customProjectCategories()
+- Qtilities::ProjectManagement::ProjectManager::executionStyle()
+- Qtilities::ProjectManagement::ProjectManager::setExecutionStyle()
+- Qtilities::ProjectManagement::ProjectManager::removeRecentProject()
+- Qtilities::ProjectManagement::ProjectManager::removeNonExistingRecentProjects()
+- Qtilities::ProjectManagement::ProjectManager::toggleProjectSaving()
+- Qtilities::ProjectManagement::ProjectManager::projectSavingEnabled()
+- Qtilities::ProjectManagement::ProjectManager::projectSavingInfoMessage()
+- Qtilities::ProjectManagement::ProjectManager::recentProjectsChanged()
+- Qtilities::ProjectManagement::ProjectManager::customProjectPathsChanged()
+
+*/
