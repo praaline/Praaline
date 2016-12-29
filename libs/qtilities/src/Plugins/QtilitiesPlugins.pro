@@ -22,7 +22,7 @@ SUBDIRS += \
     SessionLogPlugin
 
 unix {
-SUBDIRS += HelpPlugin
+#SUBDIRS += HelpPlugin
 }
 
 win32-g++ {
