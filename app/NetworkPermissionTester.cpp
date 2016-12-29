@@ -52,7 +52,7 @@ bool NetworkPermissionTester::havePermission()
         label->setWordWrap(true);
         label->setText(QCoreApplication::translate
          ("NetworkPermissionTester",
-          "<h2>Welcome to Sonic Visualiser!</h2>"
+          "<h2>Welcome to Praaline!</h2>"
           "<p><img src=\":icons/qm-logo-smaller.png\" style=\"float:right\">Sonic Visualiser is a program for viewing and exploring audio data for semantic music analysis and annotation.</p>"
           "<p>Developed in the Centre for Digital Music at Queen Mary, University of London, Sonic Visualiser is provided free as open source software under the GNU General Public License.</p>"
               "<p><hr></p>"

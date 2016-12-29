@@ -134,8 +134,8 @@ using namespace Praaline::Core;
 #include "pngui/layer/AnnotationGridLayer.h"
 #include "pngui/layer/ProsogramLayer.h"
 
-#include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
-#include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"
+#include "QtilitiesCore/QtilitiesCore"
+#include "QtilitiesCoreGui/QtilitiesCoreGui"
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
 

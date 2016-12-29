@@ -34,8 +34,8 @@ DEPENDPATH += . .. ../.. ../../pncore ../../pnlib
 
 # Qtilities configuration
 QTILITIES += extension_system
-include(../../external/qtilities/src/Qtilities.pri)
-INCLUDEPATH += ../../external/qtilities/include
+include(../../libs/qtilities/src/Qtilities.pri)
+INCLUDEPATH += ../../libs/qtilities/include
 
 # Linking dynamically with PocketSphinx
 win32 {

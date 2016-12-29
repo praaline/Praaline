@@ -1,8 +1,8 @@
 #include "VisualisationModeWidget.h"
 #include "ui_VisualisationModeWidget.h"
 
-#include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
-#include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"
+#include "QtilitiesCore/QtilitiesCore"
+#include "QtilitiesCoreGui/QtilitiesCoreGui"
 using namespace Qtilities;
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;

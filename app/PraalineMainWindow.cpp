@@ -20,11 +20,11 @@
 
 #include "svgui/layer/SVLayersInitialiser.h"
 #include "pngui/layer/PraalineLayersInitialiser.h"
-#include "../external/qtilities/include/QtilitiesLogging/QtilitiesLogging"
-#include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
-#include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"
-#include "../external/qtilities/include/QtilitiesExtensionSystem/QtilitiesExtensionSystem"
-#include "../external/qtilities/include/QtilitiesProjectManagement/QtilitiesProjectManagement"
+#include "QtilitiesLogging/QtilitiesLogging"
+#include "QtilitiesCore/QtilitiesCore"
+#include "QtilitiesCoreGui/QtilitiesCoreGui"
+#include "QtilitiesExtensionSystem/QtilitiesExtensionSystem"
+#include "QtilitiesProjectManagement/QtilitiesProjectManagement"
 
 // Application Modes
 #include "corpus/CorpusMode.h"

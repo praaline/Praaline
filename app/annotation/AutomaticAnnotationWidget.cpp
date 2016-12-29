@@ -19,7 +19,7 @@
 #include <QtilitiesExtensionSystem>
 using namespace QtilitiesExtensionSystem;
 
-#include "IAnnotationPlugin.h"
+#include "app/interfaces/IAnnotationPlugin.h"
 using namespace Praaline::Plugins;
 
 struct AutomaticAnnotationWidgetData {

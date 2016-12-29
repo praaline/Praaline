@@ -2,8 +2,8 @@
 #define PRAALINEMAINWINDOW_H
 
 #include <QObject>
-#include "../external/qtilities/include/QtilitiesCore/QtilitiesCore"
-#include "../external/qtilities/include/QtilitiesCoreGui/QtilitiesCoreGui"
+#include "QtilitiesCore/QtilitiesCore"
+#include "QtilitiesCoreGui/QtilitiesCoreGui"
 
 struct PraalineMainWindowData;
 

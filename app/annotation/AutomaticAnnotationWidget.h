@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "pncore/corpus/Corpus.h"
-#include "IAnnotationPlugin.h"
+#include "app/interfaces/IAnnotationPlugin.h"
 using namespace Praaline::Plugins;
 
 namespace Ui {

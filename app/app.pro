@@ -44,9 +44,9 @@ QTILITIES += core
 QTILITIES += coregui
 QTILITIES += extension_system
 QTILITIES += project_management
-include(../external/qtilities/src/Qtilities.pri)
-include(../external/qtilities/src/Dependencies.pri)
-INCLUDEPATH += external/qtilities/include
+include(../libs/qtilities/src/Qtilities.pri)
+include(../libs/qtilities/src/Dependencies.pri)
+INCLUDEPATH += libs/qtilities/include
 
 # QScintilla
 INCLUDEPATH += $$PWD/../libs/qscintilla/Qt4Qt5
