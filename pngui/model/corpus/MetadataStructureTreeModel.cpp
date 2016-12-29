@@ -1,3 +1,5 @@
+#include <QDebug>
+
 #include "pncore/structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
@@ -98,6 +100,8 @@ QModelIndex MetadataStructureTreeModel::parent(const QModelIndex &index) const
 
     QObject *childItem = getItem(index);
     if (!childItem) return QModelIndex();
+    qDebug() << childItem;
+
     QObject *parentItem = childItem->parent();
 
     MetadataStructureSection *section;

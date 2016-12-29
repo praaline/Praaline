@@ -189,6 +189,8 @@ GenericProperty *GenericPropertyManager::addProperty(const QString &property_nam
                     prop->setType(GenericProperty::TypeBool);
                 else if (value.type() == QVariant::Int)
                     prop->setType(GenericProperty::TypeInteger);
+                else if (value.type() == QVariant::Double)
+                    prop->setType(GenericProperty::TypeDouble);
                 else if (value.type() == QVariant::String)
                     prop->setType(GenericProperty::TypeString);
                 prop->setDefaultValueString(value.toString());
@@ -417,7 +419,7 @@ IExportable::ExportResultFlags GenericPropertyManager::loadNewPropertiesFile(con
                 if (new_prop->valueString() != reference_prop->valueString()) {
                     QString errorMsg;
                     QString old_value = new_prop->valueString();
-                    if (new_prop->setValueString(reference_prop->valueString().split(reference_prop->listSeperatorBackend()).join(new_prop->listSeperatorBackend()),&errorMsg))
+                    if (new_prop->setValueString(reference_prop->valueString().split(reference_prop->listSeparatorBackend()).join(new_prop->listSeparatorBackend()),&errorMsg))
                         LOG_TASK_INFO(QString("Successfully matched and updated property \"%1\" with new value \"%2\" (old value \"%3\").").arg(reference_prop->propertyName()).arg(reference_prop->valueString()).arg(old_value),task_ref);
                     else
                         LOG_TASK_WARNING(QString("Successfully matched property \"%1\" with new value \"%2\", however updating the property value failed with error: %3").arg(reference_prop->propertyName()).arg(reference_prop->valueString()).arg(errorMsg),task_ref);

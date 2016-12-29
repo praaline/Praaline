@@ -8,7 +8,7 @@ using namespace Qtilities::CoreGui::Interfaces;
 namespace Praaline {
 
 // Statistics Mode Parameters
-#define MODE_STATISTICS_ID 994
+#define MODE_STATISTICS_ID 1005
 const char * const CONTEXT_STATISTICS_MODE = "Context.StatisticsMode";
 
 // This structure stores private data used by the StatisticsMode class.

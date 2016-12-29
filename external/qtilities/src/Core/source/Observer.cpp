@@ -147,7 +147,8 @@ Qtilities::Core::Observer::~Observer() {
     LOG_TRACE("Deleting subject filters.");
     int filter_count = observerData->subject_filters.count();
     for (int i = 0; i < filter_count; ++i)
-        delete observerData->subject_filters.at(0);
+        delete observerData->subject_filters.at(i);
+
     observerData->subject_filters.clear();
 
     if (objectName() != QLatin1String(qti_def_GLOBAL_OBJECT_POOL)) {
@@ -1229,15 +1230,18 @@ void Qtilities::Core::Observer::deleteAll(const QString& base_class_name, bool r
     toggleBroadcastModificationStateChanges(false);
 
     startProcessingCycle();
+    QList<QObject*> objects_to_delete;
     for (int i = 0; i < total; ++i) {
-        if (observerData->subject_list.at(0)->inherits(base_class_name.toUtf8().data())) {
+        if (observerData->subject_list.at(i)->inherits(base_class_name.toUtf8().data())) {
             // Validate operation against access mode if access mode scope is category:
-            QVariant category_variant = getMultiContextPropertyValue(observerData->subject_list.at(0),qti_prop_CATEGORY_MAP);
+            QVariant category_variant = getMultiContextPropertyValue(observerData->subject_list.at(i),qti_prop_CATEGORY_MAP);
             QtilitiesCategory category = category_variant.value<QtilitiesCategory>();
             if (!isConst(category))
-                deleteObject(observerData->subject_list.at(0));
+                objects_to_delete << observerData->subject_list.at(i);
         }
     }
+    for (int i = 0; i < objects_to_delete.count(); i++)
+        deleteObject(objects_to_delete.at(i));
 
     QCoreApplication::processEvents();
     toggleBroadcastModificationStateChanges(current_broadcast);

@@ -29,7 +29,8 @@ private:
 private slots:
     void showCorpusExplorer();
     void showCorpusExplorerTables();
-    void showCorpusStructureEditor();
+    void showMetadataStructureEditor();
+    void showAnnotationStructureEditor();
 };
 
 #endif // CORPUSMODEWIDGET_H

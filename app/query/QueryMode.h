@@ -7,8 +7,8 @@ using namespace Qtilities::CoreGui::Interfaces;
 
 namespace Praaline {
 
-// Corpus Mode Parameters
-#define MODE_QUERY_ID 995
+// Query Mode Parameters
+#define MODE_QUERY_ID 1004
 const char * const CONTEXT_QUERY_MODE = "Context.QueryMode";
 
 // This structure stores private data used by the CorpusMode class.

@@ -66,9 +66,19 @@ namespace Qtilities {
             //! Gets if the property browser is read only.
             bool readOnly() const;
 
+        public slots:
+            //! Toggles display of advanced settings.
+            void toggleAdvancedSettings(bool show);
+            //! Toggles display of switch names.
+            void toggleSwitchNames(bool show);
+            //! Completely refresh the properties in the browser.
+            void refresh();
+
         private slots:
             //! Handles changes to int properties from the display side.
             void handle_intPropertyChanged(QtProperty *property, int value);
+            //! Handles changes to double properties from the display side.
+            void handle_doublePropertyChanged(QtProperty *property, double value);
             //! Handles changes to string properties from the display side.
             void handle_stringPropertyChanged(QtProperty *property, const QString & value);
             //! Handles changes to enum properties from the display side.
@@ -80,12 +90,6 @@ namespace Qtilities {
 
             //! Responds to deletion of the build step property manager.
             void handleObjectDeleted();
-            //! Toggles display of advanced settings.
-            void toggleAdvancedSettings(bool show);
-            //! Toggles display of switch names.
-            void toggleSwitchNames(bool show);
-            //! Completely refresh the properties in the browser.
-            void refresh();
 
             //! Function which responds to value changes to displayed properties from the build step side, thus it will update the display.
             void handlePropertyValueChanged(GenericProperty* property);

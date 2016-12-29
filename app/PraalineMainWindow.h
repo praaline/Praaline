@@ -27,6 +27,7 @@ private slots:
     void showKeyReference();
     void showActivityLog();
     void showUnitConverter();
+    void toggleColourPalette();
 
 private:
     QtilitiesMainWindow *m_mainWindow;

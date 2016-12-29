@@ -13,8 +13,9 @@ MetadataStructureSection::MetadataStructureSection(QObject *parent) :
 }
 
 MetadataStructureSection::MetadataStructureSection(const QString &ID, const QString &name,
-                                                   const QString &description, QObject *parent) :
-    QObject(parent), m_ID(ID), m_name(name), m_description(description)
+                                                   const QString &description, int itemOrder,
+                                                   QObject *parent) :
+    QObject(parent), m_ID(ID), m_name(name), m_description(description), m_itemOrder(itemOrder)
 {
     if (name.isEmpty()) m_name = ID;
 }
@@ -100,7 +101,6 @@ void MetadataStructureSection::swapAttribute(int oldIndex, int newIndex)
 void MetadataStructureSection::removeAttributeAt(int i)
 {
     if (i >= 0 && i < m_attributes.count()) {
-        delete m_attributes.at(i);
         m_attributes.removeAt(i);
     }
 }
@@ -109,7 +109,6 @@ void MetadataStructureSection::removeAttributeByID(const QString &ID)
 {
     int i = attributeIndexByID(ID);
     if (i != -1) {
-        delete m_attributes.at(i);
         m_attributes.removeAt(i);
     }
 }

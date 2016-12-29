@@ -383,7 +383,7 @@ void VisualiserWidget::setupFileMenu()
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 
     icon = il.load("filesave");
     action = new QAction(icon, tr("&Save Session"), this);
@@ -407,7 +407,7 @@ void VisualiserWidget::setupFileMenu()
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 
     /*
     icon = il.load("fileopenaudio");
@@ -445,7 +445,7 @@ void VisualiserWidget::setupFileMenu()
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 
     action = new QAction(tr("Import Annotation &Layer..."), this);
     action->setShortcut(tr("Ctrl+L"));
@@ -467,7 +467,7 @@ void VisualiserWidget::setupFileMenu()
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 
     action = new QAction(tr("Export Image File..."), this);
     action->setStatusTip(tr("Export a single pane to an image file"));
@@ -477,7 +477,7 @@ void VisualiserWidget::setupFileMenu()
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 
     QString templatesMenuLabel = tr("Apply Session Template");
     m_templatesMenu = menu_visualisation->menu()->addMenu(templatesMenuLabel);
@@ -505,7 +505,7 @@ void VisualiserWidget::setupFileMenu()
 
     setupTemplatesMenu();
 
-    menu_visualisation->addSeperator();
+    menu_visualisation->addSeparator();
 }
 
 void VisualiserWidget::setupEditMenu()
@@ -2382,38 +2382,8 @@ void
 VisualiserWidget::closeSession()
 {
     if (!checkSaveModified()) return;
-    while (m_paneStack->getPaneCount() > 0) {
-        Pane *pane = m_paneStack->getPane(m_paneStack->getPaneCount() - 1);
-        while (pane->getLayerCount() > 0) {
-            m_document->removeLayerFromView
-                    (pane, pane->getLayer(pane->getLayerCount() - 1));
-        }
-        m_overview->unregisterView(pane);
-        m_paneStack->deletePane(pane);
-    }
-
-    while (m_paneStack->getHiddenPaneCount() > 0) {
-        Pane *pane = m_paneStack->getHiddenPane
-                (m_paneStack->getHiddenPaneCount() - 1);
-        while (pane->getLayerCount() > 0) {
-            m_document->removeLayerFromView
-                    (pane, pane->getLayer(pane->getLayerCount() - 1));
-        }
-        m_overview->unregisterView(pane);
-        m_paneStack->deletePane(pane);
-    }
+    SimpleVisualiserWidget::closeSession();
     delete m_layerTreeDialog.data();
-    m_activityLog->hide();
-    m_keyReference->hide();
-    delete m_document;
-    m_document = 0;
-    m_viewManager->clearSelections();
-    m_timeRulerLayer = 0; // document owned this
-    m_sessionFile = "";
-    setWindowTitle(QApplication::applicationName());
-    CommandHistory::getInstance()->clear();
-    CommandHistory::getInstance()->documentSaved();
-    documentRestored();
 }
 
 void

@@ -16,20 +16,23 @@ class PRAALINE_CORE_SHARED_EXPORT MetadataStructureSection : public QObject
     Q_PROPERTY(QString ID READ ID WRITE setID)
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(QString description READ description WRITE setDescription)
+    Q_PROPERTY(int itemOrder READ itemOrder WRITE setItemOrder)
 
 public:
     explicit MetadataStructureSection(QObject *parent = 0);
     MetadataStructureSection(const QString &ID, const QString &name = QString(),
-                             const QString &description = QString(), QObject *parent = 0);
+                             const QString &description = QString(), int itemOrder = 0, QObject *parent = 0);
     ~MetadataStructureSection();
 
     // Data
-    QString ID() { return m_ID; }
+    QString ID() const { return m_ID; }
     void setID(const QString &id) { m_ID = id; }
-    QString name() { return m_name; }
+    QString name() const { return m_name; }
     void setName(const QString &name) { m_name = name; }
-    QString description() { return m_description; }
+    QString description() const { return m_description; }
     void setDescription(const QString &description) { m_description = description; }
+    int itemOrder() const { return m_itemOrder; }
+    void setItemOrder(int itemOrder) { m_itemOrder = itemOrder; }
 
     // ATTRIBUTES - Accessors
     QPointer<MetadataStructureAttribute> attribute(int index) const;
@@ -54,6 +57,7 @@ protected:
     QString m_ID;           // Section ID (e.g. speaker)
     QString m_name;         // User-friendly name (e.g. Speaker)
     QString m_description;  // Description (e.g. Speakers metadata)
+    int m_itemOrder;        // Order for presentation purposes
     QList<QPointer<MetadataStructureAttribute> > m_attributes;
 };
 

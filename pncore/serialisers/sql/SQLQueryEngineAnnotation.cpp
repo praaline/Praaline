@@ -133,8 +133,35 @@ QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer 
         resultIntervalsForLevel << QueryOccurrence::ResultInterval(type, pointer->speakerID, intervalNo, intervals.at(i));
     }
     resultIntervals.insert(levelIDs.first(), resultIntervalsForLevel);
-    // Other levels
-    //
+    // Get the intervals of other levels within the same context span
+    RealTime tMinContext, tMaxContext;
+    if (intervals.count() > 0) {
+        tMinContext = intervals.first()->tMin();
+        tMaxContext = intervals.last()->tMax();
+        foreach (QString levelID, levelIDs) {
+            if (levelID == levelIDs.first()) continue;  // this is already covered
+            QStringList attributeIDs;                   // for this level
+            // Which attributes to load for this level?
+            foreach (resultLA, qdef->resultLevelsAttributes) {
+                if (resultLA.first == levelID) attributeIDs << resultLA.second;
+            }
+            // Get intervals for this level from the database
+            QList<Interval *> intervalsForLevel = SQLSerialiserAnnotation::getIntervals(pointer->annotationID, pointer->speakerID, structure, db,
+                                                                                        levelID, tMinContext, tMaxContext, attributeIDs);
+            QList<QueryOccurrence::ResultInterval> resultIntervalsForExtraLevel;
+            int intervalNo = 0;
+            foreach (Interval *intv, intervalsForLevel) {
+                QueryOccurrence::ResultInterval::Type type;
+                if      (intv->tMax() < RealTime::fromNanoseconds(pointer->tMin_nsec)) type = QueryOccurrence::ResultInterval::LeftContext;
+                else if (intv->tMin() > RealTime::fromNanoseconds(pointer->tMax_nsec)) type = QueryOccurrence::ResultInterval::RightContext;
+                else    type = QueryOccurrence::ResultInterval::Target;
+                resultIntervalsForExtraLevel << QueryOccurrence::ResultInterval(type, pointer->speakerID, intervalNo, intv);
+                intervalNo++;
+            }
+            resultIntervals.insert(levelID, resultIntervalsForExtraLevel);
+        }
+    }
+    // Return the result
     return new QueryOccurrence(pointer->corpusID, pointer->communicationID, pointer->annotationID, resultIntervals);
 }
 

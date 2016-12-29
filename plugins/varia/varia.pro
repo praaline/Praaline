@@ -29,8 +29,8 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../app/annotation ../../svcore
-DEPENDPATH += . .. ../.. ../../pncore ../../app/annotation ../../svcore
+INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces ../../svcore
+DEPENDPATH += . .. ../.. ../../pncore ../../app/interfaces ../../svcore
 
 # Qtilities configuration
 QTILITIES += extension_system

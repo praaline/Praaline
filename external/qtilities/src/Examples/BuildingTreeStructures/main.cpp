@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
     // Big Table Shown Using Fetch More Implementation
     // ------------------------------------
     TreeNode* bigTableObserver = new TreeNode("Big Table");
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 400; i++) {
         bigTableObserver->addItem("Item " + QString::number(i));
     }
 
@@ -301,75 +301,75 @@ int main(int argc, char *argv[])
     // This can take long on slow machines, thus uncomment manually to see example...
     // ------------------------------------
 
-    TreeNode* bigTableObserverWithActivity = new TreeNode("Big Table With Activity Filter");
-    bigTableObserverWithActivity->enableActivityControl(ObserverHints::CheckboxActivityDisplay,ObserverHints::CheckboxTriggered);
-    bigTableObserverWithActivity->enableCategorizedDisplay();
-    bigTableObserverWithActivity->displayHints()->setItemViewColumnHint(ObserverHints::ColumnNameHint | ObserverHints::ColumnChildCountHint);
-    bigTableObserverWithActivity->displayHints()->setDisplayFlagsHint(ObserverHints::ItemView | ObserverHints::ActionToolBar);
-    bigTableObserverWithActivity->displayHints()->setActionHints(ObserverHints::ActionRefreshView | ObserverHints::ActionSwitchView | ObserverHints::ActionDeleteItem);
+//    TreeNode* bigTableObserverWithActivity = new TreeNode("Big Table With Activity Filter");
+//    bigTableObserverWithActivity->enableActivityControl(ObserverHints::CheckboxActivityDisplay,ObserverHints::CheckboxTriggered);
+//    bigTableObserverWithActivity->enableCategorizedDisplay();
+//    bigTableObserverWithActivity->displayHints()->setItemViewColumnHint(ObserverHints::ColumnNameHint | ObserverHints::ColumnChildCountHint);
+//    bigTableObserverWithActivity->displayHints()->setDisplayFlagsHint(ObserverHints::ItemView | ObserverHints::ActionToolBar);
+//    bigTableObserverWithActivity->displayHints()->setActionHints(ObserverHints::ActionRefreshView | ObserverHints::ActionSwitchView | ObserverHints::ActionDeleteItem);
 
-    QTime time;
-    time.start();
-    int msg_count = 0;
-    int ms = time.elapsed();
-    int s = ms / 1000; ms %= 1000;
-    int m = s / 60; s %= 60;
-    int h = m / 60; m %= 60;
-    ++msg_count;
-    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
+//    QTime time;
+//    time.start();
+//    int msg_count = 0;
+//    int ms = time.elapsed();
+//    int s = ms / 1000; ms %= 1000;
+//    int m = s / 60; s %= 60;
+//    int h = m / 60; m %= 60;
+//    ++msg_count;
+//    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
 
-    for (int i = 0; i < 2000; i++) {
-        bigTableObserverWithActivity->addItem("Item " + QString::number(i),QtilitiesCategory(QString::number(i)));
+//    for (int i = 0; i < 2000; i++) {
+//        bigTableObserverWithActivity->addItem("Item " + QString::number(i),QtilitiesCategory(QString::number(i)));
 
-//        if ((i % 10000) == 0) {
-//            ms = time.elapsed();
-//            s = ms / 1000; ms %= 1000;
-//            m = s / 60; s %= 60;
-//            h = m / 60; m %= 60;
-//            qDebug() << "##### Add item" << i << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
-//        }
-    }
+////        if ((i % 10000) == 0) {
+////            ms = time.elapsed();
+////            s = ms / 1000; ms %= 1000;
+////            m = s / 60; s %= 60;
+////            h = m / 60; m %= 60;
+////            qDebug() << "##### Add item" << i << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
+////        }
+//    }
 
-    ms = time.elapsed();
-    s = ms / 1000; ms %= 1000;
-    m = s / 60; s %= 60;
-    h = m / 60; m %= 60;
-    ++msg_count;
-    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
+//    ms = time.elapsed();
+//    s = ms / 1000; ms %= 1000;
+//    m = s / 60; s %= 60;
+//    h = m / 60; m %= 60;
+//    ++msg_count;
+//    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
 
-    bigTableObserverWithActivity->treeAt(0);
+//    bigTableObserverWithActivity->treeAt(0);
 
-    ms = time.elapsed();
-    s = ms / 1000; ms %= 1000;
-    m = s / 60; s %= 60;
-    h = m / 60; m %= 60;
-    ++msg_count;
-    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
+//    ms = time.elapsed();
+//    s = ms / 1000; ms %= 1000;
+//    m = s / 60; s %= 60;
+//    h = m / 60; m %= 60;
+//    ++msg_count;
+//    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
 
-    ObserverWidget* big_table_with_activity_widget = new ObserverWidget(Qtilities::TreeView);
-    big_table_with_activity_widget->setRefreshMode(ObserverWidget::RefreshModeShowTree);
-    big_table_with_activity_widget->setObserverContext(bigTableObserverWithActivity);
-    //big_table_with_activity_widget->toggleLazyInit(true);
-    big_table_with_activity_widget->initialize();
-    big_table_with_activity_widget->show();
-    tab_widget->addTab(big_table_with_activity_widget,QIcon(),"Big Table (With Activity Filter)");
+//    ObserverWidget* big_table_with_activity_widget = new ObserverWidget(Qtilities::TreeView);
+//    big_table_with_activity_widget->setRefreshMode(ObserverWidget::RefreshModeShowTree);
+//    big_table_with_activity_widget->setObserverContext(bigTableObserverWithActivity);
+//    //big_table_with_activity_widget->toggleLazyInit(true);
+//    big_table_with_activity_widget->initialize();
+//    big_table_with_activity_widget->show();
+//    tab_widget->addTab(big_table_with_activity_widget,QIcon(),"Big Table (With Activity Filter)");
 
-//    ObserverWidget* big_table_with_activity_widget2 = new ObserverWidget(Qtilities::TreeView);
-//    big_table_with_activity_widget2->setObserverContext(bigTableObserverWithActivity);
-//    big_table_with_activity_widget2->toggleLazyInit(true);
-//    big_table_with_activity_widget2->initialize();
-//    big_table_with_activity_widget2->show();
+////    ObserverWidget* big_table_with_activity_widget2 = new ObserverWidget(Qtilities::TreeView);
+////    big_table_with_activity_widget2->setObserverContext(bigTableObserverWithActivity);
+////    big_table_with_activity_widget2->toggleLazyInit(true);
+////    big_table_with_activity_widget2->initialize();
+////    big_table_with_activity_widget2->show();
 
-    ms = time.elapsed();
-    s = ms / 1000; ms %= 1000;
-    m = s / 60; s %= 60;
-    h = m / 60; m %= 60;
-    ++msg_count;
-    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
+//    ms = time.elapsed();
+//    s = ms / 1000; ms %= 1000;
+//    m = s / 60; s %= 60;
+//    h = m / 60; m %= 60;
+//    ++msg_count;
+//    qDebug() << "##### Construction" << msg_count << QString("%1:%2:%3:%4").arg(h,2,10,QChar('0')).arg(m,2,10,QChar('0')).arg(s,2,10,QChar('0')).arg(ms,4,10,QChar('0'));
 
-    ++current_example;
-    progress.setValue(current_example);
-    QApplication::processEvents();
+//    ++current_example;
+//    progress.setValue(current_example);
+//    QApplication::processEvents();
 
     // ----------------------------------
     // Tree With Formatting
@@ -434,6 +434,58 @@ int main(int argc, char *argv[])
     ++current_example;
     progress.setValue(current_example);
     QApplication::processEvents();
+
+    // ----------------------------------
+    // Follow Selection Activity
+    // ----------------------------------
+    TreeNode* rootNodeFollowSelection = new TreeNode("Root");
+    rootNodeFollowSelection->enableActivityControl(ObserverHints::CheckboxActivityDisplay,
+                                                   ObserverHints::FollowSelection,
+                                                   ActivityPolicyFilter::MultipleActivity,
+                                                   ActivityPolicyFilter::ParentIgnoreActivity,
+                                                   ActivityPolicyFilter::ProhibitNoneActive,
+                                                   ActivityPolicyFilter::SetNewInactive);
+
+    rootNodeFollowSelection->addItem("Child 1");
+    rootNodeFollowSelection->addItem("Child 2");
+    rootNodeFollowSelection->addItem("Child 3");
+    rootNodeFollowSelection->addItem("Child 4");
+    rootNodeFollowSelection->addItem("Child 5");
+    rootNodeFollowSelection->addItem("Child 6");
+    rootNodeFollowSelection->addItem("Child 7");
+    rootNodeFollowSelection->addItem("Child 8");
+    rootNodeFollowSelection->addItem("Child 9");
+    rootNodeFollowSelection->addItem("Child 10");
+    rootNodeFollowSelection->addItem("Child 11");
+    rootNodeFollowSelection->addItem("Child 12");
+    rootNodeFollowSelection->addItem("Child 13");
+    rootNodeFollowSelection->addItem("Child 14");
+    rootNodeFollowSelection->addItem("Child 15");
+
+    QWidget* combined_follow_selection_widget = new QWidget;
+    if (combined_follow_selection_widget->layout())
+        delete combined_follow_selection_widget->layout();
+    QHBoxLayout* combined_follow_selection_layout = new QHBoxLayout(combined_follow_selection_widget);
+    combined_follow_selection_layout->setMargin(0);
+
+    TreeWidget* follow_selection_tree_view = new TreeWidget(rootNodeFollowSelection);
+    follow_selection_tree_view->treeView()->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    combined_follow_selection_layout->addWidget(follow_selection_tree_view);
+    follow_selection_tree_view->show();
+
+    ObserverWidget* follow_selection_table_view = new ObserverWidget(rootNodeFollowSelection,Qtilities::TableView);
+    combined_follow_selection_layout->addWidget(follow_selection_table_view);
+    follow_selection_table_view->show();
+
+    tab_widget->addTab(combined_follow_selection_widget,QIcon(),"Activity Follow Selection Tree");
+
+    ++current_example;
+    progress.setValue(current_example);
+    QApplication::processEvents();
+
+    // ----------------------------------
+    // The End
+    // ----------------------------------
     progress.hide();
 
     tab_widget->show();

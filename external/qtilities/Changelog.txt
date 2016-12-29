@@ -1,7 +1,264 @@
-This change log uses the following legend to list items.
+This change log uses the following legend to list items:
 [+] New feature added
+[-] Existing feature removed
 [*] Bug Fix
 [#] Change/Improvement to old code
+
+================================
+Qtilities v1.5 Changes
+================================
+To see all closed issues in the issue tracker linked to this milestone, see the following page:
+https://github.com/JPNaude/Qtilities/issues/milestones
+
+    General:
+    ============================
+	[#] Changed the output names of the Qtilities libraries on Linux. We don't append 'd' any more 
+	    for debug builds. The qmake LIBS += directive does not use a 'd' on Linux as it does on Windows. 
+		Therefore, having the 'd' on Linux breaks it.
+	[#] Qtilities will now make sure .pdb files are generated in release mode as well when using MSVC in order
+	    order to debug using stack traces in release mode. Comment this if not desired in Qtilities.pri.
+    [#] All .pro files no longer use CONFIG += ordered. Proper dependencies are now defined, allowing
+        parallel compilation to be done.
+	[#] Fixed numerous warnings produced by older versions of gcc (specifically, gcc (GCC) 4.1.2 20080704).
+	[#] QTILITIES_NO_HELP is now defined by default.
+	[#] Documentation for QtilitiesProcess rewritten and much clearer in terms of describing the benefits of 
+	    QtilitiesProcess over just using QProcess.
+
+    ============================
+    QtilitiesLogging:
+    ============================
+    [+] The console logger engine now support ANSI escape code formatting. When enabled (default) messages
+        printed in the console will be coloured according to their types. New functions include
+        ConsoleLoggerEngine::setConsoleFormattingEnabled(), ConsoleLoggerEngine::consoleFormattingEnabled()
+        and ConsoleLoggerEngine::setConsoleFormattingHint().
+        Also, a bunch of known colours and escape related characters were added to LoggerEngines.h.
+        Note that this does not work on Windows.
+    [+] Added Logger::registerFormattingEngine().
+	[+] Added Logger::loggerEngineReferenceForFile().
+	[+] Added AbstractFormattingEngine::priority() which can be used to control which formatting engine
+	    is used in cases where multiple formatting engines with the same file extension are installed.
+
+	[#] Logger::newFileEngine() will fall back to the default formatting engine when a suitable formatting 
+	    engine cannot be found for the new file, instead of just failing and returning 0. A warning will be 
+		logged in this case.
+    [#] All debug and trace logging macros (LOG_DEBUG, LOG_DEBUG_P etc.) are now defined as noop's ((void)0) in release mode.
+    [#] Formatting engine change detected messages are now debug messages, not normal log messages anymore.
+	[#] Fixed issues where Logger::deleteAllLoggerEngines() did not loop through all logger engines properly.
+	[#] Changed built-in formatting engines to use singletons properly.
+
+    ============================
+    QtilitiesCore:
+    ============================
+    [+] Added new Zipper class which is a thin Qt-api based wrapper around the command line utility
+        from the 7-zip project called 7za.
+    [+] Added new generic property related classes: GenericProperty, GenericPropertyManager as well 
+	    as a new example demonstrating their use.
+    [+] Added FileUtils::toUnixPath().
+    [+] Added FileUtils::writeTextFile().
+    [+] Added FileUtils::readTextFile().
+    [+] QtilitiesProcess:startProcess() got a new timeout parameter which allows defining a timeout for the process.
+    [+] QtilitiesProcess now has the ability to store all buffered messages from a process for you in something
+        called a last run buffer. See the new QtilitiesProcess::lastRunBuffer() and related functions for more information.
+	[+] Added QtilitiesProcess::assignFileLoggerEngineToProcess().
+	[+] Added QtilitiesProcess::processBackendProcessBuffersEnabled().
+	[+] Added QtilitiesProcess::setProcessInfoMessagesEnabled().
+	[+] Added QtilitiesProcess::processInfoMessagesEnabled().
+	[+] Added QtilitiesProcess::setProcessBufferMessageTypeHint(). Also, added new
+        ProcessBufferMessageTypeHint class used in this function. This class uses a regular expression to identify 
+		messages and then assign a message type to them (warning, error, info etc.) or to filter the matched messages.
+	[+] Added Task::LifeTimeDestroyWhenCompleted to Task::TaskLifeTime.
+	[+] Added Task::loggingToQtMsgLoggerEngineEnabled() and setLoggingToQtMsgLoggerEngineEnabled().
+	[+] Added Task::loggingToConsoleLoggerEnabled() and setLoggingToConsoleEnabled().
+	[+] Added TaskManager::forwardTaskMessagesToConsoleEngine() and setForwardTaskMessagesToConsoleEngine(). Previously 
+	    forwarding of task messages to the console was controlled by TaskManager::forwardTaskMessagesToQtMsgEngine().
+	[+] VersionNumber now supports the ability to specify a development stage version number. Current stages 
+	    include alpha, beta, release candidate and service packs (Issue #9).
+
+	[#] Expose busyStateChanged() from private class on QtilitiesCoreApplication and QtilitiesApplication.
+    [#] QtilitiesProcess::logProgressOutput() and QtilitiesProcess::logProgressError() are now protected slots, allowing
+        subclasses to reimplement its functionality. Also, bunch of improvements internally in QtilitiesProcess and
+        detailed documentation how messages from the backend process are buffered was added. 
+	[#] Improved error reporting in QtilitiesProcess. When the working directory of the process does not exist, it will 
+	    tell you this instead of telling you that the executable does not exist when the process fails 
+		with QProcess::FailedToStart.
+		
+    [#] Changed debug messages in Observer's destructor to trace messages.
+    [#] QtilitiesProperty is now properly documented.
+    [#] Moved registration of Logger::MessageType and Logger::MessageContext from ITask to Logger's constructor.
+    [#] FileUtils::makeLocalCopyOfResource() will also create the local_path directory using QDir::mkpath() if it does not exist.
+    [#] FileUtils::makeLocalCopyOfResource()'s errorMsg parameter is no longer compulsory.
+    [#] Assign default -1 value to Task::lastErrorMessages()'s count parameter.
+	[#] When expanding/collapsing nodes in ObserverWidget, a busy cursor will be set on the ObserverWidget. 
+	    For big trees, there might be a slight delay which requires this.
+
+    [*] Fixed bug in Observer::handle_deletedSubject() where application can sometimes
+        crash with "Detected QWeakPointer creation in a QObject being deleted".
+    [*] Fixed possible crash in TreeIterator::last() when the TreeIterator was constructed with a null node.
+    [*] Fixed potential crash in ~QtilitiesProcess() when it was run in a different thread. Now using deleteLater()
+        on backend process.
+    [*] Removed buffering done in QtilitiesProcess. See issue #99 for details. This led to the removal of
+        QtilitiesProcess::setLineBreakStrings(), QtilitiesProcess::lineBreakString(), 
+		QtilitiesProcess::newStandardOutputMessage() and QtilitiesProcess::newStandardErrorMessage().
+    [*] Fixed Task::completeTask() not always emitting with the correct result. For example, it would
+        be emitted with the result set to TaskResultFromBusyStateFailOnError instead of TaskFailed.
+    [*] Fixed wrong path printed in FileUtils::makeLocalCopyOfResource() error message when resource file does not exist.
+    [*] Fixed "> working directory does not exist, process might fail to start" printing wrongly in
+        some cases when using QtilitiesProcess.
+    [*] Fixed FileUtils::findFilesUnderDir() matching against directories which are more than one level deep from the search dir.
+    [*] Fixed Task::setLastErrorMessagesStackSize() not updating the stack size correctly.
+	[*] Fixed VersionNumber > and < operators which returned wrong result in some situations.
+	[*] Fixed bug where Task.cpp was still logging errors even when the last error message count was set to 0.
+	[*] Fixed memory leak in Observer.
+
+    ============================
+    QtilitiesCoreGui:
+    ============================
+    [+] ObserverWidget/TreeWidget now has a new refresh mode which makes refreshes much smoother than
+        previously. The new mode will update the tree very smoothly when the backend tree structure
+        changes. The old behaviour is still around to use if you prefer to use it. See ObseverWidget::RefreshMode 
+		for more details.
+    [+] Added access functions to ObserverWidget to get hold of expanded objects and categories separately. Internally
+        ObserverWidget and ObserverTreeModel also uses objects and categories instead of the previously
+        used list of names in order to more accurately restore the expansion state of your tree when
+        a refresh occurs. Previously any tree that contained items with duplicate names would not have
+        kept its expansion state properly after a refresh.
+    [+] Added the ability to turn off automatic item selection and expansion state restoration when
+        an ObserverWidget refreshes. See ObserverWidget::enableAutoSelectAndExpand() and
+        ObserverWidget::disableAutoSelectAndExpand() for more details.
+    [+] ObserverWidget got a new constructor which allows you to specify the initial selection and
+        initial set of objects which needs to be expanded once the tree was initialized.
+    [+] Added new generic property related classes: GenericPropertyBrowser, GenericPropertyPathEditor,
+        GenericPropertyPathEditorListWrapper, FileEditorFactory and PathPropertyManager.
+    [+] Added TaskSummaryWidget::getSingleTaskWidgetForTask().
+    [+] WidgetLoggerFrontends now has the option to specify where and if toolbars with actions related to the
+        displayed log should be shown.
+    [+] Added TaskLogNoInitialization to the TaskLogInitialization enumeration in TaskManagerGui.
+        This allows tasks to be used more efficiently in console applications.
+    [+] Added ability to refresh icons in Mode Manager dynamically at runtime. See issue #96.
+    [+] Added required functions to get expanded objects in an ObserverWidget tree, and to expand specific objects.
+        Previously this could have only been done using the names of items, which obviously caused issues when
+        duplicate names were present in a tree.
+
+	[#] IMPORTANT: ObserverWidget::observerContext() return value changed in tree mode. Previously, this function 
+	    returned the selection parent observer context in tree view mode when there was a selection. This is wrong, 
+		it should return the root observer context as the selection parent context is available through
+		ObserverWidget::selectionParent() already and observerContext() should be consistent between TableView and
+        TreeView modes. If you used observerContext() to get hold of the parent selection, please make the 
+        necessary changes to use selectionParent() instead.		
+    [#] Slightly improved layout in SingleTaskWidget.
+    [#] Big performance improvements in ObserverWidget, especially when doing collapsing and expansion of
+        many nodes, and when using the FollowSelection activity filter hint.
+    [#] Changed ConfigurationWidget so that it no longer assigns a 0 margin to pages it displays.
+    [#] Changed ConfigurationWidget so that does not put a border around the frame in which it puts config widgets.
+    [#] ObserverWidget will no longer register all its actions by default, only when ActionHints are specified on the
+        displayed observer and the ObserverWidget is set to use its observer hints, instead of custom hints.
+    [#] ObserverWidget::setUseObserverHints() will now refresh the hints on the widget when toggled.
+	[#] Improved ConfigurationWidget's control of when Apply button is shown and also add an OK button.
+	[#] GenericPropertyBrowser's refresh(), toggleSwitchNames() and toggleAdvancedSettings() methods are now public slots 
+	    instead of private slots.
+
+    [-] Removed ObserverWidget::writeSettings() and ObserverWidget::readSettings().
+    [-] Removed the functionality in ObserverWidget where it will append the contexts of any selected objects
+        that implements IContext in the context manager. This is unnecessary overhead and can easily be implemented
+        wherever its needed by connecting a slot to the selectedObjectsChanged() signal on ObserverWidget. The following
+        functions were removed from ObserverWidget: appendSelectedContexts() and setAppendSelectedContexts().
+    [-] Removed the code which allowed ObserverTreeModel to build its internal tree representation in a different
+        thread. This was never really tested and its not needed.
+
+    [*] Fixed compilation issues against Qt5 when property browser is enable using DEFINES += QTILITIES_PROPERTY_BROWSER
+    [*] Fixed bug where ProhibitDuplicateNamesCaseSensitive was not handled properly in NamingPolicyFilter::evaluateAttachment()
+    [*] Fixed double emission of selectedObjectsChanged() when the tree parent observer changes when in tree view mode.
+    [*] Fixed ObserverWidget not respecting the ObserverHints::ItemViewColumnFlags of new selections in TreeView mode.
+    [*] Fixed ObserverWidget not keeping its selection when refreshing while using the ObserverHints::RootIndexHide hint.
+    [*] Fixed ObserverWidget not keeping its expanded nodes when refreshing while using the ObserverHints::RootIndexHide hint.
+	[*] Fixed crash in ActionManager::unregisterCommandsForContext() when there was not command registered in the action manager.
+	[*] Fixed memory leak in WidgetLoggerEngineFrontend.
+	[*] Fixed memory leak in SearchBoxWidget.
+	[*] Fixed ObserverTreeModel::handleContextDataChanged(Observer* observer) not refreshing the context of the specified observer,
+	    but of its parent context.
+
+    ============================
+    QtilitiesExtensionSystem:
+    ============================
+    [*] Fixing issues in the extension system when no default plugin configuration is available.
+
+    ============================
+    QtilitiesProjectManagement:
+    ============================
+
+    ============================
+    QtilitiesTesting:
+    ============================
+
+    ============================
+    Plugins:
+    ============================
+    [*] Cleaned up memory leak in HelpPlugin.
+
+    ============================
+    Examples:
+    ============================
+    [+] Added a new example which shows how to use, and explain the purpose of the different property classes in Qtilities.
+
+
+================================
+Qtilities v1.4 Changes
+================================
+    To see all closed issues in the issue tracker linked to this milestone, see the following page:
+    https://github.com/JPNaude/Qtilities/issues/milestones
+
+    General:
+    ============================
+    [+] Qtilities is now also available under LGPL v2.1.
+    [+] Added a new wiki for the Qtilities project at https://github.com/JPNaude/Qtilities/wiki.
+
+    [#] The Qtilities website moved from http://www.qtilities.org to http://jpnaude.github.io/Qtilities/.
+
+    [-] support@qtilities.org is no longer available, please use the mailing list for support from here on.
+    [-] The Qtilities blog is no longer available.
+
+    [*] Fixed some issues which caused compilation on Mac to fail.
+    [*] Fixed compilation issue with Qt5. See http://github.com/JPNaude/Qtilities/issues/92 for more details.
+
+    ============================
+    QtilitiesLogging:
+    ============================
+
+    ============================
+    QtilitiesCore:
+    ============================
+    [+] Added ITask::lastErrorMessages(), ITask::setLastErrorMessagesStackSize() and ITask::lastErrorMessagesStackSize().
+
+    [#] FileUtils::comparePaths() and FileUtils::pathStartsWith() got new case sensitivity parameters which can be used on Windows.
+    [#] QtilitiesProcess::logProgressOutput() and QtilitiesProcess::logProgressError() are now virtual.
+
+    [*] Fixed bugs in processing of messages by QtilitiesProcess which in some cases resulted in application hangs.
+
+    ============================
+    QtilitiesCoreGui:
+    ============================
+    [*] Fixed issue with TreeFileItem::setFilePath() where it did not allow the case of a file to be changed.
+    [*] Fixed NamingPolicyFilter::ProhibitDuplicateNamesCaseSensitive not always handled correctly in NamingPolicyFilter::Evaluate.
+    [*] Improved and fixed issues in SingleTaskWidget.
+
+    ============================
+    QtilitiesExtensionSystem:
+    ============================
+
+    ============================
+    QtilitiesProjectManagement:
+    ============================
+    [*] Fixed issue where duplicates of recent projects appeared in the recent projects menu.
+    [*] Fixed issue where clearing the recent projects list did not refresh the recent projects menu.
+
+    ============================
+    QtilitiesTesting:
+    ============================
+
+    ============================
+    Plugins:
+    ============================
+
 
 ================================
 Qtilities v1.3 Changes
@@ -21,7 +278,9 @@ Qtilities v1.3 Changes
     [#] The logger will no longer remember its previous log configuration by default. To keep log configurations between
         sessions, just call Log->setRememberSessionConfig(true) before LOG_INITIALIZE().
 
-    [*] Fixed issues when calling Logger::newFileEngine().
+    [*] Fixed issues when calling Logger::newFileEngine(). The new file engine was never initialized.
+    [*] Fixed issue in FileLoggerEngine::initialize() where it failed if the folder in which the log file
+        was located did not exist. The folder will now be created before attempting to open the file.
 
     ============================
     QtilitiesCore:
@@ -33,28 +292,39 @@ Qtilities v1.3 Changes
         an unique ID to a task was to register it in the global object pool. The Task class which is the standard
         implementation of the ITask interface now does the manual assignment in its constructor, thus Task
         objects will always have valid, unique tasks now.
+    [+] QtilitiesProcess::start() got a new parameter to specify how long the function must wait during
+        its QProcess::waitForStarted() call after the process was started.
+    [+] Added ITask::taskStopConfirmation() and ITask::setTaskStopConfirmation().
+    [+] Added FileUtils::pathStartsWith().
 
     [#] Observer will no longer log a warning when attachment fails, its now a debug message.
     [#] Tasks will now log engine specific messages to QtMsgLoggerEngine and ConsoleLoggerEngine when they are
         active and this is enabled using new functions on TaskManager to enable it. See
         TaskManager::forwardTaskMessagesToQtMsgEngine() and TaskManager::setForwardTaskMessagesToQtMsgEngine().
 
+    [*] Fixed memory leak in destructor of ITaskContainer.
+
     ============================
     QtilitiesCoreGui:
     ============================
-    [+] Added DynamicSideViewerWidget::setHiddenSideWidgets() and DynamicSideViewerWidget::hiddenSideWidgets().
+    [+] Added DynamicSideWidgetViewer::setHiddenSideWidgets() and DynamicSideWidgetViewer::hiddenSideWidgets().
     [+] Added HelpManager::homePageChanged().
     [+] Added a new parameter to QtilitiesMainWindow::writeSettings() and QtilitiesMainWindow::readSettings() to
         specify a custom ID under which the settings of the window must be saved.
     [+] Added TaskSummaryWidget::numberOfDisplayedTasksChanged() signal.
     [+] Added TaskSummaryWidget::setDisplayedTasksFilter() and TaskSummaryWidget::displayedTasksFilter().
     [+] Added SingleTaskWidget::hiddenByStopButton().
+    [+] Added access functions for the buttons in SingleTaskWidget in order to allow more customization.
 
-    [#] ObserverWidget not longer assigns F5 QKeySequence::Refresh to the refresh action.
+    [#] ObserverWidget now longer assigns F5 QKeySequence::Refresh to the refresh action.
     [#] Made the following functions public on AddDynamicPropertyWizard: propertyRemovable(),
         propertyIsExportable(), propertyReadOnly(), propertyDefaultValue().
+    [#] The refresh_list parameter on ModeManager::setActiveMode() is now false by default.
+    [#] Renamed ModeManager::isValidModeID() to ModeManager::containsModeId() where it now returns the opposite of what it always returned.
+    [#] Changed the stop icon for tasks to a red square, makes more sense than a red cross.
 
-    [*] Fixed AbstractTreeItem::getIcon() and AbstractTreeItem::hasIcon() which checked the wrong property on the object.
+    [*] Fixed AbstractTreeItem::getIcon() and AbstractTreeItem::hasIcon() which checked the wrong property
+        on the object.
     [*] Fixed some inconsitancies between select object functions on ObserverWidget.
     [*] Fixed bug in QtilitiesTreeModelProxyFilter where it always sorted using the name column.
     [*] Fixed bug in ObserverWidget where it did not calculate expanded items correctly when
@@ -62,11 +332,16 @@ Qtilities v1.3 Changes
     [*] Fixed potential crash in ObserverTreeModel::headerData().
     [*] Fixed issue where ConfigurationWidget initialized some configuration pages twice.
     [*] Fixed potential crashes in SingleTaskWidget.
+    [*] Fixed bug where activity controls were not shown for the top level nodes in a tree when the parent
+        observer used the RootIndexHide RootIndexDisplayHint. This is the default in for all trees since Qtilities v1.2.
+    [*] Fixed issue where previous modes were not stored correctly when calling ModeManager::setActiveMode().
 
     ============================
     QtilitiesExtensionSystem:
     ============================
     [+] Added ExtensionSystem::pluginPathsChanged() signal.
+    [+] Added errorMsg parameter to ExtensionSystemCore::savePluginConfiguration(). The ExtensionSystemConfig
+        window will now show what error occurred when changes made to the active plugin configuration could not be saved.
 
     [#] The path where the default plugin configuration is searched is now /plugins, not /Plugins anymore.
 
@@ -789,7 +1064,7 @@ Qtilities v1.0 Changes
     - Fixed possible crash in CommandEditor.
     - Fixed bug in ObjectScopeWidget where it created duplicate connections on the monitored object.
     - Fixed bug in ObserverWidget::toggleUseObserverHints() where it did not toggle this on the models used as well.
-    - Fixed numerous bugs in Observer models which occured if an Observer with no hints was displayed.
+    - Fixed numerous bugs in Observer models which occurred if an Observer with no hints was displayed.
     - Fixed serious bug in ObserverWidget where it incorrectly reset observer hints in some cases.
     - Fixed bug in ObserverWidget where actions toolbars were not always updated correctly.
     - Fixed bug in DynamicSideWidgetWrapper where it produced some widgets twice.

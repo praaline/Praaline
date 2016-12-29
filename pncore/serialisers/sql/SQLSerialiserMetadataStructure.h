@@ -3,22 +3,24 @@
 
 #include <QSqlDatabase>
 #include "structure/MetadataStructure.h"
+#include "SQLSerialiserBase.h"
 #include "SQLSchemaProxyBase.h"
 
 namespace Praaline {
 namespace Core {
 
-class SQLSerialiserMetadataStructure : public SQLSchemaProxyBase
+class SQLSerialiserMetadataStructure : public SQLSchemaProxyBase, public SQLSerialiserBase
 {
 public:
-    static bool initialiseMetadataStructureTables(QSqlDatabase &db);
+    static bool initialiseMetadataStructureSchema(QSqlDatabase &db);
+    static bool upgradeMetadataStructureSchema(QSqlDatabase &db);
     static bool createMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
     static bool loadMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
-    static bool createMetadataSection(QPointer<MetadataStructureSection> newSection, QSqlDatabase &db);
-    static bool updateMetadataSection(QPointer<MetadataStructureSection> updatedSection, QSqlDatabase &db);
-    static bool deleteMetadataSection(const QString &sectionID, QSqlDatabase &db);
+    static bool createMetadataSection(CorpusObject::Type type, QPointer<MetadataStructureSection> newSection, QSqlDatabase &db);
+    static bool updateMetadataSection(CorpusObject::Type type, QPointer<MetadataStructureSection> updatedSection, QSqlDatabase &db);
+    static bool deleteMetadataSection(CorpusObject::Type type, const QString &sectionID, QSqlDatabase &db);
 
     static bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute, QSqlDatabase &db);
     static bool updateMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> updatedAttribute, QSqlDatabase &db);

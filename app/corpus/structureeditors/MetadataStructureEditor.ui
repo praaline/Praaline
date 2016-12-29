@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MetadataStructureEditor</class>
+ <widget class="QMainWindow" name="MetadataStructureEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QDockWidget" name="dockMetadataStructure">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>4</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="floating">
+        <bool>false</bool>
+       </property>
+       <property name="windowTitle">
+        <string>Metadata Structure</string>
+       </property>
+       <widget class="QWidget" name="dockContentsMetadataStructure"/>
+      </widget>
+      <widget class="QDockWidget" name="dockNameValueLists">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="floating">
+        <bool>false</bool>
+       </property>
+       <property name="windowTitle">
+        <string>Name-Value Lists</string>
+       </property>
+       <widget class="QWidget" name="dockContentsNameValueLists"/>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

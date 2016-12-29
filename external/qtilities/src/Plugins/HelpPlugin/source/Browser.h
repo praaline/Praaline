@@ -13,11 +13,7 @@
 #define BROWSER_H
 
 #include <IMode>
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtWebKit>
-#else
-#include <QtWebKitWidgets>
-#endif
+#include <QWebEngineView>
 
 namespace Qtilities {
     namespace Plugins {
@@ -30,7 +26,7 @@ namespace Qtilities {
 
             /*!
             \class Browser
-            \brief A very simple browser wrapper around QWebView used to display help pages.
+            \brief A very simple browser wrapper around QWebEngineView used to display help pages.
               */
             class Browser : public QWidget
             {
@@ -42,8 +38,8 @@ namespace Qtilities {
                     //! Loads the specified url.
                     void loadUrl(const QUrl &url = QUrl());
 
-                    //! Returns a pointer to the contained QWebView.
-                    QWebView* webView();
+                    //! Returns a pointer to the contained QWebEngineView.
+                    QWebEngineView* webView();
 
                 private slots:
                     void handle_loadUrl();

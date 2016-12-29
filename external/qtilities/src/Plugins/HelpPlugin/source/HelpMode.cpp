@@ -36,65 +36,34 @@
 #include <QtDebug>
 #include <QTimer>
 #include <QUrl>
-#include <QWebPage>
-#include <QWebView>
+#include <QWebEnginePage>
+#include <QWebEngineView>
+#include <QWebEngineProfile>
+#include <QWebEngineUrlSchemeHandler>
+#include <QWebEngineUrlRequestJob>
 
 #include <QtilitiesCoreGui>
 using namespace QtilitiesCoreGui;
 using namespace Qtilities::Plugins::Help::Constants;
 using namespace Qtilities::Plugins::Help;
 
-class qti_private_HelpNetworkAccessManager : public QNetworkAccessManager {
-    public:
-        qti_private_HelpNetworkAccessManager(QHelpEngineCore* helpEngine, QNetworkAccessManager *manager, QObject *parentObject) :
-            QNetworkAccessManager(parentObject),
-            d_help_engine(helpEngine)
-        {
-            Q_ASSERT(manager);
-            Q_ASSERT(helpEngine);
-
-            setCache(manager->cache());
-            setProxy(manager->proxy());
-            setProxyFactory(manager->proxyFactory());
-            setCookieJar(manager->cookieJar());
-        }
-
-    protected:
-        virtual QNetworkReply *createRequest(
-            Operation operation, const QNetworkRequest &request, QIODevice *device) {
-                if (request.url().scheme() == "qthelp" && operation == GetOperation)
-                    return new qti_private_HelpNetworkReply(request.url(), d_help_engine);
-                else
-                    return QNetworkAccessManager::createRequest(operation, request, device);
-            }
-
-        QPointer<QHelpEngineCore>   d_help_engine;
-
-    private:
-        Q_DISABLE_COPY(qti_private_HelpNetworkAccessManager)
-};
-
-
-qti_private_HelpNetworkReply::qti_private_HelpNetworkReply(const QUrl& url, QHelpEngineCore* help_engine) : QNetworkReply(help_engine) {
-    Q_ASSERT(help_engine);
-
-    d_help_engine = help_engine;
-    setUrl(url);
-
-    QTimer::singleShot(0, this, SLOT(process()));
+qti_private_QHelpUrlSchemeHandler::qti_private_QHelpUrlSchemeHandler(QHelpEngineCore* helpEngine, QObject *parent) :
+    QWebEngineUrlSchemeHandler(parent),
+    d_help_engine(helpEngine)
+{
+    Q_ASSERT(helpEngine);
 }
 
-void qti_private_HelpNetworkReply::process() {
+void qti_private_QHelpUrlSchemeHandler::requestStarted(QWebEngineUrlRequestJob *request)
+{
     if (d_help_engine) {
-        QByteArray rawData = d_help_engine->fileData(url());
-        d_buffer.setData(rawData);
-        d_buffer.open(QIODevice::ReadOnly);
+        QBuffer *buffer = new QBuffer;
+        connect(request, SIGNAL(destroyed()), buffer, SLOT(deleteLater()));
 
-        open(QIODevice::ReadOnly|QIODevice::Unbuffered);
-        setHeader(QNetworkRequest::ContentLengthHeader, QVariant(rawData.size()));
-        setHeader(QNetworkRequest::ContentTypeHeader, "text/html");
-        emit readyRead();
-        emit finished();
+        QByteArray rawData = d_help_engine->fileData(request->requestUrl());
+        buffer->setData(rawData);
+
+        request->reply("text/html", buffer);
     }
 }
 
@@ -172,10 +141,9 @@ void HelpMode::initiallize() {
     d->browser = new Browser(QUrl(),this);
     setCentralWidget(d->browser);
 
-    QNetworkAccessManager *current_manager = d->browser->webView()->page()->networkAccessManager();
-    qti_private_HelpNetworkAccessManager* newManager = new qti_private_HelpNetworkAccessManager(HELP_MANAGER->helpEngine(), current_manager, this);
-    d->browser->webView()->page()->setNetworkAccessManager(newManager);
-    d->browser->webView()->page()->setForwardUnsupportedContent(false);
+    // Set URL handling for Qt Help
+    qti_private_QHelpUrlSchemeHandler* qthelpHandler = new qti_private_QHelpUrlSchemeHandler(HELP_MANAGER->helpEngine(), this);
+    QWebEngineProfile::defaultProfile()->installUrlSchemeHandler("qthelp", qthelpHandler);
 
     // - Register Contents Widget Factory
     d->content_widget = new ContentWidgetFactory(HELP_MANAGER->helpEngine());

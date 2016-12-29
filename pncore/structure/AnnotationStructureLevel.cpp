@@ -100,7 +100,9 @@ void AnnotationStructureLevel::swapAttribute(int oldIndex, int newIndex)
 
 void AnnotationStructureLevel::removeAttributeAt(int i)
 {
-    m_attributes.removeAt(i);
+    if (i >= 0 && i < m_attributes.count()) {
+        m_attributes.removeAt(i);
+    }
 }
 
 void AnnotationStructureLevel::removeAttributeByID(const QString &ID)

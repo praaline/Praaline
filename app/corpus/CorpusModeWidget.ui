@@ -26,9 +26,6 @@
    <property name="bottomMargin">
     <number>0</number>
    </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item row="0" column="0">
     <widget class="QWidget" name="topFrame" native="true">
      <property name="sizePolicy">
@@ -96,8 +93,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="commandCorpusStructureEditor">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="commandCorpusExplorerTables">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -105,11 +102,11 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Corpus Structure Editor</string>
+         <string>Corpus Explorer (Tables)</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
+      <item row="0" column="5">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -122,8 +119,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </spacer>
       </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="commandCorpusExplorerTables">
+      <item row="0" column="3">
+       <widget class="QPushButton" name="commandMetadataStructureEditor">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -131,7 +128,20 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Corpus Explorer (Tables)</string>
+         <string>Metadata Structure Editor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="commandAnnotationStructureEditor">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Annotation Structure Editor</string>
         </property>
        </widget>
       </item>
@@ -175,8 +185,24 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
        </property>
       </layout>
      </widget>
-     <widget class="QWidget" name="pageCorpusStructureEditor">
-      <layout class="QGridLayout" name="gridLayoutCorpusStructureEditor">
+     <widget class="QWidget" name="pageMetadataStructureEditor">
+      <layout class="QGridLayout" name="gridLayoutMetadataStructureEditor">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageAnnotationStructureEditor">
+      <layout class="QGridLayout" name="gridLayoutAnnotationStructureEditor">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -195,6 +221,12 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>commandCorpusExplorer</tabstop>
+  <tabstop>commandCorpusExplorerTables</tabstop>
+  <tabstop>commandMetadataStructureEditor</tabstop>
+  <tabstop>commandAnnotationStructureEditor</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

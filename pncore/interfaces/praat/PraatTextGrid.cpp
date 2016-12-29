@@ -20,22 +20,22 @@ QRegularExpression PraatTextGrid::regex_interval_tier = QRegularExpression("clas
 QRegularExpression PraatTextGrid::regex_point_tier = QRegularExpression("class\\s+=\\s+\\\"TextTier\\\"");
 QRegularExpression PraatTextGrid::regex_name = QRegularExpression("name\\s+=\\s+\\\"(.*)\\\"");
 QRegularExpression PraatTextGrid::regex_size = QRegularExpression("size\\s+=\\s+(\\d*)");
-QRegularExpression PraatTextGrid::regex_xmin = QRegularExpression("xmin\\s+=\\s+(\\d+\\.?\\d*)");
-QRegularExpression PraatTextGrid::regex_xmax = QRegularExpression("xmax\\s+=\\s+(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_xmin = QRegularExpression("xmin\\s+=\\s+[+-]?(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_xmax = QRegularExpression("xmax\\s+=\\s+[+-]?(\\d+\\.?\\d*)");
 QRegularExpression PraatTextGrid::regex_interval = QRegularExpression("intervals\\s+\\[\\d*\\]:");
 QRegularExpression PraatTextGrid::regex_point = QRegularExpression("points\\s+\\[\\d*\\]:");
 QRegularExpression PraatTextGrid::regex_text = QRegularExpression("text\\s+=\\s+\\\"(.*)\\\"");
-QRegularExpression PraatTextGrid::regex_time = QRegularExpression("\\s+=\\s+(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_time = QRegularExpression("\\s+=\\s+[+-]?(\\d+\\.?\\d*)");
 QRegularExpression PraatTextGrid::regex_mark = QRegularExpression("mark\\s+=\\s+\\\"(.*)\\\"");
 
 QRegularExpression PraatTextGrid::regex_short_interval_tier = QRegularExpression("\\\"IntervalTier\\\"");
 QRegularExpression PraatTextGrid::regex_short_point_tier = QRegularExpression("\\\"TextTier\\\"");
 QRegularExpression PraatTextGrid::regex_short_name = QRegularExpression("\\\"(.*)\\\"");
 QRegularExpression PraatTextGrid::regex_short_size = QRegularExpression("(\\d*)");
-QRegularExpression PraatTextGrid::regex_short_xmin = QRegularExpression("(\\d+\\.?\\d*)");
-QRegularExpression PraatTextGrid::regex_short_xmax = QRegularExpression("(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_short_xmin = QRegularExpression("[+-]?(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_short_xmax = QRegularExpression("[+-]?(\\d+\\.?\\d*)");
 QRegularExpression PraatTextGrid::regex_short_text = QRegularExpression("\\\"(.*)\\\"");
-QRegularExpression PraatTextGrid::regex_short_time = QRegularExpression("(\\d+\\.?\\d*)");
+QRegularExpression PraatTextGrid::regex_short_time = QRegularExpression("[+-]?(\\d+\\.?\\d*)");
 QRegularExpression PraatTextGrid::regex_short_mark = QRegularExpression("\\\"(.*)\\\"");
 
 

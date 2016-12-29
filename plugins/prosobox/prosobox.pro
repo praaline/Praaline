@@ -29,7 +29,7 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../app/annotation
+INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces
 DEPENDPATH += . .. ../.. ../../pncore
 
 # Qtilities configuration

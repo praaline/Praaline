@@ -64,7 +64,7 @@ void Qtilities::CoreGui::MenuContainer::addAction(Command *command, const QStrin
     d->this_menu->addAction(command->action());
 }
 
-void Qtilities::CoreGui::MenuContainer::addSeperator(const QString &before) {
+void Qtilities::CoreGui::MenuContainer::addSeparator(const QString &before) {
     QAction* sep = new QAction(d->this_menu);
     sep->setSeparator(true);
 
@@ -141,7 +141,7 @@ void Qtilities::CoreGui::MenuBarContainer::addAction(Command *command, const QSt
     return;
 }
 
-void Qtilities::CoreGui::MenuBarContainer::addSeperator(const QString &before) {
+void Qtilities::CoreGui::MenuBarContainer::addSeparator(const QString &before) {
     Q_UNUSED(before)
     return;
 }

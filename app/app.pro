@@ -13,7 +13,7 @@ TEMPLATE = app
 
 CONFIG += qt thread warn_on stl rtti exceptions c++11
 
-QT += core gui network xml sql svg opengl multimedia
+QT += core gui network xml sql svg opengl multimedia help
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets printsupport
     macx:QT += macextras
@@ -82,7 +82,6 @@ TARGET = ../praaline
 SOURCES += main.cpp \
     #visualisation/pitchanalyser.cpp \
     corpus/MergeCorporaDialog.cpp \
-    statistics/CountStatisticsWidget.cpp \
     PraalineMainWindow.cpp \
     visualisation/SimpleVisualiserWidget.cpp \
     annotation/asr/LanguageModelBuilderWidget.cpp \
@@ -109,9 +108,6 @@ SOURCES += main.cpp \
     annotation/ManualAnnotationWidget.cpp \
     annotation/TranscriberWidget.cpp \
     scripting/ScriptingModeWidget.cpp \
-    corpus/corpusstructureeditor/AddAttributeDialog.cpp \
-    corpus/corpusstructureeditor/AddLevelDialog.cpp \
-    corpus/corpusstructureeditor/CorpusStructureEditorWidget.cpp \
     corpus/exportannotationswizard/ExportAnnotationsWizard.cpp \
     corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.cpp \
     corpus/exportmetadatawizard/ExportMetadataWizard.cpp \
@@ -153,12 +149,22 @@ SOURCES += main.cpp \
     annotation/dis/AnnotationControlsDisfluencies.cpp \
     annotation/dis/DisfluencyAnalyser.cpp \
     statistics/AnalyserSegmentDuration.cpp \
-    statistics/AnalyserPitch.cpp
+    statistics/AnalyserPitch.cpp \
+    corpus/structureeditors/MetadataStructureEditor.cpp \
+    corpus/structureeditors/AnnotationStructureEditor.cpp \
+    help/SearchWidgetFactory.cpp \
+    help/IndexWidgetFactory.cpp \
+    help/HelpMode.cpp \
+    help/HelpModeWidget.cpp \
+    help/ContentWidgetFactory.cpp \
+    help/HelpBrowser.cpp \
+    help/HelpModeConfig.cpp \
+    corpus/structureeditors/AddAttributeDialog.cpp \
+    corpus/structureeditors/AddLevelDialog.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
     corpus/MergeCorporaDialog.h \
-    statistics/CountStatisticsWidget.h \
     PraalineMainWindow.h \
     visualisation/SimpleVisualiserWidget.h \
     annotation/asr/LanguageModelBuilderWidget.h \
@@ -183,12 +189,8 @@ HEADERS  += \
     annotation/AutomaticAnnotationWidget.h \
     annotation/BatchEditorWidget.h \
     annotation/CompareAnnotationsWidget.h \
-    annotation/IAnnotationPlugin.h \
     annotation/ManualAnnotationWidget.h \
     annotation/TranscriberWidget.h \
-    corpus/corpusstructureeditor/AddAttributeDialog.h \
-    corpus/corpusstructureeditor/AddLevelDialog.h \
-    corpus/corpusstructureeditor/CorpusStructureEditorWidget.h \
     corpus/exportannotationswizard/ExportAnnotationsWizard.h \
     corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.h \
     corpus/exportmetadatawizard/ExportMetadataWizard.h \
@@ -229,13 +231,23 @@ HEADERS  += \
     NetworkPermissionTester.h \
     PraalineSplash.h \
     Version.h \
-    statistics/StatisticsTemporal.h \
-    statistics/StatisticsPitch.h \
     statistics/AnalyserTemporal.h \
     statistics/AnalyserSpeechRate.h \
-    statistics/istatisticalanalyserplugin.h \
     statistics/AnalyserSegmentDuration.h \
-    statistics/AnalyserPitch.h
+    statistics/AnalyserPitch.h \
+    corpus/structureeditors/MetadataStructureEditor.h \
+    corpus/structureeditors/AnnotationStructureEditor.h \
+    help/SearchWidgetFactory.h \
+    help/IndexWidgetFactory.h \
+    help/HelpMode.h \
+    help/HelpModeWidget.h \
+    help/ContentWidgetFactory.h \
+    help/HelpBrowser.h \
+    help/HelpModeConfig.h \
+    interfaces/IAnnotationPlugin.h \
+    interfaces/IStatisticsPlugin.h \
+    corpus/structureeditors/AddAttributeDialog.h \
+    corpus/structureeditors/AddLevelDialog.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -284,10 +296,13 @@ FORMS    += \
     corpus/exportmetadatawizard/ExportMetadataWizard.ui \
     corpus/exportannotationswizard/ExportAnnotationsWizard.ui \
     corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.ui \
-    corpus/corpusstructureeditor/AddAttributeDialog.ui \
-    corpus/corpusstructureeditor/AddLevelDialog.ui \
-    corpus/corpusstructureeditor/CorpusStructureEditorWidget.ui \
-    annotation/BatchEditorWidget.ui
+    annotation/BatchEditorWidget.ui \
+    corpus/structureeditors/MetadataStructureEditor.ui \
+    corpus/structureeditors/AnnotationStructureEditor.ui \
+    help/ContentWidget.ui \
+    help/HelpModeConfig.ui \
+    corpus/structureeditors/AddAttributeDialog.ui \
+    corpus/structureeditors/AddLevelDialog.ui
 
 RESOURCES += \
     praaline.qrc \

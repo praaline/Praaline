@@ -16,7 +16,7 @@ class PRAALINE_CORE_SHARED_EXPORT StructureBase : public QObject
     Q_PROPERTY(QString description READ description WRITE setDescription)
     Q_PROPERTY(QString datatypeString READ datatypeString)
     Q_PROPERTY(quint64 datatypePrecision READ datatypePrecision)
-    Q_PROPERTY(int order READ order WRITE setOrder)
+    Q_PROPERTY(int itemOrder READ itemOrder WRITE setItemOrder)
     Q_PROPERTY(bool indexed READ indexed WRITE setIndexed)
     Q_PROPERTY(QString nameValueList READ nameValueList WRITE setNameValueList)
 
@@ -39,8 +39,8 @@ public:
     virtual void setDatatype(const DataType &datatype) { m_datatype = datatype; }
     virtual QString datatypeString() const { return m_datatype.string(); }
     virtual quint64 datatypePrecision() const { return m_datatype.precision(); }
-    virtual int order() const { return m_order; }
-    virtual void setOrder(int order) { m_order = order; }
+    virtual int itemOrder() const { return m_itemOrder; }
+    virtual void setItemOrder(int itemOrder) { m_itemOrder = itemOrder; }
     virtual bool indexed() const { return m_indexed; }
     virtual void setIndexed(bool indexed) { m_indexed = indexed; }
     virtual QString nameValueList() const { return m_nameValueList; }
@@ -55,7 +55,7 @@ protected:
     QString m_name;             // User-friendly name (e.g. F0 Minimum)
     QString m_description;      // Description (e.g. Fundamental frequency (f0) minimum, in semitones)
     DataType m_datatype;        // Data type (e.g. double) and precision
-    int m_order;                // Used to order attributes in a container (e.g. inside a metadata section)
+    int m_itemOrder;            // Used to order attributes in a container (e.g. inside a metadata section)
                                 // for presentation purposes
     bool m_indexed;             // Should create database index?
     QString m_nameValueList;    // Use a name-value list (controlled vocabulary)

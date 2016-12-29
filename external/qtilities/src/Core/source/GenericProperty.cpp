@@ -14,6 +14,7 @@ using namespace Qtilities::Core::Constants;
 #include <QDomDocument>
 
 #include "limits.h"
+#include "float.h"
 
 namespace Qtilities {
 namespace Core {
@@ -21,8 +22,8 @@ namespace Core {
 struct GenericPropertyData {
     GenericPropertyData() : is_modified(false),
         type(GenericProperty::TypeString),
-        list_backend_seperator("|"),
-        list_storage_seperator("|"),
+        list_backend_separator("|"),
+        list_storage_separator("|"),
         level(GenericProperty::LevelStandard),
         editable(true),
         default_editable(true),
@@ -35,6 +36,9 @@ struct GenericPropertyData {
         int_max(INT_MAX),
         int_min(INT_MIN),
         int_step(1),
+        double_max(INT_MAX),
+        double_min(INT_MIN),
+        double_step(1),
         file_name_filter("*.*"),
         macro_mode(GenericProperty::MacroUnexpanded),
         is_macro(false) { }
@@ -50,8 +54,8 @@ struct GenericPropertyData {
     QString description;
     QString help_id;
     QString note;
-    QString list_backend_seperator;
-    QString list_storage_seperator;
+    QString list_backend_separator;
+    QString list_storage_separator;
     GenericProperty::PropertyLevel level;
     bool editable;
     bool default_editable;
@@ -66,6 +70,9 @@ struct GenericPropertyData {
     int int_max;
     int int_min;
     int int_step;
+    int double_max;
+    int double_min;
+    int double_step;
     QStringList enum_possible_values_displayed;
     QStringList enum_possible_values_command_line;
     QRegExp string_reg_exp;
@@ -121,8 +128,8 @@ GenericProperty::GenericProperty(const GenericProperty& ref) : QObject(ref.paren
     d->state_dependent = ref.stateDependent();
     d->context_dependent = ref.contextDependent();
     d->is_internal = ref.isInternal();
-    d->list_backend_seperator = ref.listSeperatorBackend();
-    d->list_storage_seperator = ref.listSeperatorStorage();
+    d->list_backend_separator = ref.listSeparatorBackend();
+    d->list_storage_separator = ref.listSeparatorStorage();
     setIsExportable(ref.isExportable());
 }
 
@@ -153,8 +160,8 @@ GenericProperty& GenericProperty::operator=(const GenericProperty& ref) {
     d->state_dependent = ref.stateDependent();
     d->context_dependent = ref.contextDependent();
     d->is_internal = ref.isInternal();
-    d->list_backend_seperator = ref.listSeperatorBackend();
-    d->list_storage_seperator = ref.listSeperatorStorage();
+    d->list_backend_separator = ref.listSeparatorBackend();
+    d->list_storage_separator = ref.listSeparatorStorage();
     setIsExportable(ref.isExportable());
 
     setModificationState(true);
@@ -211,9 +218,9 @@ bool GenericProperty::operator==(const GenericProperty& ref) {
         return false;
     else if (d->is_internal != ref.isInternal())
         return false;
-    else if (d->list_backend_seperator != ref.listSeperatorBackend())
+    else if (d->list_backend_separator != ref.listSeparatorBackend())
         return false;
-    else if (d->list_storage_seperator != ref.listSeperatorStorage())
+    else if (d->list_storage_separator != ref.listSeparatorStorage())
         return false;
     else if (isExportable() != ref.isExportable())
         return false;
@@ -312,11 +319,26 @@ bool GenericProperty::setValueString(const QString &value, QString *errorMsg) {
         // Validate the new value according to the type of property:
         if (d->type == TypeInteger) {
             bool valid_int;
-            setIntValue(value.toInt(&valid_int));
+            int tmp_int = value.toInt(&valid_int);
             if (!valid_int) {
                 if (errorMsg)
                     *errorMsg = "The specified value " + value + " is not a valid integer.";
             } else {
+                blockSignals(true);
+                setIntValue(tmp_int);
+                blockSignals(false);
+                set = true;
+            }
+        } else if (d->type == TypeDouble) {
+            bool valid_double;
+            double tmp_dbl = value.toDouble(&valid_double);
+            if (!valid_double) {
+                if (errorMsg)
+                    *errorMsg = "The specified value " + value + " is not a valid double.";
+            } else {
+                blockSignals(true);
+                setDoubleValue(tmp_dbl);
+                blockSignals(false);
                 set = true;
             }
         } else if (d->type == TypeEnum) {
@@ -330,10 +352,14 @@ bool GenericProperty::setValueString(const QString &value, QString *errorMsg) {
         } else if (d->type == TypeBool) {
             // In here we check against known bool string representations:
             if (value.compare("YES",Qt::CaseInsensitive) == 0 || value.compare("TRUE",Qt::CaseInsensitive) == 0 || value.compare("1",Qt::CaseInsensitive) == 0) {
+                blockSignals(true);
                 setBoolValue(true);
+                blockSignals(false);
                 set = true;
             } else if (value.compare("NO",Qt::CaseInsensitive) == 0 || value.compare("FALSE",Qt::CaseInsensitive) == 0 || value.compare("0",Qt::CaseInsensitive) == 0) {
+                blockSignals(true);
                 setBoolValue(false);
+                blockSignals(false);
                 set = true;
             } else {
                 if (errorMsg)
@@ -343,8 +369,8 @@ bool GenericProperty::setValueString(const QString &value, QString *errorMsg) {
             d->value = value;
             set = true;
         } else if (d->type == TypeFileList || d->type == TypePathList) {
-            // Split using the known backend seperator and set using setFileList in order to remove duplicates.
-            setFileList(value.split(d->list_backend_seperator));
+            // Split using the known backend separator and set using setFileList in order to remove duplicates.
+            setFileList(value.split(d->list_backend_separator));
             set = true;
         } else if (d->type == TypeString || d->type == TypeVariant) {
             d->value = value;
@@ -370,7 +396,7 @@ bool GenericProperty::setValueFromProperty(GenericProperty *property) {
     if (!property)
         return false;
 
-    setValueString(property->valueString().split(property->listSeperatorBackend()).join(listSeperatorBackend()));
+    setValueString(property->valueString().split(property->listSeparatorBackend()).join(listSeparatorBackend()));
     return true;
 }
 
@@ -378,8 +404,8 @@ bool GenericProperty::compareValue(GenericProperty *property) {
     if (!property)
         return false;
 
-    QStringList string_list_base = d->value.split(listSeperatorBackend());
-    QStringList string_list_ref = property->valueString().split(property->listSeperatorBackend());
+    QStringList string_list_base = d->value.split(listSeparatorBackend());
+    QStringList string_list_ref = property->valueString().split(property->listSeparatorBackend());
 
     return (string_list_base == string_list_ref);
 }
@@ -415,6 +441,15 @@ bool GenericProperty::setDefaultValueString(const QString &value, QString* error
             if (!valid_int) {
                 if (errorMsg)
                     *errorMsg = "The specified value " + value + " is not a valid integer.";
+            } else {
+                set = true;
+            }
+        } else if (d->type == TypeDouble) {
+            bool valid_double;
+            value.toDouble(&valid_double);
+            if (!valid_double) {
+                if (errorMsg)
+                    *errorMsg = "The specified value " + value + " is not a valid double.";
             } else {
                 set = true;
             }
@@ -459,7 +494,8 @@ bool GenericProperty::setDefaultValueString(const QString &value, QString* error
         }
 
         return set;
-    }
+    } else
+        d->default_value_set = true;
 
     return true;
 }
@@ -573,26 +609,42 @@ bool GenericProperty::matchesDefault() const {
 }
 
 QString GenericProperty::listSeperatorBackend() const {
-    return d->list_backend_seperator;
+    return listSeparatorBackend();
 }
 
-void GenericProperty::setListSeperatorBackend(const QString &sep) {
-    if (d->list_backend_seperator != sep) {
-        // Convert the value from the old seperator to the new seperator:
+QString GenericProperty::listSeparatorBackend() const {
+    return d->list_backend_separator;
+}
+
+void GenericProperty::setListSeperatorBackend(const QString& sep) {
+    setListSeparatorBackend(sep);
+}
+
+void GenericProperty::setListSeparatorBackend(const QString &sep) {
+    if (d->list_backend_separator != sep) {
+        // Convert the value from the old separator to the new separator:
         if (!d->value.isEmpty())
-            d->value = d->value.split(d->list_backend_seperator,QString::SkipEmptyParts).join(sep);
+            d->value = d->value.split(d->list_backend_separator,QString::SkipEmptyParts).join(sep);
         if (!d->default_value.isEmpty())
-            d->default_value = d->default_value.split(d->list_backend_seperator,QString::SkipEmptyParts).join(sep);
-        d->list_backend_seperator = sep;
+            d->default_value = d->default_value.split(d->list_backend_separator,QString::SkipEmptyParts).join(sep);
+        d->list_backend_separator = sep;
     }
 }
 
 QString GenericProperty::listSeperatorStorage() const {
-    return d->list_storage_seperator;
+    return listSeparatorStorage();
+}
+
+QString GenericProperty::listSeparatorStorage() const {
+    return d->list_storage_separator;
 }
 
 void GenericProperty::setListSeperatorStorage(const QString &sep) {
-    d->list_storage_seperator = sep;
+    setListSeparatorBackend(sep);
+}
+
+void GenericProperty::setListSeparatorStorage(const QString &sep) {
+    d->list_storage_separator = sep;
 }
 
 // --------------------------------
@@ -631,6 +683,43 @@ int GenericProperty::intStep() const {
 void GenericProperty::setIntStep(int new_value) {
     if (d->int_step != new_value) {
         d->int_step = new_value;
+        emit possibleValuesDisplayedChanged(this);
+    }
+}
+
+double GenericProperty::doubleMax() const {
+    return d->double_max;
+}
+
+void GenericProperty::setDoubleMax(double new_value) {
+    if (d->double_max != new_value) {
+        if (d->type == TypeDouble && d->value.toDouble() > new_value)
+            setValueString(QString::number(new_value));
+        d->double_max = new_value;
+        emit possibleValuesDisplayedChanged(this);
+    }
+}
+
+double GenericProperty::doubleMin() const {
+    return d->double_min;
+}
+
+void GenericProperty::setDoubleMin(double new_value) {
+    if (d->double_min != new_value) {
+        if (d->type == TypeDouble && d->value.toDouble() < new_value)
+            setValueString(QString::number(new_value));
+        d->double_min = new_value;
+        emit possibleValuesDisplayedChanged(this);
+    }
+}
+
+double GenericProperty::doubleStep() const {
+    return d->double_step;
+}
+
+void GenericProperty::setDoubleStep(double new_value) {
+    if (d->double_step != new_value) {
+        d->double_step = new_value;
         emit possibleValuesDisplayedChanged(this);
     }
 }
@@ -724,11 +813,14 @@ bool GenericProperty::boolValue() const {
 void GenericProperty::setIntValue(int value) {
     Q_ASSERT(type() == TypeInteger);
     if (type() == TypeInteger) {
+        QString value_str = QString::number(value);
+        if (d->value == value_str)
+            return;
         if (value < d->int_min)
             value = d->int_min;
         else if (value > d->int_max)
             value = d->int_max;
-        d->value = QString::number(value);
+        d->value = value_str;
         emit valueChanged(this);
     }
 }
@@ -737,6 +829,28 @@ int GenericProperty::intValue() const {
     Q_ASSERT(type() == TypeInteger);
     if (type() == TypeInteger)
         return valueString().toInt();
+    return -1;
+}
+
+void GenericProperty::setDoubleValue(double value) {
+    Q_ASSERT(type() == TypeDouble);
+    if (type() == TypeDouble) {
+        QString value_str = QString::number(value);
+        if (d->value == value_str)
+            return;
+        if (value < d->double_min)
+            value = d->double_min;
+        else if (value > d->double_max)
+            value = d->double_max;
+        d->value = value_str;
+        emit valueChanged(this);
+    }
+}
+
+double GenericProperty::doubleValue() const {
+    Q_ASSERT(type() == TypeDouble);
+    if (type() == TypeDouble)
+        return valueString().toDouble();
     return -1;
 }
 
@@ -749,7 +863,7 @@ void GenericProperty::setFileList(const QStringList &list) {
             clean_list << FileUtils::toNativeSeparators(QDir::cleanPath(path));
         clean_list.removeDuplicates();
         clean_list.sort();
-        d->value = clean_list.join(d->list_backend_seperator);
+        d->value = clean_list.join(d->list_backend_separator);
         emit valueChanged(this);
     }
 }
@@ -783,7 +897,7 @@ void GenericProperty::setPath(const QString &file_name) {
 
 QStringList GenericProperty::fileList() const {
     if (type() == TypeFileList|| type() == TypePathList)
-        return valueString().split(d->list_backend_seperator,QString::SkipEmptyParts);
+        return valueString().split(d->list_backend_separator,QString::SkipEmptyParts);
     Q_ASSERT(type() == TypeFileList || type() == TypePathList);
     return QStringList();
 }
@@ -846,12 +960,12 @@ QString GenericProperty::mapDisplayedEnumToCommandLineEnum(QString displayed_enu
 //    QStringList csv_list;
 //    csv_list << objectName();
 //    csv_list << propertyTypeToString(d->type);
-//    csv_list << d->list_backend_seperator;
+//    csv_list << d->list_backend_separator;
 //    csv_list << listToStorageFormat(d->value);
 //    csv_list << listToStorageFormat(d->default_value);
 //    csv_list << d->description;
 //    csv_list << propertyLevelToString(d->level);
-//    csv_list << d->category.toString(d->list_storage_seperator);
+//    csv_list << d->category.toString(d->list_storage_separator);
 
 //    if (d->editable)
 //        csv_list << "1";
@@ -863,7 +977,7 @@ QString GenericProperty::mapDisplayedEnumToCommandLineEnum(QString displayed_enu
 //    csv_list << QString::number(d->int_max);
 //    csv_list << QString::number(d->int_min);
 //    csv_list << QString::number(d->int_step);
-//    csv_list << d->enum_possible_values_displayed.join(d->list_storage_seperator);
+//    csv_list << d->enum_possible_values_displayed.join(d->list_storage_separator);
 //    Command line values missing here.
 //    csv_list << d->string_reg_exp.pattern();
 //    csv_list << QString::number((int) d->string_reg_exp.patternSyntax());
@@ -893,14 +1007,14 @@ bool GenericProperty::fromCsvString(const QString &csv_string) {
     if (csv_list.count() < 2)
         return false;
 
-    QStringList aliases = csv_list[1].split(d->list_storage_seperator);
+    QStringList aliases = csv_list[1].split(d->list_storage_separator);
     foreach (const QString& alias, aliases) {
         QStringList alias_split = alias.split("::");
         if (alias_split.count() == 2) {
             PropertyAlias property_alias;
             property_alias.d_environment = alias_split.front();
 
-            // Check if the name starts with a -:             
+            // Check if the name starts with a -:
             QString name = alias_split.last();
             if (name.startsWith("-")) {
                 property_alias.d_name = name.remove(0,1);
@@ -921,9 +1035,9 @@ bool GenericProperty::fromCsvString(const QString &csv_string) {
     if (csv_list.count() < 4)
         return false;
 
-    d->list_backend_seperator = csv_list[3].simplified();
-    if (d->list_backend_seperator.isEmpty())
-        d->list_backend_seperator = d->list_storage_seperator;
+    d->list_backend_separator = csv_list[3].simplified();
+    if (d->list_backend_separator.isEmpty())
+        d->list_backend_separator = d->list_storage_separator;
 
     if (csv_list.count() < 5)
         return false;
@@ -941,7 +1055,7 @@ bool GenericProperty::fromCsvString(const QString &csv_string) {
     if (csv_list.count() < 7)
         return false;
 
-    d->category = QtilitiesCategory(csv_list[6],d->list_storage_seperator);
+    d->category = QtilitiesCategory(csv_list[6],d->list_storage_separator);
 
     if (csv_list.count() < 8)
         return false;
@@ -989,12 +1103,12 @@ bool GenericProperty::fromCsvString(const QString &csv_string) {
     if (csv_list.count() < 15)
         return false;
 
-    d->enum_possible_values_displayed = csv_list[14].split(d->list_storage_seperator,QString::SkipEmptyParts);
+    d->enum_possible_values_displayed = csv_list[14].split(d->list_storage_separator,QString::SkipEmptyParts);
 
     if (csv_list.count() < 16)
         return false;
 
-    d->enum_possible_values_command_line = csv_list[15].split(d->list_storage_seperator,QString::SkipEmptyParts);
+    d->enum_possible_values_command_line = csv_list[15].split(d->list_storage_separator,QString::SkipEmptyParts);
     if (d->enum_possible_values_command_line.isEmpty())
         d->enum_possible_values_command_line = d->enum_possible_values_displayed;
     Q_ASSERT(d->enum_possible_values_command_line.count() == d->enum_possible_values_displayed.count());
@@ -1080,9 +1194,9 @@ Qtilities::Core::Interfaces::IExportable::ExportResultFlags GenericProperty::exp
     shared_properties << param_1;
 
     if (d->type & TypeListBased) {
-        SharedProperty param_2("seperatorStorage",d->list_storage_seperator);
+        SharedProperty param_2("separatorStorage",d->list_storage_separator);
         shared_properties << param_2;
-        SharedProperty param_3("seperatorBackend",d->list_backend_seperator);
+        SharedProperty param_3("separatorBackend",d->list_backend_separator);
         shared_properties << param_3;
     }
 
@@ -1131,14 +1245,23 @@ Qtilities::Core::Interfaces::IExportable::ExportResultFlags GenericProperty::imp
         setPropertyName(element_1.text());
         has_name = true;
     }
-    QDomElement element_2 = object_node->firstChildElement("seperatorStorage");
-    if (!element_2.isNull())
-        d->list_storage_seperator = element_2.text();
-    QDomElement element_3 = object_node->firstChildElement("seperatorBackend");
-    if (!element_3.isNull())
-        d->list_backend_seperator = element_3.text();
+    QDomElement element_2 = object_node->firstChildElement("separatorStorage");
+    if (element_2.isNull())
+      element_2 = object_node->firstChildElement("seperatorStorage");
+    // backwards compatibility with the "seperator" typo
 
-    // Note: Do the value only after the seperators have been restored:
+    if (!element_2.isNull())
+        d->list_storage_separator = element_2.text();
+
+    QDomElement element_3 = object_node->firstChildElement("separatorBackend");
+    if (element_3.isNull())
+        element_3 = object_node->firstChildElement("seperatorBackend");
+    // backwards compatibility with the "seperator" typo
+
+    if (!element_3.isNull())
+        d->list_backend_separator = element_3.text();
+
+    // Note: Do the value only after the separators have been restored:
     QDomElement element_4 = object_node->firstChildElement("value");
     if (!element_4.isNull()) {
         d->value = listToBackendFormat(element_4.text());
@@ -1214,21 +1337,21 @@ void GenericProperty::setModificationState(bool new_state, IModificationNotifier
 }
 
 QString GenericProperty::listToBackendFormat(const QString &value) const {
-    if (d->list_storage_seperator.isEmpty() || d->list_backend_seperator.isEmpty())
+    if (d->list_storage_separator.isEmpty() || d->list_backend_separator.isEmpty())
         return value;
-    else if (d->list_storage_seperator == d->list_backend_seperator)
+    else if (d->list_storage_separator == d->list_backend_separator)
         return value;
     else
-        return value.split(d->list_storage_seperator,QString::SkipEmptyParts).join(d->list_backend_seperator);
+        return value.split(d->list_storage_separator,QString::SkipEmptyParts).join(d->list_backend_separator);
 }
 
 QString GenericProperty::listToStorageFormat(const QString &value) const {
-    if (d->list_storage_seperator.isEmpty() || d->list_backend_seperator.isEmpty())
+    if (d->list_storage_separator.isEmpty() || d->list_backend_separator.isEmpty())
         return value;
-    else if (d->list_storage_seperator == d->list_backend_seperator)
+    else if (d->list_storage_separator == d->list_backend_separator)
         return value;
     else
-        return value.split(d->list_backend_seperator,QString::SkipEmptyParts).join(d->list_storage_seperator);
+        return value.split(d->list_backend_separator,QString::SkipEmptyParts).join(d->list_storage_separator);
 }
 
 }

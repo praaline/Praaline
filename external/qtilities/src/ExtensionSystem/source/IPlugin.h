@@ -165,6 +165,6 @@ return version_info;
     }
 }
 
-Q_DECLARE_INTERFACE(Qtilities::ExtensionSystem::Interfaces::IPlugin,"com.Qtilities.ExtensionSystem.IPlugin/1.0")
+Q_DECLARE_INTERFACE(Qtilities::ExtensionSystem::Interfaces::IPlugin,"com.Qtilities.ExtensionSystem.IPlugin/1.0");
 
 #endif // IPLUGIN_H

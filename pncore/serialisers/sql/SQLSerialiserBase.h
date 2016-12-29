@@ -29,6 +29,10 @@ public:
 
     static bool applyMigration(const QString &migrationName, const QSqlMigrator::Migrations::Migration *migration,
                                QSqlDatabase &db);
+
+    static int getPraalineSchemaVersion(QSqlDatabase &db);
+    static bool setPraalineSchemaVersion(int version, QSqlDatabase &db);
+
 private:
     SQLSerialiserBaseData *d;
 };

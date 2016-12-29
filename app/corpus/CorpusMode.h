@@ -8,7 +8,7 @@ using namespace Qtilities::CoreGui::Interfaces;
 namespace Praaline {
 
 // Corpus Mode Parameters
-#define MODE_CORPUS_ID 998
+#define MODE_CORPUS_ID 1001
 const char * const CONTEXT_CORPUS_MODE = "Context.CorpusMode";
 
 // This structure stores private data used by the CorpusMode class.

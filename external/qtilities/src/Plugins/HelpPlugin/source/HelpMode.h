@@ -15,9 +15,9 @@
 #include <IMode.h>
 
 #include <QMainWindow>
-#include <QtNetwork/QNetworkReply>
-#include <QBuffer>
 #include <QPointer>
+#include <QWebEngineUrlSchemeHandler>
+#include <QBuffer>
 
 namespace Ui {
     class HelpMode;
@@ -26,42 +26,27 @@ namespace Ui {
 class QHelpEngine;
 class QHelpEngineCore;
 class QUrl;
-class QWebView;
+class QWebEngineView;
 
 namespace Qtilities {
     namespace Plugins {
         namespace Help {
             using namespace Qtilities::CoreGui::Interfaces;
 
-            class qti_private_HelpNetworkReply : public QNetworkReply
+            class qti_private_QHelpUrlSchemeHandler : public QWebEngineUrlSchemeHandler
             {
                 Q_OBJECT
-             public:
-                qti_private_HelpNetworkReply(const QUrl& url, QHelpEngineCore* helpEngine);
+            public:
+                qti_private_QHelpUrlSchemeHandler(QHelpEngineCore* helpEngine, QObject *parent = Q_NULLPTR);
 
-                virtual void abort() {}
-                virtual qint64 bytesAvailable() const {
-                    return d_buffer.bytesAvailable();
-                }
-                virtual bool isSequential() const {
-                    return d_buffer.isSequential();
-                }
-
-            private slots:
-                void process();
+                virtual void requestStarted(QWebEngineUrlRequestJob *request);
 
             protected:
-                virtual qint64 readData(char *data, qint64 maxSize) {
-                    return d_buffer.read(data, maxSize);
-                }
-
                 QPointer<QHelpEngineCore>   d_help_engine;
-                QBuffer                     d_buffer;
 
             private:
-                Q_DISABLE_COPY(qti_private_HelpNetworkReply)
+                Q_DISABLE_COPY(qti_private_QHelpUrlSchemeHandler)
             };
-
 
             // Help Mode Parameters
             #define MODE_HELP_ID                   997

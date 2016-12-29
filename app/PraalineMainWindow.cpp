@@ -33,6 +33,7 @@
 #include "query/QueryMode.h"
 #include "statistics/StatisticsMode.h"
 #include "scripting/ScriptingMode.h"
+#include "help/HelpMode.h"
 
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
@@ -43,7 +44,7 @@ using namespace Praaline;
 #include "CorporaManager.h"
 
 struct PraalineMainWindowData {
-    PraalineMainWindowData() {}
+    PraalineMainWindowData() : usingDarkPalette(false) {}
 
     QString shortcut_mapping_file;
     ConfigurationWidget *configurationWidget;
@@ -61,6 +62,8 @@ struct PraalineMainWindowData {
     ActionContainer *menu_playback;
     ActionContainer *menu_window;
     ActionContainer *menu_help;
+
+    bool usingDarkPalette;
 };
 
 PraalineMainWindow::PraalineMainWindow(QtilitiesMainWindow *mainWindow, QObject *parent) :
@@ -184,6 +187,10 @@ void PraalineMainWindow::initialise()
     OBJECT_MANAGER->registerObject(d->keyReference, QtilitiesCategory("KeyReference"));
     OBJECT_MANAGER->registerObject(d->activityLog, QtilitiesCategory("ActivityLog"));
 
+    // HELP MANAGER
+    // Register main help file. Plug-ins may register their help files.
+    HELP_MANAGER->registerFile(QApplication::applicationDirPath() + "/praaline.qch", false);
+
     // PLUGINS
     // ============================================================================================
     // Load plugins using the extension system
@@ -194,6 +201,24 @@ void PraalineMainWindow::initialise()
     EXTENSION_SYSTEM->addPluginPath(QDir::homePath() + "/Praaline/plugins/");
     EXTENSION_SYSTEM->initialize();
     Log->toggleQtMsgEngine(false);
+
+    // INITIALISE COMPONENTS
+    // ============================================================================================
+    // Initialise the help manager. Plugins had their chance to add help files to the pool.
+    // This initialisation should happen before creating the Help interface mode.
+    HELP_MANAGER->initialize();
+
+    // Initialise the project manager
+    PROJECT_MANAGER_INITIALIZE();
+
+    // CONFIGURATION PAGES
+    // ============================================================================================
+    // Register command editor config page
+    OBJECT_MANAGER->registerObject(ACTION_MANAGER->commandEditor(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));
+    // Register extension system config page
+    OBJECT_MANAGER->registerObject(EXTENSION_SYSTEM->configWidget(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));
+    // Logging configuration page
+    OBJECT_MANAGER->registerObject(LoggerGui::createLoggerConfigWidget(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));
 
     // USER INTERFACE MODES
     // ============================================================================================
@@ -227,6 +252,11 @@ void PraalineMainWindow::initialise()
     CONTEXT_MANAGER->registerContext(scripting_mode->contextString());
     OBJECT_MANAGER->registerObject(scripting_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
 
+    // Create an instance of the Help Mode
+    HelpMode* help_mode = new HelpMode();
+    CONTEXT_MANAGER->registerContext(help_mode->contextString());
+    OBJECT_MANAGER->registerObject(help_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
+
     // ============================================================================================
 
     // Add tools to the Window menu, after all modes
@@ -236,14 +266,10 @@ void PraalineMainWindow::initialise()
     m_mainWindow->modeManager()->initialize();
     QStringList mode_order;
     mode_order << tr("Corpus") << tr("Annotation") << tr("Visualisation") << tr("Query") << tr("Statistics") << tr("Scripting");
-    mode_order << tr("Session Log");
+    mode_order << tr("Help") << tr("Session Log");
     m_mainWindow->modeManager()->setPreferredModeOrder(mode_order);
-    m_mainWindow->modeManager()->setActiveMode(tr("Corpus"));
+    m_mainWindow->modeManager()->setActiveMode(MODE_CORPUS_ID);
 
-    // Register command editor config page.
-    OBJECT_MANAGER->registerObject(ACTION_MANAGER->commandEditor(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));
-    // Register extension system config page.
-    OBJECT_MANAGER->registerObject(EXTENSION_SYSTEM->configWidget(), QtilitiesCategory("GUI::Configuration Pages (IConfigPage)","::"));
     // Initialize the config widget:
     d->configurationWidget->initialize();
 
@@ -264,9 +290,6 @@ void PraalineMainWindow::initialise()
     m_mainWindow->readSettings();
     m_mainWindow->showMaximized();
 
-    // Initialize the project manager:
-    PROJECT_MANAGER_INITIALIZE();
-
     ACTION_MANAGER->commandObserver()->endProcessingCycle(false);
     ACTION_MANAGER->actionContainerObserver()->endProcessingCycle(false);
     OBJECT_MANAGER->objectPool()->endProcessingCycle(false);
@@ -284,9 +307,44 @@ void PraalineMainWindow::finalise()
     EXTENSION_SYSTEM->finalize();
 }
 
+// ==============================================================================================================================
+// COLOUR PALETTES
+// ==============================================================================================================================
+
+void PraalineMainWindow::toggleColourPalette()
+{
+    if (d->usingDarkPalette)
+        selectLightPalette();
+    else
+        selectDarkPalette();
+}
+
 void PraalineMainWindow::selectLightPalette()
 {
-
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+    qApp->setPalette(m_mainWindow->style()->standardPalette());
+    qApp->setStyleSheet("");
+    // Special stylesheet for the application mode list
+    QString stylesheet = "";
+    // Give the view a colored background:
+    stylesheet += "QListView { background-color: #FFFFFF; border-style: none; }";
+    // The text underneath the unselected items:
+    stylesheet += "QListView::item::text { font-weight: bold; border-style: none; color: black }";
+    // The text underneath the selected item:
+    stylesheet += "QListView::item:selected:active { font-weight: bold; border-style: none; color: white }";
+    stylesheet += "QListView::item:selected:!active { font-weight: bold; border-style: none; color: white }";
+    // Hover effect:
+    stylesheet += "QListView::item:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop: 0.4 #EEEEEE, stop:1 #CCCCCC); }";
+    // Selected item gradient:
+    stylesheet += "QListView::item:selected:active { background: #CCCCCC; }";
+    stylesheet += "QListView::item:selected:!active { background: #CCCCCC; }";
+    // The padding of items in the list:
+    if (m_mainWindow->modeLayout() == QtilitiesMainWindow::ModesLeft || m_mainWindow->modeLayout() == QtilitiesMainWindow::ModesRight)
+        stylesheet += "QListView::item { padding: 5px 1px 5px 1px;}";
+    else
+        stylesheet += "QListView::item { padding: 5px 0px 5px 0px;}";
+    m_mainWindow->modeManager()->modeListWidget()->setStyleSheet(stylesheet);
+    d->usingDarkPalette = false;
 }
 
 void PraalineMainWindow::selectDarkPalette()
@@ -306,9 +364,35 @@ void PraalineMainWindow::selectDarkPalette()
     darkPalette.setColor(QPalette::Link, QColor(42, 130, 218));
     darkPalette.setColor(QPalette::Highlight, QColor(42, 130, 218));
     darkPalette.setColor(QPalette::HighlightedText, Qt::black);
+    darkPalette.setColor(QPalette::Background, QColor(53,53,53));
     qApp->setPalette(darkPalette);
-    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; } ");
+    // Special stylesheet for the application mode list
+    QString stylesheet = "";
+    // Give the view a colored background:
+    stylesheet += "QListView { background-color: #252525; border-style: none; }";
+    // The text underneath the unselected items:
+    stylesheet += "QListView::item::text { font-weight: bold; border-style: none; color: white }";
+    // The text underneath the selected item:
+    stylesheet += "QListView::item:selected:active { font-weight: bold; border-style: none; color: black }";
+    stylesheet += "QListView::item:selected:!active { font-weight: bold; border-style: none; color: black }";
+    // Hover effect:
+    stylesheet += "QListView::item:hover { background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 white, stop: 0.4 #EEEEEE, stop:1 #CCCCCC); }";
+    // Selected item gradient:
+    stylesheet += "QListView::item:selected:active { background: #CCCCCC; }";
+    stylesheet += "QListView::item:selected:!active { background: #CCCCCC; }";
+    // The padding of items in the list:
+    if (m_mainWindow->modeLayout() == QtilitiesMainWindow::ModesLeft || m_mainWindow->modeLayout() == QtilitiesMainWindow::ModesRight)
+        stylesheet += "QListView::item { padding: 5px 1px 5px 1px;}";
+    else
+        stylesheet += "QListView::item { padding: 5px 0px 5px 0px;}";
+    m_mainWindow->modeManager()->modeListWidget()->setStyleSheet(stylesheet);
+    d->usingDarkPalette = true;
 }
+
+// ==============================================================================================================================
+// MAIN MENU
+// ==============================================================================================================================
 
 void PraalineMainWindow::setupMenuBar()
 {
@@ -352,7 +436,7 @@ void PraalineMainWindow::setupFileMenu()
     Command* command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_SETTINGS, tr("&Settings"), QKeySequence(), std_context);
     connect(command->action(), SIGNAL(triggered()), d->configurationWidget, SLOT(show()));
     d->menu_file->addAction(command);
-    d->menu_file->addSeperator();
+    d->menu_file->addSeparator();
     command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_EXIT, tr("&Quit"), QKeySequence(QKeySequence::Quit), std_context);
     connect(command->action(), SIGNAL(triggered()), QCoreApplication::instance(), SLOT(quit()));
     d->menu_file->addAction(command);
@@ -364,7 +448,7 @@ void PraalineMainWindow::setupEditMenu()
     Command* command;
     // Undo and Redo from CommandHistory signleton
     CommandHistory::getInstance()->registerMenu(d->menu_edit->menu());
-    d->menu_edit->addSeperator();
+    d->menu_edit->addSeparator();
     command = ACTION_MANAGER->registerActionPlaceHolder("Edit.Cut", QObject::tr("Cu&t"), QKeySequence(QKeySequence::Cut));
     command->setCategory(QtilitiesCategory("Editing"));
     d->menu_edit->addAction(command);
@@ -374,21 +458,33 @@ void PraalineMainWindow::setupEditMenu()
     command = ACTION_MANAGER->registerActionPlaceHolder("Edit.Paste", QObject::tr("&Paste"), QKeySequence(QKeySequence::Paste));
     command->setCategory(QtilitiesCategory("Editing"));
     d->menu_edit->addAction(command);
-    d->menu_edit->addSeperator();
+    d->menu_edit->addSeparator();
     command = ACTION_MANAGER->registerActionPlaceHolder("Edit.SelectAll", QObject::tr("Select &All"), QKeySequence(QKeySequence::SelectAll));
     command->setCategory(QtilitiesCategory("Editing"));
     d->menu_edit->addAction(command);
     command = ACTION_MANAGER->registerActionPlaceHolder("Edit.Clear", QObject::tr("C&lear"));
     command->setCategory(QtilitiesCategory("Editing"));
     d->menu_edit->addAction(command);
-    d->menu_edit->addSeperator();
+    d->menu_edit->addSeparator();
     command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_EDIT_FIND, QObject::tr("&Find"), QKeySequence(QKeySequence::Find));
     d->menu_edit->addAction(command);
 }
 
 void PraalineMainWindow::setupViewMenu()
 {
-
+    // View menu
+    IconLoader il;
+    QAction *action;
+    Command *command;
+    QList<int> std_context;
+    std_context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+    // Select colour palette
+    action = new QAction(tr("Change Colour Palette (Light/Dark)"), this);
+    action->setStatusTip(tr("Change the display colours used in Praaline between a light and a dark palette."));
+    connect(action, SIGNAL(triggered()), this, SLOT(toggleColourPalette()));
+    command = ACTION_MANAGER->registerAction("View.ChangePalette", action, std_context);
+    command->setCategory(QtilitiesCategory("View"));
+    d->menu_view->addAction(command);
 }
 
 void PraalineMainWindow::setupCorpusMenu()
@@ -445,7 +541,7 @@ void PraalineMainWindow::setupPlaybackMenu()
     command->action()->setStatusTip(tr("Treat multiple audio files as versions of the same recording, and align their timelines"));
     command->setCategory(QtilitiesCategory("Playback"));
     d->menu_playback->addAction(command);
-    d->menu_playback->addSeperator();
+    d->menu_playback->addSeparator();
     // Rewind
     command = ACTION_MANAGER->registerActionPlaceHolder("Playback.Rewind", tr("Rewind"),
                                                         QKeySequence(tr("PgUp")), QList<int>(), il.load("rewind"));
@@ -458,7 +554,7 @@ void PraalineMainWindow::setupPlaybackMenu()
     command->action()->setStatusTip(tr("Fast-forward to the next time instant or time ruler notch"));
     command->setCategory(QtilitiesCategory("Playback"));
     d->menu_playback->addAction(command);
-    d->menu_playback->addSeperator();
+    d->menu_playback->addSeparator();
     // Rewind to similar
     command = ACTION_MANAGER->registerActionPlaceHolder("Playback.RewindSimilar", tr("Rewind to Similar Point"),
                                                         QKeySequence(tr("Shift+PgUp")), QList<int>());
@@ -471,7 +567,7 @@ void PraalineMainWindow::setupPlaybackMenu()
     command->action()->setStatusTip(tr("Fast-forward to the next similarly valued time instant"));
     command->setCategory(QtilitiesCategory("Playback"));
     d->menu_playback->addAction(command);
-    d->menu_playback->addSeperator();
+    d->menu_playback->addSeparator();
     // Rewind to start
     command = ACTION_MANAGER->registerActionPlaceHolder("Playback.RewindStart", tr("Rewind to Start"),
                                                         QKeySequence(tr("Home")), QList<int>(), il.load("rewind-start"));
@@ -484,7 +580,7 @@ void PraalineMainWindow::setupPlaybackMenu()
     command->action()->setStatusTip(tr("Fast-forward to the end"));
     command->setCategory(QtilitiesCategory("Playback"));
     d->menu_playback->addAction(command);
-    d->menu_playback->addSeperator();
+    d->menu_playback->addSeparator();
     // Speed up
     command = ACTION_MANAGER->registerActionPlaceHolder("Playback.SpeedUp", tr("Speed Up"),
                                                         QKeySequence(tr("Ctrl+Alt+PgUp")), QList<int>());
@@ -572,10 +668,13 @@ void PraalineMainWindow::setupHelpMenu()
     d->menu_help->addAction(command);
 }
 
+// ==============================================================================================================================
+// HELP AND ABOUT
+// ==============================================================================================================================
+
 void PraalineMainWindow::showHelp()
 {
-    QString url = tr("http://www.praaline.org");
-    QDesktopServices::openUrl(QUrl(url));
+    m_mainWindow->modeManager()->setActiveMode(MODE_HELP_ID);
 }
 
 void PraalineMainWindow::showAbout()

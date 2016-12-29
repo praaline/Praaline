@@ -175,8 +175,8 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
         else if (index.column() == 5)   return occurrence->tMax().toDouble();
         else if (index.column() == 6) {
             // Left context
-            if (d->leftContext.contains(indexOccurrence)) {
-                return d->leftContext.value(indexOccurrence);
+            if (d->leftContext.contains(index.row())) {
+                return d->leftContext.value(index.row());
             } else {
                 QString leftContext;
                 if (d->multiLine) {
@@ -188,7 +188,7 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
                 }
                 else
                     leftContext = concatenate(occurrence->leftContext(d->queryDefinition->resultLevelsAttributes.first().first), "");
-                d->leftContext.insert(indexOccurrence, leftContext);
+                d->leftContext.insert(index.row(), leftContext);
                 return leftContext;
             }
         }
@@ -212,8 +212,8 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
         }
         else if (index.column() == columnCount() - 1) {
             // Right context
-            if (d->rightContext.contains(indexOccurrence)) {
-                return d->rightContext.value(indexOccurrence);
+            if (d->rightContext.contains(index.row())) {
+                return d->rightContext.value(index.row());
             }
             else {
                 QString rightContext;
@@ -226,7 +226,7 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
                 }
                 else
                     rightContext = concatenate(occurrence->rightContext(d->queryDefinition->resultLevelsAttributes.first().first), "");
-                d->rightContext.insert(indexOccurrence, rightContext);
+                d->rightContext.insert(index.row(), rightContext);
                 return rightContext;
             }
         }

@@ -8,7 +8,7 @@ using namespace Qtilities::CoreGui::Interfaces;
 namespace Praaline {
 
 // Annotation Mode Parameters
-#define MODE_ANNOTATION_ID 997
+#define MODE_ANNOTATION_ID 1002
 const char * const CONTEXT_ANNOTATION_MODE = "Context.AnnotationMode";
 
 // This structure stores private data used by the AnnotationMode class.

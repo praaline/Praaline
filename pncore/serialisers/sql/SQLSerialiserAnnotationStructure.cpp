@@ -74,6 +74,7 @@ bool SQLSerialiserAnnotationStructure::loadAnnotationStructure(QPointer<Annotati
         default:    level->setLevelType(AnnotationStructureLevel::IndependentLevel);    break;
         }
         level->setParentLevelID(q1.value("parentLevelID").toString());
+        level->setName(q1.value("name").toString());
         level->setDescription(q1.value("description").toString());
         level->setDatatype(DataType(q1.value("datatype").toString()));
         level->setDatatype(DataType(level->datatype().base(), q1.value("length").toInt()));

@@ -31,7 +31,7 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
         return false;
     }
     // Initialise database
-    SQLSerialiserMetadataStructure::initialiseMetadataStructureTables(m_database);
+    SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(m_database);
     SQLSerialiserMetadataStructure::createMetadataSchema(m_structure, m_database);
     return true;
 }
@@ -49,6 +49,8 @@ bool SQLMetadataDatastore::openDatastore(const DatastoreInfo &info)
         qDebug() << m_lastError;
         return false;
     }
+    // Upgrade database if needed
+    SQLSerialiserMetadataStructure::upgradeMetadataStructureSchema(m_database);
     return true;
 }
 

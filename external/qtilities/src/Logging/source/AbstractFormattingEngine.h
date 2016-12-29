@@ -48,7 +48,7 @@ namespace Qtilities {
 
                 return *this;
             }
-            bool operator==(const CustomFormattingHint& ref) {
+            bool operator==(const CustomFormattingHint& ref) const {
                 if (d_hint != ref.d_hint)
                     return false;
                 if (d_message_type_flags != ref.d_message_type_flags)
@@ -58,7 +58,7 @@ namespace Qtilities {
 
                 return true;
             }
-            bool operator!=(const CustomFormattingHint& ref) {
+            bool operator!=(const CustomFormattingHint& ref) const {
                 return !(*this==ref);
             }
 
@@ -140,6 +140,16 @@ if (rich_text_engine) {
                 Example format = QString("log"). Note that the point is not part of the extension.
                 */
             virtual QString fileExtension() const = 0;
+            //! Function which returns a priority for this formatting engine.
+            /*!
+             * In cases where multiple formatting engines with the same fileExtension() are installed, the engine's priority will
+             * be used to determine the formatting engine to use, where the engine with the higest priority will be used.
+             *
+             * \note All of the formatting engines provided by %Qtilities has the default priority of 1.
+             */
+            virtual uint priority() const {
+                return 1;
+            }
             //! Function which provides the end of line character used by the formatting engine.
             virtual QString endOfLineChar() const = 0;
 

@@ -194,7 +194,8 @@ HEADERS += \
     serialisers/sql/SQLSerialiserMetadata.h \
     serialisers/sql/SQLSerialiserMetadataStructure.h \
     serialisers/mocadb/MocaDBSerialiserSystem.h \
-    serialisers/sql/SQLSerialiserSystem.h
+    serialisers/sql/SQLSerialiserSystem.h \
+    structure/NameValueList.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -353,7 +354,8 @@ SOURCES += \
     query/Dataset.cpp \
     query/Measures.cpp \
     serialisers/mocadb/MocaDBSerialiserSystem.cpp \
-    serialisers/sql/SQLSerialiserSystem.cpp
+    serialisers/sql/SQLSerialiserSystem.cpp \
+    structure/NameValueList.cpp
 
 DISTFILES += \
     pncore.qmodel

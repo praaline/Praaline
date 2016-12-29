@@ -29,12 +29,12 @@ bool MocaDBSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataS
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
     // There are no sections in a Moca3 system. Use default sections
     structure->clearAll();
-    MetadataStructureSection *sectionCorpus = new MetadataStructureSection("corpus", "Corpus", "Corpus (Moca3)", structure);
-    MetadataStructureSection *sectionCommunication = new MetadataStructureSection("communication", "Communication", "Communication (Moca3)", structure);
-    MetadataStructureSection *sectionSpeaker = new MetadataStructureSection("speaker", "Speaker", "Speaker (Moca3)", structure);
-    MetadataStructureSection *sectionRecording = new MetadataStructureSection("recording", "Recording", "Recording (Moca3)", structure);
-    MetadataStructureSection *sectionAnnotation = new MetadataStructureSection("annotation", "Annotation", "Annotation (Moca3)", structure);
-    MetadataStructureSection *sectionParticipation = new MetadataStructureSection("participation", "Participation", "Participation (Moca3)", structure);
+    MetadataStructureSection *sectionCorpus = new MetadataStructureSection("corpus", "Corpus", "Corpus (Moca3)", 0, structure);
+    MetadataStructureSection *sectionCommunication = new MetadataStructureSection("communication", "Communication", "Communication (Moca3)", 0, structure);
+    MetadataStructureSection *sectionSpeaker = new MetadataStructureSection("speaker", "Speaker", "Speaker (Moca3)", 0, structure);
+    MetadataStructureSection *sectionRecording = new MetadataStructureSection("recording", "Recording", "Recording (Moca3)", 0, structure);
+    MetadataStructureSection *sectionAnnotation = new MetadataStructureSection("annotation", "Annotation", "Annotation (Moca3)", 0, structure);
+    MetadataStructureSection *sectionParticipation = new MetadataStructureSection("participation", "Participation", "Participation (Moca3)", 0, structure);
     structure->addSection(CorpusObject::Type_Corpus, sectionCorpus);
     structure->addSection(CorpusObject::Type_Communication, sectionCommunication);
     structure->addSection(CorpusObject::Type_Speaker, sectionSpeaker);
@@ -58,7 +58,7 @@ bool MocaDBSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataS
                                        q1.value("value_type_id").toInt()));
             attribute->setDefaultValue(q1.value("default_value"));
             attribute->setMandatory(q1.value("mandatory").toBool());
-            attribute->setOrder(q1.value("order_metadata").toInt());
+            attribute->setItemOrder(q1.value("order_metadata").toInt());
             // Extra properties of the Moca3 system
             attribute->setProperty("form_type_id", q1.value("form_type_id"));
             attribute->setProperty("system", q1.value("system"));
@@ -86,7 +86,7 @@ bool MocaDBSerialiserMetadataStructure::createMetadataAttribute(CorpusObject::Ty
     q.bindValue(":default_value", newAttribute->defaultValue());
     q.bindValue(":mandatory", newAttribute->mandatory());
     q.bindValue(":system", newAttribute->property("system"));
-    q.bindValue(":order_metadata", newAttribute->order());
+    q.bindValue(":order_metadata", newAttribute->itemOrder());
     q.bindValue(":share_opts_meta_id", newAttribute->property("share_opts_meta_id"));
     q.exec();
     if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
@@ -109,7 +109,7 @@ bool MocaDBSerialiserMetadataStructure::updateMetadataAttribute(CorpusObject::Ty
     q.bindValue(":default_value", updatedAttribute->defaultValue());
     q.bindValue(":mandatory", updatedAttribute->mandatory());
     q.bindValue(":system", updatedAttribute->property(":system"));
-    q.bindValue(":order_metadata", updatedAttribute->order());
+    q.bindValue(":order_metadata", updatedAttribute->itemOrder());
     q.bindValue(":share_opts_meta_id", updatedAttribute->property("share_opts_meta_id"));
     q.bindValue(":metadata_def_id", updatedAttribute->ID());
     q.exec();

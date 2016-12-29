@@ -8,7 +8,7 @@ using namespace Qtilities::CoreGui::Interfaces;
 namespace Praaline {
 
 // Scripting Mode Parameters
-#define MODE_SCRIPTING_ID 993
+#define MODE_SCRIPTING_ID 1006
 const char * const CONTEXT_SCRIPTING_MODE = "Context.ScriptingMode";
 
 // This structure stores private data used by the ScriptingMode class.

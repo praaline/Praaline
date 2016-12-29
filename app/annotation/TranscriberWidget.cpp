@@ -5,6 +5,7 @@
 #include <QGridLayout>
 #include <QScrollArea>
 #include <QFrame>
+#include <QMenu>
 
 #include "svcore/data/model/WaveFileModel.h"
 #include "svgui/view/Pane.h"
@@ -76,7 +77,10 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     //connect(m_paneStack, SIGNAL(propertyStacksResized(int)), this, SLOT(propertyStacksResized(int)));
     m_visualiserFrame->setLayout(layout);
     ui->gridLayoutVisualiser->addWidget(m_visualiserFrame);
+    // Menus and toolbars
     setupMenus();
+    m_rightButtonMenu = new QMenu();
+    setupPlaybackMenusAndToolbar();
     //setupToolbars();
     statusBar();
     m_currentLabel = new QLabel;
@@ -88,6 +92,8 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     d->annotationEditor = new AnnotationTimelineEditor(this);
     // d->annotationEditor->setOrientation(Qt::Horizontal);
     ui->gridLayoutEditor->addWidget(d->annotationEditor);
+
+    m_viewManager->setToolMode(ViewManager::SelectMode);
 }
 
 TranscriberWidget::~TranscriberWidget()

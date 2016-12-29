@@ -142,7 +142,6 @@ SimpleVisualiserWidget::~SimpleVisualiserWidget()
 
 void SimpleVisualiserWidget::setupMenus()
 {
-
 }
 
 void SimpleVisualiserWidget::setupEditMenu()
@@ -446,7 +445,33 @@ void SimpleVisualiserWidget::newSession()
 
 void SimpleVisualiserWidget::closeSession()
 {
+    while (m_paneStack->getPaneCount() > 0) {
+        Pane *pane = m_paneStack->getPane(m_paneStack->getPaneCount() - 1);
+        while (pane->getLayerCount() > 0) {
+            m_document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
+        }
+        m_overview->unregisterView(pane);
+        m_paneStack->deletePane(pane);
+    }
 
+    while (m_paneStack->getHiddenPaneCount() > 0) {
+        Pane *pane = m_paneStack->getHiddenPane(m_paneStack->getHiddenPaneCount() - 1);
+        while (pane->getLayerCount() > 0) {
+            m_document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
+        }
+        m_overview->unregisterView(pane);
+        m_paneStack->deletePane(pane);
+    }
+    m_activityLog->hide();
+    m_keyReference->hide();
+    delete m_document;
+    m_document = 0;
+    m_viewManager->clearSelections();
+    m_timeRulerLayer = 0; // document owned this
+    m_sessionFile = "";
+    CommandHistory::getInstance()->clear();
+    CommandHistory::getInstance()->documentSaved();
+    documentRestored();
 }
 
 void SimpleVisualiserWidget::sampleRateMismatch(sv_samplerate_t requested, sv_samplerate_t actual, bool willResample)

@@ -190,7 +190,7 @@ void CorpusExplorerWidget::setupActions()
     setupRecentFilesMenu();
     connect(d->recentFiles, SIGNAL(recentChanged()), this, SLOT(setupRecentFilesMenu()));
 
-    file_menu->addSeperator(qti_action_FILE_SETTINGS);
+    file_menu->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionSaveCorpus = new QAction(tr("Save Corpus"), this);
     connect(d->actionSaveCorpus, SIGNAL(triggered()), SLOT(saveCorpus()));
@@ -210,7 +210,7 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    file_menu->addSeperator(qti_action_FILE_SETTINGS);
+    file_menu->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionImportCorpus = new QAction(tr("Import Corpus..."), this);
     connect(d->actionImportCorpus, SIGNAL(triggered()), SLOT(importCorpus()));
@@ -218,7 +218,7 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    file_menu->addSeperator(qti_action_FILE_SETTINGS);
+    file_menu->addSeparator(qti_action_FILE_SETTINGS);
 
     // ------------------------------------------------------------------------------------------------------
     // CORPUS MENU
@@ -264,7 +264,7 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    corpus_menu->addSeperator();
+    corpus_menu->addSeparator();
 
     // Import - export functionality
 
@@ -292,7 +292,7 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    corpus_menu->addSeperator();
+    corpus_menu->addSeparator();
 
     d->actionCheckMediaFiles = new QAction(tr("Check files of Media Recordings..."), this);
     connect(d->actionCheckMediaFiles, SIGNAL(triggered()), SLOT(checkMediaFiles()));

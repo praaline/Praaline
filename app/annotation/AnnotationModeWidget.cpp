@@ -111,7 +111,7 @@ void AnnotationModeWidget::setupActions()
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    menu_window->addSeperator();
+    menu_window->addSeparator();
 }
 
 void AnnotationModeWidget::showAutomaticAnnotation()

@@ -10,7 +10,8 @@ using namespace QtilitiesCoreGui;
 // Contained widgets
 #include "CorpusExplorerWidget.h"
 #include "CorpusExplorerTableWidget.h"
-#include "corpusstructureeditor/CorpusStructureEditorWidget.h"
+#include "structureeditors/MetadataStructureEditor.h"
+#include "structureeditors/AnnotationStructureEditor.h"
 
 struct CorpusModeWidgetData {
     CorpusModeWidgetData()
@@ -18,11 +19,13 @@ struct CorpusModeWidgetData {
 
     QAction *actionShowCorpusExplorer;
     QAction *actionShowCorpusExplorerTables;
-    QAction *actionShowCorpusStructureEditor;
+    QAction *actionShowMetadataStructureEditor;
+    QAction *actionShowAnnotationStructureEditor;
 
     CorpusExplorerWidget *widgetCorpusExplorer;
     CorpusExplorerTableWidget *widgetCorpusExplorerTables;
-    CorpusStructureEditorWidget *widgetCorpusStructureEditor;
+    MetadataStructureEditor *widgetMetadataStructureEditor;
+    AnnotationStructureEditor *widgetAnnotationStructureEditor;
 };
 
 CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
@@ -33,11 +36,13 @@ CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
 
     d->widgetCorpusExplorer = new CorpusExplorerWidget(this);
     d->widgetCorpusExplorerTables = new CorpusExplorerTableWidget(this);
-    d->widgetCorpusStructureEditor = new CorpusStructureEditorWidget(this);
+    d->widgetMetadataStructureEditor = new MetadataStructureEditor(this);
+    d->widgetAnnotationStructureEditor = new AnnotationStructureEditor(this);
 
     ui->gridLayoutCorpusExplorer->addWidget(d->widgetCorpusExplorer);
     ui->gridLayoutCorpusExplorerTables->addWidget(d->widgetCorpusExplorerTables);
-    ui->gridLayoutCorpusStructureEditor->addWidget(d->widgetCorpusStructureEditor);
+    ui->gridLayoutMetadataStructureEditor->addWidget(d->widgetMetadataStructureEditor);
+    ui->gridLayoutAnnotationStructureEditor->addWidget(d->widgetAnnotationStructureEditor);
 
     setupActions();
 
@@ -45,7 +50,8 @@ CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
 
     connect(ui->commandCorpusExplorer, SIGNAL(clicked()), this, SLOT(showCorpusExplorer()));
     connect(ui->commandCorpusExplorerTables, SIGNAL(clicked()), this, SLOT(showCorpusExplorerTables()));
-    connect(ui->commandCorpusStructureEditor, SIGNAL(clicked()), this, SLOT(showCorpusStructureEditor()));
+    connect(ui->commandMetadataStructureEditor, SIGNAL(clicked()), this, SLOT(showMetadataStructureEditor()));
+    connect(ui->commandAnnotationStructureEditor, SIGNAL(clicked()), this, SLOT(showAnnotationStructureEditor()));
 }
 
 CorpusModeWidget::~CorpusModeWidget()
@@ -82,13 +88,19 @@ void CorpusModeWidget::setupActions()
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCorpusStructureEditor = new QAction(tr("Show Corpus Structure Editor"), this);
-    connect(d->actionShowCorpusStructureEditor, SIGNAL(triggered()), SLOT(showCorpusStructureEditor()));
-    command = ACTION_MANAGER->registerAction("Window.ShowCorpusStructureEditor", d->actionShowCorpusStructureEditor, context);
+    d->actionShowMetadataStructureEditor = new QAction(tr("Show Metadata Structure Editor"), this);
+    connect(d->actionShowMetadataStructureEditor, SIGNAL(triggered()), SLOT(showMetadataStructureEditor()));
+    command = ACTION_MANAGER->registerAction("Window.ShowMetadataStructureEditor", d->actionShowMetadataStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    menu_window->addSeperator();
+    d->actionShowAnnotationStructureEditor = new QAction(tr("Show Annotation Structure Editor"), this);
+    connect(d->actionShowAnnotationStructureEditor, SIGNAL(triggered()), SLOT(showAnnotationStructureEditor()));
+    command = ACTION_MANAGER->registerAction("Window.ShowAnnotationStructureEditor", d->actionShowAnnotationStructureEditor, context);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
+
+    menu_window->addSeparator();
 }
 
 void CorpusModeWidget::showCorpusExplorer()
@@ -103,9 +115,14 @@ void CorpusModeWidget::showCorpusExplorerTables()
     emit activateMode();
 }
 
-void CorpusModeWidget::showCorpusStructureEditor()
+void CorpusModeWidget::showMetadataStructureEditor()
 {
     ui->stackedWidget->setCurrentIndex(2);
     emit activateMode();
 }
 
+void CorpusModeWidget::showAnnotationStructureEditor()
+{
+    ui->stackedWidget->setCurrentIndex(3);
+    emit activateMode();
+}

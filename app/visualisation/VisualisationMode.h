@@ -8,7 +8,7 @@ using namespace Qtilities::CoreGui::Interfaces;
 namespace Praaline {
 
 // Visualisation Mode Parameters
-#define MODE_VISUALISATION_ID 996
+#define MODE_VISUALISATION_ID 1003
 const char * const CONTEXT_VISUALISATION_MODE = "Context.VisualisationMode";
 
 // This structure stores private data used by the VisualisationMode class.

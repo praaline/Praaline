@@ -345,7 +345,7 @@ while (itrB.hasNext()) {
              *it is necessary to specify the parent of the siblings you are iterating when any of the siblings has multiple parents.
              *\param iterator_id Internal iterator ID. You should never use this directly.
              */
-            ConstSubjectIterator(Observer* observer,
+            ConstSubjectIterator(const Observer* observer,
                             ObserverIterationLevel iteration_level,
                             const Observer* sibling_iteration_parent_observer = 0,
                             int iterator_id = -1) :
@@ -484,7 +484,7 @@ while (itrB.hasNext()) {
         private:
             const T* d_current;
             const T* d_root;
-            Observer* d_parent_observer;
+            const Observer* d_parent_observer;
             int d_iterator_id;
         };
     }
