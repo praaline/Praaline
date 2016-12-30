@@ -1,4 +1,4 @@
-#include "corpuslevelsattributesselector.h"
+#include "CorpusLevelsAttributesSelector.h"
 #include "ui_corpuslevelsattributesselector.h"
 
 CorpusLevelsAttributesSelector::CorpusLevelsAttributesSelector(QWidget *parent) :

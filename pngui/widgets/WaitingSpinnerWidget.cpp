@@ -21,7 +21,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 // Own includes
-#include "waitingspinnerwidget.h"
+#include "WaitingSpinnerWidget.h"
 
 // Standard incluces
 #include <cmath>

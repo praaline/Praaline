@@ -250,7 +250,7 @@
   <customwidget>
    <class>CheckBoxList</class>
    <extends>QComboBox</extends>
-   <header>pngui/widgets/checkboxlist.h</header>
+   <header>pngui/widgets/CheckBoxList.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

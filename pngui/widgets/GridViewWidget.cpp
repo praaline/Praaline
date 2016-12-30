@@ -10,9 +10,9 @@
 #include <QRegularExpression>
 #include <QProgressDialog>
 
-#include "gridviewfinddialog.h"
+#include "GridViewFindDialog.h"
 #include "grid/qabstractfilterproxymodel.h"
-#include "gridviewwidget.h"
+#include "GridViewWidget.h"
 #include "ui_gridviewwidget.h"
 
 struct GridViewWidgetData {

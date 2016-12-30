@@ -10,6 +10,8 @@
 #include "pncore/corpus/CorpusObject.h"
 #include "pncore/structure/MetadataStructure.h"
 
+struct MetadataEditorWidgetData;
+
 class MetadataEditorWidget : public QWidget
 {
     Q_OBJECT
@@ -24,9 +26,16 @@ public:
         QString attributeID;
     };
 
-    MetadataEditorWidget(QWidget *parent = 0);
+    enum MetadataEditorWidgetStyle {
+        TreeStyle,
+        GroupBoxStyle,
+        ButtonStyle
+    };
+
+    MetadataEditorWidget(MetadataEditorWidgetStyle style = MetadataEditorWidget::TreeStyle, QWidget *parent = 0);
     ~MetadataEditorWidget();
 
+    void changeStyle(MetadataEditorWidgetStyle style);
     void rebind(QPointer<Praaline::Core::MetadataStructure> mstructure,
                 QList<QPointer<Praaline::Core::CorpusObject> > &items,
                 bool includeParticipationSpeaker = false, bool includeParticipationCommunication = false);
@@ -44,21 +53,9 @@ private slots:
     void valueChanged(QtProperty *property, const QDate &value);
 
 private:
-    class QtStringPropertyManager *m_stringManager;
-    class QtBoolPropertyManager *m_boolManager;
-    class QtIntPropertyManager *m_intManager;
-    class QtDoublePropertyManager *m_doubleManager;
-    class QtEnumPropertyManager *m_enumManager;
-    class QtDatePropertyManager *m_dateManager;
-    class QtGroupPropertyManager *m_groupManager;
+    MetadataEditorWidgetData *d;
 
-    class QtTreePropertyBrowser *m_propertyEditor;
-
-    QMap<QPair<Praaline::Core::CorpusObject::Type, QString>, QPointer<Praaline::Core::CorpusObject> > m_items;
-
-    QMap<QtProperty *, PropertyID> m_propertyToId;
-    QMap<PropertyID, QtProperty *> m_idToProperty;
-
+    void createPropertyBrowser(MetadataEditorWidgetStyle style);
     void addProperty(QtProperty *property, Praaline::Core::CorpusObject::Type type,
                      const QString &itemID, const QString &attributeID, QtProperty *group);
     QtProperty *addProperties(QPointer<Praaline::Core::MetadataStructure> mstructure,

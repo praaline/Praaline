@@ -90,22 +90,11 @@ HEADERS += \
     grid/spinboxitemdelegate.h \
     model/checkableproxymodel.h \
     model/delayedexecutiontimer.h \
-    widgets/selectiondialog.h \
-    widgets/corpuslevelsattributesselector.h \
-    widgets/selectionlistdataproviderproxy.h \
-    widgets/metadataeditorwidget.h \
     observers/corpusobserver.h \
     model/query/queryfiltersequencetablemodel.h \
     model/query/querydefinitiontreemodel.h \
     model/annotation/annotationtiermodel.h \
     model/diff/diffsesforintervalstablemodel.h \
-    widgets/gridviewwidget.h \
-    widgets/checkboxlist.h \
-    widgets/corpusitemselectorwidget.h \
-    widgets/annotationtimelineeditor.h \
-    widgets/timelineeditorconfigwidget.h \
-    widgets/gridviewfinddialog.h \
-    widgets/waitingspinnerwidget.h \
     model/annotation/AnnotationGridPointModel.h \
     model/annotation/AnnotationGridModel.h \
     layer/AnnotationGridLayer.h \
@@ -168,7 +157,18 @@ HEADERS += \
     model/corpus/CorpusRecordingTableModel.h \
     model/corpus/CorpusSpeakerTableModel.h \
     model/corpus/MetadataStructureTreeModel.h \
-    model/query/QueryOccurrenceTableModel.h
+    model/query/QueryOccurrenceTableModel.h \
+    widgets/MetadataEditorWidget.h \
+    widgets/AnnotationTimelineEditor.h \
+    widgets/CheckBoxList.h \
+    widgets/CorpusItemSelectorWidget.h \
+    widgets/CorpusLevelsAttributesSelector.h \
+    widgets/GridViewFindDialog.h \
+    widgets/GridViewWidget.h \
+    widgets/SelectionDialog.h \
+    widgets/SelectionListDataProviderProxy.h \
+    widgets/TimelineEditorConfigWidget.h \
+    widgets/WaitingSpinnerWidget.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -209,22 +209,11 @@ SOURCES += \
     grid/spinboxitemdelegate.cpp \
     model/checkableproxymodel.cpp \
     model/delayedexecutiontimer.cpp \
-    widgets/selectiondialog.cpp \
-    widgets/corpuslevelsattributesselector.cpp \
-    widgets/selectionlistdataproviderproxy.cpp \
-    widgets/metadataeditorwidget.cpp \
     observers/corpusobserver.cpp \
     model/query/queryfiltersequencetablemodel.cpp \
     model/query/querydefinitiontreemodel.cpp \
     model/annotation/annotationtiermodel.cpp \
     model/diff/diffsesforintervalstablemodel.cpp \
-    widgets/gridviewwidget.cpp \
-    widgets/checkboxlist.cpp \
-    widgets/corpusitemselectorwidget.cpp \
-    widgets/annotationtimelineeditor.cpp \
-    widgets/timelineeditorconfigwidget.cpp \
-    widgets/gridviewfinddialog.cpp \
-    widgets/waitingspinnerwidget.cpp \
     model/annotation/AnnotationGridModel.cpp \
     layer/AnnotationGridLayer.cpp \
     layer/PraalineLayersInitialiser.cpp \
@@ -272,4 +261,15 @@ SOURCES += \
     model/corpus/CorpusRecordingTableModel.cpp \
     model/corpus/CorpusSpeakerTableModel.cpp \
     model/corpus/MetadataStructureTreeModel.cpp \
-    model/query/QueryOccurrenceTableModel.cpp
+    model/query/QueryOccurrenceTableModel.cpp \
+    widgets/MetadataEditorWidget.cpp \
+    widgets/AnnotationTimelineEditor.cpp \
+    widgets/CheckBoxList.cpp \
+    widgets/CorpusItemSelectorWidget.cpp \
+    widgets/CorpusLevelsAttributesSelector.cpp \
+    widgets/GridViewFindDialog.cpp \
+    widgets/GridViewWidget.cpp \
+    widgets/SelectionDialog.cpp \
+    widgets/SelectionListDataProviderProxy.cpp \
+    widgets/TimelineEditorConfigWidget.cpp \
+    widgets/WaitingSpinnerWidget.cpp

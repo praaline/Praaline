@@ -2,7 +2,7 @@
 #include <QDialogButtonBox>
 #include <QTreeView>
 #include <QVBoxLayout>
-#include "selectiondialog.h"
+#include "SelectionDialog.h"
 
 SelectionDialog::SelectionDialog(const QString &title, QAbstractItemModel *model, QWidget *parent) :
     QDialog(parent), m_model(model)

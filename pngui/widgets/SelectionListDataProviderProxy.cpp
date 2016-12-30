@@ -1,6 +1,6 @@
 #include <QObject>
 #include <QIdentityProxyModel>
-#include "selectionlistdataproviderproxy.h"
+#include "SelectionListDataProviderProxy.h"
 
 SelectionListDataProviderProxy::SelectionListDataProviderProxy(QObject* parent) :
     QIdentityProxyModel(parent)

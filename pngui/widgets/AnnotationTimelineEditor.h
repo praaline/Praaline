@@ -10,7 +10,7 @@
 #include <QModelIndex>
 #include "base/RealTime.h"
 #include "model/annotation/annotationtiermodel.h"
-#include "selectionlistdataproviderproxy.h"
+#include "SelectionListDataProviderProxy.h"
 
 namespace Ui {
 class AnnotationTimelineEditor;

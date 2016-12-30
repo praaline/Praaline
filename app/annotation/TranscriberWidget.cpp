@@ -22,8 +22,8 @@
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
-#include "pngui/widgets/corpusitemselectorwidget.h"
-#include "pngui/widgets/annotationtimelineeditor.h"
+#include "pngui/widgets/CorpusItemSelectorWidget.h"
+#include "pngui/widgets/AnnotationTimelineEditor.h"
 
 #include "../visualisation/SimpleVisualiserWidget.h"
 

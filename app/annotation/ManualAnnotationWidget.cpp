@@ -18,10 +18,10 @@
 #include "pngui/observers/corpusobserver.h"
 #include "pngui/model/checkableproxymodel.h"
 #include "pngui/model/corpus/CorpusBookmarkModel.h"
-#include "pngui/widgets/annotationtimelineeditor.h"
-#include "pngui/widgets/corpusitemselectorwidget.h"
-#include "pngui/widgets/timelineeditorconfigwidget.h"
-#include "pngui/widgets/waitingspinnerwidget.h"
+#include "pngui/widgets/AnnotationTimelineEditor.h"
+#include "pngui/widgets/CorpusItemSelectorWidget.h"
+#include "pngui/widgets/TimelineEditorConfigWidget.h"
+#include "pngui/widgets/WaitingSpinnerWidget.h"
 
 #include "dis/AnnotationControlsDisfluencies.h"
 

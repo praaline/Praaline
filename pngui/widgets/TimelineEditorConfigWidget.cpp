@@ -1,4 +1,4 @@
-#include "timelineeditorconfigwidget.h"
+#include "TimelineEditorConfigWidget.h"
 #include "ui_timelineeditorconfigwidget.h"
 
 #include <QString>

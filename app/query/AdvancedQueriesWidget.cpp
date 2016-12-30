@@ -18,7 +18,7 @@
 #include "grid/qtextfilter.h"
 #include "grid/qvaluefilter.h"
 
-#include "pngui/widgets/gridviewwidget.h"
+#include "pngui/widgets/GridViewWidget.h"
 #include "CorporaManager.h"
 #include "sql/SqlTextEdit.h"
 

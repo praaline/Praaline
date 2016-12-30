@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QAbstractItemView>
 #include <QStylePainter>
-#include "checkboxlist.h"
+#include "CheckBoxList.h"
 
 // internal private delegate
 class CheckBoxListDelegate : public QItemDelegate

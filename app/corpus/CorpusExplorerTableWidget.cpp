@@ -27,8 +27,8 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/CorpusSpeakerTableModel.h"
 #include "pngui/model/corpus/CorpusRecordingTableModel.h"
 #include "pngui/model/corpus/CorpusAnnotationTableModel.h"
-#include "pngui/widgets/selectionlistdataproviderproxy.h"
-#include "pngui/widgets/gridviewwidget.h"
+#include "pngui/widgets/SelectionListDataProviderProxy.h"
+#include "pngui/widgets/GridViewWidget.h"
 
 #include "CorporaManager.h"
 

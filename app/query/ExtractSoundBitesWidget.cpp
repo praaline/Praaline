@@ -13,7 +13,7 @@
 #include "pncore/corpus/CorpusRecording.h"
 using namespace Praaline::Core;
 
-#include "pngui/widgets/gridviewwidget.h"
+#include "pngui/widgets/GridViewWidget.h"
 #include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/mediautil/SoundInfo.h"
 #include "CorporaManager.h"

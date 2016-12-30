@@ -16,12 +16,12 @@ using namespace Praaline::Core;
 #include "pngui/model/query/QueryOccurrenceTableModel.h"
 #include "pngui/model/query/queryfiltersequencetablemodel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
-#include "pngui/widgets/gridviewwidget.h"
+#include "pngui/widgets/GridViewWidget.h"
 #include "CorporaManager.h"
 
 
 struct ConcordancerQuickWidgetData {
-    ConcordancerQuickWidgetData() : modelLevelsAttributes(0), corporaManager(0), modelResults(0), currentQuery(0) {}
+    ConcordancerQuickWidgetData() : modelLevelsAttributes(0), modelResults(0), corporaManager(0), currentQuery(0) {}
 
     QToolBar *toolbarMain;
     QAction *actionDefinitionOpen;

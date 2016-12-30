@@ -2,7 +2,7 @@
 #include <QFileDialog>
 #include <QSortFilterProxyModel>
 #include "model/annotation/annotationtiermodel.h"
-#include "annotationtimelineeditor.h"
+#include "AnnotationTimelineEditor.h"
 #include "ui_annotationtimelineeditor.h"
 
 #include "grid/qadvancedtableview.h"
@@ -22,7 +22,7 @@
 #include "grid/qtextfilter.h"
 #include "grid/qvaluefilter.h"
 
-#include "gridviewwidget.h"
+#include "GridViewWidget.h"
 
 using namespace Praaline::Core;
 

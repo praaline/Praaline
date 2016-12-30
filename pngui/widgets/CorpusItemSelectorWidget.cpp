@@ -8,7 +8,7 @@
 #include <QStandardItemModel>
 #include <QModelIndex>
 
-#include "corpusitemselectorwidget.h"
+#include "CorpusItemSelectorWidget.h"
 #include "ui_corpusitemselectorwidget.h"
 
 #include "pncore/corpus/Corpus.h"

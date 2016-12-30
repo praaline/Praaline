@@ -10,7 +10,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/observers/corpusobserver.h"
-#include "pngui/widgets/gridviewwidget.h"
+#include "pngui/widgets/GridViewWidget.h"
 #include "CorporaManager.h"
 
 struct BatchEditWidgetData {

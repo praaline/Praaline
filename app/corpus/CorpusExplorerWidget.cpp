@@ -17,8 +17,8 @@ using namespace QtilitiesProjectManagement;
 #include "pncore/corpus/Corpus.h"
 #include "pncore/serialisers/CorpusDefinition.h"
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
-#include "pngui/widgets/selectiondialog.h"
-#include "pngui/widgets/metadataeditorwidget.h"
+#include "pngui/widgets/SelectionDialog.h"
+#include "pngui/widgets/MetadataEditorWidget.h"
 #include "pngui/observers/corpusobserver.h"
 #include "CorporaManager.h"
 #include "NewCorpusWizard.h"
@@ -36,8 +36,8 @@ using std::vector;
 
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
-        corporaManager(0), projectItem(0), corporaTopLevelNode(0), corporaObserverWidget(0),
-        recentFilesMenu(0), recentFiles(0)
+        corporaManager(0), recentFiles(0), recentFilesMenu(0), projectItem(0),
+        corporaTopLevelNode(0), corporaObserverWidget(0), metadataEditorPrimary(0), metadataEditorSecondary(0)
     { }
 
     CorporaManager *corporaManager;
@@ -74,7 +74,7 @@ struct CorpusExplorerWidgetData {
 
     QPointer<TreeNode> corporaTopLevelNode;
     ObserverWidget* corporaObserverWidget;
-    MetadataEditorWidget *metadataEditorMain;
+    MetadataEditorWidget *metadataEditorPrimary;
     MetadataEditorWidget *metadataEditorSecondary;
 
     QToolBar *toolbarCorpusExplorer;
@@ -133,10 +133,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     // Create layout of the Corpus Explorer
     ui->gridLayout->setMargin(0);
     ui->dockCorpusExplorer->setWidget(d->corporaObserverWidget);
-    d->metadataEditorMain = new MetadataEditorWidget(this);
-    d->metadataEditorMain->layout()->setMargin(0);
-    ui->dockMetadataPrimary->setWidget(d->metadataEditorMain);
-    d->metadataEditorSecondary = new MetadataEditorWidget(this);
+    d->metadataEditorPrimary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
+    d->metadataEditorPrimary->layout()->setMargin(0);
+    ui->dockMetadataPrimary->setWidget(d->metadataEditorPrimary);
+    d->metadataEditorSecondary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
     d->metadataEditorSecondary->layout()->setMargin(0);
     ui->dockMetadataSecondary->setWidget(d->metadataEditorSecondary);
 }
@@ -361,7 +361,7 @@ void CorpusExplorerWidget::updateMetadataEditorsForCom(CorpusCommunication *comm
         if (rec) itemsMain << static_cast<CorpusObject *>(rec);
     foreach(QPointer<CorpusAnnotation> annot, communication->annotations())
         if (annot) itemsMain << static_cast<CorpusObject *>(annot);
-    d->metadataEditorMain->rebind(corpus->metadataStructure(), itemsMain);
+    d->metadataEditorPrimary->rebind(corpus->metadataStructure(), itemsMain);
     // Speakers participating in Communication
     QList<QPointer<CorpusObject> > itemsSecondary;
     foreach (QPointer<CorpusParticipation> part, corpus->participationsForCommunication(communication->ID()))
@@ -378,7 +378,7 @@ void CorpusExplorerWidget::updateMetadataEditorsForSpk(CorpusSpeaker *speaker)
     if (!corpus) return;
     QList<QPointer<CorpusObject> > itemsMain;
     itemsMain << static_cast<CorpusObject *>(speaker);
-    d->metadataEditorMain->rebind(corpus->metadataStructure(), itemsMain);
+    d->metadataEditorPrimary->rebind(corpus->metadataStructure(), itemsMain);
     // Communication where Speaker participates
     QList<QPointer<CorpusObject> > itemsSecondary;
     foreach (QPointer<CorpusParticipation> part, corpus->participationsForSpeaker(speaker->ID()))
@@ -549,7 +549,7 @@ void CorpusExplorerWidget::closeCorpus()
     OBJECT_MANAGER->removeObject(obs);
     delete obs;
     // Metadata editors
-    d->metadataEditorMain->clear();
+    d->metadataEditorPrimary->clear();
     d->metadataEditorSecondary->clear();
     // Activate next corpus (if available)
     QList<QObject *> listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
