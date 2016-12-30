@@ -168,7 +168,9 @@ HEADERS += \
     widgets/SelectionDialog.h \
     widgets/SelectionListDataProviderProxy.h \
     widgets/TimelineEditorConfigWidget.h \
-    widgets/WaitingSpinnerWidget.h
+    widgets/WaitingSpinnerWidget.h \
+    widgets/CorpusItemPreview.h \
+    widgets/SelectReorderItemsWidget.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -272,4 +274,6 @@ SOURCES += \
     widgets/SelectionDialog.cpp \
     widgets/SelectionListDataProviderProxy.cpp \
     widgets/TimelineEditorConfigWidget.cpp \
-    widgets/WaitingSpinnerWidget.cpp
+    widgets/WaitingSpinnerWidget.cpp \
+    widgets/CorpusItemPreview.cpp \
+    widgets/SelectReorderItemsWidget.cpp

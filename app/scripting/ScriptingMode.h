@@ -36,8 +36,12 @@ public:
 
 signals:
     void modeIconChanged();
+    void modeActivated();
+    void modeDeactivated();
 
 public slots:
+    void modeManagerActiveModeChanged(int new_mode_id, int old_mode_id);
+    void activateMode();
 
 private:
     ScriptingModePrivateData *d;
@@ -46,3 +50,5 @@ private:
 }
 
 #endif // SCRIPTINGMODE_H
+
+

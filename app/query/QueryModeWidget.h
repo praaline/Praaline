@@ -2,11 +2,6 @@
 #define QUERYMODEWIDGET_H
 
 #include <QWidget>
-#include <QString>
-#include <QStringList>
-#include <QProcess>
-#include <QTextStream>
-#include "pngui/observers/corpusobserver.h"
 
 namespace Ui {
 class QueryModeWidget;

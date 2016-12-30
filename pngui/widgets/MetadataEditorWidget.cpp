@@ -4,6 +4,7 @@
 #include <QPair>
 #include <QDate>
 #include <QGridLayout>
+#include <QScrollArea>
 
 #include "pncore/corpus/CorpusParticipation.h"
 #include "pncore/corpus/CorpusObject.h"
@@ -42,6 +43,7 @@ struct MetadataEditorWidgetData {
     QtDateEditFactory *dateEditFactory;
 
     QGridLayout *mainLayout;
+    QScrollArea *scroll;
     QtAbstractPropertyBrowser *propertyEditor;
     MetadataEditorWidget::MetadataEditorWidgetStyle style;
 
@@ -88,6 +90,8 @@ MetadataEditorWidget::MetadataEditorWidget(MetadataEditorWidgetStyle style, QWid
 
     d->mainLayout = new QGridLayout(this);
     this->setLayout(d->mainLayout);
+    d->scroll = new QScrollArea();
+    d->scroll->setWidgetResizable(true);
 
     createPropertyBrowser(style);
 }
@@ -101,7 +105,10 @@ void MetadataEditorWidget::createPropertyBrowser(MetadataEditorWidgetStyle style
 {
     // Delete previous property editor (if one exists)
     if (d->propertyEditor) {
-        d->mainLayout->removeWidget(d->propertyEditor);
+        if (d->style == MetadataEditorWidget::TreeStyle)
+            d->mainLayout->removeWidget(d->propertyEditor);
+        else
+            d->mainLayout->removeWidget(d->scroll);
         delete d->propertyEditor;
         d->propertyEditor = 0;
     }
@@ -126,13 +133,17 @@ void MetadataEditorWidget::createPropertyBrowser(MetadataEditorWidgetStyle style
     if (style == MetadataEditorWidget::TreeStyle) {
         QtTreePropertyBrowser *editor = qobject_cast<QtTreePropertyBrowser *>(d->propertyEditor);
         if (editor) editor->setResizeMode(QtTreePropertyBrowser::ResizeToContents);
+        d->mainLayout->addWidget(d->propertyEditor);
+    } else {
+        d->scroll->setWidget(d->propertyEditor);
+        d->mainLayout->addWidget(d->scroll);
     }
 
-    d->mainLayout->addWidget(d->propertyEditor);
+    // Save the new style
     d->style = style;
 }
 
-void MetadataEditorWidget::changeStyle(MetadataEditorWidgetStyle style)
+void MetadataEditorWidget::setEditorStyle(MetadataEditorWidgetStyle style)
 {
     // Create new property browser if necessary
     if ((d->style == style) && (d->propertyEditor)) return; // already OK

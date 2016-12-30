@@ -1,3 +1,10 @@
+#include <QList>
+#include <QWidget>
+#include <QAction>
+
+#include "QtilitiesCoreGui/QtilitiesCoreGui"
+using namespace QtilitiesCoreGui;
+
 #include "QueryModeWidget.h"
 #include "ui_QueryModeWidget.h"
 
@@ -22,11 +29,9 @@ struct QueryModeWidgetData {
 };
 
 QueryModeWidget::QueryModeWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::QueryModeWidget)
+    QWidget(parent), ui(new Ui::QueryModeWidget), d(new QueryModeWidgetData())
 {
     ui->setupUi(this);
-    d = new QueryModeWidgetData();
 
     d->widgetConcordancer = new ConcordancerQuickWidget(this);
     d->widgetCreateDataset = new CreateDatasetWidget(this);
@@ -68,7 +73,7 @@ void QueryModeWidget::setupActions()
     if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
-    // VIEW MENU
+    // WINDOW MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionShowCorcondancer = new QAction(tr("Concordancer"), this);
     connect(d->actionShowCorcondancer, SIGNAL(triggered()), SLOT(showConcordancer()));

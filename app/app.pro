@@ -160,7 +160,8 @@ SOURCES += main.cpp \
     help/HelpBrowser.cpp \
     help/HelpModeConfig.cpp \
     corpus/structureeditors/AddAttributeDialog.cpp \
-    corpus/structureeditors/AddLevelDialog.cpp
+    corpus/structureeditors/AddLevelDialog.cpp \
+    scripting/ScriptEditorWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -247,7 +248,8 @@ HEADERS  += \
     interfaces/IAnnotationPlugin.h \
     interfaces/IStatisticsPlugin.h \
     corpus/structureeditors/AddAttributeDialog.h \
-    corpus/structureeditors/AddLevelDialog.h
+    corpus/structureeditors/AddLevelDialog.h \
+    scripting/ScriptEditorWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

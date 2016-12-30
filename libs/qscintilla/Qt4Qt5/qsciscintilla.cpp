@@ -2,7 +2,7 @@
 // Scintilla.  It is modelled on QTextEdit - a method of the same name should
 // behave in the same way.
 //
-// Copyright (c) 2015 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2016 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -1078,7 +1078,7 @@ QColor QsciScintilla::edgeColor() const
 {
     long res = SendScintilla(SCI_GETEDGECOLOUR);
 
-    return QColor((int)res, ((int)(res >> 8)) & 0x00ff, ((int)(res >> 16)) & 0x00ff);
+    return QColor(((int)res) & 0x00ff, ((int)(res >> 8)) & 0x00ff, ((int)(res >> 16)) & 0x00ff);
 }
 
 

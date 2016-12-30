@@ -1,6 +1,6 @@
 # The project file for the QScintilla library.
 #
-# Copyright (c) 2015 Riverbank Computing Limited <info@riverbankcomputing.com>
+# Copyright (c) 2016 Riverbank Computing Limited <info@riverbankcomputing.com>
 # 
 # This file is part of QScintilla.
 # 
@@ -20,11 +20,11 @@
 
 # This must be kept in sync with Python/configure.py, Python/configure-old.py,
 # example-Qt4Qt5/application.pro and designer-Qt4Qt5/designer.pro.
-!win32:VERSION = 12.0.1
+!win32:VERSION = 12.0.2
 
 TEMPLATE = lib
 TARGET = qscintilla2
-CONFIG += qt warn_off release thread exceptions staticlib debug_and_release c++11
+CONFIG += qt warn_off release thread exceptions hide_symbols
 INCLUDEPATH += . ../include ../lexlib ../src
 
 !CONFIG(staticlib) {
@@ -35,9 +35,9 @@ DEFINES += SCINTILLA_QT SCI_LEXER
 greaterThan(QT_MAJOR_VERSION, 4) {
 	QT += widgets printsupport
 
-    #greaterThan(QT_MINOR_VERSION, 1) {
+    greaterThan(QT_MINOR_VERSION, 1) {
 	    macx:QT += macextras
-    #}
+    }
 
     # Work around QTBUG-39300.
     CONFIG -= android_install
@@ -45,7 +45,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 # Comment this in if you want the internal Scintilla classes to be placed in a
 # Scintilla namespace rather than pollute the global namespace.
-DEFINES += SCI_NAMESPACE
+#DEFINES += SCI_NAMESPACE
 
 target.path = $$[QT_INSTALL_LIBS]
 INSTALLS += target
@@ -67,7 +67,11 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 } else {
     features.path = $$[QT_INSTALL_DATA]/mkspecs/features
 }
-features.files = $$PWD/features/qscintilla2.prf
+CONFIG(staticlib) {
+    features.files = $$PWD/features_staticlib/qscintilla2.prf
+} else {
+    features.files = $$PWD/features/qscintilla2.prf
+}
 INSTALLS += features
 
 HEADERS = \
@@ -175,8 +179,7 @@ HEADERS = \
 	../src/UnicodeFromUTF8.h \
 	../src/UniConversion.h \
 	../src/ViewStyle.h \
-	../src/XPM.h \
-    ../lexlib/SparseState.h
+	../src/XPM.h
 
 SOURCES = \
 	qsciscintilla.cpp \
@@ -228,8 +231,8 @@ SOURCES = \
 	qsciprinter.cpp \
 	qscistyle.cpp \
 	qscistyledtext.cpp \
-        MacPasteboardMime.cpp \
-        InputMethod.cpp \
+    MacPasteboardMime.cpp \
+    InputMethod.cpp \
 	SciClasses.cpp \
 	ListBoxQt.cpp \
 	PlatQt.cpp \
@@ -356,15 +359,15 @@ SOURCES = \
 	../src/EditView.cpp \
 	../src/ExternalLexer.cpp \
 	../src/Indicator.cpp \
-        ../src/KeyMap.cpp \
+    ../src/KeyMap.cpp \
 	../src/LineMarker.cpp \
 	../src/MarginView.cpp \
 	../src/PerLine.cpp \
 	../src/PositionCache.cpp \
-        ../src/RESearch.cpp \
+    ../src/RESearch.cpp \
 	../src/RunStyles.cpp \
-        ../src/ScintillaBase.cpp \
-        ../src/Selection.cpp \
+    ../src/ScintillaBase.cpp \
+    ../src/Selection.cpp \
 	../src/Style.cpp \
 	../src/UniConversion.cpp \
 	../src/ViewStyle.cpp \

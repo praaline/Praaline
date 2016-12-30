@@ -24,16 +24,16 @@
 
 #define INDIC_INPUTMETHOD 24
 
-#ifdef SCI_NAMESPACE
-using namespace Scintilla;
-#endif
 
 void QsciScintillaBase::inputMethodEvent(QInputMethodEvent *event)
 {
+#if !defined(Q_OS_WIN)
     // Do nothing if it appears to be a non-event.  This can sometimes happen
-    // (but why?) on losing focus.
+    // (but why?) on losing focus.  However there are reports that this breaks
+    // character composition on Windows.
     if (event->commitString().isEmpty() && event->preeditString().isEmpty() && event->replacementLength() == 0)
         return;
+#endif
 
     ScintillaBytes bytes;
 

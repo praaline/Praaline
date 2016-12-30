@@ -35,7 +35,7 @@ public:
     MetadataEditorWidget(MetadataEditorWidgetStyle style = MetadataEditorWidget::TreeStyle, QWidget *parent = 0);
     ~MetadataEditorWidget();
 
-    void changeStyle(MetadataEditorWidgetStyle style);
+    void setEditorStyle(MetadataEditorWidgetStyle style);
     void rebind(QPointer<Praaline::Core::MetadataStructure> mstructure,
                 QList<QPointer<Praaline::Core::CorpusObject> > &items,
                 bool includeParticipationSpeaker = false, bool includeParticipationCommunication = false);

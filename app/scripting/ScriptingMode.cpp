@@ -14,6 +14,7 @@ struct ScriptingModePrivateData {
     ScriptingModePrivateData() : widget(0) {}
 
     QPointer<ScriptingModeWidget> widget;
+    QPointer<QtilitiesMainWindow> mainWindow;
 };
 
 ScriptingMode::ScriptingMode(QObject *parent) :
@@ -21,6 +22,17 @@ ScriptingMode::ScriptingMode(QObject *parent) :
 {
     d = new ScriptingModePrivateData();
     setObjectName(tr("Scripting Mode"));
+
+    // Find reference to main window
+    QList<QObject *> list;
+    list = OBJECT_MANAGER->registeredInterfaces("Qtilities::CoreGui::QtilitiesMainWindow");
+    foreach (QObject* obj, list) {
+        QtilitiesMainWindow *window = qobject_cast<QtilitiesMainWindow *>(obj);
+        if (window) d->mainWindow = window;
+    }
+
+    if (!d->widget) d->widget = new ScriptingModeWidget();
+    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
 }
 
 ScriptingMode::~ScriptingMode()
@@ -45,6 +57,21 @@ QIcon ScriptingMode::modeIcon() const {
 
 QString ScriptingMode::modeName() const {
     return tr("Scripting");
+}
+
+void ScriptingMode::modeManagerActiveModeChanged(int new_mode_id, int old_mode_id)
+{
+    Q_UNUSED(old_mode_id)
+    if (new_mode_id == MODE_SCRIPTING_ID)
+        emit modeActivated();
+    else
+        emit modeDeactivated();
+}
+
+void ScriptingMode::activateMode()
+{
+    if (!d->mainWindow) return;
+    d->mainWindow->modeManager()->setActiveMode(modeName());
 }
 
 }

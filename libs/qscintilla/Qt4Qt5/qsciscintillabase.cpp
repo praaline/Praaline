@@ -1,6 +1,6 @@
 // This module implements the "official" low-level API.
 //
-// Copyright (c) 2015 Riverbank Computing Limited <info@riverbankcomputing.com>
+// Copyright (c) 2016 Riverbank Computing Limited <info@riverbankcomputing.com>
 // 
 // This file is part of QScintilla.
 // 
@@ -653,7 +653,8 @@ void QsciScintillaBase::resizeEvent(QResizeEvent *)
 
 
 // Re-implemented to suppress the default behaviour as Scintilla works at a
-// more fundamental level.
+// more fundamental level.  Note that this means that replacing the scrollbars
+// with custom versions does not work.
 void QsciScintillaBase::scrollContentsBy(int, int)
 {
 }
