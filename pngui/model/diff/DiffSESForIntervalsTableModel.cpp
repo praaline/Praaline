@@ -9,7 +9,7 @@ using namespace std;
 using namespace dtl;
 #include "pnlib/diff/diffintervals.h"
 
-#include "diffsesforintervalstablemodel.h"
+#include "DiffSESForIntervalsTableModel.h"
 
 DiffSESforIntervalsTableModel::DiffSESforIntervalsTableModel(dtl::Ses<Interval *>::sesElemVec &sesElemVec,
                                                              const QList<Interval *> &intervals_A, const QList<Interval *> &intervals_B,

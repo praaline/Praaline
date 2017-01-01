@@ -3,7 +3,7 @@
 #include "pncore/corpus/CorpusSpeaker.h"
 using namespace Praaline::Core;
 
-#include "observers/corpusobserver.h"
+#include "observers/CorpusObserver.h"
 #include "CorpusExplorerTreeModel.h"
 
 struct CorpusExplorerTreeModelData {

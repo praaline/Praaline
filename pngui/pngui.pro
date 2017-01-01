@@ -30,15 +30,16 @@ QT += core gui gui-private
 DEFINES += XLSX_NO_LIB
 
 FORMS += \
-    grid/qadvancedtableview.ui \
-    grid/qconditionaldecorationdialog.ui \
     widgets/annotationverticaltimelineeditor.ui \
-    widgets/corpuslevelsattributesselector.ui \
-    widgets/gridviewwidget.ui \
-    widgets/corpusitemselectorwidget.ui \
-    widgets/annotationtimelineeditor.ui \
-    widgets/timelineeditorconfigwidget.ui \
-    widgets/gridviewfinddialog.ui
+    widgets/TableWidgetBase.ui \
+    widgets/TimelineEditorConfigWidget.ui \
+    widgets/GridViewWidget.ui \
+    widgets/GridViewFindDialog.ui \
+    widgets/CorpusLevelsAttributesSelector.ui \
+    widgets/CorpusItemSelectorWidget.ui \
+    widgets/AnnotationTimelineEditor.ui \
+    grid/QAdvancedTableView.ui \
+    grid/QConditionalDecorationDialog.ui
 
 HEADERS += \
     grid/qabstractfilter.h \
@@ -88,13 +89,7 @@ HEADERS += \
     grid/qvaluefilter.h \
     grid/qvaluefilter_p.h \
     grid/spinboxitemdelegate.h \
-    model/checkableproxymodel.h \
-    model/delayedexecutiontimer.h \
-    observers/corpusobserver.h \
-    model/query/queryfiltersequencetablemodel.h \
-    model/query/querydefinitiontreemodel.h \
     model/annotation/annotationtiermodel.h \
-    model/diff/diffsesforintervalstablemodel.h \
     model/annotation/AnnotationGridPointModel.h \
     model/annotation/AnnotationGridModel.h \
     layer/AnnotationGridLayer.h \
@@ -170,7 +165,16 @@ HEADERS += \
     widgets/TimelineEditorConfigWidget.h \
     widgets/WaitingSpinnerWidget.h \
     widgets/CorpusItemPreview.h \
-    widgets/SelectReorderItemsWidget.h
+    widgets/SelectReorderItemsWidget.h \
+    widgets/TableWidgetBase.h \
+    observers/CorpusObserver.h \
+    model/DelayedExecutionTimer.h \
+    model/CheckableProxyModel.h \
+    model/diff/DiffSESForIntervalsTableModel.h \
+    model/query/QueryDefinitionTreeModel.h \
+    model/query/QueryFilterSequenceTableModel.h \
+    model/corpus/CorporaTableModel.h \
+    model/corpus/test.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -209,13 +213,7 @@ SOURCES += \
     grid/quniquevaluesproxymodel.cpp \
     grid/qvaluefilter.cpp \
     grid/spinboxitemdelegate.cpp \
-    model/checkableproxymodel.cpp \
-    model/delayedexecutiontimer.cpp \
-    observers/corpusobserver.cpp \
-    model/query/queryfiltersequencetablemodel.cpp \
-    model/query/querydefinitiontreemodel.cpp \
     model/annotation/annotationtiermodel.cpp \
-    model/diff/diffsesforintervalstablemodel.cpp \
     model/annotation/AnnotationGridModel.cpp \
     layer/AnnotationGridLayer.cpp \
     layer/PraalineLayersInitialiser.cpp \
@@ -276,4 +274,13 @@ SOURCES += \
     widgets/TimelineEditorConfigWidget.cpp \
     widgets/WaitingSpinnerWidget.cpp \
     widgets/CorpusItemPreview.cpp \
-    widgets/SelectReorderItemsWidget.cpp
+    widgets/SelectReorderItemsWidget.cpp \
+    widgets/TableWidgetBase.cpp \
+    observers/CorpusObserver.cpp \
+    model/DelayedExecutionTimer.cpp \
+    model/CheckableProxyModel.cpp \
+    model/diff/DiffSESForIntervalsTableModel.cpp \
+    model/query/QueryFilterSequenceTableModel.cpp \
+    model/query/QueryDefinitionTreeModel.cpp \
+    model/corpus/CorporaTableModel.cpp \
+    model/corpus/test.cpp

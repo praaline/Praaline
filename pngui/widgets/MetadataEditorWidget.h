@@ -51,6 +51,8 @@ private slots:
     void valueChanged(QtProperty *property, int value);
     void valueChanged(QtProperty *property, double value);
     void valueChanged(QtProperty *property, const QDate &value);
+    void valueChanged(QtProperty *property, const QTime &value);
+    void valueChanged(QtProperty *property, const QDateTime &value);
 
 private:
     MetadataEditorWidgetData *d;

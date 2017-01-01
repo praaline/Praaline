@@ -24,7 +24,7 @@ struct MetadataEditorWidgetData {
     MetadataEditorWidgetData () :
         stringManager(0), boolManager(0), intManager(0), doubleManager(0), enumManager(0), dateManager(0), groupManager(0),
         doubleSpinBoxFactory(0), checkBoxFactory(0), spinBoxFactory(0), lineEditFactory(0), comboBoxFactory(0), dateEditFactory(0),
-        mainLayout(0), propertyEditor(0), style(MetadataEditorWidget::TreeStyle)
+        mainLayout(0), propertyEditor(0), style(MetadataEditorWidget::TreeStyle), metadataStructure(0)
     {}
 
     QtStringPropertyManager *stringManager;
@@ -33,6 +33,8 @@ struct MetadataEditorWidgetData {
     QtDoublePropertyManager *doubleManager;
     QtEnumPropertyManager *enumManager;
     QtDatePropertyManager *dateManager;
+    QtTimePropertyManager *timeManager;
+    QtDateTimePropertyManager *dateTimeManager;
     QtGroupPropertyManager *groupManager;
 
     QtDoubleSpinBoxFactory *doubleSpinBoxFactory;
@@ -41,12 +43,15 @@ struct MetadataEditorWidgetData {
     QtLineEditFactory *lineEditFactory;
     QtEnumEditorFactory *comboBoxFactory;
     QtDateEditFactory *dateEditFactory;
+    QtTimeEditFactory *timeEditFactory;
+    QtDateTimeEditFactory *dateTimeEditFactory;
 
     QGridLayout *mainLayout;
     QScrollArea *scroll;
     QtAbstractPropertyBrowser *propertyEditor;
     MetadataEditorWidget::MetadataEditorWidgetStyle style;
 
+    QPointer<MetadataStructure> metadataStructure;
     QMap<QPair<Praaline::Core::CorpusObject::Type, QString>, QPointer<Praaline::Core::CorpusObject> > items;
 
     QMap<QtProperty *, MetadataEditorWidget::PropertyID> propertyToId;
@@ -58,21 +63,25 @@ MetadataEditorWidget::MetadataEditorWidget(MetadataEditorWidgetStyle style, QWid
     QWidget(parent), d(new MetadataEditorWidgetData)
 {
     // Managers
+    d->groupManager = new QtGroupPropertyManager(this);
     d->stringManager = new QtStringPropertyManager(this);
     d->boolManager = new QtBoolPropertyManager(this);
     d->intManager = new QtIntPropertyManager(this);
     d->doubleManager = new QtDoublePropertyManager(this);
     d->enumManager = new QtEnumPropertyManager(this);
     d->dateManager = new QtDatePropertyManager(this);
-    d->groupManager = new QtGroupPropertyManager(this);
+    d->timeManager = new QtTimePropertyManager(this);
+    d->dateTimeManager = new QtDateTimePropertyManager(this);
 
     // Factories
-    d->doubleSpinBoxFactory = new QtDoubleSpinBoxFactory(this);
-    d->checkBoxFactory = new QtCheckBoxFactory(this);
-    d->spinBoxFactory = new QtSpinBoxFactory(this);
-    d->lineEditFactory = new QtLineEditFactory(this);
-    d->comboBoxFactory = new QtEnumEditorFactory(this);
-    d->dateEditFactory = new QtDateEditFactory(this);
+    d->lineEditFactory = new QtLineEditFactory(this); // string
+    d->checkBoxFactory = new QtCheckBoxFactory(this); // bool
+    d->spinBoxFactory = new QtSpinBoxFactory(this); // int
+    d->doubleSpinBoxFactory = new QtDoubleSpinBoxFactory(this); // double
+    d->comboBoxFactory = new QtEnumEditorFactory(this); // enum
+    d->dateEditFactory = new QtDateEditFactory(this); // date
+    d->timeEditFactory = new QtTimeEditFactory(this); // time
+    d->dateTimeEditFactory = new QtDateTimeEditFactory(this); // datetime
 
     // Signals and slots
     connect(d->stringManager, SIGNAL(valueChanged(QtProperty*, const QString &)),
@@ -86,7 +95,11 @@ MetadataEditorWidget::MetadataEditorWidget(MetadataEditorWidgetStyle style, QWid
     connect(d->enumManager, SIGNAL(valueChanged(QtProperty*, int)),
             this, SLOT(valueChanged(QtProperty *, int)));
     connect(d->dateManager, SIGNAL(valueChanged(QtProperty*, const QDate &)),
-            this, SLOT(valueChanged(QtProperty *, const QDate &)));
+            this, SLOT(valueChanged(QtProperty*, const QDate &)));
+    connect(d->timeManager, SIGNAL(valueChanged(QtProperty*,QTime)),
+            this, SLOT(valueChanged(QtProperty*, const QTime &)));
+    connect(d->dateTimeManager, SIGNAL(valueChanged(QtProperty*,QDateTime)),
+            this, SLOT(valueChanged(QtProperty*, const QDateTime &)));
 
     d->mainLayout = new QGridLayout(this);
     this->setLayout(d->mainLayout);
@@ -126,8 +139,10 @@ void MetadataEditorWidget::createPropertyBrowser(MetadataEditorWidgetStyle style
     d->propertyEditor->setFactoryForManager(d->boolManager, d->checkBoxFactory);
     d->propertyEditor->setFactoryForManager(d->intManager, d->spinBoxFactory);
     d->propertyEditor->setFactoryForManager(d->doubleManager, d->doubleSpinBoxFactory);
-    d->propertyEditor->setFactoryForManager(d->dateManager, d->dateEditFactory);
     d->propertyEditor->setFactoryForManager(d->enumManager, d->comboBoxFactory);
+    d->propertyEditor->setFactoryForManager(d->dateManager, d->dateEditFactory);
+    d->propertyEditor->setFactoryForManager(d->timeManager, d->timeEditFactory);
+    d->propertyEditor->setFactoryForManager(d->dateTimeManager, d->dateTimeEditFactory);
 
     // Presentation details depending on property browser type
     if (style == MetadataEditorWidget::TreeStyle) {
@@ -148,6 +163,12 @@ void MetadataEditorWidget::setEditorStyle(MetadataEditorWidgetStyle style)
     // Create new property browser if necessary
     if ((d->style == style) && (d->propertyEditor)) return; // already OK
     createPropertyBrowser(style);
+    // Create properties based on saved state
+    QtProperty *group = Q_NULLPTR;
+    foreach (QPointer<CorpusObject> item, d->items.values()) {
+        if (!group) group = addProperties(d->metadataStructure, item);
+        else addProperties(d->metadataStructure, item, group);
+    }
 }
 
 void MetadataEditorWidget::addProperty(QtProperty *property, CorpusObject::Type type,
@@ -204,16 +225,38 @@ QtProperty *MetadataEditorWidget::addProperties(QPointer<MetadataStructure> mstr
         if (i != 0) group = d->groupManager->addProperty(sec->name());
         foreach (QPointer<MetadataStructureAttribute> attr, sec->attributes()) {
             if (!attr) continue;
-            if (attr->datatype().base() == DataType::DateTime) {
+            // Select correct manager based on attribute type (string, bool, int, double, enum)
+            if (attr->datatype().base() == DataType::Boolean) {
+                property = d->boolManager->addProperty(attr->name());
+                d->boolManager->setValue(property, item->property(attr->ID()).toBool());
+            }
+            else if (attr->datatype().base() == DataType::BigInt || attr->datatype().base() == DataType::Integer ||
+                attr->datatype().base() == DataType::SmallInt) {
+                property = d->intManager->addProperty(attr->name());
+                d->intManager->setValue(property, item->property(attr->ID()).toInt());
+            }
+            else if (attr->datatype().base() == DataType::Decimal || attr->datatype().base() == DataType::Double ||
+                     attr->datatype().base() == DataType::Float) {
+                property = d->doubleManager->addProperty(attr->name());
+                d->doubleManager->setValue(property, item->property(attr->ID()).toDouble());
+            }
+            else if (attr->datatype().base() == DataType::Date) {
                 property = d->dateManager->addProperty(attr->name());
                 d->dateManager->setValue(property, item->property(attr->ID()).toDate());
-                addProperty(property, item->type(), itemID, QLatin1String(attr->ID().toLatin1()), group);
+            }
+            else if (attr->datatype().base() == DataType::Time) {
+                property = d->timeManager->addProperty(attr->name());
+                d->timeManager->setValue(property, item->property(attr->ID()).toTime());
+            }
+            else if (attr->datatype().base() == DataType::DateTime) {
+                property = d->dateTimeManager->addProperty(attr->name());
+                d->dateTimeManager->setValue(property, item->property(attr->ID()).toDateTime());
             }
             else {
                 property = d->stringManager->addProperty(attr->name());
                 d->stringManager->setValue(property, item->property(attr->ID()).toString());
-                addProperty(property, item->type(), itemID, QLatin1String(attr->ID().toLatin1()), group);
             }
+            addProperty(property, item->type(), itemID, QLatin1String(attr->ID().toLatin1()), group);
         }
     }
     // Basic attributes that appear after user-defined ones
@@ -224,7 +267,7 @@ QtProperty *MetadataEditorWidget::addProperties(QPointer<MetadataStructure> mstr
         property = d->doubleManager->addProperty("Duration");
         d->doubleManager->setValue(property, item->property("durationSec").toDouble());
         addProperty(property, item->type(), itemID, QLatin1String("durationSec"), groupTopLevel);
-        //
+        // Sound information
         QtProperty *groupSoundInfo = d->groupManager->addProperty("Sound file information");
         property = d->stringManager->addProperty("Format");
         d->stringManager->setValue(property, item->property("format").toString());
@@ -264,27 +307,31 @@ void MetadataEditorWidget::rebind(QPointer<MetadataStructure> mstructure, QList<
     if (!mstructure) return;
     // Clean up previous items
     clear();
-    // Create property box of new items
+    // Save the items that should be shown
     foreach (QPointer<CorpusObject> item, items) {
         if (!item) continue;
         d->items.insert(QPair<CorpusObject::Type, QString>(item->type(), item->ID()), item);
-        QtProperty *group = addProperties(mstructure, item);
-        if (!group) continue;
         if (item->type() == CorpusObject::Type_Participation && includeParticipationSpeaker) {
             CorpusParticipation *part = qobject_cast<CorpusParticipation *>(item);
             if (!part) continue;
             d->items.insert(QPair<CorpusObject::Type, QString>(CorpusObject::Type_Speaker, part->speakerID()),
                            static_cast<CorpusObject *>(part->speaker()));
-            addProperties(mstructure, static_cast<CorpusObject *>(part->speaker()), group);
         }
         if (item->type() == CorpusObject::Type_Participation && includeParticipationCommunication) {
             CorpusParticipation *part = qobject_cast<CorpusParticipation *>(item);
             if (!part) continue;
             d->items.insert(QPair<CorpusObject::Type, QString>(CorpusObject::Type_Communication, part->communicationID()),
                            static_cast<CorpusObject *>(part->communication()));
-            addProperties(mstructure, static_cast<CorpusObject *>(part->communication()), group);
         }
     }
+    // Create properties
+    QtProperty *group = Q_NULLPTR;
+    foreach (QPointer<CorpusObject> item, d->items.values()) {
+        if (!group) group = addProperties(mstructure, item);
+        else addProperties(mstructure, item, group);
+    }
+    // Save state
+    d->metadataStructure = mstructure;
 }
 
 // ==============================================================================================================================
@@ -324,6 +371,22 @@ void MetadataEditorWidget::valueChanged(QtProperty *property, double value)
 }
 
 void MetadataEditorWidget::valueChanged(QtProperty *property, const QDate &value)
+{
+    if (!d->propertyToId.contains(property)) return;
+    QPointer<CorpusObject> item = d->items.value(QPair<CorpusObject::Type, QString>(d->propertyToId[property].type, d->propertyToId[property].itemID));
+    if (!item) return;
+    item->setProperty(d->propertyToId[property].attributeID, value);
+}
+
+void MetadataEditorWidget::valueChanged(QtProperty *property, const QTime &value)
+{
+    if (!d->propertyToId.contains(property)) return;
+    QPointer<CorpusObject> item = d->items.value(QPair<CorpusObject::Type, QString>(d->propertyToId[property].type, d->propertyToId[property].itemID));
+    if (!item) return;
+    item->setProperty(d->propertyToId[property].attributeID, value);
+}
+
+void MetadataEditorWidget::valueChanged(QtProperty *property, const QDateTime &value)
 {
     if (!d->propertyToId.contains(property)) return;
     QPointer<CorpusObject> item = d->items.value(QPair<CorpusObject::Type, QString>(d->propertyToId[property].type, d->propertyToId[property].itemID));

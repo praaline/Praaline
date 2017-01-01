@@ -10,7 +10,7 @@
 using namespace Praaline::Core;
 
 #include "pnlib/diff/diffintervals.h"
-#include "pngui/model/diff/diffsesforintervalstablemodel.h"
+#include "pngui/model/diff/DiffSESForIntervalsTableModel.h"
 #include "pngui/widgets/CheckBoxList.h"
 #include "pngui/widgets/GridViewWidget.h"
 #include "CorporaManager.h"

@@ -19,7 +19,7 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/SelectionDialog.h"
 #include "pngui/widgets/MetadataEditorWidget.h"
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 #include "CorporaManager.h"
 #include "NewCorpusWizard.h"
 #include "CorpusDatabaseConnectionDialog.h"
@@ -66,6 +66,12 @@ struct CorpusExplorerWidgetData {
     QAction *actionCreateSpeakersFromAnnotations;
     QAction *actionSplitCommunications;
     QAction *actionCleanUpParticipations;
+    QAction *actionMetadataEditorPrimaryStyleTree;
+    QAction *actionMetadataEditorPrimaryStyleGroupBox;
+    QAction *actionMetadataEditorPrimaryStyleButton;
+    QAction *actionMetadataEditorSecondaryStyleTree;
+    QAction *actionMetadataEditorSecondaryStyleGroupBox;
+    QAction *actionMetadataEditorSecondaryStyleButton;
 
     RecentFiles *recentFiles;
     ActionContainer* recentFilesMenu;
@@ -78,6 +84,7 @@ struct CorpusExplorerWidgetData {
     MetadataEditorWidget *metadataEditorSecondary;
 
     QToolBar *toolbarCorpusExplorer;
+    QMenu *menuMetadataEditorStyles;
 };
 
 CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
@@ -332,6 +339,64 @@ void CorpusExplorerWidget::setupActions()
     command = ACTION_MANAGER->registerAction("Corpus.AttributesAndGroupings", d->actionAttributesAndGroupings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     view_menu->addAction(command);
+
+    // Metadata editor styling menus (inserted on the toolbar)
+    setupMetadataEditorsStylingMenu();
+}
+
+void CorpusExplorerWidget::setupMetadataEditorsStylingMenu()
+{
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+    Command* command;
+
+    d->menuMetadataEditorStyles = new QMenu(this);
+
+    d->actionMetadataEditorPrimaryStyleTree = new QAction(tr("Primary Metadata Editor: Tree View"), this);
+    connect(d->actionMetadataEditorPrimaryStyleTree, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleTree()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.Tree", d->actionMetadataEditorPrimaryStyleTree, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleTree);
+
+    d->actionMetadataEditorPrimaryStyleGroupBox = new QAction(tr("Primary Metadata Editor: Form View"), this);
+    connect(d->actionMetadataEditorPrimaryStyleGroupBox, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleGroupBox()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.GroupBox", d->actionMetadataEditorPrimaryStyleGroupBox, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleGroupBox);
+
+    d->actionMetadataEditorPrimaryStyleButton = new QAction(tr("Primary Metadata Editor: Compact View"), this);
+    connect(d->actionMetadataEditorPrimaryStyleButton, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleButton()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.Button", d->actionMetadataEditorPrimaryStyleButton, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleButton);
+
+    d->menuMetadataEditorStyles->addSeparator();
+
+    d->actionMetadataEditorSecondaryStyleTree = new QAction(tr("Secondary Metadata Editor: Tree View"), this);
+    connect(d->actionMetadataEditorSecondaryStyleTree, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleTree()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.Tree", d->actionMetadataEditorSecondaryStyleTree, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleTree);
+
+    d->actionMetadataEditorSecondaryStyleGroupBox = new QAction(tr("Secondary Metadata Editor: Form View"), this);
+    connect(d->actionMetadataEditorSecondaryStyleGroupBox, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleGroupBox()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.GroupBox", d->actionMetadataEditorSecondaryStyleGroupBox, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleGroupBox);
+
+    d->actionMetadataEditorSecondaryStyleButton = new QAction(tr("Secondary Metadata Editor: Compact View"), this);
+    connect(d->actionMetadataEditorSecondaryStyleButton, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleButton()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.Button", d->actionMetadataEditorSecondaryStyleButton, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleButton);
+
+    // Add the pop-up menu to the corpus explorer toolbar
+    QToolButton* toolButtonMetadataEditorStyles = new QToolButton();
+    toolButtonMetadataEditorStyles->setMenu(d->menuMetadataEditorStyles);
+    toolButtonMetadataEditorStyles->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* toolButtonActionMetadataEditorStyles = new QWidgetAction(this);
+    toolButtonActionMetadataEditorStyles->setDefaultWidget(toolButtonMetadataEditorStyles);
+    d->toolbarCorpusExplorer->addAction(toolButtonActionMetadataEditorStyles);
 }
 
 void CorpusExplorerWidget::setupRecentFilesMenu()
@@ -1078,3 +1143,38 @@ void CorpusExplorerWidget::attributesAndGroupings()
     obs->setCommunicationsGrouping(dialog->groupAttributesForCommunications());
     obs->setSpeakersGrouping(dialog->groupAttributesForSpeakers());
 }
+
+// ==============================================================================================================================
+// Metadata editors (primary and secondary) styling
+// ==============================================================================================================================
+
+void CorpusExplorerWidget::metadataEditorPrimaryStyleTree()
+{
+    d->metadataEditorPrimary->setEditorStyle(MetadataEditorWidget::TreeStyle);
+}
+
+void CorpusExplorerWidget::metadataEditorPrimaryStyleGroupBox()
+{
+    d->metadataEditorPrimary->setEditorStyle(MetadataEditorWidget::GroupBoxStyle);
+}
+
+void CorpusExplorerWidget::metadataEditorPrimaryStyleButton()
+{
+    d->metadataEditorPrimary->setEditorStyle(MetadataEditorWidget::ButtonStyle);
+}
+
+void CorpusExplorerWidget::metadataEditorSecondaryStyleTree()
+{
+    d->metadataEditorSecondary->setEditorStyle(MetadataEditorWidget::TreeStyle);
+}
+
+void CorpusExplorerWidget::metadataEditorSecondaryStyleGroupBox()
+{
+    d->metadataEditorSecondary->setEditorStyle(MetadataEditorWidget::GroupBoxStyle);
+}
+
+void CorpusExplorerWidget::metadataEditorSecondaryStyleButton()
+{
+    d->metadataEditorSecondary->setEditorStyle(MetadataEditorWidget::ButtonStyle);
+}
+

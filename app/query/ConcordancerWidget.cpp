@@ -11,10 +11,10 @@
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
 
-#include "pngui/observers/corpusobserver.h"
-#include "pngui/model/checkableproxymodel.h"
+#include "pngui/observers/CorpusObserver.h"
+#include "pngui/model/CheckableProxyModel.h"
 #include "pngui/model/query/QueryOccurrenceTableModel.h"
-#include "pngui/model/query/queryfiltersequencetablemodel.h"
+#include "pngui/model/query/QueryFilterSequenceTableModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "CorporaManager.h"
 

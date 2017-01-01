@@ -1,7 +1,7 @@
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 
 #include "CorporaManager.h"
 

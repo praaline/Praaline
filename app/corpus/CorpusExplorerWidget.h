@@ -6,7 +6,7 @@
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 
 namespace Ui {
 class CorpusExplorerWidget;
@@ -57,11 +57,19 @@ private slots:
 
     void setupRecentFilesMenu();
 
+    void metadataEditorPrimaryStyleTree();
+    void metadataEditorPrimaryStyleGroupBox();
+    void metadataEditorPrimaryStyleButton();
+    void metadataEditorSecondaryStyleTree();
+    void metadataEditorSecondaryStyleGroupBox();
+    void metadataEditorSecondaryStyleButton();
+
 private:
     Ui::CorpusExplorerWidget *ui;
     CorpusExplorerWidgetData *d;
 
     void setupActions();
+    void setupMetadataEditorsStylingMenu();
 
     void openCorpusFile(const QString &filename);
     Corpus *openCorpus(const QString &filename, CorpusDefinition &definition);

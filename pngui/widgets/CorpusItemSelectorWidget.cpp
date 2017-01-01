@@ -15,7 +15,7 @@
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
 
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/corpus/CorpusBookmarkModel.h"
 
 struct CorpusItemSelectorWidgetData {

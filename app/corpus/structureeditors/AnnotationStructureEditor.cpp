@@ -14,7 +14,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 #include "CorporaManager.h"
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"

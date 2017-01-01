@@ -13,8 +13,8 @@
 #include "AutomaticAnnotationWidget.h"
 #include "ui_AutomaticAnnotationWidget.h"
 
-#include "pngui/observers/corpusobserver.h"
-#include "pngui/model/checkableproxymodel.h"
+#include "pngui/observers/CorpusObserver.h"
+#include "pngui/model/CheckableProxyModel.h"
 
 #include <QtilitiesExtensionSystem>
 using namespace QtilitiesExtensionSystem;

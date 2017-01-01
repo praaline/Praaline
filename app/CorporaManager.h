@@ -11,7 +11,7 @@ class Corpus;
 }
 }
 
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 
 class CorporaManager : public QObject
 {

@@ -15,8 +15,8 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 
-#include "pngui/observers/corpusobserver.h"
-#include "pngui/model/checkableproxymodel.h"
+#include "pngui/observers/CorpusObserver.h"
+#include "pngui/model/CheckableProxyModel.h"
 #include "pngui/model/corpus/CorpusBookmarkModel.h"
 #include "pngui/widgets/AnnotationTimelineEditor.h"
 #include "pngui/widgets/CorpusItemSelectorWidget.h"

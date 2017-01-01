@@ -2,7 +2,7 @@
 #include "pncore/query/QueryFilterSequence.h"
 using namespace Praaline::Core;
 
-#include "queryfiltersequencetablemodel.h"
+#include "QueryFilterSequenceTableModel.h"
 
 QueryFilterSequenceTableModel::QueryFilterSequenceTableModel(QueryFilterSequence &filterSequence, QObject *parent) :
     QAbstractTableModel(parent), m_filterSequence(filterSequence)

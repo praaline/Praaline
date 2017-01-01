@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QProcess>
 #include <QTextStream>
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 
 namespace Ui {
 class AnnotationModeWidget;

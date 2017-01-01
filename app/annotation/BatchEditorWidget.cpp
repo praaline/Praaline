@@ -9,7 +9,7 @@
 #include "pncore/annotation/AnnotationTier.h"
 using namespace Praaline::Core;
 
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 #include "pngui/widgets/GridViewWidget.h"
 #include "CorporaManager.h"
 

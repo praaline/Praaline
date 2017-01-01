@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "pncore/corpus/CorpusObject.h"
-#include "pngui/observers/corpusobserver.h"
+#include "pngui/observers/CorpusObserver.h"
 
 namespace Ui {
 class AnnotationStructureEditor;

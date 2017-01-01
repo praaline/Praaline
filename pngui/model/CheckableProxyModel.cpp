@@ -17,11 +17,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "checkableproxymodel.h"
+#include "CheckableProxyModel.h"
 #include <QtDebug>
 #include <QTimer>
 #include <QQueue>
-#include "delayedexecutiontimer.h"
+#include "DelayedExecutionTimer.h"
 
 
 #ifdef CHECKABLEPROXYMODEL_DEBUG

@@ -6,7 +6,7 @@
 #include "pncore/serialisers/CorpusDefinition.h"
 using namespace Praaline::Core;
 
-#include "corpusobserver.h"
+#include "CorpusObserver.h"
 
 CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointer<CorpusCommunication> com) :
     TreeNode(com->ID()), communication(com)
