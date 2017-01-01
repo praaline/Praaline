@@ -721,12 +721,17 @@ void VisualiserWidget::setupViewMenu()
     if (m_mainMenusCreated) return;
 
     IconLoader il;
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID("Context.VisualisationMode"));
 
     QAction *action = 0;
 
     m_keyReference->setCategory(tr("Panning and Navigation"));
 
-    QMenu *menu = menuBar()->addMenu(tr("&View"));
+    bool existed;
+    ActionContainer* view_menu = ACTION_MANAGER->createMenu(qti_action_VIEW, existed);
+    QMenu *menu = view_menu->menu();
+
     menu->setTearOffEnabled(true);
     m_scrollLeftAction = new QAction(tr("Scroll &Left"), this);
     m_scrollLeftAction->setShortcut(tr("Left"));
@@ -927,7 +932,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
         m_paneActions.clear();
         m_paneMenu->clear();
     } else {
-        m_paneMenu = menuBar()->addMenu(tr("&Pane"));
+        m_paneMenu = new QMenu(tr("&Pane"), this);
         m_paneMenu->setTearOffEnabled(true);
     }
 
@@ -935,7 +940,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
         m_layerActions.clear();
         m_layerMenu->clear();
     } else {
-        m_layerMenu = menuBar()->addMenu(tr("&Layer"));
+        m_layerMenu = new QMenu(tr("&Layer"), this);
         m_layerMenu->setTearOffEnabled(true);
     }
 
@@ -1333,7 +1338,7 @@ void VisualiserWidget::setupTransformsMenu()
         m_transformActionsReverse.clear();
         m_transformsMenu->clear();
     } else {
-        m_transformsMenu = menuBar()->addMenu(tr("&Transform"));
+        m_transformsMenu = new QMenu(tr("&Transform"));
         m_transformsMenu->setTearOffEnabled(true);
         m_transformsMenu->setSeparatorsCollapsible(true);
     }
@@ -1721,12 +1726,42 @@ void VisualiserWidget::setupExistingLayersMenus()
 
 void VisualiserWidget::setupToolbars()
 {
+    IconLoader il;
+
+    // Playback toolbar
     setupPlaybackMenusAndToolbar();
 
-    IconLoader il;
+    // Edit toolbar
     QToolBar *toolbar = addToolBar(tr("Edit Toolbar"));
     CommandHistory::getInstance()->registerToolbar(toolbar);
 
+    // Panes, Layers, Transforms toolbar
+    toolbar = addToolBar(tr("Panes Layers Transforms"));
+    QToolButton* toolButtonPanes = new QToolButton();
+    toolButtonPanes->setText("Panes ");
+    toolButtonPanes->setMenu(m_paneMenu);
+    toolButtonPanes->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* toolButtonActionPanes = new QWidgetAction(this);
+    toolButtonActionPanes->setDefaultWidget(toolButtonPanes);
+    toolbar->addAction(toolButtonActionPanes);
+
+    QToolButton* toolButtonLayers = new QToolButton();
+    toolButtonLayers->setText("Layers ");
+    toolButtonLayers->setMenu(m_layerMenu);
+    toolButtonLayers->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* toolButtonActionLayers = new QWidgetAction(this);
+    toolButtonActionLayers->setDefaultWidget(toolButtonLayers);
+    toolbar->addAction(toolButtonActionLayers);
+
+    QToolButton* toolButtonTransforms = new QToolButton();
+    toolButtonTransforms->setText("Transforms ");
+    toolButtonTransforms->setMenu(m_transformsMenu);
+    toolButtonTransforms->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* toolButtonActionTransforms = new QWidgetAction(this);
+    toolButtonActionTransforms->setDefaultWidget(toolButtonTransforms);
+    toolbar->addAction(toolButtonActionTransforms);
+
+    // Tools toolbar
     toolbar = addToolBar(tr("Tools Toolbar"));
     QActionGroup *group = new QActionGroup(this);
 

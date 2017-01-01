@@ -174,5 +174,5 @@ struct PRAALINE_CORE_SHARED_EXPORT RealTime
 };
 
 PRAALINE_CORE_SHARED_EXPORT std::ostream & operator<<(std::ostream &out, const RealTime &rt);
-    
+
 #endif

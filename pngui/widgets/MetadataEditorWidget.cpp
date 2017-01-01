@@ -53,6 +53,7 @@ struct MetadataEditorWidgetData {
 
     QPointer<MetadataStructure> metadataStructure;
     QMap<QPair<Praaline::Core::CorpusObject::Type, QString>, QPointer<Praaline::Core::CorpusObject> > items;
+    QList<QPointer<Praaline::Core::CorpusObject> > itemsSorted;
 
     QMap<QtProperty *, MetadataEditorWidget::PropertyID> propertyToId;
     QMap<MetadataEditorWidget::PropertyID, QtProperty *> idToProperty;
@@ -165,7 +166,7 @@ void MetadataEditorWidget::setEditorStyle(MetadataEditorWidgetStyle style)
     createPropertyBrowser(style);
     // Create properties based on saved state
     QtProperty *group = Q_NULLPTR;
-    foreach (QPointer<CorpusObject> item, d->items.values()) {
+    foreach (QPointer<CorpusObject> item, d->itemsSorted) {
         if (!group) group = addProperties(d->metadataStructure, item);
         else addProperties(d->metadataStructure, item, group);
     }
@@ -292,6 +293,7 @@ void MetadataEditorWidget::clear()
 {
     // Clean up previous items
     d->items.clear();
+    d->itemsSorted.clear();
     QMap<QtProperty *, PropertyID>::ConstIterator itProp = d->propertyToId.constBegin();
     while (itProp != d->propertyToId.constEnd()) {
         delete itProp.key();
@@ -311,22 +313,25 @@ void MetadataEditorWidget::rebind(QPointer<MetadataStructure> mstructure, QList<
     foreach (QPointer<CorpusObject> item, items) {
         if (!item) continue;
         d->items.insert(QPair<CorpusObject::Type, QString>(item->type(), item->ID()), item);
+        d->itemsSorted.append(item);
         if (item->type() == CorpusObject::Type_Participation && includeParticipationSpeaker) {
             CorpusParticipation *part = qobject_cast<CorpusParticipation *>(item);
             if (!part) continue;
             d->items.insert(QPair<CorpusObject::Type, QString>(CorpusObject::Type_Speaker, part->speakerID()),
                            static_cast<CorpusObject *>(part->speaker()));
+            d->itemsSorted.append(static_cast<CorpusObject *>(part->speaker()));
         }
         if (item->type() == CorpusObject::Type_Participation && includeParticipationCommunication) {
             CorpusParticipation *part = qobject_cast<CorpusParticipation *>(item);
             if (!part) continue;
             d->items.insert(QPair<CorpusObject::Type, QString>(CorpusObject::Type_Communication, part->communicationID()),
                            static_cast<CorpusObject *>(part->communication()));
+            d->itemsSorted.append(static_cast<CorpusObject *>(part->communication()));
         }
     }
     // Create properties
     QtProperty *group = Q_NULLPTR;
-    foreach (QPointer<CorpusObject> item, d->items.values()) {
+    foreach (QPointer<CorpusObject> item, d->itemsSorted) {
         if (!group) group = addProperties(mstructure, item);
         else addProperties(mstructure, item, group);
     }
