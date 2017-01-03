@@ -406,7 +406,7 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
 {
     if (!tierTokMWU || !tierTokMin) return;
     if (!keepOnlyMin) {
-        if ((tierTokMWU->countItems() != this->count())) {
+        if ((tierTokMWU->count() != this->count())) {
             qDebug() << "Error - mismatch number of tokens in tok-mwu and token list";
             return;
         }
@@ -416,7 +416,7 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
         Token *tok = this->at(i);
         foreach (TokenUnit *tu, tok->getTokenUnits()) j++;
     }
-    if (tierTokMin->countItems() != j) {
+    if (tierTokMin->count() != j) {
         qDebug() << "Error - mismatch number of tokens in tok-min and token list";
         int iterTU = 0;
         for (int iterTok = 0; iterTok < this->count(); ++iterTok) {

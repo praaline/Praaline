@@ -24,17 +24,17 @@ Point::Point()
 }
 
 Point::Point(const RealTime &time, const QString &text) :
-    AnnotationElement(time, text)
+    AnnotationElement(text), m_time(time)
 {
 }
 
 Point::Point(const RealTime &time, const QString &text, const QHash<QString, QVariant> &attributes) :
-    AnnotationElement(time, text, attributes)
+    AnnotationElement(text, attributes), m_time(time)
 {
 }
 
 Point::Point(const Point &copy) :
-    AnnotationElement(copy.m_time, copy.m_text, copy.m_attributes)
+    AnnotationElement(copy.m_text, copy.m_attributes), m_time(copy.m_time)
 {
 }
 
@@ -42,12 +42,17 @@ Point::Point(const Point *copy)
 {
     m_time = copy->m_time;
     m_text = copy->m_text;
-    foreach (QString attributeID, copy->m_attributes.keys())
-        m_attributes.insert(attributeID, copy->m_attributes.value(attributeID));
+    m_attributes = copy->m_attributes;
 }
 
 Point::~Point()
 {
+}
+
+QVariant Point::attribute(const QString &name) const
+{
+    if (name == "time") return time().toDouble();
+    return AnnotationElement::attribute(name);
 }
 
 } // namespace Core

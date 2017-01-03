@@ -2,7 +2,7 @@
 #define XMLMETADATADATASTORE_H
 
 #include <QObject>
-#include "serialisers/AbstractMetadataDatastore.h"
+#include "serialisers/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {

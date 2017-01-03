@@ -99,7 +99,7 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     // Phones
     IntervalTier *tier_phone = tiers_nuclei->getIntervalTierByName("phone");
     if (tier_phone) {
-        for (int i = 0; i < tier_phone->countItems(); ++i) {
+        for (int i = 0; i < tier_phone->count(); ++i) {
             Interval *intv = tier_phone->interval(i);
             d->phones->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
                                                     RealTime::realTime2Frame(intv->duration(), sampleRate),
@@ -109,7 +109,7 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     // Syllables
     IntervalTier *tier_syll = tiers_nuclei->getIntervalTierByName("syll");
     if (tier_syll) {
-        for (int i = 0; i < tier_syll->countItems(); ++i) {
+        for (int i = 0; i < tier_syll->count(); ++i) {
             Interval *intv = tier_syll->interval(i);
             d->sylls->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
                                                    RealTime::realTime2Frame(intv->duration(), sampleRate),
@@ -119,7 +119,7 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     // Voiced-Unvoiced regions
     IntervalTier *tier_vuv = tiers_nuclei->getIntervalTierByName("vuv");
     if (tier_vuv) {
-        for (int i = 0; i < tier_vuv->countItems(); ++i) {
+        for (int i = 0; i < tier_vuv->count(); ++i) {
             Interval *intv = tier_vuv->interval(i);
             d->vuvregions->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
                                                         RealTime::realTime2Frame(intv->duration(), sampleRate),

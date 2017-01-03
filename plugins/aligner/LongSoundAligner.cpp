@@ -41,7 +41,7 @@ bool LongSoundAligner::createRecognitionLevel(QPointer<Corpus> corpus, int recog
     if (!corpus) return false;
     QString levelID = QString(d->tiername_auto_hypseg).arg(recognitionStep);
     if (corpus->annotationStructure()->hasLevel(levelID)) return true;
-    AnnotationStructureLevel *level = new AnnotationStructureLevel(levelID, AnnotationStructureLevel::IndependentLevel,
+    AnnotationStructureLevel *level = new AnnotationStructureLevel(levelID, AnnotationStructureLevel::IndependentIntervalsLevel,
                                                                    levelID, QString("Long sound alignment step %1").arg(recognitionStep));
     if (!corpus->datastoreAnnotations()->createAnnotationLevel(level)) return false;
     corpus->annotationStructure()->addLevel(level);
@@ -157,7 +157,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                               .replace("(1)", "").replace("(2)", "").replace("(3)", "").replace("(4)", "")
                               .replace("<s>", "_").replace("</s>", "_"));
             }
-            tier_auto_hypseg->fillEmptyAnnotationsWith("_");
+            tier_auto_hypseg->fillEmptyTextLabelsWith("_");
             tier_auto_hypseg->mergeIdenticalAnnotations("_");
             // Save
             mutex.lock();

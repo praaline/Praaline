@@ -10,7 +10,7 @@
 #include "pncore/base/RealTime.h"
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/Model.h"
-#include "pngui/model/annotation/annotationtiermodel.h"
+#include "pngui/model/annotation/AnnotationTierModel.h"
 #include "pngui/model/annotation/AnnotationGridPointModel.h"
 
 struct AnnotationGridModelData;

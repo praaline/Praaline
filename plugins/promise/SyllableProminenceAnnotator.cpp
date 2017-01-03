@@ -26,7 +26,7 @@ SyllableProminenceAnnotator::SyllableProminenceAnnotator(QObject *parent) :
 void SyllableProminenceAnnotator::prepareFeatures(QHash<QString, RealValueList> &features, IntervalTier *tier_syll, IntervalTier *tier_phones)
 {
     // Prepare data
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         Interval *syll = tier_syll->interval(isyll);
         // Duration
         double syll_dur = syll->attribute("duration").toDouble();
@@ -45,7 +45,7 @@ void SyllableProminenceAnnotator::prepareFeatures(QHash<QString, RealValueList> 
             tier_syll->interval(isyll)->setAttribute("f0_max_st", f0_max_st);
         }
     }
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Duration (log)
         features["syll_dur_rel22"] << Measures::relative(tier_syll, "duration", isyll, 2, 2, true, "", false);
         features["syll_dur_rel33"] << Measures::relative(tier_syll, "duration", isyll, 3, 3, true, "", false);
@@ -77,7 +77,7 @@ void SyllableProminenceAnnotator::prepareFeatures(QHash<QString, RealValueList> 
         features["intensity_rel44"]  << Measures::relative(tier_syll, "int_peak", isyll, 4, 4, true, "f0_min", true);
         features["intensity_rel55"]  << Measures::relative(tier_syll, "int_peak", isyll, 5, 5, true, "f0_min", true);
         // Following pause
-        if (isyll < tier_syll->countItems() - 1 && tier_syll->interval(isyll+1)->isPauseSilent()) {
+        if (isyll < tier_syll->count() - 1 && tier_syll->interval(isyll+1)->isPauseSilent()) {
             double pausedur = tier_syll->interval(isyll+1)->duration().toDouble();
             features["following_pause_dur"] << pausedur;
         }
@@ -102,7 +102,7 @@ void SyllableProminenceAnnotator::outputRFACE(const QString &sampleID, IntervalT
                         "f0_up" << "f0_down" << "f0_mvt" << "f0_traj" <<
                         "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
 
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         QString sylldata;
 
         // Get attributes
@@ -169,7 +169,7 @@ void SyllableProminenceAnnotator::readRFACEprediction(QString filename, Interval
     line = stream.readLine(); // header
     QString classA = line.section("\t", 2, 2).right(1);
     QString classB = line.section("\t", 3, 3).right(1);
-    for (int isyll = 0; isyll < tier_syll->countItems() && !stream.atEnd(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count() && !stream.atEnd(); isyll++) {
         Interval *syll = tier_syll->interval(isyll);
         QString delivery = syll->attribute("delivery").toString();
         QString prom = syll->attribute("prom").toString();
@@ -238,7 +238,7 @@ void SyllableProminenceAnnotator::outputSVM(IntervalTier *tier_syll, IntervalTie
                         "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
 
 
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         QString sylldata;
 
         // Get attributes
@@ -322,7 +322,7 @@ int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
                         "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
 
     bool endSequence = true;
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Get attributes
         Interval *syll = tier_syll->interval(isyll);
         QString delivery = syll->attribute("delivery").toString();
@@ -474,11 +474,11 @@ IntervalTier *SyllableProminenceAnnotator::annotateWithCRF(IntervalTier *tier_sy
     do {
         QString line = streamOut.readLine();
         if (line.isEmpty() || line.startsWith("#")) continue;
-        if (isyll >= promise->countItems()) continue;
+        if (isyll >= promise->count()) continue;
         // move cursor to next syllable at end of sequence pauses
         while (promise->interval(isyll)->text() != "x" &&
                promise->interval(isyll)->duration().toDouble() > 0.100 &&
-               isyll < promise->countItems())
+               isyll < promise->count())
             isyll++;
         //
         QStringList fields = line.split("\t");
@@ -538,7 +538,7 @@ IntervalTier *SyllableProminenceAnnotator::annotate(QString annotationID, const 
                         "f0_up" << "f0_down" << "f0_mvt" << "f0_traj" <<
                         "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
 
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         streamFeatures << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
         Interval *syll = tier_syll->interval(isyll);
         streamFeatures << syll->text() << "\t";

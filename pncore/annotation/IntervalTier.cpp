@@ -79,7 +79,7 @@ IntervalTier::IntervalTier(const QString &name, const IntervalTier *tierA, const
 
     RealTime cursor = m_tMin;
     int i = 0, j = 0;
-    while ((i < tierA->countItems()) && (j < tierB->countItems())) {
+    while ((i < tierA->count()) && (j < tierB->count())) {
         RealTime tMax_A = tierA->interval(i)->tMax();
         RealTime tMax_B = tierB->interval(j)->tMax();
         bool active_A = !tierA->interval(i)->isPauseSilent();
@@ -109,9 +109,92 @@ IntervalTier::~IntervalTier()
     qDeleteAll(m_intervals);
 }
 
-// ==========================================================================================================
+// ==============================================================================================================================
+// Implementation of AnnotationTier
+// ==============================================================================================================================
+
+bool IntervalTier::isEmpty() const
+{
+    if (m_intervals.count() == 1)
+        return m_intervals.at(0)->text().isEmpty();
+    // else
+    return false;
+}
+
+void IntervalTier::clear()
+{
+    qDeleteAll(m_intervals);
+    m_intervals.clear();
+    m_intervals << new Interval(m_tMin, m_tMax, ""); // initial blank interval
+}
+
+Interval *IntervalTier::at(int index) const
+{
+    return m_intervals.at(index);
+}
+
+Interval *IntervalTier::first() const
+{
+    if (isEmpty()) return Q_NULLPTR;
+    return m_intervals.first();
+}
+
+Interval *IntervalTier::last() const
+{
+    if (isEmpty()) return Q_NULLPTR;
+    return m_intervals.last();
+}
+
+QList<QString> IntervalTier::getDistinctTextLabels() const
+{
+    QList<QString> ret;
+    foreach (Interval *intv, m_intervals) {
+        if (!ret.contains(intv->text())) ret << intv->text();
+    }
+    return ret;
+}
+
+QList<QVariant> IntervalTier::getDistinctAttributeValues(const QString &attributeID) const
+{
+    QList<QVariant> ret;
+    foreach (Interval *intv, m_intervals) {
+        if (!ret.contains(intv->attribute(attributeID))) ret.append(intv->attribute(attributeID));
+    }
+    return ret;
+}
+
+void IntervalTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+{
+    foreach (Interval *intv, m_intervals) {
+        intv->replaceText(before, after, cs);
+    }
+}
+
+void IntervalTier::fillEmptyTextLabelsWith(const QString &filler)
+{
+    foreach (Interval *intv, m_intervals) {
+        if (intv->text().isEmpty()) intv->setText(filler);
+    }
+}
+
+void IntervalTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
+{
+    foreach (Interval *intv, m_intervals) {
+        intv->replaceAttributeText(attributeID, before, after, cs);
+    }
+}
+
+void IntervalTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
+{
+    foreach (Interval *intv, m_intervals) {
+        if (intv->attribute(attributeID).toString().isEmpty())
+            intv->setAttribute(attributeID, filler);
+    }
+}
+
+// ==============================================================================================================================
 // Accessors and mutators for Intervals
-// ==========================================================================================================
+// ==============================================================================================================================
 
 Interval* IntervalTier::interval(int index) const
 {
@@ -121,16 +204,6 @@ Interval* IntervalTier::interval(int index) const
 QList<Interval *> IntervalTier::intervals() const
 {
     return m_intervals;
-}
-
-Interval *IntervalTier::firstInterval() const
-{
-    return m_intervals.first();
-}
-
-Interval *IntervalTier::lastInterval() const
-{
-    return m_intervals.last();
 }
 
 bool IntervalTier::compareIntervals(Interval *A, Interval *B) {
@@ -173,21 +246,6 @@ int IntervalTier::intervalIndexAtTime(RealTime t) const
     return -1;
 }
 
-bool IntervalTier::isEmpty() const
-{
-    if (m_intervals.count() == 1)
-        return m_intervals.at(0)->text().isEmpty();
-    else
-        return false;
-}
-
-void IntervalTier::clear()
-{
-    qDeleteAll(m_intervals);
-    m_intervals.clear();
-    m_intervals << new Interval(m_tMin, m_tMax, ""); // initial blank interval
-}
-
 void IntervalTier::copyIntervalsFrom(const IntervalTier *copy, bool copyData)
 {
     if (!copy) return;
@@ -213,7 +271,7 @@ void IntervalTier::replaceAllIntervals(QList<Interval *> &newIntervals)
     }
     qSort(m_intervals.begin(), m_intervals.end(), IntervalTier::compareIntervals);
     fixEmptyIntervals();
-    m_tMin = m_intervals.at(0)->m_time;
+    m_tMin = m_intervals.at(0)->m_tMin;
     m_tMax = m_intervals.at(m_intervals.count() - 1)->m_tMax;
 }
 
@@ -246,9 +304,9 @@ Interval *IntervalTier::split(int index, RealTime at)
 Interval *IntervalTier::addToEnd(RealTime tMax, const QString &text)
 {
     Interval *intv;
-    intv = split(countItems() - 1, tMax);
+    intv = split(count() - 1, tMax);
     if (intv == 0) return 0; // problem with tMax
-    intv = interval(countItems() - 2);
+    intv = interval(count() - 2);
     intv->setText(text);
     return intv;
 }
@@ -337,11 +395,29 @@ void IntervalTier::mergeContiguousAnnotations(const QStringList &separatorsOfInt
     }
 }
 
-QList<RealTime> IntervalTier::tCenters() const
+QList<RealTime> IntervalTier::times() const
 {
     QList<RealTime> ret;
-    foreach (Interval *intv, m_intervals)
-        ret << intv->tCenter();
+    foreach (Interval *intv, m_intervals) ret << intv->tMin();
+    return ret;
+}
+
+QList<RealTime> IntervalTier::timesMin() const
+{
+    return times();
+}
+
+QList<RealTime> IntervalTier::timesCenter() const
+{
+    QList<RealTime> ret;
+    foreach (Interval *intv, m_intervals) ret << intv->tCenter();
+    return ret;
+}
+
+QList<RealTime> IntervalTier::timesMax() const
+{
+    QList<RealTime> ret;
+    foreach (Interval *intv, m_intervals) ret << intv->tMax();
     return ret;
 }
 
@@ -350,7 +426,7 @@ void IntervalTier::timeShift(const RealTime delta)
     m_tMin = m_tMin + delta;
     m_tMax = m_tMax + delta;
     foreach (Interval *intv, m_intervals) {
-        intv->m_time = intv->m_time + delta;
+        intv->m_tMin = intv->m_tMin + delta;
         intv->m_tMax = intv->m_tMax + delta;
     }
 }
@@ -385,7 +461,7 @@ void IntervalTier::fixBoundariesBasedOnTier(const IntervalTier *correctBoundarie
         proposed = correctBoundariesTier->getBoundaryClosestTo(m_intervals[i]->tMin());
         if ( (proposed >= previous_tMax) && (RealTime::abs(proposed - m_intervals[i]->tMin()) < threshold) &&
              (proposed < m_intervals[i]->tMax()) ) {
-            m_intervals[i]->m_time = proposed;
+            m_intervals[i]->m_tMin = proposed;
         }
         proposed = correctBoundariesTier->getBoundaryClosestTo(m_intervals[i]->tMax());
         if ( (proposed <= next_tMin) && (RealTime::abs(proposed - m_intervals[i]->tMax()) < threshold) &&
@@ -393,31 +469,6 @@ void IntervalTier::fixBoundariesBasedOnTier(const IntervalTier *correctBoundarie
             m_intervals[i]->m_tMax = proposed;
         }
     }
-}
-
-void IntervalTier::replaceText(const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Interval *intv, m_intervals) {
-        intv->replaceText(before, after, cs);
-    }
-}
-
-void IntervalTier::fillEmptyAnnotationsWith(const QString &filler)
-{
-    foreach (Interval *intv, m_intervals) {
-        if (intv->text().isEmpty()) intv->setText(filler);
-    }
-}
-
-QList<QString> IntervalTier::getDistinctTextLabels() const
-{
-    QList<QString> ret;
-    foreach (Interval *intv, m_intervals) {
-        if (!ret.contains(intv->text())) {
-            ret << intv->text();
-        }
-    }
-    return ret;
 }
 
 QList<Interval *> IntervalTier::getIntervalsContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const
@@ -504,12 +555,12 @@ IntervalTier *IntervalTier::getIntervalTierSubset(const RealTime &timeStart, con
         intervals << new Interval(intv); // deep copy
     }
     IntervalTier *ret = new IntervalTier(name(), intervals, timeStart, timeEnd);
-    if (ret->countItems() > 0) {
+    if (ret->count() > 0) {
         ret->timeShift(-timeStart);
-        if (ret->firstInterval()->tMin() < RealTime(0, 0) && ret->firstInterval()->tMax() > RealTime(0, 0))
-            ret->firstInterval()->m_time = RealTime(0, 0);
-        if (ret->lastInterval()->tMax() > (timeEnd - timeStart) && ret->lastInterval()->tMin() < (timeEnd - timeStart))
-            ret->lastInterval()->m_tMax = (timeEnd - timeStart);
+        if (ret->first()->tMin() < RealTime(0, 0) && ret->first()->tMax() > RealTime(0, 0))
+            ret->first()->m_tMin = RealTime(0, 0);
+        if (ret->last()->tMax() > (timeEnd - timeStart) && ret->last()->tMin() < (timeEnd - timeStart))
+            ret->last()->m_tMax = (timeEnd - timeStart);
     }
     return ret;
 }
@@ -663,7 +714,7 @@ bool IntervalTier::moveBoundary(int index, RealTime time)
     if (time > m_intervals.at(index)->tMax()) return false;
     // Move boundary
     if (index > 0) m_intervals[index - 1]->m_tMax = time;
-    m_intervals[index]->m_time = time;
+    m_intervals[index]->m_tMin = time;
     return true;
 }
 
@@ -691,7 +742,7 @@ bool IntervalTier::realignIntervals(int indexFrom, QList<RealTime> &newBoundarie
     for (int i = 0; i < newBoundaries.count(); ++i) {
         int index = indexFrom + i;
         if (index > 0) m_intervals[index - 1]->m_tMax = newBoundaries[i];
-        if (index < m_intervals.count()) m_intervals[index]->m_time = newBoundaries[i];
+        if (index < m_intervals.count()) m_intervals[index]->m_tMin = newBoundaries[i];
     }
     return true;
 }

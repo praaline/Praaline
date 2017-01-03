@@ -186,7 +186,8 @@ bool ImportCorpusItemsWizardCorrespondancesPage::validatePage()
         // for now, just use varchar(1024)
         if (m_corpus && ui->optionCreateLevelsAttributes->isChecked()) {
             if (!m_corpus->annotationStructure()->hasLevel(annotationLevelID)) {
-                QPointer<AnnotationStructureLevel> level = new AnnotationStructureLevel(annotationLevelID, AnnotationStructureLevel::IndependentLevel, annotationLevelID);
+                QPointer<AnnotationStructureLevel> level =
+                        new AnnotationStructureLevel(annotationLevelID, AnnotationStructureLevel::IndependentIntervalsLevel, annotationLevelID);
                 if (m_corpus->datastoreAnnotations()->createAnnotationLevel(level)) {
                     m_corpus->annotationStructure()->addLevel(level);
                     structureChanges = true;

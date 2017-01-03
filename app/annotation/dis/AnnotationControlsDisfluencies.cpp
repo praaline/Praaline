@@ -2,7 +2,7 @@
 #include <QList>
 #include <QMessageBox>
 
-#include "pngui/model/annotation/annotationtiermodel.h"
+#include "pngui/model/annotation/AnnotationTierModel.h"
 
 #include "AnnotationControlsDisfluencies.h"
 #include "ui_AnnotationControlsDisfluencies.h"

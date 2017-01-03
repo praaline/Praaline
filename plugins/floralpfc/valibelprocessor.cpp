@@ -102,7 +102,7 @@ void ValibelProcessor::importValibelFile(Corpus *corpus, const QString &filename
     foreach (QString speakerID, segmentIntervals.keys()) {
         RealTime tend = segmentIntervals[speakerID].last()->tMax();
         IntervalTier *tier = new IntervalTier("segment", segmentIntervals[speakerID], RealTime(), tend);
-        tier->fillEmptyAnnotationsWith("_");
+        tier->fillEmptyTextLabelsWith("_");
         corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier);
     }
 }
@@ -201,7 +201,7 @@ void ValibelProcessor::tokenise(Corpus *corpus, QList<QPointer<CorpusCommunicati
                     itok = itok + count;
                     if (segment->duration().toDouble() > 1.0) itok = itok + 1;
                 }
-                tier_tok_min->fillEmptyAnnotationsWith("_");
+                tier_tok_min->fillEmptyTextLabelsWith("_");
 
                 // Punctuation
                 foreach (Interval *tok_min, tier_tok_min->intervals()) {

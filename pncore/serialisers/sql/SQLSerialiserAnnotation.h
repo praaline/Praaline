@@ -6,6 +6,7 @@
 #include "structure/AnnotationStructure.h"
 #include "annotation/AnnotationTierGroup.h"
 #include "annotation/AnnotationTier.h"
+#include "serialisers/AnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -13,57 +14,66 @@ namespace Core {
 class SQLSerialiserAnnotation : public SQLSerialiserBase
 {
 public:
-    static bool saveTiers(const QString &annotationID, const QString &speakerID,
-                          AnnotationTierGroup *tiers, AnnotationStructure *structure, QSqlDatabase &db);
-    static bool saveTier(const QString &annotationID, const QString &speakerID,
-                         AnnotationTier *tier, AnnotationStructure *structure, QSqlDatabase &db);
+    // ==========================================================================================================================
+    // Annotation Elements
+    // ==========================================================================================================================
+    static QList<AnnotationElement *> getAnnotationElements(
+            const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
+    static QList<Interval *> getIntervals(
+            const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
+    static QList<Point *> getPoints(
+            const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
 
-    static QMap<QString, QPointer<AnnotationTierGroup> > getTiersAllSpeakers(const QString &annotationID,
-                                                                             const AnnotationStructure *structure, QSqlDatabase &db,
-                                                                             const QStringList &levelIDs = QStringList());
-    static AnnotationTierGroup *getTiers(const QString &annotationID, const QString &speakerID,
-                                         const AnnotationStructure *structure, QSqlDatabase &db,
-                                         const QStringList &levelIDs = QStringList());
-    static AnnotationTier *getTier(const QString &annotationID, const QString &speakerID,
-                                   const AnnotationStructure *structure, QSqlDatabase &db,
-                                   const QString &levelID, const QStringList &attributeIDs = QStringList());    
-    static QList<Interval *> getIntervals(const QString &annotationID, const QString &speakerID,
-                                          const AnnotationStructure *structure, QSqlDatabase &db,
-                                          const QString &levelID, int intervalNoMin, int intervalNoMax,
-                                          const QStringList &attributeIDs = QStringList());
-    static QList<Interval *> getIntervals(const QString &annotationID, const QString &speakerID,
-                                          const AnnotationStructure *structure, QSqlDatabase &db,
-                                          const QString &levelID, RealTime tMin, RealTime tMax,
-                                          const QStringList &attributeIDs = QStringList());
-    // Cleaning up
-    static bool deleteAllForAnnotationID(QString annotationID, const AnnotationStructure *structure, QSqlDatabase &db);
+    // ==========================================================================================================================
+    // Annotation Tiers
+    // ==========================================================================================================================
+    static AnnotationTier *getTier(
+            const QString &annotationID, const QString &speakerID, const QString &levelID, const QStringList &attributeIDs,
+            AnnotationStructure *structure, QSqlDatabase &db);
+    static AnnotationTierGroup *getTiers(
+            const QString &annotationID, const QString &speakerID, const QStringList &levelIDs,
+            AnnotationStructure *structure, QSqlDatabase &db);
+    static QMap<QString, QPointer<AnnotationTierGroup> > getTiersAllSpeakers(
+            const QString &annotationID, const QStringList &levelIDs, AnnotationStructure *structure, QSqlDatabase &db);
+    static bool saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier,
+                         AnnotationStructure *structure, QSqlDatabase &db);
+    static bool saveTiers(const QString &annotationID, const QString &speakerID, AnnotationTierGroup *tiers,
+                          AnnotationStructure *structure, QSqlDatabase &db);
+    static bool deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID,
+                           AnnotationStructure *structure, QSqlDatabase &db);
+    static bool deleteAllTiersAllSpeakers(const QString &annotationID, AnnotationStructure *structure, QSqlDatabase &db);
 
-    // Management of multiple speakers per annotation
-    static QList<QString> getSpeakersInLevel(const QString &annotationID, const QString &levelID,
-                                             const AnnotationStructure *structure, QSqlDatabase &db);
+    // ==========================================================================================================================
+    // Speakers and Timeline
+    // ==========================================================================================================================
+    static QList<QString> getSpeakersInLevel(
+            const QString &annotationID, const QString &levelID,
+            AnnotationStructure *structure, QSqlDatabase &db, bool filter = false);
     static QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID,
-                                                   const AnnotationStructure *structure, QSqlDatabase &db);
+                                                   AnnotationStructure *structure, QSqlDatabase &db);
     static QList<QString> getSpeakersInAnnotation(const QString &annotationID,
-                                                  const AnnotationStructure *structure, QSqlDatabase &db);
+                                                  AnnotationStructure *structure, QSqlDatabase &db);
     static QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID,
-                                                        const AnnotationStructure *structure, QSqlDatabase &db);
+                                                        AnnotationStructure *structure, QSqlDatabase &db);
     static IntervalTier *getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
                                             const QString &levelID, bool detailed,
-                                            const AnnotationStructure *structure, QSqlDatabase &db);
+                                            AnnotationStructure *structure, QSqlDatabase &db);
 
-    // Batch update (find and replace) in annotation levels
+    // ==========================================================================================================================
+    // Batch Processing
+    // ==========================================================================================================================
     static QList<QPair<QList<QVariant>, long> > getDistinctLabels(const QString &levelID, const QStringList &attributeIDs,
-                                                                 const AnnotationStructure *structure, QSqlDatabase &db);
+                                                                 AnnotationStructure *structure, QSqlDatabase &db);
     static bool batchUpdate(const QString &levelID, const QString &attributeID, const QVariant &newValue,
                             const QList<QPair<QString, QVariant> > &criteria,
-                            const AnnotationStructure *structure, QSqlDatabase &db);
+                            AnnotationStructure *structure, QSqlDatabase &db);
 
-    // Statistical information on annotation levels
+    // ==========================================================================================================================
+    // Statistics
+    // ==========================================================================================================================
     static QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs,
-                                                           const AnnotationStructure *structure, QSqlDatabase &db);
-//    static QList<QPair<QList<QVariant>, long> > countAnnotationLevelContents(
-//            QStringList &groupByMetadataAttributeIDs,
-//            const AnnotationStructure *structure, QSqlDatabase &db);
+                                                           AnnotationStructure *structure, QSqlDatabase &db);
+
 private:
     SQLSerialiserAnnotation();
 };

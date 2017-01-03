@@ -9,7 +9,8 @@ AddLevelDialog::AddLevelDialog(AnnotationStructure *structure, QWidget *parent) 
     ui->setupUi(this);
     QStringList leveltypes, datatypes, levelIDs;
 
-    leveltypes << "Independent" << "Grouping" << "Sequences" << "Tree";
+    leveltypes << "Independent Points" << "Independent Intervals" << "Grouping Intervals"
+               << "Sequences" << "Tree" << "Relations";
     ui->comboLevelType->addItems(leveltypes);
     datatypes << "Text" << "Number (real)" << "Number (integer)" << "Yes/No (boolean)" << "Date/Time";
     ui->comboDatatype->addItems(datatypes);
@@ -40,11 +41,13 @@ QString AddLevelDialog::levelID() const
 AnnotationStructureLevel::LevelType AddLevelDialog::levelType() const
 {
     QString lt = ui->comboLevelType->currentText();
-    if      (lt == "Independent")   return AnnotationStructureLevel::IndependentLevel;
-    else if (lt == "Grouping")      return AnnotationStructureLevel::GroupingLevel;
-    else if (lt == "Sequences")     return AnnotationStructureLevel::SequencesLevel;
-    else if (lt == "Tree")          return AnnotationStructureLevel::TreeLevel;
-    return AnnotationStructureLevel::IndependentLevel;
+    if      (lt == "Independent Points")    return AnnotationStructureLevel::IndependentPointsLevel;
+    else if (lt == "Independent Intervals") return AnnotationStructureLevel::IndependentIntervalsLevel;
+    else if (lt == "Grouping Intervals")    return AnnotationStructureLevel::GroupingLevel;
+    else if (lt == "Sequences")             return AnnotationStructureLevel::SequencesLevel;
+    else if (lt == "Tree")                  return AnnotationStructureLevel::TreeLevel;
+    else if (lt == "Relations")             return AnnotationStructureLevel::RelationsLevel;
+    return AnnotationStructureLevel::IndependentIntervalsLevel;
 }
 
 QString AddLevelDialog::parentLevelID() const

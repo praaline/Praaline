@@ -15,7 +15,7 @@ QPair<int, int> Measures::window(IntervalTier *tier, int i, int windowLeft, int 
     ret.first = i; ret.second = i;
     // Checks
     if (!tier) return ret;
-    if (i < 0 || i >= tier->countItems()) return ret;
+    if (i < 0 || i >= tier->count()) return ret;
     if (tier->interval(i)->isPauseSilent() && pauseBlocksWindow) return ret;
     // Calculation
     ret.first = i - windowLeft;
@@ -23,7 +23,7 @@ QPair<int, int> Measures::window(IntervalTier *tier, int i, int windowLeft, int 
     while ((ret.first < i) &&
            ((tier->interval(i)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow))) ret.first++;
     ret.second = i + windowRight;
-    if (ret.second >= tier->countItems()) ret.second = tier->countItems() - 1;
+    if (ret.second >= tier->count()) ret.second = tier->count() - 1;
     while ((ret.second > i) &&
            ((tier->interval(ret.second)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow))) ret.second--;
     return ret;

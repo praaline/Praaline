@@ -11,6 +11,7 @@
 #include "AnnotationTier.h"
 #include "IntervalTier.h"
 #include "PointTier.h"
+#include "RelationTier.h"
 
 namespace Praaline {
 namespace Core {

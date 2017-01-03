@@ -21,14 +21,16 @@ class PRAALINE_CORE_SHARED_EXPORT AnnotationStructureLevel : public StructureBas
 
 public:
     enum LevelType {
-        IndependentLevel = 0,
-        GroupingLevel = 1,
-        SequencesLevel = 2,
-        TreeLevel = 3
+        IndependentPointsLevel    = 10,
+        IndependentIntervalsLevel = 20,
+        GroupingLevel             = 30,
+        SequencesLevel            = 40,
+        TreeLevel                 = 50,
+        RelationsLevel            = 60
     };
 
     explicit AnnotationStructureLevel(QObject *parent = 0);
-    AnnotationStructureLevel(const QString &ID, LevelType type = IndependentLevel,
+    AnnotationStructureLevel(const QString &ID, LevelType type = IndependentIntervalsLevel,
                              const QString &name = QString(), const QString &description = QString(),
                              const QString &parentLevelID = QString(),
                              const DataType &datatype = DataType(DataType::VarChar, 1024),
@@ -37,6 +39,7 @@ public:
 
     // Data
     LevelType levelType() const { return m_levelType; }
+    bool isLevelTypePrimary() const;
     void setLevelType(LevelType type) { m_levelType = type; }
     QString parentLevelID() const { return m_parentLevelID; }
     void setParentLevelID(const QString &parentLevelID) { m_parentLevelID = parentLevelID; }

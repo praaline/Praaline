@@ -26,7 +26,7 @@ ProsodicBoundariesAnnotator::ProsodicBoundariesAnnotator(QObject *parent) :
 void ProsodicBoundariesAnnotator::prepareFeatures(QHash<QString, RealValueList> &features, IntervalTier *tier_syll)
 {
     // Prepare data
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         Interval *syll = tier_syll->interval(isyll);
         // Duration
         double syll_dur = syll->attribute("duration").toDouble();
@@ -44,9 +44,9 @@ void ProsodicBoundariesAnnotator::prepareFeatures(QHash<QString, RealValueList> 
             tier_syll->interval(isyll)->setAttribute("f0_max_st", f0_max_st);
         }
     }
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Following pause
-        if (isyll < tier_syll->countItems() - 1 && tier_syll->interval(isyll+1)->isPauseSilent()) {
+        if (isyll < tier_syll->count() - 1 && tier_syll->interval(isyll+1)->isPauseSilent()) {
             double pausedur = tier_syll->interval(isyll+1)->duration().toDouble();
             features["following_pause_dur"] << pausedur;
             features["following_pause_dur_log"] << log(pausedur);
@@ -97,7 +97,7 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
                         "f0_up" << "f0_down"<< "f0_traj";
 
     bool endSequence = true;
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Get attributes: syllable text
         Interval *syll = tier_syll->interval(isyll);
         QString sylltext = syll->text().replace(" ", "_").trimmed();
@@ -234,11 +234,11 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
     do {
         QString line = streamOut.readLine();
         if (line.isEmpty() || line.startsWith("#")) continue;
-        if (isyll >= promise->countItems()) continue;
+        if (isyll >= promise->count()) continue;
         // move cursor to next syllable at end of sequence pauses
         while (promise->interval(isyll)->text() != "x" &&
                promise->interval(isyll)->duration().toDouble() > 0.300 &&
-               isyll < promise->countItems())
+               isyll < promise->count())
             isyll++;
         //
         QStringList fields = line.split("\t");
@@ -277,7 +277,7 @@ IntervalTier *ProsodicBoundariesAnnotator::annotate(QString annotationID, const 
                         "syll_dur_log_rel20" << "syll_dur_log_rel30" << "syll_dur_log_rel40" <<
                         "f0_mean_st_rel20" << "f0_mean_st_rel30" << "f0_mean_st_rel40" << "f0_mean_st_rel50" <<
                         "f0_up" << "f0_down"<< "f0_traj";
-    for (int isyll = 0; isyll < tier_syll->countItems(); isyll++) {
+    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         streamFeatures << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
         Interval *syll = tier_syll->interval(isyll);
         streamFeatures << syll->text() << "\t";

@@ -239,7 +239,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
         updateTierFromAnnotationTable(tempDirectory + filenameData, "nucl_t1", "nucl_t2", tier_syll);
     }
     if (!corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_syll)) {
-        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " syll count " << tier_syll->countItems();
+        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " syll count " << tier_syll->count();
     }
     if (txgNuclei)
         delete txgNuclei;

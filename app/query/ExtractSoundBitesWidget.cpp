@@ -253,12 +253,12 @@ void ExtractSoundBitesWidget::carryOverAnnotations(QPointer<Corpus> corpusSource
                 AnnotationStructureLevel *level = corpusSource->annotationStructure()->levels().at(i);
                 if (!level) continue;
                 // TODO: ensure all types of levels are copied over!!!
-                if (level->levelType() != AnnotationStructureLevel::IndependentLevel &&
+                if (level->levelType() != AnnotationStructureLevel::IndependentIntervalsLevel &&
                     level->levelType() != AnnotationStructureLevel::GroupingLevel) continue;
                 IntervalTier *tierIntvSource = tiersSource->getIntervalTierByName(level->ID());
                 if (tierIntvSource) {
                     IntervalTier *tierIntvDest = tierIntvSource->getIntervalTierSubset(start, end);
-                    if (tierIntvDest->countItems() == 1 && tierIntvDest->firstInterval()->isPauseSilent()) continue;
+                    if (tierIntvDest->count() == 1 && tierIntvDest->first()->isPauseSilent()) continue;
                     tiersDest->addTier(tierIntvDest);
                 }
                 PointTier *tierPointSource = tiersSource->getPointTierByName(level->ID());

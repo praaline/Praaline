@@ -33,20 +33,27 @@ public:
                  const QString &textA, const QString &textB, const QString &textAB, QObject *parent = 0);
     virtual ~IntervalTier();
 
-    // Properties
+    // Implementation of AnnotationTier
     AnnotationTier::TierType tierType() const
         { return AnnotationTier::TierType_Intervals; }
-    int countItems() const
+    int count() const
         { return m_intervals.count(); }
     bool isEmpty() const;
     void clear();
+    Interval *at(int index) const;
+    Interval *first() const;
+    Interval *last() const;
+    QList<QString> getDistinctTextLabels() const;
+    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
+    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    void fillEmptyTextLabelsWith(const QString &filler);
+    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
+                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
 
     // Accessors for Intervals
-    Interval* interval(int index) const;
+    Interval *interval(int index) const;
     QList<Interval *> intervals() const;
-
-    Interval *firstInterval() const;
-    Interval *lastInterval() const;
 
     Interval *intervalAtTime(RealTime t);
     int intervalIndexAtTime(RealTime t) const;
@@ -60,19 +67,16 @@ public:
     Interval *merge(int indexFrom, int indexTo, const QString &separator = QString());
     void copyIntervalsFrom(const IntervalTier *copy, bool copyData = true);
     void replaceAllIntervals(QList<Interval *> &newIntervals);
-    void timeShift(const RealTime delta);
     bool moveBoundary(int index, RealTime time);
     bool realignIntervals(int indexFrom, QList<RealTime> &newBoundaries);
 
     // Methods
+    QList<RealTime> times() const;
+    QList<RealTime> timesMin() const;
+    QList<RealTime> timesCenter() const;
+    QList<RealTime> timesMax() const;
+    void timeShift(const RealTime delta);
 
-    int count() const { return m_intervals.count(); }
-    // implementing AnnotationTier
-    void replaceText(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    QList<QString> getDistinctTextLabels() const;
-    void fillEmptyAnnotationsWith(const QString &filler);
-    QList<RealTime> tCenters() const;
-    // other
     RealTime getBoundaryClosestTo(const RealTime timePoint) const;
     void fixBoundariesBasedOnTier(const IntervalTier *correctBoundariesTier,
                                   RealTime threshold = RealTime(0, 100000000));

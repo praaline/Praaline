@@ -41,7 +41,7 @@ bool PseudoLanguage::createListOfPossibleDiphones(Corpus *corpus, QList<QPointer
                     IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
                     if (!tier_phones) continue;
 
-                    for (int i = 0; i < tier_phones->countItems() - 1; ++i) {
+                    for (int i = 0; i < tier_phones->count() - 1; ++i) {
                         QString ph1 = tier_phones->interval(i)->text();
                         QString ph2 = tier_phones->interval(i+1)->text();
                         if (ph1 == "_" || ph2 == "_") continue;
@@ -118,7 +118,7 @@ void PseudoLanguage::substitutePhonemes(IntervalTier *tier_phones, const QString
     file.close();
 
     // Substitute phonemes
-    for (int i = 1; i < tier_phones->countItems() - 1; ++i) {
+    for (int i = 1; i < tier_phones->count() - 1; ++i) {
         QString phoneme = tier_phones->interval(i)->text();
         if (phoneme.isEmpty()) phoneme = "_";
         if (!allPhonemes.contains(phoneme))

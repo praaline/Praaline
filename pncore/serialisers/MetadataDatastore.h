@@ -12,11 +12,11 @@ namespace Core {
 
 class Corpus;
 
-class PRAALINE_CORE_SHARED_EXPORT AbstractMetadataDatastore : public QObject
+class PRAALINE_CORE_SHARED_EXPORT MetadataDatastore : public QObject
 {
     Q_OBJECT
 public:
-    AbstractMetadataDatastore(QObject *parent = 0) : QObject(parent) {}
+    MetadataDatastore(QObject *parent = 0) : QObject(parent) {}
     virtual bool createDatastore(const DatastoreInfo &info) = 0;
     virtual bool openDatastore(const DatastoreInfo &info) = 0;
     virtual bool closeDatastore() = 0;

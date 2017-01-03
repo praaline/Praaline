@@ -178,12 +178,12 @@ void Corpus::clear()
 
 // Datastore
 
-QPointer<AbstractAnnotationDatastore> Corpus::datastoreAnnotations() const
+QPointer<AnnotationDatastore> Corpus::datastoreAnnotations() const
 {
     return m_datastoreAnnotations;
 }
 
-QPointer<AbstractMetadataDatastore> Corpus::datastoreMetadata() const
+QPointer<MetadataDatastore> Corpus::datastoreMetadata() const
 {
     return m_datastoreMetadata;
 }
@@ -198,13 +198,13 @@ bool Corpus::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataS
     return m_datastoreMetadata->createMetadataAttribute(type, newAttribute);
 }
 
-bool Corpus::renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID)
+bool Corpus::renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID)
 {
     if (!m_datastoreMetadata) return false;
     return m_datastoreMetadata->renameMetadataAttribute(type, attributeID, newAttributeID);
 }
 
-bool Corpus::deleteMetadataAttribute(CorpusObject::Type type, QString attributeID)
+bool Corpus::deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID)
 {
     if (!m_datastoreMetadata) return false;
     return m_datastoreMetadata->deleteMetadataAttribute(type, attributeID);
@@ -217,40 +217,40 @@ bool Corpus::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel)
     return m_datastoreAnnotations->createAnnotationLevel(newLevel);
 }
 
-bool Corpus::renameAnnotationLevel(QString levelID, QString newLevelID)
+bool Corpus::renameAnnotationLevel(const QString &levelID, const QString &newLevelID)
 {
     if (!m_datastoreAnnotations) return false;
     return m_datastoreAnnotations->renameAnnotationLevel(levelID, newLevelID);
 }
 
-bool Corpus::deleteAnnotationLevel(QString levelID)
+bool Corpus::deleteAnnotationLevel(const QString &levelID)
 {
     if (!m_datastoreAnnotations) return false;
     return m_datastoreAnnotations->deleteAnnotationLevel(levelID);
 }
 
-bool Corpus::createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute)
+bool Corpus::createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute)
 {
     if (!m_datastoreAnnotations) return false;
     return m_datastoreAnnotations->createAnnotationAttribute(levelID, newAttribute);
 }
 
-bool Corpus::renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID)
+bool Corpus::renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID)
 {
     if (!m_datastoreAnnotations) return false;
     return m_datastoreAnnotations->renameAnnotationAttribute(levelID, attributeID, newAttributeID);
 }
 
-bool Corpus::deleteAnnotationAttribute(QString levelID, QString attributeID)
+bool Corpus::deleteAnnotationAttribute(const QString &levelID, const QString &attributeID)
 {
     if (!m_datastoreAnnotations) return false;
     return m_datastoreAnnotations->deleteAnnotationAttribute(levelID, attributeID);
 }
 
-bool Corpus::retypeAnnotationAttribute(QString levelID, QString attributeID, QString newDatatype, int newDatalength)
+bool Corpus::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDataType)
 {
     if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->retypeAnnotationAttribute(levelID, attributeID, newDatatype, newDatalength);
+    return m_datastoreAnnotations->retypeAnnotationAttribute(levelID, attributeID, newDataType);
 }
 
 void Corpus::importMetadataStructure(MetadataStructure *otherStructure)

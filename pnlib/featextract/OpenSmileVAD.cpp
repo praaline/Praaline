@@ -109,7 +109,7 @@ IntervalTier *OpenSmileVAD::splitToUtterances(QPointer<CorpusRecording> rec,
             intv->setText("silent");
     }
     tier->mergeIdenticalAnnotations();
-    tier->replaceText("sounding", textVoice);
-    tier->replaceText("silent", textSilent);
+    tier->replaceTextLabels("sounding", textVoice);
+    tier->replaceTextLabels("silent", textSilent);
     return tier;
 }

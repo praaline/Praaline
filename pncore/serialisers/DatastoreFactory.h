@@ -2,8 +2,8 @@
 #define DATASTOREFACTORY_H
 
 #include "pncore_global.h"
-#include "AbstractAnnotationDatastore.h"
-#include "AbstractMetadataDatastore.h"
+#include "AnnotationDatastore.h"
+#include "MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -11,8 +11,8 @@ namespace Core {
 class PRAALINE_CORE_SHARED_EXPORT DatastoreFactory
 {
 public:
-    static AbstractAnnotationDatastore *getAnnotationDatastore(const DatastoreInfo &dsi, QPointer<AnnotationStructure> structure);
-    static AbstractMetadataDatastore *getMetadataDatastore(const DatastoreInfo &dsi, QPointer<MetadataStructure> structure);
+    static AnnotationDatastore *getAnnotationDatastore(const DatastoreInfo &dsi, QPointer<AnnotationStructure> structure);
+    static MetadataDatastore *getMetadataDatastore(const DatastoreInfo &dsi, QPointer<MetadataStructure> structure);
 
 private:
     DatastoreFactory() {}

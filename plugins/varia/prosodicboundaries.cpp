@@ -78,7 +78,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             syll->setAttribute("duration_log", log(syll->attribute("duration").toDouble()));
             if (syll->text() == "_") {
                 int pause_index = timeline->intervalIndexAtTime(syll->tCenter());
-                if (pause_index == 0 || pause_index == timeline->countItems() - 1) continue;
+                if (pause_index == 0 || pause_index == timeline->count() - 1) continue;
                 QString speakerBefore = timeline->interval(pause_index - 1)->text();
                 QString speakerAfter = timeline->interval(pause_index + 1)->text();
                 if (speakerBefore == speakerAfter && speakerBefore == speakerID)
@@ -88,7 +88,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
 
         // Analyse selected syllables
         foreach (int isyll, syllIndices) {
-            if ((isyll < 0) || (isyll >= tier_syll->countItems())) continue;
+            if ((isyll < 0) || (isyll >= tier_syll->count())) continue;
             Interval *syll = tier_syll->interval(isyll);
 
             // Expert annotation
@@ -104,10 +104,10 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             // Prosodic features
             // --------------------------------------------------------------------------------------------------------
             double durNextPause = 0.0, logdurNextPause = 0.0, logdurNextPauseZ = 0.0;
-            if (isyll < tier_syll->countItems() - 1) {
+            if (isyll < tier_syll->count() - 1) {
                 if (tier_syll->interval(isyll + 1)->text() == "_") {
                     int pause_index = timeline->intervalIndexAtTime(tier_syll->interval(isyll + 1)->tCenter());
-                    if (pause_index != 0 && pause_index != timeline->countItems() - 1) {
+                    if (pause_index != 0 && pause_index != timeline->count() - 1) {
                         QString speakerBefore = timeline->interval(pause_index - 1)->text();
                         QString speakerAfter = timeline->interval(pause_index + 1)->text();
                         if (speakerBefore == speakerAfter && speakerBefore == speakerID) {

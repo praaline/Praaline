@@ -262,14 +262,14 @@ QPair<int, int> windowNoPause(IntervalTier *tier_syll, int i, int windowLeft, in
     ret.first = i; ret.second = i;
     // Checks
     if (!tier_syll) return ret;
-    if (i < 0 || i >= tier_syll->countItems()) return ret;
+    if (i < 0 || i >= tier_syll->count()) return ret;
     if (tier_syll->interval(i)->isPauseSilent()) return ret;
     // Calculation
     ret.first = i - windowLeft;
     if (ret.first < 0) ret.first = 0;
     while (tier_syll->interval(ret.first)->isPauseSilent() && ret.first < i) ret.first++;
     ret.second = i + windowRight;
-    if (ret.second >= tier_syll->countItems()) ret.second = tier_syll->countItems() - 1;
+    if (ret.second >= tier_syll->count()) ret.second = tier_syll->count() - 1;
     while (tier_syll->interval(ret.second)->isPauseSilent() && ret.second > i) ret.second--;
     return ret;
 }
@@ -280,12 +280,12 @@ QPair<int, int> windowIncludingPause(IntervalTier *tier_syll, int i, int windowL
     ret.first = i; ret.second = i;
     // Checks
     if (!tier_syll) return ret;
-    if (i < 0 || i >= tier_syll->countItems()) return ret;
+    if (i < 0 || i >= tier_syll->count()) return ret;
     // Calculation
     ret.first = i - windowLeft;
     if (ret.first < 0) ret.first = 0;
     ret.second = i + windowRight;
-    if (ret.second >= tier_syll->countItems()) ret.second = tier_syll->countItems() - 1;
+    if (ret.second >= tier_syll->count()) ret.second = tier_syll->count() - 1;
     return ret;
 }
 

@@ -212,7 +212,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     // If need be, create syllables level
     AnnotationStructureLevel *level_syll = corpus->annotationStructure()->level(d->levelSyllable);
     if (!level_syll) {
-        level_syll = new AnnotationStructureLevel(d->levelSyllable, AnnotationStructureLevel::IndependentLevel, "Syllables", "");
+        level_syll = new AnnotationStructureLevel(d->levelSyllable, AnnotationStructureLevel::IndependentIntervalsLevel, "Syllables", "");
         if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_syll)) return;
         corpus->annotationStructure()->addLevel(level_syll);
     }
@@ -293,7 +293,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                     tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax());
                 } else {
                     tier_segment = new IntervalTier(d->levelSegmentation, listLongPauses, tier_autosyll->tMin(), tier_autosyll->tMax());
-                    tier_segment->replaceText("<sil>", "_");
+                    tier_segment->replaceTextLabels("<sil>", "_");
                     tier_segment->mergeIdenticalAnnotations("_");
                 }
                 corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
@@ -352,7 +352,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(Corpus *corpus, QLis
     if (d->createLevels) {
         // Create segmentation level if it does not exist
         if ((!d->levelSegmentation.isEmpty()) && (!corpus->annotationStructure()->hasLevel(d->levelSegmentation))) {
-            AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(d->levelSegmentation, AnnotationStructureLevel::IndependentLevel, "Segmentation", "");
+            AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(
+                        d->levelSegmentation, AnnotationStructureLevel::IndependentIntervalsLevel, "Segmentation", "");
             if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_segment)) {
                 printMessage(QString("Error creating segmentation level: %1").arg(d->levelSegmentation));
                 return;

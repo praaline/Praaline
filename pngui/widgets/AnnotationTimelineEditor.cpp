@@ -1,7 +1,7 @@
 #include <QObject>
 #include <QFileDialog>
 #include <QSortFilterProxyModel>
-#include "model/annotation/annotationtiermodel.h"
+#include "model/annotation/AnnotationTierModel.h"
 #include "AnnotationTimelineEditor.h"
 #include "ui_annotationtimelineeditor.h"
 

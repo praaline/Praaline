@@ -67,11 +67,13 @@ bool SQLSerialiserAnnotationStructure::loadAnnotationStructure(QPointer<Annotati
         AnnotationStructureLevel *level = new AnnotationStructureLevel();
         level->setID(q1.value("levelID").toString());
         switch (q1.value("levelType").toInt()) {
-        case 0:     level->setLevelType(AnnotationStructureLevel::IndependentLevel);    break;
-        case 1:     level->setLevelType(AnnotationStructureLevel::GroupingLevel);       break;
-        case 2:     level->setLevelType(AnnotationStructureLevel::SequencesLevel);      break;
-        case 3:     level->setLevelType(AnnotationStructureLevel::TreeLevel);           break;
-        default:    level->setLevelType(AnnotationStructureLevel::IndependentLevel);    break;
+        case 10:    level->setLevelType(AnnotationStructureLevel::IndependentPointsLevel);      break;
+        case 20:    level->setLevelType(AnnotationStructureLevel::IndependentIntervalsLevel);   break;
+        case 30:    level->setLevelType(AnnotationStructureLevel::GroupingLevel);               break;
+        case 40:    level->setLevelType(AnnotationStructureLevel::SequencesLevel);              break;
+        case 50:    level->setLevelType(AnnotationStructureLevel::TreeLevel);                   break;
+        case 60:    level->setLevelType(AnnotationStructureLevel::RelationsLevel);              break;
+        default:    level->setLevelType(AnnotationStructureLevel::IndependentIntervalsLevel);   break;
         }
         level->setParentLevelID(q1.value("parentLevelID").toString());
         level->setName(q1.value("name").toString());
@@ -106,33 +108,41 @@ bool SQLSerialiserAnnotationStructure::createAnnotationLevel(QPointer<Annotation
     Migrations::Migration createLevel;
     QString tableName = newLevel->ID();
     ColumnList columns;
+    // All types of annotation levels contain the tuple (annotationID, speakerID) in their primary key
     columns << Column("annotationID", SqlType(SqlType::VarChar, 64), "", Column::Primary) <<
                Column("speakerID", SqlType(SqlType::VarChar, 64), "", Column::Primary);
-    if ((newLevel->levelType() == AnnotationStructureLevel::IndependentLevel) ||
-        (newLevel->levelType() == AnnotationStructureLevel::GroupingLevel)) {
+    // Independent levels can move their time boundaries freely
+    if     ((newLevel->levelType() == AnnotationStructureLevel::IndependentPointsLevel) ||
+            (newLevel->levelType() == AnnotationStructureLevel::IndependentIntervalsLevel) ||
+            (newLevel->levelType() == AnnotationStructureLevel::GroupingLevel)) {
         columns << Column("intervalNo", SqlType(SqlType::Integer, 11), "", Column::Primary) <<
                    Column("tMin", SqlType(SqlType::BigInt, 20)) <<
-                   Column("tMax", SqlType(SqlType::BigInt, 20)) <<
-                   Column("xText", SqlType(SqlType::VarChar, 1024));
+                   Column("tMax", SqlType(SqlType::BigInt, 20));
     }
-    else if (newLevel->levelType() == AnnotationStructureLevel::SequencesLevel) {
-        columns << Column("tMin", SqlType(SqlType::BigInt, 20), "", Column::Primary) <<
-                   Column("tMax", SqlType(SqlType::BigInt, 20), "", Column::Primary) <<
-                   Column("xText", SqlType(SqlType::VarChar, 1024));
-    }
-    else if (newLevel->levelType() == AnnotationStructureLevel::TreeLevel) {
+    // Sequences, trees and relations depend on a main level for their time boundaries
+    // and use a tuple (left, right) according to their semantics
+    else if (newLevel->levelType() == AnnotationStructureLevel::SequencesLevel ||
+             newLevel->levelType() == AnnotationStructureLevel::TreeLevel ||
+             newLevel->levelType() == AnnotationStructureLevel::RelationsLevel) {
         columns << Column("intervalNoLeft", SqlType(SqlType::Integer, 11), "", Column::Primary) <<
-                   Column("intervalNoRight", SqlType(SqlType::Integer, 11), "", Column::Primary) <<
-                   Column("xText", SqlType(SqlType::VarChar, 1024));
+                   Column("intervalNoRight", SqlType(SqlType::Integer, 11), "", Column::Primary);
     }
     else {
         return false;
     }
+    // All levels have a basic text attribute and one or more user-defined attributes
+    columns << Column("xText", SqlType(SqlType::VarChar, 1024));
     foreach(AnnotationStructureAttribute *attribute, newLevel->attributes()) {
         columns << Column(attribute->ID(), SqlType(attribute->datatype()));
     }
+    // Build a database table corresponding to the level
     Table::Builder table(tableName, columns);
     createLevel.add(new CreateTable(table));
+    // In case of a dependent level (sequences, trees, relations), we need to create a database relationship
+    // to the table of the master level
+
+
+    // Execute SQL commands to build the level
     bool result = SQLSerialiserBase::applyMigration(
                 QString("%1_createlevel_%2").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName),
                 &createLevel, db);

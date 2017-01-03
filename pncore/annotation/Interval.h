@@ -29,8 +29,10 @@ class PRAALINE_CORE_SHARED_EXPORT Interval : public AnnotationElement
     friend class IntervalTier;
 
 public:
+    Interval();
     Interval(const RealTime tMin, const RealTime tMax, const QString &text);
     Interval(const RealTime tMin, const RealTime tMax, const QString &text, const QHash<QString, QVariant> &attributes);
+    Interval(const Interval &copy);
     Interval(const Interval *copy, bool copyAttributes = true);
     Interval(const RealTime tMin, const RealTime tMax, const Interval *copy);
     Interval(const QList<Interval *> &intervals, const QString &separator = QString());
@@ -38,13 +40,13 @@ public:
 
     // Properties
     inline RealTime tMin() const
-        { return m_time; }
+        { return m_tMin; }
     inline RealTime tMax() const
         { return m_tMax; }
     inline RealTime tCenter() const
-        { return (m_time + m_tMax) / 2.0; }
+        { return (m_tMin + m_tMax) / 2.0; }
     inline RealTime duration() const
-        { return (m_tMax - m_time); }
+        { return (m_tMax - m_tMin); }
 
     // Override
     virtual QVariant attribute(const QString &name) const;
@@ -58,10 +60,13 @@ public:
     int compare(const Interval &other) const;
 
 protected:
+    RealTime m_tMin;
     RealTime m_tMax;
 };
 
 } // namespace Core
 } // namespace Praaline
+
+Q_DECLARE_METATYPE(Praaline::Core::Interval)
 
 #endif // INTERVAL_H

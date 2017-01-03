@@ -2,7 +2,7 @@
 #define ANNOTATIONCONTROLSDISFLUENCIES_H
 
 #include <QWidget>
-#include "pngui/model/annotation/annotationtiermodel.h"
+#include "pngui/model/annotation/AnnotationTierModel.h"
 
 namespace Ui {
 class AnnotationControlsDisfluencies;

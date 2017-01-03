@@ -24,6 +24,17 @@ AnnotationStructureLevel::AnnotationStructureLevel(const QString &ID, Annotation
 {
 }
 
+bool AnnotationStructureLevel::isLevelTypePrimary() const
+{
+    if ((m_levelType == AnnotationStructureLevel::IndependentPointsLevel) ||
+        (m_levelType == AnnotationStructureLevel::IndependentIntervalsLevel) ||
+        (m_levelType == AnnotationStructureLevel::GroupingLevel)) {
+        return true;
+    }
+    // else
+    return false;
+}
+
 // ==========================================================================================================
 // ATTRIBUTES
 // ==========================================================================================================

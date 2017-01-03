@@ -2,12 +2,12 @@
 #define XMLANNOTATIONDATASTORE_H
 
 #include <QObject>
-#include "serialisers/AbstractAnnotationDatastore.h"
+#include "serialisers/AnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
-class XMLAnnotationDatastore : public AbstractAnnotationDatastore
+class XMLAnnotationDatastore : public AnnotationDatastore
 {
     Q_OBJECT
 public:

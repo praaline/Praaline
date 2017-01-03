@@ -62,9 +62,9 @@ bool MBROLAFileManager::updatePhoneTierFromPhoFile(const QString &filenamePho, Q
     } while (!stream.atEnd());
     file.close();
     // Update attributes from annotation table
-    if (data.count() < tier->countItems()) return false;
+    if (data.count() < tier->count()) return false;
 
-    for (int i = 0; i < tier->countItems(); i++) {
+    for (int i = 0; i < tier->count(); i++) {
         Interval *intv = tier->interval(i);
         if (!intv) continue;
         QList<QVariant> record = data.at(i);
@@ -135,7 +135,7 @@ void MBROLAFileManager::extractPhoParameters(Corpus *corpus, QPointer<CorpusReco
         QString filenamePho = corpus->baseMediaPath() + "/" + QString(filenameTempAnnot).replace(".TextGrid", "m.pho");
         updatePhoneTierFromPhoFile(filenamePho, tier_phones, attributeForPhoneme);
         if (!corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_phones)) {
-            qDebug() << "Error in saving " << annot->ID() << " speaker " << speakerID << " phone count " << tier_phones->countItems();
+            qDebug() << "Error in saving " << annot->ID() << " speaker " << speakerID << " phone count " << tier_phones->count();
         }
     }
     qDeleteAll(tiersAll);

@@ -33,10 +33,21 @@ public:
     Point(const Point *copy);
     virtual ~Point();
 
+    // Properties
+    inline RealTime time() const { return m_time; }
+
+    // Override
+    virtual QVariant attribute(const QString &name) const;
+
+protected:
+    RealTime m_time;
+
     friend class PointTier;
 };
 
 } // namespace Core
 } // namespace Praaline
+
+Q_DECLARE_METATYPE(Praaline::Core::Point)
 
 #endif // POINT_H

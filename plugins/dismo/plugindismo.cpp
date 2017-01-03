@@ -154,7 +154,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpu
     // If needed, create tok_min level
     AnnotationStructureLevel *level_tok_min = corpus->annotationStructure()->level(d->levelTokMin);
     if (!level_tok_min) {
-        level_tok_min = new AnnotationStructureLevel(d->levelTokMin, AnnotationStructureLevel::IndependentLevel, "Tokens (minimal)", "");
+        level_tok_min = new AnnotationStructureLevel(d->levelTokMin, AnnotationStructureLevel::IndependentIntervalsLevel, "Tokens (minimal)", "");
         if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_tok_min)) return;
         corpus->annotationStructure()->addLevel(level_tok_min);
     }
@@ -319,7 +319,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
                     if (d->tokenisedOnlyToMinimal) {
                         tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
                         if (!tier_tok_min) continue;
-                        tier_tok_min->fillEmptyAnnotationsWith("_");
+                        tier_tok_min->fillEmptyTextLabelsWith("_");
                         tier_tok_mwu = new IntervalTier(d->levelTokMWU, tiers->tMin(), tiers->tMax());
                         DISMO->annotateTokenizedToMinimal(tier_tok_min, tier_tok_mwu);
                     }
@@ -327,8 +327,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
                         tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
                         tier_tok_mwu = tiers->getIntervalTierByName(d->levelTokMWU);
                         if (!tier_tok_min || !tier_tok_mwu) continue;
-                        tier_tok_min->fillEmptyAnnotationsWith("_");
-                        tier_tok_mwu->fillEmptyAnnotationsWith("_");
+                        tier_tok_min->fillEmptyTextLabelsWith("_");
+                        tier_tok_mwu->fillEmptyTextLabelsWith("_");
                         QHash<QString, QString> attr;
                         foreach (QString attrName, d->attributeNames.keys()) {
                             attr.insert(d->attributePrefix + attrName, d->attributeNames.value(attrName));

@@ -12,7 +12,7 @@
 ChunkAnnotator::ChunkAnnotator(IntervalTier *tier_tokens, IntervalTier *tier_chunks, const QString &attributePOS) :
     m_tier_tokens(tier_tokens), m_tier_chunks(tier_chunks), m_attributePOS(attributePOS), m_usingBIO(true)
 {
-    m_numberOfUnits = m_tier_tokens->countItems();
+    m_numberOfUnits = m_tier_tokens->count();
 }
 
 ChunkAnnotator::~ChunkAnnotator()
@@ -32,9 +32,9 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
 
     // Post-processing
     if (m_usingBIO) {
-        if (m_tier_chunks->countItems() != m_tier_tokens->countItems())
+        if (m_tier_chunks->count() != m_tier_tokens->count())
             return; // error
-        for (int i = 0; i < m_tier_chunks->countItems(); i++) {
+        for (int i = 0; i < m_tier_chunks->count(); i++) {
             Interval *chunk = m_tier_chunks->interval(i);
             Interval *token = m_tier_tokens->interval(i);
             if (!chunk || !token) break;
@@ -50,7 +50,7 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
 //                chunk->setText("AdP-B");
 
             Interval *chunk_before = (i > 0) ? m_tier_chunks->interval(i - 1) : 0;
-            Interval *chunk_after = (i < m_tier_chunks->countItems() - 1) ? m_tier_chunks->interval(i + 1) : 0;
+            Interval *chunk_after = (i < m_tier_chunks->count() - 1) ? m_tier_chunks->interval(i + 1) : 0;
             if (chunk && chunk_before && chunk_after) {
                 if (token->isPauseSilent()) {
                     if (token->duration().toDouble() >= 0.250)
@@ -71,7 +71,7 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
             }
         }
         // Format results, from BIO format to intervals
-        int i = m_tier_chunks->countItems() - 1;
+        int i = m_tier_chunks->count() - 1;
         while (i > 0) {
             QString A = m_tier_chunks->interval(i - 1)->text();
             QString B = m_tier_chunks->interval(i)->text();
@@ -91,9 +91,9 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
             i--;
         }
     } else {
-        if (m_tier_chunks->countItems() != m_tier_tokens->countItems())
+        if (m_tier_chunks->count() != m_tier_tokens->count())
             return; // error
-        for (int i = 0; i < m_tier_chunks->countItems(); i++) {
+        for (int i = 0; i < m_tier_chunks->count(); i++) {
             Interval *chunk = m_tier_chunks->interval(i);
             Interval *token = m_tier_tokens->interval(i);
             if (!chunk || !token) break;
@@ -105,7 +105,7 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
                 chunk->setText("ITJ"); // euh
 
             Interval *chunk_before = (i > 0) ? m_tier_chunks->interval(i - 1) : 0;
-            Interval *chunk_after = (i < m_tier_chunks->countItems() - 1) ? m_tier_chunks->interval(i + 1) : 0;
+            Interval *chunk_after = (i < m_tier_chunks->count() - 1) ? m_tier_chunks->interval(i + 1) : 0;
             if (chunk && chunk_before && chunk_after) {
                 if (token->isPauseSilent()) {
                     if (token->duration().toDouble() >= 0.250)
@@ -123,7 +123,7 @@ void ChunkAnnotator::annotate(const QString &filenameModel)
             }
         }
         // Merge
-        int i = m_tier_chunks->countItems() - 1;
+        int i = m_tier_chunks->count() - 1;
         while (i > 0) {
             QString A = m_tier_chunks->interval(i - 1)->text();
             QString B = m_tier_chunks->interval(i)->text();

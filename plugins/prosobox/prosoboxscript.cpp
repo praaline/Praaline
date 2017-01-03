@@ -51,10 +51,10 @@ void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annota
     }
     IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
-        tier_timeline->replaceText(speakerID, "L1");
-        tier_timeline->replaceText("L1+L2", "L1");
-        tier_timeline->replaceText("L2+L1", "L1");
-        tier_timeline->fillEmptyAnnotationsWith("_");
+        tier_timeline->replaceTextLabels(speakerID, "L1");
+        tier_timeline->replaceTextLabels("L1+L2", "L1");
+        tier_timeline->replaceTextLabels("L2+L1", "L1");
+        tier_timeline->fillEmptyTextLabelsWith("_");
         tier_timeline->mergeIdenticalAnnotations(QString(), QStringList() << "_");
         tier_timeline->setName("speaker");
         txg->addTier(tier_timeline);

@@ -106,7 +106,7 @@
          </widget>
         </widget>
        </widget>
-       <widget class="QDockWidget" name="dockPreview">
+       <widget class="QDockWidget" name="dockCorpusItemPreview">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>

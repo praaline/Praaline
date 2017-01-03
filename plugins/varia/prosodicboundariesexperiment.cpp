@@ -132,7 +132,7 @@ void PBExpe::potentialStimuliFromSample(Corpus *corpus, QPointer<CorpusAnnotatio
             if (syll->text() == "_") {
                 // first and last silence are always included
                 int pause_index = timeline->intervalIndexAtTime(syll->tCenter());
-                if (pause_index == 0 || pause_index == timeline->countItems() - 1) {
+                if (pause_index == 0 || pause_index == timeline->count() - 1) {
                     pauseBoundariesForIPUs << new Interval(syll);
                 }
                 // exclude if pause is smaller than threshold
@@ -215,7 +215,7 @@ void PBExpe::actualStimuliFromCorpus(Corpus *corpus, QList<QPointer<CorpusCommun
                 IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
                 if (!tier_tokmin) continue;
                 QList<Interval *> actualStimuli;
-                actualStimuli << new Interval(tier_syll->firstInterval()->tMax(), tier_syll->lastInterval()->tMin(), "");
+                actualStimuli << new Interval(tier_syll->first()->tMax(), tier_syll->last()->tMin(), "");
                 measuresForPotentialStimuli(annot, actualStimuli, out, tier_syll, tier_tokmin);
             }
             qDeleteAll(tiersAll);
@@ -429,7 +429,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumber
             if (!tier_tapping) continue;
             if (subjectID.isEmpty()) continue;
             totalAnnotators++; // Count the subject as a potential annotator even if they did not tap
-            if (tier_tapping->countItems() == 1) continue; // The subject did not tap (not a single time) on this sample
+            if (tier_tapping->count() == 1) continue; // The subject did not tap (not a single time) on this sample
             if (tier_tapping->tMax() > tMax) tMax = tier_tapping->tMax();
             foreach(Interval *intv, tier_tapping->intervals()) {
                 if (intv->text() != "x") continue;
@@ -638,7 +638,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
                 syll->setAttribute(prefix + "TimesOrig", "");
             }
 
-            if (tier_syll->countItems() < 10) {
+            if (tier_syll->count() < 10) {
                 corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_syll);
                 continue; // (secondary speakers, not analysed)
             }
@@ -713,12 +713,12 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
 
             // Go through local maxima and attribute PPB groups to syllables
             QHash<int, QList<int> > assignments;
-            for (int spIndex = 0; spIndex < tier_smooth->countItems(); ++spIndex) {
+            for (int spIndex = 0; spIndex < tier_smooth->count(); ++spIndex) {
                 Point *sp = tier_smooth->point(spIndex);
                 if (sp->attribute("localMax").toBool()) {
                     int target_syll;
                     if (sp->time() > tier_syll->tMax())
-                        target_syll = tier_syll->countItems() - 1;
+                        target_syll = tier_syll->count() - 1;
                     else
                         target_syll = tier_syll->intervalIndexAtTime(sp->time());
                     if (target_syll < 0) {
@@ -802,7 +802,7 @@ void PBExpe::analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int 
                 QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
                 IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
                 if (!tier_syll) continue;
-                for (int syllNo = 0; syllNo < tier_syll->countItems(); ++syllNo) {
+                for (int syllNo = 0; syllNo < tier_syll->count(); ++syllNo) {
                     Interval *syll = tier_syll->interval(syllNo);
                     if (!syll->attribute(prefix + "PotentialSite").toBool()) continue;
                     QString ID = QString("%1\t%2\t%3\t%4")
@@ -1036,7 +1036,7 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix, boo
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
             if (!tier_syll) continue;
             QList<int> ppbSyllables;
-            for (int i = 0; i < tier_syll->countItems(); ++i) {
+            for (int i = 0; i < tier_syll->count(); ++i) {
                 Interval *syll = tier_syll->interval(i);
                 if (syll->attribute(prefix + "Force").toDouble() <= 0.01) continue;
                 ppbSyllables << i;
@@ -1255,7 +1255,7 @@ void PBExpe::statCorrespondanceNSandMS(Corpus *corpus, QString prefix)
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
             if (!tier_syll) continue;
             QList<int> ppbSyllables;
-            for (int i = 0; i < tier_syll->countItems(); ++i) {
+            for (int i = 0; i < tier_syll->count(); ++i) {
                 Interval *syll = tier_syll->interval(i);
                 if (!syll->attribute(prefix + "PotentialSite").toBool()) continue;
                 ppbSyllables << i;
@@ -1308,7 +1308,7 @@ void PBExpe::analysisCheckBoundaryRightAfterPause(Corpus *corpus)
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
             if (!tier_syll) continue;
 
-            for (int i = 0; i < tier_syll->countItems() - 1; ++i) {
+            for (int i = 0; i < tier_syll->count() - 1; ++i) {
                 Interval *syll = tier_syll->interval(i);
                 Interval *syll_next = tier_syll->interval(i+1);
                 if (syll->isPauseSilent() && syll_next->attribute("boundaryForce").toDouble() > 0.0) {

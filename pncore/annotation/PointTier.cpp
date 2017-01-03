@@ -27,7 +27,7 @@ PointTier::PointTier(const QString &name, const QList<Point *> &points,
     m_tMax = tMax;
     m_points = points;
     if (m_points.count() == 0) return;
-    qSort(m_points.begin(), m_points.end(), PointTier::ComparePoints);
+    qSort(m_points.begin(), m_points.end(), PointTier::comparePoints);
     if (m_tMin > m_points.first()->m_time) m_tMin = m_points.first()->m_time;
     if (m_tMax < m_points.last()->m_time) m_tMax = m_points.last()->m_time;
 }
@@ -50,9 +50,89 @@ PointTier::~PointTier()
     qDeleteAll(m_points);
 }
 
-// ==========================================================================================================
+// ==============================================================================================================================
+// Implementation of AnnotationTier
+// ==============================================================================================================================
+
+bool PointTier::isEmpty() const
+{
+    return m_points.isEmpty();
+}
+
+void PointTier::clear()
+{
+    qDeleteAll(m_points);
+    m_points.clear();
+}
+
+Point *PointTier::at(int index) const
+{
+    return m_points.at(index);
+}
+
+Point *PointTier::first() const
+{
+    if (isEmpty()) return Q_NULLPTR;
+    return m_points.first();
+}
+
+Point *PointTier::last() const
+{
+    if (isEmpty()) return Q_NULLPTR;
+    return m_points.last();
+}
+
+QList<QString> PointTier::getDistinctTextLabels() const
+{
+    QList<QString> ret;
+    foreach (Point *point, m_points) {
+        if (!ret.contains(point->text())) ret << point->text();
+    }
+    return ret;
+}
+
+QList<QVariant> PointTier::getDistinctAttributeValues(const QString &attributeID) const
+{
+    QList<QVariant> ret;
+    foreach (Point *point, m_points) {
+        if (!ret.contains(point->attribute(attributeID))) ret.append(point->attribute(attributeID));
+    }
+    return ret;
+}
+
+void PointTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+{
+    foreach (Point *point, m_points) {
+        point->replaceText(before, after, cs);
+    }
+}
+
+void PointTier::fillEmptyTextLabelsWith(const QString &filler)
+{
+    foreach (Point *point, m_points) {
+        if (point->text().isEmpty()) point->setText(filler);
+    }
+}
+
+
+void PointTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
+{
+    foreach (Point *point, m_points) {
+        point->replaceAttributeText(attributeID, before, after, cs);
+    }
+}
+
+void PointTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
+{
+    foreach (Point *point, m_points) {
+        if (point->attribute(attributeID).toString().isEmpty())
+            point->setAttribute(attributeID, filler);
+    }
+}
+
+// ==============================================================================================================================
 // Accessors and mutators for Points
-// ==========================================================================================================
+// ==============================================================================================================================
 
 Point *PointTier::point(int index) const
 {
@@ -64,7 +144,7 @@ QList<Point *> PointTier::points() const
     return m_points;
 }
 
-bool PointTier::ComparePoints(Point *A, Point *B) {
+bool PointTier::comparePoints(Point *A, Point *B) {
     return (A->time() < B->time());
 }
 
@@ -107,18 +187,25 @@ int PointTier::pointIndexAtTime(RealTime t, RealTime threshold) const
 void PointTier::addPoint(Point *point)
 {
     m_points << point;
-    qSort(m_points.begin(), m_points.end(), PointTier::ComparePoints);
+    qSort(m_points.begin(), m_points.end(), PointTier::comparePoints);
 }
 
 void PointTier::addPoints(QList<Point *> points)
 {
     m_points << points;
-    qSort(m_points.begin(), m_points.end(), PointTier::ComparePoints);
+    qSort(m_points.begin(), m_points.end(), PointTier::comparePoints);
 }
 
 void PointTier::removePointAt(int i)
 {
     m_points.removeAt(i);
+}
+
+QList<RealTime> PointTier::times() const
+{
+    QList<RealTime> ret;
+    foreach (Point *p, m_points) ret << p->time();
+    return ret;
 }
 
 void PointTier::timeShift(const RealTime delta)
@@ -127,39 +214,6 @@ void PointTier::timeShift(const RealTime delta)
     m_tMax = m_tMax + delta;
     foreach (Point *p, m_points) {
         p->m_time = p->m_time + delta;
-    }
-}
-
-QList<RealTime> PointTier::tCenters() const
-{
-    QList<RealTime> ret;
-    foreach (Point *p, m_points)
-        ret << p->time();
-    return ret;
-}
-
-void PointTier::replaceText(const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Point *p, m_points) {
-        p->replaceText(before, after, cs);
-    }
-}
-
-QList<QString> PointTier::getDistinctTextLabels() const
-{
-    QList<QString> ret;
-    foreach (Point *p, m_points) {
-        if (!ret.contains(p->text())) {
-            ret << p->text();
-        }
-    }
-    return ret;
-}
-
-void PointTier::fillEmptyAnnotationsWith(const QString &filler)
-{
-    foreach (Point *p, m_points) {
-        if (p->text().isEmpty()) p->setText(filler);
     }
 }
 
@@ -198,7 +252,7 @@ QList<Point *> PointTier::getPointsContainedIn(RealTime tMin, RealTime tMax) con
 {
     QList<Point *> ret;
     int low = pointIndexAtTime(tMin); --low; if (low < 0) low = 0;
-    int high = pointIndexAtTime(tMax); ++high; if (high >= countItems()) high = countItems() -1;
+    int high = pointIndexAtTime(tMax); ++high; if (high >= count()) high = count() -1;
     if (m_points.at(low)->time() >= tMin) ret << m_points.at(low);
     for (int i = low + 1; i <= high - 1; ++i) ret << m_points.at(i);
     if (m_points.at(high)->time() <= tMax) ret << m_points.at(high);
@@ -209,7 +263,7 @@ IntervalTier *PointTier::getIntervalsMin(const QString &name, QObject *parent)
 {
     IntervalTier *ret = new IntervalTier(name, m_tMin, m_tMax, parent);
     foreach (Point *p, m_points) {
-        Interval *intv = ret->split(ret->countItems() - 1, p->time());
+        Interval *intv = ret->split(ret->count() - 1, p->time());
         intv->setText(p->text());
     }
     return ret;

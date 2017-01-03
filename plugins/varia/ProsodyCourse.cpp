@@ -147,7 +147,7 @@ void ProsodyCourse::syllableTables(Corpus *corpus)
                 IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
                 if (!tier_syll) continue;
                 QList<int> syllables;
-                for (int i = 0; i < tier_syll->countItems(); ++i) { syllables << i; }
+                for (int i = 0; i < tier_syll->count(); ++i) { syllables << i; }
                 if (syllables.isEmpty()) continue;
                 QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, annotationID, syllables, extraAttributes);
                 foreach (QString line, results) out << line.replace(",", ".") << "\n";

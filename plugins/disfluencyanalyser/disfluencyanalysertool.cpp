@@ -24,13 +24,13 @@ bool DisfluencyAnalyserTool::readFromTier(IntervalTier *tierDisfluency, const QS
 {
     if (!tierDisfluency)
         return false;
-    if (!(tierDisfluency->countItems() == m_tierTokens->countItems()))
+    if (!(tierDisfluency->count() == m_tierTokens->count()))
         return false;
 
     int start = -1, end = -1, interruptionPoint = -1, reparans = -1, editStart = -1, editEnd = -1;
     QString tag, previousTag, tagExt, previousTagExt;
     bool inEdit = false; bool inReparans = false;
-    for (int i = 0; i < m_tierTokens->countItems(); i++) {
+    for (int i = 0; i < m_tierTokens->count(); i++) {
         QString disfluencyIntv;
         if (attribute.isEmpty())
             disfluencyIntv = tierDisfluency->interval(i)->text();

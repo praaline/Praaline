@@ -94,20 +94,24 @@ QModelIndex AnnotationStructureTreeModel::parent(const QModelIndex &index) const
 
 QString convertLevelTypeToString(int levelType)
 {
-    if      (levelType == AnnotationStructureLevel::IndependentLevel)   return "Independent";
-    else if (levelType == AnnotationStructureLevel::GroupingLevel)      return "Grouping";
-    else if (levelType == AnnotationStructureLevel::SequencesLevel)     return "Sequences";
-    else if (levelType == AnnotationStructureLevel::TreeLevel)          return "Tree";
+    if      (levelType == AnnotationStructureLevel::IndependentPointsLevel)    return "Independent Points";
+    if      (levelType == AnnotationStructureLevel::IndependentIntervalsLevel) return "Independent Intervals";
+    else if (levelType == AnnotationStructureLevel::GroupingLevel)             return "Grouping Intervals";
+    else if (levelType == AnnotationStructureLevel::SequencesLevel)            return "Sequences";
+    else if (levelType == AnnotationStructureLevel::TreeLevel)                 return "Tree";
+    else if (levelType == AnnotationStructureLevel::RelationsLevel)            return "Relations";
     return QString();
 }
 
 AnnotationStructureLevel::LevelType convertStringToLevelType(QString str)
 {
-    if      (str == "Independent")  return AnnotationStructureLevel::IndependentLevel;
-    else if (str == "Grouping")     return AnnotationStructureLevel::GroupingLevel;
-    else if (str == "Sequences")    return AnnotationStructureLevel::SequencesLevel;
-    else if (str == "Tree")         return AnnotationStructureLevel::TreeLevel;
-    return AnnotationStructureLevel::IndependentLevel;
+    if      (str == "Independent Points")    return AnnotationStructureLevel::IndependentPointsLevel;
+    else if (str == "Independent Intervals") return AnnotationStructureLevel::IndependentIntervalsLevel;
+    else if (str == "Grouping Intervals")    return AnnotationStructureLevel::GroupingLevel;
+    else if (str == "Sequences")             return AnnotationStructureLevel::SequencesLevel;
+    else if (str == "Tree")                  return AnnotationStructureLevel::TreeLevel;
+    else if (str == "Relations")             return AnnotationStructureLevel::RelationsLevel;
+    return AnnotationStructureLevel::IndependentIntervalsLevel;
 }
 
 QVariant AnnotationStructureTreeModel::headerData(int Level, Qt::Orientation orientation, int role) const

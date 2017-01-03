@@ -134,8 +134,6 @@ HEADERS += \
     structure/MetadataStructureAttribute.h \
     structure/MetadataStructureSection.h \
     structure/MetadataStructure.h \
-    serialisers/AbstractAnnotationDatastore.h \
-    serialisers/AbstractMetadataDatastore.h \
     serialisers/DatastoreFactory.h \
     corpus/Corpus.h \
     corpus/CorpusCommunication.h \
@@ -153,7 +151,6 @@ HEADERS += \
     annotation/IntervalTier.h \
     annotation/Point.h \
     annotation/PointTier.h \
-    annotation/RelationTier.h \
     annotation/SpeakerTimeline.h \
     annotation/TreeTier.h \
     interfaces/praat/PraatTextFile.h \
@@ -180,7 +177,6 @@ HEADERS += \
     serialisers/sql/SQLAnnotationDatastore.h \
     serialisers/sql/SQLMetadataDatastore.h \
     serialisers/sql/SQLQueryEngineAnnotation.h \
-    serialisers/sql/SQLSchemaProxyAnnotation.h \
     serialisers/sql/SQLSchemaProxyBase.h \
     serialisers/sql/SQLSerialiserAnnotation.h \
     serialisers/sql/SQLSerialiserAnnotationStructure.h \
@@ -195,7 +191,13 @@ HEADERS += \
     serialisers/sql/SQLSerialiserMetadataStructure.h \
     serialisers/mocadb/MocaDBSerialiserSystem.h \
     serialisers/sql/SQLSerialiserSystem.h \
-    structure/NameValueList.h
+    structure/NameValueList.h \
+    annotation/SequencesTier.h \
+    annotation/Relation.h \
+    annotation/Sequence.h \
+    serialisers/AnnotationDatastore.h \
+    serialisers/MetadataDatastore.h \
+    annotation/RelationTier.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -314,7 +316,6 @@ SOURCES += \
     annotation/IntervalTier.cpp \
     annotation/Point.cpp \
     annotation/PointTier.cpp \
-    annotation/RelationTier.cpp \
     annotation/SpeakerTimeline.cpp \
     annotation/TreeTier.cpp \
     interfaces/praat/PraatTextFile.cpp \
@@ -355,7 +356,11 @@ SOURCES += \
     query/Measures.cpp \
     serialisers/mocadb/MocaDBSerialiserSystem.cpp \
     serialisers/sql/SQLSerialiserSystem.cpp \
-    structure/NameValueList.cpp
+    structure/NameValueList.cpp \
+    annotation/SequencesTier.cpp \
+    annotation/Relation.cpp \
+    annotation/Sequence.cpp \
+    annotation/RelationTier.cpp
 
 DISTFILES += \
     pncore.qmodel

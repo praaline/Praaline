@@ -36,9 +36,10 @@ class PRAALINE_CORE_SHARED_EXPORT AnnotationTier : public QObject
 
 public:
     enum TierType {
-        TierType_Intervals,
         TierType_Points,
+        TierType_Intervals,
         TierType_Grouping,
+        TierType_Sequences,
         TierType_Tree,
         TierType_Relations
     };
@@ -51,23 +52,22 @@ public:
     virtual void setName(const QString &name);
     virtual RealTime tMin() const;
     virtual RealTime tMax() const;
-    virtual int count() const = 0; // TODO : change that
-    virtual bool isEmpty() const;
 
-    virtual QList<QString> getDistinctTextLabels() const;
-    virtual QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
+    virtual int count() const = 0;
+    virtual bool isEmpty() const = 0;
+    virtual void clear() = 0;
+    virtual AnnotationElement *at(int index) const = 0;
+    virtual AnnotationElement *first() const = 0;
+    virtual AnnotationElement *last() const = 0;
 
-    virtual void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    virtual void fillEmptyTextLabelsWith(const QString &filler);
-    virtual void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    virtual void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
+    virtual QList<QString> getDistinctTextLabels() const = 0;
+    virtual QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const = 0;
 
-    virtual AnnotationElement *at(int index);
-    virtual AnnotationElement *first();
-    virtual AnnotationElement *last();
-
-    virtual QList<RealTime> times() const;
-    virtual void timeShift(const RealTime delta);
+    virtual void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) = 0;
+    virtual void fillEmptyTextLabelsWith(const QString &filler) = 0;
+    virtual void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
+                                      Qt::CaseSensitivity cs = Qt::CaseSensitive) = 0;
+    virtual void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler) = 0;
 
 signals:
     void nameChanged();
@@ -76,7 +76,6 @@ protected:
     QString m_name;
     RealTime m_tMin;
     RealTime m_tMax;
-    QList<AnnotationElement *> m_items;
 };
 
 } // namespace Core

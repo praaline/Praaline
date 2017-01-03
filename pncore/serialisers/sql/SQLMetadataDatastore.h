@@ -3,12 +3,12 @@
 
 #include <QObject>
 #include <QSqlDatabase>
-#include "serialisers/AbstractMetadataDatastore.h"
+#include "serialisers/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
-class SQLMetadataDatastore : public AbstractMetadataDatastore
+class SQLMetadataDatastore : public MetadataDatastore
 {
     Q_OBJECT
 public:

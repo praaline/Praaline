@@ -38,7 +38,7 @@ Token::Token(const QList<TokenUnit *> &listTokMin, const QString &textMWU)
     : TokenUnit(RealTime(0,0), RealTime(0,0), textMWU)
 {
     if (listTokMin.count() > 0) {
-        m_time = listTokMin[0]->tMin();
+        m_tMin = listTokMin[0]->tMin();
         m_tMax = listTokMin[listTokMin.count() - 1]->tMax();
     }
     //
@@ -84,12 +84,12 @@ QList<Interval *> Token::toIntervalsDisfluency() const
 
 Interval *Token::toIntervalDiscourse() const
 {
-    return new Interval(m_time, m_tMax, m_tagDiscourse);
+    return new Interval(m_tMin, m_tMax, m_tagDiscourse);
 }
 
 Interval *Token::toIntervalFrontier() const
 {
-    return new Interval(m_time, m_tMax, m_tagFrontier);
+    return new Interval(m_tMin, m_tMax, m_tagFrontier);
 }
 
 // Overriden mutators from TokenUnit. When the token is Simple (only one TokenUnit), we synchronize

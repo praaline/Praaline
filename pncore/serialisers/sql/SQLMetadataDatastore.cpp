@@ -8,7 +8,7 @@ namespace Praaline {
 namespace Core {
 
 SQLMetadataDatastore::SQLMetadataDatastore(QPointer<MetadataStructure> structure, QObject *parent) :
-    AbstractMetadataDatastore(parent), m_structure(structure)
+    MetadataDatastore(parent), m_structure(structure)
 {
 }
 

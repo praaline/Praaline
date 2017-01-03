@@ -1,6 +1,6 @@
 /*
     Praaline - Annotation module
-    Copyright (c) 2011-2015 George Christodoulides
+    Copyright (c) 2011-2016 George Christodoulides
 
     This program or module is free software: you can redistribute it
     and/or modify it under the terms of the GNU General Public License
@@ -18,19 +18,28 @@
 namespace Praaline {
 namespace Core {
 
+Interval::Interval()
+{
+}
+
 Interval::Interval(const RealTime tMin, const RealTime tMax, const QString &text) :
-    AnnotationElement(tMin, text), m_tMax(tMax)
+    AnnotationElement(text), m_tMin(tMin), m_tMax(tMax)
 {
 }
 
 Interval::Interval(const RealTime tMin, const RealTime tMax, const QString &text, const QHash<QString, QVariant> &attributes) :
-    AnnotationElement(tMin, text, attributes), m_tMax(tMax)
+    AnnotationElement(text, attributes), m_tMin(tMin), m_tMax(tMax)
+{
+}
+
+Interval::Interval(const Interval &copy) :
+    AnnotationElement(copy.m_text, copy.m_attributes), m_tMin(copy.m_tMin), m_tMax(copy.m_tMax)
 {
 }
 
 Interval::Interval(const Interval *copy, bool copyAttributes)
 {
-    m_time = copy->m_time;
+    m_tMin = copy->m_tMin;
     m_tMax = copy->m_tMax;
     m_text = copy->m_text;
     if (copyAttributes) {
@@ -40,7 +49,7 @@ Interval::Interval(const Interval *copy, bool copyAttributes)
 }
 
 Interval::Interval(const RealTime tMin, const RealTime tMax, const Interval *copy) :
-    AnnotationElement(tMin, copy->text()), m_tMax(tMax)
+    AnnotationElement(copy->text()), m_tMin(tMin), m_tMax(tMax)
 {
     foreach (QString attributeID, copy->m_attributes.keys())
         m_attributes.insert(attributeID, copy->m_attributes.value(attributeID));
@@ -51,7 +60,7 @@ Interval::Interval(const QList<Interval *> &intervals, const QString &separator)
     // Constructor that concatenates intervals into a new one
     bool first = true;
     if (intervals.count() > 0) {
-        m_time = intervals[0]->tMin();
+        m_tMin = intervals[0]->tMin();
         m_tMax = intervals[intervals.count() - 1]->tMax();
         foreach (Interval *intv, intervals) {
             if (!first) m_text.append(separator);
@@ -73,27 +82,27 @@ QVariant Interval::attribute(const QString &name) const
 bool Interval::overlaps(const Interval &other, const RealTime threshold) const
 {
     // default threshold is 0
-    return (((m_tMax - other.m_time) > threshold) &&
-            ((other.m_tMax - m_time) > threshold));
+    return (((m_tMax - other.m_tMin) > threshold) &&
+            ((other.m_tMax - m_tMin) > threshold));
 }
 
 bool Interval::covers(const Interval &other, const RealTime threshold) const
 {
     // default threshold is 0
-    return (((m_time - other.m_time) <= threshold) &&
+    return (((m_tMin - other.m_tMin) <= threshold) &&
             ((other.m_tMax - m_tMax) <= threshold));
 }
 
 bool Interval::isCovered(const Interval &other, const RealTime threshold) const
 {
     // default threshold is 0
-    return (((other.m_time - m_time) <= threshold) &&
+    return (((other.m_tMin - m_tMin) <= threshold) &&
             ((m_tMax - other.m_tMax) <= threshold));
 }
 
 bool Interval::contains(const RealTime timePoint) const
 {
-    return ((m_time <= timePoint) && (timePoint <= m_tMax));
+    return ((m_tMin <= timePoint) && (timePoint <= m_tMax));
 }
 
 bool Interval::isPauseSilent() const
@@ -103,8 +112,8 @@ bool Interval::isPauseSilent() const
 
 int Interval::compare(const Interval &other) const
 {
-    if (other.m_time < m_time) return 1;
-    if (other.m_time > m_time) return -1;
+    if (other.m_tMin < m_tMin) return 1;
+    if (other.m_tMin > m_tMin) return -1;
     if (other.m_tMax < m_tMax) return 1;
     if (other.m_tMax > m_tMax) return -1;
     return other.m_text.compare(m_text);

@@ -240,16 +240,16 @@ void TokenUnit::setTagsFromCRF(const QString &crfFileLine)
 
 Interval *TokenUnit::toIntervalToken() const
 {
-    return new Interval(m_time, m_tMax, m_text);
+    return new Interval(m_tMin, m_tMax, m_text);
 }
 
 Interval *TokenUnit::toIntervalPOS() const
 {
-    return new Interval(m_time, m_tMax, m_tagPOS);
+    return new Interval(m_tMin, m_tMax, m_tagPOS);
 }
 
 Interval *TokenUnit::toIntervalDisfluency() const
 {
-    return new Interval(m_time, m_tMax, m_tagDisfluency);
+    return new Interval(m_tMin, m_tMax, m_tagDisfluency);
 }
 

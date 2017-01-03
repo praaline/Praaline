@@ -6,7 +6,7 @@ namespace Praaline {
 namespace Core {
 
 // static
-AbstractAnnotationDatastore *DatastoreFactory::getAnnotationDatastore(const DatastoreInfo &dsi, QPointer<AnnotationStructure> structure)
+AnnotationDatastore *DatastoreFactory::getAnnotationDatastore(const DatastoreInfo &dsi, QPointer<AnnotationStructure> structure)
 {
     if (dsi.type == DatastoreInfo::SQL) {
         return new SQLAnnotationDatastore(structure);
@@ -15,7 +15,7 @@ AbstractAnnotationDatastore *DatastoreFactory::getAnnotationDatastore(const Data
 }
 
 // static
-AbstractMetadataDatastore *DatastoreFactory::getMetadataDatastore(const DatastoreInfo &dsi, QPointer<MetadataStructure> structure)
+MetadataDatastore *DatastoreFactory::getMetadataDatastore(const DatastoreInfo &dsi, QPointer<MetadataStructure> structure)
 {
     if (dsi.type == DatastoreInfo::SQL) {
         return new SQLMetadataDatastore(structure);

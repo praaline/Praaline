@@ -128,7 +128,9 @@ void SplitCommunicationsDialog::doSplit()
                 if (!annot) continue;
                 QList<Interval *> segments;
                 int i = 1;
-                foreach (Interval *intv, d->corpus->datastoreAnnotations()->getIntervals(annot->ID(), "", levelID, -1, -1)) {
+                QList<Interval *> intervals = d->corpus->datastoreAnnotations()->getIntervals(
+                            AnnotationDatastore::Selection(annot->ID(), "", levelID));
+                foreach (Interval *intv, intervals) {
                     QString label = (attributeID.isEmpty()) ? intv->text() : intv->attribute(attributeID).toString();
                     if (selectedSplitLabels.contains(label)) {
                         Interval *segment = new Interval(intv);

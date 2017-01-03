@@ -75,6 +75,22 @@ QString CorpusRecording::filePath() const
     return QFileInfo(baseMediaPath() + "/" + filename()).path();
 }
 
+bool CorpusRecording::isFileAvailable() const
+{
+    if (filename().startsWith("http:") || filename().startsWith("https:"))
+        return false;
+    // else
+    return QFile::exists(baseMediaPath() + "/" + filename());
+}
+
+QUrl CorpusRecording::mediaUrl() const
+{
+    if (filename().startsWith("http:") || filename().startsWith("https:"))
+        return QUrl(filename());
+    // else
+    return QUrl::fromLocalFile(baseMediaPath() + "/" + filename());
+}
+
 void CorpusRecording::setName(const QString &name)
 {
     if (m_name != name) {
@@ -169,11 +185,6 @@ void CorpusRecording::setChecksumMD5(const QString &checksumMD5)
         m_checksumMD5 = checksumMD5;
         setDirty(true);
     }
-}
-
-bool CorpusRecording::isFileAvailable() const
-{
-    return QFile::exists(basePath() + m_filename);
 }
 
 } // namespace Core

@@ -8,7 +8,7 @@
 #include "pncore/annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
-#include "annotationtiermodel.h"
+#include "AnnotationTierModel.h"
 
 struct TimelineData {
     QString speakerID;
@@ -44,7 +44,7 @@ AnnotationTierModel::AnnotationTierModel(QMap<QString, QPointer<AnnotationTierGr
     foreach (QString speakerID, d->tiers.keys()) {
         IntervalTier *tier = d->tiers.value(speakerID)->getIntervalTierByName(d->tiernameMinimal);
         if (!tier) continue;
-        for (int intervalNo = 0; intervalNo < tier->countItems(); ++intervalNo) {
+        for (int intervalNo = 0; intervalNo < tier->count(); ++intervalNo) {
             TimelineData td;
             td.speakerID = speakerID;
             td.intervalNo = intervalNo;
@@ -100,7 +100,7 @@ RealTime AnnotationTierModel::getEndTime() const
     IntervalTier *tier_min = spk_tiers->getIntervalTierByName(d->tiernameMinimal);
     if (!tier_min) return RealTime();
     int i = d->timeline.last().intervalNo;
-    if (i >= tier_min->countItems()) return RealTime();
+    if (i >= tier_min->count()) return RealTime();
     return tier_min->interval(i)->tMax();
 }
 
@@ -321,7 +321,7 @@ bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &valu
         if (!result) return false;
         // update timeline (our center, next interval's min and center)
         d->timeline[timelineIndex].tCenter = tier_minimal->interval(intervalIndex)->tCenter();
-        if ((timelineIndex < d->timeline.count() - 1) && (intervalIndex < tier_minimal->countItems() -1)) {
+        if ((timelineIndex < d->timeline.count() - 1) && (intervalIndex < tier_minimal->count() -1)) {
             d->timeline[timelineIndex + 1].tMin = tier_minimal->interval(intervalIndex + 1)->tMin();
             d->timeline[timelineIndex + 1].tCenter = tier_minimal->interval(intervalIndex + 1)->tCenter();
         }
@@ -538,7 +538,7 @@ bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &time
             beginRemoveColumns(QModelIndex(), timelineIndices.first() + 1, timelineIndices.last());
         int indexFirst = tier->intervalIndexAtTime(tdFirst.tCenter);
         int indexLast = tier->intervalIndexAtTime(tdLast.tCenter);
-        if (indexLast == -1) indexLast = tier->countItems() - 1;
+        if (indexLast == -1) indexLast = tier->count() - 1;
         Interval *merged = tier->merge(indexFirst, indexLast, " ");
         if (!merged) {
             if (d->orientation == Qt::Vertical)

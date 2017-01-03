@@ -4,6 +4,7 @@
 #include "pncore_global.h"
 #include <QObject>
 #include <QString>
+#include <QUrl>
 #include "base/RealTime.h"
 #include "CorpusObject.h"
 
@@ -79,6 +80,7 @@ public:
     void setChecksumMD5(const QString &checksumMD5);
 
     bool isFileAvailable() const;
+    QUrl mediaUrl() const;
 
 signals:
     

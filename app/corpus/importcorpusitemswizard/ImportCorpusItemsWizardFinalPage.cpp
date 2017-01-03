@@ -162,7 +162,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
         if (tierL->tierType() == AnnotationTier::TierType_Intervals && tierA->tierType() == AnnotationTier::TierType_Intervals) {
             IntervalTier *tierLI = qobject_cast<IntervalTier *>(tierL);
             IntervalTier *tierAI = qobject_cast<IntervalTier *>(tierA);
-            for (int i = 0; i < tierLI->countItems(); ++i) {
+            for (int i = 0; i < tierLI->count(); ++i) {
                 Interval *intv = tierAI->intervalAtTime(tierLI->interval(i)->tCenter());
                 if (intv) tierLI->interval(i)->setAttribute(c.annotationAttributeID, intv->text());
             }
@@ -170,7 +170,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
         else if (tierL->tierType() == AnnotationTier::TierType_Intervals && tierA->tierType() == AnnotationTier::TierType_Points) {
             IntervalTier *tierLI = qobject_cast<IntervalTier *>(tierL);
             PointTier *tierAP = qobject_cast<PointTier *>(tierA);
-            for (int i = 0; i < tierLI->countItems(); ++i) {
+            for (int i = 0; i < tierLI->count(); ++i) {
                 Point *pnt = tierAP->pointAtTime(tierLI->interval(i)->tCenter());
                 if (pnt) tierLI->interval(i)->setAttribute(c.annotationAttributeID, pnt->text());
             }
@@ -178,7 +178,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
         else if (tierL->tierType() == AnnotationTier::TierType_Points && tierA->tierType() == AnnotationTier::TierType_Intervals) {
             PointTier *tierLP = qobject_cast<PointTier *>(tierL);
             IntervalTier *tierAI = qobject_cast<IntervalTier *>(tierA);
-            for (int i = 0; i < tierLP->countItems(); ++i) {
+            for (int i = 0; i < tierLP->count(); ++i) {
                 Interval *intv = tierAI->intervalAtTime(tierLP->point(i)->time());
                 if (intv) tierLP->point(i)->setAttribute(c.annotationAttributeID, intv->text());
             }
@@ -186,7 +186,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
         else if (tierL->tierType() == AnnotationTier::TierType_Points && tierA->tierType() == AnnotationTier::TierType_Points) {
             PointTier *tierLP = qobject_cast<PointTier *>(tierL);
             PointTier *tierAP = qobject_cast<PointTier *>(tierA);
-            for (int i = 0; i < tierLP->countItems(); ++i) {
+            for (int i = 0; i < tierLP->count(); ++i) {
                 Point *pnt = tierAP->pointAtTime(tierLP->point(i)->time());
                 if (pnt) tierLP->point(i)->setAttribute(c.annotationAttributeID, pnt->text());
             }

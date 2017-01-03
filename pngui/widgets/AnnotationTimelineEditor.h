@@ -9,7 +9,7 @@
 #include <QIdentityProxyModel>
 #include <QModelIndex>
 #include "base/RealTime.h"
-#include "model/annotation/annotationtiermodel.h"
+#include "model/annotation/AnnotationTierModel.h"
 #include "SelectionListDataProviderProxy.h"
 
 namespace Ui {

@@ -104,7 +104,7 @@ QList<int> DisfluencyPatternDetector::indicesWithoutSimpleDisfluencies(bool with
 {
     // Token skipping happens here
     QList<int> list;
-    if (to < 0) to = d->tierDisfluency->countItems() - 1;
+    if (to < 0) to = d->tierDisfluency->count() - 1;
     for (int i = from; i <= to; ++i) {
         QString tok = (d->tierinfoToken.second.isEmpty()) ?
                     d->tierToken->interval(i)->text() :
@@ -146,7 +146,7 @@ bool DisfluencyPatternDetector::matchAll(QList<int> &indices, int start, int win
 
 void DisfluencyPatternDetector::revertToDisfluenciesLevel1()
 {
-    for (int index = 0; index < d->tierDisfluency->countItems(); ++index) {
+    for (int index = 0; index < d->tierDisfluency->count(); ++index) {
         QString dis = (d->tierinfoDisfluency.second.isEmpty()) ?
                     d->tierDisfluency->interval(index)->text() :
                     d->tierDisfluency->interval(index)->attribute(d->tierinfoDisfluency.second).toString();
@@ -422,7 +422,7 @@ QPointer<CorpusBookmark> DisfluencyPatternDetector::createBookmark(const QString
     if (!d->tierToken) return 0;
     if (pattern.indices.isEmpty()) return 0;
     int i = pattern.indices.first();
-    if (i < 0 || i >= d->tierToken->countItems()) return 0;
+    if (i < 0 || i >= d->tierToken->count()) return 0;
     RealTime t = d->tierToken->interval(i)->tMin();
     return new CorpusBookmark(corpusID, communicationID, annotationID, t, pattern.type(), pattern.text);
 }

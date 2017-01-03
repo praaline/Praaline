@@ -9,7 +9,7 @@ namespace Praaline {
 namespace Core {
 
 SQLAnnotationDatastore::SQLAnnotationDatastore(QPointer<AnnotationStructure> structure, QObject *parent) :
-    AbstractAnnotationDatastore(parent), m_structure(structure)
+    AnnotationDatastore(parent), m_structure(structure)
 {
 }
 
@@ -17,6 +17,10 @@ SQLAnnotationDatastore::~SQLAnnotationDatastore()
 {
     closeDatastore();
 }
+
+// ==========================================================================================================================
+// Datastore
+// ==========================================================================================================================
 
 bool SQLAnnotationDatastore::createDatastore(const DatastoreInfo &info)
 {
@@ -59,7 +63,9 @@ bool SQLAnnotationDatastore::closeDatastore()
     return true;
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------
+// ==========================================================================================================================
+// Annotation Structure
+// ==========================================================================================================================
 
 bool SQLAnnotationDatastore::loadAnnotationStructure()
 {
@@ -76,49 +82,55 @@ bool SQLAnnotationDatastore::createAnnotationLevel(QPointer<AnnotationStructureL
     return SQLSerialiserAnnotationStructure::createAnnotationLevel(newLevel, m_database);
 }
 
-bool SQLAnnotationDatastore::renameAnnotationLevel(QString levelID, QString newLevelID)
+bool SQLAnnotationDatastore::renameAnnotationLevel(const QString &levelID, const QString &newLevelID)
 {
     return SQLSerialiserAnnotationStructure::renameAnnotationLevel(levelID, newLevelID, m_database);
 }
 
-bool SQLAnnotationDatastore::deleteAnnotationLevel(QString levelID)
+bool SQLAnnotationDatastore::deleteAnnotationLevel(const QString &levelID)
 {
     return SQLSerialiserAnnotationStructure::deleteAnnotationLevel(levelID, m_database);
 }
 
-bool SQLAnnotationDatastore::createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute)
+bool SQLAnnotationDatastore::createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute)
 {
     return SQLSerialiserAnnotationStructure::createAnnotationAttribute(levelID, newAttribute, m_database);
 }
 
-bool SQLAnnotationDatastore::renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID)
+bool SQLAnnotationDatastore::renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID)
 {
     return SQLSerialiserAnnotationStructure::renameAnnotationAttribute(levelID, attributeID, newAttributeID, m_database);
 }
 
-bool SQLAnnotationDatastore::deleteAnnotationAttribute(QString levelID, QString attributeID)
+bool SQLAnnotationDatastore::deleteAnnotationAttribute(const QString &levelID, const QString &attributeID)
 {
     return SQLSerialiserAnnotationStructure::deleteAnnotationAttribute(levelID, attributeID, m_database);
 }
 
-bool SQLAnnotationDatastore::retypeAnnotationAttribute(QString levelID, QString attributeID, QString newDatatype, int newDatalength)
+bool SQLAnnotationDatastore::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype)
 {
-    // return SQLSerialiserAnnotationStructure::retypeAnnotationAttribute(levelID, attributeID, newDatatype, newDatalength, m_database);
+    return SQLSerialiserAnnotationStructure::retypeAnnotationAttribute(levelID, attributeID, newDatatype, m_database);
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------
+// ==========================================================================================================================
+// Annotation Tiers
+// ==========================================================================================================================
 
-bool SQLAnnotationDatastore::saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers)
+AnnotationTier *SQLAnnotationDatastore::getTier(const QString &annotationID, const QString &speakerID,
+                                                const QString &levelID, const QStringList &attributeIDs)
 {
-    foreach (QString speakerID, tiersAllSpeakers.keys()) {
-        saveTiers(annotationID, speakerID, tiersAllSpeakers.value(speakerID));
-    }
-    return true;
+    return SQLSerialiserAnnotation::getTier(annotationID, speakerID, levelID, attributeIDs, m_structure, m_database);
 }
 
-bool SQLAnnotationDatastore::saveTiers(const QString &annotationID, const QString &speakerID, AnnotationTierGroup *tiers)
+AnnotationTierGroup *SQLAnnotationDatastore::getTiers(const QString &annotationID, const QString &speakerID,
+                                                      const QStringList &levelIDs)
 {
-    return SQLSerialiserAnnotation::saveTiers(annotationID, speakerID, tiers, m_structure, m_database);
+    return SQLSerialiserAnnotation::getTiers(annotationID, speakerID, levelIDs, m_structure, m_database);
+}
+
+QMap<QString, QPointer<AnnotationTierGroup> > SQLAnnotationDatastore::getTiersAllSpeakers(const QString &annotationID, const QStringList &levelIDs)
+{
+    return SQLSerialiserAnnotation::getTiersAllSpeakers(annotationID, levelIDs, m_structure, m_database);
 }
 
 bool SQLAnnotationDatastore::saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier)
@@ -126,38 +138,60 @@ bool SQLAnnotationDatastore::saveTier(const QString &annotationID, const QString
     return SQLSerialiserAnnotation::saveTier(annotationID, speakerID, tier, m_structure, m_database);
 }
 
-AnnotationTierGroup *SQLAnnotationDatastore::getTiers(const QString &annotationID, const QString &speakerID,
-                                                      const QStringList &levelIDs)
+bool SQLAnnotationDatastore::saveTiers(const QString &annotationID, const QString &speakerID, AnnotationTierGroup *tiers)
 {
-    return SQLSerialiserAnnotation::getTiers(annotationID, speakerID, m_structure, m_database, levelIDs);
+    return SQLSerialiserAnnotation::saveTiers(annotationID, speakerID, tiers, m_structure, m_database);
 }
 
-QMap<QString, QPointer<AnnotationTierGroup> > SQLAnnotationDatastore::getTiersAllSpeakers(const QString &annotationID, const QStringList &levelIDs)
+bool SQLAnnotationDatastore::saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers)
 {
-    return SQLSerialiserAnnotation::getTiersAllSpeakers(annotationID, m_structure, m_database, levelIDs);
+    bool success = true;
+    foreach (QString speakerID, tiersAllSpeakers.keys()) {
+        success = success && saveTiers(annotationID, speakerID, tiersAllSpeakers.value(speakerID));
+    }
+    return success;
 }
 
-AnnotationTier *SQLAnnotationDatastore::getTier(const QString &annotationID, const QString &speakerID,
-                                                const QString &levelID, const QStringList &attributeIDs)
+bool SQLAnnotationDatastore::deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID)
 {
-    return SQLSerialiserAnnotation::getTier(annotationID, speakerID, m_structure, m_database, levelID, attributeIDs);
+    return SQLSerialiserAnnotation::deleteTier(annotationID, speakerID, levelID, m_structure, m_database);
 }
 
-QList<Interval *> SQLAnnotationDatastore::getIntervals(const QString &annotationID, const QString &speakerID,
-                                                       const QString &levelID, int intervalNoMin, int intervalNoMax,
-                                                       const QStringList &attributeIDs)
+bool SQLAnnotationDatastore::deleteTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs)
 {
-    return SQLSerialiserAnnotation::getIntervals(annotationID, speakerID, m_structure, m_database,
-                                                 levelID, intervalNoMin, intervalNoMax, attributeIDs);
+    bool success = true;
+    foreach (QString levelID, levelIDs) {
+        success = success && deleteTier(annotationID, speakerID, levelID);
+    }
+    return success;
 }
 
-QList<Interval *> SQLAnnotationDatastore::getIntervals(const QString &annotationID, const QString &speakerID,
-                                                       const QString &levelID, RealTime tMin, RealTime tMax,
-                                                       const QStringList &attributeIDs)
+bool SQLAnnotationDatastore::deleteAllTiersAllSpeakers(const QString &annotationID)
 {
-    return SQLSerialiserAnnotation::getIntervals(annotationID, speakerID, m_structure, m_database,
-                                                 levelID, tMin, tMax, attributeIDs);
+    return SQLSerialiserAnnotation::deleteAllTiersAllSpeakers(annotationID, m_structure, m_database);
 }
+
+// ==========================================================================================================================
+// Annotation Elements
+// ==========================================================================================================================
+QList<AnnotationElement *> SQLAnnotationDatastore::getAnnotationElements(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getAnnotationElements(selection, m_structure, m_database);
+}
+
+QList<Interval *> SQLAnnotationDatastore::getIntervals(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getIntervals(selection, m_structure, m_database);
+}
+
+QList<Point *> SQLAnnotationDatastore::getPoints(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getPoints(selection, m_structure, m_database);
+}
+
+// ==========================================================================================================================
+// Speakers and Timeline
+// ==========================================================================================================================
 
 QList<QString> SQLAnnotationDatastore::getSpeakersInLevel(const QString &annotationID, const QString &levelID)
 {
@@ -185,12 +219,9 @@ IntervalTier *SQLAnnotationDatastore::getSpeakerTimeline(const QString &communic
     return SQLSerialiserAnnotation::getSpeakerTimeline(communicationID, annotationID, levelID, detailed, m_structure, m_database);
 }
 
-bool SQLAnnotationDatastore::deleteAllForAnnotationID(QString annotationID)
-{
-    return SQLSerialiserAnnotation::deleteAllForAnnotationID(annotationID, m_structure, m_database);
-}
-
+// ==========================================================================================================================
 // Queries
+// ==========================================================================================================================
 
 QList<QueryOccurrencePointer *> SQLAnnotationDatastore::runQuery(QueryDefinition *qdef)
 {
@@ -207,7 +238,9 @@ bool SQLAnnotationDatastore::updateAnnotationsFromQueryOccurrences(const QList<Q
     return SQLQueryEngineAnnotation::updateAnnotationsFromQueryOccurrences(occurrences, m_structure, m_database);
 }
 
-// Batch editing
+// ==========================================================================================================================
+// Batch Processing
+// ==========================================================================================================================
 
 QList<QPair<QList<QVariant>, long> > SQLAnnotationDatastore::getDistinctLabels(const QString &levelID, const QStringList &attributeIDs)
 {
@@ -220,7 +253,10 @@ bool SQLAnnotationDatastore::batchUpdate(const QString &levelID, const QString &
     return SQLSerialiserAnnotation::batchUpdate(levelID, attributeID, newValue, criteria, m_structure, m_database);
 }
 
-// Counting
+// ==========================================================================================================================
+// Statistics
+// ==========================================================================================================================
+
 QList<QPair<QList<QVariant>, long> > SQLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs)
 {
     return SQLSerialiserAnnotation::countItems(levelID, groupByAttributeIDs, m_structure, m_database);

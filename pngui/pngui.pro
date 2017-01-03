@@ -7,7 +7,7 @@
 
 CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11
 
-QT += xml sql gui printsupport
+QT += xml sql gui printsupport multimedia multimediawidgets
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
 }
@@ -89,7 +89,6 @@ HEADERS += \
     grid/qvaluefilter.h \
     grid/qvaluefilter_p.h \
     grid/spinboxitemdelegate.h \
-    model/annotation/annotationtiermodel.h \
     model/annotation/AnnotationGridPointModel.h \
     model/annotation/AnnotationGridModel.h \
     layer/AnnotationGridLayer.h \
@@ -174,7 +173,11 @@ HEADERS += \
     model/query/QueryDefinitionTreeModel.h \
     model/query/QueryFilterSequenceTableModel.h \
     model/corpus/CorporaTableModel.h \
-    model/corpus/test.h
+    model/corpus/test.h \
+    widgets/MediaPlayerControls.h \
+    widgets/MediaPlayerVideoWidget.h \
+    widgets/MiniTranscriptionWidget.h \
+    model/annotation/AnnotationTierModel.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -213,7 +216,6 @@ SOURCES += \
     grid/quniquevaluesproxymodel.cpp \
     grid/qvaluefilter.cpp \
     grid/spinboxitemdelegate.cpp \
-    model/annotation/annotationtiermodel.cpp \
     model/annotation/AnnotationGridModel.cpp \
     layer/AnnotationGridLayer.cpp \
     layer/PraalineLayersInitialiser.cpp \
@@ -283,4 +285,8 @@ SOURCES += \
     model/query/QueryFilterSequenceTableModel.cpp \
     model/query/QueryDefinitionTreeModel.cpp \
     model/corpus/CorporaTableModel.cpp \
-    model/corpus/test.cpp
+    model/corpus/test.cpp \
+    widgets/MediaPlayerControls.cpp \
+    widgets/MediaPlayerVideoWidget.cpp \
+    widgets/MiniTranscriptionWidget.cpp \
+    model/annotation/AnnotationTierModel.cpp

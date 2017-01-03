@@ -158,11 +158,11 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
                                                                      tier_syll, tier_token, speakerID, streamFeatures, streamFeaturesCRF);
                 IntervalTier *tier_promise_pos = promise->annotate(annot->ID(), filenameModelCrossPOS, true, "promise_pos",
                                                                    tier_syll, tier_token, speakerID, streamFeatures, streamFeaturesCRF);
-                for (int i = 0; i < tier_syll->countItems(); ++i) {
-                    if (tier_promise_nopos && i < tier_promise_nopos->countItems()) {
+                for (int i = 0; i < tier_syll->count(); ++i) {
+                    if (tier_promise_nopos && i < tier_promise_nopos->count()) {
                         tier_syll->interval(i)->setAttribute("promise", tier_promise_nopos->interval(i)->text());
                     }
-                    if (tier_promise_pos && i < tier_promise_pos->countItems()) {
+                    if (tier_promise_pos && i < tier_promise_pos->count()) {
                         tier_syll->interval(i)->setAttribute("promise_pos", tier_promise_pos->interval(i)->text());
                     }
                 }

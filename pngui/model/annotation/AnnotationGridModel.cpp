@@ -50,7 +50,7 @@ AnnotationGridModel::AnnotationGridModel(sv_samplerate_t sampleRate,
             firstTier = false;
             IntervalTier *tier_intv = qobject_cast<IntervalTier *>(tier);
             if (tier_intv) {
-                for (int i = 0; i < tier_intv->countItems(); ++i) {
+                for (int i = 0; i < tier_intv->count(); ++i) {
                     Interval *intv = tier_intv->interval(i);
                     points->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
                                                          RealTime::realTime2Frame(intv->duration(), sampleRate),
@@ -59,7 +59,7 @@ AnnotationGridModel::AnnotationGridModel(sv_samplerate_t sampleRate,
             }
             PointTier *tier_point = qobject_cast<PointTier *>(tier);
             if (tier_point) {
-                for (int i = 0; i < tier_point->countItems(); ++i) {
+                for (int i = 0; i < tier_point->count(); ++i) {
                     Point *point = tier_point->point(i);
                     points->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(point->time(), sampleRate), 0,
                                                          speakerID, levelID, i));

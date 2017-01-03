@@ -19,6 +19,7 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/SelectionDialog.h"
 #include "pngui/widgets/MetadataEditorWidget.h"
+#include "pngui/widgets/CorpusItemPreview.h"
 #include "pngui/observers/CorpusObserver.h"
 #include "CorporaManager.h"
 #include "NewCorpusWizard.h"
@@ -37,7 +38,8 @@ using std::vector;
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
         corporaManager(0), recentFiles(0), recentFilesMenu(0), projectItem(0),
-        corporaTopLevelNode(0), corporaObserverWidget(0), metadataEditorPrimary(0), metadataEditorSecondary(0)
+        corporaTopLevelNode(0), corporaObserverWidget(0), metadataEditorPrimary(0), metadataEditorSecondary(0),
+        preview(0)
     { }
 
     CorporaManager *corporaManager;
@@ -85,6 +87,8 @@ struct CorpusExplorerWidgetData {
 
     QToolBar *toolbarCorpusExplorer;
     QMenu *menuMetadataEditorStyles;
+
+    CorpusItemPreview *preview;
 };
 
 CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
@@ -136,6 +140,11 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     d->corporaObserverWidget->setObserverContext(d->corporaTopLevelNode);
     d->corporaObserverWidget->layout()->setMargin(0);
     d->corporaObserverWidget->initialize();
+
+    // Set up corpus item preview widget
+    d->preview = new CorpusItemPreview(this);
+    d->preview->layout()->setMargin(0);
+    ui->dockCorpusItemPreview->setWidget(d->preview);
 
     // Create layout of the Corpus Explorer
     ui->gridLayout->setMargin(0);
@@ -453,12 +462,16 @@ void CorpusExplorerWidget::updateMetadataEditorsForSpk(CorpusSpeaker *speaker)
 
 void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
 {
-    if (selected.isEmpty()) return;
+    if (selected.isEmpty()) {
+        return;
+        d->preview->openCommunication(Q_NULLPTR);
+    }
     QObject *obj = selected.first();
     CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
     if (nodeCom && nodeCom->communication) {
         d->corporaManager->setActiveCorpus(nodeCom->communication->corpusID());
         updateMetadataEditorsForCom(nodeCom->communication);
+        d->preview->openCommunication(nodeCom->communication);
         return;
     }
     CorpusExplorerTreeNodeSpeaker *nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(obj);
@@ -472,6 +485,7 @@ void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
         d->corporaManager->setActiveCorpus(nodeRec->recording->corpusID());
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeRec->recording->parent());
         updateMetadataEditorsForCom(communication);
+        d->preview->openCommunication(communication);
         return;
     }
     CorpusExplorerTreeNodeAnnotation *nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(obj);
@@ -479,6 +493,7 @@ void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
         d->corporaManager->setActiveCorpus(nodeAnnot->annotation->corpusID());
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeAnnot->annotation->parent());
         updateMetadataEditorsForCom(communication);
+        d->preview->openCommunication(communication);
         return;
     }
 }
@@ -812,7 +827,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             if (alsoDeleteData) {
                 foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                     if (annot) {
-                        corpus->datastoreAnnotations()->deleteAllForAnnotationID(annot->ID());
+                        corpus->datastoreAnnotations()->deleteAllTiersAllSpeakers(annot->ID());
                         com->removeAnnotation(annot->ID());
                     }
                 }
@@ -856,7 +871,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             if (alsoDeleteData) {
                 Corpus *corpus = qobject_cast<Corpus *>(com->parent());
                 if (corpus) {
-                    corpus->datastoreAnnotations()->deleteAllForAnnotationID(annot->ID());
+                    corpus->datastoreAnnotations()->deleteAllTiersAllSpeakers(annot->ID());
                 }
             }
             com->removeAnnotation(annot->ID());
@@ -903,7 +918,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                             if (com) {
                                 foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                                     if (annot) {
-                                        corpus->datastoreAnnotations()->deleteAllForAnnotationID(annot->ID());
+                                        corpus->datastoreAnnotations()->deleteAllTiersAllSpeakers(annot->ID());
                                         com->removeAnnotation(annot->ID());
                                     }
                                 }
@@ -926,7 +941,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                     if (alsoDeleteData) {
                         Corpus *corpus = qobject_cast<Corpus *>(com->parent());
                         if (corpus) {
-                            corpus->datastoreAnnotations()->deleteAllForAnnotationID(cobj->ID());
+                            corpus->datastoreAnnotations()->deleteAllTiersAllSpeakers(cobj->ID());
                         }
                     }
                 }

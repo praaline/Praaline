@@ -15,7 +15,7 @@
 #include "CorpusParticipation.h"
 #include "structure/AnnotationStructure.h"
 #include "structure/MetadataStructure.h"
-#include "serialisers/AbstractAnnotationDatastore.h"
+#include "serialisers/AnnotationDatastore.h"
 #include "serialisers/DatastoreFactory.h"
 #include "serialisers/CorpusDefinition.h"
 
@@ -61,8 +61,8 @@ public:
     void importCorpus(Corpus *corpusSource, const QString &prefix);
 
     // Datastore
-    QPointer<AbstractAnnotationDatastore> datastoreAnnotations() const;
-    QPointer<AbstractMetadataDatastore> datastoreMetadata() const;
+    QPointer<AnnotationDatastore> datastoreAnnotations() const;
+    QPointer<MetadataDatastore> datastoreMetadata() const;
 
     // ----------------------------------------------------------------------------------------------------------------
     // STRUCTURE
@@ -72,17 +72,17 @@ public:
     // Structural changes that have an impact on corpus objects and the data stores
     // Metadata
     bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute);
-    bool renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID);
-    bool deleteMetadataAttribute(CorpusObject::Type type, QString attributeID);
+    bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID);
+    bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID);
     void importMetadataStructure(MetadataStructure *otherStructure);
     // Annotations
     bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel);
-    bool renameAnnotationLevel(QString levelID, QString newLevelID);
-    bool deleteAnnotationLevel(QString levelID);
-    bool createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute);
-    bool renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID);
-    bool deleteAnnotationAttribute(QString levelID, QString attributeID);
-    bool retypeAnnotationAttribute(QString levelID, QString attributeID, QString newDatatype, int newDatalength);
+    bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID);
+    bool deleteAnnotationLevel(const QString &levelID);
+    bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute);
+    bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID);
+    bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID);
+    bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype);
     void importAnnotationStructure(AnnotationStructure *otherStructure);
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -156,8 +156,8 @@ protected:
     QMultiMap<QString, QPointer<CorpusParticipation> > m_participationsBySpeaker;
     QPointer<AnnotationStructure> m_annotationStructure;
     QPointer<MetadataStructure> m_metadataStructure;
-    QPointer<AbstractAnnotationDatastore> m_datastoreAnnotations;
-    QPointer<AbstractMetadataDatastore> m_datastoreMetadata;
+    QPointer<AnnotationDatastore> m_datastoreAnnotations;
+    QPointer<MetadataDatastore> m_datastoreMetadata;
 
 private slots:
     void communicationChangedID(const QString &oldID, const QString &newID);

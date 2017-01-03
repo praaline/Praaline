@@ -27,23 +27,24 @@ public:
     PointTier(const PointTier *copy, QString name = QString(), QObject *parent = 0);
     virtual ~PointTier();
 
+    // Implementation of AnnotationTier
     AnnotationTier::TierType tierType() const
         { return AnnotationTier::TierType_Points; }
-    QString name() const
-        { return m_name; }
-    void setName(const QString &name)
-        { m_name = name; }
-    RealTime tMin() const
-        { return m_tMin; }
-    RealTime tMax() const
-        { return m_tMax; }
-    //void resize(const new_tMin, const new_tMax);
-    int countItems() const
+    int count() const
         { return m_points.count(); }
-    bool isEmpty() const
-        { return m_points.isEmpty(); }
-    void clear()
-        { m_points.clear(); }
+    bool isEmpty() const;
+    void clear();
+    Point *at(int index) const;
+    Point *first() const;
+    Point *last() const;
+    QList<QString> getDistinctTextLabels() const;
+    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
+    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    void fillEmptyTextLabelsWith(const QString &filler);
+    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
+                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
+    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
+
 
     // Accessors for Points
     Point* point(int index) const;
@@ -58,13 +59,7 @@ public:
     void removePointAt(int i);
 
     // Methods
-    // implementing AnnotationTier
-    int count() const { return m_points.count(); }
-    void replaceText(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    QList<QString> getDistinctTextLabels() const;
-    void fillEmptyAnnotationsWith(const QString &filler);
-    QList<RealTime> tCenters() const;
-    // other
+    QList<RealTime> times() const;
     void timeShift(const RealTime delta);
     void fixBoundariesBasedOnTier(const IntervalTier *correctBoundariesTier,
                                   RealTime threshold = RealTime(0, 100000000));
@@ -76,13 +71,10 @@ public:
     QList<Point *> findLocalMaxima(const RealTime &localMaxThreshold, const QString &compareAttributeID) const;
 
 protected:
-    QString m_name;
-    RealTime m_tMin;
-    RealTime m_tMax;
     QList<Point *> m_points;
 
 private:
-    static bool ComparePoints(Point *A, Point *B);
+    static bool comparePoints(Point *A, Point *B);
 };
 
 } // namespace Core

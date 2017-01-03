@@ -122,8 +122,9 @@ QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer 
     int intervalNoMin = pointer->intervalNoMin - lengthContextLeft; if (intervalNoMin < 1) intervalNoMin = 1;
     int intervalNoMax = pointer->intervalNoMax + lengthContextRight;
 
-    intervals = SQLSerialiserAnnotation::getIntervals(pointer->annotationID, pointer->speakerID, structure, db,
-                                                      levelIDs.first(), intervalNoMin, intervalNoMax);
+    intervals = SQLSerialiserAnnotation::getIntervals(
+                AnnotationDatastore::Selection(pointer->annotationID, pointer->speakerID, levelIDs.first(), intervalNoMin, intervalNoMax),
+                structure, db);
     for (int i = 0; i < intervals.count(); ++i) {
         int intervalNo = intervalNoMin + i;
         QueryOccurrence::ResultInterval::Type type;
@@ -146,8 +147,9 @@ QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer 
                 if (resultLA.first == levelID) attributeIDs << resultLA.second;
             }
             // Get intervals for this level from the database
-            QList<Interval *> intervalsForLevel = SQLSerialiserAnnotation::getIntervals(pointer->annotationID, pointer->speakerID, structure, db,
-                                                                                        levelID, tMinContext, tMaxContext, attributeIDs);
+            QList<Interval *> intervalsForLevel = SQLSerialiserAnnotation::getIntervals(
+                        AnnotationDatastore::Selection(pointer->annotationID, pointer->speakerID, levelID, attributeIDs, tMinContext, tMaxContext),
+                        structure, db);
             QList<QueryOccurrence::ResultInterval> resultIntervalsForExtraLevel;
             int intervalNo = 0;
             foreach (Interval *intv, intervalsForLevel) {

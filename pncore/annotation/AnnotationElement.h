@@ -27,14 +27,13 @@ namespace Core {
 class PRAALINE_CORE_SHARED_EXPORT AnnotationElement
 {
 public:
-    AnnotationElement();
-    AnnotationElement(const RealTime &time, const QString &text = QString());
-    AnnotationElement(const RealTime &time, const QString &text, const QHash<QString, QVariant> &attributes);
+    explicit AnnotationElement();
+    AnnotationElement(const QString &text);
+    AnnotationElement(const QString &text, const QHash<QString, QVariant> &attributes);
+    AnnotationElement(const AnnotationElement &other);
     inline virtual ~AnnotationElement() {}
+    // Note: Requirements for QVariant are a public default constructor, a public copy constructor, and a public destructor
 
-    inline virtual RealTime time() const {
-        return m_time;
-    }
     inline QString text() const {
         return m_text;
     }
@@ -53,19 +52,20 @@ public:
     }
 
     inline QVariant attribute(const QString &name) const {
-        if (name == "time") return time().toDouble();
         if (name == "text") return text();
         return m_attributes.value(name, QVariant());
     }
     inline virtual void setAttribute(const QString &name, QVariant value){
-        m_attributes.insert(name, value);
+        if (name == "text")
+            setText(value.toString());
+        else
+            m_attributes.insert(name, value);
     }
     inline const QHash<QString, QVariant> &attributes() const {
         return m_attributes;
     }
 
 protected:
-    RealTime m_time;
     QString m_text;
     QHash<QString, QVariant> m_attributes;
 
@@ -74,5 +74,7 @@ protected:
 
 } // namespace Core
 } // namespace Praaline
+
+Q_DECLARE_METATYPE(Praaline::Core::AnnotationElement)
 
 #endif // ANNOTATIONELEMENT_H

@@ -261,7 +261,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
         IntervalTier *tier_tokmwu = tok_mwu_tiers.value(speakerID);
         if (!tier_tokmwu) continue;
         QPair<int, int> tokmwu_indexes = tier_tokmwu->getIntervalIndexesContainedIn(soundsegment);
-        if (tokmwu_indexes.first < 0 || tokmwu_indexes.second >= tier_tokmwu->countItems()) continue;
+        if (tokmwu_indexes.first < 0 || tokmwu_indexes.second >= tier_tokmwu->count()) continue;
         //
         for (int interval_nr = tokmwu_indexes.first; interval_nr <= tokmwu_indexes.second; ++interval_nr) {
             Interval *tokmwu = tier_tokmwu->interval(interval_nr);
@@ -291,7 +291,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
         IntervalTier *tier_tokmin = tok_min_tiers.value(speakerID);
         if (!tier_tokmin) continue;
         QPair<int, int> tokmin_indexes =  tier_tokmin->getIntervalIndexesContainedIn(soundsegment);
-        if (tokmin_indexes.first < 0 || tokmin_indexes.second >= tier_tokmin->countItems()) continue;
+        if (tokmin_indexes.first < 0 || tokmin_indexes.second >= tier_tokmin->count()) continue;
         //
         for (int interval_nr = tokmin_indexes.first; interval_nr <= tokmin_indexes.second; ++interval_nr) {
             Interval *tokmin = tier_tokmin->interval(interval_nr);
@@ -323,7 +323,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
             IntervalTier *tier_syll = syll_tiers.value(speakerID);
             if (!tier_syll) continue;
             QPair<int, int> syll_indexes =  tier_syll->getIntervalIndexesContainedIn(soundsegment);
-            if (syll_indexes.first < 0 || syll_indexes.second >= tier_syll->countItems()) continue;
+            if (syll_indexes.first < 0 || syll_indexes.second >= tier_syll->count()) continue;
             //
             for (int interval_nr = syll_indexes.first; interval_nr <= syll_indexes.second; ++interval_nr) {
                 Interval *syll = tier_syll->interval(interval_nr);

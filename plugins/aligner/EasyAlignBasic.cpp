@@ -70,7 +70,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
     QList<Interval *> intervalsWords;
     QList<Interval *> intervalsPhones;
 
-    for (int i = 0; i < tier_toAlign_ortho->countItems(); i++) {
+    for (int i = 0; i < tier_toAlign_ortho->count(); i++) {
         Interval *intv_utteranceOrtho = tier_toAlign_ortho->interval(i);
         if (intv_utteranceOrtho->text().trimmed().isEmpty())
             continue;
@@ -336,7 +336,7 @@ QString EasyAlignBasic::runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication
             IntervalTier *tier_ortho = tiers->getIntervalTierByName("transcription");
             if (!tier_ortho) continue;
             IntervalTier *tier_words_exist = tiers->getIntervalTierByName("words");
-            if (tier_words_exist && tier_words_exist->countItems() > 0) continue;
+            if (tier_words_exist && tier_words_exist->count() > 0) continue;
 
             // Align all intervals
             QList<Interval *> intervalsToAlign;

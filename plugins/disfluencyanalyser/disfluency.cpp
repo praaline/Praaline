@@ -12,7 +12,7 @@ Disfluency::Disfluency(IntervalTier *tierTokens, int start, int end, const QStri
         m_start = m_end = m_interruptionPoint = m_reparansStart = m_editTermStart = m_editTermEnd = -1;
         return;
     }
-    if ((m_start > m_end) || (m_start < 0) || (m_end >= m_tierTokens->countItems())) {
+    if ((m_start > m_end) || (m_start < 0) || (m_end >= m_tierTokens->count())) {
         // invalid data
         m_start = m_end = m_interruptionPoint = m_reparansStart = m_editTermStart = m_editTermEnd = -1;
         return;
@@ -33,37 +33,37 @@ Disfluency::Disfluency(IntervalTier *tierTokens, int start, int end, const QStri
 
 RealTime Disfluency::timeStart() const
 {
-    if ((!m_tierTokens) || (m_start < 0) || (m_start >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_start < 0) || (m_start >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_start)->tMin();
 }
 RealTime Disfluency::timeEnd() const
 {
-    if ((!m_tierTokens) || (m_end < 0) || (m_end >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_end < 0) || (m_end >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_end)->tMax();
 }
 RealTime Disfluency::timeInterruptionPoint() const
 {
-    if ((!m_tierTokens) || (m_interruptionPoint < 0) || (m_interruptionPoint >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_interruptionPoint < 0) || (m_interruptionPoint >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_interruptionPoint)->tMax();
 }
 RealTime Disfluency::timeReparansStart() const
 {
-    if ((!m_tierTokens) || (m_reparansStart < 0) || (m_reparansStart >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_reparansStart < 0) || (m_reparansStart >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_reparansStart)->tMin();
 }
 RealTime Disfluency::timeEditTermStart() const
 {
-    if ((!m_tierTokens) || (m_editTermStart < 0) || (m_editTermStart >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_editTermStart < 0) || (m_editTermStart >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_editTermStart)->tMin();
 }
 RealTime Disfluency::timeEditTermEnd() const
 {
-    if ((!m_tierTokens) || (m_editTermEnd < 0) || (m_editTermEnd >= m_tierTokens->countItems()))
+    if ((!m_tierTokens) || (m_editTermEnd < 0) || (m_editTermEnd >= m_tierTokens->count()))
         return RealTime(-1, 0);
     return m_tierTokens->interval(m_editTermEnd)->tMax();
 }

@@ -47,22 +47,26 @@ QString convertLevelTypeToXML(AnnotationStructureLevel::LevelType levelType)
 {
     QString ret;
     switch(levelType) {
-    case AnnotationStructureLevel::IndependentLevel : ret = "independent"; break;
-    case AnnotationStructureLevel::GroupingLevel    : ret = "grouping"; break;
-    case AnnotationStructureLevel::SequencesLevel   : ret = "sequences"; break;
-    case AnnotationStructureLevel::TreeLevel        : ret = "tree"; break;
-    default: ret = "independent";
+    case AnnotationStructureLevel::IndependentPointsLevel:      ret = "independentpoints";    break;
+    case AnnotationStructureLevel::IndependentIntervalsLevel:   ret = "independentintervals"; break;
+    case AnnotationStructureLevel::GroupingLevel:               ret = "grouping";             break;
+    case AnnotationStructureLevel::SequencesLevel:              ret = "sequences";            break;
+    case AnnotationStructureLevel::TreeLevel:                   ret = "tree";                 break;
+    case AnnotationStructureLevel::RelationsLevel:              ret = "relations";            break;
+    default: ret = "independentintervals";
     }
     return ret;
 }
 
 AnnotationStructureLevel::LevelType convertXMLToLevelType(QString xml)
 {
-    if (xml == "independent")   return AnnotationStructureLevel::IndependentLevel;
-    if (xml == "grouping")      return AnnotationStructureLevel::GroupingLevel;
-    if (xml == "sequences")     return AnnotationStructureLevel::SequencesLevel;
-    if (xml == "tree")          return AnnotationStructureLevel::TreeLevel;
-    return AnnotationStructureLevel::IndependentLevel;
+    if (xml == "independentpoints")     return AnnotationStructureLevel::IndependentPointsLevel;
+    if (xml == "independentintervals")  return AnnotationStructureLevel::IndependentIntervalsLevel;
+    if (xml == "grouping")              return AnnotationStructureLevel::GroupingLevel;
+    if (xml == "sequences")             return AnnotationStructureLevel::SequencesLevel;
+    if (xml == "tree")                  return AnnotationStructureLevel::TreeLevel;
+    if (xml == "relations")             return AnnotationStructureLevel::RelationsLevel;
+    return AnnotationStructureLevel::IndependentIntervalsLevel;
 }
 
 // static
