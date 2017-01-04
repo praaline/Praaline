@@ -41,7 +41,7 @@ public:
         { return m_indexTo; }
 
     // Override
-    virtual QVariant attribute(const QString &name) const;
+    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
 
     int compare(const Relation &other) const;
 

@@ -36,8 +36,8 @@ public:
     // Properties
     inline RealTime time() const { return m_time; }
 
-    // Override
-    virtual QVariant attribute(const QString &name) const;
+    // Overrides
+    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
 
 protected:
     RealTime m_time;

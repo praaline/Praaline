@@ -55,8 +55,9 @@ public:
     // Annotation Elements
     // ==========================================================================================================================
     QList<AnnotationElement *> getAnnotationElements(const Selection &selection);
-    QList<Interval *> getIntervals(const Selection &selection);
     QList<Point *> getPoints(const Selection &selection);
+    QList<Interval *> getIntervals(const Selection &selection);
+    QList<Sequence *> getSequences(const Selection &selection);
 
     // ==========================================================================================================================
     // Speakers and Timeline

@@ -192,12 +192,12 @@ HEADERS += \
     serialisers/mocadb/MocaDBSerialiserSystem.h \
     serialisers/sql/SQLSerialiserSystem.h \
     structure/NameValueList.h \
-    annotation/SequencesTier.h \
     annotation/Relation.h \
     annotation/Sequence.h \
     serialisers/AnnotationDatastore.h \
     serialisers/MetadataDatastore.h \
-    annotation/RelationTier.h
+    annotation/RelationTier.h \
+    annotation/SequenceTier.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -357,10 +357,10 @@ SOURCES += \
     serialisers/mocadb/MocaDBSerialiserSystem.cpp \
     serialisers/sql/SQLSerialiserSystem.cpp \
     structure/NameValueList.cpp \
-    annotation/SequencesTier.cpp \
     annotation/Relation.cpp \
     annotation/Sequence.cpp \
-    annotation/RelationTier.cpp
+    annotation/RelationTier.cpp \
+    annotation/SequenceTier.cpp
 
 DISTFILES += \
     pncore.qmodel

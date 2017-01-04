@@ -3,9 +3,14 @@
 
 #include <QSqlDatabase>
 #include "SQLSerialiserBase.h"
-#include "structure/AnnotationStructure.h"
-#include "annotation/AnnotationTierGroup.h"
+#include "annotation/AnnotationElement.h"
+#include "annotation/Point.h"
+#include "annotation/Interval.h"
+#include "annotation/Sequence.h"
+#include "annotation/Relation.h"
 #include "annotation/AnnotationTier.h"
+#include "annotation/AnnotationTierGroup.h"
+#include "structure/AnnotationStructure.h"
 #include "serialisers/AnnotationDatastore.h"
 
 namespace Praaline {
@@ -19,9 +24,11 @@ public:
     // ==========================================================================================================================
     static QList<AnnotationElement *> getAnnotationElements(
             const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
+    static QList<Point *> getPoints(
+            const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
     static QList<Interval *> getIntervals(
             const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
-    static QList<Point *> getPoints(
+    static QList<Sequence *> getSequences(
             const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
 
     // ==========================================================================================================================

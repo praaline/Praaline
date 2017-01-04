@@ -179,14 +179,19 @@ QList<AnnotationElement *> SQLAnnotationDatastore::getAnnotationElements(const S
     return SQLSerialiserAnnotation::getAnnotationElements(selection, m_structure, m_database);
 }
 
+QList<Point *> SQLAnnotationDatastore::getPoints(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getPoints(selection, m_structure, m_database);
+}
+
 QList<Interval *> SQLAnnotationDatastore::getIntervals(const Selection &selection)
 {
     return SQLSerialiserAnnotation::getIntervals(selection, m_structure, m_database);
 }
 
-QList<Point *> SQLAnnotationDatastore::getPoints(const Selection &selection)
+QList<Sequence *> SQLAnnotationDatastore::getSequences(const Selection &selection)
 {
-    return SQLSerialiserAnnotation::getPoints(selection, m_structure, m_database);
+    return SQLSerialiserAnnotation::getSequences(selection, m_structure, m_database);
 }
 
 // ==========================================================================================================================

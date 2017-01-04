@@ -177,6 +177,7 @@ HEADERS += \
     widgets/MediaPlayerControls.h \
     widgets/MediaPlayerVideoWidget.h \
     widgets/MiniTranscriptionWidget.h \
+    model/annotation/AnnotationsTableModel.h \
     model/annotation/AnnotationTierModel.h
 
 SOURCES += \
@@ -289,4 +290,5 @@ SOURCES += \
     widgets/MediaPlayerControls.cpp \
     widgets/MediaPlayerVideoWidget.cpp \
     widgets/MiniTranscriptionWidget.cpp \
-    model/annotation/AnnotationTierModel.cpp
+    model/annotation/AnnotationTierModel.cpp \
+    model/annotation/AnnotationsTableModel.cpp

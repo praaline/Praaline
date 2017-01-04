@@ -73,7 +73,9 @@ Interval::Interval(const QList<Interval *> &intervals, const QString &separator)
 QVariant Interval::attribute(const QString &name) const
 {
     if (name == "tMin") return tMin().toDouble();
+    if (name == "tMinNanoseconds") return tMin().toNanoseconds();
     if (name == "tMax") return tMax().toDouble();
+    if (name == "tMaxNanoseconds") return tMax().toNanoseconds();
     if (name == "tCenter") return tCenter().toDouble();
     if (name == "duration") return duration().toDouble();
     return AnnotationElement::attribute(name);

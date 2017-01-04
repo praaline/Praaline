@@ -79,6 +79,14 @@ public:
     virtual bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype) = 0;
 
     // ==========================================================================================================================
+    // Annotation Elements
+    // ==========================================================================================================================
+    virtual QList<AnnotationElement *> getAnnotationElements(const Selection &selection) = 0;
+    virtual QList<Point *> getPoints(const Selection &selection) = 0;
+    virtual QList<Interval *> getIntervals(const Selection &selection) = 0;
+    virtual QList<Sequence *> getSequences(const Selection &selection) = 0;
+
+    // ==========================================================================================================================
     // Annotation Tiers
     // ==========================================================================================================================
     virtual AnnotationTier *getTier(const QString &annotationID, const QString &speakerID, const QString &levelID,
@@ -93,13 +101,6 @@ public:
     virtual bool deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID) = 0;
     virtual bool deleteTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs = QStringList()) = 0;
     virtual bool deleteAllTiersAllSpeakers(const QString &annotationID) = 0;
-
-    // ==========================================================================================================================
-    // Annotation Elements
-    // ==========================================================================================================================
-    virtual QList<AnnotationElement *> getAnnotationElements(const Selection &selection) = 0;
-    virtual QList<Interval *> getIntervals(const Selection &selection) = 0;
-    virtual QList<Point *> getPoints(const Selection &selection) = 0;
 
     // ==========================================================================================================================
     // Speakers and Timeline

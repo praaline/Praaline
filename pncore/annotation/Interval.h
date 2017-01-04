@@ -48,8 +48,8 @@ public:
     inline RealTime duration() const
         { return (m_tMax - m_tMin); }
 
-    // Override
-    virtual QVariant attribute(const QString &name) const;
+    // Overrides
+    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
 
     // Methods for Intervals
     bool overlaps(const Interval &other, const RealTime threshold = RealTime(0, 0)) const;

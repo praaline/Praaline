@@ -34,7 +34,7 @@ public:
     inline virtual ~AnnotationElement() {}
     // Note: Requirements for QVariant are a public default constructor, a public copy constructor, and a public destructor
 
-    inline QString text() const {
+    inline virtual QString text() const {
         return m_text;
     }
     inline virtual void setText(const QString &text) {
@@ -51,7 +51,7 @@ public:
         m_attributes[attributeID] = m_attributes[attributeID].toString().replace(before, after, cs);
     }
 
-    inline QVariant attribute(const QString &name) const {
+    inline virtual QVariant attribute(const QString &name) const {
         if (name == "text") return text();
         return m_attributes.value(name, QVariant());
     }
@@ -61,7 +61,7 @@ public:
         else
             m_attributes.insert(name, value);
     }
-    inline const QHash<QString, QVariant> &attributes() const {
+    inline virtual const QHash<QString, QVariant> &attributes() const {
         return m_attributes;
     }
 

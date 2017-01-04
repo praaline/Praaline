@@ -2,6 +2,11 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include "annotation/AnnotationElement.h"
+#include "annotation/Point.h"
+#include "annotation/Interval.h"
+#include "annotation/Sequence.h"
+#include "annotation/Relation.h"
 #include "SQLSerialiserAnnotation.h"
 
 namespace Praaline {
@@ -110,6 +115,34 @@ QList<AnnotationElement *> SQLSerialiserAnnotation::getAnnotationElements(
     return elements;
 }
 
+QList<Point *> SQLSerialiserAnnotation::getPoints(
+        const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db)
+{
+    QList<Point *> points;
+    // Check that the requested level exists in the annotation structure
+    AnnotationStructureLevel *level = structure->level(selection.levelID);
+    if (!level) return points;
+    // Derive the list of attributes that will be requested from the database
+    QStringList effectiveAttributeIDs = getEffectiveAttributeIDs(level, selection.attributeIDs);
+    // Run query
+    QSqlQuery query(db);
+    prepareSelectQuery(query, level, effectiveAttributeIDs, selection);
+    query.exec();
+    // Read annotation elements
+    while (query.next()) {
+        RealTime time(RealTime::fromNanoseconds(query.value("tMin").toLongLong()));
+        QString xText = query.value("xText").toString();
+        QHash<QString, QVariant> attributes;
+        foreach (QString attributeID, effectiveAttributeIDs) {
+            attributes.insert(attributeID, query.value(attributeID));
+        }
+        if (selection.annotationID.isEmpty()) attributes.insert("annotationID", query.value("annotationID"));
+        if (selection.speakerID.isEmpty())    attributes.insert("speakerID", query.value("speakerID"));
+        points << new Point(time, xText, attributes);
+    }
+    return points;
+}
+
 QList<Interval *> SQLSerialiserAnnotation::getIntervals(
         const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db)
 {
@@ -139,13 +172,13 @@ QList<Interval *> SQLSerialiserAnnotation::getIntervals(
     return intervals;
 }
 
-QList<Point *> SQLSerialiserAnnotation::getPoints(
+QList<Sequence *> SQLSerialiserAnnotation::getSequences(
         const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db)
 {
-    QList<Point *> points;
+    QList<Sequence *> sequences;
     // Check that the requested level exists in the annotation structure
     AnnotationStructureLevel *level = structure->level(selection.levelID);
-    if (!level) return points;
+    if (!level) return sequences;
     // Derive the list of attributes that will be requested from the database
     QStringList effectiveAttributeIDs = getEffectiveAttributeIDs(level, selection.attributeIDs);
     // Run query
@@ -154,7 +187,8 @@ QList<Point *> SQLSerialiserAnnotation::getPoints(
     query.exec();
     // Read annotation elements
     while (query.next()) {
-        RealTime time(RealTime::fromNanoseconds(query.value("tMin").toLongLong()));
+        int indexFrom = query.value("intervalNoLeft").toInt();
+        int indexTo = query.value("intervalNoRight").toInt();
         QString xText = query.value("xText").toString();
         QHash<QString, QVariant> attributes;
         foreach (QString attributeID, effectiveAttributeIDs) {
@@ -162,10 +196,11 @@ QList<Point *> SQLSerialiserAnnotation::getPoints(
         }
         if (selection.annotationID.isEmpty()) attributes.insert("annotationID", query.value("annotationID"));
         if (selection.speakerID.isEmpty())    attributes.insert("speakerID", query.value("speakerID"));
-        points << new Point(time, xText, attributes);
+        sequences << new Sequence(indexFrom, indexTo, xText, attributes);
     }
-    return points;
+    return sequences;
 }
+
 
 // ==========================================================================================================================
 // Get annotation tiers
@@ -244,6 +279,8 @@ QMap<QString, QPointer<AnnotationTierGroup> > SQLSerialiserAnnotation::getTiersA
 
 bool updateTier(const QString &annotationID, const QString &speakerID,
                 AnnotationTier *tier, AnnotationStructureLevel *level, QSqlDatabase &db) {
+    if (!level) return false;
+
     QSqlQuery query(db);
     QString q1, q2;
 
@@ -253,8 +290,23 @@ bool updateTier(const QString &annotationID, const QString &speakerID,
     query.bindValue(":speakerID", speakerID);
     if (!query.exec()) { qDebug() << query.lastError(); return false; }
 
-    q1 = QString("INSERT INTO %1 (annotationID, speakerID, intervalNo, tMin, tMax, xText").arg(level->ID());
-    q2 = "VALUES (:annotationID, :speakerID, :intervalNo, :tMin, :tMax, :xText";
+    q1 = QString("INSERT INTO %1 (annotationID, speakerID ").arg(level->ID());
+    q2 = "VALUES (:annotationID, :speakerID ";
+    switch (level->levelType()) {
+    case AnnotationStructureLevel::IndependentPointsLevel:
+    case AnnotationStructureLevel::IndependentIntervalsLevel:
+    case AnnotationStructureLevel::GroupingLevel:
+        q1.append(", intervalNo, tMin, tMax, xText");
+        q2.append(", :intervalNo, :tMin, :tMax, :xText");
+        break;
+    case AnnotationStructureLevel::SequencesLevel:
+    case AnnotationStructureLevel::TreeLevel:
+    case AnnotationStructureLevel::RelationsLevel:
+        q1.append(", intervalNoLeft, intervalNoRight, xText");
+        q2.append(", :intervalNoLeft, :intervalNoRight, :xText");
+        break;
+    }
+    // User-defined attributes
     foreach (QString attributeID, level->attributeIDs()) {
         q1.append(", ").append(attributeID);
         q2.append(", :").append(attributeID);
@@ -264,37 +316,36 @@ bool updateTier(const QString &annotationID, const QString &speakerID,
     query.bindValue(":annotationID", annotationID);
     query.bindValue(":speakerID", speakerID);
     int itemNo = 1;
-    if (tier->tierType() == AnnotationTier::TierType_Intervals) {
-        IntervalTier *tierI = qobject_cast<IntervalTier *>(tier);
-        foreach (Interval *intv, tierI->intervals()) {
+    for (int i = 0; i < tier->count(); ++i) {
+        AnnotationElement *element = tier->at(i);
+        switch (level->levelType()) {
+        case AnnotationStructureLevel::IndependentPointsLevel:
             query.bindValue(":intervalNo", itemNo);
-            query.bindValue(":tMin", intv->tMin().toNanoseconds());
-            query.bindValue(":tMax", intv->tMax().toNanoseconds());
-            query.bindValue(":xText", intv->text());
-            foreach (QString attributeID, level->attributeIDs()) {
-                query.bindValue(QString(":%1").arg(attributeID), intv->attribute(attributeID));
-            }
-            if (!query.exec()) {
-                qDebug() << "Error in updateTier (intervals): " << annotationID << speakerID << tier->name() << query.lastError(); return false;
-            }
-            ++itemNo;
-        }
-    }
-    else if (tier->tierType() == AnnotationTier::TierType_Points) {
-        PointTier *tierP = qobject_cast<PointTier *>(tier);
-        foreach (Point *pnt, tierP->points()) {
+            query.bindValue(":tMin", element->attribute("timeNanoseconds"));
+            query.bindValue(":tMax", element->attribute("timeNanoseconds"));
+            break;
+        case AnnotationStructureLevel::IndependentIntervalsLevel:
+        case AnnotationStructureLevel::GroupingLevel:
             query.bindValue(":intervalNo", itemNo);
-            query.bindValue(":tMin", pnt->time().toNanoseconds());
-            query.bindValue(":tMax", pnt->time().toNanoseconds());
-            query.bindValue(":xText", pnt->text());
-            foreach (QString attributeID, level->attributeIDs()) {
-                query.bindValue(QString(":%1").arg(attributeID), pnt->attribute(attributeID));
-            }
-            if (!query.exec()) {
-                qDebug() << "Error in updateTier (points): " << annotationID << speakerID << tier->name() << query.lastError(); return false;
-            }
-            ++itemNo;
+            query.bindValue(":tMin", element->attribute("tMinNanoseconds"));
+            query.bindValue(":tMax", element->attribute("tMaxNanoseconds"));
+            break;
+        case AnnotationStructureLevel::SequencesLevel:
+        case AnnotationStructureLevel::TreeLevel:
+        case AnnotationStructureLevel::RelationsLevel:
+            query.bindValue(":intervalNoLeft", element->attribute("indexFrom").toInt());
+            query.bindValue(":intervalNoRight", element->attribute("indexTo").toInt());
+            break;
         }
+        query.bindValue(":xText", element->text());
+        foreach (QString attributeID, level->attributeIDs()) {
+            query.bindValue(QString(":%1").arg(attributeID), element->attribute(attributeID));
+        }
+        if (!query.exec()) {
+            qDebug() << "Error in updateTier: " << annotationID << speakerID << tier->name() << itemNo << query.lastError();
+            return false;
+        }
+        ++itemNo;
     }
     return true;
 }

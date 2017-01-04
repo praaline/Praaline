@@ -52,6 +52,7 @@ Point::~Point()
 QVariant Point::attribute(const QString &name) const
 {
     if (name == "time") return time().toDouble();
+    if (name == "timeNanoseconds") return time().toNanoseconds();
     return AnnotationElement::attribute(name);
 }
 
