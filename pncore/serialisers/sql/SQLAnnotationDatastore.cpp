@@ -3,6 +3,7 @@
 #include "SQLAnnotationDatastore.h"
 #include "SQLSerialiserAnnotation.h"
 #include "SQLSerialiserAnnotationStructure.h"
+#include "SQLSerialiserNameValueList.h"
 #include "SQLQueryEngineAnnotation.h"
 
 namespace Praaline {
@@ -37,6 +38,7 @@ bool SQLAnnotationDatastore::createDatastore(const DatastoreInfo &info)
     }
     // Initialise database
     SQLSerialiserAnnotationStructure::initialiseAnnotationStructureTables(m_database);
+    SQLSerialiserNameValueList::initialiseNameValueListSchema(m_database);
     return true;
 }
 
@@ -53,6 +55,8 @@ bool SQLAnnotationDatastore::openDatastore(const DatastoreInfo &info)
         qDebug() << m_lastError;
         return false;
     }
+    // Upgrade database if needed
+    SQLSerialiserNameValueList::upgradeNameValueListSchema(m_database);
     return true;
 }
 
@@ -113,6 +117,63 @@ bool SQLAnnotationDatastore::retypeAnnotationAttribute(const QString &levelID, c
 }
 
 // ==========================================================================================================================
+// Name-value lists
+// ==========================================================================================================================
+
+NameValueList *SQLAnnotationDatastore::getNameValueList(const QString &listID)
+{
+    return SQLSerialiserNameValueList::getNameValueList(listID, SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+QStringList SQLAnnotationDatastore::getAllNameValueListIDs()
+{
+    return SQLSerialiserNameValueList::getAllNameValueListIDs(SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+QMap<QString, QPointer<NameValueList> > SQLAnnotationDatastore::getAllNameValueLists()
+{
+    return SQLSerialiserNameValueList::getAllNameValueLists(SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+bool SQLAnnotationDatastore::createNameValueList(NameValueList *list)
+{
+    return SQLSerialiserNameValueList::createNameValueList(list, SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+bool SQLAnnotationDatastore::updateNameValueList(NameValueList *list)
+{
+    return SQLSerialiserNameValueList::updateNameValueList(list, SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+bool SQLAnnotationDatastore::deleteNameValueList(const QString &listID)
+{
+    return SQLSerialiserNameValueList::deleteNameValueList(listID, SQLSerialiserNameValueList::Annotation, m_database);
+}
+
+// ==========================================================================================================================
+// Annotation Elements
+// ==========================================================================================================================
+QList<AnnotationElement *> SQLAnnotationDatastore::getAnnotationElements(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getAnnotationElements(selection, m_structure, m_database);
+}
+
+QList<Point *> SQLAnnotationDatastore::getPoints(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getPoints(selection, m_structure, m_database);
+}
+
+QList<Interval *> SQLAnnotationDatastore::getIntervals(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getIntervals(selection, m_structure, m_database);
+}
+
+QList<Sequence *> SQLAnnotationDatastore::getSequences(const Selection &selection)
+{
+    return SQLSerialiserAnnotation::getSequences(selection, m_structure, m_database);
+}
+
+// ==========================================================================================================================
 // Annotation Tiers
 // ==========================================================================================================================
 
@@ -169,29 +230,6 @@ bool SQLAnnotationDatastore::deleteTiers(const QString &annotationID, const QStr
 bool SQLAnnotationDatastore::deleteAllTiersAllSpeakers(const QString &annotationID)
 {
     return SQLSerialiserAnnotation::deleteAllTiersAllSpeakers(annotationID, m_structure, m_database);
-}
-
-// ==========================================================================================================================
-// Annotation Elements
-// ==========================================================================================================================
-QList<AnnotationElement *> SQLAnnotationDatastore::getAnnotationElements(const Selection &selection)
-{
-    return SQLSerialiserAnnotation::getAnnotationElements(selection, m_structure, m_database);
-}
-
-QList<Point *> SQLAnnotationDatastore::getPoints(const Selection &selection)
-{
-    return SQLSerialiserAnnotation::getPoints(selection, m_structure, m_database);
-}
-
-QList<Interval *> SQLAnnotationDatastore::getIntervals(const Selection &selection)
-{
-    return SQLSerialiserAnnotation::getIntervals(selection, m_structure, m_database);
-}
-
-QList<Sequence *> SQLAnnotationDatastore::getSequences(const Selection &selection)
-{
-    return SQLSerialiserAnnotation::getSequences(selection, m_structure, m_database);
 }
 
 // ==========================================================================================================================

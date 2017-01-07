@@ -16,6 +16,7 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/MetadataStructureTreeModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/observers/CorpusObserver.h"
+#include "NameValueListEditor.h"
 #include "CorporaManager.h"
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
@@ -36,6 +37,8 @@ struct MetadataStructureEditorData {
     QPointer<MetadataStructureTreeModel> treemodelMetadataStructure;
 
     QToolBar *toolbarMetadataStructure;
+
+    NameValueListEditor *editorNVList;
 };
 
 MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
@@ -67,6 +70,15 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
     inner->setCentralWidget(d->treeviewMetadataStructure);
     ui->dockMetadataStructure->setWidget(inner);
     d->treeviewMetadataStructure->setAlternatingRowColors(true);
+
+    // Name-value list editor
+    d->editorNVList = new NameValueListEditor(this);
+    ui->dockNameValueLists->setWidget(d->editorNVList);
+
+    // Set proportions
+    ui->splitter->setSizes(QList<int>() << 100 << 100);
+    ui->splitter->setStretchFactor(0, 3);
+    ui->splitter->setStretchFactor(1, 1);
 }
 
 MetadataStructureEditor::~MetadataStructureEditor()
@@ -152,8 +164,10 @@ void MetadataStructureEditor::activeCorpusChanged(const QString &newActiveCorpus
     if (!corpus) {
         d->treeviewMetadataStructure->setModel(0);
         if (d->treemodelMetadataStructure) delete d->treemodelMetadataStructure;
+        d->editorNVList->rebind(0);
     } else {
         refreshMetadataStructureTreeView(corpus->metadataStructure());
+        d->editorNVList->rebind(corpus->datastoreMetadata());
     }
 }
 

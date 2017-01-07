@@ -15,18 +15,38 @@ public:
     SQLMetadataDatastore(QPointer<MetadataStructure> structure, QObject *parent = 0);
     ~SQLMetadataDatastore();
 
-    bool createDatastore(const DatastoreInfo &info);
-    bool openDatastore(const DatastoreInfo &info);
-    bool closeDatastore();
+    // ==========================================================================================================================
+    // Datastore
+    // ==========================================================================================================================
+    bool createDatastore(const DatastoreInfo &info) override;
+    bool openDatastore(const DatastoreInfo &info) override;
+    bool closeDatastore() override;
 
-    bool loadMetadataStructure();
-    bool saveMetadataStructure();
-    bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute);
-    bool renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID);
-    bool deleteMetadataAttribute(CorpusObject::Type type, QString attributeID);
+    // ==========================================================================================================================
+    // Metadata Structure
+    // ==========================================================================================================================
+    bool loadMetadataStructure() override;
+    bool saveMetadataStructure() override;
+    bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) override;
+    bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) override;
+    bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) override;
+    bool retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const DataType &newDatatype) override;
 
-    bool loadCorpus(Corpus *corpus);
-    bool saveCorpus(Corpus *corpus);
+    // ==========================================================================================================================
+    // Name-value lists
+    // ==========================================================================================================================
+    NameValueList *getNameValueList(const QString &listID) override;
+    QStringList getAllNameValueListIDs() override;
+    QMap<QString, QPointer<NameValueList> > getAllNameValueLists() override;
+    bool createNameValueList(NameValueList *list) override;
+    bool updateNameValueList(NameValueList *list) override;
+    bool deleteNameValueList(const QString &listID) override;
+
+    // ==========================================================================================================================
+    // Corpus
+    // ==========================================================================================================================
+    bool loadCorpus(Corpus *corpus) override;
+    bool saveCorpus(Corpus *corpus) override;
 
 private:
     QSqlDatabase m_database;

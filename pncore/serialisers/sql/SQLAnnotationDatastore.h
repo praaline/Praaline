@@ -18,75 +18,85 @@ public:
     // ==========================================================================================================================
     // Datastore
     // ==========================================================================================================================
-    bool createDatastore(const DatastoreInfo &info);
-    bool openDatastore(const DatastoreInfo &info);
-    bool closeDatastore();
+    bool createDatastore(const DatastoreInfo &info) override;
+    bool openDatastore(const DatastoreInfo &info) override;
+    bool closeDatastore() override;
 
     // ==========================================================================================================================
     // Annotation Structure
     // ==========================================================================================================================
-    bool loadAnnotationStructure();
-    bool saveAnnotationStructure();
-    bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel);
-    bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID);
-    bool deleteAnnotationLevel(const QString &levelID);
-    bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute);
-    bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID);
-    bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID);
-    bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype);
+    bool loadAnnotationStructure() override;
+    bool saveAnnotationStructure() override;
+    bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel) override;
+    bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID) override;
+    bool deleteAnnotationLevel(const QString &levelID) override;
+    bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute) override;
+    bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID) override;
+    bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID) override;
+    bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype) override;
+
+    // ==========================================================================================================================
+    // Name-value lists
+    // ==========================================================================================================================
+    NameValueList *getNameValueList(const QString &listID) override;
+    QStringList getAllNameValueListIDs() override;
+    QMap<QString, QPointer<NameValueList> > getAllNameValueLists() override;
+    bool createNameValueList(NameValueList *list) override;
+    bool updateNameValueList(NameValueList *list) override;
+    bool deleteNameValueList(const QString &listID) override;
 
     // ==========================================================================================================================
     // Annotation Tiers
     // ==========================================================================================================================
     AnnotationTier *getTier(const QString &annotationID, const QString &speakerID,
-                            const QString &levelID, const QStringList &attributeIDs = QStringList());
+                            const QString &levelID, const QStringList &attributeIDs = QStringList()) override;
     AnnotationTierGroup *getTiers(const QString &annotationID, const QString &speakerID,
-                                  const QStringList &levelIDs = QStringList());
+                                  const QStringList &levelIDs = QStringList()) override;
     QMap<QString, QPointer<AnnotationTierGroup> > getTiersAllSpeakers(const QString &annotationID,
-                                                                      const QStringList &levelIDs = QStringList());
-    bool saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier);
-    bool saveTiers(const QString &annotationID, const QString &speakerID, AnnotationTierGroup *tiers);
-    bool saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers);
-    bool deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID);
-    bool deleteTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs = QStringList());
-    bool deleteAllTiersAllSpeakers(const QString &annotationID);
+                                                                      const QStringList &levelIDs = QStringList()) override;
+    bool saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier) override;
+    bool saveTiers(const QString &annotationID, const QString &speakerID, AnnotationTierGroup *tiers) override;
+    bool saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers) override;
+    bool deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID) override;
+    bool deleteTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs = QStringList()) override;
+    bool deleteAllTiersAllSpeakers(const QString &annotationID) override;
 
     // ==========================================================================================================================
     // Annotation Elements
     // ==========================================================================================================================
-    QList<AnnotationElement *> getAnnotationElements(const Selection &selection);
-    QList<Point *> getPoints(const Selection &selection);
-    QList<Interval *> getIntervals(const Selection &selection);
-    QList<Sequence *> getSequences(const Selection &selection);
+    QList<AnnotationElement *> getAnnotationElements(const Selection &selection) override;
+    QList<Point *> getPoints(const Selection &selection) override;
+    QList<Interval *> getIntervals(const Selection &selection) override;
+    QList<Sequence *> getSequences(const Selection &selection) override;
 
     // ==========================================================================================================================
     // Speakers and Timeline
     // ==========================================================================================================================
-    QList<QString> getSpeakersInLevel(const QString &annotationID, const QString &levelID);
-    QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID);
-    QList<QString> getSpeakersInAnnotation(const QString &annotationID);
-    QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID);
+    QList<QString> getSpeakersInLevel(const QString &annotationID, const QString &levelID) override;
+    QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID) override;
+    QList<QString> getSpeakersInAnnotation(const QString &annotationID) override;
+    QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID) override;
     IntervalTier *getSpeakerTimeline(const QString &communicationID,const QString &annotationID,
-                                     const QString &levelID, bool detailed = false);
+                                     const QString &levelID, bool detailed = false) override;
 
     // ==========================================================================================================================
     // Queries
     // ==========================================================================================================================
-    QList<QueryOccurrencePointer *> runQuery(QueryDefinition *qdef);
-    QueryOccurrence *getOccurrence(QueryOccurrencePointer *pointer, QueryDefinition *qdef);
-    bool updateAnnotationsFromQueryOccurrences(const QList<QueryOccurrence *> &occurrences);
+    QList<QueryOccurrencePointer *> runQuery(QueryDefinition *qdef) override;
+    QueryOccurrence *getOccurrence(QueryOccurrencePointer *pointer, QueryDefinition *qdef) override;
+    bool updateAnnotationsFromQueryOccurrences(const QList<QueryOccurrence *> &occurrences) override;
 
     // ==========================================================================================================================
     // Batch Processing
     // ==========================================================================================================================
-    QList<QPair<QList<QVariant>, long> > getDistinctLabels(const QString &levelID, const QStringList &attributeIDs);
+    QList<QPair<QList<QVariant>, long> > getDistinctLabels(const QString &levelID, const QStringList &attributeIDs) override;
     bool batchUpdate(const QString &levelID, const QString &attributeID, const QVariant &newValue,
-                     const QList<QPair<QString, QVariant> > &criteria);
+                     const QList<QPair<QString, QVariant> > &criteria) override;
 
     // ==========================================================================================================================
     // Statistics
     // ==========================================================================================================================
-    QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs);
+    QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) override;
 
 private:
     QSqlDatabase m_database;

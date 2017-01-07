@@ -85,7 +85,6 @@ SOURCES += main.cpp \
     PraalineMainWindow.cpp \
     visualisation/SimpleVisualiserWidget.cpp \
     annotation/asr/LanguageModelBuilderWidget.cpp \
-    query/AnnotationDataBrowserWidget.cpp \
     visualisation/ExportVisualisationDialog.cpp \
     query/sql/SqlTextEdit.cpp \
     query/sql/SqlUiLexer.cpp \
@@ -161,7 +160,9 @@ SOURCES += main.cpp \
     help/HelpModeConfig.cpp \
     corpus/structureeditors/AddAttributeDialog.cpp \
     corpus/structureeditors/AddLevelDialog.cpp \
-    scripting/ScriptEditorWidget.cpp
+    scripting/ScriptEditorWidget.cpp \
+    corpus/structureeditors/NameValueListEditor.cpp \
+    query/AnnotationBrowserWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -169,7 +170,6 @@ HEADERS  += \
     PraalineMainWindow.h \
     visualisation/SimpleVisualiserWidget.h \
     annotation/asr/LanguageModelBuilderWidget.h \
-    query/AnnotationDataBrowserWidget.h \
     visualisation/ExportVisualisationDialog.h \
     query/sql/SqlTextEdit.h \
     query/sql/SqlUiLexer.h \
@@ -249,13 +249,14 @@ HEADERS  += \
     interfaces/IStatisticsPlugin.h \
     corpus/structureeditors/AddAttributeDialog.h \
     corpus/structureeditors/AddLevelDialog.h \
-    scripting/ScriptEditorWidget.h
+    scripting/ScriptEditorWidget.h \
+    corpus/structureeditors/NameValueListEditor.h \
+    query/AnnotationBrowserWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
     statistics/CountStatisticsWidget.ui \
     annotation/asr/LanguageModelBuilderWidget.ui \
-    query/AnnotationDataBrowserWidget.ui \
     query/AdvancedQueriesWidget.ui \
     query/ConcordancerQuickWidget.ui \
     query/ConcordancerWidget.ui \

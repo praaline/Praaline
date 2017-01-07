@@ -9,8 +9,10 @@
 #include <QMap>
 
 #include "DatastoreInfo.h"
+#include "NameValueListDatastore.h"
 #include "base/DataType.h"
 #include "structure/AnnotationStructure.h"
+#include "structure/NameValueList.h"
 #include "annotation/AnnotationTierGroup.h"
 #include "query/QueryDefinition.h"
 #include "query/QueryOccurrence.h"
@@ -18,7 +20,7 @@
 namespace Praaline {
 namespace Core {
 
-class PRAALINE_CORE_SHARED_EXPORT AnnotationDatastore : public QObject
+class PRAALINE_CORE_SHARED_EXPORT AnnotationDatastore : public QObject, public NameValueListDatastore
 {
     Q_OBJECT
 public:
@@ -77,6 +79,16 @@ public:
     virtual bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID) = 0;
     virtual bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID) = 0;
     virtual bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype) = 0;
+
+    // ==========================================================================================================================
+    // Name-value lists
+    // ==========================================================================================================================
+    virtual NameValueList *getNameValueList(const QString &listID) = 0;
+    virtual QStringList getAllNameValueListIDs() = 0;
+    virtual QMap<QString, QPointer<NameValueList> > getAllNameValueLists() = 0;
+    virtual bool createNameValueList(NameValueList *list) = 0;
+    virtual bool updateNameValueList(NameValueList *list) = 0;
+    virtual bool deleteNameValueList(const QString &listID) = 0;
 
     // ==========================================================================================================================
     // Annotation Elements

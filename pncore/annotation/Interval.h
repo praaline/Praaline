@@ -49,7 +49,10 @@ public:
         { return (m_tMax - m_tMin); }
 
     // Overrides
-    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
+    virtual QVariant attribute(const QString &name) const override ;
+    inline virtual ElementType elementType() const override {
+        return Type_Interval;
+    }
 
     // Methods for Intervals
     bool overlaps(const Interval &other, const RealTime threshold = RealTime(0, 0)) const;

@@ -15,6 +15,7 @@ using namespace Praaline::Core;
 
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/observers/CorpusObserver.h"
+#include "NameValueListEditor.h"
 #include "CorporaManager.h"
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
@@ -37,6 +38,8 @@ struct AnnotationStructureEditorData {
     QPointer<AnnotationStructureTreeModel> treemodelAnnotationStructure;
 
     QToolBar *toolbarAnnotationStructure;
+
+    NameValueListEditor *editorNVList;
 };
 
 AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
@@ -68,6 +71,15 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
     inner->setCentralWidget(d->treeviewAnnotationStructure);
     ui->dockAnnotationStructure->setWidget(inner);
     d->treeviewAnnotationStructure->setAlternatingRowColors(true);
+
+    // Name-value list editor
+    d->editorNVList = new NameValueListEditor(this);
+    ui->dockNameValueLists->setWidget(d->editorNVList);
+
+    // Set proportions
+    ui->splitter->setSizes(QList<int>() << 100 << 100);
+    ui->splitter->setStretchFactor(0, 3);
+    ui->splitter->setStretchFactor(1, 1);
 }
 
 AnnotationStructureEditor::~AnnotationStructureEditor()

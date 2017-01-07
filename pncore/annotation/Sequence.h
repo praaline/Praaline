@@ -43,7 +43,10 @@ public:
         { return m_indexFrom - m_indexTo; }
 
     // Overrides
-    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
+    virtual QVariant attribute(const QString &name) const override;
+    inline virtual ElementType elementType() const override {
+        return Type_Sequence;
+    }
 
     int compare(const Sequence &other) const;
 

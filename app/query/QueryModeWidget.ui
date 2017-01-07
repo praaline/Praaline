@@ -29,6 +29,80 @@
    <property name="spacing">
     <number>0</number>
    </property>
+   <item row="1" column="0">
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="pageConcordancer">
+      <layout class="QGridLayout" name="gridLayoutConcordancer">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageCreateDataset">
+      <layout class="QGridLayout" name="gridLayoutCreateDataset">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageAnnotationBrowser">
+      <layout class="QGridLayout" name="gridLayoutAnnotationBrowser">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageAdvancedQueries">
+      <layout class="QGridLayout" name="gridLayoutAdvancedQueries">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageExtractSamples">
+      <layout class="QGridLayout" name="gridLayoutExtractSoundBites"/>
+     </widget>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QWidget" name="topFrame" native="true">
      <property name="sizePolicy">
@@ -83,46 +157,7 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="commandAdvancedQueries">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Advanced Queries</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>642</width>
-          <height>17</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="commandCreateDataset">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Create Dataset</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QPushButton" name="commandConcordancer">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -135,7 +170,62 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </widget>
       </item>
-      <item row="0" column="4">
+      <item row="1" column="4">
+       <widget class="QPushButton" name="commandAnnotationBrowser">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Annotation Browser</string>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="commandAdvancedQueries">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Advanced Queries</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="7">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>642</width>
+          <height>17</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="commandCreateDataset">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Create Dataset</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="6">
        <widget class="QPushButton" name="commandExtractSamples">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -151,66 +241,15 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QStackedWidget" name="stackedWidget">
-     <property name="currentIndex">
-      <number>3</number>
-     </property>
-     <widget class="QWidget" name="pageConcordancer">
-      <layout class="QGridLayout" name="gridLayoutConcordancer">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="pageCreateDataset">
-      <layout class="QGridLayout" name="gridLayoutCreateDataset">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="pageAdvancedQueries">
-      <layout class="QGridLayout" name="gridLayoutAdvancedQueries">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="pageExtractSamples">
-      <layout class="QGridLayout" name="gridLayoutExtractSoundBites"/>
-     </widget>
-    </widget>
-   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>commandCreateDataset</tabstop>
+  <tabstop>commandAnnotationBrowser</tabstop>
+  <tabstop>commandAdvancedQueries</tabstop>
+  <tabstop>commandExtractSamples</tabstop>
+  <tabstop>commandConcordancer</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

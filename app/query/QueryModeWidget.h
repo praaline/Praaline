@@ -23,6 +23,7 @@ signals:
 private slots:
     void showConcordancer();
     void showCreateDataset();
+    void showAnnotationBrowser();
     void showAdvancedQueries();
     void showExtractSamples();
 

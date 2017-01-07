@@ -28,6 +28,7 @@ signals:
 private slots:
     void recordingsIndexChanged(int);
     void annotationsIndexChanged(int);
+    void annotationLevelsIndexChanged(int);
 
     void durationChanged(qint64 duration);
     void positionChanged(qint64 progress);

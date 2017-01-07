@@ -8,10 +8,11 @@ using namespace QtilitiesCoreGui;
 #include "QueryModeWidget.h"
 #include "ui_QueryModeWidget.h"
 
-#include "AdvancedQueriesWidget.h"
 #include "ConcordancerWidget.h"
-#include "CreateDatasetWidget.h"
 #include "ConcordancerQuickWidget.h"
+#include "CreateDatasetWidget.h"
+#include "AnnotationBrowserWidget.h"
+#include "AdvancedQueriesWidget.h"
 #include "ExtractSoundBitesWidget.h"
 
 struct QueryModeWidgetData {
@@ -19,11 +20,13 @@ struct QueryModeWidgetData {
 
     QAction *actionShowCorcondancer;
     QAction *actionShowCreateDataset;
+    QAction *actionShowAnnotationBrowser;
     QAction *actionShowAdvancedQueries;
     QAction *actionShowExtractSamples;
 
     ConcordancerQuickWidget *widgetConcordancer;
     CreateDatasetWidget *widgetCreateDataset;
+    AnnotationBrowserWidget *widgetAnnotationBrowser;
     AdvancedQueriesWidget *widgetAdvancedQueries;
     ExtractSoundBitesWidget *widgetExtractSamples;
 };
@@ -35,11 +38,13 @@ QueryModeWidget::QueryModeWidget(QWidget *parent) :
 
     d->widgetConcordancer = new ConcordancerQuickWidget(this);
     d->widgetCreateDataset = new CreateDatasetWidget(this);
+    d->widgetAnnotationBrowser = new AnnotationBrowserWidget(this);
     d->widgetAdvancedQueries = new AdvancedQueriesWidget(this);
     d->widgetExtractSamples = new ExtractSoundBitesWidget(this);
 
     ui->gridLayoutConcordancer->addWidget(d->widgetConcordancer);
     ui->gridLayoutCreateDataset->addWidget(d->widgetCreateDataset);
+    ui->gridLayoutAnnotationBrowser->addWidget(d->widgetAnnotationBrowser);
     ui->gridLayoutAdvancedQueries->addWidget(d->widgetAdvancedQueries);
     ui->gridLayoutExtractSoundBites->addWidget(d->widgetExtractSamples);
 
@@ -47,6 +52,7 @@ QueryModeWidget::QueryModeWidget(QWidget *parent) :
 
     connect(ui->commandConcordancer, SIGNAL(clicked()), this, SLOT(showConcordancer()));
     connect(ui->commandCreateDataset, SIGNAL(clicked()), this, SLOT(showCreateDataset()));
+    connect(ui->commandAnnotationBrowser, SIGNAL(clicked()), this, SLOT(showAnnotationBrowser()));
     connect(ui->commandAdvancedQueries, SIGNAL(clicked()), this, SLOT(showAdvancedQueries()));
     connect(ui->commandExtractSamples, SIGNAL(clicked(bool)), this, SLOT(showExtractSamples()));
 
@@ -87,6 +93,12 @@ void QueryModeWidget::setupActions()
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
+    d->actionShowAnnotationBrowser = new QAction(tr("Annotation Table Browser"), this);
+    connect(d->actionShowAnnotationBrowser, SIGNAL(triggered()), SLOT(showAnnotationBrowser()));
+    command = ACTION_MANAGER->registerAction("Corpus.ShowAnnotationBrowser", d->actionShowAnnotationBrowser, context);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
+
     d->actionShowAdvancedQueries = new QAction(tr("Advanced Queries"), this);
     connect(d->actionShowAdvancedQueries, SIGNAL(triggered()), SLOT(showAdvancedQueries()));
     command = ACTION_MANAGER->registerAction("Corpus.ShowAdvancedQueries", d->actionShowAdvancedQueries, context);
@@ -114,14 +126,20 @@ void QueryModeWidget::showCreateDataset()
     emit activateMode();
 }
 
-void QueryModeWidget::showAdvancedQueries()
+void QueryModeWidget::showAnnotationBrowser()
 {
     ui->stackedWidget->setCurrentIndex(2);
     emit activateMode();
 }
 
-void QueryModeWidget::showExtractSamples()
+void QueryModeWidget::showAdvancedQueries()
 {
     ui->stackedWidget->setCurrentIndex(3);
+    emit activateMode();
+}
+
+void QueryModeWidget::showExtractSamples()
+{
+    ui->stackedWidget->setCurrentIndex(4);
     emit activateMode();
 }

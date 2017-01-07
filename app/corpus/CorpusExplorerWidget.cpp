@@ -155,6 +155,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     d->metadataEditorSecondary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
     d->metadataEditorSecondary->layout()->setMargin(0);
     ui->dockMetadataSecondary->setWidget(d->metadataEditorSecondary);
+
+    // Layout
+    ui->splitterEditorsAndPreview->setStretchFactor(0, 2);
+    ui->splitterEditorsAndPreview->setStretchFactor(1, 1);
 }
 
 CorpusExplorerWidget::~CorpusExplorerWidget()

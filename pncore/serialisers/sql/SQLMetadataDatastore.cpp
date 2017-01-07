@@ -2,6 +2,7 @@
 #include <QSqlError>
 #include "SQLSerialiserCorpus.h"
 #include "SQLSerialiserMetadataStructure.h"
+#include "SQLSerialiserNameValueList.h"
 #include "SQLMetadataDatastore.h"
 
 namespace Praaline {
@@ -17,6 +18,9 @@ SQLMetadataDatastore::~SQLMetadataDatastore()
     closeDatastore();
 }
 
+// ==========================================================================================================================
+// Datastore
+// ==========================================================================================================================
 bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
 {
     if (m_database.isOpen()) m_database.close();
@@ -33,6 +37,7 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
     // Initialise database
     SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(m_database);
     SQLSerialiserMetadataStructure::createMetadataSchema(m_structure, m_database);
+    SQLSerialiserNameValueList::initialiseNameValueListSchema(m_database);
     return true;
 }
 
@@ -51,6 +56,7 @@ bool SQLMetadataDatastore::openDatastore(const DatastoreInfo &info)
     }
     // Upgrade database if needed
     SQLSerialiserMetadataStructure::upgradeMetadataStructureSchema(m_database);
+    SQLSerialiserNameValueList::upgradeNameValueListSchema(m_database);
     return true;
 }
 
@@ -61,19 +67,28 @@ bool SQLMetadataDatastore::closeDatastore()
     return true;
 }
 
+// ==========================================================================================================================
+// Metadata Structure
+// ==========================================================================================================================
 bool SQLMetadataDatastore::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute)
 {
     return SQLSerialiserMetadataStructure::createMetadataAttribute(type, newAttribute, m_database);
 }
 
-bool SQLMetadataDatastore::renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID)
+bool SQLMetadataDatastore::renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID)
 {
     return SQLSerialiserMetadataStructure::renameMetadataAttribute(type, attributeID, newAttributeID, m_database);
 }
 
-bool SQLMetadataDatastore::deleteMetadataAttribute(CorpusObject::Type type, QString attributeID)
+bool SQLMetadataDatastore::deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID)
 {
     return SQLSerialiserMetadataStructure::deleteMetadataAttribute(type, attributeID, m_database);
+}
+
+bool SQLMetadataDatastore::retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const DataType &newDatatype)
+{
+    // return SQLSerialiserMetadataStructure::retypeMetadataAttribute(type, attributeID, newDatatype, m_database);
+    return false;
 }
 
 bool SQLMetadataDatastore::loadMetadataStructure()
@@ -83,8 +98,46 @@ bool SQLMetadataDatastore::loadMetadataStructure()
 
 bool SQLMetadataDatastore::saveMetadataStructure()
 {
-    //return SQLSerialiserMetadataStructure::write(m_structure, m_database);
+    return true;
 }
+
+// ==========================================================================================================================
+// Name-value lists
+// ==========================================================================================================================
+
+NameValueList *SQLMetadataDatastore::getNameValueList(const QString &listID)
+{
+    return SQLSerialiserNameValueList::getNameValueList(listID, SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+QStringList SQLMetadataDatastore::getAllNameValueListIDs()
+{
+    return SQLSerialiserNameValueList::getAllNameValueListIDs(SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+QMap<QString, QPointer<NameValueList> > SQLMetadataDatastore::getAllNameValueLists()
+{
+    return SQLSerialiserNameValueList::getAllNameValueLists(SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+bool SQLMetadataDatastore::createNameValueList(NameValueList *list)
+{
+    return SQLSerialiserNameValueList::createNameValueList(list, SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+bool SQLMetadataDatastore::updateNameValueList(NameValueList *list)
+{
+    return SQLSerialiserNameValueList::updateNameValueList(list, SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+bool SQLMetadataDatastore::deleteNameValueList(const QString &listID)
+{
+    return SQLSerialiserNameValueList::deleteNameValueList(listID, SQLSerialiserNameValueList::Metadata, m_database);
+}
+
+// ==========================================================================================================================
+// Corpus
+// ==========================================================================================================================
 
 bool SQLMetadataDatastore::loadCorpus(Corpus *corpus)
 {

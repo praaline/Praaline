@@ -37,7 +37,10 @@ public:
     inline RealTime time() const { return m_time; }
 
     // Overrides
-    virtual QVariant attribute(const QString &name) const Q_DECL_OVERRIDE;
+    virtual QVariant attribute(const QString &name) const override;
+    inline virtual ElementType elementType() const override {
+        return Type_Point;
+    }
 
 protected:
     RealTime m_time;

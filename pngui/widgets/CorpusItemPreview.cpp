@@ -13,6 +13,7 @@
 #include <QTreeWidget>
 #include <QtWidgets>
 
+#include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 using namespace Praaline::Core;
 
@@ -23,6 +24,8 @@ struct CorpusItemPreviewData {
 
     QComboBox *recordingsComboBox;
     QComboBox *annotationsComboBox;
+    QComboBox *annotationLevelsComboBox;
+    QLabel *labelStatus;
 
     QMediaPlayer *player;
     MediaPlayerControls *controls;
@@ -41,6 +44,7 @@ struct CorpusItemPreviewData {
     QPointer<CorpusCommunication> communication;
     QStringList recordingsIDs;
     QStringList annotationIDs;
+    QStringList levelIDs;
 };
 
 CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
@@ -52,6 +56,11 @@ CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
     // List of available annotations (for transcription preview)
     d->annotationsComboBox = new QComboBox(this);
     connect(d->annotationsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(annotationsIndexChanged(int)));
+    // List of available annotation levels
+    d->annotationLevelsComboBox = new QComboBox(this);
+    connect(d->annotationLevelsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(annotationLevelsIndexChanged(int)));
+    // Status label
+    d->labelStatus = new QLabel(this);
     // Media player
     d->player = new QMediaPlayer(this);
     connect(d->player, SIGNAL(durationChanged(qint64)), SLOT(durationChanged(qint64)));
@@ -105,9 +114,12 @@ CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
     // Create layout
     QBoxLayout *selectionLayout = new QHBoxLayout;
     selectionLayout->addWidget(new QLabel(tr("Media file: "), this));
-    selectionLayout->addWidget(d->recordingsComboBox);
+    selectionLayout->addWidget(d->recordingsComboBox, 1);
     selectionLayout->addWidget(new QLabel(tr("Annotation: "), this));
-    selectionLayout->addWidget(d->annotationsComboBox);
+    selectionLayout->addWidget(d->annotationsComboBox, 1);
+    selectionLayout->addWidget(new QLabel(tr("Preview level: "), this));
+    selectionLayout->addWidget(d->annotationLevelsComboBox, 1);
+    selectionLayout->addWidget(d->labelStatus, 2);
 
     QBoxLayout *displayLayout = new QHBoxLayout;
     displayLayout->addWidget(d->videoWidget);
@@ -180,26 +192,16 @@ void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
         names.append(annot->name());
     }
     d->annotationsComboBox->insertItems(0, names);
-
-
-
-//    QFileDialog fileDialog(this);
-//    fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
-//    fileDialog.setWindowTitle(tr("Open Files"));
-//    QStringList supportedMimeTypes = player->supportedMimeTypes();
-//    if (!supportedMimeTypes.isEmpty()) {
-//        supportedMimeTypes.append("audio/x-m3u"); // MP3 playlists
-//        fileDialog.setMimeTypeFilters(supportedMimeTypes);
-//    }
-//    fileDialog.setDirectory(QStandardPaths::standardLocations(QStandardPaths::MoviesLocation).value(0, QDir::homePath()));
-//    if (fileDialog.exec() == QDialog::Accepted)
-//        addToPlaylist(fileDialog.selectedUrls());
-//    foreach (const QUrl &url, urls) {
-//        if (isPlaylist(url))
-//            playlist->load(url);
-//        else
-//            playlist->addMedia(url);
-//    }
+    // Populate combo box with annotation levels (only if necessary, i.e. if corpus changed)
+    QPointer<Corpus> corpus = com->corpus();
+    if (corpus && corpus->annotationStructure()) {
+        QStringList levelIDs = corpus->annotationStructure()->levelIDs();
+        if (d->levelIDs != levelIDs) {
+            d->annotationLevelsComboBox->clear();
+            d->annotationLevelsComboBox->insertItems(0, levelIDs);
+            d->levelIDs = levelIDs;
+        }
+    }
 }
 
 void CorpusItemPreview::recordingsIndexChanged(int index)
@@ -220,6 +222,11 @@ void CorpusItemPreview::annotationsIndexChanged(int index)
     QPointer<CorpusAnnotation> annot = d->communication->annotation(annotationID);
     if (!annot) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
     d->transcriptionWidget->setAnnotation(annot);
+}
+
+void CorpusItemPreview::annotationLevelsIndexChanged(int)
+{
+    d->transcriptionWidget->setTranscriptionLevelID(d->annotationLevelsComboBox->currentText());
 }
 
 void CorpusItemPreview::durationChanged(qint64 duration)

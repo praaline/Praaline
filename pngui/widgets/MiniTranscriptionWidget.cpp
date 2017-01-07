@@ -47,16 +47,29 @@ MiniTranscriptionWidget::~MiniTranscriptionWidget()
 
 void MiniTranscriptionWidget::setTranscriptionLevelID(const QString &levelID)
 {
-    d->transcriptionLevelID = levelID;
+    if (d->transcriptionLevelID == levelID) return;
+    rebind(d->annotation, levelID);
+}
+
+QString MiniTranscriptionWidget::transcriptionLevelID() const
+{
+    return d->transcriptionLevelID;
 }
 
 void MiniTranscriptionWidget::setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot)
+{
+    if (d->annotation == annot) return;
+    rebind(annot, d->transcriptionLevelID);
+}
+
+void MiniTranscriptionWidget::rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID)
 {
     d->transcriptionView->clear();
     d->lines.clear();
     if (!annot) return;
     QPointer<Corpus> corpus = annot->corpus();
     if (!corpus) return;
+    if (!levelID.isEmpty()) d->transcriptionLevelID = levelID;
     foreach (Interval *intv, corpus->datastoreAnnotations()->getIntervals(
                  AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID))) {
         QStringList fields;
@@ -66,4 +79,5 @@ void MiniTranscriptionWidget::setAnnotation(QPointer<Praaline::Core::CorpusAnnot
         d->lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
     }
     d->transcriptionView->insertTopLevelItems(0, d->lines);
+    d->annotation = annot;
 }

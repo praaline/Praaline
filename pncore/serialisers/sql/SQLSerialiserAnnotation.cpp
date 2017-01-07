@@ -68,8 +68,13 @@ bool prepareSelectQuery(QSqlQuery &query, AnnotationStructureLevel *level, const
         if (selection.timeMax >= RealTime(0, 0))    q.append(" AND tMax <= :timeMax ");
     }
     // Sorting
-    if (level->isLevelTypePrimary())    q.append(" ORDER BY tMin, annotationID, speakerID ");
-    else                                q.append(" ORDER BY intervalNoLeft, annotationID, speakerID ");
+    if (selection.annotationID.isEmpty()) {
+        if (level->isLevelTypePrimary())    q.append(" ORDER BY annotationID, speakerID, tMin ");
+        else                                q.append(" ORDER BY annotationID, speakerID, intervalNoLeft ");
+    } else {
+        if (level->isLevelTypePrimary())    q.append(" ORDER BY tMin, speakerID ");
+        else                                q.append(" ORDER BY intervalNoLeft, speakerID ");
+    }
     // Prepare query
     query.setForwardOnly(true);
     query.prepare(q);
@@ -110,6 +115,11 @@ QList<AnnotationElement *> SQLSerialiserAnnotation::getAnnotationElements(
         }
         if (selection.annotationID.isEmpty()) attributes.insert("annotationID", query.value("annotationID"));
         if (selection.speakerID.isEmpty())    attributes.insert("speakerID", query.value("speakerID"));
+        if (query.value("intervalNo").isValid())        attributes.insert("indexNo", query.value("intervalNo"));
+        if (query.value("intervalNoLeft").isValid())    attributes.insert("indexFrom", query.value("intervalNoLeft"));
+        if (query.value("intervalNoRight").isValid())   attributes.insert("indexTo", query.value("intervalNoRight"));
+        if (query.value("tMin").isValid())              attributes.insert("tMin_nsec", query.value("tMin"));
+        if (query.value("tMax").isValid())              attributes.insert("tMax_nsec", query.value("tMax"));
         elements << new AnnotationElement(xText, attributes);
     }
     return elements;

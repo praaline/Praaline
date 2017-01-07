@@ -8,7 +8,7 @@
 
 namespace Praaline {
 namespace Core {
-    class CorpusBookmark;
+class CorpusBookmark;
 }
 }
 

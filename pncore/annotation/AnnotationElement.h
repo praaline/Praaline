@@ -34,6 +34,17 @@ public:
     inline virtual ~AnnotationElement() {}
     // Note: Requirements for QVariant are a public default constructor, a public copy constructor, and a public destructor
 
+    enum ElementType {
+        Type_Element,
+        Type_Point,
+        Type_Interval,
+        Type_Sequence,
+        Type_Relation
+    };
+    inline virtual ElementType elementType() const {
+        return Type_Element;
+    }
+
     inline virtual QString text() const {
         return m_text;
     }
@@ -61,13 +72,13 @@ public:
         else
             m_attributes.insert(name, value);
     }
-    inline virtual const QHash<QString, QVariant> &attributes() const {
+    inline virtual const QVariantHash &attributes() const {
         return m_attributes;
     }
 
 protected:
     QString m_text;
-    QHash<QString, QVariant> m_attributes;
+    QVariantHash m_attributes;
 
     friend class AnnotationTier;
 };

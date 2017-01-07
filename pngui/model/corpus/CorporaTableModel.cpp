@@ -23,15 +23,15 @@ bool CorporaTableModel::setHeaderData(int section, Qt::Orientation orientation, 
 
 int CorporaTableModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
-        return 0;
+    Q_UNUSED(parent)
+    return 0;
 
     // FIXME: Implement me!
 }
 
 int CorporaTableModel::columnCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    Q_UNUSED(parent)
         return 0;
 
     // FIXME: Implement me!

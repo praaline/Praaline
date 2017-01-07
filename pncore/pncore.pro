@@ -197,7 +197,10 @@ HEADERS += \
     serialisers/AnnotationDatastore.h \
     serialisers/MetadataDatastore.h \
     annotation/RelationTier.h \
-    annotation/SequenceTier.h
+    annotation/SequenceTier.h \
+    serialisers/sql/SQLSerialiserNameValueList.h \
+    corpus/CorpusRepository.h \
+    serialisers/NameValueListDatastore.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -360,7 +363,9 @@ SOURCES += \
     annotation/Relation.cpp \
     annotation/Sequence.cpp \
     annotation/RelationTier.cpp \
-    annotation/SequenceTier.cpp
+    annotation/SequenceTier.cpp \
+    serialisers/sql/SQLSerialiserNameValueList.cpp \
+    corpus/CorpusRepository.cpp
 
 DISTFILES += \
     pncore.qmodel

@@ -20,20 +20,19 @@ CorpusBookmarkModel::~CorpusBookmarkModel()
 
 int CorpusBookmarkModel::rowCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return d->bookmarks.count();
 }
 
 int CorpusBookmarkModel::columnCount(const QModelIndex &parent) const
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
     return 6;
 }
 
 QVariant CorpusBookmarkModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole)
-        return QVariant();
+    if (role != Qt::DisplayRole) return QVariant();
     if (orientation == Qt::Horizontal) {
         switch (section) {
         case 0: return tr("Corpus ID"); break;
@@ -51,10 +50,8 @@ QVariant CorpusBookmarkModel::headerData(int section, Qt::Orientation orientatio
 
 QVariant CorpusBookmarkModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
-        return QVariant();
-    if (index.row() >= d->bookmarks.count() || index.row() < 0)
-        return QVariant();
+    if (!index.isValid()) return QVariant();
+    if (index.row() >= d->bookmarks.count() || index.row() < 0) return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         QPointer<CorpusBookmark> bookmark = d->bookmarks.at(index.row());
@@ -75,8 +72,7 @@ QVariant CorpusBookmarkModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags CorpusBookmarkModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
+    if (!index.isValid()) return Qt::NoItemFlags;
     if (index.column() >= 4)
         return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
     return QAbstractTableModel::flags(index);
@@ -91,12 +87,12 @@ bool CorpusBookmarkModel::setData(const QModelIndex &index, const QVariant &valu
     if (!bookmark) return false;
     if (index.column() == 4) {
         bookmark->setName(value.toString());
-        emit(dataChanged(index, index));
+        emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
     if (index.column() == 5) {
         bookmark->setNotes(value.toString());
-        emit(dataChanged(index, index));
+        emit dataChanged(index, index, QVector<int>() << role);
         return true;
     }
     return false;

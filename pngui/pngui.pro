@@ -5,7 +5,7 @@
     error( Could not find the common.pri file! )
 }
 
-CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11
+CONFIG += staticlib qt thread warn_on stl rtti exceptions c++14
 
 QT += xml sql gui printsupport multimedia multimediawidgets
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -28,6 +28,9 @@ INCLUDEPATH += libs/qtilities/include
 # For QXlsx
 QT += core gui gui-private
 DEFINES += XLSX_NO_LIB
+
+# For Node Editor
+DEFINES += NODE_EDITOR_STATIC
 
 FORMS += \
     widgets/annotationverticaltimelineeditor.ui \
@@ -173,12 +176,42 @@ HEADERS += \
     model/query/QueryDefinitionTreeModel.h \
     model/query/QueryFilterSequenceTableModel.h \
     model/corpus/CorporaTableModel.h \
-    model/corpus/test.h \
     widgets/MediaPlayerControls.h \
     widgets/MediaPlayerVideoWidget.h \
     widgets/MiniTranscriptionWidget.h \
-    model/annotation/AnnotationsTableModel.h \
-    model/annotation/AnnotationTierModel.h
+    model/annotation/AnnotationTierModel.h \
+    model/annotation/AnnotationTableModel.h \
+    model/NameValueListTableModel.h \
+    nodeeditor/Compiler.h \
+    nodeeditor/Connection.h \
+    nodeeditor/ConnectionBlurEffect.h \
+    nodeeditor/ConnectionGeometry.h \
+    nodeeditor/ConnectionGraphicsObject.h \
+    nodeeditor/ConnectionPainter.h \
+    nodeeditor/ConnectionState.h \
+    nodeeditor/ConnectionStyle.h \
+    nodeeditor/DataModelRegistry.h \
+    nodeeditor/Export.h \
+    nodeeditor/FlowItemInterface.h \
+    nodeeditor/FlowScene.h \
+    nodeeditor/FlowView.h \
+    nodeeditor/FlowViewStyle.h \
+    nodeeditor/Node.h \
+    nodeeditor/NodeConnectionInteraction.h \
+    nodeeditor/NodeData.h \
+    nodeeditor/NodeDataModel.h \
+    nodeeditor/NodeGeometry.h \
+    nodeeditor/NodeGraphicsObject.h \
+    nodeeditor/NodePainter.h \
+    nodeeditor/NodeState.h \
+    nodeeditor/NodeStyle.h \
+    nodeeditor/OperatingSystem.h \
+    nodeeditor/PortType.h \
+    nodeeditor/Properties.h \
+    nodeeditor/QStringStdHash.h \
+    nodeeditor/Serializable.h \
+    nodeeditor/Style.h \
+    nodeeditor/StyleCollection.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -286,9 +319,33 @@ SOURCES += \
     model/query/QueryFilterSequenceTableModel.cpp \
     model/query/QueryDefinitionTreeModel.cpp \
     model/corpus/CorporaTableModel.cpp \
-    model/corpus/test.cpp \
     widgets/MediaPlayerControls.cpp \
     widgets/MediaPlayerVideoWidget.cpp \
     widgets/MiniTranscriptionWidget.cpp \
     model/annotation/AnnotationTierModel.cpp \
-    model/annotation/AnnotationsTableModel.cpp
+    model/annotation/AnnotationTableModel.cpp \
+    model/NameValueListTableModel.cpp \
+    nodeeditor/Connection.cpp \
+    nodeeditor/ConnectionBlurEffect.cpp \
+    nodeeditor/ConnectionGeometry.cpp \
+    nodeeditor/ConnectionGraphicsObject.cpp \
+    nodeeditor/ConnectionPainter.cpp \
+    nodeeditor/ConnectionState.cpp \
+    nodeeditor/ConnectionStyle.cpp \
+    nodeeditor/DataModelRegistry.cpp \
+    nodeeditor/FlowItemInterface.cpp \
+    nodeeditor/FlowScene.cpp \
+    nodeeditor/FlowView.cpp \
+    nodeeditor/FlowViewStyle.cpp \
+    nodeeditor/Node.cpp \
+    nodeeditor/NodeConnectionInteraction.cpp \
+    nodeeditor/NodeGeometry.cpp \
+    nodeeditor/NodeGraphicsObject.cpp \
+    nodeeditor/NodePainter.cpp \
+    nodeeditor/NodeState.cpp \
+    nodeeditor/NodeStyle.cpp \
+    nodeeditor/Properties.cpp \
+    nodeeditor/StyleCollection.cpp
+
+RESOURCES += \
+    nodeeditor/resources/NodeEditorResources.qrc

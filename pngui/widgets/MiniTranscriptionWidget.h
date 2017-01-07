@@ -21,6 +21,7 @@ public:
 
     void setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
     void setTranscriptionLevelID(const QString &levelID);
+    QString transcriptionLevelID() const;
 
 signals:
 
@@ -28,6 +29,7 @@ public slots:
 
 private:
     MiniTranscriptionWidgetData *d;
+    void rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID);
 };
 
 #endif // MINITRANSCRIPTIONWIDGET_H
