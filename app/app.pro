@@ -1,5 +1,5 @@
 # Praaline
-# (c) George Christodoulides 2012-2014
+# (c) George Christodoulides 2012-2017
 
 ! include( ../common.pri ) {
     error( Could not find the common.pri file! )
@@ -11,7 +11,7 @@ solaris*:TARGET = praaline
 
 TEMPLATE = app
 
-CONFIG += qt thread warn_on stl rtti exceptions c++11
+CONFIG += qt thread warn_on stl rtti exceptions c++14
 
 QT += core gui network xml sql svg opengl multimedia multimediawidgets help
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -55,6 +55,8 @@ win* { LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/release }
 LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
 DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 
+# Node editor
+DEFINES += NODE_EDITOR_STATIC
 
 # Application components
 LIBS +=  \
@@ -162,7 +164,8 @@ SOURCES += main.cpp \
     corpus/structureeditors/AddLevelDialog.cpp \
     scripting/ScriptEditorWidget.cpp \
     corpus/structureeditors/NameValueListEditor.cpp \
-    query/AnnotationBrowserWidget.cpp
+    query/AnnotationBrowserWidget.cpp \
+    query/dataseteditor/DatasetEditorWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -251,7 +254,9 @@ HEADERS  += \
     corpus/structureeditors/AddLevelDialog.h \
     scripting/ScriptEditorWidget.h \
     corpus/structureeditors/NameValueListEditor.h \
-    query/AnnotationBrowserWidget.h
+    query/AnnotationBrowserWidget.h \
+    query/dataseteditor/DatasetEditorWidget.h \
+    query/dataseteditor/DatasetEditorModels.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

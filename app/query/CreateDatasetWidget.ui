@@ -36,8 +36,8 @@
        <property name="windowTitle">
         <string>Query Definition</string>
        </property>
-       <widget class="QWidget" name="dockWidgetQueryDefinitionContents">
-        <layout class="QGridLayout" name="gridLayout_3">
+       <widget class="QWidget" name="dockWidgetDatasetEditorContents">
+        <layout class="QGridLayout" name="gridLayoutDatasetEditor">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -50,63 +50,6 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0" rowspan="3" colspan="2">
-          <widget class="QTreeView" name="treeviewQueryDefinition">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>1</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="commandAdd">
-           <property name="text">
-            <string>Add</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2">
-          <widget class="QPushButton" name="commandRemove">
-           <property name="text">
-            <string>Remove</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>177</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="3" column="0">
-          <widget class="QCommandLinkButton" name="commandCreateDataset">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Create dataset</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1" colspan="2">
-          <widget class="QProgressBar" name="progressBar">
-           <property name="value">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>
@@ -115,7 +58,7 @@
         <string>Results</string>
        </property>
        <widget class="QWidget" name="dockWidgetResultsContents">
-        <layout class="QGridLayout" name="gridLayout">
+        <layout class="QGridLayout" name="gridLayoutResults">
          <property name="leftMargin">
           <number>0</number>
          </property>

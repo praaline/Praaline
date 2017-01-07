@@ -26,7 +26,7 @@
 
 FlowScene::
 FlowScene(std::shared_ptr<DataModelRegistry> registry)
-    : _registry(std::move(registry))
+    : m_registry(std::move(registry))
 {
     setItemIndexMethod(QGraphicsScene::NoIndex);
 }
@@ -35,8 +35,8 @@ FlowScene(std::shared_ptr<DataModelRegistry> registry)
 FlowScene::
 ~FlowScene()
 {
-    _connections.clear();
-    _nodes.clear();
+    m_connections.clear();
+    m_nodes.clear();
 }
 
 
@@ -55,7 +55,7 @@ createConnection(PortType connectedPort,
     // after this function connection points are set to node port
     connection->setGraphicsObject(std::move(cgo));
 
-    _connections[connection->id()] = connection;
+    m_connections[connection->id()] = connection;
 
     connectionCreated(*connection);
     return connection;
@@ -87,7 +87,7 @@ createConnection(std::shared_ptr<Node> nodeIn,
     // after this function connection points are set to node port
     connection->setGraphicsObject(std::move(cgo));
 
-    _connections[connection->id()] = connection;
+    m_connections[connection->id()] = connection;
 
     connectionCreated(*connection);
 
@@ -112,8 +112,8 @@ restoreConnection(Properties const &p)
     p.get("in_index", &portIndexIn);
     p.get("out_index", &portIndexOut);
 
-    auto nodeIn  = _nodes[nodeInId];
-    auto nodeOut = _nodes[nodeOutId];
+    auto nodeIn  = m_nodes[nodeInId];
+    auto nodeOut = m_nodes[nodeOutId];
 
     return createConnection(nodeIn, portIndexIn, nodeOut, portIndexOut);
 }
@@ -125,7 +125,7 @@ deleteConnection(std::shared_ptr<Connection> connection)
 {
     connectionDeleted(*connection);
     connection->removeFromNodes();
-    _connections.erase(connection->id());
+    m_connections.erase(connection->id());
 }
 
 
@@ -138,7 +138,7 @@ createNode(std::unique_ptr<NodeDataModel> && dataModel)
 
     node->setGraphicsObject(std::move(ngo));
 
-    _nodes[node->id()] = node;
+    m_nodes[node->id()] = node;
 
     nodeCreated(node);
     return node;
@@ -165,7 +165,7 @@ restoreNode(Properties const &p)
 
     node->restore(p);
 
-    _nodes[node->id()] = node;
+    m_nodes[node->id()] = node;
 
     nodeCreated(node);
     return node;
@@ -193,7 +193,7 @@ removeNode(std::shared_ptr<Node> node)
     deleteConnections(PortType::In);
     deleteConnections(PortType::Out);
 
-    _nodes.erase(node->id());
+    m_nodes.erase(node->id());
 }
 
 
@@ -209,7 +209,7 @@ DataModelRegistry&
 FlowScene::
 registry()
 {
-    return *_registry;
+    return *m_registry;
 }
 
 
@@ -217,7 +217,7 @@ void
 FlowScene::
 setRegistry(std::shared_ptr<DataModelRegistry> registry)
 {
-    _registry = registry;
+    m_registry = registry;
 }
 
 
@@ -233,9 +233,9 @@ save() const
     writeBuffer.open(QIODevice::WriteOnly);
     QDataStream out(&writeBuffer);
 
-    out << static_cast<quint64>(_nodes.size());
+    out << static_cast<quint64>(m_nodes.size());
 
-    for (auto const & pair : _nodes)
+    for (auto const & pair : m_nodes)
     {
         auto const &node = pair.second;
 
@@ -248,9 +248,9 @@ save() const
         out << m;
     }
 
-    out << static_cast<quint64>(_connections.size());
+    out << static_cast<quint64>(m_connections.size());
 
-    for (auto const & pair : _connections)
+    for (auto const & pair : m_connections)
     {
         auto const &connection = pair.second;
 
@@ -287,8 +287,8 @@ void
 FlowScene::
 load()
 {
-    _connections.clear();
-    _nodes.clear();
+    m_connections.clear();
+    m_nodes.clear();
 
     //-------------
 

@@ -7,6 +7,8 @@ namespace Ui {
 class CreateDatasetWidget;
 }
 
+struct CreateDatasetWidgetData;
+
 class CreateDatasetWidget : public QMainWindow
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ public:
 
 private:
     Ui::CreateDatasetWidget *ui;
+    CreateDatasetWidgetData *d;
 };
 
 #endif // CREATEDATASETWIDGET_H
