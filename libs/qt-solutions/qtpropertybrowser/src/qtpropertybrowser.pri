@@ -30,3 +30,54 @@ win32 {
     contains(TEMPLATE, lib):contains(CONFIG, shared):DEFINES += QT_QTPROPERTYBROWSER_EXPORT
     else:qtpropertybrowser-uselib:DEFINES += QT_QTPROPERTYBROWSER_IMPORT
 }
+
+HEADERS += \
+    $$PWD/QtAbstractEditorFactoryBase \
+    $$PWD/QtAbstractPropertyBrowser \
+    $$PWD/QtAbstractPropertyManager \
+    $$PWD/QtBoolPropertyManager \
+    $$PWD/QtBrowserItem \
+    $$PWD/QtButtonPropertyBrowser \
+    $$PWD/QtCharEditorFactory \
+    $$PWD/QtCharPropertyManager \
+    $$PWD/QtCheckBoxFactory \
+    $$PWD/QtColorEditorFactory \
+    $$PWD/QtColorPropertyManager \
+    $$PWD/QtCursorEditorFactory \
+    $$PWD/QtCursorPropertyManager \
+    $$PWD/QtDateEditFactory \
+    $$PWD/QtDatePropertyManager \
+    $$PWD/QtDateTimeEditFactory \
+    $$PWD/QtDateTimePropertyManager \
+    $$PWD/QtDoublePropertyManager \
+    $$PWD/QtDoubleSpinBoxFactory \
+    $$PWD/QtEnumEditorFactory \
+    $$PWD/QtEnumPropertyManager \
+    $$PWD/QtFlagPropertyManager \
+    $$PWD/QtFontEditorFactory \
+    $$PWD/QtFontPropertyManager \
+    $$PWD/QtGroupBoxPropertyBrowser \
+    $$PWD/QtGroupPropertyManager \
+    $$PWD/QtIntPropertyManager \
+    $$PWD/QtKeySequenceEditorFactory \
+    $$PWD/QtKeySequencePropertyManager \
+    $$PWD/QtLineEditFactory \
+    $$PWD/QtLocalePropertyManager \
+    $$PWD/QtPointFPropertyManager \
+    $$PWD/QtPointPropertyManager \
+    $$PWD/QtProperty \
+    $$PWD/QtRectFPropertyManager \
+    $$PWD/QtRectPropertyManager \
+    $$PWD/QtScrollBarFactory \
+    $$PWD/QtSizeFPropertyManager \
+    $$PWD/QtSizePolicyPropertyManager \
+    $$PWD/QtSizePropertyManager \
+    $$PWD/QtSliderFactory \
+    $$PWD/QtSpinBoxFactory \
+    $$PWD/QtStringPropertyManager \
+    $$PWD/QtTimeEditFactory \
+    $$PWD/QtTimePropertyManager \
+    $$PWD/QtTreePropertyBrowser \
+    $$PWD/QtVariantEditorFactory \
+    $$PWD/QtVariantProperty \
+    $$PWD/QtVariantPropertyManager
