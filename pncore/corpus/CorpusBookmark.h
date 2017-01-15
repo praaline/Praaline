@@ -41,9 +41,10 @@ public:
     QString ID() const;
     void setID(const QString &ID) { Q_UNUSED(ID) }
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Bookmark; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Bookmark; }
+    bool save() override { return false; }
 
-    QString corpusID() const { return m_corpusID; }
+    // Inherits: QString corpusID() const; from CorpusObject
     QString communicationID() const { return m_communicationID; }
     QString annotationID() const { return m_annotationID; }
     RealTime time() const { return m_time; }
@@ -53,15 +54,12 @@ public:
     void set(const QString &corpusID = QString(), const QString &communicationID = QString(),
              const QString &annotationID = QString(), const RealTime &time = RealTime(-1, 0),
              const QString &name = QString(), const QString &notes = QString());
+    // Inherits: void setCorpusID(const QString &corpusID); from Corpus Object
     void setCommunicationID(const QString &communicationID);
     void setAnnotationID(const QString &annotationID);
     void setTime(const RealTime &time);
     void setName(const QString &name);
     void setNotes(const QString &notes);
-
-signals:
-
-public slots:
 
 private:
     QString m_communicationID;
@@ -69,6 +67,8 @@ private:
     RealTime m_time;
     QString m_name;
     QString m_notes;
+
+    Q_DISABLE_COPY(CorpusBookmark)
 };
 
 } // namespace Core

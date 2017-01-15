@@ -3,7 +3,6 @@
 #include "pncore/corpus/CorpusRecording.h"
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/corpus/CorpusSpeaker.h"
-#include "pncore/serialisers/CorpusDefinition.h"
 using namespace Praaline::Core;
 
 #include "CorpusObserver.h"

@@ -14,7 +14,6 @@ class CorpusSpeaker;
 class CorpusObject;
 }
 }
-#include "pncore/serialisers/CorpusDefinition.h"
 
 #include "QtilitiesCore/QtilitiesCore"
 #include "QtilitiesCoreGui/QtilitiesCoreGui"
@@ -79,9 +78,6 @@ public:
     void setCommunicationsGrouping(QStringList groupAttributeIDs);
     void setSpeakersGrouping(QStringList groupAttributeIDs);
 
-    Praaline::Core::CorpusDefinition &definition() { return m_definition; }
-    void setDefinition(const Praaline::Core::CorpusDefinition &definition) { m_definition = definition; }
-
 signals:
 
 private slots:
@@ -98,8 +94,6 @@ private:
 
     QStringList m_groupAttributeIDsCommunication;
     QStringList m_groupAttributeIDsSpeaker;
-
-    Praaline::Core::CorpusDefinition m_definition;
 
     void clear();
     void buildTree();

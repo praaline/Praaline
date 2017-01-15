@@ -62,17 +62,18 @@ public:
     virtual QString corpusID() const { return m_corpusID; }
     virtual void setCorpusID(const QString &corpusID);
 
-    // Subclasses (different types of corpus objects) should override this
-    virtual CorpusObject::Type type() const { return CorpusObject::Type_Undefined; }
-
-    virtual QString basePath() const { return QString(); }
-    virtual QString baseMediaPath() const { return QString(); }
+    // Subclasses (different types of corpus objects) must override this
+    virtual CorpusObject::Type type() const = 0;
+    virtual bool save() = 0;
 
     // Get/set properties using QString names
     QVariant property(const QString &name) const;
     bool setProperty(const QString &name, const QVariant &value);
 
     QPointer<CorpusRepository> repository() const { return m_repository; }
+
+signals:
+    void changedID(const QString &oldID, const QString &newID);
 
 protected:
     QString m_ID;
@@ -85,12 +86,9 @@ protected:
     // Monitor dynamic property changes
     bool eventFilter(QObject *obj, QEvent *event);
 
-signals:
-    void changedID(const QString &oldID, const QString &newID);
-
-public slots:
-
-friend class CorpusDatastore;
+private:
+    friend class CorpusDatastore;
+    Q_DISABLE_COPY(CorpusObject)
 };
 
 } // namespace Core

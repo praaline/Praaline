@@ -28,7 +28,7 @@ void SphinxFeatureExtractor::setSampleRate(quint64 samplerate)
     m_sampleRate = samplerate;
 }
 
-bool SphinxFeatureExtractor::batchCreateSphinxMFC(const QString &basePath, QStringList filenamesWave16k)
+bool SphinxFeatureExtractor::batchCreateSphinxMFC(QStringList filenamesWave16k)
 {
     // List WAV files whose features will be extracted in a fileids temporary file
     // Get a temporary file and write out the utterances
@@ -39,7 +39,7 @@ bool SphinxFeatureExtractor::batchCreateSphinxMFC(const QString &basePath, QStri
     QTextStream ctl(&fileCtl);
     ctl.setCodec("ISO 8859-1");
     foreach (QString filename, filenamesWave16k) {
-        if (!QFile::exists(basePath + "/" + filename)) continue;
+        if (!QFile::exists(filename)) continue;
         QString s = QString(filename).replace(".wav", "");
         qDebug() << s;
         ctl << s << "\n";
@@ -56,8 +56,8 @@ bool SphinxFeatureExtractor::batchCreateSphinxMFC(const QString &basePath, QStri
     sphinxFEparams << "-argfile" << m_filenameSphinxFeatParams <<
                       "-samprate" << QString("%1").arg(m_sampleRate) <<
                       "-c" << filenameCtl <<
-                      "-di" << basePath <<
-                      "-do" << basePath <<
+                      // "-di" << basePath <<
+                      // "-do" << basePath <<
                       "-ei" << "wav" <<
                       "-eo" << "mfc" <<
                       "-mswav" << "yes" <<

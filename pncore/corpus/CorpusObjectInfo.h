@@ -40,7 +40,7 @@ public:
     QString lastUpdatedBy() const;
     QDateTime lastUpdatedTimestamp() const;
 
-protected:
+private:
     CorpusObject::Type m_type;
     QString m_ID;
     QString m_parentID;

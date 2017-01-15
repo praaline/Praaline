@@ -2,9 +2,8 @@
 #define SPHINXRECOGNISER_H
 
 #include <QObject>
-#include "pncore/corpus/Corpus.h"
-
-using namespace Praaline::Core;
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/Interval.h"
 
 struct SphinxRecogniserData;
 
@@ -28,10 +27,12 @@ public:
                            const QString &attributenameMLLRMatrix);
 
     // Recipes
-    bool recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID,
-                                 QList<Interval *> &utterances, QList<Interval *> &segmentation);
+    bool recogniseUtterances_MFC(QPointer<Praaline::Core::CorpusCommunication> com, QString recordingID,
+                                 QList<Praaline::Core::Interval *> &utterances,
+                                 QList<Praaline::Core::Interval *> &segmentation);
     bool readRecognitionResults(const QString &fileID, const QString &filenameHypotheses, const QString filenameSegmentation,
-                                QList<Interval *> &utterances, QList<Interval *> &segmentation);
+                                QList<Praaline::Core::Interval *> &utterances,
+                                QList<Praaline::Core::Interval *> &segmentation);
 signals:
 
 public slots:

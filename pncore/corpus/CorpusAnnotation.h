@@ -19,7 +19,6 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QSharedPointer>
 #include "CorpusObject.h"
 
 namespace Praaline {
@@ -42,10 +41,9 @@ public:
     CorpusAnnotation(CorpusAnnotation *other, QObject *parent = 0);
     ~CorpusAnnotation() {}
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Annotation; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Annotation; }
+    bool save() override;
 
-    QString basePath() const;
-    QString baseMediaPath() const;
     QString communicationID() const;
     QPointer<Corpus> corpus() const;
 
@@ -66,16 +64,14 @@ public:
     void addLanguage(const QString &languageID);
     void removeLanguage(const QString &languageID);
 
-signals:
-    
-public slots:
-
-protected:
+private:
     QString m_name;
     QString m_recordingID;
     QString m_filename;
     QString m_format;
     QStringList m_languages;
+
+    Q_DISABLE_COPY(CorpusAnnotation)
 };
 
 } // namespace Core

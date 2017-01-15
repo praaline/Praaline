@@ -11,7 +11,7 @@
 
 namespace Praaline {
 namespace Core {
-class Corpus;
+class CorpusRepository;
 class QueryDefinition;
 class QueryOccurrencePointer;
 class QueryOccurrence;
@@ -24,7 +24,7 @@ class QueryOccurrenceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit QueryOccurrenceTableModel(QPointer<Praaline::Core::Corpus> corpus,
+    explicit QueryOccurrenceTableModel(Praaline::Core::CorpusRepository *repository,
                                        Praaline::Core::QueryDefinition *queryDefinition,
                                        QList<Praaline::Core::QueryOccurrencePointer *> &pointers,
                                        bool multiline = false, QObject *parent = 0);

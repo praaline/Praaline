@@ -9,7 +9,9 @@
 #include <QMutexLocker>
 #include <QFileInfo>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
 
 #include "SphinxConfiguration.h"
 #include "SphinxSegmentation.h"
@@ -150,7 +152,7 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     if ((!d->userAcousticModel.isEmpty()) && (QFile::exists(d->userAcousticModel)))
         pathAcousticModel = d->userAcousticModel;
     if (d->useAcousticModelFromAttribute && (!com->property(d->attributename_acoustic_model).toString().isEmpty())) {
-        QString f = com->basePath() + "/" + com->property(d->attributename_acoustic_model).toString();
+        QString f = rec->basePath() + "/" + com->property(d->attributename_acoustic_model).toString();
         if (QFile::exists(f)) pathAcousticModel = f;
     }
     // Language Model
@@ -158,7 +160,7 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     if ((!d->userLanguageModel.isEmpty()) && (QFile::exists(d->userLanguageModel)))
         filenameLanguageModel = d->userLanguageModel;
     if (d->useLanguageModelFromAttribute && (!com->property(d->attributename_language_model).toString().isEmpty())) {
-        QString f = com->basePath() + "/" + com->property(d->attributename_language_model).toString();
+        QString f = rec->basePath() + "/" + com->property(d->attributename_language_model).toString();
         if (QFile::exists(f)) filenameLanguageModel = f;
     }
     // Pronunciation Dictionary
@@ -170,7 +172,7 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
     if ((!d->userMLLRMatrix.isEmpty()) && (QFile::exists(d->userMLLRMatrix)))
         filenameMLLRMatrix = d->userMLLRMatrix;
     if (d->useMLLRMatrixFromAttribute && (!com->property(d->attributename_mllr_matrix).toString().isEmpty())) {
-        QString f = com->basePath() + "/" + com->property(d->attributename_mllr_matrix).toString();
+        QString f = rec->basePath() + "/" + com->property(d->attributename_mllr_matrix).toString();
         if (QFile::exists(f)) filenameMLLRMatrix = f;
     }
 

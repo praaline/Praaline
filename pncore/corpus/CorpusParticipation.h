@@ -40,11 +40,12 @@ public:
     ~CorpusParticipation() {}
     void copyProperties(CorpusParticipation *other);
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Participation; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Participation; }
+    bool save() override;
 
     // override CorpusObject ID methods
-    QString ID() const;
-    void setID(const QString &ID);
+    QString ID() const override;
+    void setID(const QString &ID) override;
 
     QPointer<Corpus> corpus() const;
 
@@ -61,6 +62,8 @@ private:
     QPointer<CorpusCommunication> m_communication;
     QPointer<CorpusSpeaker> m_speaker;
     QString m_role;
+
+    Q_DISABLE_COPY(CorpusParticipation)
 };
 
 } // namespace Core

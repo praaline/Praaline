@@ -5,7 +5,9 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
@@ -71,13 +73,13 @@ void SphinxAcousticModelTrainer::setSpeakersExcludeFilter(const QStringList &spe
     d->speakersExclude = speakerIDs;
 }
 
-bool SphinxAcousticModelTrainer::createFiles(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > &communications,
-                                             QStringList &outUnknownWordsList, bool splitTrainTest, bool createSoundSegments)
+bool SphinxAcousticModelTrainer::createFiles(
+        QList<QPointer<CorpusCommunication> > &communications,
+        QStringList &outUnknownWordsList, bool splitTrainTest, bool createSoundSegments)
 {
-    if (!corpus) return false;
     // Default path
     if (d->outputPath.isEmpty()) {
-        d->outputPath = corpus->baseMediaPath() + "/adapt";
+        d->outputPath = "./adapt";
     }
     // Create files
     QString filenameBase = d->outputPath + "/etc/";
@@ -121,12 +123,15 @@ bool SphinxAcousticModelTrainer::createFiles(QPointer<Corpus> corpus, QList<QPoi
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
+        if (!com->repository()) continue;
+        if (!com->repository()->annotations()) continue;
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
-                // Process recording-annotation pair
+                // Process recording-annotation pair, only if this annotation corresponds to the recording
+                if ((!annot->recordingID().isEmpty()) && (annot->recordingID() != rec->ID())) continue;
                 QString annotationID = annot->ID();
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
                 foreach (QString speakerID, tiersAll.keys()) {
                     if ((!d->speakersInclude.isEmpty()) && (!d->speakersInclude.contains(speakerID))) continue;
                     if ((!d->speakersExclude.isEmpty()) && (d->speakersExclude.contains(speakerID))) continue;
@@ -189,8 +194,7 @@ bool SphinxAcousticModelTrainer::createFiles(QPointer<Corpus> corpus, QList<QPoi
                         i++; // proceed to next utterance
                     }
                     if (createSoundSegments) {
-                        AudioSegmenter::segment(corpus->baseMediaPath() + "/" + rec->filename(),
-                                                d->outputPath, list_utterances, "utteranceID", 16000);
+                        AudioSegmenter::segment(rec->filePath(), d->outputPath, list_utterances, "utteranceID", 16000);
                     }
                     qDeleteAll(list_utterances);
                 }

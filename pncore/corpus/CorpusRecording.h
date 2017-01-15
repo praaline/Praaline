@@ -18,6 +18,7 @@
 #include "pncore_global.h"
 #include <QObject>
 #include <QString>
+#include <QDir>
 #include <QUrl>
 #include "base/RealTime.h"
 #include "CorpusObject.h"
@@ -49,12 +50,13 @@ public:
     CorpusRecording(CorpusRecording *other, QObject *parent = 0);
     ~CorpusRecording() {}
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Recording; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Recording; }
+    bool save() override;
 
-    QString basePath() const;
-    QString baseMediaPath() const;
     QString communicationID() const;
     QPointer<Corpus> corpus() const;
+
+    QString basePath() const;
     QString filePath() const;
 
     QString name() const { return m_name; }
@@ -96,10 +98,6 @@ public:
     bool isFileAvailable() const;
     QUrl mediaUrl() const;
 
-signals:
-    
-public slots:
-
 private:
     QString m_name;
     QString m_filename;
@@ -112,6 +110,8 @@ private:
     QString m_encoding;
     long long m_fileSize;
     QString m_checksumMD5;
+
+    Q_DISABLE_COPY(CorpusRecording)
 };
 
 } // namespace Core

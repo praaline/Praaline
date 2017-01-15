@@ -14,7 +14,7 @@ public:
     void setFeatureParametersFile(const QString &filename);
     void setSampleRate(quint64 samplerate);
 
-    bool batchCreateSphinxMFC(const QString &basePath, QStringList filenamesWave16k);
+    bool batchCreateSphinxMFC(QStringList filenamesWave16k);
 
 signals:
 

@@ -9,6 +9,8 @@
 #include <QDir>
 #include "CorpusObject.h"
 #include "Corpus.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -73,6 +75,12 @@ void Corpus::clear()
     m_communications.clear();
     qDeleteAll(m_speakers);
     m_speakers.clear();
+}
+
+bool Corpus::save() {
+    if (!m_repository) return false;
+    if (!m_repository->metadata()) return false;
+    return m_repository->metadata()->saveCorpus(this);
 }
 
 // ==============================================================================================================================

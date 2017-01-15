@@ -41,17 +41,16 @@ public:
     CorpusCommunication(CorpusCommunication *other, QObject *parent = 0);
     ~CorpusCommunication();
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Communication; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Communication; }
+    bool save() override;
 
     QPointer<Corpus> corpus() const;
-    QString basePath() const;
-    QString baseMediaPath() const;
 
     // Basic data
     QString name() const { return m_name; }
     void setName(const QString &name);
 
-    void setCorpusID(const QString &corpusID);
+    void setCorpusID(const QString &corpusID) override;
 
     // RECORDINGS
     QPointer<CorpusRecording> recording(const QString &recordingID) const;
@@ -86,16 +85,16 @@ signals:
     void corpusAnnotationAdded(QPointer<Praaline::Core::CorpusAnnotation> annotation);
     void corpusAnnotationDeleted(QString communicationID, QString annotationID);
 
-public slots:
-
 private slots:
     void recordingChangedID(const QString &oldID, const QString &newID);
     void annotationChangedID(const QString &oldID, const QString &newID);
     
-protected:
+private:
     QString m_name;
     QMap<QString, QPointer<CorpusRecording> > m_recordings;
     QMap<QString, QPointer<CorpusAnnotation> > m_annotations;
+
+    Q_DISABLE_COPY(CorpusCommunication)
 };
 
 } // namespace Core

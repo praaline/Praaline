@@ -29,7 +29,7 @@ public:
     void setSpeakersIncludeFilter(const QStringList &speakerIDs);
     void setSpeakersExcludeFilter(const QStringList &speakerIDs);
 
-    bool createFiles(QPointer<Praaline::Core::Corpus> corpus, QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
+    bool createFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
                      QStringList &outUnknownWordsList, bool splitTrainTest = false, bool createSoundSegments = false);
 
 signals:

@@ -6,6 +6,7 @@
 #include <QList>
 
 #include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "AnnotationTierModel.h"

@@ -6,6 +6,8 @@
 #include "CorpusRecording.h"
 #include "CorpusAnnotation.h"
 #include "CorpusCommunication.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -40,24 +42,6 @@ CorpusCommunication::~CorpusCommunication()
 QPointer<Corpus> CorpusCommunication::corpus() const
 {
     return qobject_cast<Corpus *>(this->parent());
-}
-
-QString CorpusCommunication::basePath() const
-{
-    Corpus *myCorpus = qobject_cast<Corpus *>(this->parent());
-    if (myCorpus)
-        return myCorpus->basePath();
-    else
-        return QString();
-}
-
-QString CorpusCommunication::baseMediaPath() const
-{
-    Corpus *myCorpus = qobject_cast<Corpus *>(this->parent());
-    if (myCorpus)
-        return myCorpus->baseMediaPath();
-    else
-        return QString();
 }
 
 void CorpusCommunication::setName(const QString &name)
@@ -244,6 +228,12 @@ void CorpusCommunication::annotationChangedID(const QString &oldID, const QStrin
     if (!annotation) return;
     m_annotations.remove(oldID);
     m_annotations.insert(newID, annotation);
+}
+
+bool CorpusCommunication::save() {
+    if (!m_repository) return false;
+    if (!m_repository->metadata()) return false;
+    return m_repository->metadata()->saveCommunications(QList<QPointer<CorpusCommunication> >() << this);
 }
 
 } // namespace Core

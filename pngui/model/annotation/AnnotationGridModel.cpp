@@ -5,7 +5,10 @@
 #include <QPointer>
 #include <QTextStream>
 
-#include <pncore/annotation/AnnotationTierGroup.h>
+#include "pncore/annotation/AnnotationTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/PointTier.h"
 using namespace Praaline::Core;
 
 #include "AnnotationGridPointModel.h"

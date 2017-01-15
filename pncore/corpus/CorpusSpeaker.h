@@ -35,22 +35,18 @@ public:
     CorpusSpeaker(const QString &ID, QObject *parent = 0);
     CorpusSpeaker(CorpusSpeaker *other, QObject *parent = 0);
 
-    CorpusObject::Type type() const { return CorpusObject::Type_Speaker; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Speaker; }
+    bool save() override;
 
     QPointer<Corpus> corpus() const;
-    QString basePath() const;
-    QString baseMediaPath() const;
 
     QString name() const { return m_name; }
     void setName(const QString &name);
 
-signals:
-    
-public slots:
-
 private:
     QString m_name;
     
+    Q_DISABLE_COPY(CorpusSpeaker)
 };
 
 } // namespace Core

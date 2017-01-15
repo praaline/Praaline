@@ -15,6 +15,8 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
 struct CorpusItemPreviewData {
@@ -194,8 +196,8 @@ void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
     d->annotationsComboBox->insertItems(0, names);
     // Populate combo box with annotation levels (only if necessary, i.e. if corpus changed)
     QPointer<Corpus> corpus = com->corpus();
-    if (corpus && corpus->annotationStructure()) {
-        QStringList levelIDs = corpus->annotationStructure()->levelIDs();
+    if (corpus && corpus->repository() && corpus->repository()->annotationStructure()) {
+        QStringList levelIDs = corpus->repository()->annotationStructure()->levelIDs();
         if (d->levelIDs != levelIDs) {
             d->annotationLevelsComboBox->clear();
             d->annotationLevelsComboBox->insertItems(0, levelIDs);

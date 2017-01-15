@@ -5,8 +5,10 @@
 #include <QStandardItemModel>
 #include "MiniTranscriptionWidget.h"
 
-#include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 struct MiniTranscriptionWidgetData {
@@ -67,10 +69,10 @@ void MiniTranscriptionWidget::rebind(QPointer<Praaline::Core::CorpusAnnotation> 
     d->transcriptionView->clear();
     d->lines.clear();
     if (!annot) return;
-    QPointer<Corpus> corpus = annot->corpus();
-    if (!corpus) return;
+    if (!annot->repository()) return;
+    if (!annot->repository()->annotations()) return;
     if (!levelID.isEmpty()) d->transcriptionLevelID = levelID;
-    foreach (Interval *intv, corpus->datastoreAnnotations()->getIntervals(
+    foreach (Interval *intv, annot->repository()->annotations()->getIntervals(
                  AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID))) {
         QStringList fields;
         fields << QString::fromStdString(intv->tMin().toText())

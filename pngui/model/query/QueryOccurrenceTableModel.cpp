@@ -4,15 +4,16 @@
 
 #include "pncore/query/QueryDefinition.h"
 #include "pncore/query/QueryOccurrence.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "QueryOccurrenceTableModel.h"
 
 struct QueryOccurrenceTableModelData {
-    QueryOccurrenceTableModelData() : corpus(0), multiLine(false) {}
+    QueryOccurrenceTableModelData() : repository(0), multiLine(false) {}
 
-    QPointer<Corpus> corpus;
+    QPointer<CorpusRepository> repository;
     QueryDefinition *queryDefinition;
     QList<QueryOccurrencePointer *> pointers;
     mutable QHash<int, QueryOccurrence *> occurrences;
@@ -21,12 +22,12 @@ struct QueryOccurrenceTableModelData {
     bool multiLine;
 };
 
-QueryOccurrenceTableModel::QueryOccurrenceTableModel(QPointer<Corpus> corpus, QueryDefinition *queryDefinition,
+QueryOccurrenceTableModel::QueryOccurrenceTableModel(CorpusRepository *repository, QueryDefinition *queryDefinition,
                                                      QList<QueryOccurrencePointer *> &pointers,
                                                      bool multiline, QObject *parent) :
     QAbstractTableModel(parent), d(new QueryOccurrenceTableModelData)
 {
-    d->corpus = corpus;
+    d->repository = repository;
     d->queryDefinition = queryDefinition;
     d->pointers = pointers;
     d->occurrences = QHash<int, QueryOccurrence *>();
@@ -160,7 +161,7 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
     QueryOccurrence *occurrence = d->occurrences.value(indexOccurrence, 0);
     if (!occurrence) {
         // lazy loading
-        occurrence = d->corpus->datastoreAnnotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
+        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
         d->occurrences.insert(indexOccurrence, occurrence);
         // qDebug() << "loaded " << indexOccurrence;
     }
@@ -278,7 +279,7 @@ bool QueryOccurrenceTableModel::setData(const QModelIndex &index, const QVariant
     QueryOccurrence *occurrence = d->occurrences.value(indexOccurrence, 0);
     if (!occurrence) {
         // lazy loading
-        occurrence = d->corpus->datastoreAnnotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
+        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
         d->occurrences.insert(indexOccurrence, occurrence);
         qDebug() << "loaded " << indexOccurrence;
     }

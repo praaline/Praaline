@@ -6,6 +6,8 @@
 #include "Corpus.h"
 #include "CorpusAnnotation.h"
 #include "CorpusCommunication.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -36,20 +38,6 @@ CorpusAnnotation::CorpusAnnotation(CorpusAnnotation *other, QObject *parent) :
     m_format = other->m_format;
     m_languages = other->m_languages;
     copyPropertiesFrom(other);
-}
-
-QString CorpusAnnotation::basePath() const
-{
-    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
-    if (com) return com->basePath();
-    return QString();
-}
-
-QString CorpusAnnotation::baseMediaPath() const
-{
-    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
-    if (com) return com->baseMediaPath();
-    return QString();
 }
 
 QPointer<Corpus> CorpusAnnotation::corpus() const
@@ -125,6 +113,12 @@ void CorpusAnnotation::removeLanguage(const QString &languageID)
         m_languages.removeOne(languageID);
         m_isDirty = true;
     }
+}
+
+bool CorpusAnnotation::save() {
+    if (!m_repository) return false;
+    if (!m_repository->metadata()) return false;
+    return m_repository->metadata()->saveAnnotations(QList<QPointer<CorpusAnnotation> >() << this);
 }
 
 } // namespace Core

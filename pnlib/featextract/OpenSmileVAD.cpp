@@ -72,7 +72,7 @@ IntervalTier *OpenSmileVAD::splitToUtterances(QPointer<CorpusRecording> rec,
                                               QString textSilent, QString textVoice)
 {
     if (!rec) return 0;
-    QString filenameWave = rec->baseMediaPath() + "/" + QString(rec->filename()).replace(".wav", ".16k.wav");
+    QString filenameWave = QString(rec->filePath()).replace(".wav", ".16k.wav");
     QList<QPair<double, double> > VADActivations;
     bool result = runVAD(filenameWave, VADActivations);
     if (!result) return 0;

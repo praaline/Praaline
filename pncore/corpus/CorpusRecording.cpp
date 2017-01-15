@@ -6,6 +6,9 @@
 #include "CorpusObject.h"
 #include "CorpusRecording.h"
 #include "CorpusCommunication.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/FileDatastore.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -42,16 +45,11 @@ CorpusRecording::CorpusRecording(CorpusRecording *other, QObject *parent) :
 
 QString CorpusRecording::basePath() const
 {
-    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
-    if (com) return com->basePath();
-    return QString();
-}
-
-QString CorpusRecording::baseMediaPath() const
-{
-    CorpusCommunication *com = qobject_cast<CorpusCommunication *>(this->parent());
-    if (com) return com->baseMediaPath();
-    return QString();
+    QString path;
+    if (m_repository && m_repository->files())
+        path = m_repository->files()->basePath();
+    if (path.endsWith("/")) path.chop(1);
+    return path;
 }
 
 QString CorpusRecording::communicationID() const
@@ -70,7 +68,7 @@ QPointer<Corpus> CorpusRecording::corpus() const
 
 QString CorpusRecording::filePath() const
 {
-    return QFileInfo(baseMediaPath() + "/" + filename()).path();
+    return QFileInfo(basePath() + "/" + filename()).path();
 }
 
 bool CorpusRecording::isFileAvailable() const
@@ -78,7 +76,7 @@ bool CorpusRecording::isFileAvailable() const
     if (filename().startsWith("http:") || filename().startsWith("https:"))
         return false;
     // else
-    return QFile::exists(baseMediaPath() + "/" + filename());
+    return QFile::exists(basePath() + "/" + filename());
 }
 
 QUrl CorpusRecording::mediaUrl() const
@@ -86,7 +84,7 @@ QUrl CorpusRecording::mediaUrl() const
     if (filename().startsWith("http:") || filename().startsWith("https:"))
         return QUrl(filename());
     // else
-    return QUrl::fromLocalFile(baseMediaPath() + "/" + filename());
+    return QUrl::fromLocalFile(basePath() + "/" + filename());
 }
 
 void CorpusRecording::setName(const QString &name)
@@ -183,6 +181,12 @@ void CorpusRecording::setChecksumMD5(const QString &checksumMD5)
         m_checksumMD5 = checksumMD5;
         m_isDirty = true;
     }
+}
+
+bool CorpusRecording::save() {
+    if (!m_repository) return false;
+    if (!m_repository->metadata()) return false;
+    return m_repository->metadata()->saveRecordings(QList<QPointer<CorpusRecording> >() << this);
 }
 
 } // namespace Core

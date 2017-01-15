@@ -45,7 +45,8 @@ public:
     // ----------------------------------------------------------------------------------------------------------------
     // Corpus
     // ----------------------------------------------------------------------------------------------------------------
-    CorpusObject::Type type() const { return CorpusObject::Type_Corpus; }
+    CorpusObject::Type type() const override { return CorpusObject::Type_Corpus; }
+    bool save() override;
 
     QString name() const { return m_name; }
     void setName(const QString &name);
@@ -54,8 +55,8 @@ public:
     void setDescription(const QString &description);
 
     // Override corpusID = ID
-    QString corpusID() const { return m_ID; }
-    void setCorpusID(const QString &corpusID);
+    QString corpusID() const override { return m_ID; }
+    void setCorpusID(const QString &corpusID) override;
 
     void clear();
 
@@ -122,9 +123,11 @@ signals:
     void corpusSpeakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
     void corpusSpeakerDeleted(QString ID);
 
-public slots:
+private slots:
+    void communicationChangedID(const QString &oldID, const QString &newID);
+    void speakerChangedID(const QString &oldID, const QString &newID);
 
-protected:
+private:
     QString m_name;
     QString m_description;
     QMap<QString, QPointer<CorpusCommunication> > m_communications;
@@ -132,12 +135,7 @@ protected:
     QMultiMap<QString, QPointer<CorpusParticipation> > m_participationsByCommunication;
     QMultiMap<QString, QPointer<CorpusParticipation> > m_participationsBySpeaker;
 
-private slots:
-    void communicationChangedID(const QString &oldID, const QString &newID);
-    void speakerChangedID(const QString &oldID, const QString &newID);
-
-private:
-
+    Q_DISABLE_COPY(Corpus)
 };
 
 } // namespace Core

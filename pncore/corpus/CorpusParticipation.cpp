@@ -1,5 +1,7 @@
 #include "Corpus.h"
 #include "CorpusParticipation.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -73,6 +75,12 @@ void CorpusParticipation::setRole(const QString &role)
         m_role = role;
         m_isDirty = true;
     }
+}
+
+bool CorpusParticipation::save() {
+    if (!m_repository) return false;
+    if (!m_repository->metadata()) return false;
+    return m_repository->metadata()->saveParticipations(QList<QPointer<CorpusParticipation> >() << this);
 }
 
 } // namespace Core

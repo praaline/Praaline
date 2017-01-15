@@ -3,8 +3,9 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 
@@ -32,10 +33,9 @@ HTKAcousticModelTrainer::~HTKAcousticModelTrainer()
     delete d;
 }
 
-bool HTKAcousticModelTrainer::createMLF(const QString &filename, Corpus *trainingCorpus,
-                                        QList<QPointer<CorpusCommunication> > trainingCommunications,
-                                        const QString &levelSegment, const QString &levelToken, const QString &levelPhone,
-                                        const QString &attributePhonetisation)
+bool HTKAcousticModelTrainer::createMLF(
+        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &levelSegment, const QString &levelToken, const QString &levelPhone, const QString &attributePhonetisation)
 {
     // Create master label file
     QFile fileMLF(filename);
@@ -48,10 +48,12 @@ bool HTKAcousticModelTrainer::createMLF(const QString &filename, Corpus *trainin
     foreach (QPointer<CorpusCommunication> com, trainingCommunications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
+        if (!com->repository()) continue;
+        if (!com->repository()->annotations()) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = trainingCorpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
@@ -138,17 +140,17 @@ bool HTKAcousticModelTrainer::createMLF(const QString &filename, Corpus *trainin
     return true;
 }
 
-bool HTKAcousticModelTrainer::createMasterLabelFileFromTokens(const QString &filename, Corpus *trainingCorpus,
-                                                           QList<QPointer<CorpusCommunication> > trainingCommunications,
-                                                           const QString &levelSegment, const QString &levelToken, const QString &attributePhonetisation)
+bool HTKAcousticModelTrainer::createMasterLabelFileFromTokens(
+        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &levelSegment, const QString &levelToken, const QString &attributePhonetisation)
 {
-    return createMLF(filename, trainingCorpus, trainingCommunications, levelSegment, levelToken, "", attributePhonetisation);
+    return createMLF(filename, trainingCommunications, levelSegment, levelToken, "", attributePhonetisation);
 }
 
-bool HTKAcousticModelTrainer::createMasterLabelFileFromTokensAndPhones(const QString &filename, Corpus *trainingCorpus,
-                                                                    QList<QPointer<CorpusCommunication> > trainingCommunications,
-                                                                    const QString &levelSegment, const QString &levelToken, const QString &levelPhone)
+bool HTKAcousticModelTrainer::createMasterLabelFileFromTokensAndPhones(
+        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &levelSegment, const QString &levelToken, const QString &levelPhone)
 {
-    return createMLF(filename, trainingCorpus, trainingCommunications, levelSegment, levelToken, levelPhone, "");
+    return createMLF(filename, trainingCommunications, levelSegment, levelToken, levelPhone, "");
 }
 
