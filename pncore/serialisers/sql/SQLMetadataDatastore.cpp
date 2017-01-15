@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QSqlDatabase>
 #include <QSqlError>
 #include "corpus/CorpusObject.h"
 #include "corpus/CorpusObjectInfo.h"
@@ -6,7 +7,7 @@
 #include "structure/MetadataStructureAttribute.h"
 #include "datastore/DatastoreInfo.h"
 #include "datastore/CorpusRepository.h"
-#include "SQLSerialiserCorpus.h"
+#include "SQLSerialiserMetadata.h"
 #include "SQLSerialiserMetadataStructure.h"
 #include "SQLSerialiserNameValueList.h"
 #include "SQLMetadataDatastore.h"
@@ -45,8 +46,8 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
     d->database.setUserName(info.username);
     d->database.setPassword(info.password);
     if (!d->database.open()) {
-        d->lastError = d->database.lastError().text();
-        qDebug() << d->lastError;
+        d->repository->setLastError(d->database.lastError().text());
+        qDebug() << d->database.lastError().text();
         return false;
     }
     // Initialise database
@@ -65,8 +66,8 @@ bool SQLMetadataDatastore::openDatastore(const DatastoreInfo &info)
     d->database.setUserName(info.username);
     d->database.setPassword(info.password);
     if (!d->database.open()) {
-        d->lastError = d->database.lastError().text();
-        qDebug() << d->lastError;
+        d->repository->setLastError(d->database.lastError().text());
+        qDebug() << d->database.lastError().text();
         return false;
     }
     // Upgrade database if needed
@@ -155,8 +156,7 @@ bool SQLMetadataDatastore::deleteNameValueList(const QString &listID)
 // ==========================================================================================================================
 QList<CorpusObjectInfo> SQLMetadataDatastore::getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID)
 {
-    QList<CorpusObjectInfo> ret;
-    return ret;
+    return SQLSerialiserMetadata::getCorpusObjectInfoList(type, parentID, d->database, d->repository);
 }
 
 // ==========================================================================================================================
@@ -165,89 +165,89 @@ QList<CorpusObjectInfo> SQLMetadataDatastore::getCorpusObjectInfoList(CorpusObje
 // Load metadata information in already created corpus objects
 bool SQLMetadataDatastore::loadCorpus(Corpus *corpus)
 {
-    return SQLSerialiserCorpus::loadCorpus(corpus, d->database);
+    return SQLSerialiserMetadata::loadCorpus(corpus, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::loadCommunications(QList<QPointer<CorpusCommunication> > &communications)
 {
-    return false;
+    return SQLSerialiserMetadata::loadCommunications(communications, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers)
 {
-    return false;
+    return SQLSerialiserMetadata::loadSpeakers(speakers, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::loadRecordings(QList<QPointer<CorpusRecording> > &recordings)
 {
-    return false;
+    return SQLSerialiserMetadata::loadRecordings(recordings, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations)
 {
-    return false;
+    return SQLSerialiserMetadata::loadAnnotations(annotations, d->database, d->structure, d->repository);
 }
 
 // Save (insert or update) corpus objects
 bool SQLMetadataDatastore::saveCorpus(Corpus *corpus)
 {
-    return SQLSerialiserCorpus::saveCorpus(corpus, d->database);
+    return SQLSerialiserMetadata::saveCorpus(corpus, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::saveCommunications(QList<QPointer<CorpusCommunication> > &communications)
 {
-    return false;
+    return SQLSerialiserMetadata::saveCommunications(communications, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers)
 {
-    return false;
+    return SQLSerialiserMetadata::saveSpeakers(speakers, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::saveRecordings(QList<QPointer<CorpusRecording> > &recordings)
 {
-    return false;
+    return SQLSerialiserMetadata::saveRecordings(recordings, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations)
 {
-    return false;
+    return SQLSerialiserMetadata::saveAnnotations(annotations, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::saveParticipations(QList<QPointer<CorpusParticipation> >  &participations)
 {
-    return false;
+    return SQLSerialiserMetadata::saveParticipations(participations, d->database, d->structure, d->repository);
 }
 
 // Delete corpus objects
 bool SQLMetadataDatastore::deleteCorpus(const QString &corpusID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteCorpus(corpusID, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::deleteCommunication(const QString &communicationID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteCommunication(communicationID, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::deleteSpeaker(const QString &speakerID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteSpeaker(speakerID, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::deleteRecording(const QString &recordingID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteRecording(recordingID, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::deleteAnnotation(const QString &annotationID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteAnnotation(annotationID, d->database, d->structure, d->repository);
 }
 
 bool SQLMetadataDatastore::deleteParticipation(const QString &communicationID, const QString &speakerID)
 {
-    return false;
+    return SQLSerialiserMetadata::deleteParticipation(communicationID, speakerID, d->database, d->structure, d->repository);
 }
 
 } // namespace Core

@@ -29,7 +29,8 @@ class AnnotationDatastore;
 class FileDatastore;
 class MetadataStructure;
 class AnnotationStructure;
-class NameValueList;
+
+struct CorpusRepositoryData;
 
 class PRAALINE_CORE_SHARED_EXPORT CorpusRepository : public QObject
 {
@@ -50,25 +51,28 @@ public:
 
     // Metadata and Annotation structures
     // ==========================================================================================================================
-    QPointer<MetadataStructure> metadataStructure() const { return m_metadataStructure; }
-    QPointer<AnnotationStructure> annotationStructure() const { return m_annotationStructure; }   
+    QPointer<MetadataStructure> metadataStructure() const;
+    QPointer<AnnotationStructure> annotationStructure() const;
     void importMetadataStructure(MetadataStructure *otherStructure);
     void importAnnotationStructure(AnnotationStructure *otherStructure);
 
+    // Error handling and logging
+    // ==========================================================================================================================
+    QString lastError() const;
+    void setLastError(const QString &errorMessage);
+    void clearLastError();
+    void sendLogMessage(const QString &category, const QString &message);
+
 signals:
+    void logMessage(const QString &category, const QString &message);
 
 public slots:
-
-protected:
-    QPointer<MetadataStructure> m_metadataStructure;
-    QPointer<AnnotationStructure> m_annotationStructure;
-    QPointer<MetadataDatastore> m_datastoreMetadata;
-    QPointer<AnnotationDatastore> m_datastoreAnnotations;
-    QPointer<FileDatastore> m_datastoreFiles;
 
 private:
     CorpusRepository(const CorpusRepositoryDefinition &definition, QObject *parent = 0);
     ~CorpusRepository();
+
+    CorpusRepositoryData *d;
 };
 
 } // namespace Core

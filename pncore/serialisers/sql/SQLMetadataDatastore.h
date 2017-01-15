@@ -2,7 +2,6 @@
 #define SQLMETADATADATASTORE_H
 
 #include <QObject>
-#include <QSqlDatabase>
 #include "datastore/MetadataDatastore.h"
 
 namespace Praaline {

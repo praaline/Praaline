@@ -7,7 +7,6 @@
 
 #include "structure/MetadataStructure.h"
 #include "structure/AnnotationStructure.h"
-#include "structure/NameValueList.h"
 #include "CorpusRepositoryDefinition.h"
 #include "DatastoreFactory.h"
 #include "MetadataDatastore.h"
@@ -18,23 +17,33 @@
 namespace Praaline {
 namespace Core {
 
+struct CorpusRepositoryData {
+    QString lastError;
+    QPointer<MetadataStructure> metadataStructure;
+    QPointer<AnnotationStructure> annotationStructure;
+    QPointer<MetadataDatastore> datastoreMetadata;
+    QPointer<AnnotationDatastore> datastoreAnnotations;
+    QPointer<FileDatastore> datastoreFiles;
+};
+
 CorpusRepository::CorpusRepository(const CorpusRepositoryDefinition &definition, QObject *parent) :
-    QObject(parent)
+    QObject(parent), d(new CorpusRepositoryData)
 {
-    m_annotationStructure = new AnnotationStructure(this);
-    m_metadataStructure = new MetadataStructure(this);
-    m_datastoreAnnotations = DatastoreFactory::getAnnotationDatastore(definition.infoDatastoreAnnotations, m_annotationStructure, this);
-    m_datastoreMetadata = DatastoreFactory::getMetadataDatastore(definition.infoDatastoreMetadata, m_metadataStructure, this);
-    m_datastoreFiles = new FileDatastore(this);
+    d->annotationStructure = new AnnotationStructure(this);
+    d->metadataStructure = new MetadataStructure(this);
+    d->datastoreAnnotations = DatastoreFactory::getAnnotationDatastore(definition.infoDatastoreAnnotations, d->annotationStructure, this);
+    d->datastoreMetadata = DatastoreFactory::getMetadataDatastore(definition.infoDatastoreMetadata, d->metadataStructure, this);
+    d->datastoreFiles = new FileDatastore(this);
 }
 
 CorpusRepository::~CorpusRepository()
 {
-    if (m_datastoreMetadata)    delete m_datastoreMetadata;
-    if (m_datastoreAnnotations) delete m_datastoreAnnotations;
-    if (m_datastoreFiles)       delete m_datastoreFiles;
-    if (m_metadataStructure)    delete m_metadataStructure;
-    if (m_annotationStructure)  delete m_annotationStructure;
+    if (d->datastoreMetadata)    delete d->datastoreMetadata;
+    if (d->datastoreAnnotations) delete d->datastoreAnnotations;
+    if (d->datastoreFiles)       delete d->datastoreFiles;
+    if (d->metadataStructure)    delete d->metadataStructure;
+    if (d->annotationStructure)  delete d->annotationStructure;
+    delete d;
 }
 
 // static
@@ -50,14 +59,14 @@ CorpusRepository *CorpusRepository::create(const CorpusRepositoryDefinition &def
     repository->metadataStructure()->addSection(CorpusObject::Type_Participation, new MetadataStructureSection("participation", "Participation", "(Default section)"));
     if (repository->annotations()) {
         if (!repository->annotations()->createDatastore(definition.infoDatastoreAnnotations)) {
-            errorMessages.append("Error creating annotation datastore: ").append(repository->annotations()->lastError()).append("\n");
-            repository->annotations()->clearError();
+            errorMessages.append("Error creating annotation datastore: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
         }
     }
     if (repository->metadata()) {
         if (!repository->metadata()->createDatastore(definition.infoDatastoreMetadata)) {
-            errorMessages.append("Error creating metadata datastore: ").append(repository->metadata()->lastError()).append("\n");
-            repository->metadata()->clearError();
+            errorMessages.append("Error creating metadata datastore: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
         }
     }
     if (repository->files()) {
@@ -73,25 +82,25 @@ CorpusRepository *CorpusRepository::open(const CorpusRepositoryDefinition &defin
     QPointer<CorpusRepository> repository = new CorpusRepository(definition, parent);
     if (repository->annotations()) {
         if (!repository->annotations()->openDatastore(definition.infoDatastoreAnnotations)) {
-            errorMessages.append("Error opening annotation datastore: ").append(repository->annotations()->lastError()).append("\n");
-            repository->annotations()->clearError();
+            errorMessages.append("Error opening annotation datastore: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
             return Q_NULLPTR;
         }
         if (!repository->annotations()->loadAnnotationStructure()) {
-            errorMessages.append("Error reading annotation structure: ").append(repository->annotations()->lastError()).append("\n");
-            repository->annotations()->clearError();
+            errorMessages.append("Error reading annotation structure: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
             return Q_NULLPTR;
         }
     }
     if (repository->metadata()) {
         if (!repository->metadata()->openDatastore(definition.infoDatastoreMetadata)) {
-            errorMessages.append("Error opening metadata datastore: ").append(repository->metadata()->lastError()).append("\n");
-            repository->metadata()->clearError();
+            errorMessages.append("Error opening metadata datastore: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
             return Q_NULLPTR;
         }
         if (!repository->metadata()->loadMetadataStructure()) {
-            errorMessages.append("Error reading metadata structure: ").append(repository->metadata()->lastError()).append("\n");
-            repository->metadata()->clearError();
+            errorMessages.append("Error reading metadata structure: ").append(repository->lastError()).append("\n");
+            repository->clearLastError();
             return Q_NULLPTR;
         }
     }
@@ -103,14 +112,14 @@ CorpusRepository *CorpusRepository::open(const CorpusRepositoryDefinition &defin
 
 void CorpusRepository::save()
 {
-    m_datastoreMetadata->saveMetadataStructure();
-    m_datastoreAnnotations->saveAnnotationStructure();
+    d->datastoreMetadata->saveMetadataStructure();
+    d->datastoreAnnotations->saveAnnotationStructure();
 }
 
 void CorpusRepository::close()
 {
-    m_datastoreMetadata->closeDatastore();
-    m_datastoreAnnotations->closeDatastore();
+    d->datastoreMetadata->closeDatastore();
+    d->datastoreAnnotations->closeDatastore();
 }
 
 // ==============================================================================================================================
@@ -119,27 +128,37 @@ void CorpusRepository::close()
 
 QPointer<AnnotationDatastore> CorpusRepository::annotations() const
 {
-    return m_datastoreAnnotations;
+    return d->datastoreAnnotations;
 }
 
 QPointer<MetadataDatastore> CorpusRepository::metadata() const
 {
-    return m_datastoreMetadata;
+    return d->datastoreMetadata;
 }
 
 QPointer<FileDatastore> CorpusRepository::files() const
 {
-    return m_datastoreFiles;
+    return d->datastoreFiles;
 }
 
 // ==============================================================================================================================
-// Importing metadata and annotation structure from other sources
+// Metadata and annotation structures
 // ==============================================================================================================================
+
+QPointer<MetadataStructure> CorpusRepository::metadataStructure() const
+{
+    return d->metadataStructure;
+}
+
+QPointer<AnnotationStructure> CorpusRepository::annotationStructure() const
+{
+    return d->annotationStructure;
+}
 
 void CorpusRepository::importMetadataStructure(MetadataStructure *otherStructure)
 {
-    if (!m_datastoreMetadata) return;
-    if (!m_metadataStructure) return;
+    if (!d->datastoreMetadata) return;
+    if (!d->metadataStructure) return;
 
     const QMetaObject &mo = CorpusObject::staticMetaObject;
     int index = mo.indexOfEnumerator("Type");
@@ -148,7 +167,7 @@ void CorpusRepository::importMetadataStructure(MetadataStructure *otherStructure
         CorpusObject::Type type = static_cast<CorpusObject::Type>(metaEnum.value(i));
         MetadataStructureSection *mySection;
         foreach (MetadataStructureSection *otherSection, otherStructure->sections(type)) {
-            mySection = m_metadataStructure->section(type, otherSection->ID());
+            mySection = d->metadataStructure->section(type, otherSection->ID());
             if (mySection) {
                 // Copy over name and description, only if this structure does not already define them
                 if (mySection->name().isEmpty())
@@ -160,7 +179,7 @@ void CorpusRepository::importMetadataStructure(MetadataStructure *otherStructure
                     MetadataStructureAttribute *myAttribute = mySection->attribute(otherAttribute->ID());
                     if (!myAttribute) {
                         myAttribute = new MetadataStructureAttribute(otherAttribute);
-                        if (m_datastoreMetadata->createMetadataAttribute(type, myAttribute))
+                        if (d->datastoreMetadata->createMetadataAttribute(type, myAttribute))
                             mySection->addAttribute(myAttribute);
                         else delete myAttribute;
                     }
@@ -169,26 +188,26 @@ void CorpusRepository::importMetadataStructure(MetadataStructure *otherStructure
             else {
                 // Copy Section from other
                 mySection = new MetadataStructureSection(otherSection->ID(), otherSection->name(), otherSection->description());
-                m_metadataStructure->addSection(type, mySection);
+                d->metadataStructure->addSection(type, mySection);
                 foreach (MetadataStructureAttribute *otherAttribute, otherSection->attributes()) {
                     MetadataStructureAttribute *myAttribute = new MetadataStructureAttribute(otherAttribute);
-                    if (m_datastoreMetadata->createMetadataAttribute(type, myAttribute))
+                    if (d->datastoreMetadata->createMetadataAttribute(type, myAttribute))
                         mySection->addAttribute(myAttribute);
                     else delete myAttribute;
                 }
             }
         }
     }
-    m_datastoreMetadata->saveMetadataStructure();
+    d->datastoreMetadata->saveMetadataStructure();
 }
 
 void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStructure)
 {
-    if (!m_datastoreAnnotations) return;
-    if (!m_annotationStructure) return;
+    if (!d->datastoreAnnotations) return;
+    if (!d->annotationStructure) return;
     AnnotationStructureLevel *myLevel;
     foreach (AnnotationStructureLevel *otherLevel, otherStructure->levels()) {
-        myLevel = m_annotationStructure->level(otherLevel->ID());
+        myLevel = d->annotationStructure->level(otherLevel->ID());
         if (myLevel) {
             // Copy over name and description, only if this structure does not already define them
             if (myLevel->name().isEmpty())
@@ -200,7 +219,7 @@ void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStruc
                 AnnotationStructureAttribute *myAttribute = myLevel->attribute(otherAttribute->ID());
                 if (!myAttribute) {
                     myAttribute = new AnnotationStructureAttribute(otherAttribute);
-                    if (m_datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
+                    if (d->datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
                         myLevel->addAttribute(myAttribute);
                     else delete myAttribute;
                 }
@@ -212,11 +231,11 @@ void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStruc
                                                    otherLevel->description(), otherLevel->parentLevelID(),
                                                    otherLevel->datatype(), otherLevel->itemOrder(),
                                                    otherLevel->indexed(), otherLevel->nameValueList());
-            if (m_datastoreAnnotations->createAnnotationLevel(myLevel)) {
-                m_annotationStructure->addLevel(myLevel);
+            if (d->datastoreAnnotations->createAnnotationLevel(myLevel)) {
+                d->annotationStructure->addLevel(myLevel);
                 foreach (AnnotationStructureAttribute *otherAttribute, otherLevel->attributes()) {
                     AnnotationStructureAttribute *myAttribute = new AnnotationStructureAttribute(otherAttribute);
-                    if (m_datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
+                    if (d->datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
                         myLevel->addAttribute(myAttribute);
                     else delete myAttribute;
                 }
@@ -224,7 +243,31 @@ void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStruc
             else delete myLevel;
         }
     }
-    m_datastoreAnnotations->saveAnnotationStructure();
+    d->datastoreAnnotations->saveAnnotationStructure();
+}
+
+// ==============================================================================================================================
+// Error handling and logging
+// ==============================================================================================================================
+QString CorpusRepository::lastError() const
+{
+    return d->lastError;
+}
+
+void CorpusRepository::setLastError(const QString &errorMessage)
+{
+    d->lastError = errorMessage;
+    sendLogMessage("ERROR", errorMessage);
+}
+
+void CorpusRepository::clearLastError()
+{
+    d->lastError.clear();
+}
+
+void CorpusRepository::sendLogMessage(const QString &category, const QString &message)
+{
+    emit logMessage(category, message);
 }
 
 } // namespace Core

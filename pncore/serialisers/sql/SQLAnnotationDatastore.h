@@ -2,14 +2,15 @@
 #define SQLANNOTATIONDATASTORE_H
 
 #include <QObject>
-#include <QSqlDatabase>
-#include "structure/AnnotationStructure.h"
 #include "datastore/AnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
+class AnnotationStructure;
 class CorpusRepository;
+
+struct SQLAnnotationDatastoreData;
 
 class SQLAnnotationDatastore : public AnnotationDatastore
 {
@@ -104,8 +105,7 @@ public:
     QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) override;
 
 private:
-    QSqlDatabase m_database;
-    QPointer<AnnotationStructure> m_structure;
+    SQLAnnotationDatastoreData *d;
 };
 
 } // namespace Core

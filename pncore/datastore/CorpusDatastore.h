@@ -37,13 +37,7 @@ public:
     // ==========================================================================================================================
     void setRepository(CorpusObject *object);
 
-    // Error handling
-    // ==========================================================================================================================
-    virtual QString lastError() const { return m_lastError; }
-    virtual void clearError() { m_lastError.clear(); }
-
 protected:
-    QString m_lastError;
     QPointer<CorpusRepository> m_repository;
 };
 
