@@ -6,7 +6,9 @@
 #include <QFile>
 #include <QMutex>
 #include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusRepository.h"
 #include "pncore/annotation/Interval.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
@@ -74,14 +76,14 @@ bool SpeechRecognitionRecipes::createSphinxFeatureFile(QPointer<Corpus> corpus, 
     return true;
 }
 
-bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<CorpusRepository> repository, QPointer<CorpusCommunication> com,
                                                               QPointer<CorpusRecording> rec, const QString &annotationID,
                                                               const QString &tiernameSegmentation, const QString &tiernameTranscription,
                                                               const QString &pathAcousticModel, const QString &filenameLanguageModel,
                                                               const QString &filenamePronunciationDictionary, const QString &filenameMLLRMatrix)
 {
     static QMutex mutex;
-    if (!corpus) return false;
+    if (!repository) return false;
     if (!rec) return false;
     QPointer<SphinxRecogniser> sphinx = new SphinxRecogniser();
     // Configure Sphinx
@@ -92,7 +94,7 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> c
     // Transcribe
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     mutex.lock();
-    tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+    tiersAll = repository->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
     mutex.unlock();
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -112,8 +114,8 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> c
             IntervalTier *tier_auto_transcribe = new IntervalTier(tiernameTranscription, segmentation,
                                                                   RealTime(0, 0), rec->duration());
             mutex.lock();
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_transcribe);
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
+            repository->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_transcribe);
+            repository->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
             mutex.unlock();
         }
     }
@@ -121,18 +123,18 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<Corpus> c
     return true;
 }
 
-bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<CorpusRepository> repository, QPointer<CorpusCommunication> com,
                                                                    const QString &tiernameSegmentation, const QString &tiernameTranscription)
 {
     static QMutex mutex;
-    if (!corpus) return false;
+    if (!repository) return false;
     if (!com) return false;
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         mutex.lock();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = repository->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -156,7 +158,7 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
             tier_segment->replaceTextLabels("</s>", "_");
             tier_segment->mergeIdenticalAnnotations("_");
             mutex.lock();
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
+            repository->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_segment);
             mutex.unlock();
         }
     }

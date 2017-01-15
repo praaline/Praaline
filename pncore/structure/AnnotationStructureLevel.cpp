@@ -2,7 +2,7 @@
 #include <QPointer>
 #include <QString>
 #include <QList>
-#include "StructureBase.h"
+#include "StructureAttributeBase.h"
 #include "AnnotationStructureAttribute.h"
 #include "AnnotationStructureLevel.h"
 
@@ -10,7 +10,7 @@ namespace Praaline {
 namespace Core {
 
 AnnotationStructureLevel::AnnotationStructureLevel(QObject *parent) :
-    StructureBase(parent)
+    StructureAttributeBase(parent)
 {
 }
 
@@ -19,7 +19,7 @@ AnnotationStructureLevel::AnnotationStructureLevel(const QString &ID, Annotation
                                                    const QString &parentLevelID,
                                                    const DataType &datatype, int order, bool indexed, const QString &nameValueList,
                                                    QObject *parent) :
-    StructureBase(ID, name, description, datatype, order, indexed, nameValueList, parent),
+    StructureAttributeBase(ID, name, description, datatype, order, indexed, nameValueList, parent),
     m_levelType(levelType), m_parentLevelID(parentLevelID)
 {
 }

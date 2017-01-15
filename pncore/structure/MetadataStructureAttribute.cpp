@@ -1,5 +1,5 @@
 #include <QObject>
-#include "StructureBase.h"
+#include "StructureAttributeBase.h"
 #include "MetadataStructureSection.h"
 #include "MetadataStructureAttribute.h"
 
@@ -7,23 +7,23 @@ namespace Praaline {
 namespace Core {
 
 MetadataStructureAttribute::MetadataStructureAttribute(QObject *parent) :
-    StructureBase(parent)
+    StructureAttributeBase(parent)
 {
 }
 
 MetadataStructureAttribute::MetadataStructureAttribute(const QString &ID, QObject *parent) :
-    StructureBase(ID, parent)
+    StructureAttributeBase(ID, parent)
 {
 }
 
 MetadataStructureAttribute::MetadataStructureAttribute(const QString &ID, const QString &name, const QString &description,
                                                        const DataType &datatype, int order, QObject *parent) :
-    StructureBase(ID, name, description, datatype, order, parent)
+    StructureAttributeBase(ID, name, description, datatype, order, parent)
 {
 }
 
 MetadataStructureAttribute::MetadataStructureAttribute(const MetadataStructureAttribute *other, QObject *parent) :
-    StructureBase(other, parent)
+    StructureAttributeBase(other, parent)
 {
 }
 

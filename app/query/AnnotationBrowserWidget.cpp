@@ -1,6 +1,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QVBoxLayout>
+#include <QMessageBox>
 
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
@@ -13,14 +14,21 @@ using namespace Praaline::Core;
 
 struct AnnotationBrowserWidgetData {
     AnnotationBrowserWidgetData() :
-        corporaManager(0), model(0)
+        corporaManager(0), corpus(0), model(0)
     {}
 
+    // User interface elements
     CorporaManager *corporaManager;
     QComboBox *comboboxCorpus;
     QComboBox *comboboxAnnotationLevel;
     GridViewWidget *gridview;
-
+    // Main toolbar
+    QToolBar *toolbarMain;
+    QAction *actionSave;
+    // Data
+    QPointer<Corpus> corpus;
+    QString levelID;
+    QStringList attributeIDs;
     QList<AnnotationElement *> elements;
     AnnotationTableModel *model;
 };
@@ -46,6 +54,11 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     // Grid view
     d->gridview = new GridViewWidget(this);
     d->gridview->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    // Main toolbar
+    d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
+    d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarMain->setIconSize(QSize(24, 24));
+    setupActions();
     // Create layout
     QGroupBox *groupboxSelection = new QGroupBox(tr("Corpus and Annotation Level"), this);
     QHBoxLayout *layoutSelection = new QHBoxLayout(this);
@@ -57,6 +70,7 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     layoutSelection->addStretch();
     groupboxSelection->setLayout(layoutSelection);
     QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->addWidget(d->toolbarMain);
     layout->addWidget(groupboxSelection);
     layout->addWidget(d->gridview);
     this->setLayout(layout);
@@ -65,6 +79,22 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
 AnnotationBrowserWidget::~AnnotationBrowserWidget()
 {
     delete d;
+}
+
+void AnnotationBrowserWidget::setupActions()
+{
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+    Command* command;
+
+    // MAIN TOOLBAR
+    // ----------------------------------------------------------------------------------------------------------------
+    d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
+    connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotationData()));
+    command = ACTION_MANAGER->registerAction("Annotation.AnnotationBrowser.Save", d->actionSave, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarMain->addAction(d->actionSave);
+    d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 }
 
 void AnnotationBrowserWidget::corpusAdded(QString corpusID)
@@ -114,9 +144,25 @@ void AnnotationBrowserWidget::loadAnnotationData()
     // Set data model
     AnnotationTableModel *model = new AnnotationTableModel(AnnotationElement::Type_Interval, elements, level->attributeIDs(), this);
     d->gridview->tableView()->setModel(model);
-    d->gridview->tableView()->horizontalHeader()->setSectionsClickable(true);
+    // Update internal state
     if (d->model) delete d->model;
     qDeleteAll(d->elements);
-    //d->model = model;
+    d->model = model;
+    d->corpus = corpus;
+    d->levelID = level->ID();
+    d->attributeIDs = level->attributeIDs();
     d->elements = elements;
+}
+
+void AnnotationBrowserWidget::saveAnnotationData()
+{
+    if (!d->corpus) return;
+    bool result = d->corpus->datastoreAnnotations()->saveAnnotationElements(d->elements, d->levelID, d->attributeIDs);
+    if (result && d->model) {
+        d->model->modelSavedInDatabase();
+    } else {
+        QMessageBox::warning(this, tr("Error(s) saving"),
+                             tr("One or more annotation elements could not be saved in the database. "
+                                "They are indicated as 'modified' or 'new'."));
+    }
 }

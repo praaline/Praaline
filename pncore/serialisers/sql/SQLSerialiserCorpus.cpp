@@ -278,13 +278,12 @@ bool SQLSerialiserCorpus::saveCommunication(CorpusCommunication *com, MetadataSt
     }
     db.commit();
     foreach (CorpusRecording *rec, com->recordings()) {
-        rec->setDirty(false); rec->setNew(false);
+         setClean(rec);
     }
     foreach (CorpusAnnotation *annot, com->annotations()) {
-        annot->setDirty(false); annot->setNew(false);
+        setClean(annot);
     }
-    com->setDirty(false);
-    com->setNew(false);
+    setClean(com);
     return true;
 }
 
@@ -299,8 +298,7 @@ bool SQLSerialiserCorpus::saveSpeaker(CorpusSpeaker *spk, MetadataStructure *str
         return false;
     }
     db.commit();
-    spk->setDirty(false);
-    spk->setNew(false);
+    setClean(spk);
     return true;
 }
 
@@ -315,8 +313,7 @@ bool SQLSerialiserCorpus::saveParticipation(CorpusParticipation *participation, 
         return false;
     }
     db.commit();
-    participation->setDirty(false);
-    participation->setNew(false);
+    setClean(participation);
     return true;
 }
 
@@ -341,8 +338,6 @@ void readRecording(QSqlQuery &q, CorpusRecording *rec, MetadataStructure *struct
     foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Recording)) {
         rec->setProperty(attribute->ID(), q.value(attribute->ID()));
     }
-    rec->setDirty(false);
-    rec->setNew(false);
 }
 
 // static private
@@ -357,6 +352,7 @@ QList<CorpusRecording *> SQLSerialiserCorpus::execGetRecordings(QString communic
     while (q.next()) {
         CorpusRecording *rec = new CorpusRecording();
         readRecording(q, rec, structure);
+        setClean(rec);
         list << rec;
     }
     return list;
@@ -382,6 +378,7 @@ QMultiMap<QString, CorpusRecording *> SQLSerialiserCorpus::execGetRecordingsAll(
         CorpusRecording *rec = new CorpusRecording();
         QString communicationID = q.value("communicationID").toString();
         readRecording(q, rec, structure);
+        setClean(rec);
         recordings.insert(communicationID, rec);
     }
     return recordings;
@@ -400,8 +397,6 @@ void readAnnotation(QSqlQuery &q, CorpusAnnotation *annot, MetadataStructure *st
     foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Annotation)) {
         annot->setProperty(attribute->ID(), q.value(attribute->ID()));
     }
-    annot->setDirty(false);
-    annot->setNew(false);
 }
 
 // static private
@@ -416,6 +411,7 @@ QList<CorpusAnnotation *> SQLSerialiserCorpus::execGetAnnotations(QString commun
     while (q.next()) {
         CorpusAnnotation *annot = new CorpusAnnotation();
         readAnnotation(q, annot, structure);
+        setClean(annot);
         list << annot;
     }
     return list;
@@ -441,6 +437,7 @@ QMultiMap<QString, CorpusAnnotation *> SQLSerialiserCorpus::execGetAnnotationsAl
         CorpusAnnotation *annot = new CorpusAnnotation();
         QString communicationID = q.value("communicationID").toString();
         readAnnotation(q, annot, structure);
+        setClean(annot);
         annotations.insert(communicationID, annot);
     }
     return annotations;
@@ -477,8 +474,7 @@ QList<CorpusCommunication *> SQLSerialiserCorpus::execGetCommunications(QString 
             com->addRecording(rec);
         foreach (CorpusAnnotation *annot, annotations.values(communicationID))
             com->addAnnotation(annot);
-        com->setDirty(false);
-        com->setNew(false);
+        setClean(com);
         list << com;
     }
     return list;
@@ -507,8 +503,7 @@ QList<CorpusSpeaker *> SQLSerialiserCorpus::execGetSpeakers(QString corpusID, Me
         foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Speaker)) {
             spk->setProperty(attribute->ID(), q.value(attribute->ID()));
         }
-        spk->setDirty(false);
-        spk->setNew(false);
+        setClean(spk);
         list << spk;
     }
     return list;
@@ -538,8 +533,7 @@ void SQLSerialiserCorpus::execGetParticipations(Corpus *corpus, MetadataStructur
             foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Participation)) {
                 participation->setProperty(attribute->ID(), q.value(attribute->ID()));
             }
-            participation->setDirty(false);
-            participation->setNew(false);
+            setClean(participation);
         }
     }
 }
@@ -549,7 +543,7 @@ void SQLSerialiserCorpus::execGetParticipations(Corpus *corpus, MetadataStructur
 bool SQLSerialiserCorpus::saveCorpus(Corpus *corpus, QSqlDatabase &db)
 {
     if (!corpus) return false;
-    MetadataStructure *structure = corpus->metadataStructure();
+    MetadataStructure *structure = 0; // corpus->metadataStructure();
     if (!structure) return false;
     // Start transaction
     db.transaction();
@@ -596,27 +590,27 @@ bool SQLSerialiserCorpus::saveCorpus(Corpus *corpus, QSqlDatabase &db)
         execCleanUpCommunication(com, db);
         bool result = execSaveCommunication(com, structure, db);
         if (result) {
-            com->setNew(false); com->setDirty(false);
+            setClean(com);
             foreach (CorpusRecording *rec, com->recordings()) {
                 if (execSaveRecording(com->ID(), rec, structure, db)) {
-                    rec->setNew(false); rec->setDirty(false);
+                    setClean(rec);
                 }
             }
             foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (execSaveAnnotation(com->ID(), annot, structure, db)) {
-                    annot->setNew(false); annot->setDirty(false);
+                    setClean(annot);
                 }
             }
         }
     }
     foreach (CorpusSpeaker *spk, corpus->speakers()) {
         if (execSaveSpeaker(spk, structure, db)) {
-            spk->setNew(false); spk->setDirty(false);
+            setClean(spk);
         }
     }
     foreach (CorpusParticipation *participation, corpus->participations()) {
         if (execSaveParticipation(participation, structure, db)) {
-            participation->setNew(false); participation->setDirty(false);
+            setClean(participation);
         }
     }
     db.commit();
@@ -628,7 +622,7 @@ bool SQLSerialiserCorpus::saveCorpus(Corpus *corpus, QSqlDatabase &db)
 bool SQLSerialiserCorpus::loadCorpus(Corpus *corpus, QSqlDatabase &db)
 {
     if (!corpus) return false;
-    MetadataStructure *structure = corpus->metadataStructure();
+    MetadataStructure *structure = 0; // corpus->metadataStructure();
     if (!structure) return false;
     // Read
     foreach (CorpusCommunication *com, getCommunications(corpus->ID(), structure, db))
@@ -636,8 +630,7 @@ bool SQLSerialiserCorpus::loadCorpus(Corpus *corpus, QSqlDatabase &db)
     foreach (CorpusSpeaker *spk, getSpeakers(corpus->ID(), structure, db))
         corpus->addSpeaker(spk);
     execGetParticipations(corpus, structure, db);
-    corpus->setNew(false);
-    corpus->setDirty(false);
+    setClean(corpus);
     return true;
 }
 

@@ -127,14 +127,12 @@ HEADERS += \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.h \
     base/DataType.h \
     QSqlMigrator/Structure/SqlType.h \
-    structure/StructureBase.h \
     structure/AnnotationStructureAttribute.h \
     structure/AnnotationStructureLevel.h \
     structure/AnnotationStructure.h \
     structure/MetadataStructureAttribute.h \
     structure/MetadataStructureSection.h \
     structure/MetadataStructure.h \
-    serialisers/DatastoreFactory.h \
     corpus/Corpus.h \
     corpus/CorpusCommunication.h \
     corpus/CorpusParticipation.h \
@@ -160,8 +158,6 @@ HEADERS += \
     interfaces/subtitles/SubtitlesFile.h \
     interfaces/transcriber/TranscriberAnnotationGraph.h \
     interfaces/InterfaceTextFile.h \
-    serialisers/DatastoreInfo.h \
-    serialisers/CorpusDefinition.h \
     serialisers/xml/XMLAnnotationDatastore.h \
     serialisers/xml/XMLMetadataDatastore.h \
     serialisers/xml/XMLSerialiserAnnotation.h \
@@ -194,13 +190,22 @@ HEADERS += \
     structure/NameValueList.h \
     annotation/Relation.h \
     annotation/Sequence.h \
-    serialisers/AnnotationDatastore.h \
-    serialisers/MetadataDatastore.h \
     annotation/RelationTier.h \
     annotation/SequenceTier.h \
     serialisers/sql/SQLSerialiserNameValueList.h \
-    corpus/CorpusRepository.h \
-    serialisers/NameValueListDatastore.h
+    corpus/CorpusObjectInfo.h \
+    datastore/AnnotationDatastore.h \
+    datastore/CorpusDatastore.h \
+    datastore/CorpusRepositoryDefinition.h \
+    datastore/DatastoreFactory.h \
+    datastore/DatastoreInfo.h \
+    datastore/MetadataDatastore.h \
+    datastore/NameValueListDatastore.h \
+    datastore/CorpusRepository.h \
+    datastore/FileDatastore.h \
+    structure/StructureAttributeBase.h \
+    base/IDatastore.h \
+    base/ISaveable.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -295,14 +300,12 @@ SOURCES += \
     QSqlMigrator/Databases/PostgresqlMigrator/Helper/PostgresqlTypeMapperService.cpp \
     base/DataType.cpp \
     QSqlMigrator/Structure/SqlType.cpp \
-    structure/StructureBase.cpp \
     structure/AnnotationStructureAttribute.cpp \
     structure/AnnotationStructureLevel.cpp \
     structure/AnnotationStructure.cpp \
     structure/MetadataStructureAttribute.cpp \
     structure/MetadataStructureSection.cpp \
     structure/MetadataStructure.cpp \
-    serialisers/DatastoreFactory.cpp \
     corpus/Corpus.cpp \
     corpus/CorpusCommunication.cpp \
     corpus/CorpusParticipation.cpp \
@@ -328,7 +331,6 @@ SOURCES += \
     interfaces/subtitles/SubtitlesFile.cpp \
     interfaces/transcriber/TranscriberAnnotationGraph.cpp \
     interfaces/InterfaceTextFile.cpp \
-    serialisers/CorpusDefinition.cpp \
     serialisers/xml/XMLAnnotationDatastore.cpp \
     serialisers/xml/XMLMetadataDatastore.cpp \
     serialisers/xml/XMLSerialiserAnnotation.cpp \
@@ -365,7 +367,12 @@ SOURCES += \
     annotation/RelationTier.cpp \
     annotation/SequenceTier.cpp \
     serialisers/sql/SQLSerialiserNameValueList.cpp \
-    corpus/CorpusRepository.cpp
+    datastore/CorpusRepositoryDefinition.cpp \
+    datastore/DatastoreFactory.cpp \
+    datastore/CorpusRepository.cpp \
+    datastore/FileDatastore.cpp \
+    structure/StructureAttributeBase.cpp \
+    datastore/CorpusDatastore.cpp
 
 DISTFILES += \
     pncore.qmodel

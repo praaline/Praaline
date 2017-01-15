@@ -1,5 +1,7 @@
 #include <QDebug>
 #include <QSqlError>
+#include "datastore/CorpusRepository.h"
+#include "datastore/DatastoreInfo.h"
 #include "SQLAnnotationDatastore.h"
 #include "SQLSerialiserAnnotation.h"
 #include "SQLSerialiserAnnotationStructure.h"
@@ -9,8 +11,8 @@
 namespace Praaline {
 namespace Core {
 
-SQLAnnotationDatastore::SQLAnnotationDatastore(QPointer<AnnotationStructure> structure, QObject *parent) :
-    AnnotationDatastore(parent), m_structure(structure)
+SQLAnnotationDatastore::SQLAnnotationDatastore(AnnotationStructure *structure, CorpusRepository *repository, QObject *parent) :
+    AnnotationDatastore(repository, parent), m_structure(structure)
 {
 }
 
@@ -81,7 +83,7 @@ bool SQLAnnotationDatastore::saveAnnotationStructure()
     return true;
 }
 
-bool SQLAnnotationDatastore::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel)
+bool SQLAnnotationDatastore::createAnnotationLevel(AnnotationStructureLevel *newLevel)
 {
     return SQLSerialiserAnnotationStructure::createAnnotationLevel(newLevel, m_database);
 }
@@ -96,7 +98,7 @@ bool SQLAnnotationDatastore::deleteAnnotationLevel(const QString &levelID)
     return SQLSerialiserAnnotationStructure::deleteAnnotationLevel(levelID, m_database);
 }
 
-bool SQLAnnotationDatastore::createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute)
+bool SQLAnnotationDatastore::createAnnotationAttribute(const QString &levelID, AnnotationStructureAttribute *newAttribute)
 {
     return SQLSerialiserAnnotationStructure::createAnnotationAttribute(levelID, newAttribute, m_database);
 }
@@ -173,6 +175,12 @@ QList<Sequence *> SQLAnnotationDatastore::getSequences(const Selection &selectio
     return SQLSerialiserAnnotation::getSequences(selection, m_structure, m_database);
 }
 
+bool SQLAnnotationDatastore::saveAnnotationElements(
+        const QList<AnnotationElement *> &elements, const QString &levelID, const QStringList &attributeIDs)
+{
+    return SQLSerialiserAnnotation::saveAnnotationElements(elements, levelID, attributeIDs, m_structure, m_database);
+}
+
 // ==========================================================================================================================
 // Annotation Tiers
 // ==========================================================================================================================
@@ -236,22 +244,22 @@ bool SQLAnnotationDatastore::deleteAllTiersAllSpeakers(const QString &annotation
 // Speakers and Timeline
 // ==========================================================================================================================
 
-QList<QString> SQLAnnotationDatastore::getSpeakersInLevel(const QString &annotationID, const QString &levelID)
+QStringList SQLAnnotationDatastore::getSpeakersInLevel(const QString &annotationID, const QString &levelID)
 {
     return SQLSerialiserAnnotation::getSpeakersInLevel(annotationID, levelID, m_structure, m_database);
 }
 
-QList<QString> SQLAnnotationDatastore::getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID)
+QStringList SQLAnnotationDatastore::getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID)
 {
     return SQLSerialiserAnnotation::getSpeakersActiveInLevel(annotationID, levelID, m_structure, m_database);
 }
 
-QList<QString> SQLAnnotationDatastore::getSpeakersInAnnotation(const QString &annotationID)
+QStringList SQLAnnotationDatastore::getSpeakersInAnnotation(const QString &annotationID)
 {
     return SQLSerialiserAnnotation::getSpeakersInAnnotation(annotationID, m_structure, m_database);
 }
 
-QList<QString> SQLAnnotationDatastore::getSpeakersActiveInAnnotation(const QString &annotationID)
+QStringList SQLAnnotationDatastore::getSpeakersActiveInAnnotation(const QString &annotationID)
 {
     return SQLSerialiserAnnotation::getSpeakersActiveInAnnotation(annotationID, m_structure, m_database);
 }

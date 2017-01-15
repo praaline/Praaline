@@ -29,8 +29,6 @@ CorpusSpeaker::CorpusSpeaker(CorpusSpeaker *other, QObject *parent) :
     m_name = other->m_name;
     m_corpusID = other->m_corpusID;
     copyPropertiesFrom(other);
-    setDirty(true);
-    setNew(true);
 }
 
 QPointer<Corpus> CorpusSpeaker::corpus() const
@@ -60,7 +58,7 @@ void CorpusSpeaker::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 

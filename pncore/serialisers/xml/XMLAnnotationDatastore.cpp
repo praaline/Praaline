@@ -1,9 +1,16 @@
+#include <QString>
+#include <QMap>
+#include "datastore/CorpusRepository.h"
+#include "datastore/DatastoreInfo.h"
+#include "annotation/IntervalTier.h"
+#include "structure/AnnotationStructure.h"
 #include "XMLAnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
-XMLAnnotationDatastore::XMLAnnotationDatastore(QPointer<AnnotationStructure> structure, QObject *parent)
+XMLAnnotationDatastore::XMLAnnotationDatastore(AnnotationStructure *structure, CorpusRepository *repository, QObject *parent) :
+    AnnotationDatastore(repository, parent), m_structure(structure)
 {
 }
 
@@ -11,6 +18,9 @@ XMLAnnotationDatastore::~XMLAnnotationDatastore()
 {
 }
 
+// ==========================================================================================================================
+// Datastore
+// ==========================================================================================================================
 bool XMLAnnotationDatastore::createDatastore(const DatastoreInfo &info)
 {
     return false;
@@ -26,6 +36,9 @@ bool XMLAnnotationDatastore::closeDatastore()
     return false;
 }
 
+// ==========================================================================================================================
+// Annotation Structure
+// ==========================================================================================================================
 bool XMLAnnotationDatastore::loadAnnotationStructure()
 {
     return false;
@@ -36,42 +49,96 @@ bool XMLAnnotationDatastore::saveAnnotationStructure()
     return false;
 }
 
-bool XMLAnnotationDatastore::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel)
+bool XMLAnnotationDatastore::createAnnotationLevel(AnnotationStructureLevel *newLevel)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::renameAnnotationLevel(QString levelID, QString newLevelID)
+bool XMLAnnotationDatastore::renameAnnotationLevel(const QString &levelID, const QString &newLevelID)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::deleteAnnotationLevel(QString levelID)
+bool XMLAnnotationDatastore::deleteAnnotationLevel(const QString &levelID)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::createAnnotationAttribute(QString levelID, QPointer<AnnotationStructureAttribute> newAttribute)
+bool XMLAnnotationDatastore::createAnnotationAttribute(const QString &levelID, AnnotationStructureAttribute *newAttribute)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::renameAnnotationAttribute(QString levelID, QString attributeID, QString newAttributeID)
+bool XMLAnnotationDatastore::renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::deleteAnnotationAttribute(QString levelID, QString attributeID)
+bool XMLAnnotationDatastore::deleteAnnotationAttribute(const QString &levelID, const QString &attributeID)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::retypeAnnotationAttribute(QString levelID, QString attributeID, QString newDatatype, int newDatalength)
+bool XMLAnnotationDatastore::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype)
 {
     return false;
 }
 
-bool XMLAnnotationDatastore::saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers)
+// ==========================================================================================================================
+// Name-value lists
+// ==========================================================================================================================
+NameValueList *XMLAnnotationDatastore::getNameValueList(const QString &listID)
+{
+    return Q_NULLPTR;
+}
+
+QStringList XMLAnnotationDatastore::getAllNameValueListIDs()
+{
+    QStringList ret;
+    return ret;
+}
+
+QMap<QString, QPointer<NameValueList> > XMLAnnotationDatastore::getAllNameValueLists()
+{
+
+}
+
+bool XMLAnnotationDatastore::createNameValueList(NameValueList *list)
+{
+    return false;
+}
+
+bool XMLAnnotationDatastore::updateNameValueList(NameValueList *list)
+{
+    return false;
+}
+
+bool XMLAnnotationDatastore::deleteNameValueList(const QString &listID)
+{
+    return false;
+}
+
+// ==========================================================================================================================
+// Annotation Tiers
+// ==========================================================================================================================
+AnnotationTier *XMLAnnotationDatastore::getTier(const QString &annotationID, const QString &speakerID,
+                                                const QString &levelID, const QStringList &attributeIDs)
+{
+    return Q_NULLPTR;
+}
+
+AnnotationTierGroup *XMLAnnotationDatastore::getTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs)
+{
+    return Q_NULLPTR;
+}
+
+QMap<QString, QPointer<AnnotationTierGroup> > XMLAnnotationDatastore::getTiersAllSpeakers(const QString &annotationID, const QStringList &levelIDs)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > ret;
+    return ret;
+}
+
+bool XMLAnnotationDatastore::saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier)
 {
     return false;
 }
@@ -81,91 +148,133 @@ bool XMLAnnotationDatastore::saveTiers(const QString &annotationID, const QStrin
     return false;
 }
 
-bool XMLAnnotationDatastore::saveTier(const QString &annotationID, const QString &speakerID, AnnotationTier *tier)
+bool XMLAnnotationDatastore::saveTiersAllSpeakers(const QString &annotationID, QMap<QString, QPointer<AnnotationTierGroup> > &tiersAllSpeakers)
 {
     return false;
 }
 
-AnnotationTierGroup *XMLAnnotationDatastore::getTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs)
-{
-    return 0;
-}
-
-QMap<QString, QPointer<AnnotationTierGroup> > XMLAnnotationDatastore::getTiersAllSpeakers(const QString &annotationID, const QStringList &levelIDs)
-{
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
-    return tiers;
-}
-
-AnnotationTier *XMLAnnotationDatastore::getTier(const QString &annotationID, const QString &speakerID, const QString &levelID, const QStringList &attributeIDs)
-{
-    return 0;
-}
-
-QList<Interval *> XMLAnnotationDatastore::getIntervals(const QString &annotationID, const QString &speakerID,
-                                                       const QString &levelID, int intervalNoMin, int intervalNoMax,
-                                                       const QStringList &attributeIDs)
-{
-    QList<Interval *> list;
-    return list;
-}
-
-QList<Interval *> XMLAnnotationDatastore::getIntervals(const QString &annotationID, const QString &speakerID,
-                                                       const QString &levelID, RealTime tMin, RealTime tMax,
-                                                       const QStringList &attributeIDs)
-{
-    QList<Interval *> list;
-    return list;
-}
-
-QList<QString> XMLAnnotationDatastore::getSpeakersInLevel(const QString &annotationID, const QString &levelID)
-{
-    QList<QString> speakers;
-    return speakers;
-}
-
-QList<QString> XMLAnnotationDatastore::getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID)
-{
-    QList<QString> speakers;
-    return speakers;
-}
-
-QList<QString> XMLAnnotationDatastore::getSpeakersInAnnotation(const QString &annotationID)
-{
-    QList<QString> speakersAll;
-    return speakersAll;
-}
-
-QList<QString> XMLAnnotationDatastore::getSpeakersActiveInAnnotation(const QString &annotationID)
-{
-    QList<QString> speakersAll;
-    return speakersAll;
-}
-
-IntervalTier *XMLAnnotationDatastore::getSpeakerTimeline(const QString &annotationID, const QString &levelID)
-{
-    return 0;
-}
-
-bool XMLAnnotationDatastore::deleteAllForAnnotationID(QString annotationID)
+bool XMLAnnotationDatastore::deleteTier(const QString &annotationID, const QString &speakerID, const QString &levelID)
 {
     return false;
 }
 
+bool XMLAnnotationDatastore::deleteTiers(const QString &annotationID, const QString &speakerID, const QStringList &levelIDs)
+{
+    return false;
+}
+
+bool XMLAnnotationDatastore::deleteAllTiersAllSpeakers(const QString &annotationID)
+{
+    return false;
+}
+
+// ==========================================================================================================================
+// Annotation Elements
+// ==========================================================================================================================
+QList<AnnotationElement *> XMLAnnotationDatastore::getAnnotationElements(const Selection &selection)
+{
+    QList<AnnotationElement *> ret;
+    return ret;
+}
+
+QList<Point *> XMLAnnotationDatastore::getPoints(const Selection &selection)
+{
+    QList<Point *> ret;
+    return ret;
+}
+
+QList<Interval *> XMLAnnotationDatastore::getIntervals(const Selection &selection)
+{
+    QList<Interval *> ret;
+    return ret;
+}
+
+QList<Sequence *> XMLAnnotationDatastore::getSequences(const Selection &selection)
+{
+    QList<Sequence *> ret;
+    return ret;
+}
+
+bool XMLAnnotationDatastore::saveAnnotationElements(const QList<AnnotationElement *> &elements, const QString &levelID,
+                                                    const QStringList &attributeIDs)
+{
+    return false;
+}
+
+// ==========================================================================================================================
+// Speakers and Timeline
+// ==========================================================================================================================
+QStringList XMLAnnotationDatastore::getSpeakersInLevel(const QString &annotationID, const QString &levelID)
+{
+    QStringList ret;
+    return ret;
+}
+
+QStringList XMLAnnotationDatastore::getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID)
+{
+    QStringList ret;
+    return ret;
+}
+
+QStringList XMLAnnotationDatastore::getSpeakersInAnnotation(const QString &annotationID)
+{
+    QStringList ret;
+    return ret;
+}
+
+QStringList XMLAnnotationDatastore::getSpeakersActiveInAnnotation(const QString &annotationID)
+{
+    QStringList ret;
+    return ret;
+}
+
+IntervalTier *XMLAnnotationDatastore::getSpeakerTimeline(const QString &communicationID,const QString &annotationID,
+                                                         const QString &levelID, bool detailed)
+{
+    return Q_NULLPTR;
+}
+
+// ==========================================================================================================================
+// Queries
+// ==========================================================================================================================
 QList<QueryOccurrencePointer *> XMLAnnotationDatastore::runQuery(QueryDefinition *qdef)
 {
-    QList<QueryOccurrencePointer *> occurrences;
-    return occurrences;
+    QList<QueryOccurrencePointer *> ret;
+    return ret;
 }
 
 QueryOccurrence *XMLAnnotationDatastore::getOccurrence(QueryOccurrencePointer *pointer, QueryDefinition *qdef)
 {
-    return 0;
+    return Q_NULLPTR;
 }
 
 bool XMLAnnotationDatastore::updateAnnotationsFromQueryOccurrences(const QList<QueryOccurrence *> &occurrences)
 {
     return false;
+}
+
+// ==========================================================================================================================
+// Batch Processing
+// ==========================================================================================================================
+QList<QPair<QList<QVariant>, long> > XMLAnnotationDatastore::getDistinctLabels(const QString &levelID, const QStringList &attributeIDs)
+{
+    QList<QPair<QList<QVariant>, long> > ret;
+    return ret;
+}
+
+bool XMLAnnotationDatastore::batchUpdate(const QString &levelID, const QString &attributeID, const QVariant &newValue,
+                                         const QList<QPair<QString, QVariant> > &criteria)
+{
+    return false;
+}
+
+// ==========================================================================================================================
+// Statistics
+// ==========================================================================================================================
+QList<QPair<QList<QVariant>, long> > XMLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs)
+{
+    QList<QPair<QList<QVariant>, long> > ret;
+    return ret;
 }
 
 } // namespace Core

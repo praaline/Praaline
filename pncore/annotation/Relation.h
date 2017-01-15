@@ -2,8 +2,8 @@
 #define RELATION_H
 
 /*
-    Praaline - Annotation module
-    Copyright (c) 2011-2016 George Christodoulides
+    Praaline - Core module - Annotation
+    Copyright (c) 2011-2017 George Christodoulides
 
     This program or module is free software: you can redistribute it
     and/or modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@ public:
 
     // Override
     virtual QVariant attribute(const QString &name) const override;
+    virtual void setAttribute(const QString &name, QVariant value) override;
     inline virtual ElementType elementType() const override {
         return Type_Relation;
     }

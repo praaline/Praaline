@@ -6,29 +6,22 @@
 #include <QXmlStreamWriter>
 
 #include "DatastoreInfo.h"
-#include "CorpusDefinition.h"
+#include "CorpusRepositoryDefinition.h"
 
 namespace Praaline {
 namespace Core {
 
-CorpusDefinition::CorpusDefinition() :
-    basePath(""), baseMediaPath("")
+CorpusRepositoryDefinition::CorpusRepositoryDefinition() :
+    basePath(QString()), basePathMedia(QString())
 {
 }
 
-CorpusDefinition::~CorpusDefinition()
+CorpusRepositoryDefinition::~CorpusRepositoryDefinition()
 {
 }
 
-QString datastoreType(DatastoreInfo info)
-{
-    if (info.type == DatastoreInfo::XML) return "xml";
-    else if (info.type == DatastoreInfo::SQL) return "sql";
-    else if (info.type == DatastoreInfo::Files) return "files";
-    return "";
-}
 
-bool CorpusDefinition::save(const QString &filename)
+bool CorpusRepositoryDefinition::save(const QString &filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) return false;
@@ -36,37 +29,37 @@ bool CorpusDefinition::save(const QString &filename)
     xml.setAutoFormatting(true);
     xml.writeStartDocument();
     xml.writeStartElement("PraalineCorpusDefinition");
-    xml.writeAttribute("ID", corpusID);
-    xml.writeAttribute("name", corpusName);
+    xml.writeAttribute("ID", repositoryID);
+    xml.writeAttribute("name", repositoryName);
     xml.writeStartElement("MetadataDatastore");
-    xml.writeAttribute("type", datastoreType(datastoreMetadata));
-    xml.writeAttribute("driver", datastoreMetadata.driver);
-    xml.writeAttribute("hostname", datastoreMetadata.hostname);
-    if (datastoreMetadata.driver == "QSQLITE") {
-        QFileInfo finfo(datastoreMetadata.datasource);
+    xml.writeAttribute("type", infoDatastoreMetadata.typeToString());
+    xml.writeAttribute("driver", infoDatastoreMetadata.driver);
+    xml.writeAttribute("hostname", infoDatastoreMetadata.hostname);
+    if (infoDatastoreMetadata.driver == "QSQLITE") {
+        QFileInfo finfo(infoDatastoreMetadata.datasource);
         xml.writeAttribute("datasource", finfo.fileName());
     } else {
-        xml.writeAttribute("datasource", datastoreMetadata.datasource);
+        xml.writeAttribute("datasource", infoDatastoreMetadata.datasource);
     }
-    xml.writeAttribute("username", datastoreMetadata.username);
-    xml.writeAttribute("usepassword", (datastoreMetadata.usePassword) ? "yes" : "no");
+    xml.writeAttribute("username", infoDatastoreMetadata.username);
+    xml.writeAttribute("usepassword", (infoDatastoreMetadata.usePassword) ? "yes" : "no");
     xml.writeEndElement(); // MetadataDatastore
     xml.writeStartElement("AnnotationsDatastore");
-    xml.writeAttribute("type", datastoreType(datastoreAnnotations));
-    xml.writeAttribute("driver", datastoreAnnotations.driver);
-    xml.writeAttribute("hostname", datastoreAnnotations.hostname);
-    if (datastoreAnnotations.driver == "QSQLITE") {
-        QFileInfo finfo(datastoreAnnotations.datasource);
+    xml.writeAttribute("type", infoDatastoreAnnotations.typeToString());
+    xml.writeAttribute("driver", infoDatastoreAnnotations.driver);
+    xml.writeAttribute("hostname", infoDatastoreAnnotations.hostname);
+    if (infoDatastoreAnnotations.driver == "QSQLITE") {
+        QFileInfo finfo(infoDatastoreAnnotations.datasource);
         xml.writeAttribute("datasource", finfo.fileName());
     } else {
-        xml.writeAttribute("datasource", datastoreMetadata.datasource);
+        xml.writeAttribute("datasource", infoDatastoreMetadata.datasource);
     }
-    xml.writeAttribute("username", datastoreAnnotations.username);
-    xml.writeAttribute("usepassword", (datastoreAnnotations.usePassword) ? "yes" : "no");
+    xml.writeAttribute("username", infoDatastoreAnnotations.username);
+    xml.writeAttribute("usepassword", (infoDatastoreAnnotations.usePassword) ? "yes" : "no");
     xml.writeEndElement(); // AnnotationsDatastore
     xml.writeStartElement("MediaDatastore");
-    QString relativeBaseMediaPath = QDir(basePath).relativeFilePath(baseMediaPath);
-    xml.writeAttribute("baseMediaPath", relativeBaseMediaPath);
+    QString relativeBasePathMedia = QDir(basePath).relativeFilePath(basePathMedia);
+    xml.writeAttribute("baseMediaPath", relativeBasePathMedia);
     xml.writeEndElement(); // MediaDatastore
     xml.writeEndElement(); // PraalineCorpusDefinition
     xml.writeEndDocument();
@@ -79,9 +72,7 @@ void readDatastoreInfo(QXmlStreamReader &xml, DatastoreInfo &info)
 {
     if (xml.attributes().hasAttribute("type")) {
         QString type = xml.attributes().value("type").toString();
-        if (type == "xml") info.type = DatastoreInfo::XML;
-        else if (type == "sql") info.type = DatastoreInfo::SQL;
-        else if (type == "files") info.type = DatastoreInfo::Files;
+        info.setTypeFromString(type);
     }
     if (xml.attributes().hasAttribute("driver"))     info.driver = xml.attributes().value("driver").toString();
     if (xml.attributes().hasAttribute("hostname"))   info.hostname = xml.attributes().value("hostname").toString();
@@ -95,7 +86,7 @@ void readDatastoreInfo(QXmlStreamReader &xml, DatastoreInfo &info)
     }
 }
 
-bool CorpusDefinition::load(const QString &filename)
+bool CorpusRepositoryDefinition::load(const QString &filename)
 {
     QFile file(filename);
     QFileInfo finfo(filename);
@@ -104,21 +95,21 @@ bool CorpusDefinition::load(const QString &filename)
     while (!xml.atEnd() && !xml.hasError()) {
         // If token is StartElement, we'll see if we can read it.
         if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "PraalineCorpusDefinition") {
-            if (xml.attributes().hasAttribute("ID")) corpusID = xml.attributes().value("ID").toString();
-            if (xml.attributes().hasAttribute("name")) corpusName = xml.attributes().value("name").toString();
+            if (xml.attributes().hasAttribute("ID")) repositoryID = xml.attributes().value("ID").toString();
+            if (xml.attributes().hasAttribute("name")) repositoryName = xml.attributes().value("name").toString();
             xml.readNext();
             while (!xml.atEnd() && !xml.hasError() &&
                    !(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "PraalineCorpusDefinition")) {
                 if (xml.tokenType() == QXmlStreamReader::StartElement) {
                     if (xml.name() == "MetadataDatastore") {
-                        readDatastoreInfo(xml, datastoreMetadata);
+                        readDatastoreInfo(xml, infoDatastoreMetadata);
                     }
                     else if (xml.name() == "AnnotationsDatastore") {
-                        readDatastoreInfo(xml, datastoreAnnotations);
+                        readDatastoreInfo(xml, infoDatastoreAnnotations);
                     }
                     else if (xml.name() == "MediaDatastore") {
                         if (xml.attributes().hasAttribute("baseMediaPath"))
-                            this->baseMediaPath = xml.attributes().value("baseMediaPath").toString();
+                            this->basePathMedia = xml.attributes().value("baseMediaPath").toString();
                     }
                 }
                 xml.readNext();
@@ -137,15 +128,15 @@ bool CorpusDefinition::load(const QString &filename)
     this->filenameDefinition = filename;
     this->basePath = finfo.canonicalPath();
     // Media path is relative to corpus definition file
-    if (this->baseMediaPath.isEmpty())
-        this->baseMediaPath = this->basePath;
+    if (this->basePathMedia.isEmpty())
+        this->basePathMedia = this->basePath;
     else
-        this->baseMediaPath = this->baseMediaPath.replace(QRegularExpression("^./"), this->basePath + "/");
+        this->basePathMedia = this->basePathMedia.replace(QRegularExpression("^./"), this->basePath + "/");
     // Adjust to open correctly SQLite databases
-    if (this->datastoreMetadata.driver == "QSQLITE")
-        this->datastoreMetadata.datasource = this->basePath + "/" + this->datastoreMetadata.datasource;
-    if (this->datastoreAnnotations.driver == "QSQLITE")
-        this->datastoreAnnotations.datasource = this->basePath + "/" + this->datastoreAnnotations.datasource;
+    if (this->infoDatastoreMetadata.driver == "QSQLITE")
+        this->infoDatastoreMetadata.datasource = this->basePath + "/" + this->infoDatastoreMetadata.datasource;
+    if (this->infoDatastoreAnnotations.driver == "QSQLITE")
+        this->infoDatastoreAnnotations.datasource = this->basePath + "/" + this->infoDatastoreAnnotations.datasource;
 
     return true;
 }

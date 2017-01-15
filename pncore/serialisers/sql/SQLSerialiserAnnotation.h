@@ -2,6 +2,7 @@
 #define SQLSERIALISERANNOTATION_H
 
 #include <QSqlDatabase>
+#include "base/IDatastore.h"
 #include "SQLSerialiserBase.h"
 #include "annotation/AnnotationElement.h"
 #include "annotation/Point.h"
@@ -11,12 +12,12 @@
 #include "annotation/AnnotationTier.h"
 #include "annotation/AnnotationTierGroup.h"
 #include "structure/AnnotationStructure.h"
-#include "serialisers/AnnotationDatastore.h"
+#include "datastore/AnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
-class SQLSerialiserAnnotation : public SQLSerialiserBase
+class SQLSerialiserAnnotation : public SQLSerialiserBase, public IDatastore
 {
 public:
     // ==========================================================================================================================
@@ -30,6 +31,9 @@ public:
             const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
     static QList<Sequence *> getSequences(
             const AnnotationDatastore::Selection &selection, AnnotationStructure *structure, QSqlDatabase &db);
+    static bool saveAnnotationElements(
+            const QList<AnnotationElement *> &elements, const QString &levelID, const QStringList &attributeIDs,
+            AnnotationStructure *structure, QSqlDatabase &db);
 
     // ==========================================================================================================================
     // Annotation Tiers

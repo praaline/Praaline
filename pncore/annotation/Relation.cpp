@@ -44,6 +44,11 @@ QVariant Relation::attribute(const QString &name) const
     return AnnotationElement::attribute(name);
 }
 
+void Relation::setAttribute(const QString &name, QVariant value) {
+    if ((name == "indexFrom") || (name == "indexTo")) return;
+    AnnotationElement::setAttribute(name, value);
+}
+
 int Relation::compare(const Relation &other) const
 {
     if (other.m_indexFrom < m_indexFrom) return 1;

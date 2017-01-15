@@ -71,7 +71,7 @@ void CorpusParticipation::setRole(const QString &role)
 {
     if (m_role != role) {
         m_role = role;
-        m_dirty = true;
+        m_isDirty = true;
     }
 }
 

@@ -81,6 +81,12 @@ QVariant Interval::attribute(const QString &name) const
     return AnnotationElement::attribute(name);
 }
 
+void Interval::setAttribute(const QString &name, QVariant value) {
+    if ((name == "tMin") || (name == "tMinNanoseconds") || (name == "tMax") || (name == "tMaxNanoseconds") ||
+        (name == "tCenter") || (name == "duration")) return;
+    AnnotationElement::setAttribute(name, value);
+}
+
 bool Interval::overlaps(const Interval &other, const RealTime threshold) const
 {
     // default threshold is 0

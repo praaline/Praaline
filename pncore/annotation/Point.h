@@ -2,8 +2,8 @@
 #define POINT_H
 
 /*
-    Praaline - Annotation module
-    Copyright (c) 2011-12 George Christodoulides
+    Praaline - Core module - Annotation
+    Copyright (c) 2011-2017 George Christodoulides
 
     This program or module is free software: you can redistribute it
     and/or modify it under the terms of the GNU General Public License
@@ -25,6 +25,8 @@ namespace Core {
 
 class PRAALINE_CORE_SHARED_EXPORT Point : public AnnotationElement
 {
+    friend class PointTier;
+
 public:
     Point();
     Point(const RealTime &time, const QString &text = QString());
@@ -38,14 +40,13 @@ public:
 
     // Overrides
     virtual QVariant attribute(const QString &name) const override;
+    virtual void setAttribute(const QString &name, QVariant value) override;
     inline virtual ElementType elementType() const override {
         return Type_Point;
     }
 
 protected:
-    RealTime m_time;
-
-    friend class PointTier;
+    RealTime m_time;    
 };
 
 } // namespace Core

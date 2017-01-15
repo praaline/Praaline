@@ -1,5 +1,6 @@
 #include <QString>
 #include <QTextStream>
+#include "Relation.h"
 #include "RelationTier.h"
 #include "IntervalTier.h"
 #include "AnnotationTier.h"

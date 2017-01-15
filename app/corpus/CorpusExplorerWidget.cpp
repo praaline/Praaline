@@ -979,17 +979,17 @@ void CorpusExplorerWidget::relinkCorpusItem()
             CorpusRecording *rec = qobject_cast<CorpusRecording *>(cobj);
             QPointer<CorpusCommunication> com = corpus->communication(rec->communicationID());
             if (!com) return;
-            com->unlinkRecording(rec->ID());
-            com = corpus->communication(communicationID);
-            com->addRecording(rec);
+//            com->unlinkRecording(rec->ID());
+//            com = corpus->communication(communicationID);
+//            com->addRecording(rec);
         }
         else if (cobj->type() == CorpusObject::Type_Annotation) {
             CorpusAnnotation *annot = qobject_cast<CorpusAnnotation *>(cobj);
             QPointer<CorpusCommunication> com = corpus->communication(annot->communicationID());
             if (!com) return;
-            com->unlinkAnnotation(annot->ID());
-            com = corpus->communication(communicationID);
-            com->addAnnotation(annot);
+//            com->unlinkAnnotation(annot->ID());
+//            com = corpus->communication(communicationID);
+//            com->addAnnotation(annot);
         }
     }
 }

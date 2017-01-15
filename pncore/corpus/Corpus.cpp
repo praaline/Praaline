@@ -7,45 +7,46 @@
 #include <QMultiHash>
 #include <QPair>
 #include <QDir>
-#include <QRegularExpression>
 #include "CorpusObject.h"
 #include "Corpus.h"
-#include "serialisers/DatastoreFactory.h"
 
 namespace Praaline {
 namespace Core {
 
-Corpus::Corpus(const CorpusDefinition &definition, QObject *parent) :
-    CorpusObject(definition.corpusID, parent)
+Corpus::Corpus(QObject *parent) :
+    CorpusObject(parent)
 {
-    m_name = definition.corpusName;
-    m_basePath = definition.basePath;
-    m_baseMediaPath = definition.baseMediaPath;
-    m_annotationStructure = new AnnotationStructure(this);
-    m_metadataStructure = new MetadataStructure(this);
-    m_datastoreAnnotations = DatastoreFactory::getAnnotationDatastore(definition.datastoreAnnotations, m_annotationStructure);
-    m_datastoreMetadata = DatastoreFactory::getMetadataDatastore(definition.datastoreMetadata, m_metadataStructure);
+}
+
+Corpus::Corpus(const QString &ID, const QString &name, const QString &description, QObject *parent) :
+    CorpusObject(ID, parent), m_name(name), m_description(description)
+{
+    m_corpusID = ID;
 }
 
 Corpus::~Corpus()
 {
     qDeleteAll(m_communications);
     qDeleteAll(m_speakers);
-    if (m_annotationStructure) delete m_annotationStructure;
-    if (m_metadataStructure) delete m_metadataStructure;
-    if (m_datastoreAnnotations) delete m_datastoreAnnotations;
-    if (m_datastoreMetadata) delete m_datastoreMetadata;
 }
 
-// ----------------------------------------------------------------------------------------------------------------
-// CorpusObject implementation
-// ----------------------------------------------------------------------------------------------------------------
+// ==============================================================================================================================
+// Corpus
+// ==============================================================================================================================
 
 void Corpus::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
-        setDirty(true);
+        m_isDirty = true;
+    }
+}
+
+void Corpus::setDescription(const QString &description)
+{
+    if (m_description != description) {
+        m_description = description;
+        m_isDirty = true;
     }
 }
 
@@ -54,303 +55,29 @@ void Corpus::setCorpusID(const QString &corpusID)
     if (m_ID != corpusID) {
         m_ID = corpusID;
         m_corpusID = corpusID;
-        foreach (QPointer<CorpusCommunication> com, m_communications) if (com) com->setCorpusID(corpusID);
-        foreach (QPointer<CorpusSpeaker> spk, m_speakers) if (spk) spk->setCorpusID(corpusID);
-        foreach (QPointer<CorpusParticipation> part, m_participationsByCommunication.values()) if (part) part->setCorpusID(corpusID);
-        setDirty(true);
+        foreach (QPointer<CorpusCommunication> com, m_communications)
+            if (com) com->setCorpusID(corpusID);
+        foreach (QPointer<CorpusSpeaker> spk, m_speakers)
+            if (spk) spk->setCorpusID(corpusID);
+        foreach (QPointer<CorpusParticipation> part, m_participationsByCommunication.values())
+            if (part) part->setCorpusID(corpusID);
+        m_isDirty = true;
     }
-}
-
-QString Corpus::getRelativeToBasePath(const QString &absoluteFilePath) const
-{
-    if (m_basePath.isEmpty())
-        return absoluteFilePath;
-    return QDir(m_basePath).relativeFilePath(absoluteFilePath);
-}
-
-QString Corpus::getRelativeToBaseMediaPath (const QString &absoluteFilePath) const
-{
-    if (m_baseMediaPath.isEmpty())
-        return absoluteFilePath;
-    return QDir(m_baseMediaPath).relativeFilePath(absoluteFilePath);
-}
-
-void Corpus::setBaseMediaPath(const QString &path)
-{
-    m_baseMediaPath = QDir(path).absolutePath();
-}
-
-// ----------------------------------------------------------------------------------------------------------------
-// CORPUS
-// ----------------------------------------------------------------------------------------------------------------
-// static
-Corpus *Corpus::create(const CorpusDefinition &definition, QString &errorMessages, QObject *parent)
-{
-    errorMessages.clear();
-    Corpus *corpus = new Corpus(definition, parent);
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Corpus, new MetadataStructureSection("corpus", "Corpus", "(Default section)"));
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Communication, new MetadataStructureSection("communication", "Communication", "(Default section)"));
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Recording, new MetadataStructureSection("recording", "Recording", "(Default section)"));
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Annotation, new MetadataStructureSection("annotation", "Annotation", "(Default section)"));
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Speaker, new MetadataStructureSection("speaker", "Speaker", "(Default section)"));
-    corpus->metadataStructure()->addSection(CorpusObject::Type_Participation, new MetadataStructureSection("participation", "Participation", "(Default section)"));
-    if (corpus->datastoreAnnotations()) {
-        if (!corpus->datastoreAnnotations()->createDatastore(definition.datastoreAnnotations)) {
-            errorMessages.append("Error creating annotation datastore: ").append(corpus->datastoreAnnotations()->lastError()).append("\n");
-            corpus->datastoreAnnotations()->clearError();
-        }
-    }
-    if (corpus->datastoreMetadata()) {
-        if (!corpus->datastoreMetadata()->createDatastore(definition.datastoreMetadata)) {
-            errorMessages.append("Error creating metadata datastore: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
-            corpus->datastoreMetadata()->clearError();
-        }
-    }
-    return corpus;
-}
-
-// static
-Corpus *Corpus::open(const CorpusDefinition &definition, QString &errorMessages, QObject *parent)
-{
-    errorMessages.clear();
-    QPointer<Corpus> corpus = new Corpus(definition, parent);
-    if (corpus->datastoreAnnotations()) {
-        if (!corpus->datastoreAnnotations()->openDatastore(definition.datastoreAnnotations)) {
-            errorMessages.append("Error opening annotation datastore: ").append(corpus->datastoreAnnotations()->lastError()).append("\n");
-            corpus->datastoreAnnotations()->clearError();
-            return 0;
-        }
-        if (!corpus->datastoreAnnotations()->loadAnnotationStructure()) {
-            errorMessages.append("Error reading annotation structure: ").append(corpus->datastoreAnnotations()->lastError()).append("\n");
-            corpus->datastoreAnnotations()->clearError();
-            return 0;
-        }
-    }
-    if (corpus->datastoreMetadata()) {
-        if (!corpus->datastoreMetadata()->openDatastore(definition.datastoreMetadata)) {
-            errorMessages.append("Error opening metadata datastore: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
-            corpus->datastoreMetadata()->clearError();
-            return 0;
-        }
-        if (!corpus->datastoreMetadata()->loadMetadataStructure()) {
-            errorMessages.append("Error reading metadata structure: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
-            corpus->datastoreMetadata()->clearError();
-            return 0;
-        }
-        if (!corpus->datastoreMetadata()->loadCorpus(corpus)) {
-            errorMessages.append("Error loading corpus: ").append(corpus->datastoreMetadata()->lastError()).append("\n");
-            corpus->datastoreMetadata()->clearError();
-            return 0;
-        }
-    }
-    return corpus;
-}
-
-void Corpus::save()
-{
-    m_datastoreMetadata->saveMetadataStructure();
-    m_datastoreMetadata->saveCorpus(this);
-    m_datastoreAnnotations->saveAnnotationStructure();
-}
-
-void Corpus::saveAs(const CorpusDefinition &definition)
-{
-    Q_UNUSED(definition)
-}
-
-void Corpus::close()
-{
-    m_datastoreMetadata->closeDatastore();
-    m_datastoreAnnotations->closeDatastore();
 }
 
 void Corpus::clear()
 {
-    m_name = "";
-    m_basePath = "";
+    m_name = QString();
+    m_description = QString();
     qDeleteAll(m_communications);
     m_communications.clear();
     qDeleteAll(m_speakers);
     m_speakers.clear();
-    m_metadataStructure.clear();
-    m_annotationStructure.clear();
 }
 
-// Datastore
-
-QPointer<AnnotationDatastore> Corpus::datastoreAnnotations() const
-{
-    return m_datastoreAnnotations;
-}
-
-QPointer<MetadataDatastore> Corpus::datastoreMetadata() const
-{
-    return m_datastoreMetadata;
-}
-
-// ==========================================================================================================
-// STRUCTURE MANAGEMENT
-// ==========================================================================================================
-
-bool Corpus::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute)
-{
-    if (!m_datastoreMetadata) return false;
-    return m_datastoreMetadata->createMetadataAttribute(type, newAttribute);
-}
-
-bool Corpus::renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID)
-{
-    if (!m_datastoreMetadata) return false;
-    return m_datastoreMetadata->renameMetadataAttribute(type, attributeID, newAttributeID);
-}
-
-bool Corpus::deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID)
-{
-    if (!m_datastoreMetadata) return false;
-    return m_datastoreMetadata->deleteMetadataAttribute(type, attributeID);
-}
-
-// Annotations
-bool Corpus::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->createAnnotationLevel(newLevel);
-}
-
-bool Corpus::renameAnnotationLevel(const QString &levelID, const QString &newLevelID)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->renameAnnotationLevel(levelID, newLevelID);
-}
-
-bool Corpus::deleteAnnotationLevel(const QString &levelID)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->deleteAnnotationLevel(levelID);
-}
-
-bool Corpus::createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->createAnnotationAttribute(levelID, newAttribute);
-}
-
-bool Corpus::renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->renameAnnotationAttribute(levelID, attributeID, newAttributeID);
-}
-
-bool Corpus::deleteAnnotationAttribute(const QString &levelID, const QString &attributeID)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->deleteAnnotationAttribute(levelID, attributeID);
-}
-
-bool Corpus::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDataType)
-{
-    if (!m_datastoreAnnotations) return false;
-    return m_datastoreAnnotations->retypeAnnotationAttribute(levelID, attributeID, newDataType);
-}
-
-void Corpus::importMetadataStructure(MetadataStructure *otherStructure)
-{
-    if (!m_datastoreMetadata) return;
-    if (!m_metadataStructure) return;
-
-    const QMetaObject &mo = CorpusObject::staticMetaObject;
-    int index = mo.indexOfEnumerator("Type");
-    QMetaEnum metaEnum = mo.enumerator(index);
-    for (int i = 0; i < metaEnum.keyCount(); ++i) {
-        CorpusObject::Type type = static_cast<CorpusObject::Type>(metaEnum.value(i));
-        MetadataStructureSection *mySection;
-        foreach (MetadataStructureSection *otherSection, otherStructure->sections(type)) {
-            mySection = m_metadataStructure->section(type, otherSection->ID());
-            if (mySection) {
-                // Copy over name and description, only if this structure does not already define them
-                if (mySection->name().isEmpty())
-                    mySection->setName(otherSection->name());
-                if (mySection->description().isEmpty())
-                    mySection->setDescription(otherSection->description());
-                // Have section in common, check attributes.
-                foreach (MetadataStructureAttribute *otherAttribute, otherSection->attributes()) {
-                    MetadataStructureAttribute *myAttribute = mySection->attribute(otherAttribute->ID());
-                    if (!myAttribute) {
-                        myAttribute = new MetadataStructureAttribute(otherAttribute);
-                        if (m_datastoreMetadata->createMetadataAttribute(type, myAttribute))
-                            mySection->addAttribute(myAttribute);
-                        else delete myAttribute;
-                    }
-                }
-            }
-            else {
-                // Copy Section from other
-                mySection = new MetadataStructureSection(otherSection->ID(), otherSection->name(), otherSection->description());
-                m_metadataStructure->addSection(type, mySection);
-                foreach (MetadataStructureAttribute *otherAttribute, otherSection->attributes()) {
-                    MetadataStructureAttribute *myAttribute = new MetadataStructureAttribute(otherAttribute);
-                    if (m_datastoreMetadata->createMetadataAttribute(type, myAttribute))
-                        mySection->addAttribute(myAttribute);
-                    else delete myAttribute;
-                }
-            }
-        }
-    }
-    m_datastoreMetadata->saveMetadataStructure();
-}
-
-void Corpus::importAnnotationStructure(AnnotationStructure *otherStructure)
-{
-    if (!m_datastoreAnnotations) return;
-    if (!m_annotationStructure) return;
-    AnnotationStructureLevel *myLevel;
-    foreach (AnnotationStructureLevel *otherLevel, otherStructure->levels()) {
-        myLevel = m_annotationStructure->level(otherLevel->ID());
-        if (myLevel) {
-            // Copy over name and description, only if this structure does not already define them
-            if (myLevel->name().isEmpty())
-                myLevel->setName(otherLevel->name());
-            if (myLevel->description().isEmpty())
-                myLevel->setDescription(otherLevel->description());
-            // Have level in common, check attributes.
-            foreach (AnnotationStructureAttribute *otherAttribute, otherLevel->attributes()) {
-                AnnotationStructureAttribute *myAttribute = myLevel->attribute(otherAttribute->ID());
-                if (!myAttribute) {
-                    myAttribute = new AnnotationStructureAttribute(otherAttribute);
-                    if (m_datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
-                        myLevel->addAttribute(myAttribute);
-                    else delete myAttribute;
-                }
-            }
-        }
-        else {
-            // Copy level from other
-            myLevel = new AnnotationStructureLevel(otherLevel->ID(), otherLevel->levelType(), otherLevel->name(),
-                                                   otherLevel->description(), otherLevel->parentLevelID(),
-                                                   otherLevel->datatype(), otherLevel->itemOrder(),
-                                                   otherLevel->indexed(), otherLevel->nameValueList());
-            if (m_datastoreAnnotations->createAnnotationLevel(myLevel)) {
-                m_annotationStructure->addLevel(myLevel);
-                foreach (AnnotationStructureAttribute *otherAttribute, otherLevel->attributes()) {
-                    AnnotationStructureAttribute *myAttribute = new AnnotationStructureAttribute(otherAttribute);
-                    if (m_datastoreAnnotations->createAnnotationAttribute(myLevel->ID(), myAttribute))
-                        myLevel->addAttribute(myAttribute);
-                    else delete myAttribute;
-                }
-            }
-            else delete myLevel;
-        }
-    }
-    m_datastoreAnnotations->saveAnnotationStructure();
-}
-
-// ==========================================================================================================
-// ITEM MANAGEMENT
-// ==========================================================================================================
-
-// ==========================================================================================================
+// ==============================================================================================================================
 // Communications
-// ==========================================================================================================
+// ==============================================================================================================================
 
 QPointer<CorpusCommunication> Corpus::communication(const QString &communicationID) const
 {
@@ -389,7 +116,7 @@ void Corpus::addCommunication(CorpusCommunication *communication)
     communication->setCorpusID(this->ID());
     m_communications.insert(communication->ID(), communication);
     // connect(communication, SIGNAL(changedID(QString,QString)), this, SLOT(communicationChangedID(QString,QString)));
-    setDirty(true);
+    m_isDirty = true;
     emit corpusCommunicationAdded(communication);
 }
 
@@ -405,7 +132,7 @@ void Corpus::removeCommunication(const QString &communicationID)
     // remove communication
     m_communications.remove(communicationID);
     delete communication;
-    setDirty(true);
+    m_isDirty = true;
     deletedCommunicationIDs << communicationID;
     emit corpusCommunicationDeleted(communicationID);
 }
@@ -424,9 +151,9 @@ void Corpus::communicationChangedID(const QString &oldID, const QString &newID)
     m_participationsByCommunication.remove(oldID);
 }
 
-// ==========================================================================================================
+// ==============================================================================================================================
 // Speakers
-// ==========================================================================================================
+// ==============================================================================================================================
 
 QPointer<CorpusSpeaker> Corpus::speaker(const QString &speakerID) const
 {
@@ -465,7 +192,7 @@ void Corpus::addSpeaker(CorpusSpeaker *speaker)
     speaker->setCorpusID(this->ID());
     m_speakers.insert(speaker->ID(), speaker);
     connect(speaker, SIGNAL(changedID(QString,QString)), this, SLOT(speakerChangedID(QString,QString)));
-    setDirty(true);
+    m_isDirty = true;
     emit corpusSpeakerAdded(speaker);
 }
 
@@ -483,7 +210,7 @@ void Corpus::removeSpeaker(const QString &speakerID)
     // remove speaker
     m_speakers.remove(speakerID);
     delete speaker;
-    setDirty(true);
+    m_isDirty = true;
     deletedSpeakerIDs << speakerID;
     emit corpusSpeakerDeleted(speakerID);
 }
@@ -502,9 +229,10 @@ void Corpus::speakerChangedID(const QString &oldID, const QString &newID)
     m_participationsBySpeaker.remove(oldID);
 }
 
-// ==========================================================================================================
+// ==============================================================================================================================
 // Participation of Speakers in Communications
-// ==========================================================================================================
+// ==============================================================================================================================
+
 QPointer<CorpusParticipation> Corpus::participation(const QString &communicationID, const QString &speakerID)
 {
     foreach (QPointer<CorpusParticipation> participation, m_participationsByCommunication.values(communicationID)) {
@@ -570,9 +298,9 @@ void Corpus::removeParticipation(const QString &communicationID, const QString &
     deletedParticipationIDs << QPair<QString, QString>(communicationID, speakerID);
 }
 
-// ==========================================================================================================
-// Other
-// ==========================================================================================================
+// ==============================================================================================================================
+// Other convenience methods
+// ==============================================================================================================================
 
 QStringList Corpus::recordingIDs() const
 {
@@ -680,59 +408,6 @@ QList<QPair<QString, QString> > Corpus::getCommunicationsRecordingsIDs() const
         }
     }
     return list;
-}
-
-// ====================================================================================================================
-// Import corpus from another corpus
-
-void Corpus::importCorpus(Corpus *corpusSource, const QString &prefix)
-{
-    if (!corpusSource) return;
-
-    // Import and merge metadata and annotation structure
-    importMetadataStructure(corpusSource->metadataStructure());
-    importAnnotationStructure(corpusSource->annotationStructure());
-    save();
-
-    // Copy over corpus items
-    foreach (QPointer<CorpusSpeaker> spk, corpusSource->speakers()) {
-        CorpusSpeaker *destSpk = new CorpusSpeaker(spk);
-        destSpk->setID(prefix + spk->ID());
-        this->addSpeaker(destSpk);
-    }
-    foreach (QPointer<CorpusCommunication> com, corpusSource->communications()) {
-        if (!com) continue;
-        CorpusCommunication *destCom = new CorpusCommunication(com);
-        destCom->setID(prefix + com->ID());
-        this->addCommunication(destCom);
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            if (!rec) continue;
-            CorpusRecording *destRec = new CorpusRecording(rec);
-            destRec->setID(prefix + rec->ID());
-            destCom->addRecording(destRec);
-            // copy over media file
-            QFileInfo infoDest(baseMediaPath() + "/" + destRec->filename());
-            infoDest.absoluteDir().mkpath(infoDest.absolutePath());
-            QFile::copy(corpusSource->baseMediaPath() + "/" + rec->filename(),
-                        baseMediaPath() + "/" + destRec->filename());
-        }
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            CorpusAnnotation *destAnnot = new CorpusAnnotation(annot);
-            destAnnot->setID(prefix + annot->ID());
-            destCom->addAnnotation(destAnnot);
-            QMap<QString, QPointer<AnnotationTierGroup> > data =
-                    corpusSource->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
-            datastoreAnnotations()->saveTiersAllSpeakers(destAnnot->ID(), data);
-        }
-        foreach (QPointer<CorpusParticipation> participation, corpusSource->participationsForCommunication(com->ID())) {
-            if (!participation) continue;
-            QPointer<CorpusSpeaker> destSpk = speaker(prefix + participation->speakerID());
-            if (!destSpk) continue;
-            CorpusParticipation *destParticipcation = addParticipation(destCom->ID(), destSpk->ID(), participation->role());
-            if (destParticipcation) destParticipcation->copyProperties(participation);
-        }
-    }
 }
 
 } // namespace Core

@@ -8,6 +8,7 @@
 
 namespace Praaline {
 namespace Core {
+class CorpusRepository;
 class Corpus;
 class CorpusCommunication;
 class CorpusRecording;
@@ -29,13 +30,13 @@ public:
                                               Configuration config);
     static bool createSphinxFeatureFile(QPointer<Praaline::Core::Corpus> corpus, QPointer<Praaline::Core::CorpusRecording> rec,
                                         Configuration config);
-    static bool transcribeUtterancesWithSphinx(QPointer<Praaline::Core::Corpus> corpus,
+    static bool transcribeUtterancesWithSphinx(QPointer<Praaline::Core::CorpusRepository> repository,
                                                QPointer<Praaline::Core::CorpusCommunication> com,
                                                QPointer<Praaline::Core::CorpusRecording> rec, const QString &annotationID,
                                                const QString &tiernameSegmentation, const QString &tiernameTranscription,
                                                const QString &pathAcousticModel, const QString &filenameLanguageModel,
                                                const QString &filenamePronunciationDictionary, const QString &filenameMLLRMatrix);
-    static bool updateSegmentationFromTranscription(QPointer<Praaline::Core::Corpus> corpus,
+    static bool updateSegmentationFromTranscription(QPointer<Praaline::Core::CorpusRepository> repository,
                                                     QPointer<Praaline::Core::CorpusCommunication> com,
                                                     const QString &tiernameSegmentation, const QString &tiernameTranscription);
 

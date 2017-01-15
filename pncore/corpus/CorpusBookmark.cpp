@@ -30,31 +30,47 @@ void CorpusBookmark::set(const QString &corpusID, const QString &communicationID
     if (time != RealTime(-1, 0)) m_time = time;
     if (!name.isEmpty()) m_name = name;
     if (!notes.isEmpty()) m_notes = notes;
+    m_isDirty = true;
 }
 
 void CorpusBookmark::setCommunicationID(const QString &communicationID)
 {
-    m_communicationID = communicationID;
+    if (m_communicationID != communicationID) {
+        m_communicationID = communicationID;
+        m_isDirty = true;
+    }
 }
 
 void CorpusBookmark::setAnnotationID(const QString &annotationID)
 {
-    m_annotationID = annotationID;
+    if (m_annotationID != annotationID) {
+        m_annotationID = annotationID;
+        m_isDirty = true;
+    }
 }
 
 void CorpusBookmark::setTime(const RealTime &time)
 {
-    m_time = time;
+    if (m_time != time) {
+        m_time = time;
+        m_isDirty = true;
+    }
 }
 
 void CorpusBookmark::setName(const QString &name)
 {
-    m_name = name;
+    if (m_name != name) {
+        m_name = name;
+        m_isDirty = true;
+    }
 }
 
 void CorpusBookmark::setNotes(const QString &notes)
 {
-    m_notes = notes;
+    if (m_notes != notes) {
+        m_notes = notes;
+        m_isDirty = true;
+    }
 }
 
 } // namespace Core

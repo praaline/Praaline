@@ -63,6 +63,16 @@ QVariant CorpusAnnotationTableModel::headerData(int section, Qt::Orientation ori
         else
             return QVariant();
     }
+    else if (orientation == Qt::Vertical) {
+        QString ret = QString::number(section + 1);
+        QPointer<CorpusAnnotation> item(0);
+        if ((section >= 0) && (section < d->items.count())) {
+            item  = d->items.at(section);
+            if (item->isNew()) return ret.append(" +");
+            if (item->isDirty()) return ret.append(" #");
+        }
+        return ret;
+    }
     return QVariant();
 }
 

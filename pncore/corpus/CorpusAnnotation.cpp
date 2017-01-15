@@ -10,15 +10,15 @@
 namespace Praaline {
 namespace Core {
 
-CorpusAnnotation::CorpusAnnotation(QObject *parent)
-    : CorpusObject(parent)
+CorpusAnnotation::CorpusAnnotation(QObject *parent) :
+    CorpusObject(parent)
 {
     m_filename = QString();
     m_format = "tiers"; // by default
 }
 
-CorpusAnnotation::CorpusAnnotation(const QString ID, QObject *parent)
-    : CorpusObject(ID, parent)
+CorpusAnnotation::CorpusAnnotation(const QString ID, QObject *parent) :
+    CorpusObject(ID, parent)
 {
     m_filename = QString();
 }
@@ -36,8 +36,6 @@ CorpusAnnotation::CorpusAnnotation(CorpusAnnotation *other, QObject *parent) :
     m_format = other->m_format;
     m_languages = other->m_languages;
     copyPropertiesFrom(other);
-    setDirty(true);
-    setNew(true);
 }
 
 QString CorpusAnnotation::basePath() const
@@ -72,7 +70,7 @@ void CorpusAnnotation::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -80,7 +78,7 @@ void CorpusAnnotation::setRecordingID(const QString &recordingID)
 {
     if (m_recordingID != recordingID) {
         m_recordingID = recordingID;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -88,7 +86,7 @@ void CorpusAnnotation::setFilename(const QString &filename)
 {
     if (m_filename != filename) {
         m_filename = filename;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -96,7 +94,7 @@ void CorpusAnnotation::setFormat(const QString &format)
 {
     if (m_format != format) {
         m_format = format;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -117,7 +115,7 @@ void CorpusAnnotation::addLanguage(const QString &languageID)
 {
     if (!m_languages.contains(languageID)) {
         m_languages.append(languageID);
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -125,7 +123,7 @@ void CorpusAnnotation::removeLanguage(const QString &languageID)
 {
     if (m_languages.contains(languageID)) {
         m_languages.removeOne(languageID);
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 

@@ -1,8 +1,9 @@
 #ifndef ANNOTATIONTIER_H
 #define ANNOTATIONTIER_H
+
 /*
-    Praaline - Annotation module
-    Copyright (c) 2011-12 George Christodoulides
+    Praaline - Core module - Annotation
+    Copyright (c) 2011-2017 George Christodoulides
 
     This program or module is free software: you can redistribute it
     and/or modify it under the terms of the GNU General Public License
@@ -20,12 +21,13 @@
 #include <QHash>
 #include <QList>
 #include "base/RealTime.h"
-#include "AnnotationElement.h"
 
 class QTextStream;
 
 namespace Praaline {
 namespace Core {
+
+class AnnotationElement;
 
 class PRAALINE_CORE_SHARED_EXPORT AnnotationTier : public QObject
 {

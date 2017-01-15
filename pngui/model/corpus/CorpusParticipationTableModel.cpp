@@ -74,6 +74,16 @@ QVariant CorpusParticipationTableModel::headerData(int section, Qt::Orientation 
                 return QVariant();
         }
     }
+    else if (orientation == Qt::Vertical) {
+        QString ret = QString::number(section + 1);
+        QPointer<CorpusParticipation> item(0);
+        if ((section >= 0) && (section < d->items.count())) {
+            item  = d->items.at(section);
+            if (item->isNew()) return ret.append(" +");
+            if (item->isDirty()) return ret.append(" #");
+        }
+        return ret;
+    }
     return QVariant();
 }
 

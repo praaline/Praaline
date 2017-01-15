@@ -1,26 +1,55 @@
 #ifndef ANNOTATIONDATASTORE_H
 #define ANNOTATIONDATASTORE_H
 
+/*
+    Praaline - Core module - Datastores
+    Copyright (c) 2011-2017 George Christodoulides
+
+    This program or module is free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version. It is provided
+    for educational purposes and is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+    the GNU General Public License for more details.
+*/
+
 #include "pncore_global.h"
 #include <QObject>
 #include <QPointer>
+#include <QString>
 #include <QList>
+#include <QStringList>
 #include <QPair>
 #include <QMap>
-
-#include "DatastoreInfo.h"
+#include "base/IDatastore.h"
+#include "CorpusDatastore.h"
+#include "CorpusRepository.h"
 #include "NameValueListDatastore.h"
+#include "base/RealTime.h"
 #include "base/DataType.h"
-#include "structure/AnnotationStructure.h"
-#include "structure/NameValueList.h"
-#include "annotation/AnnotationTierGroup.h"
-#include "query/QueryDefinition.h"
-#include "query/QueryOccurrence.h"
 
 namespace Praaline {
 namespace Core {
 
-class PRAALINE_CORE_SHARED_EXPORT AnnotationDatastore : public QObject, public NameValueListDatastore
+class DatastoreInfo;
+class AnnotationStructureLevel;
+class AnnotationStructureAttribute;
+class NameValueList;
+class AnnotationElement;
+class Point;
+class Interval;
+class Sequence;
+class Relation;
+class AnnotationTier;
+class AnnotationTierGroup;
+class IntervalTier;
+class QueryDefinition;
+class QueryOccurrence;
+class QueryOccurrencePointer;
+
+class PRAALINE_CORE_SHARED_EXPORT AnnotationDatastore : public CorpusDatastore, public IDatastore, public NameValueListDatastore
 {
     Q_OBJECT
 public:
@@ -57,7 +86,8 @@ public:
             indexMin(-1), indexMax(-1), timeMin(timeMin), timeMax(timeMax) {}
     };
 
-    AnnotationDatastore(QObject *parent = 0) : QObject(parent) {}
+    AnnotationDatastore(CorpusRepository *repository, QObject *parent = 0) :
+        CorpusDatastore(repository, parent) {}
     virtual ~AnnotationDatastore() {}
 
     // ==========================================================================================================================
@@ -72,10 +102,10 @@ public:
     // ==========================================================================================================================
     virtual bool loadAnnotationStructure() = 0;
     virtual bool saveAnnotationStructure() = 0;
-    virtual bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel) = 0;
+    virtual bool createAnnotationLevel(AnnotationStructureLevel *newLevel) = 0;
     virtual bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID) = 0;
     virtual bool deleteAnnotationLevel(const QString &levelID) = 0;
-    virtual bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute) = 0;
+    virtual bool createAnnotationAttribute(const QString &levelID, AnnotationStructureAttribute *newAttribute) = 0;
     virtual bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID) = 0;
     virtual bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID) = 0;
     virtual bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype) = 0;
@@ -97,6 +127,8 @@ public:
     virtual QList<Point *> getPoints(const Selection &selection) = 0;
     virtual QList<Interval *> getIntervals(const Selection &selection) = 0;
     virtual QList<Sequence *> getSequences(const Selection &selection) = 0;
+    virtual bool saveAnnotationElements(const QList<AnnotationElement *> &elements, const QString &levelID,
+                                        const QStringList &attributeIDs) = 0;
 
     // ==========================================================================================================================
     // Annotation Tiers
@@ -117,10 +149,10 @@ public:
     // ==========================================================================================================================
     // Speakers and Timeline
     // ==========================================================================================================================
-    virtual QList<QString> getSpeakersInLevel(const QString &annotationID, const QString &levelID) = 0;
-    virtual QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID) = 0;
-    virtual QList<QString> getSpeakersInAnnotation(const QString &annotationID) = 0;
-    virtual QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID) = 0;
+    virtual QStringList getSpeakersInLevel(const QString &annotationID, const QString &levelID) = 0;
+    virtual QStringList getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID) = 0;
+    virtual QStringList getSpeakersInAnnotation(const QString &annotationID) = 0;
+    virtual QStringList getSpeakersActiveInAnnotation(const QString &annotationID) = 0;
     virtual IntervalTier *getSpeakerTimeline(const QString &communicationID, const QString &annotationID,
                                              const QString &levelID, bool detailed = false) = 0;
 
@@ -143,14 +175,6 @@ public:
     // ==========================================================================================================================
     virtual QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) = 0;
 
-    // ==========================================================================================================================
-    // Error handling
-    // ==========================================================================================================================
-    virtual QString lastError() const { return m_lastError; }
-    virtual void clearError() { m_lastError.clear(); }
-
-protected:
-    QString m_lastError;
 };
 
 } // namespace Core

@@ -45,6 +45,11 @@ QVariant Sequence::attribute(const QString &name) const
     return AnnotationElement::attribute(name);
 }
 
+void Sequence::setAttribute(const QString &name, QVariant value) {
+    if ((name == "indexFrom") || (name == "indexTo") || (name == "length")) return;
+    AnnotationElement::setAttribute(name, value);
+}
+
 int Sequence::compare(const Sequence &other) const
 {
     if (other.m_indexFrom < m_indexFrom) return 1;

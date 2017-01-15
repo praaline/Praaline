@@ -1,6 +1,21 @@
 #ifndef CORPUS_H
 #define CORPUS_H
 
+/*
+    Praaline - Core module - Corpus metadata
+    Copyright (c) 2011-2017 George Christodoulides
+
+    This program or module is free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version. It is provided
+    for educational purposes and is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+    the GNU General Public License for more details.
+*/
+
+
 #include "pncore_global.h"
 #include <QObject>
 #include <QPointer>
@@ -13,11 +28,6 @@
 #include "CorpusCommunication.h"
 #include "CorpusSpeaker.h"
 #include "CorpusParticipation.h"
-#include "structure/AnnotationStructure.h"
-#include "structure/MetadataStructure.h"
-#include "serialisers/AnnotationDatastore.h"
-#include "serialisers/DatastoreFactory.h"
-#include "serialisers/CorpusDefinition.h"
 
 namespace Praaline {
 namespace Core {
@@ -26,67 +36,31 @@ class PRAALINE_CORE_SHARED_EXPORT Corpus : public CorpusObject
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name WRITE setName)
+
 public:
-    Corpus(const CorpusDefinition &definition, QObject *parent = 0);
+    explicit Corpus(QObject *parent = 0);
+    Corpus(const QString &ID, const QString &name = QString(), const QString &description = QString(), QObject *parent = 0);
     ~Corpus();
 
     // ----------------------------------------------------------------------------------------------------------------
-    // CorpusObject implementation
+    // Corpus
     // ----------------------------------------------------------------------------------------------------------------
     CorpusObject::Type type() const { return CorpusObject::Type_Corpus; }
 
     QString name() const { return m_name; }
     void setName(const QString &name);
 
-    QString basePath() const { return m_basePath; }
-    QString getRelativeToBasePath (const QString &absoluteFilePath) const;
-
-    QString baseMediaPath() const { return m_baseMediaPath; }
-    void setBaseMediaPath(const QString &path);
-    QString getRelativeToBaseMediaPath (const QString &absoluteFilePath) const;
+    QString description() const { return m_description; }
+    void setDescription(const QString &description);
 
     // Override corpusID = ID
     QString corpusID() const { return m_ID; }
     void setCorpusID(const QString &corpusID);
 
-    // ----------------------------------------------------------------------------------------------------------------
-    // CORPUS
-    // ----------------------------------------------------------------------------------------------------------------
-    static Corpus *create(const CorpusDefinition &definition, QString &errorMessages, QObject *parent = 0);
-    static Corpus *open(const CorpusDefinition &definition, QString &errorMessages, QObject *parent = 0);
-    void save();
-    void saveAs(const CorpusDefinition &definition);
-    void close();
     void clear();
-    void importCorpus(Corpus *corpusSource, const QString &prefix);
-
-    // Datastore
-    QPointer<AnnotationDatastore> datastoreAnnotations() const;
-    QPointer<MetadataDatastore> datastoreMetadata() const;
 
     // ----------------------------------------------------------------------------------------------------------------
-    // STRUCTURE
-    // ----------------------------------------------------------------------------------------------------------------
-    QPointer<MetadataStructure> metadataStructure() const { return m_metadataStructure; }
-    QPointer<AnnotationStructure> annotationStructure() const { return m_annotationStructure; }
-    // Structural changes that have an impact on corpus objects and the data stores
-    // Metadata
-    bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute);
-    bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID);
-    bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID);
-    void importMetadataStructure(MetadataStructure *otherStructure);
-    // Annotations
-    bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel);
-    bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID);
-    bool deleteAnnotationLevel(const QString &levelID);
-    bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute);
-    bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID);
-    bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID);
-    bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype);
-    void importAnnotationStructure(AnnotationStructure *otherStructure);
-
-    // ----------------------------------------------------------------------------------------------------------------
-    // COMMUNICATIONS
+    // Communications
     // ----------------------------------------------------------------------------------------------------------------
     QPointer<CorpusCommunication> communication(const QString &communicationID) const;
     int communicationsCount() const;
@@ -96,8 +70,9 @@ public:
     const QMap<QString, QPointer<CorpusCommunication> > &communications() const;
     void addCommunication(CorpusCommunication *communication);
     void removeCommunication(const QString &communicationID);
+
     // ----------------------------------------------------------------------------------------------------------------
-    // SPEAKERS
+    // Speakers
     // ----------------------------------------------------------------------------------------------------------------
     QPointer<CorpusSpeaker> speaker(const QString &speakerID) const;
     int speakersCount() const;
@@ -107,8 +82,9 @@ public:
     const QMap<QString, QPointer<CorpusSpeaker> > &speakers() const;
     void addSpeaker(CorpusSpeaker *speaker);
     void removeSpeaker(const QString &speakerID);
+
     // ----------------------------------------------------------------------------------------------------------------
-    // SPEAKER PARTICIPATION IN COMMUNICATIONS
+    // Speaker Participation in Communications
     // ----------------------------------------------------------------------------------------------------------------
     QPointer<CorpusParticipation> participation(const QString &communicationID, const QString &speakerID);
     bool hasParticipation(const QString &communicationID, const QString &speakerID);
@@ -119,7 +95,7 @@ public:
     void removeParticipation(const QString &communicationID, const QString &speakerID);
 
     // ----------------------------------------------------------------------------------------------------------------
-    // Cross recordings x annotations
+    // Cross Recordings x Annotations
     // ----------------------------------------------------------------------------------------------------------------
     QStringList recordingIDs() const;
     QStringList annotationIDs() const;
@@ -132,7 +108,9 @@ public:
     QList<QPair<QString, QString> > getCommunicationsAnnotationsIDs() const;
     QList<QPair<QString, QString> > getCommunicationsRecordingsIDs() const;
 
+    // ----------------------------------------------------------------------------------------------------------------
     // Database helpers
+    // ----------------------------------------------------------------------------------------------------------------
     QList<QString> deletedCommunicationIDs;
     QList<QString> deletedSpeakerIDs;
     QList<QPair<QString, QString> > deletedParticipationIDs;
@@ -148,16 +126,11 @@ public slots:
 
 protected:
     QString m_name;
-    QString m_basePath;
-    QString m_baseMediaPath;
+    QString m_description;
     QMap<QString, QPointer<CorpusCommunication> > m_communications;
     QMap<QString, QPointer<CorpusSpeaker> > m_speakers;
     QMultiMap<QString, QPointer<CorpusParticipation> > m_participationsByCommunication;
     QMultiMap<QString, QPointer<CorpusParticipation> > m_participationsBySpeaker;
-    QPointer<AnnotationStructure> m_annotationStructure;
-    QPointer<MetadataStructure> m_metadataStructure;
-    QPointer<AnnotationDatastore> m_datastoreAnnotations;
-    QPointer<MetadataDatastore> m_datastoreMetadata;
 
 private slots:
     void communicationChangedID(const QString &oldID, const QString &newID);

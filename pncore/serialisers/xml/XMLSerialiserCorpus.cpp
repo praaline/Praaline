@@ -256,54 +256,54 @@ void XMLSerialiserCorpus::readAttributes(CorpusObject *obj, MetadataStructure *m
 // static
 bool XMLSerialiserCorpus::saveCorpus(Corpus *corpus, QXmlStreamWriter &xml)
 {
-    xml.writeStartElement("CorpusData");
-    xml.writeStartElement("Communications");
-    foreach (CorpusCommunication *com, corpus->communications()) {
-        writeCommunication(com, corpus->metadataStructure(), xml);
-    }
-    xml.writeEndElement(); // Communications
-    xml.writeStartElement("Speakers");
-    foreach (CorpusSpeaker *spk, corpus->speakers()) {
-        writeSpeaker(spk, corpus->metadataStructure(), xml);
-    }
-    xml.writeEndElement(); // Speakers
-    xml.writeStartElement("Participations");
-    foreach (CorpusParticipation *participation, corpus->participations()) {
-        writeParticipation(participation, corpus->metadataStructure(), xml);
-    }
-    xml.writeEndElement(); // Participations
-    xml.writeEndElement(); // CorpusData
-    return true;
+//    xml.writeStartElement("CorpusData");
+//    xml.writeStartElement("Communications");
+//    foreach (CorpusCommunication *com, corpus->communications()) {
+//        writeCommunication(com, corpus->metadataStructure(), xml);
+//    }
+//    xml.writeEndElement(); // Communications
+//    xml.writeStartElement("Speakers");
+//    foreach (CorpusSpeaker *spk, corpus->speakers()) {
+//        writeSpeaker(spk, corpus->metadataStructure(), xml);
+//    }
+//    xml.writeEndElement(); // Speakers
+//    xml.writeStartElement("Participations");
+//    foreach (CorpusParticipation *participation, corpus->participations()) {
+//        writeParticipation(participation, corpus->metadataStructure(), xml);
+//    }
+//    xml.writeEndElement(); // Participations
+//    xml.writeEndElement(); // CorpusData
+//    return true;
 }
 
 // static
 bool XMLSerialiserCorpus::loadCorpus(Corpus *corpus, QXmlStreamReader &xml)
 {
-    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == xmlElementName_Corpus)) {
-        if (xml.tokenType() == QXmlStreamReader::StartElement) {
-            if (xml.name() == "CorpusData") {
-                xml.readNext();
-                while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "CorpusData")) {
-                    if (xml.tokenType() == QXmlStreamReader::StartElement) {
-                        if (xml.name() == xmlElementName_Communication) {
-                            CorpusCommunication *com = readCommunication(corpus->metadataStructure(), xml);
-                            if (com) corpus->addCommunication(com);
-                        }
-                        else if (xml.name() == xmlElementName_Speaker) {
-                            CorpusSpeaker *spk = readSpeaker(corpus->metadataStructure(), xml);
-                            if (spk) corpus->addSpeaker(spk);
-                        }
-                        else if (xml.name() == xmlElementName_Participation) {
-                            readParticipation(corpus, corpus->metadataStructure(), xml);
-                        }
-                    }
-                    xml.readNext();
-                }
-            }
-        }
-        xml.readNext(); // next element
-    }
-    return true;
+//    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == xmlElementName_Corpus)) {
+//        if (xml.tokenType() == QXmlStreamReader::StartElement) {
+//            if (xml.name() == "CorpusData") {
+//                xml.readNext();
+//                while(!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == "CorpusData")) {
+//                    if (xml.tokenType() == QXmlStreamReader::StartElement) {
+//                        if (xml.name() == xmlElementName_Communication) {
+//                            CorpusCommunication *com = readCommunication(corpus->metadataStructure(), xml);
+//                            if (com) corpus->addCommunication(com);
+//                        }
+//                        else if (xml.name() == xmlElementName_Speaker) {
+//                            CorpusSpeaker *spk = readSpeaker(corpus->metadataStructure(), xml);
+//                            if (spk) corpus->addSpeaker(spk);
+//                        }
+//                        else if (xml.name() == xmlElementName_Participation) {
+//                            readParticipation(corpus, corpus->metadataStructure(), xml);
+//                        }
+//                    }
+//                    xml.readNext();
+//                }
+//            }
+//        }
+//        xml.readNext(); // next element
+//    }
+//    return true;
 }
 
 } // namespace Core

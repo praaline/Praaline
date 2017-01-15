@@ -1,11 +1,14 @@
 #include <QDebug>
 #include <QString>
 #include <QLabel>
-#include <QAction>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QPlainTextEdit>
+#include <QAction>
 #include <QToolBar>
 #include <QTableView>
 #include <QVBoxLayout>
+#include <QFormLayout>
 #include <QMessageBox>
 
 #include "pncore/structure/NameValueList.h"
@@ -23,6 +26,10 @@ struct NameValueListEditorData {
     {}
 
     QComboBox *comboboxLists;
+    QLineEdit *editListName;
+    QPlainTextEdit *textListDescription;
+    QLabel *labelDataType;
+
     QToolBar *toolbarLists;
     QToolBar *toolbarCurrentList;
     QTableView *tableviewCurrentList;
@@ -49,6 +56,10 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     d->comboboxLists = new QComboBox(this);
     connect(d->comboboxLists, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedListChanged(int)));
     d->comboboxLists->setEditable(false);
+    // Editing basic list definition
+    d->editListName = new QLineEdit(this);
+    d->textListDescription = new QPlainTextEdit(this);
+    d->labelDataType = new QLabel(this);
     // Toolbars
     d->toolbarLists = new QToolBar("Lists", this);
     d->toolbarCurrentList = new QToolBar("Current List", this);
@@ -57,12 +68,21 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     d->tableviewCurrentList = new QTableView(this);
     // Layout
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(d->toolbarLists);
-    layout->addWidget(d->comboboxLists);
+    layout->addWidget(d->toolbarLists);    
+    QFormLayout *layoutEditing = new QFormLayout(this);
+    layoutEditing->addWidget(new QLabel(tr("Select name-value list: "), this));
+    layoutEditing->addWidget(d->comboboxLists);
+    layoutEditing->addWidget(new QLabel(tr("Name: "), this));
+    layoutEditing->addWidget(d->editListName);
+    layoutEditing->addWidget(new QLabel(tr("Description: "), this));
+    layoutEditing->addWidget(d->textListDescription);
+    layoutEditing->addWidget(new QLabel(tr("Data type: "), this));
+    layoutEditing->addWidget(d->labelDataType);
+    layout->addLayout(layoutEditing, 1);
     layout->addWidget(d->toolbarCurrentList);
-    layout->addWidget(d->tableviewCurrentList);
+    layout->addWidget(d->tableviewCurrentList, 4);
     layout->setContentsMargins(0,0,0,0);
-    layout->setSpacing(0);
+    layout->setSpacing(3);
     this->setLayout(layout);
 }
 
@@ -138,9 +158,17 @@ void NameValueListEditor::rebindList(Praaline::Core::NameValueList *list)
         NameValueListTableModel *model = new NameValueListTableModel(list, this);
         d->tableviewCurrentList->setModel(model);
         d->model = model;
+        d->editListName->setText(list->name());
+        d->textListDescription->setPlainText(list->description());
+        QString datatypeDesc = list->datatypeString();
+        if (list->datatypePrecision() > 0) datatypeDesc.append(QString(" (%1)").arg(list->datatypePrecision()));
+        d->labelDataType->setText(datatypeDesc);
     } else {
         d->tableviewCurrentList->setModel(0);
         d->model = 0;
+        d->editListName->clear();
+        d->textListDescription->clear();
+        d->labelDataType->clear();
     }
     d->currentList = list;
 }
@@ -183,6 +211,8 @@ void NameValueListEditor::saveList()
 {
     if (!d->datastore) return;
     if (!d->currentList) return;
+    d->currentList->setName(d->editListName->text());
+    d->currentList->setDescription(d->textListDescription->toPlainText());
     d->datastore->updateNameValueList(d->currentList);
 }
 

@@ -38,8 +38,6 @@ CorpusRecording::CorpusRecording(CorpusRecording *other, QObject *parent) :
     m_fileSize = other->m_fileSize;
     m_checksumMD5 = other->m_checksumMD5;
     copyPropertiesFrom(other);
-    setDirty(true);
-    setNew(true);
 }
 
 QString CorpusRecording::basePath() const
@@ -95,7 +93,7 @@ void CorpusRecording::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -103,7 +101,7 @@ void CorpusRecording::setFilename(const QString &filename)
 {
     if (m_filename != filename) {
         m_filename = filename;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -111,7 +109,7 @@ void CorpusRecording::setFormat(const QString &format)
 {
     if (m_format != format) {
         m_format = format;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -119,7 +117,7 @@ void CorpusRecording::setDuration(const RealTime &duration)
 {
     if (m_duration != duration) {
         m_duration = duration;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -127,7 +125,7 @@ void CorpusRecording::setDurationSec(double duration)
 {
     if (m_duration != RealTime::fromSeconds(duration)) {
         m_duration = RealTime::fromSeconds(duration);
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -135,7 +133,7 @@ void CorpusRecording::setChannels(int channels)
 {
     if (m_channels != channels) {
         m_channels = channels;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -143,7 +141,7 @@ void CorpusRecording::setSampleRate(int sampleRate)
 {
     if (m_sampleRate != sampleRate) {
         m_sampleRate = sampleRate;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -151,7 +149,7 @@ void CorpusRecording::setPrecisionBits(int precisionBits)
 {
     if (m_precisionBits != precisionBits) {
         m_precisionBits = precisionBits;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -159,7 +157,7 @@ void CorpusRecording::setBitRate(int bitRate)
 {
     if (m_bitRate != bitRate) {
         m_bitRate = bitRate;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -167,7 +165,7 @@ void CorpusRecording::setEncoding(const QString &encoding)
 {
     if (m_encoding != encoding) {
         m_encoding = encoding;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -175,7 +173,7 @@ void CorpusRecording::setFileSize(long long fileSize)
 {
     if (m_fileSize != fileSize) {
         m_fileSize = fileSize;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -183,7 +181,7 @@ void CorpusRecording::setChecksumMD5(const QString &checksumMD5)
 {
     if (m_checksumMD5 != checksumMD5) {
         m_checksumMD5 = checksumMD5;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 

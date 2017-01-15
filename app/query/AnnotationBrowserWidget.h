@@ -21,9 +21,11 @@ protected slots:
     void corpusRemoved(QString);
     void selectedCorpusChanged(int index);
     void loadAnnotationData();
+    void saveAnnotationData();
 
 private:
     AnnotationBrowserWidgetData *d;
+    void setupActions();
 };
 
 #endif // ANNOTATIONBROWSERWIDGET_H

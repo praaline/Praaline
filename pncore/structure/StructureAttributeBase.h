@@ -1,5 +1,19 @@
-#ifndef STRUCTUREBASE_H
-#define STRUCTUREBASE_H
+#ifndef STRUCTUREATTRIBUTEBASE_H
+#define STRUCTUREATTRIBUTEBASE_H
+
+/*
+    Praaline - Core module - Corpus Structure Definition
+    Copyright (c) 2011-2017 George Christodoulides
+
+    This program or module is free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version. It is provided
+    for educational purposes and is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+    the GNU General Public License for more details.
+*/
 
 #include "pncore_global.h"
 #include "base/DataType.h"
@@ -8,7 +22,7 @@
 namespace Praaline {
 namespace Core {
 
-class PRAALINE_CORE_SHARED_EXPORT StructureBase : public QObject
+class PRAALINE_CORE_SHARED_EXPORT StructureAttributeBase : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString ID READ ID WRITE setID)
@@ -21,12 +35,12 @@ class PRAALINE_CORE_SHARED_EXPORT StructureBase : public QObject
     Q_PROPERTY(QString nameValueList READ nameValueList WRITE setNameValueList)
 
 public:
-    explicit StructureBase(QObject *parent = 0);
-    StructureBase(const QString &ID, QObject *parent = 0);
-    StructureBase(const QString &ID, const QString &name, const QString &description, const DataType &datatype,
+    explicit StructureAttributeBase(QObject *parent = 0);
+    StructureAttributeBase(const QString &ID, QObject *parent = 0);
+    StructureAttributeBase(const QString &ID, const QString &name, const QString &description, const DataType &datatype,
                   int order = 0, bool indexed = false, const QString &nameValueList = QString(), QObject *parent = 0);
-    StructureBase(const StructureBase *other, QObject *parent = 0);
-    virtual ~StructureBase() {}
+    StructureAttributeBase(const StructureAttributeBase *other, QObject *parent = 0);
+    virtual ~StructureAttributeBase() {}
 
     // Data
     virtual QString ID() const { return m_ID; }
@@ -64,4 +78,4 @@ protected:
 } // namespace Core
 } // namespace Praaline
 
-#endif // STRUCTUREBASE_H
+#endif // STRUCTUREATTRIBUTEBASE_H

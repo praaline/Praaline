@@ -2,30 +2,77 @@
 #define XMLMETADATADATASTORE_H
 
 #include <QObject>
-#include "serialisers/MetadataDatastore.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
 
-class XMLMetadataDatastore : public QObject
+class MetadataStructure;
+
+class XMLMetadataDatastore : public MetadataDatastore
 {
     Q_OBJECT
 public:
-    explicit XMLMetadataDatastore(QPointer<MetadataStructure> structure, QObject *parent = 0);
+    XMLMetadataDatastore(MetadataStructure *structure, CorpusRepository *repository, QObject *parent = 0);
     ~XMLMetadataDatastore();
 
-    bool createDatastore(const DatastoreInfo &info);
-    bool openDatastore(const DatastoreInfo &info);
-    bool closeDatastore();
+    // ==========================================================================================================================
+    // Datastore
+    // ==========================================================================================================================
+    bool createDatastore(const DatastoreInfo &info) override;
+    bool openDatastore(const DatastoreInfo &info) override;
+    bool closeDatastore() override;
 
-    bool loadAnnotationStructure();
-    bool saveAnnotationStructure();
-    bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute);
-    bool renameMetadataAttribute(CorpusObject::Type type, QString attributeID, QString newAttributeID);
-    bool deleteMetadataAttribute(CorpusObject::Type type, QString attributeID);
+    // ==========================================================================================================================
+    // Metadata Structure
+    // ==========================================================================================================================
+    bool loadMetadataStructure() override;
+    bool saveMetadataStructure() override;
+    bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) override;
+    bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) override;
+    bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) override;
+    bool retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const DataType &newDatatype) override;
 
-    bool loadCorpus(Corpus *corpus);
-    bool saveCorpus(Corpus *corpus);
+    // ==========================================================================================================================
+    // Name-value lists
+    // ==========================================================================================================================
+    NameValueList *getNameValueList(const QString &listID) override;
+    QStringList getAllNameValueListIDs() override;
+    QMap<QString, QPointer<NameValueList> > getAllNameValueLists() override;
+    bool createNameValueList(NameValueList *list) override;
+    bool updateNameValueList(NameValueList *list) override;
+    bool deleteNameValueList(const QString &listID) override;
+
+    // ==========================================================================================================================
+    // Corpus object info lists
+    // ==========================================================================================================================
+    QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID) override;
+
+    // ==========================================================================================================================
+    // Corpus
+    // ==========================================================================================================================
+    // Load metadata information in already created corpus objects
+    bool loadCorpus(Corpus *corpus) override;
+    bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
+    bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
+    bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
+    bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
+
+    // Save (insert or update) corpus objects
+    bool saveCorpus(Corpus *corpus) override;
+    bool saveCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
+    bool saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
+    bool saveRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
+    bool saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
+    bool saveParticipations(QList<QPointer<CorpusParticipation> >  &participations) override;
+
+    // Delete corpus objects
+    bool deleteCorpus(const QString &corpusID) override;
+    bool deleteCommunication(const QString &communicationID) override;
+    bool deleteSpeaker(const QString &speakerID) override;
+    bool deleteRecording(const QString &recordingID) override;
+    bool deleteAnnotation(const QString &annotationID) override;
+    bool deleteParticipation(const QString &communicationID, const QString &speakerID) override;
 
 private:
     QString m_filename;

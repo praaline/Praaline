@@ -2,6 +2,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include "datastore/CorpusRepository.h"
 #include "SQLSerialiserAnnotation.h"
 #include "SQLQueryEngineAnnotation.h"
 
@@ -68,7 +69,6 @@ QSqlQuery getSqlQueryForSequence(const QueryFilterSequence &qsequence, QSqlDatab
     return qsql;
 }
 
-// static
 QList<QueryOccurrencePointer *> SQLQueryEngineAnnotation::runQuery(QueryDefinition *qdef, AnnotationStructure *structure, QSqlDatabase &db)
 {
     QList<QueryOccurrencePointer *> pointers;
@@ -100,7 +100,6 @@ QList<QueryOccurrencePointer *> SQLQueryEngineAnnotation::runQuery(QueryDefiniti
     return pointers;
 }
 
-// static
 QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer *pointer, QueryDefinition *qdef,
                                                          AnnotationStructure *structure, QSqlDatabase &db,
                                                          int lengthContextLeft, int lengthContextRight)
@@ -167,7 +166,6 @@ QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer 
     return new QueryOccurrence(pointer->corpusID, pointer->communicationID, pointer->annotationID, resultIntervals);
 }
 
-// static
 bool SQLQueryEngineAnnotation::updateAnnotationsFromQueryOccurrences(const QList<QueryOccurrence *> &occurrences, AnnotationStructure *structure, QSqlDatabase &db)
 {
 

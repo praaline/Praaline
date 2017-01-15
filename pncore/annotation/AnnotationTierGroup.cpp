@@ -5,8 +5,11 @@
 #include <QStringList>
 #include "base/RealTime.h"
 #include "AnnotationTier.h"
-#include "IntervalTier.h"
 #include "PointTier.h"
+#include "IntervalTier.h"
+#include "SequenceTier.h"
+#include "TreeTier.h"
+#include "RelationTier.h"
 #include "AnnotationTierGroup.h"
 
 namespace Praaline {

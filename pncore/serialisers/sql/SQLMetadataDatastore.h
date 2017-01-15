@@ -3,16 +3,21 @@
 
 #include <QObject>
 #include <QSqlDatabase>
-#include "serialisers/MetadataDatastore.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
+
+class MetadataStructure;
+class CorpusRepository;
+
+struct SQLMetadataDatastoreData;
 
 class SQLMetadataDatastore : public MetadataDatastore
 {
     Q_OBJECT
 public:
-    SQLMetadataDatastore(QPointer<MetadataStructure> structure, QObject *parent = 0);
+    SQLMetadataDatastore(MetadataStructure *structure, CorpusRepository *repository, QObject *parent = 0);
     ~SQLMetadataDatastore();
 
     // ==========================================================================================================================
@@ -43,14 +48,38 @@ public:
     bool deleteNameValueList(const QString &listID) override;
 
     // ==========================================================================================================================
+    // Corpus object info lists
+    // ==========================================================================================================================
+    QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID) override;
+
+    // ==========================================================================================================================
     // Corpus
     // ==========================================================================================================================
+    // Load metadata information in already created corpus objects
     bool loadCorpus(Corpus *corpus) override;
+    bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
+    bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
+    bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
+    bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
+
+    // Save (insert or update) corpus objects
     bool saveCorpus(Corpus *corpus) override;
+    bool saveCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
+    bool saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
+    bool saveRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
+    bool saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
+    bool saveParticipations(QList<QPointer<CorpusParticipation> >  &participations) override;
+
+    // Delete corpus objects
+    bool deleteCorpus(const QString &corpusID) override;
+    bool deleteCommunication(const QString &communicationID) override;
+    bool deleteSpeaker(const QString &speakerID) override;
+    bool deleteRecording(const QString &recordingID) override;
+    bool deleteAnnotation(const QString &annotationID) override;
+    bool deleteParticipation(const QString &communicationID, const QString &speakerID) override;
 
 private:
-    QSqlDatabase m_database;
-    QPointer<MetadataStructure> m_structure;
+    SQLMetadataDatastoreData *d;
 };
 
 } // namespace Core

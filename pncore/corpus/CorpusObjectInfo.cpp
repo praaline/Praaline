@@ -4,8 +4,12 @@ namespace Praaline {
 namespace Core {
 
 CorpusObjectInfo::CorpusObjectInfo(
-        CorpusObject::Type type, const QString &ID, const QString &parentID, const QString &name, const QString &description) :
-    m_type(type), m_ID(ID), m_parentID(parentID), m_name(name), m_description(description)
+        CorpusObject::Type type, const QString &ID, const QString &parentID, const QString &name, const QString &description,
+        const QString &createdBy, const QDateTime &createdTimestamp,
+        const QString &lastUpdatedBy, const QDateTime &lastUpdatedTimestamp) :
+    m_type(type), m_ID(ID), m_parentID(parentID), m_name(name), m_description(description),
+    m_createdBy(createdBy), m_createdTimestamp(createdTimestamp),
+    m_lastUpdatedBy(lastUpdatedBy), m_lastUpdatedTimestamp(lastUpdatedTimestamp)
 {
 }
 
@@ -52,18 +56,6 @@ QString CorpusObjectInfo::lastUpdatedBy() const
 QDateTime CorpusObjectInfo::lastUpdatedTimestamp() const
 {
     return m_lastUpdatedTimestamp;
-}
-
-void CorpusObjectInfo::setCreated(const QString &createdBy, const QDateTime &createdTimestamp)
-{
-    m_createdBy = createdBy;
-    m_createdTimestamp = createdTimestamp;
-}
-
-void CorpusObjectInfo::setUpdated(const QString &updatedBy, const QDateTime &updatedTimestamp)
-{
-    m_lastUpdatedBy = updatedBy;
-    m_lastUpdatedTimestamp = updatedTimestamp;
 }
 
 } // namespace Core

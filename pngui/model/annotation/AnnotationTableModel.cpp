@@ -28,38 +28,49 @@ AnnotationTableModel::~AnnotationTableModel()
 QVariant AnnotationTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole) return QVariant();
-    if (orientation != Qt::Horizontal) return QVariant();
-    if      (section == 0) return tr("annotationID");
-    else if (section == 1) return tr("speakerID");
-    int offset = 0;
-    switch (d->elementType) {
-    case AnnotationElement::Type_Point:
-        if      (section == 2) return (tr("indexNo"));
-        else if (section == 3) return (tr("time_nsec"));
-        else if (section == 4) return (tr("text"));
-        offset = 5;
-        break;
-    case AnnotationElement::Type_Interval:
-        if      (section == 2) return (tr("indexNo"));
-        else if (section == 3) return (tr("tMin_nsec"));
-        else if (section == 4) return (tr("tMax_nsec"));
-        else if (section == 5) return (tr("text"));
-        offset = 6;
-        break;
-    case AnnotationElement::Type_Sequence:
-    case AnnotationElement::Type_Relation:
-        if      (section == 2) return (tr("indexFrom"));
-        else if (section == 3) return (tr("indexTo"));
-        else if (section == 4) return (tr("text"));
-        offset = 5;
-        break;
-    case AnnotationElement::Type_Element:
-    default:
-        if      (section == 2) return (tr("text"));
-        offset = 3;
+    if (orientation == Qt::Horizontal) {
+        if      (section == 0) return tr("annotationID");
+        else if (section == 1) return tr("speakerID");
+        int offset = 0;
+        switch (d->elementType) {
+        case AnnotationElement::Type_Point:
+            if      (section == 2) return (tr("indexNo"));
+            else if (section == 3) return (tr("time_nsec"));
+            else if (section == 4) return (tr("text"));
+            offset = 5;
+            break;
+        case AnnotationElement::Type_Interval:
+            if      (section == 2) return (tr("indexNo"));
+            else if (section == 3) return (tr("tMin_nsec"));
+            else if (section == 4) return (tr("tMax_nsec"));
+            else if (section == 5) return (tr("text"));
+            offset = 6;
+            break;
+        case AnnotationElement::Type_Sequence:
+        case AnnotationElement::Type_Relation:
+            if      (section == 2) return (tr("indexFrom"));
+            else if (section == 3) return (tr("indexTo"));
+            else if (section == 4) return (tr("text"));
+            offset = 5;
+            break;
+        case AnnotationElement::Type_Element:
+        default:
+            if      (section == 2) return (tr("text"));
+            offset = 3;
+        }
+        if ((section - offset) >= 0 && (section - offset) < d->attributeIDs.count()) {
+            return d->attributeIDs.at(section - offset);
+        }
     }
-    if ((section - offset) >= 0 && (section - offset) < d->attributeIDs.count()) {
-        return d->attributeIDs.at(section - offset);
+    else if (orientation == Qt::Vertical) {
+        QString ret = QString::number(section + 1);
+        AnnotationElement *element(0);
+        if ((section >= 0) && (section < d->elements.count())) {
+            element = d->elements.at(section);
+            if (element->isNew()) return ret.append(" +");
+            if (element->isDirty()) return ret.append(" #");
+        }
+        return ret;
     }
     return QVariant();
 }
@@ -126,15 +137,71 @@ QVariant AnnotationTableModel::data(const QModelIndex &index, int role) const
 
 bool AnnotationTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-//    if (data(index, role) != value) {
-//        emit dataChanged(index, index, QVector<int>() << role);
-//        return true;
-//    }
+    if (!index.isValid()) return false;
+    if (index.row() < 0 || index.row() >= d->elements.count()) return false;
+    if ((role == Qt::EditRole) && (data(index, role) != value)) {
+        AnnotationElement *element = d->elements.at(index.row());
+        QString attributeID;
+        int offset = 0;
+        switch (d->elementType) {
+        case AnnotationElement::Type_Point:
+            if      (index.column() == 2) return false; // indexNo
+            else if (index.column() == 3) attributeID = "tMin_nsec";
+            else if (index.column() == 4) attributeID = "text";
+            offset = 5;
+            break;
+        case AnnotationElement::Type_Interval:
+            if      (index.column() == 2) return false; // indexNo
+            else if (index.column() == 3) attributeID = "tMin_nsec";
+            else if (index.column() == 4) attributeID = "tMax_nsec";
+            else if (index.column() == 5) attributeID = "text";
+            offset = 6;
+            break;
+        case AnnotationElement::Type_Sequence:
+        case AnnotationElement::Type_Relation:
+            if      (index.column() == 2) return false; // indexFrom
+            else if (index.column() == 3) return false; // indexTo
+            else if (index.column() == 4) attributeID = "text";
+            offset = 5;
+            break;
+        case AnnotationElement::Type_Element:
+        default:
+            if      (index.column() == 2) attributeID = "text";
+            offset = 3;
+        }
+        if ((index.column() - offset) >= 0 && (index.column() - offset) < d->attributeIDs.count()) {
+            attributeID = d->attributeIDs.at(index.column()- offset);
+        }
+        element->setAttribute(attributeID, value);
+        emit dataChanged(index, index, QVector<int>() << role);
+        return true;
+    }
     return false;
 }
 
 Qt::ItemFlags AnnotationTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) return Qt::NoItemFlags;
-    return QAbstractTableModel::flags(index); // | Qt::ItemIsEditable;
+    switch (d->elementType) {
+    case AnnotationElement::Type_Point:
+    case AnnotationElement::Type_Interval:
+        if (index.column() >= 3) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        break;
+    case AnnotationElement::Type_Sequence:
+    case AnnotationElement::Type_Relation:
+        if (index.column() >= 4) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        break;
+    case AnnotationElement::Type_Element:
+    default:
+        if (index.column() >= 2) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        break;
+    }
+    return QAbstractTableModel::flags(index);
 }
+
+void AnnotationTableModel::modelSavedInDatabase()
+{
+    emit headerDataChanged(Qt::Vertical, 0, d->elements.count());
+}
+
+

@@ -151,6 +151,7 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
                 QString("%1_createlist_%2").arg(QDateTime::currentDateTimeUtc().toString()).arg(tableName),
                 &createList, db);
     if (!result) { return false; }
+    db.transaction();
     QSqlQuery q1(db), q2(db), qdel(db);
     q1.prepare("INSERT INTO praalineNameValueLists (listID, listType, name, description, datatype, datatypePrecision) "
                "VALUES (:listID, :listType, :name, :description, :datatype, :datatypePrecision)");
@@ -158,7 +159,7 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
     qdel.prepare("DELETE FROM praalineNameValueLists WHERE listID = :listID");
     qdel.bindValue(":listID", newList->ID());
     qdel.exec();
-    if (qdel.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
+    if (qdel.lastError().isValid()) { qDebug() << q1.lastError(); db.rollback(); return false; }
     q1.bindValue(":listID", newList->ID());
     q1.bindValue(":listType", listType);
     q1.bindValue(":name", newList->name());
@@ -166,14 +167,15 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
     q1.bindValue(":datatype", newList->datatypeString());
     q1.bindValue(":datatypePrecision", newList->datatypePrecision());
     q1.exec();
-    if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
+    if (q1.lastError().isValid()) { qDebug() << q1.lastError(); db.rollback(); return false; }
     for (int i = 0; i < newList->count(); ++i) {
         q2.bindValue(":ID", newList->value(i));
         q2.bindValue(":displayText", newList->displayString(i));
         q2.bindValue(":itemOrder", i + 1);
         q2.exec();
-        if (q2.lastError().isValid()) { qDebug() << q2.lastError(); return false; }
+        if (q2.lastError().isValid()) { qDebug() << q2.lastError(); db.rollback(); return false; }
     }
+    db.commit();
     qDebug() << "Sucessfully created name-value list " << newList->ID();
     return true;
 }
@@ -193,6 +195,7 @@ bool SQLSerialiserNameValueList::updateNameValueList(NameValueList *list, NameVa
     q1.bindValue(":listType", listType);
     q1.bindValue(":name", list->name());
     q1.bindValue(":description", list->description());
+    q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); db.rollback(); return false; }
     qdel.prepare(QString("DELETE FROM %1").arg(tableName));
     qdel.exec();
@@ -205,6 +208,7 @@ bool SQLSerialiserNameValueList::updateNameValueList(NameValueList *list, NameVa
         q2.exec();
         if (q2.lastError().isValid()) { qDebug() << q2.lastError(); db.rollback(); return false; }
     }
+    db.commit();
     qDebug() << "Sucessfully created name-value list " << list->ID();
     return true;
 }

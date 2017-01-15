@@ -29,8 +29,6 @@ CorpusCommunication::CorpusCommunication(CorpusCommunication *other, QObject *pa
     m_name = other->m_name;
     m_corpusID = other->m_corpusID;
     copyPropertiesFrom(other);
-    setDirty(true);
-    setNew(true);
 }
 
 CorpusCommunication::~CorpusCommunication()
@@ -66,7 +64,7 @@ void CorpusCommunication::setName(const QString &name)
 {
     if (m_name != name) {
         m_name = name;
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -76,7 +74,7 @@ void CorpusCommunication::setCorpusID(const QString &corpusID)
         m_corpusID = corpusID;
         foreach (QPointer<CorpusRecording> rec, m_recordings) if (rec) rec->setCorpusID(corpusID);
         foreach (QPointer<CorpusAnnotation> annot, m_annotations) if (annot) annot->setCorpusID(corpusID);
-        setDirty(true);
+        m_isDirty = true;
     }
 }
 
@@ -125,7 +123,7 @@ void CorpusCommunication::addRecording(CorpusRecording *recording)
     recording->setCorpusID(this->corpusID());
     m_recordings.insert(recording->ID(), recording);
     connect(recording, SIGNAL(changedID(QString,QString)), this, SLOT(recordingChangedID(QString,QString)));
-    setDirty(true);
+    m_isDirty = true;
     emit corpusRecordingAdded(recording);
 }
 
@@ -136,21 +134,21 @@ void CorpusCommunication::removeRecording(const QString &recordingID)
     // remove recording
     m_recordings.remove(recordingID);
     delete recording;
-    setDirty(true);
+    m_isDirty = true;
     deletedRecordingIDs << recordingID;
     emit corpusRecordingDeleted(this->ID(), recordingID);
 }
 
-void CorpusCommunication::unlinkRecording(const QString &recordingID)
-{
-    if (!m_recordings.contains(recordingID)) return;
-    QPointer<CorpusRecording> recording = m_recordings.value(recordingID);
-    m_recordings.remove(recordingID);
-    recording->setNew(true);
-    setDirty(true);
-    deletedRecordingIDs << recordingID;
-    emit corpusRecordingDeleted(this->ID(), recordingID);
-}
+//void CorpusCommunication::unlinkRecording(const QString &recordingID)
+//{
+//    if (!m_recordings.contains(recordingID)) return;
+//    QPointer<CorpusRecording> recording = m_recordings.value(recordingID);
+//    m_recordings.remove(recordingID);
+//    recording->setNew(true);
+//    m_isDirty = true;
+//    deletedRecordingIDs << recordingID;
+//    emit corpusRecordingDeleted(this->ID(), recordingID);
+//}
 
 void CorpusCommunication::recordingChangedID(const QString &oldID, const QString &newID)
 {
@@ -212,7 +210,7 @@ void CorpusCommunication::addAnnotation(CorpusAnnotation *annotation)
     annotation->setCorpusID(this->corpusID());
     m_annotations.insert(annotation->ID(), annotation);
     connect(annotation, SIGNAL(changedID(QString,QString)), this, SLOT(annotationChangedID(QString,QString)));
-    setDirty(true);
+    m_isDirty = true;
     emit corpusAnnotationAdded(annotation);
 }
 
@@ -223,21 +221,21 @@ void CorpusCommunication::removeAnnotation(const QString &annotationID)
     // remove annotation
     m_annotations.remove(annotationID);
     delete annotation;
-    setDirty(true);
+    m_isDirty = true;
     deletedAnnotationIDs << annotationID;
     emit corpusAnnotationDeleted(this->ID(), annotationID);
 }
 
-void CorpusCommunication::unlinkAnnotation(const QString &annotationID)
-{
-    if (!m_annotations.contains(annotationID)) return;
-    QPointer<CorpusAnnotation> annotation = m_annotations.value(annotationID);
-    m_annotations.remove(annotationID);
-    annotation->setNew(true);
-    setDirty(true);
-    deletedAnnotationIDs << annotationID;
-    emit corpusAnnotationDeleted(this->ID(), annotationID);
-}
+//void CorpusCommunication::unlinkAnnotation(const QString &annotationID)
+//{
+//    if (!m_annotations.contains(annotationID)) return;
+//    QPointer<CorpusAnnotation> annotation = m_annotations.value(annotationID);
+//    m_annotations.remove(annotationID);
+//    annotation->setNew(true);
+//    m_isDirty = true;
+//    deletedAnnotationIDs << annotationID;
+//    emit corpusAnnotationDeleted(this->ID(), annotationID);
+//}
 
 void CorpusCommunication::annotationChangedID(const QString &oldID, const QString &newID)
 {

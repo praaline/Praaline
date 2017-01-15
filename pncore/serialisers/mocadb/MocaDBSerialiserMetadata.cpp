@@ -62,9 +62,9 @@ QList<CorpusObjectInfo> MocaDBSerialiserMetadata::getCorpusObjectInfoList(Corpus
     if (q.lastError().isValid()) { qDebug() << q.lastError(); return list; }
     while (q.next()) {
         CorpusObjectInfo item(type, q.value("data_id").toString(), q.value("parent_id").toString(),
-                              q.value("name").toString(), q.value("description").toString());
-        item.setCreated(q.value("created_by").toString(), q.value("created_timestamp").toDateTime());
-        item.setUpdated(q.value("last_update_by").toString(), q.value("last_update_timestamp").toDateTime());
+                              q.value("name").toString(), q.value("description").toString(),
+                              q.value("created_by").toString(), q.value("created_timestamp").toDateTime(),
+                              q.value("last_update_by").toString(), q.value("last_update_timestamp").toDateTime());
         list << item;
     }
     return list;

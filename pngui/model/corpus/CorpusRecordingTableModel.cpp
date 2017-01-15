@@ -72,6 +72,16 @@ QVariant CorpusRecordingTableModel::headerData(int section, Qt::Orientation orie
         else
             return QVariant();
     }
+    else if (orientation == Qt::Vertical) {
+        QString ret = QString::number(section + 1);
+        QPointer<CorpusRecording> item(0);
+        if ((section >= 0) && (section < d->items.count())) {
+            item  = d->items.at(section);
+            if (item->isNew()) return ret.append(" +");
+            if (item->isDirty()) return ret.append(" #");
+        }
+        return ret;
+    }
     return QVariant();
 }
 

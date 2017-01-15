@@ -3,16 +3,19 @@
 
 #include <QObject>
 #include <QSqlDatabase>
-#include "serialisers/AnnotationDatastore.h"
+#include "structure/AnnotationStructure.h"
+#include "datastore/AnnotationDatastore.h"
 
 namespace Praaline {
 namespace Core {
+
+class CorpusRepository;
 
 class SQLAnnotationDatastore : public AnnotationDatastore
 {
     Q_OBJECT
 public:
-    explicit SQLAnnotationDatastore(QPointer<AnnotationStructure> structure, QObject *parent = 0);
+    explicit SQLAnnotationDatastore(AnnotationStructure *structure, CorpusRepository *repository, QObject *parent = 0);
     ~SQLAnnotationDatastore();
 
     // ==========================================================================================================================
@@ -27,10 +30,10 @@ public:
     // ==========================================================================================================================
     bool loadAnnotationStructure() override;
     bool saveAnnotationStructure() override;
-    bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel) override;
+    bool createAnnotationLevel(AnnotationStructureLevel *newLevel) override;
     bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID) override;
     bool deleteAnnotationLevel(const QString &levelID) override;
-    bool createAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> newAttribute) override;
+    bool createAnnotationAttribute(const QString &levelID, AnnotationStructureAttribute *newAttribute) override;
     bool renameAnnotationAttribute(const QString &levelID, const QString &attributeID, const QString &newAttributeID) override;
     bool deleteAnnotationAttribute(const QString &levelID, const QString &attributeID) override;
     bool retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDatatype) override;
@@ -68,14 +71,16 @@ public:
     QList<Point *> getPoints(const Selection &selection) override;
     QList<Interval *> getIntervals(const Selection &selection) override;
     QList<Sequence *> getSequences(const Selection &selection) override;
+    bool saveAnnotationElements(const QList<AnnotationElement *> &elements, const QString &levelID,
+                                const QStringList &attributeIDs) override;
 
     // ==========================================================================================================================
     // Speakers and Timeline
     // ==========================================================================================================================
-    QList<QString> getSpeakersInLevel(const QString &annotationID, const QString &levelID) override;
-    QList<QString> getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID) override;
-    QList<QString> getSpeakersInAnnotation(const QString &annotationID) override;
-    QList<QString> getSpeakersActiveInAnnotation(const QString &annotationID) override;
+    QStringList getSpeakersInLevel(const QString &annotationID, const QString &levelID) override;
+    QStringList getSpeakersActiveInLevel(const QString &annotationID, const QString &levelID) override;
+    QStringList getSpeakersInAnnotation(const QString &annotationID) override;
+    QStringList getSpeakersActiveInAnnotation(const QString &annotationID) override;
     IntervalTier *getSpeakerTimeline(const QString &communicationID,const QString &annotationID,
                                      const QString &levelID, bool detailed = false) override;
 

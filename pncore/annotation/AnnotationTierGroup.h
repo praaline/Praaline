@@ -1,6 +1,20 @@
 #ifndef ANNOTATIONTIERGROUP_H
 #define ANNOTATIONTIERGROUP_H
 
+/*
+    Praaline - Core module - Annotation
+    Copyright (c) 2011-2017 George Christodoulides
+
+    This program or module is free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version. It is provided
+    for educational purposes and is distributed in the hope that it will
+    be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+    the GNU General Public License for more details.
+*/
+
 #include "pncore_global.h"
 #include <QObject>
 #include <QString>
@@ -8,15 +22,16 @@
 #include <QPair>
 #include <QStringList>
 #include "base/RealTime.h"
-#include "AnnotationTier.h"
-#include "PointTier.h"
-#include "IntervalTier.h"
-#include "SequenceTier.h"
-#include "TreeTier.h"
-#include "RelationTier.h"
 
 namespace Praaline {
 namespace Core {
+
+class AnnotationTier;
+class PointTier;
+class IntervalTier;
+class SequenceTier;
+class TreeTier;
+class RelationTier;
 
 class PRAALINE_CORE_SHARED_EXPORT AnnotationTierGroup : public QObject
 {

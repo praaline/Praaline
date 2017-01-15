@@ -56,5 +56,10 @@ QVariant Point::attribute(const QString &name) const
     return AnnotationElement::attribute(name);
 }
 
+void Point::setAttribute(const QString &name, QVariant value) {
+    if ((name == "time") || (name == "timeNanoseconds")) return;
+    AnnotationElement::setAttribute(name, value);
+}
+
 } // namespace Core
 } // namespace Praaline

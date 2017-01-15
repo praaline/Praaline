@@ -1,5 +1,6 @@
 #include <QString>
 #include <QTextStream>
+#include "Point.h"
 #include "PointTier.h"
 #include "IntervalTier.h"
 #include "AnnotationTier.h"

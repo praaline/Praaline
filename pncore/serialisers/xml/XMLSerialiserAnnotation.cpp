@@ -1,3 +1,7 @@
+#include "structure/AnnotationStructure.h"
+#include "annotation/AnnotationTierGroup.h"
+#include "annotation/AnnotationTier.h"
+#include "annotation/Interval.h"
 #include "XMLSerialiserAnnotation.h"
 
 namespace Praaline {

@@ -2,6 +2,7 @@
 #define SQLSERIALISERCORPUS_H
 
 #include <QSqlDatabase>
+#include "base/IDatastore.h"
 #include "SQLSerialiserBase.h"
 #include "structure/MetadataStructure.h"
 #include "corpus/Corpus.h"
@@ -14,7 +15,7 @@
 namespace Praaline {
 namespace Core {
 
-class SQLSerialiserCorpus : public SQLSerialiserBase
+class SQLSerialiserCorpus : public SQLSerialiserBase, public IDatastore
 {
 public:
     static bool saveCorpus(Corpus *corpus, QSqlDatabase &db);

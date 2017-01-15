@@ -1,13 +1,18 @@
 #ifndef XMLSERIALISERANNOTATION_H
 #define XMLSERIALISERANNOTATION_H
 
+#include <QString>
+#include <QMap>
+#include "base/RealTime.h"
 #include "XMLSerialiserBase.h"
-#include "structure/AnnotationStructure.h"
-#include "annotation/AnnotationTierGroup.h"
-#include "annotation/AnnotationTier.h"
 
 namespace Praaline {
 namespace Core {
+
+class Interval;
+class AnnotationTier;
+class AnnotationTierGroup;
+class AnnotationStructure;
 
 class XMLSerialiserAnnotation : public XMLSerialiserBase
 {
