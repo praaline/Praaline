@@ -5,6 +5,8 @@
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/query/Measures.h"
 #include "pncore/base/RealValueList.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "prosodicboundaries.h"
 
 QStringList ProsodicBoundaries::POS_CLI = QStringList( { "PRP:det", "DET:def", "DET:dem", "DET:int", "DET:par", "DET:pos",
@@ -60,7 +62,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
 {
     QList<QString> results;
     if (!corpus) return results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotID);
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
@@ -73,7 +75,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
         // Prepare syllables (calculcate log duration and a list of pause durations)
         // Distinguish between intra-speaker and inter-speaker pauses
         // Note: for getSpeakerTimeline, in the experiment corpus communicationID = annotationID
-        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline(annotID, annotID, "syll");
+        IntervalTier *timeline = corpus->repository()->annotations()->getSpeakerTimeline(annotID, annotID, "syll");
         foreach (Interval *syll, tier_syll->intervals()) {
             syll->setAttribute("duration_log", log(syll->attribute("duration").toDouble()));
             if (syll->text() == "_") {
@@ -229,7 +231,7 @@ void ProsodicBoundaries::analyseBoundaryList(QTextStream &out, Corpus *corpus, c
 QList<QString> ProsodicBoundaries::analyseCorpusSampleToStrings(Corpus *corpus, const QString &annotID)
 {
     QList<QString> results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotID);
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 

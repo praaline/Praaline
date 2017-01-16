@@ -14,6 +14,8 @@
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/structure/AnnotationStructureLevel.h"
 #include "pncore/annotation/AnnotationDataTable.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "annotationpluginpraatscript.h"
@@ -144,7 +146,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     if (!tempDirectory.endsWith("/")) tempDirectory.append("/");
     // Copy the recording file into temp+.wav
     QString filenameTempRec = QString("%1_%2.wav").arg(rec->ID()).arg(speakerID);
-    QFile::copy(corpus->baseMediaPath() + "/" + rec->filename(), tempDirectory + filenameTempRec);
+    QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
 
     // Check that the needed tiers are present
     if (segmentationMethod == 1 || segmentationMethod == 2 || segmentationMethod == 3) {
@@ -189,7 +191,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     QStringList scriptArguments;
 
     // Create prosogram directory if it does not exist in the folder
-    QFileInfo info(corpus->baseMediaPath() + "/" + rec->filename());
+    QFileInfo info(rec->filePath());
     QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
     if (keepIntermediateFiles) {
         info.absoluteDir().mkpath("prosogram");
@@ -238,7 +240,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     } else {
         updateTierFromAnnotationTable(tempDirectory + filenameData, "nucl_t1", "nucl_t2", tier_syll);
     }
-    if (!corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_syll)) {
+    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll)) {
         qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " syll count " << tier_syll->count();
     }
     if (txgNuclei)

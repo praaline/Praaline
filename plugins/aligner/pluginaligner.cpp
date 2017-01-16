@@ -14,12 +14,16 @@
 
 #include "pluginaligner.h"
 #include "pncore/corpus/Corpus.h"
-#include "phonemedatabase.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+
 #include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "pnlib/asr/sphinx/SphinxSegmentation.h"
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
+
+#include "phonemedatabase.h"
 #include "EasyAlignBasic.h"
 #include "LongSoundAligner.h"
 #include "BroadClassAligner.h"
@@ -153,7 +157,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Aligner::PluginAlig
     return parameters;
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::Aligner::PluginAligner::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("commandDownsampleWaveFiles")) d->commandDownsampleWaveFiles = parameters.value("commandDownsampleWaveFiles").toBool();
     if (parameters.contains("commandExtractFeatures")) d->commandExtractFeatures = parameters.value("commandExtractFeatures").toBool();
@@ -170,7 +174,7 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(QHash<QString, QVa
     if (parameters.contains("sphinxMLLRAdaptationPath")) d->sphinxMLLRAdaptationPath = parameters.value("sphinxMLLRAdaptationPath").toString();
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(const QList<QPointer<CorpusCommunication> > &communications)
 {
     printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
     QPointer<LongSoundAligner> LSA = new LongSoundAligner();
@@ -179,7 +183,7 @@ void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAut
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
-        LSA->createUtterancesFromProsogramAutosyll(corpus, com);
+        LSA->createUtterancesFromProsogramAutosyll(com);
         ++countDone;
         madeProgress(countDone * 100 / communications.count());
         QApplication::processEvents();
@@ -250,41 +254,39 @@ struct LSAStep
 
 struct DownsampleWaveFileStep
 {
-    DownsampleWaveFileStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    DownsampleWaveFileStep() {}
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            SpeechRecognitionRecipes::downsampleWaveFile(m_corpus, rec);
+            SpeechRecognitionRecipes::downsampleWaveFile(rec);
         }
         return QString("%1\tdownsampled %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
     }
-    QPointer<Corpus> m_corpus;
 };
 
 struct SphinxFeatureExtractionStep
 {
-    SphinxFeatureExtractionStep(QPointer<Corpus> corpus, SpeechRecognitionRecipes::Configuration config)
-        : m_corpus(corpus), m_config(config) { }
+    SphinxFeatureExtractionStep(SpeechRecognitionRecipes::Configuration config) :
+        m_config(config) {}
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            SpeechRecognitionRecipes::createSphinxFeatureFile(m_corpus, rec, m_config);
+            SpeechRecognitionRecipes::createSphinxFeatureFile(rec, m_config);
         }
         return QString("%1\textracted feature files for %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
     }
-    QPointer<Corpus> m_corpus;
     SpeechRecognitionRecipes::Configuration m_config;
 };
 
 struct OpenSmileVADSegmentationStep
 {
-    OpenSmileVADSegmentationStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    OpenSmileVADSegmentationStep() {}
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
@@ -302,20 +304,19 @@ struct OpenSmileVADSegmentationStep
             tier_utterances->setName("auto_segment");
             // Save
             mutex.lock();
-            m_corpus->datastoreAnnotations()->saveTier(rec->ID(), "", tier_utterances);
+            com->repository()->annotations()->saveTier(rec->ID(), "", tier_utterances);
             mutex.unlock();
         }
         return QString("%1\tsegmented %2 recording(s) using OpenSMILE VAD.").arg(com->ID()).arg(com->recordingsCount());
     }
-    QPointer<Corpus> m_corpus;
 };
 
 struct SphinxAutomaticTranscriptionStep
 {
     SphinxAutomaticTranscriptionStep(
-            QPointer<Corpus> corpus, const QString &sphinxAcousticModel, const QString &sphinxLanguageModel,
+            const QString &sphinxAcousticModel, const QString &sphinxLanguageModel,
             const QString &sphinxPronunciationDictionary, const QString &sphinxMLLRMatrix)
-        : m_corpus(corpus), m_sphinxAcousticModel(sphinxAcousticModel), m_sphinxLanguageModel(sphinxLanguageModel),
+        : m_sphinxAcousticModel(sphinxAcousticModel), m_sphinxLanguageModel(sphinxLanguageModel),
           m_sphinxPronunciationDictionary(sphinxPronunciationDictionary), m_sphinxMLLRMatrix(sphinxMLLRMatrix) { }
     typedef QString result_type;
 
@@ -327,17 +328,16 @@ struct SphinxAutomaticTranscriptionStep
             if (id > 10) return QString("%1 ok").arg(id);
 
             bool result = SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(
-                        m_corpus, com, rec, rec->ID(), "auto_segment", "auto_transcription",
+                        com, rec, rec->ID(), "auto_segment", "auto_transcription",
                         m_sphinxAcousticModel, m_sphinxLanguageModel,
                         m_sphinxPronunciationDictionary, m_sphinxMLLRMatrix);
             if (result) {
                 SpeechRecognitionRecipes::updateSegmentationFromTranscription(
-                            m_corpus, com, "auto_segment", "auto_transcription");
+                            com, "auto_segment", "auto_transcription");
             }
         }
         return QString("%1\tautomatically transcribed %2 recording(s) using Sphinx.").arg(com->ID()).arg(com->recordingsCount());
     }
-    QPointer<Corpus> m_corpus;
     QString m_sphinxAcousticModel;
     QString m_sphinxLanguageModel;
     QString m_sphinxPronunciationDictionary;
@@ -346,37 +346,35 @@ struct SphinxAutomaticTranscriptionStep
 
 struct CreateMLLRAdaptationStep
 {
-    CreateMLLRAdaptationStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    CreateMLLRAdaptationStep() {}
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            // SpeechRecognitionRecipes::downsampleWaveFile(m_corpus, rec);
+            SpeechRecognitionRecipes::downsampleWaveFile(rec);
         }
         return QString("%1\t %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
     }
-    QPointer<Corpus> m_corpus;
     QString m_MLLRAdaptationPath;
 };
 
 struct RunEasyAlignStep
 {
-    RunEasyAlignStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    RunEasyAlignStep() {}
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        return EasyAlignBasic::runAllEasyAlignSteps(m_corpus, com);
+        return EasyAlignBasic::runAllEasyAlignSteps(com);
     }
-    QPointer<Corpus> m_corpus;
 };
 
 // ====================================================================================================================
 
-void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     madeProgress(0);
     printMessage("Starting");
@@ -385,7 +383,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 
     // asynchronous execution
     if (d->commandDownsampleWaveFiles) {
-        d->future = QtConcurrent::mapped(communications, DownsampleWaveFileStep(corpus));
+        d->future = QtConcurrent::mapped(communications, DownsampleWaveFileStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
@@ -393,38 +391,38 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
         SpeechRecognitionRecipes::Configuration config;
         config.sphinxHMModelPath = SphinxConfiguration::defaultModelsPath() + "model/hmm/french_f0";
         // BATCH MODE (but UI unresponsive) SpeechRecognitionRecipes::batchCreateSphinxFeatureFiles(corpus, communications, config);
-        d->future = QtConcurrent::mapped(communications, SphinxFeatureExtractionStep(corpus, config));
+        d->future = QtConcurrent::mapped(communications, SphinxFeatureExtractionStep(config));
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
     if (d->commandSplitToUtterances) {
-        d->future = QtConcurrent::mapped(communications, OpenSmileVADSegmentationStep(corpus));
+        d->future = QtConcurrent::mapped(communications, OpenSmileVADSegmentationStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
     if (d->commandAutomaticTranscription) {
         d->future = QtConcurrent::mapped(communications, SphinxAutomaticTranscriptionStep(
-                                             corpus, d->sphinxAcousticModel, d->sphinxLanguageModel,
+                                             d->sphinxAcousticModel, d->sphinxLanguageModel,
                                              d->sphinxPronunciationDictionary, d->sphinxMLLRMatrix));
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
     if (d->commandCreateMLLRAdaptation) {
-        d->future = QtConcurrent::mapped(communications, CreateMLLRAdaptationStep(corpus));
+        d->future = QtConcurrent::mapped(communications, CreateMLLRAdaptationStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
 
     if (d->commandLongSoundAligner) {
         QPointer<LongSoundAligner> LSA = new LongSoundAligner();
-        LSA->createRecognitionLevel(corpus, 0);
-        d->future = QtConcurrent::mapped(communications, LSAStep(corpus));
+        LSA->createRecognitionLevel(0);
+        d->future = QtConcurrent::mapped(communications, LSAStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
 
     if (d->commandEasyAlign) {
-        d->future = QtConcurrent::mapped(communications, RunEasyAlignStep(corpus));
+        d->future = QtConcurrent::mapped(communications, RunEasyAlignStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
@@ -556,7 +554,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(Corpus *corpus, QList<QP
 //                QFileInfo info(filenameRec);
 //                QString filename = info.absolutePath() + QString("/%1_phone.svl").arg(speakerID);
 
-void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const QList<QPointer<CorpusCommunication> > &communications)
 {
     int countDone = 0;
     madeProgress(0);
@@ -568,14 +566,14 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus 
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_token = tiers->getIntervalTierByName("tok_min");
                 if (!tier_token) continue;
                 ExternalPhonetiser::addPhonetisationToTokens(tier_token, "", "phonetisation");
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_token);
             }
             qDeleteAll(tiersAll);
         }
@@ -588,7 +586,7 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(Corpus 
     printMessage("Finished");
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -598,7 +596,7 @@ void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID.startsWith("(")) continue;
 
@@ -637,7 +635,7 @@ void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances
     }
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::align(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::align(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -647,7 +645,7 @@ void Praaline::Plugins::Aligner::PluginAligner::align(Corpus *corpus, QList<QPoi
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID.startsWith("(")) continue;
 
@@ -664,7 +662,7 @@ void Praaline::Plugins::Aligner::PluginAligner::align(Corpus *corpus, QList<QPoi
     //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<QPointer<CorpusCommunication> > &communications)
 {
     int countDone = 0;
     madeProgress(0);
@@ -675,7 +673,7 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(Corpus *corpus, QList<QPo
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;

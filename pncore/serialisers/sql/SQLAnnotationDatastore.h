@@ -30,7 +30,6 @@ public:
     // Annotation Structure
     // ==========================================================================================================================
     bool loadAnnotationStructure() override;
-    bool saveAnnotationStructure() override;
     bool createAnnotationLevel(AnnotationStructureLevel *newLevel) override;
     bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID) override;
     bool deleteAnnotationLevel(const QString &levelID) override;

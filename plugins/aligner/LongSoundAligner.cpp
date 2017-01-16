@@ -7,6 +7,8 @@
 #include "LongSoundAligner.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 
 struct LongSoundAlignerData
@@ -36,38 +38,37 @@ LongSoundAligner::~LongSoundAligner()
 }
 
 // Annotation structure tools
-bool LongSoundAligner::createRecognitionLevel(QPointer<Corpus> corpus, int recognitionStep)
+bool LongSoundAligner::createRecognitionLevel(CorpusRepository *repository, int recognitionStep)
 {
-    if (!corpus) return false;
+    if (!repository) return false;
     QString levelID = QString(d->tiername_auto_hypseg).arg(recognitionStep);
-    if (corpus->annotationStructure()->hasLevel(levelID)) return true;
+    if (repository->annotationStructure()->hasLevel(levelID)) return true;
     AnnotationStructureLevel *level = new AnnotationStructureLevel(levelID, AnnotationStructureLevel::IndependentIntervalsLevel,
                                                                    levelID, QString("Long sound alignment step %1").arg(recognitionStep));
-    if (!corpus->datastoreAnnotations()->createAnnotationLevel(level)) return false;
-    corpus->annotationStructure()->addLevel(level);
+    if (!repository->datastoreAnnotations()->createAnnotationLevel(level)) return false;
+    repository->annotationStructure()->addLevel(level);
     AnnotationStructureAttribute *attr;
     attr = new AnnotationStructureAttribute("text_from_dic", "Text from Dic", "Text from pronunciation dictionary");
-    if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
-    level->addAttribute(attr);
+    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
+    repository->addAttribute(attr);
     attr = new AnnotationStructureAttribute("acoustic_score", "Acoustic score", "Acoustic score for this word", DataType::Double);
-    if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
+    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
     attr = new AnnotationStructureAttribute("lm_score", "LM score", "Language model score for this word", DataType::Double);
-    if (!corpus->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
+    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
-    corpus->save();
     return true;
 }
 
 // Long sound alignment steps
-bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<CorpusCommunication> com)
 {
     if (!com) return false;
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         // Normally, there should be one speaker (with a speaker ID equal to the communication ID), created by
         // running Prosogram in automatic segmentation mode.
         foreach (QString speakerID, tiersAll.keys()) {
@@ -84,7 +85,7 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<Corpus> co
                 }
                 if (syll->text() != "syl") syll->setText("_");
             }
-            corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_auto_syll);
+            com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_auto_syll);
             tier_auto_syll->mergeIdenticalAnnotations("_");
             QList<Interval *> pauses;
             foreach (Interval *syll, tier_auto_syll->intervals())
@@ -102,7 +103,7 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<Corpus> co
             IntervalTier *tier_auto_utterance = new IntervalTier(d->tiername_auto_utterance, longPauses,
                                                                  tier_auto_syll->tMin(), tier_auto_syll->tMax());
             tiers->addTier(tier_auto_utterance);
-            corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_auto_utterance);
+            com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_auto_utterance);
         }
         qDeleteAll(tiersAll);
     }

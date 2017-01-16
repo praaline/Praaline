@@ -112,11 +112,6 @@ bool SQLMetadataDatastore::loadMetadataStructure()
     return SQLSerialiserMetadataStructure::loadMetadataStructure(d->structure, d->database);
 }
 
-bool SQLMetadataDatastore::saveMetadataStructure()
-{
-    return true;
-}
-
 // ==========================================================================================================================
 // Name-value lists
 // ==========================================================================================================================

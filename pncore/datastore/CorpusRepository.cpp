@@ -110,12 +110,6 @@ CorpusRepository *CorpusRepository::open(const CorpusRepositoryDefinition &defin
     return repository;
 }
 
-void CorpusRepository::save()
-{
-    d->datastoreMetadata->saveMetadataStructure();
-    d->datastoreAnnotations->saveAnnotationStructure();
-}
-
 void CorpusRepository::close()
 {
     d->datastoreMetadata->closeDatastore();
@@ -198,7 +192,6 @@ void CorpusRepository::importMetadataStructure(MetadataStructure *otherStructure
             }
         }
     }
-    d->datastoreMetadata->saveMetadataStructure();
 }
 
 void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStructure)
@@ -243,7 +236,6 @@ void CorpusRepository::importAnnotationStructure(AnnotationStructure *otherStruc
             else delete myLevel;
         }
     }
-    d->datastoreAnnotations->saveAnnotationStructure();
 }
 
 // ==============================================================================================================================

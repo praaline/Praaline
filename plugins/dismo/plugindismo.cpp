@@ -125,7 +125,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisMo::PluginDisMo:
     return parameters;
 }
 
-void Praaline::Plugins::DisMo::PluginDisMo::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::DisMo::PluginDisMo::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("createDisMoAnnotationLevels")) d->createDisMoAnnotationLevels = parameters.value("createDisMoAnnotationLevels").toBool();
     if (parameters.contains("alreadyTokenised")) d->alreadyTokenised = parameters.value("alreadyTokenised").toBool();
@@ -181,8 +181,6 @@ void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpu
     createAttribute(repository, level_tok_mwu, d->attributePrefix, "pos_ext_mwu", "POS extended (MWU)", "", DataType(DataType::VarChar, 32));
     createAttribute(repository, level_tok_mwu, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
     createAttribute(repository, level_tok_mwu, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
-    // Save corpus repository
-    repository->save();
 }
 
 void trainExperiments()
@@ -264,7 +262,7 @@ QString evaluateCRFfile(const QString &filename, double &precision, double &prec
 }
 
 
-void Praaline::Plugins::DisMo::PluginDisMo::process(QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 //    addMWUindications(corpus, communications);
 //    return;

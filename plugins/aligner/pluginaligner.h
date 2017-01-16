@@ -34,30 +34,30 @@ namespace Praaline {
                 virtual ~PluginAligner();
 
                 // IObjectBase implementation
-                QObject* objectBase() { return this; }
-                const QObject* objectBase() const { return this; }
+                QObject* objectBase() override { return this; }
+                const QObject* objectBase() const override { return this; }
 
                 // IPlugin implementation
-                bool initialize(const QStringList &arguments, QStringList *error_strings);
-                bool initializeDependencies(QStringList *error_strings);
-                void finalize();
-                QString pluginName() const;
-                QtilitiesCategory pluginCategory() const;
-                VersionInformation pluginVersionInformation() const;
-                QString pluginPublisher() const;
-                QString pluginPublisherWebsite() const;
-                QString pluginPublisherContact() const;
-                QString pluginDescription() const;
-                QString pluginCopyright() const;
-                QString pluginLicense() const;
+                bool initialize(const QStringList &arguments, QStringList *error_strings) override;
+                bool initializeDependencies(QStringList *error_strings) override;
+                void finalize() override;
+                QString pluginName() const override;
+                QtilitiesCategory pluginCategory() const override;
+                VersionInformation pluginVersionInformation() const override;
+                QString pluginPublisher() const override;
+                QString pluginPublisherWebsite() const override;
+                QString pluginPublisherContact() const override;
+                QString pluginDescription() const override;
+                QString pluginCopyright() const override;
+                QString pluginLicense() const override;
 
                 // IAnnotationPlugin implementation
-                QList<PluginParameter> pluginParameters() const;
-                void setParameters(QHash<QString, QVariant> parameters);
-                void process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                QList<PluginParameter> pluginParameters() const override;
+                void setParameters(const QHash<QString, QVariant> &parameters) override;
+                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
 
             signals:
-                void printMessage(QString message);
+                void printMessage(const QString &message);
                 void madeProgress(int progress);
 
             protected slots:
@@ -67,11 +67,11 @@ namespace Praaline {
 
             private:
                 PluginAlignerPrivateData* d;
-                void addPhonetisationToTokens(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-                void createFeatureFilesFromUtterances(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-                void align(Corpus *corpus, QList<QPointer<CorpusCommunication> > &communications);
-                void createUtterancesFromProsogramAutosyll(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
-                void checks(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                void addPhonetisationToTokens(const QList<QPointer<CorpusCommunication> > &communications);
+                void createFeatureFilesFromUtterances(const QList<QPointer<CorpusCommunication> > &communications);
+                void align(const QList<QPointer<CorpusCommunication> > &communications);
+                void createUtterancesFromProsogramAutosyll(const QList<QPointer<CorpusCommunication> > &communications);
+                void checks(const QList<QPointer<CorpusCommunication> > &communications);
             };
         }
     }

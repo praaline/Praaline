@@ -40,7 +40,6 @@ public:
     // ==========================================================================================================================
     static CorpusRepository *create(const CorpusRepositoryDefinition &definition, QString &errorMessages, QObject *parent = 0);
     static CorpusRepository *open(const CorpusRepositoryDefinition &definition, QString &errorMessages, QObject *parent = 0);
-    void save();
     void close();
 
     // Datastores

@@ -44,11 +44,6 @@ bool XMLMetadataDatastore::loadMetadataStructure()
     return false;
 }
 
-bool XMLMetadataDatastore::saveMetadataStructure()
-{
-    return false;
-}
-
 bool XMLMetadataDatastore::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute)
 {
     return false;

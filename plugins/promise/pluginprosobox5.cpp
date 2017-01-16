@@ -7,11 +7,16 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QCoreApplication>
+
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/structure/AnnotationStructureLevel.h"
 #include "pncore/annotation/AnnotationDataTable.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
 
 #include "attributenametranslation.h"
 #include "annotationpluginpraatscript.h"
@@ -60,7 +65,7 @@ void PluginProsobox5::ProsoGram(Corpus *corpus, CorpusRecording *rec, CorpusAnno
     if (!rec) return;
     if (!annot) return;
 
-    QList<QString> speakerIDs = corpus->datastoreAnnotations()->getSpeakersInLevel(annot->ID(), "syll");
+    QList<QString> speakerIDs = corpus->repository()->annotations()->getSpeakersInLevel(annot->ID(), "syll");
     foreach (QString speakerID , speakerIDs) {
         QString filenameTempRec = rec->basePath() + rec->filename();
         filenameTempRec = filenameTempRec.replace(rec->ID() + ".", speakerID + ".", Qt::CaseInsensitive);
@@ -116,10 +121,10 @@ void PluginProsobox5::ProsoGram(Corpus *corpus, CorpusRecording *rec, CorpusAnno
             QFile::remove(filenameTempRec);
 
         // Update syllable tier
-        IntervalTier *syll = qobject_cast<IntervalTier *>(corpus->datastoreAnnotations()->getTier(annot->ID(), speakerID, "syll"));
+        IntervalTier *syll = qobject_cast<IntervalTier *>(corpus->repository()->annotations()->getTier(annot->ID(), speakerID, "syll"));
         if (!syll) return;
         updateTierFromAnnotationTable(prosoPath + filenameSpreadsheet, "nucl_t1", "nucl_t2", syll);
-        corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, syll);
+        corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, syll);
         delete syll;
     }
 }
@@ -130,7 +135,8 @@ void PluginProsobox5::CreateSyllTable(CorpusCommunication *com)
 {
     if (com->annotationsCount() == 0)
         return;
-    QFileInfo info(com->basePath() + com->annotation(0)->filename());
+    QString basePath = com->repository()->files()->basePath();
+    QFileInfo info(basePath + "/" + com->annotation(0)->filename());
     QString annotationID = info.fileName().replace(".TextGrid", "", Qt::CaseInsensitive);
     QString absPath = info.absoluteDir().absolutePath() + "/";
     QString prosoPath = absPath + "prosogram/";
@@ -156,7 +162,8 @@ void PluginProsobox5::ProsoProm(CorpusCommunication *com)
 {
     if (com->annotationsCount() == 0)
         return;
-    QString filenameAnnotation = com->basePath() + com->annotation(0)->filename();
+    QString basePath = com->repository()->files()->basePath();
+    QString filenameAnnotation = basePath + "/" + com->annotation(0)->filename();
     QString filenameTable = QString(filenameAnnotation).replace(".TextGrid", ".Table", Qt::CaseInsensitive);
     // Execute PromGrad
     QString appPath = QCoreApplication::applicationDirPath();
@@ -177,7 +184,8 @@ void PluginProsobox5::MakeIFtier(CorpusCommunication *com)
 {
     if (com->annotationsCount() == 0)
         return;
-    QString filenameAnnotation = com->basePath() + com->annotation(0)->filename();
+    QString basePath = com->repository()->files()->basePath();
+    QString filenameAnnotation = basePath + "/" + com->annotation(0)->filename();
     // Execute PromGrad
     QString appPath = QCoreApplication::applicationDirPath();
     QString script = appPath + "/tools/various/make_if_tier_from_lex3.praat";

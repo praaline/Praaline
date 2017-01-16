@@ -54,11 +54,11 @@ namespace Praaline {
 
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
-                void setParameters(QHash<QString, QVariant> parameters) override;
-                void process(QList<QPointer<CorpusCommunication> > communications) override;
+                void setParameters(const QHash<QString, QVariant> &parameters) override;
+                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
 
             signals:
-                void printMessage(QString message);
+                void printMessage(const QString &message);
                 void madeProgress(int progress);
 
             private:

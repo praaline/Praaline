@@ -5,6 +5,9 @@
 #include <QList>
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
@@ -18,7 +21,7 @@ ProsodyCourse::ProsodyCourse()
 
 void ProsodyCourse::exportMultiTierTextgrids(Corpus *corpus, QPointer<CorpusCommunication> com)
 {
-    QString path = corpus->basePath();
+    QString path = corpus->repository()->files()->basePath();
 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
 
@@ -26,7 +29,7 @@ void ProsodyCourse::exportMultiTierTextgrids(Corpus *corpus, QPointer<CorpusComm
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -141,7 +144,7 @@ void ProsodyCourse::syllableTables(Corpus *corpus)
            "promise_pos\tpromise\tdelivery2\tf0_mean\n";
     foreach (CorpusCommunication *com, corpus->communications()) {
         foreach (QString annotationID, com->annotationIDs()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiers.keys()) {
                 QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
                 IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");

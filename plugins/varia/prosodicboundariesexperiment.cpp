@@ -17,6 +17,10 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusSpeaker.h"
 #include "pncore/corpus/CorpusBookmark.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/PointTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 
 #include "prosodicboundaries.h"
@@ -115,10 +119,10 @@ void PBExpe::measuresForPotentialStimuli(QPointer<CorpusAnnotation> annot, QList
 
 void PBExpe::potentialStimuliFromSample(Corpus *corpus, QPointer<CorpusAnnotation> annot, QTextStream &out)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annot->ID());
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-        IntervalTier *timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annot->ID(), "tok_mwu");
+        IntervalTier *timeline = corpus->repository()->annotations()->getSpeakerTimeline("", annot->ID(), "tok_mwu");
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;
         IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
@@ -207,7 +211,7 @@ void PBExpe::actualStimuliFromCorpus(Corpus *corpus, QList<QPointer<CorpusCommun
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
@@ -270,7 +274,7 @@ bool PBExpe::resultsReadTapping(const QString &subjectID, const QString &filenam
             state = 0;
             // add to database
             IntervalTier *tier = new IntervalTier("tapping", eventIntervals, RealTime(0, 0), RealTime::fromMilliseconds(t1 - t0));
-            corpus->datastoreAnnotations()->saveTier(stimulusID, subjectID, tier);
+            corpus->repository()->annotations()->saveTier(stimulusID, subjectID, tier);
             delete tier;
             eventIntervals.clear();
         }
@@ -343,7 +347,7 @@ void PBExpe::analysisCalculateDeltaRT(Corpus *corpus)
         dRTs << RealValueList() << RealValueList();
         for (int k = 1; k <= 2; ++k) {
             QString annotationID = QString("beeps0%1").arg(k);
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annotationID, spk->ID());
+            AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(annotationID, spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << annotationID << spk->ID(); continue; }
             IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
             if (!tier_tap) { qDebug() << "no tier tapping"; continue; }
@@ -383,14 +387,14 @@ void PBExpe::analysisCreateAdjustedTappingTier(Corpus *corpus)
     foreach (CorpusCommunication *com, corpus->communications()) {
         foreach (CorpusSpeaker *spk, corpus->speakers()) {
             if (!spk->property("isExperimentSubject").toBool()) continue;
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(com->ID(), spk->ID());
+            AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(com->ID(), spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << com->ID() << spk->ID(); continue; }
             IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
             if (!tier_tap) { qDebug() << "no tier tapping"; continue; }
             IntervalTier *tier_tapAdj = new IntervalTier(tier_tap, "tappingAdj");
             RealTime delta = RealTime::fromSeconds(spk->property("drt_avg").toDouble());
             tier_tapAdj->timeShift(-delta);
-            corpus->datastoreAnnotations()->saveTier(com->ID(), spk->ID(), tier_tapAdj);
+            corpus->repository()->annotations()->saveTier(com->ID(), spk->ID(), tier_tapAdj);
         }
     }
 }
@@ -401,7 +405,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumber
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
     foreach (CorpusCommunication *com, corpus->communications()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
 
         // Sparse one-dimensional model of key-down events, adjusted for subject RT
         sv_samplerate_t sampleRate = 16000;
@@ -567,7 +571,7 @@ void PBExpe::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumber
             p->setAttribute("localMax", true);
         }
 
-        corpus->datastoreAnnotations()->saveTier(com->ID(), "smooth", tier_smooth.data());
+        corpus->repository()->annotations()->saveTier(com->ID(), "smooth", tier_smooth.data());
         qDeleteAll(tiers);
     }
     corpus->save(); // make sure you save the total annotators data!
@@ -616,7 +620,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
 {
     if (!corpus) return;
     foreach (CorpusCommunication *com, corpus->communications()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         QPointer<AnnotationTierGroup> tiersSmooth = tiers.value("smooth");
         if (!tiersSmooth) continue;
         QPointer<PointTier> tier_smooth = tiersSmooth->getPointTierByName("smooth");
@@ -639,7 +643,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
             }
 
             if (tier_syll->count() < 10) {
-                corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_syll);
+                corpus->repository()->annotations()->saveTier(com->ID(), speakerID, tier_syll);
                 continue; // (secondary speakers, not analysed)
             }
 
@@ -779,7 +783,7 @@ void PBExpe::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QStr
                 syll->setAttribute(prefix + "TimesAdj", timesAdj.join("|"));
                 syll->setAttribute(prefix + "TimesOrig", timesOrig.join("|"));
             }
-            corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_syll);
+            corpus->repository()->annotations()->saveTier(com->ID(), speakerID, tier_syll);
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();
@@ -797,7 +801,7 @@ void PBExpe::analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int 
         analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", prefix);
 
         foreach (CorpusCommunication *com, corpus->communications()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
             foreach (QString speakerID, tiers.keys()) {
                 QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
                 IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -840,7 +844,7 @@ void PBExpe::analysisCalculateAverageDelay(Corpus *corpus, QString prefix)
     QStringList vowels;
     vowels << "a" << "e" << "i" << "o" << "u" << "E" << "O" << "2" << "9" << "y" << "a~" << "e~" << "o~" << "2~" << "9~" << "@" ;
     foreach (CorpusCommunication *com, corpus->communications()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -872,7 +876,7 @@ void PBExpe::analysisCalculateAverageDelay(Corpus *corpus, QString prefix)
                 syll->setAttribute(prefix + "Dispersion", responseTimes.stddev());
             }
 
-            corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_syll);
+            corpus->repository()->annotations()->saveTier(com->ID(), speakerID, tier_syll);
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();
@@ -887,7 +891,7 @@ void PBExpe::analysisCalculateCoverage(Corpus *corpus, QString prefix)
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
 
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -916,7 +920,7 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName("tok_mwu");
@@ -956,7 +960,7 @@ void PBExpe::createProsodicUnits(Corpus *corpus)
                 }
             }
             IntervalTier *tier_units = new IntervalTier("prosodic_unit", units, RealTime(0, 0), tier_tok_mwu->tMax());
-            corpus->datastoreAnnotations()->saveTier(com->ID(), speakerID, tier_units);
+            corpus->repository()->annotations()->saveTier(com->ID(), speakerID, tier_units);
         }
         qDeleteAll(tiers);
         qDebug() << com->ID();
@@ -970,7 +974,7 @@ QStringList PBExpe::printTranscriptionInProsodicUnits(Corpus *corpus)
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName("tok_mwu");
@@ -1030,7 +1034,7 @@ void PBExpe::statExtractFeaturesForModelling(Corpus *corpus, QString prefix, boo
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
         if (id == "B19S" || id == "B19N") continue;
 
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -1108,7 +1112,7 @@ void PBExpe::statInterAnnotatorAgreement(Corpus *corpus, QString prefix)
         if (id == "B19S" || id == "B19N") continue;
 
         // Get list of subjects who tapped during this sample
-        QList<QString> annotatorsForSample = corpus->datastoreAnnotations()->getSpeakersActiveInLevel(com->ID(), "tapping");
+        QList<QString> annotatorsForSample = corpus->repository()->annotations()->getSpeakersActiveInLevel(com->ID(), "tapping");
         qDebug() << com->ID() << " " << annotatorsForSample.count();
         // To calculate Cohen's kappa we need all the annotations by Subject ID -> (Syllable ID, Perceived as boundary?)
         QHash<QString, QList<bool> > boundaryAnnotations;
@@ -1122,7 +1126,7 @@ void PBExpe::statInterAnnotatorAgreement(Corpus *corpus, QString prefix)
         QHash<QPair<QString, QString>, double> kappaScoresForSample;
 
         // Process each syllable and categorise only those that are potential prosodic boundary sites.
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -1249,7 +1253,7 @@ void PBExpe::statCorrespondanceNSandMS(Corpus *corpus, QString prefix)
         QString idNS = id; QString idMS = id.remove("N").append("S");
         QList<QString> featuresNS, featuresMS;
 
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
@@ -1302,7 +1306,7 @@ void PBExpe::analysisCheckBoundaryRightAfterPause(Corpus *corpus)
         QString id = com->ID();
         if (!id.startsWith("A") && !id.startsWith("B")) continue;
 
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->datastoreAnnotations()->getTiersAllSpeakers(com->ID());
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
             IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");

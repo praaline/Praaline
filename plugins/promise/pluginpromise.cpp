@@ -9,6 +9,8 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusBookmark.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
@@ -100,12 +102,12 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Promise::PluginProm
     return parameters;
 }
 
-void Praaline::Plugins::Promise::PluginPromise::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::Promise::PluginPromise::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("command")) d->command = parameters.value("command").toString();
 }
 
-void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Promise::PluginPromise::process(const QList<QPointer<CorpusCommunication> > &communications)
 {    
     QString appPath = QCoreApplication::applicationDirPath();
     QString filenameModelCrossNoPOS = appPath + "/plugins/promise/cross_nopos.model";
@@ -140,10 +142,11 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
     printMessage("Promise Prosodic Prominence Annotator ver. 1.0 running");
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        if (!com->repository()) continue;
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -167,7 +170,7 @@ void Praaline::Plugins::Promise::PluginPromise::process(Corpus *corpus, QList<QP
                     }
                 }
 
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_syll);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll);
                 qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
                 delete tier_promise_nopos;
                 delete tier_promise_pos;

@@ -8,7 +8,12 @@
 #include "pncore/base/RealValueList.h"
 #include "pncore/annotation/Interval.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/MetadataStructure.h"
 
 #include "DisfluenciesExperiments.h"
 
@@ -62,7 +67,7 @@ bool DisfluenciesExperiments::resultsReadTapping(const QString &sessionID, const
             state = 0;
             // add to database
             QPointer<IntervalTier> tier = new IntervalTier("tapping", eventIntervals);
-            corpus->datastoreAnnotations()->saveTier(stimulusID, QString("%1_%2").arg(annotatorID).arg(sessionID), tier);
+            corpus->repository()->annotations()->saveTier(stimulusID, QString("%1_%2").arg(annotatorID).arg(sessionID), tier);
             eventIntervals.clear();
         }
     } while (!stream.atEnd());
@@ -76,7 +81,7 @@ bool createRTAttribute(const QString &attributeID, const QString &attributeName,
     if (!section->hasAttribute(attributeID)) {
         MetadataStructureAttribute *attr = new MetadataStructureAttribute(
                     attributeID, attributeName, "", DataType::Double);
-        if (corpus->datastoreMetadata()->createMetadataAttribute(CorpusObject::Type_Speaker, attr)) {
+        if (corpus->repository()->metadata()->createMetadataAttribute(CorpusObject::Type_Speaker, attr)) {
             section->addAttribute(attr);
             return true;
         }
@@ -87,7 +92,7 @@ bool createRTAttribute(const QString &attributeID, const QString &attributeName,
 void createDeltaRTProperties(Corpus *corpus, int numberOfBeepFiles)
 {
     if (!corpus) return;
-    QPointer<MetadataStructureSection> section = corpus->metadataStructure()->section(CorpusObject::Type_Speaker, "speaker");
+    QPointer<MetadataStructureSection> section = corpus->repository()->metadataStructure()->section(CorpusObject::Type_Speaker, "speaker");
     if (!section) return;
     for (int i = 1; i <= numberOfBeepFiles; ++i) {
         createRTAttribute(QString("drt_avg_%1").arg(i), QString("Delta RT Mean %1").arg(i), corpus, section);
@@ -107,7 +112,7 @@ void DisfluenciesExperiments::analysisCalculateDeltaRT(Corpus *corpus)
     QList<QList<RealTime> > beeps;
     for (int k = 1; k <= numberOfBeepFiles; ++k) {
         QString beepsID("beeps"); if (k < 10) beepsID.append("0"); beepsID.append(QString("%1").arg(k));
-        IntervalTier *tier_beeps = qobject_cast<IntervalTier*>(corpus->datastoreAnnotations()->getTier(beepsID, beepsID, "beeps"));
+        IntervalTier *tier_beeps = qobject_cast<IntervalTier*>(corpus->repository()->annotations()->getTier(beepsID, beepsID, "beeps"));
         if (!tier_beeps) continue;
         QList<RealTime> beepTimes;
         foreach (Interval *intv, tier_beeps->intervals()) {
@@ -124,7 +129,7 @@ void DisfluenciesExperiments::analysisCalculateDeltaRT(Corpus *corpus)
             dRTs << RealValueList();
             QString beepsID("beeps"); if (k < 10) beepsID.append("0"); beepsID.append(QString("%1").arg(k));
 
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(beepsID, spk->ID());
+            AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(beepsID, spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << beepsID << spk->ID(); continue; }
             IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
             if (!tier_tap) { qDebug() << "no tier tapping" << beepsID << spk->ID(); continue; }
@@ -166,13 +171,14 @@ void DisfluenciesExperiments::analysisCalculateDeltaRT(Corpus *corpus)
     corpus->save();
 }
 
-void DisfluenciesExperiments::analysisCreateAdjustedTappingTier(Corpus *corpus)
+void DisfluenciesExperiments::analysisCreateAdjustedTappingTier(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    if (!corpus) return;
-    foreach (CorpusCommunication *com, corpus->communications()) {
+    foreach (CorpusCommunication *com, communications) {
+        Corpus *corpus = com->corpus();
+        if (!corpus) continue;
         foreach (CorpusSpeaker *spk, corpus->speakers()) {
             if (!spk->property("isExperimentSubject").toBool()) continue;
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(com->ID(), spk->ID());
+            AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(com->ID(), spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << com->ID() << spk->ID(); continue; }
             IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
             if (!tier_tap) { qDebug() << "no tier tapping"; continue; }
@@ -184,7 +190,7 @@ void DisfluenciesExperiments::analysisCreateAdjustedTappingTier(Corpus *corpus)
             double RT = -3.3839 * RTFactor + 304.92;
             RealTime delta = RealTime::fromMilliseconds(RT);
             tier_tapAdj->timeShift(-delta);
-            corpus->datastoreAnnotations()->saveTier(com->ID(), spk->ID(), tier_tapAdj);
+            com->repository()->annotations()->saveTier(com->ID(), spk->ID(), tier_tapAdj);
         }
     }
     // Need to run the following SQL statements against the database after this procedure:

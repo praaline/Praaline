@@ -106,8 +106,9 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Varia::PluginVaria:
     return parameters;
 }
 
-void Praaline::Plugins::Varia::PluginVaria::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::Varia::PluginVaria::setParameters(const QHash<QString, QVariant> &parameters)
 {
+    Q_UNUSED(parameters)
 }
 
 void chunk(QList<QPointer<CorpusCommunication> > communications) {
@@ -155,7 +156,7 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
 //return;
 
 
-void Praaline::Plugins::Varia::PluginVaria::process(QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {    
     // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);
     DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
@@ -167,7 +168,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(QList<QPointer<CorpusCommuni
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         // MyExperiments::createTextgridsFromAutosyll(corpus, com);
-        MyExperiments::updateTranscriptionMode(corpus, com);
+        // MyExperiments::updateTranscriptionMode(corpus, com);
         countDone++;
         madeProgress(countDone * 100 / communications.count());
     }

@@ -27,7 +27,6 @@ public:
     // Metadata Structure
     // ==========================================================================================================================
     bool loadMetadataStructure() override;
-    bool saveMetadataStructure() override;
     bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) override;
     bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) override;
     bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) override;

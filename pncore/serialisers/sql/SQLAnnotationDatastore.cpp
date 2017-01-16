@@ -88,11 +88,6 @@ bool SQLAnnotationDatastore::loadAnnotationStructure()
     return SQLSerialiserAnnotationStructure::loadAnnotationStructure(d->structure, d->database);
 }
 
-bool SQLAnnotationDatastore::saveAnnotationStructure()
-{
-    return true;
-}
-
 bool SQLAnnotationDatastore::createAnnotationLevel(AnnotationStructureLevel *newLevel)
 {
     return SQLSerialiserAnnotationStructure::createAnnotationLevel(newLevel, d->database);

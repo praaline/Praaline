@@ -9,6 +9,9 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusRecording.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
@@ -30,7 +33,7 @@ void MyExperiments::createTextgridsFromAutosyll(QPointer<Corpus> corpus, QPointe
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
             QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -59,7 +62,7 @@ void MyExperiments::createTextgridsFromAutosyll(QPointer<Corpus> corpus, QPointe
                     }
                 }
             }
-            QFile::copy(corpus->baseMediaPath() + "/" + rec->filename(), outputPath + "/" + rec->ID() + ".wav");
+            QFile::copy(rec->filePath(), outputPath + "/" + rec->ID() + ".wav");
             PraatTextGrid::save(outputPath + "/" + rec->ID() + ".TextGrid", txg.data());
             qDeleteAll(tiersAll);
         }
@@ -129,7 +132,7 @@ void MyExperiments::updateTranscriptionMode(QPointer<Corpus> corpus, QPointer<Co
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -148,7 +151,7 @@ void MyExperiments::mergePauses(QPointer<Corpus> corpus, QPointer<CorpusCommunic
     if (!corpus || !com) return;
 
     foreach (QString annotationID, com->annotationIDs()) {
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -159,7 +162,7 @@ void MyExperiments::mergePauses(QPointer<Corpus> corpus, QPointer<CorpusCommunic
                 if (!tier) continue;
                 tier->fillEmptyTextLabelsWith("_");
                 tier->mergeIdenticalAnnotations("_");
-                corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier);
+                corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier);
             }
         }
         qDeleteAll(tiersAll);

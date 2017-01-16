@@ -25,8 +25,9 @@ namespace Praaline {
                 QStringList listOptions;
                 QString description;
 
-                PluginParameter(QString ID, QString name, int propertyType, QVariant defaultValue = QVariant(),
-                                QStringList listOptions = QStringList(), QString description = QString()) :
+                PluginParameter(const QString &ID, const QString &name, int propertyType,
+                                const QVariant &defaultValue = QVariant(),
+                                const QStringList &listOptions = QStringList(), const QString &description = QString()) :
                     ID(ID), name(name), propertyType(propertyType), defaultValue(defaultValue),
                     listOptions(listOptions), description(description)
                 {}
@@ -36,10 +37,10 @@ namespace Praaline {
             virtual ~IAnnotationPlugin() {}
 
             virtual QList<PluginParameter> pluginParameters() const = 0;
-            virtual void setParameters(QHash<QString, QVariant> parameters) = 0;
-            virtual void process(QList<QPointer<CorpusCommunication> > communications) = 0;
+            virtual void setParameters(const QHash<QString, QVariant> &parameters) = 0;
+            virtual void process(const QList<QPointer<CorpusCommunication> > &communications) = 0;
         signals:
-            virtual void printMessage(QString message) = 0 ;
+            virtual void printMessage(const QString &message) = 0 ;
             virtual void madeProgress(int progress) = 0;
 
         public slots:

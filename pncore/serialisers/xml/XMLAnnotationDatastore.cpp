@@ -44,11 +44,6 @@ bool XMLAnnotationDatastore::loadAnnotationStructure()
     return false;
 }
 
-bool XMLAnnotationDatastore::saveAnnotationStructure()
-{
-    return false;
-}
-
 bool XMLAnnotationDatastore::createAnnotationLevel(AnnotationStructureLevel *newLevel)
 {
     return false;

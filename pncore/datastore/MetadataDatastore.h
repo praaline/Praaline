@@ -60,7 +60,6 @@ public:
     // Metadata Structure
     // ==========================================================================================================================
     virtual bool loadMetadataStructure() = 0;
-    virtual bool saveMetadataStructure() = 0;
     virtual bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) = 0;
     virtual bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) = 0;
     virtual bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) = 0;
