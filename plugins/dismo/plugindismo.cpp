@@ -11,7 +11,9 @@
 #include "dismo/dismoannotator.h"
 #include "dismo/dismotrainer.h"
 #include "serialisers/dismoserialisersql.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/structure/AnnotationStructure.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
@@ -135,7 +137,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::setParameters(QHash<QString, QVarian
     if (parameters.contains("attributePrefix")) d->attributePrefix = parameters.value("attributePrefix").toString();
 }
 
-void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QString &prefix,
+void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
                      const QString &ID, const QString &name = QString(), const QString &description = QString(),
                      const DataType &datatype = DataType(DataType::VarChar, 255), int order = 0,
                      bool indexed = false, const QString &nameValueList = QString())
@@ -143,44 +145,44 @@ void createAttribute(Corpus *corpus, AnnotationStructureLevel *level, const QStr
     if (level->hasAttribute(ID)) return;
     AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
                                                                           order, indexed, nameValueList);
-    if (corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr))
+    if (repository->annotations()->createAnnotationAttribute(level->ID(), attr))
         level->addAttribute(attr);
 }
 
-void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(Corpus *corpus)
+void Praaline::Plugins::DisMo::PluginDisMo::createDisMoAnnotationStructure(CorpusRepository *repository)
 {
-    if (!corpus) return;
+    if (!repository) return;
     d->attributePrefix = d->attributePrefix.trimmed();
     // If needed, create tok_min level
-    AnnotationStructureLevel *level_tok_min = corpus->annotationStructure()->level(d->levelTokMin);
+    AnnotationStructureLevel *level_tok_min = repository->annotationStructure()->level(d->levelTokMin);
     if (!level_tok_min) {
         level_tok_min = new AnnotationStructureLevel(d->levelTokMin, AnnotationStructureLevel::IndependentIntervalsLevel, "Tokens (minimal)", "");
-        if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_tok_min)) return;
-        corpus->annotationStructure()->addLevel(level_tok_min);
+        if (!repository->annotations()->createAnnotationLevel(level_tok_min)) return;
+        repository->annotationStructure()->addLevel(level_tok_min);
     }
     // Create tok_min attributes where necessary
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_min", "Part-of-Speech (min)", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "disfluency", "Disfluency", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "lemma_min", "Lemma (min)", "", DataType(DataType::VarChar, 256));
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "pos_ext_min", "POS extended (min)", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
-    createAttribute(corpus, level_tok_min, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
+    createAttribute(repository, level_tok_min, d->attributePrefix, "pos_min", "Part-of-Speech (min)", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_min, d->attributePrefix, "disfluency", "Disfluency", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_min, d->attributePrefix, "lemma_min", "Lemma (min)", "", DataType(DataType::VarChar, 256));
+    createAttribute(repository, level_tok_min, d->attributePrefix, "pos_ext_min", "POS extended (min)", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_min, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
+    createAttribute(repository, level_tok_min, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
     // If needed, create tok_mwu level
-    AnnotationStructureLevel *level_tok_mwu = corpus->annotationStructure()->level(d->levelTokMWU);
+    AnnotationStructureLevel *level_tok_mwu = repository->annotationStructure()->level(d->levelTokMWU);
     if (!level_tok_mwu) {
         level_tok_mwu = new AnnotationStructureLevel(d->levelTokMWU, AnnotationStructureLevel::GroupingLevel, "Tokens (MWU)", "");
-        if (!corpus->datastoreAnnotations()->createAnnotationLevel(level_tok_mwu)) return;
-        corpus->annotationStructure()->addLevel(level_tok_mwu);
+        if (!repository->annotations()->createAnnotationLevel(level_tok_mwu)) return;
+        repository->annotationStructure()->addLevel(level_tok_mwu);
     }
     // Create tok_mwu attributes where necessary
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_mwu", "Part-of-Speech (MWU)", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "discourse", "Discourse", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "lemma_mwu", "Lemma (MWU)", "", DataType(DataType::VarChar, 256));
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "pos_ext_mwu", "POS extended (MWU)", "", DataType(DataType::VarChar, 32));
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
-    createAttribute(corpus, level_tok_mwu, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
-    // Save corpus
-    corpus->save();
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "pos_mwu", "Part-of-Speech (MWU)", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "discourse", "Discourse", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "lemma_mwu", "Lemma (MWU)", "", DataType(DataType::VarChar, 256));
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "pos_ext_mwu", "POS extended (MWU)", "", DataType(DataType::VarChar, 32));
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "dismo_confidence", "DisMo confidence", "", DataType::Double);
+    createAttribute(repository, level_tok_mwu, d->attributePrefix, "dismo_method", "DisMo method", "", DataType(DataType::VarChar, 64));
+    // Save corpus repository
+    repository->save();
 }
 
 void trainExperiments()
@@ -262,7 +264,7 @@ QString evaluateCRFfile(const QString &filename, double &precision, double &prec
 }
 
 
-void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisMo::PluginDisMo::process(QList<QPointer<CorpusCommunication> > communications)
 {
 //    addMWUindications(corpus, communications);
 //    return;
@@ -280,28 +282,30 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
 //    }
 //    return;
 
-    if (!corpus) {
-        emit printMessage("DisMo: no corpus selected!");
-        return;
-    }
 
     DisMoAnnotator::DismoAnnotator *DISMO = new DisMoAnnotator::DismoAnnotator("fr");
     QPointer<IntervalTier> tier_tok_min;
     QPointer<IntervalTier> tier_tok_mwu;
+    QList<QPointer<CorpusRepository> > repositoriesWithDisMoAnnotationStructure;
 
-    if (d->createDisMoAnnotationLevels) {
-        createDisMoAnnotationStructure(corpus);
-        emit printMessage("Created 2 annotation levels to store DisMo annotations");
-    }
     int countDone = 0;
     madeProgress(0);
     printMessage("DisMo Annotator ver. 1.0 running");
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        if (!com->repository()) {
+            emit printMessage(QString("DisMo: no corpus repository available for %1").arg(com->ID()));
+            continue;
+        }
+        if (d->createDisMoAnnotationLevels && !repositoriesWithDisMoAnnotationStructure.contains(com->repository())) {
+            createDisMoAnnotationStructure(com->repository());
+            repositoriesWithDisMoAnnotationStructure << com->repository();
+            emit printMessage("Created annotation levels and attributes to store DisMo annotations");
+        }
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -336,8 +340,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
                         DISMO->annotateTokenized(tier_tok_min, tier_tok_mwu, attr);
                     }
                 }
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_mwu);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_mwu);
                 qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
                 delete tier_tok_min;
                 delete tier_tok_mwu;
@@ -353,13 +357,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(Corpus *corpus, QList<QPoint
     printMessage("DisMo finished.");
 }
 
-void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<QPointer<CorpusCommunication> > communications)
 {
-    if (!corpus) {
-        emit printMessage("DisMo: no corpus selected!");
-        return;
-    }
-
     QPointer<IntervalTier> tier_tok_min;
     QPointer<IntervalTier> tier_tok_mwu;
 
@@ -368,10 +367,14 @@ void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(Corpus *corpus, QL
     printMessage("DisMo Annotator ver. 1.0 running");
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        if (!com->repository()) {
+            emit printMessage(QString("DisMo: no corpus repository available for %1").arg(com->ID()));
+            continue;
+        }
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -388,8 +391,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(Corpus *corpus, QL
                     else
                         tok_min->setAttribute("part_of_mwu", true);
                 }
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_mwu);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_mwu);
                 qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
 
             }

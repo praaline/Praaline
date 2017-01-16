@@ -37,7 +37,7 @@ namespace Praaline {
 
             virtual QList<PluginParameter> pluginParameters() const = 0;
             virtual void setParameters(QHash<QString, QVariant> parameters) = 0;
-            virtual void process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications) = 0;
+            virtual void process(QList<QPointer<CorpusCommunication> > communications) = 0;
         signals:
             virtual void printMessage(QString message) = 0 ;
             virtual void madeProgress(int progress) = 0;

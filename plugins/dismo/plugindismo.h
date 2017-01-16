@@ -35,27 +35,27 @@ namespace Praaline {
                 ~PluginDisMo();
 
                 // IObjectBase implementation
-                QObject* objectBase() { return this; }
-                const QObject* objectBase() const { return this; }
+                QObject* objectBase() override { return this; }
+                const QObject* objectBase() const override { return this; }
 
                 // IPlugin implementation
-                bool initialize(const QStringList &arguments, QStringList *error_strings);
-                bool initializeDependencies(QStringList *error_strings);
-                void finalize();
-                QString pluginName() const;
-                QtilitiesCategory pluginCategory() const;
-                VersionInformation pluginVersionInformation() const;
-                QString pluginPublisher() const;
-                QString pluginPublisherWebsite() const;
-                QString pluginPublisherContact() const;
-                QString pluginDescription() const;
-                QString pluginCopyright() const;
-                QString pluginLicense() const;
+                bool initialize(const QStringList &arguments, QStringList *error_strings) override;
+                bool initializeDependencies(QStringList *error_strings) override;
+                void finalize() override;
+                QString pluginName() const override;
+                QtilitiesCategory pluginCategory() const override;
+                VersionInformation pluginVersionInformation() const override;
+                QString pluginPublisher() const override;
+                QString pluginPublisherWebsite() const override;
+                QString pluginPublisherContact() const override;
+                QString pluginDescription() const override;
+                QString pluginCopyright() const override;
+                QString pluginLicense() const override;
 
                 // IAnnotationPlugin implementation
-                QList<PluginParameter> pluginParameters() const;
-                void setParameters(QHash<QString, QVariant> parameters);
-                void process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                QList<PluginParameter> pluginParameters() const override;
+                void setParameters(QHash<QString, QVariant> parameters) override;
+                void process(QList<QPointer<CorpusCommunication> > communications) override;
 
             signals:
                 void printMessage(QString message);
@@ -64,8 +64,8 @@ namespace Praaline {
             private:
                 PluginDisMoPrivateData* d;
 
-                void createDisMoAnnotationStructure(Corpus *corpus);
-                void addMWUindications(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                void createDisMoAnnotationStructure(CorpusRepository *corpus);
+                void addMWUindications(QList<QPointer<CorpusCommunication> > communications);
             };
         }
     }

@@ -13,6 +13,8 @@
 
 #include "chunkannotator.h"
 #include "svbridge.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
@@ -108,14 +110,14 @@ void Praaline::Plugins::Varia::PluginVaria::setParameters(QHash<QString, QVarian
 {
 }
 
-void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications) {
+void chunk(QList<QPointer<CorpusCommunication> > communications) {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
@@ -128,9 +130,9 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
                 }
                 ChunkAnnotator chunker(tier_tokens, tier_chunks, "pos_mwu");
                 chunker.annotate("d:/chunker/chunker_fr.model");
-                corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_chunks);
+                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_chunks);
 
-                PraatTextGrid::save(corpus->basePath() + "/" + com->ID() + ".TextGrid", tiers);
+                // PraatTextGrid::save(corpus->basePath() + "/" + com->ID() + ".TextGrid", tiers);
             }
             qDeleteAll(tiersAll);
         }
@@ -153,10 +155,10 @@ void chunk(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
 //return;
 
 
-void Praaline::Plugins::Varia::PluginVaria::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Varia::PluginVaria::process(QList<QPointer<CorpusCommunication> > communications)
 {    
-    // DisfluenciesExperiments::analysisCalculateDeltaRT(corpus);
-    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(corpus);
+    // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);
+    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
     return;
 
 
