@@ -11,10 +11,13 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusAnnotation.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/annotation/Interval.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
+using namespace Praaline::Core;
 
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
 #include "EasyAlignBasic.h"
@@ -307,18 +310,18 @@ QString EasyAlignBasic::mergeFiles(CorpusCommunication *com)
 }
 
 // static
-QString EasyAlignBasic::runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication *com)
+QString EasyAlignBasic::runAllEasyAlignSteps(CorpusCommunication *com)
 {
     QString ret;
     static QMutex mutex;
-    if (!corpus) return ret;
     if (!com) return ret;
+    if (!com->repository()) return ret;
     QPointer<EasyAlignBasic> EA = new EasyAlignBasic();
 
     foreach (QString annotationID, com->annotationIDs()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
         mutex.lock();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             // Find corresponding recording
@@ -344,8 +347,8 @@ QString EasyAlignBasic::runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication
                 intervalsToAlign << new Interval(intv);
             }
             // Create a textgrid with the same name as the recording
-            QString filenameSound = corpus->baseMediaPath() + "/" + recording->filename();
-            QString filenameAlignTextgrid = corpus->baseMediaPath() + "/" + QString(recording->filename()).replace(".wav", ".TextGrid");
+            QString filenameSound = recording->filePath();
+            QString filenameAlignTextgrid = QString(recording->filePath()).replace(".wav", ".TextGrid");
             EA->prepareAlignmentTextgrid(tier_ortho->intervals(), tier_ortho, filenameAlignTextgrid);
             // alignment
             EA->runEasyAlign(filenameSound, filenameAlignTextgrid);
@@ -361,9 +364,9 @@ QString EasyAlignBasic::runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication
             IntervalTier *tier_syll = txg->getIntervalTierByName("syll");
             IntervalTier *tier_words = txg->getIntervalTierByName("words");
             mutex.lock();
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_phone);
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_syll);
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_words);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_phone);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_words);
             mutex.unlock();
 
 

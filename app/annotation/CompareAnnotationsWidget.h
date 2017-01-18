@@ -24,7 +24,7 @@ private:
     void setupActions();
 
 private slots:
-    void activeCorpusChanged(const QString &corpusID);
+    void activeCorpusRepositoryChanged(const QString &repositoryID);
     void levelLeftChanged(QString text);
     void levelRightChanged(QString text);
     void annotationLeftChanged(QString text);

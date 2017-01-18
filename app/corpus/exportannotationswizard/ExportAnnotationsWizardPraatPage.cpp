@@ -25,8 +25,8 @@ ExportAnnotationsWizardPraatPage::ExportAnnotationsWizardPraatPage(QPointer<Corp
     if (!corpus) return;
     d->corpus = corpus;
 
-    d->modelLevelsAttributes = new AnnotationStructureTreeModel(corpus->annotationStructure(), true, true, this);
-    ui->treeviewLevelsAttributes->setModel(d->modelLevelsAttributes);
+//    d->modelLevelsAttributes = new AnnotationStructureTreeModel(corpus->annotationStructure(), true, true, this);
+//    ui->treeviewLevelsAttributes->setModel(d->modelLevelsAttributes);
 
 }
 

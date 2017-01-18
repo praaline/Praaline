@@ -7,6 +7,8 @@
 #include "ui_CheckMediaFilesDialog.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "pnlib/mediautil/SoundInfo.h"
 
 CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
@@ -78,7 +80,7 @@ void CheckMediaFilesDialog::process()
             continue;
         }
         SoundInfo info;
-        bool ok = SoundInfo::getSoundInfo(m_corpus->baseMediaPath() + "/" + filename, info);
+        bool ok = SoundInfo::getSoundInfo(m_corpus->repository()->files()->basePath() + "/" + filename, info);
         if (!ok) {
             m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;

@@ -18,7 +18,7 @@ public:
     ~AdvancedQueriesWidget();
 
 private slots:
-    void activeCorpusChanged(const QString &newActiveCorpusID);
+    void activeCorpusRepositoryChanged(const QString &newActiveCorpusRepositoryID);
 
 private:
     Ui::AdvancedQueriesWidget *ui;

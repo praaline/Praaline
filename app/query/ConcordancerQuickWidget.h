@@ -18,7 +18,7 @@ public:
     ~ConcordancerQuickWidget();
 
 private slots:
-    void activeCorpusChanged(const QString &corpusID);
+    void activeCorpusRepositoryChanged(const QString &repositoryID);
     void levelChanged(const QString &text);
 
     void definitionOpen();

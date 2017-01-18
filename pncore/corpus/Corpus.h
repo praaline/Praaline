@@ -117,11 +117,10 @@ public:
     QList<QPair<QString, QString> > deletedParticipationIDs;
 
 signals:
-    void corpusChanged();
-    void corpusCommunicationAdded(QPointer<Praaline::Core::CorpusCommunication> communication);
-    void corpusCommunicationDeleted(QString ID);
-    void corpusSpeakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
-    void corpusSpeakerDeleted(QString ID);
+    void communicationAdded(QPointer<Praaline::Core::CorpusCommunication> communication);
+    void communicationDeleted(QString ID);
+    void speakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
+    void speakerDeleted(QString ID);
 
 private slots:
     void communicationChangedID(const QString &oldID, const QString &newID);

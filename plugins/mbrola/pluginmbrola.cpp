@@ -12,6 +12,10 @@
 
 
 #include "pncore/base/RealValueList.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "mbrolafilemanager.h"
 #include "pseudolanguage.h"
 
@@ -94,14 +98,14 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::MBROLA::PluginMBROL
     return parameters;
 }
 
-void Praaline::Plugins::MBROLA::PluginMBROLA::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::MBROLA::PluginMBROLA::setParameters(const QHash<QString, QVariant> &parameters)
 {
     Q_UNUSED(parameters)
 }
 
 // ====================================================================================================================
 
-void Praaline::Plugins::MBROLA::PluginMBROLA::scriptSentMessage(QString message)
+void Praaline::Plugins::MBROLA::PluginMBROLA::scriptSentMessage(const QString &message)
 {
     printMessage(message);
 }
@@ -116,7 +120,7 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::scriptFinished(int exitcode)
 
 // ====================================================================================================================
 
-void Praaline::Plugins::MBROLA::PluginMBROLA::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 //    QFile file("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/test.txt");
 //    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
@@ -138,7 +142,7 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(Corpus *corpus, QList<QPoi
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
 
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                 foreach (QString speakerID, tiersAll.keys()) {
                     QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 
@@ -155,7 +159,7 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(Corpus *corpus, QList<QPoi
 //                    mgr->createPhoFile(QString("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/%1_%2_pseudo.pho")
 //                                       .arg(annot->ID()).arg(speakerID), tier_phones, "pseudolang");
 
-                    corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_phones);
+                    com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phones);
                 }
                 qDeleteAll(tiersAll);
 

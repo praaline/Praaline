@@ -112,7 +112,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisMo2::PluginDisMo
     return parameters;
 }
 
-void Praaline::Plugins::DisMo2::PluginDisMo2::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::DisMo2::PluginDisMo2::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("alreadyTokenised")) d->alreadyTokenised = parameters.value("alreadyTokenised").toBool();
     if (parameters.contains("tokenisedOnlyToMinimal")) d->tokenisedOnlyToMinimal = parameters.value("tokenisedOnlyToMinimal").toBool();
@@ -123,13 +123,8 @@ void Praaline::Plugins::DisMo2::PluginDisMo2::setParameters(QHash<QString, QVari
     if (parameters.contains("attributePrefix")) d->attributePrefix = parameters.value("attributePrefix").toString();
 }
 
-void Praaline::Plugins::DisMo2::PluginDisMo2::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    if (!corpus) {
-        emit printMessage("DisMo: no corpus selected!");
-        return;
-    }
-
 //    DisMoAnnotator::DismoAnnotator *DISMO = new DisMoAnnotator::DismoAnnotator("fr");
 //    QPointer<IntervalTier> tier_tok_min;
 //    QPointer<IntervalTier> tier_tok_mwu;

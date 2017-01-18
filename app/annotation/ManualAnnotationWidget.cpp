@@ -14,6 +14,8 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/CheckableProxyModel.h"
@@ -303,7 +305,7 @@ void ManualAnnotationWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<
     }
     d->currentCommunicationID = com->ID();
     if ((rec) && (d->currentRecordingID != rec->ID())) {
-        d->mediaPlayer->setMedia(QUrl::fromLocalFile(corpus->baseMediaPath() + "/" + rec->filename()));
+        d->mediaPlayer->setMedia(QUrl::fromLocalFile(rec->filePath()));
         d->currentRecordingID = rec->ID();
     }
     else {
@@ -331,7 +333,7 @@ void ManualAnnotationWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPoin
     }
     else {
         if (com->recordingsCount() == 1) {
-            d->mediaPlayer->setMedia(QUrl::fromLocalFile(corpus->baseMediaPath() + "/" + com->recordings().first()->filename()));
+            d->mediaPlayer->setMedia(QUrl::fromLocalFile(com->recordings().first()->filePath()));
         }
         openForEditing(corpus, annot->ID());
         d->editor->moveToTime(time);
@@ -342,7 +344,7 @@ void ManualAnnotationWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPoin
 void ManualAnnotationWidget::openForEditing(Corpus *corpus, const QString &annotationID)
 {
     if (!corpus) return;
-    if (!corpus->datastoreAnnotations()) return;
+    if (!corpus->repository()) return;
     d->currentCorpus = corpus;
     d->currentAnnotationID = annotationID;
     qDeleteAll(d->currentTierGroups);
@@ -351,7 +353,7 @@ void ManualAnnotationWidget::openForEditing(Corpus *corpus, const QString &annot
     d->waitingSpinner->start();
     QApplication::processEvents();
 
-    d->currentTierGroups = corpus->datastoreAnnotations()->getTiersAllSpeakers(d->currentAnnotationID);
+    d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
     d->editor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
     updateAnnotationControls();
@@ -362,7 +364,7 @@ void ManualAnnotationWidget::openForEditing(Corpus *corpus, const QString &annot
 void ManualAnnotationWidget::saveAnnotations()
 {
     foreach (QString speakerID, d->currentTierGroups.keys())
-        d->currentCorpus->datastoreAnnotations()->saveTiers(d->currentAnnotationID, speakerID, d->currentTierGroups.value(speakerID));
+        d->currentCorpus->repository()->annotations()->saveTiers(d->currentAnnotationID, speakerID, d->currentTierGroups.value(speakerID));
 }
 
 void ManualAnnotationWidget::selectedLevelsAttributesChanged()

@@ -1,50 +1,67 @@
 #include <QFileDialog>
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "ImportCorpusItemsWizardSelectionPage.h"
 #include "ui_ImportCorpusItemsWizardSelectionPage.h"
 
+struct ImportCorpusItemsWizardSelectionPageData {
+    ImportCorpusItemsWizardSelectionPageData(QPointer<CorpusRepository> repository,
+                                             QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
+                                             QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations) :
+        repository(repository), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
+        abort(false)
+    {}
+
+    QPointer<CorpusRepository> repository;
+    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings;
+    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations;
+    QPointer<QStandardItemModel> modelFormatsRecording;
+    QPointer<QStandardItemModel> modelFormatsAnnotation;
+    bool abort;
+};
+
 ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
-        QPointer<Corpus> corpus,
+        QPointer<CorpusRepository> repository,
         QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
         QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardSelectionPage),
-    m_corpus(corpus), m_candidateRecordings(candidateRecordings), m_candidateAnnotations(candidateAnnotations),
-    m_abort(false)
+    d(new ImportCorpusItemsWizardSelectionPageData(repository, candidateRecordings, candidateAnnotations))
 {
     ui->setupUi(this);
     connect(ui->commandSelectFolder, SIGNAL(clicked()), this, SLOT(selectFolder()));
     connect(ui->commandAbort, SIGNAL(clicked()), this, SLOT(abortProcess()));
 
     // Set path
-    ui->editFolderName->setText(m_corpus->basePath());
+    ui->editFolderName->setText(d->repository->files()->basePath());
 
     // Check lists for file formats
-    m_modelFormatsRecording = new QStandardItemModel(this);
-    m_modelFormatsAnnotation = new QStandardItemModel(this);
-    m_modelFormatsRecording->setColumnCount(1);
-    m_modelFormatsAnnotation->setColumnCount(1);
+    d->modelFormatsRecording = new QStandardItemModel(this);
+    d->modelFormatsAnnotation = new QStandardItemModel(this);
+    d->modelFormatsRecording->setColumnCount(1);
+    d->modelFormatsAnnotation->setColumnCount(1);
     QStandardItem *item;
     // Media formats
     item = new QStandardItem("Wave files (.wav)");  item->setData("wav");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
-    m_modelFormatsRecording->setItem(0, 0, item);
+    d->modelFormatsRecording->setItem(0, 0, item);
     item = new QStandardItem("MP3 files (.mp3)");  item->setData("mp3");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
-    m_modelFormatsRecording->setItem(1, 0, item);
-    ui->treeviewRecordingsFormat->setModel(m_modelFormatsRecording);
+    d->modelFormatsRecording->setItem(1, 0, item);
+    ui->treeviewRecordingsFormat->setModel(d->modelFormatsRecording);
     ui->treeviewRecordingsFormat->setHeaderHidden(true);
     // Annotation formats
     item = new QStandardItem("Praat textgrid files (.textgrid)");  item->setData("textgrid");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
-    m_modelFormatsAnnotation->setItem(0, 0, item);
+    d->modelFormatsAnnotation->setItem(0, 0, item);
     item = new QStandardItem("TranscriberAG files (.trs)");  item->setData("trs");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
-    m_modelFormatsAnnotation->setItem(1, 0, item);
+    d->modelFormatsAnnotation->setItem(1, 0, item);
     item = new QStandardItem("SubRip subtitle files (.srt)");  item->setData("srt");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
-    m_modelFormatsAnnotation->setItem(2, 0, item);
+    d->modelFormatsAnnotation->setItem(2, 0, item);
 
-    ui->treeviewAnnotationsFormat->setModel(m_modelFormatsAnnotation);
+    ui->treeviewAnnotationsFormat->setModel(d->modelFormatsAnnotation);
     ui->treeviewAnnotationsFormat->setHeaderHidden(true);
 
     QStringList filters;
@@ -73,30 +90,30 @@ void ImportCorpusItemsWizardSelectionPage::selectFolder()
 
 void ImportCorpusItemsWizardSelectionPage::abortProcess()
 {
-    m_abort = true;
+    d->abort = true;
 }
 
 bool ImportCorpusItemsWizardSelectionPage::validatePage ()
 {
     ui->stackedWidget->setCurrentIndex(1);
-    qDeleteAll(m_candidateRecordings);
-    m_candidateRecordings.clear();
-    qDeleteAll(m_candidateAnnotations);
-    m_candidateAnnotations.clear();
+    qDeleteAll(d->candidateRecordings);
+    d->candidateRecordings.clear();
+    qDeleteAll(d->candidateAnnotations);
+    d->candidateAnnotations.clear();
     ui->texteditMessages->clear();
-    m_abort = false;
+    d->abort = false;
 
     QDir dirinfo(ui->editFolderName->text());
     QStringList recordingFilters, annotationFilters;
-    for (int i = 0; i < m_modelFormatsRecording->rowCount(); ++i) {
-        QStandardItem *item = m_modelFormatsRecording->item(i, 0);
+    for (int i = 0; i < d->modelFormatsRecording->rowCount(); ++i) {
+        QStandardItem *item = d->modelFormatsRecording->item(i, 0);
         if (item->checkState() == Qt::Checked) {
             QString suffix = item->data().toString().toLower();
             recordingFilters << QString("*.") + suffix;
         }
     }
-    for (int i = 0; i < m_modelFormatsAnnotation->rowCount(); ++i) {
-        QStandardItem *item = m_modelFormatsAnnotation->item(i, 0);
+    for (int i = 0; i < d->modelFormatsAnnotation->rowCount(); ++i) {
+        QStandardItem *item = d->modelFormatsAnnotation->item(i, 0);
         if (item->checkState() == Qt::Checked) {
             QString suffix = item->data().toString();
             annotationFilters << QString("*.") + suffix;
@@ -105,14 +122,14 @@ bool ImportCorpusItemsWizardSelectionPage::validatePage ()
 
     if (!recordingFilters.isEmpty()) {
         addFiles(dirinfo.canonicalPath(), recordingFilters, ui->checkBoxRecursive->isChecked(), true);
-        if (m_abort) {
+        if (d->abort) {
             ui->stackedWidget->setCurrentIndex(0);
             return false;
         }
     }
     if (!annotationFilters.isEmpty()) {
         addFiles(dirinfo.canonicalPath(), annotationFilters, ui->checkBoxRecursive->isChecked(), false);
-        if (m_abort) {
+        if (d->abort) {
             ui->stackedWidget->setCurrentIndex(0);
             return false;
         }
@@ -125,7 +142,7 @@ bool ImportCorpusItemsWizardSelectionPage::validatePage ()
 void ImportCorpusItemsWizardSelectionPage::addFiles(const QString& directory, const QStringList &filters, bool recursive,
                                                     bool isRecording)
 {
-    if (m_abort) return;
+    if (d->abort) return;
     QDir dirinfo(directory);
     QFileInfoList list;
     list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
@@ -152,10 +169,10 @@ void ImportCorpusItemsWizardSelectionPage::addFiles(const QString& directory, co
 // private
 bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bool isRecording)
 {
-    if (m_abort) return false;
+    if (d->abort) return false;
     bool isAnnotation = !isRecording;
-    if (!m_modelFormatsRecording) return false;
-    if (!m_modelFormatsAnnotation) return false;
+    if (!d->modelFormatsRecording) return false;
+    if (!d->modelFormatsAnnotation) return false;
 
     // check filter
     QString filterOperator, filter;
@@ -193,7 +210,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
         CorpusRecording *rec = new CorpusRecording(baseFilename);
         rec->setName(baseFilename);
         rec->setFilename(info.canonicalFilePath());
-        m_candidateRecordings.insert(QPair<QString, QString>(communicationID, baseFilename), rec);
+        d->candidateRecordings.insert(QPair<QString, QString>(communicationID, baseFilename), rec);
         ui->texteditMessages->appendPlainText(QString("MEDIA RECORDING %1 >> Communication ID: %2, Recording ID: %3")
                                               .arg(info.canonicalFilePath()).arg(communicationID).arg(baseFilename));
         ui->texteditMessages->moveCursor(QTextCursor::End);
@@ -218,7 +235,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
             annot->setProperty("speakerPolicyData", "ortho;loc2");
         }
 
-        m_candidateAnnotations.insert(QPair<QString, QString>(communicationID, baseFilename), annot);
+        d->candidateAnnotations.insert(QPair<QString, QString>(communicationID, baseFilename), annot);
         ui->texteditMessages->appendPlainText(QString("ANNOTATION %1 >> Communication ID: %2, Annotation ID: %3")
                                               .arg(info.canonicalFilePath()).arg(communicationID).arg(baseFilename));
         ui->texteditMessages->moveCursor(QTextCursor::End);

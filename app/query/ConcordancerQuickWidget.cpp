@@ -7,7 +7,11 @@
 #include "ui_ConcordancerQuickWidget.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/query/QueryDefinition.h"
+#include "pncore/query/QueryOccurrence.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
 
@@ -17,11 +21,11 @@ using namespace Praaline::Core;
 #include "pngui/model/query/QueryFilterSequenceTableModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/widgets/GridViewWidget.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 
 
 struct ConcordancerQuickWidgetData {
-    ConcordancerQuickWidgetData() : modelLevelsAttributes(0), modelResults(0), corporaManager(0), currentQuery(0) {}
+    ConcordancerQuickWidgetData() : modelLevelsAttributes(0), modelResults(0), corpusRepositoryManager(0), currentQuery(0) {}
 
     QToolBar *toolbarMain;
     QAction *actionDefinitionOpen;
@@ -63,7 +67,7 @@ struct ConcordancerQuickWidgetData {
     QueryOccurrenceTableModel *modelResults;
 
     // Corpus Manager
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoryManager;
 
     // Query
     QueryDefinition *currentQuery;
@@ -133,15 +137,16 @@ ConcordancerQuickWidget::ConcordancerQuickWidget(QWidget *parent) :
     setupActions();
     connect(ui->commandSearchOccurrences, SIGNAL(clicked()), this, SLOT(searchOccurrences()));
 
-    // Corpora manager
+    // CorpusRepositoriesManager
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoryManager = manager;
     }
 
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoryManager, SIGNAL(activeCorpusRepositoryChanged(QString)),
+            this, SLOT(activeCorpusRepositoryChanged(QString)));
     connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelChanged(QString)));
 }
 
@@ -208,21 +213,21 @@ void ConcordancerQuickWidget::setupActions()
 
 }
 
-void ConcordancerQuickWidget::activeCorpusChanged(const QString &corpusID)
+void ConcordancerQuickWidget::activeCorpusRepositoryChanged(const QString &repositoryID)
 {
-    Q_UNUSED(corpusID)
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
+    Q_UNUSED(repositoryID)
+    QPointer<CorpusRepository> repository = d->corpusRepositoryManager->activeCorpusRepository();
     // In any case, clear results
     d->tableviewResults->tableView()->setModel(0);
     if (d->modelResults) delete d->modelResults;
-    if (corpus) {
-        AnnotationStructureTreeModel *model = new AnnotationStructureTreeModel(corpus->annotationStructure(), true, true, this);
+    if (repository) {
+        AnnotationStructureTreeModel *model = new AnnotationStructureTreeModel(repository->annotationStructure(), true, true, this);
         d->treeviewLevelsAttributes->setModel(model);
         if (d->modelLevelsAttributes) delete d->modelLevelsAttributes;
         d->modelLevelsAttributes = model;
         // update levels
         ui->comboBoxAnnotationLevel->clear();
-        foreach (AnnotationStructureLevel *level, corpus->annotationStructure()->levels()) {
+        foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
             ui->comboBoxAnnotationLevel->addItem(level->name(), level->ID());
         }
         levelChanged("");
@@ -232,10 +237,10 @@ void ConcordancerQuickWidget::activeCorpusChanged(const QString &corpusID)
 void ConcordancerQuickWidget::levelChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoryManager->activeCorpusRepository();
+    if (!repository) return;
     QString levelID = ui->comboBoxAnnotationLevel->currentData().toString();
-    AnnotationStructureLevel *level = corpus->annotationStructure()->level(levelID);
+    AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
     foreach (QComboBox *comboBoxAttributes, d->filterAttributeComboBoxes) {
         comboBoxAttributes->clear();
@@ -321,8 +326,8 @@ void ConcordancerQuickWidget::searchOccurrences()
 //    QueryFilterSequenceTableModel *seqmodel = new QueryFilterSequenceTableModel(group.filterSequences[0], this);
 //    d->treeviewQueryDefinition->setModel(seqmodel);
 
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoryManager->activeCorpusRepository();
+    if (!repository) return;
     if (d->modelLevelsAttributes->selectedLevelsAttributes().isEmpty()) {
         QMessageBox::warning(this, tr("No output selected"),
                              tr("You must select the output annotation Levels/Attributes from the panel on the right. "
@@ -330,7 +335,7 @@ void ConcordancerQuickWidget::searchOccurrences()
         return;
     }
     QString levelID = ui->comboBoxAnnotationLevel->currentData().toString();
-    if (!corpus->annotationStructure()->hasLevel(levelID)) return;
+    if (!repository->annotationStructure()->hasLevel(levelID)) return;
     QueryDefinition *query = new QueryDefinition();
     query->filterGroups << QueryFilterGroup();
     QueryFilterSequence sequence(levelID);
@@ -375,14 +380,14 @@ void ConcordancerQuickWidget::searchOccurrences()
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(0);
     qApp->processEvents();
-    QList<QueryOccurrencePointer *> occurrencePointers = corpus->datastoreAnnotations()->runQuery(query);
+    QList<QueryOccurrencePointer *> occurrencePointers = repository->annotations()->runQuery(query);
     ui->progressBar->setMaximum(occurrencePointers.count());
     d->resultsPointers = occurrencePointers;
 
     bool multiline = false;
     if (ui->optionFormatMultiline->isChecked()) multiline = true;
     qDebug() << query->resultLevelsAttributes;
-    QueryOccurrenceTableModel *modelResults = new QueryOccurrenceTableModel(corpus, query, occurrencePointers, multiline, this);
+    QueryOccurrenceTableModel *modelResults = new QueryOccurrenceTableModel(repository, query, occurrencePointers, multiline, this);
     d->tableviewResults->tableView()->setModel(modelResults);
     if (d->modelResults) delete d->modelResults;
     d->modelResults = modelResults;

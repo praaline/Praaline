@@ -18,6 +18,8 @@ namespace Praaline {
 namespace Core {
 
 struct CorpusRepositoryData {
+    QString repositoryID;
+    QString repositoryDescription;
     QString lastError;
     QPointer<MetadataStructure> metadataStructure;
     QPointer<AnnotationStructure> annotationStructure;
@@ -114,6 +116,28 @@ void CorpusRepository::close()
 {
     d->datastoreMetadata->closeDatastore();
     d->datastoreAnnotations->closeDatastore();
+}
+
+QString CorpusRepository::ID() const
+{
+    return d->repositoryID;
+}
+
+void CorpusRepository::setID(const QString &ID)
+{
+    QString oldID = d->repositoryID;
+    d->repositoryID = ID;
+    emit changedID(oldID, ID);
+}
+
+QString CorpusRepository::description() const
+{
+    return d->repositoryDescription;
+}
+
+void CorpusRepository::setDescription(const QString &description)
+{
+    d->repositoryDescription = description;
 }
 
 // ==============================================================================================================================

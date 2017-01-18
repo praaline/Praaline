@@ -3,7 +3,8 @@
 #include <QFileDialog>
 #include "CorpusDatabaseConnectionDialog.h"
 #include "ui_CorpusDatabaseConnectionDialog.h"
-#include "pncore/serialisers/CorpusDefinition.h"
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
+using namespace Praaline::Core;
 
 CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) :
     QDialog(parent),
@@ -36,26 +37,26 @@ CorpusDatabaseConnectionDialog::~CorpusDatabaseConnectionDialog()
     delete ui;
 }
 
-CorpusDefinition CorpusDatabaseConnectionDialog::corpusDefinition()
+CorpusRepositoryDefinition CorpusDatabaseConnectionDialog::corpusDefinition()
 {
-    CorpusDefinition def;
-    def.corpusID = ui->editCorpusID->text();
-    def.corpusName = ui->editCorpusName->text();
-    def.basePath = def.baseMediaPath = ui->editBaseFolder->text();
-    def.datastoreMetadata.type = DatastoreInfo::SQL;
-    def.datastoreMetadata.driver = ui->comboBoxDatabaseTypeMetadata->currentData().toString();
-    def.datastoreMetadata.hostname = ui->editHostnameMetadata->text();
-    def.datastoreMetadata.username = ui->editUsernameMetadata->text();
-    def.datastoreMetadata.password = ui->editPasswordMetadata->text();
-    def.datastoreMetadata.usePassword = (def.datastoreMetadata.password.isEmpty()) ? false : true;
-    def.datastoreMetadata.datasource = ui->editDatabaseNameMetadata->text();
-    def.datastoreAnnotations.type = DatastoreInfo::SQL;
-    def.datastoreAnnotations.driver = ui->comboBoxDatabaseTypeAnnotations->currentData().toString();
-    def.datastoreAnnotations.hostname = ui->editHostnameAnnotations->text();
-    def.datastoreAnnotations.username = ui->editUsernameAnnotations->text();
-    def.datastoreAnnotations.password = ui->editPasswordAnnotations->text();
-    def.datastoreAnnotations.usePassword = (def.datastoreAnnotations.password.isEmpty()) ? false : true;
-    def.datastoreAnnotations.datasource = ui->editDatabaseNameAnnotations->text();
+    CorpusRepositoryDefinition def;
+    def.repositoryID = ui->editCorpusID->text();
+    def.repositoryName = ui->editCorpusName->text();
+    def.basePath = ui->editBaseFolder->text();
+    def.infoDatastoreMetadata.type = DatastoreInfo::SQL;
+    def.infoDatastoreMetadata.driver = ui->comboBoxDatabaseTypeMetadata->currentData().toString();
+    def.infoDatastoreMetadata.hostname = ui->editHostnameMetadata->text();
+    def.infoDatastoreMetadata.username = ui->editUsernameMetadata->text();
+    def.infoDatastoreMetadata.password = ui->editPasswordMetadata->text();
+    def.infoDatastoreMetadata.usePassword = (def.infoDatastoreMetadata.password.isEmpty()) ? false : true;
+    def.infoDatastoreMetadata.datasource = ui->editDatabaseNameMetadata->text();
+    def.infoDatastoreAnnotations.type = DatastoreInfo::SQL;
+    def.infoDatastoreAnnotations.driver = ui->comboBoxDatabaseTypeAnnotations->currentData().toString();
+    def.infoDatastoreAnnotations.hostname = ui->editHostnameAnnotations->text();
+    def.infoDatastoreAnnotations.username = ui->editUsernameAnnotations->text();
+    def.infoDatastoreAnnotations.password = ui->editPasswordAnnotations->text();
+    def.infoDatastoreAnnotations.usePassword = (def.infoDatastoreAnnotations.password.isEmpty()) ? false : true;
+    def.infoDatastoreAnnotations.datasource = ui->editDatabaseNameAnnotations->text();
     return def;
 }
 

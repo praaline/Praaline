@@ -7,8 +7,10 @@
 #include "LongSoundAligner.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 
 struct LongSoundAlignerData
@@ -45,17 +47,17 @@ bool LongSoundAligner::createRecognitionLevel(CorpusRepository *repository, int 
     if (repository->annotationStructure()->hasLevel(levelID)) return true;
     AnnotationStructureLevel *level = new AnnotationStructureLevel(levelID, AnnotationStructureLevel::IndependentIntervalsLevel,
                                                                    levelID, QString("Long sound alignment step %1").arg(recognitionStep));
-    if (!repository->datastoreAnnotations()->createAnnotationLevel(level)) return false;
+    if (!repository->annotations()->createAnnotationLevel(level)) return false;
     repository->annotationStructure()->addLevel(level);
     AnnotationStructureAttribute *attr;
     attr = new AnnotationStructureAttribute("text_from_dic", "Text from Dic", "Text from pronunciation dictionary");
-    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
-    repository->addAttribute(attr);
+    if (!repository->annotations()->createAnnotationAttribute(levelID, attr)) return false;
+    level->addAttribute(attr);
     attr = new AnnotationStructureAttribute("acoustic_score", "Acoustic score", "Acoustic score for this word", DataType::Double);
-    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
+    if (!repository->annotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
     attr = new AnnotationStructureAttribute("lm_score", "LM score", "Language model score for this word", DataType::Double);
-    if (!repository->datastoreAnnotations()->createAnnotationAttribute(levelID, attr)) return false;
+    if (!repository->annotations()->createAnnotationAttribute(levelID, attr)) return false;
     level->addAttribute(attr);
     return true;
 }
@@ -110,7 +112,7 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<CorpusComm
     return true;
 }
 
-bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com, int recognitionStep)
+bool LongSoundAligner::recognise(QPointer<CorpusCommunication> com, int recognitionStep)
 {
     static QMutex mutex;
 
@@ -125,6 +127,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     }
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     if (!com) return false;
+    if (!com->repository()) return false;
     if (!com->hasRecordings()) {
         com->setProperty("LSA_status", "NoRecordings");
         return false;
@@ -135,7 +138,7 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
         if (!annot) continue;
         QString annotationID = annot->ID();
         mutex.lock();
-        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -162,8 +165,8 @@ bool LongSoundAligner::recognise(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             tier_auto_hypseg->mergeIdenticalAnnotations("_");
             // Save
             mutex.lock();
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_hypseg);
-            corpus->datastoreAnnotations()->saveTier(annotationID, speakerID, tier_auto_utterance);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_auto_hypseg);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_auto_utterance);
             mutex.unlock();
         }
         qDeleteAll(tiersAll);

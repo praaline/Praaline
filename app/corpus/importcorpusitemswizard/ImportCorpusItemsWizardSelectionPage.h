@@ -18,12 +18,14 @@ namespace Ui {
 class ImportCorpusItemsWizardSelectionPage;
 }
 
+struct ImportCorpusItemsWizardSelectionPageData;
+
 class ImportCorpusItemsWizardSelectionPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardSelectionPage(QPointer<Corpus> corpus,
+    explicit ImportCorpusItemsWizardSelectionPage(QPointer<CorpusRepository> repository,
                                                   QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
                                                   QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
                                                   QWidget *parent = 0);
@@ -37,14 +39,8 @@ private slots:
 
 private:
     Ui::ImportCorpusItemsWizardSelectionPage *ui;
-    // State
-    QPointer<Corpus> m_corpus;
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &m_candidateRecordings;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &m_candidateAnnotations;
-    QPointer<QStandardItemModel> m_modelFormatsRecording;
-    QPointer<QStandardItemModel> m_modelFormatsAnnotation;
-    bool m_abort;
-    // Methods
+    ImportCorpusItemsWizardSelectionPageData *d;
+
     QString communicationNameFromFilename(const QFileInfo &filename);
     void addFiles(const QString& directory, const QStringList &filters, bool recursive, bool isRecording);
     bool processFile(const QFileInfo &info, bool isRecording);

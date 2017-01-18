@@ -42,6 +42,11 @@ public:
     static CorpusRepository *open(const CorpusRepositoryDefinition &definition, QString &errorMessages, QObject *parent = 0);
     void close();
 
+    QString ID() const;
+    void setID(const QString &ID);
+    QString description() const;
+    void setDescription(const QString &description);
+
     // Datastores
     // ==========================================================================================================================
     QPointer<AnnotationDatastore> annotations() const;
@@ -63,6 +68,7 @@ public:
     void sendLogMessage(const QString &category, const QString &message);
 
 signals:
+    void changedID(const QString &oldID, const QString &newID);
     void logMessage(const QString &category, const QString &message);
 
 public slots:

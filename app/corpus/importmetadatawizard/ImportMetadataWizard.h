@@ -15,6 +15,8 @@ namespace Ui {
 class ImportMetadataWizard;
 }
 
+struct ImportMetadataWizardData;
+
 class ImportMetadataWizard : public QWizard
 {
     Q_OBJECT
@@ -37,18 +39,7 @@ public:
 
 private:
     Ui::ImportMetadataWizard *ui;
-
-    Corpus *m_corpus;
-    CorpusObject::Type m_corpusObjectType;
-    QString m_filename;
-    QString m_encoding;
-    QString m_delimiter;
-    QString m_textQualifier;
-    QList<QList<QString> > m_preview;
-    int m_columnCount;
-    int m_fileLineCount;
-    QStandardItemModel *m_previewModel;
-    QMap<QString, ColumnCorrespondance> m_ColumnCorrespondances;
+    ImportMetadataWizardData *d;
 
     void readFile();
     void preparePreview();

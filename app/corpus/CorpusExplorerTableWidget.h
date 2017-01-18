@@ -19,7 +19,7 @@ public:
     ~CorpusExplorerTableWidget();
 
 private slots:
-    void activeCorpusChanged(const QString &newActiveCorpusID);
+    void activeCorpusRepositoryChanged(const QString &newActiveCorpusID);
     void corpusObjectTypeChanged(const QString &text);
 
     void resultChanged(int filterRows, int unfilteredRows);

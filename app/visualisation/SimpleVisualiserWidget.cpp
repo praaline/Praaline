@@ -962,14 +962,14 @@ void SimpleVisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunic
     foreach (QPointer<CorpusRecording> rec, com->recordings()) {
         if (!first) {
             // Main audio
-            QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
-            FileOpenStatus status = openPath(path, ReplaceSession);
+            FileOpenStatus status = openPath(rec->filePath(), ReplaceSession);
             if (status == FileOpenFailed) {
                 QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
+                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(rec->filePath()));
             } else if (status == FileOpenWrongMode) {
                 QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>Please load at least one audio file before importing annotations.").arg(path));
+                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>"
+                                         "Please load at least one audio file before importing annotations.").arg(rec->filePath()));
             }
             addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");
             first = true;
@@ -984,10 +984,9 @@ void SimpleVisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunic
 void SimpleVisualiserWidget::addRecordingToSession(QPointer<CorpusRecording> rec)
 {
     if (!rec) return;
-    QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
-    FileOpenStatus status = openAudio(path, CreateAdditionalModel);
+    FileOpenStatus status = openAudio(rec->filePath(), CreateAdditionalModel);
     if (status == FileOpenFailed) {
         QMessageBox::critical(this, tr("Failed to open file"),
-                              tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(path));
+                              tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(rec->filePath()));
     }
 }

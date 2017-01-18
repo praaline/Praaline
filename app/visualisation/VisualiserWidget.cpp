@@ -127,6 +127,7 @@
 #include "pncore/corpus/CorpusRecording.h"
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/PointTier.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/annotation/AnnotationGridModel.h"

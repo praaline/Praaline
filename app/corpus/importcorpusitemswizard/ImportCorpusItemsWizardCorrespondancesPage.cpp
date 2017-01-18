@@ -5,17 +5,35 @@
 #include <QFileInfo>
 #include <QMultiHash>
 #include <QStandardItemModel>
+
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/interfaces/InterfaceTextFile.h"
+
 #include "ImportCorpusItemsWizardCorrespondancesPage.h"
 #include "ui_ImportCorpusItemsWizardCorrespondancesPage.h"
 
+struct ImportCorpusItemsWizardCorrespondancesPageData {
+    ImportCorpusItemsWizardCorrespondancesPageData(QPointer<CorpusRepository> repository,
+                                                   QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
+                                                   QSet<QString> &tierNamesCommon) :
+        repository(repository), tierCorrespondances(tierCorrespondances), tierNamesCommon(tierNamesCommon)
+    {}
+
+    QPointer<CorpusRepository> repository;
+    QMultiHash<QString, TierCorrespondance> &tierCorrespondances;
+    QSet<QString> &tierNamesCommon;
+    QPointer<QStandardItemModel> modelTiers;
+};
+
 ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondancesPage(
-        QPointer<Corpus> corpus,
+        QPointer<CorpusRepository> repository,
         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardCorrespondancesPage),
-    m_corpus(corpus), m_tierCorrespondances(tierCorrespondances), m_tierNamesCommon(tierNamesCommon)
+    d(new ImportCorpusItemsWizardCorrespondancesPageData(repository, tierCorrespondances, tierNamesCommon))
 {
     ui->setupUi(this);
     setTitle(tr("Correspondances between annotation files and Annotation Levels/Attributes"));
@@ -38,7 +56,8 @@ ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondanc
 ImportCorpusItemsWizardCorrespondancesPage::~ImportCorpusItemsWizardCorrespondancesPage()
 {
     delete ui;
-    delete m_modelTiers;
+    if (d->modelTiers) delete d->modelTiers;
+    delete d;
 }
 
 void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
@@ -49,13 +68,13 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
     QList<QString> tierNamesAllSorted;
     QList<QString> tierNamesCommonSorted;
 
-    if (!m_tierNamesCommon.isEmpty()) tierNamesCommonSorted = m_tierNamesCommon.toList();
+    if (!d->tierNamesCommon.isEmpty()) tierNamesCommonSorted = d->tierNamesCommon.toList();
     qSort(tierNamesCommonSorted);
 
     // Find all tiers (common and not common)
     QHash<QString, QStringList> tierNamesPresence;
     QMultiHash<QString, TierCorrespondance>::iterator iter;
-    for (iter = m_tierCorrespondances.begin(); iter != m_tierCorrespondances.end(); ++iter) {
+    for (iter = d->tierCorrespondances.begin(); iter != d->tierCorrespondances.end(); ++iter) {
         QString tierName = iter.value().tierName;
         if (!tierNamesAllSorted.contains(tierName)) tierNamesAllSorted << tierName;
         QFileInfo finfo(iter.value().filename);
@@ -64,22 +83,22 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
     qSort(tierNamesAllSorted);
 
     // Model for tiers
-    m_modelTiers = new QStandardItemModel(tierNamesAllSorted.count(), 4, this);
+    d->modelTiers = new QStandardItemModel(tierNamesAllSorted.count(), 4, this);
     i = 0;
     foreach (QString tier, tierNamesAllSorted) {
-        m_modelTiers->setItem(i, 0, new QStandardItem(tier));
-        m_modelTiers->setItem(i, 1, new QStandardItem());
-        m_modelTiers->setItem(i, 2, new QStandardItem());
-        if (m_tierNamesCommon.contains(tier))
-            m_modelTiers->setItem(i, 3, new QStandardItem(tr("All files")));
+        d->modelTiers->setItem(i, 0, new QStandardItem(tier));
+        d->modelTiers->setItem(i, 1, new QStandardItem());
+        d->modelTiers->setItem(i, 2, new QStandardItem());
+        if (d->tierNamesCommon.contains(tier))
+            d->modelTiers->setItem(i, 3, new QStandardItem(tr("All files")));
         else {
-            m_modelTiers->setItem(i, 3, new QStandardItem(tierNamesPresence[tier].join(", ")));
+            d->modelTiers->setItem(i, 3, new QStandardItem(tierNamesPresence[tier].join(", ")));
         }
         i++;
     }
     labels << tr("Tier Name") << tr("Annotation Level") << tr("Annotation Attribute") << tr("Presence");
-    m_modelTiers->setHorizontalHeaderLabels(labels);
-    ui->tableviewTiers->setModel(m_modelTiers);
+    d->modelTiers->setHorizontalHeaderLabels(labels);
+    ui->tableviewTiers->setModel(d->modelTiers);
 
     guessCorrespondances();
 }
@@ -115,11 +134,11 @@ void ImportCorpusItemsWizardCorrespondancesPage::batchUpdate()
     QString filterOperator = ui->comboFilter->currentText();
     QString filter = ui->editFilter->text();
     // Run through tiers
-    for (int i = 0; i < m_modelTiers->rowCount(); ++i) {
-        QString tierName = m_modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
+    for (int i = 0; i < d->modelTiers->rowCount(); ++i) {
+        QString tierName = d->modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
         if (filterTierName(tierName, filterOperator, filter)) {
-            m_modelTiers->setData(m_modelTiers->index(i, 1), ui->editLevel->text());
-            m_modelTiers->setData(m_modelTiers->index(i, 2), ui->editAttribute->text());
+            d->modelTiers->setData(d->modelTiers->index(i, 1), ui->editLevel->text());
+            d->modelTiers->setData(d->modelTiers->index(i, 2), ui->editAttribute->text());
         }
     }
 }
@@ -127,32 +146,32 @@ void ImportCorpusItemsWizardCorrespondancesPage::batchUpdate()
 void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondance(int i, QString tierName)
 {
     // Best match
-    foreach (QString levelID, m_corpus->annotationStructure()->levelIDs()) {
+    foreach (QString levelID, d->repository->annotationStructure()->levelIDs()) {
         if ((tierName == levelID) || (tierName.replace("-", "_") == levelID)) {
-            m_modelTiers->setData(m_modelTiers->index(i, 1), levelID);
+            d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
             return;
         }
         else {
-            foreach (QString attributeID, m_corpus->annotationStructure()->level(levelID)->attributeIDs()) {
+            foreach (QString attributeID, d->repository->annotationStructure()->level(levelID)->attributeIDs()) {
                 if ((tierName == attributeID) || (tierName.replace("-", "_") == attributeID)) {
-                    m_modelTiers->setData(m_modelTiers->index(i, 1), levelID);
-                    m_modelTiers->setData(m_modelTiers->index(i, 2), attributeID);
+                    d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
+                    d->modelTiers->setData(d->modelTiers->index(i, 2), attributeID);
                     return;
                 }
             }
         }
     }
     // Next best match
-    foreach (QString levelID, m_corpus->annotationStructure()->levelIDs()) {
+    foreach (QString levelID, d->repository->annotationStructure()->levelIDs()) {
         if (tierName.startsWith(levelID) || tierName.replace("-", "_").startsWith(levelID)) {
-            m_modelTiers->setData(m_modelTiers->index(i, 1), levelID);
+            d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
             return;
         }
         else {
-            foreach (QString attributeID, m_corpus->annotationStructure()->level(levelID)->attributeIDs()) {
+            foreach (QString attributeID, d->repository->annotationStructure()->level(levelID)->attributeIDs()) {
                 if (tierName.startsWith(attributeID) || tierName.replace("-", "_").startsWith(attributeID)) {
-                    m_modelTiers->setData(m_modelTiers->index(i, 1), levelID);
-                    m_modelTiers->setData(m_modelTiers->index(i, 2), attributeID);
+                    d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
+                    d->modelTiers->setData(d->modelTiers->index(i, 2), attributeID);
                     return;
                 }
             }
@@ -162,11 +181,11 @@ void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondance(int i, QStr
 
 void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondances()
 {
-    if (!m_corpus) return;
-    if (!m_corpus->annotationStructure()) return;
+    if (!d->repository) return;
+    if (!d->repository->annotationStructure()) return;
 
-    for (int i = 0; i < m_modelTiers->rowCount(); ++i) {
-        QString tierName = m_modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
+    for (int i = 0; i < d->modelTiers->rowCount(); ++i) {
+        QString tierName = d->modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
         guessCorrespondance(i, tierName);
     }
 }
@@ -176,38 +195,35 @@ bool ImportCorpusItemsWizardCorrespondancesPage::validatePage()
     QHash<QString, QPair<QString, QString> > correspondances;
     bool structureChanges = false;
 
-    for (int i = 0; i < m_modelTiers->rowCount(); ++i) {
-        QString tier = m_modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
-        QString annotationLevelID = m_modelTiers->item(i, 1)->data(Qt::DisplayRole).toString();
-        QString annotationAttributeID = m_modelTiers->item(i, 2)->data(Qt::DisplayRole).toString();
+    for (int i = 0; i < d->modelTiers->rowCount(); ++i) {
+        QString tier = d->modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
+        QString annotationLevelID = d->modelTiers->item(i, 1)->data(Qt::DisplayRole).toString();
+        QString annotationAttributeID = d->modelTiers->item(i, 2)->data(Qt::DisplayRole).toString();
         correspondances.insert(tier, QPair<QString, QString>(annotationLevelID, annotationAttributeID));
         // Create levels and attributes if they do not exist
         // IMPROVE this: should lead to a next wizard page asking to define the data types of the new level/attributes
         // for now, just use varchar(1024)
-        if (m_corpus && ui->optionCreateLevelsAttributes->isChecked()) {
-            if (!m_corpus->annotationStructure()->hasLevel(annotationLevelID)) {
+        if (d->repository && ui->optionCreateLevelsAttributes->isChecked()) {
+            if (!d->repository->annotationStructure()->hasLevel(annotationLevelID)) {
                 QPointer<AnnotationStructureLevel> level =
                         new AnnotationStructureLevel(annotationLevelID, AnnotationStructureLevel::IndependentIntervalsLevel, annotationLevelID);
-                if (m_corpus->datastoreAnnotations()->createAnnotationLevel(level)) {
-                    m_corpus->annotationStructure()->addLevel(level);
+                if (d->repository->annotations()->createAnnotationLevel(level)) {
+                    d->repository->annotationStructure()->addLevel(level);
                     structureChanges = true;
                 }
             }
-            AnnotationStructureLevel *level = m_corpus->annotationStructure()->level(annotationLevelID);
+            AnnotationStructureLevel *level = d->repository->annotationStructure()->level(annotationLevelID);
             if (level && (!annotationAttributeID.isEmpty()) && (!level->hasAttribute(annotationAttributeID))) {
                 QPointer<AnnotationStructureAttribute> attr = new AnnotationStructureAttribute(annotationAttributeID, annotationAttributeID);
-                if (m_corpus->datastoreAnnotations()->createAnnotationAttribute(level->ID(), attr)) {
+                if (d->repository->annotations()->createAnnotationAttribute(level->ID(), attr)) {
                     level->addAttribute(attr);
                     structureChanges = true;
                 }
             }
         }
     }
-    if (m_corpus && structureChanges) {
-        m_corpus->save();
-    }
     QMultiHash<QString, TierCorrespondance>::iterator i;
-    for (i = m_tierCorrespondances.begin(); i != m_tierCorrespondances.end(); ++i) {
+    for (i = d->tierCorrespondances.begin(); i != d->tierCorrespondances.end(); ++i) {
         QString tierName = i.value().tierName;
         if (correspondances.contains(tierName)) {
             i.value().annotationLevelID = correspondances.value(tierName).first;

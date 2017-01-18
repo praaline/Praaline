@@ -5,6 +5,8 @@
 #include <QFile>
 #include <QTextStream>
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "valibelprocessor.h"
@@ -103,7 +105,7 @@ void ValibelProcessor::importValibelFile(Corpus *corpus, const QString &filename
         RealTime tend = segmentIntervals[speakerID].last()->tMax();
         IntervalTier *tier = new IntervalTier("segment", segmentIntervals[speakerID], RealTime(), tend);
         tier->fillEmptyTextLabelsWith("_");
-        corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier);
+        corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, tier);
     }
 }
 
@@ -168,12 +170,12 @@ QList<QString> ValibelProcessor::splitToken(QString input)
     return ret;
 }
 
-void ValibelProcessor::tokenise(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void ValibelProcessor::tokenise(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -221,7 +223,7 @@ void ValibelProcessor::tokenise(Corpus *corpus, QList<QPointer<CorpusCommunicati
                 }
                 tier_tok_min->mergeIdenticalAnnotations("_");
 
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
                 delete tier_tok_min;
             }
             qDeleteAll(tiersAll);
@@ -230,12 +232,12 @@ void ValibelProcessor::tokenise(Corpus *corpus, QList<QPointer<CorpusCommunicati
     }
 }
 
-void ValibelProcessor::tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void ValibelProcessor::tokmin_punctuation(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -261,7 +263,7 @@ void ValibelProcessor::tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusC
                     { l.chop(1); tok_min->setAttribute("liaison", l); }
                     if (l.startsWith("\"")) { l = l.remove(0, 1); tok_min->setAttribute("liaison", l); }
                 }
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             }
             qDeleteAll(tiersAll);
         }
@@ -270,12 +272,12 @@ void ValibelProcessor::tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusC
 }
 
 
-void ValibelProcessor::pauses(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void ValibelProcessor::pauses(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -284,7 +286,7 @@ void ValibelProcessor::pauses(Corpus *corpus, QList<QPointer<CorpusCommunication
                     if (intv->text() == "/") intv->setText("_");
                 }
                 tier_tok_min->mergeIdenticalAnnotations("_");
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             }
             qDeleteAll(tiersAll);
         }

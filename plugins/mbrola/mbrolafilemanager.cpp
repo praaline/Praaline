@@ -6,7 +6,10 @@
 #include <QDebug>
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
+using namespace Praaline::Core;
 
 #include "mbrolafilemanager.h"
 
@@ -14,7 +17,7 @@ MBROLAFileManager::MBROLAFileManager()
 {
 }
 
-bool MBROLAFileManager::createPhoFile(const QString &filenamePho, QPointer<IntervalTier> tier_phones, const QString &attributeID)
+bool MBROLAFileManager::createPhoFile(const QString &filenamePho, IntervalTier *tier_phones, const QString &attributeID)
 {
     return createPhoFile(filenamePho, tier_phones->intervals(), attributeID);
 }
@@ -43,7 +46,7 @@ bool MBROLAFileManager::createPhoFile(const QString &filenamePho, QList<Interval
 
 
 
-bool MBROLAFileManager::updatePhoneTierFromPhoFile(const QString &filenamePho, QPointer<IntervalTier> tier,
+bool MBROLAFileManager::updatePhoneTierFromPhoFile(const QString &filenamePho, IntervalTier *tier,
                                                    const QString &attributeForPhoneme, bool updatePhone, bool updatePitch)
 {
     if (!tier) return false;
@@ -90,13 +93,12 @@ bool MBROLAFileManager::updatePhoneTierFromPhoFile(const QString &filenamePho, Q
 }
 
 
-void MBROLAFileManager::extractPhoParameters(Corpus *corpus, QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot,
+void MBROLAFileManager::extractPhoParameters(QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot,
                                              const QString &attributeForPhoneme)
 {
-    if (!corpus) return;
     if (!rec) return;
     if (!annot) return;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = annot->repository()->annotations()->getTiersAllSpeakers(annot->ID());
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 
@@ -104,7 +106,7 @@ void MBROLAFileManager::extractPhoParameters(Corpus *corpus, QPointer<CorpusReco
         if (!tier_phones) continue;
 
         // Find speaker's sex
-        QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+        QPointer<CorpusSpeaker> spk = annot->corpus()->speaker(speakerID);
         QString sex = "Male";
         if (spk) {
             QString spkSex = spk->property("sex").toString();
@@ -118,7 +120,7 @@ void MBROLAFileManager::extractPhoParameters(Corpus *corpus, QPointer<CorpusReco
         if (!tempDirectory.endsWith("/")) tempDirectory.append("/");
         // Copy the recording file into temp+.wav
         QString filenameTempRec = QString("%1_%2.wav").arg(rec->ID()).arg(speakerID);
-        QFile::copy(corpus->baseMediaPath() + "/" + rec->filename(), tempDirectory + filenameTempRec);
+        QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
         // Prepare the annotation (phones only)
         QString filenameTempAnnot = QString("%1_%2.TextGrid").arg(rec->ID()).arg(speakerID);
         QPointer<AnnotationTierGroup> tiersOnlyPhones = new AnnotationTierGroup();
@@ -129,12 +131,12 @@ void MBROLAFileManager::extractPhoParameters(Corpus *corpus, QPointer<CorpusReco
         QString script = appPath + "/plugins/mbrola/praaline_mbrolise.praat";
         QStringList scriptArguments;
         scriptArguments << tempDirectory + filenameTempRec << tempDirectory + filenameTempAnnot <<
-                           sex << "1" << corpus->baseMediaPath();
+                           sex << "1" << rec->basePath();
         executePraatScript(script, scriptArguments);
 
-        QString filenamePho = corpus->baseMediaPath() + "/" + QString(filenameTempAnnot).replace(".TextGrid", "m.pho");
+        QString filenamePho = rec->basePath() + "/" + QString(filenameTempAnnot).replace(".TextGrid", "m.pho");
         updatePhoneTierFromPhoFile(filenamePho, tier_phones, attributeForPhoneme);
-        if (!corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_phones)) {
+        if (!annot->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phones)) {
             qDebug() << "Error in saving " << annot->ID() << " speaker " << speakerID << " phone count " << tier_phones->count();
         }
     }

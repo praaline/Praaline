@@ -8,24 +8,23 @@
 #include "AnnotationStructureEditor.h"
 #include "ui_AnnotationStructureEditor.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
-#include "pngui/observers/CorpusObserver.h"
 #include "NameValueListEditor.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
 
 struct AnnotationStructureEditorData {
-    AnnotationStructureEditorData() :
-        corporaManager(0), treemodelAnnotationStructure(0)
+    AnnotationStructureEditorData() : corpusRepositoriesManager(0), treemodelAnnotationStructure(0)
     { }
 
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoriesManager;
 
     QAction *actionAddAnnotationStructureLevel;
     QAction *actionAddAnnotationStructureAttribute;
@@ -52,10 +51,10 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
     QList<QObject *> list;
     list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
 
     // Toolbars and actions
     d->toolbarAnnotationStructure = new QToolBar("Annotation Structure", this);
@@ -161,15 +160,15 @@ void AnnotationStructureEditor::refreshAnnotationStructureTreeView(AnnotationStr
     if (previousAnnotationStructureModel) delete previousAnnotationStructureModel;
 }
 
-void AnnotationStructureEditor::activeCorpusChanged(const QString &newActiveCorpusID)
+void AnnotationStructureEditor::activeCorpusRepositoryChanged(const QString &repositoryID)
 {
-    Q_UNUSED(newActiveCorpusID);
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) {
+    Q_UNUSED(repositoryID);
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) {
         d->treeviewAnnotationStructure->setModel(0);
         if (d->treemodelAnnotationStructure) delete d->treemodelAnnotationStructure;
     } else {
-        refreshAnnotationStructureTreeView(corpus->annotationStructure());
+        refreshAnnotationStructureTreeView(repository->annotationStructure());
     }
 }
 
@@ -177,14 +176,13 @@ void AnnotationStructureEditor::activeCorpusChanged(const QString &newActiveCorp
 
 void AnnotationStructureEditor::addAnnotationStructureLevel()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotationStructure()) return;
     if (!d->treemodelAnnotationStructure) return;
-    if (!obs->corpus()->annotationStructure()) return;
 
     // Ask user for level definition
-    AddLevelDialog *dialog = new AddLevelDialog(obs->corpus()->annotationStructure(), this);
+    AddLevelDialog *dialog = new AddLevelDialog(repository->annotationStructure(), this);
     dialog->exec();
     if (dialog->result() == QDialog::Rejected) return;
     QString levelID = dialog->levelID();
@@ -197,19 +195,18 @@ void AnnotationStructureEditor::addAnnotationStructureLevel()
     newLevel->setDatatype(dt);
 
     // Create level
-    if (!obs->corpus()->datastoreAnnotations()->createAnnotationLevel(newLevel))
+    if (!repository->annotations()->createAnnotationLevel(newLevel))
         return; // failed to create level
-    obs->corpus()->annotationStructure()->addLevel(newLevel);
-    refreshAnnotationStructureTreeView(obs->corpus()->annotationStructure());
+    repository->annotationStructure()->addLevel(newLevel);
+    refreshAnnotationStructureTreeView(repository->annotationStructure());
 }
 
 void AnnotationStructureEditor::addAnnotationStructureAttribute()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotationStructure()) return;
     if (!d->treemodelAnnotationStructure) return;
-    if (!obs->corpus()->annotationStructure()) return;
 
     QModelIndex index = d->treeviewAnnotationStructure->currentIndex();
     if (!index.isValid()) return;
@@ -232,19 +229,18 @@ void AnnotationStructureEditor::addAnnotationStructureAttribute()
     if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
     newAttribute->setDatatype(dt);
 
-    if (!obs->corpus()->datastoreAnnotations()->createAnnotationAttribute(level->ID(), newAttribute))
+    if (!repository->annotations()->createAnnotationAttribute(level->ID(), newAttribute))
         return; // failed to create attribute
     level->addAttribute(newAttribute);
-    refreshAnnotationStructureTreeView(obs->corpus()->annotationStructure());
+    refreshAnnotationStructureTreeView(repository->annotationStructure());
 }
 
 void AnnotationStructureEditor::removeAnnotationStructureItem()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotationStructure()) return;
     if (!d->treemodelAnnotationStructure) return;
-    if (!obs->corpus()->annotationStructure()) return;
 
     QModelIndex index = d->treeviewAnnotationStructure->currentIndex();
     if (!index.isValid()) return;
@@ -257,9 +253,9 @@ void AnnotationStructureEditor::removeAnnotationStructureItem()
         if (QMessageBox::warning(this, "Remove annotation level?",
                                  QString("Do you want to delete all the annotations stored on Level '%1'? This action cannot be reversed!")
                                  .arg(level->name()), "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        obs->corpus()->datastoreAnnotations()->deleteAnnotationLevel(level->ID());
-        obs->corpus()->annotationStructure()->removeLevelByID(level->ID());
-        refreshAnnotationStructureTreeView(obs->corpus()->annotationStructure());
+        repository->annotations()->deleteAnnotationLevel(level->ID());
+        repository->annotationStructure()->removeLevelByID(level->ID());
+        refreshAnnotationStructureTreeView(repository->annotationStructure());
     }
     else {
         level = qobject_cast<AnnotationStructureLevel *>(attr->parent());
@@ -267,17 +263,17 @@ void AnnotationStructureEditor::removeAnnotationStructureItem()
         if (QMessageBox::warning(this, "Remove annotation attribute?",
                                  QString("Do you want to delete all the annotations stored for Attribute '%1'? This action cannot be reversed!")
                                  .arg(attr->name()), "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        obs->corpus()->datastoreAnnotations()->deleteAnnotationAttribute(level->ID(), attr->ID());
+        repository->annotations()->deleteAnnotationAttribute(level->ID(), attr->ID());
         level->removeAttributeByID(attr->ID());
-        refreshAnnotationStructureTreeView(obs->corpus()->annotationStructure());
+        refreshAnnotationStructureTreeView(repository->annotationStructure());
     }
 }
 
 void AnnotationStructureEditor::importAnnotationStructure()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Annotation Structure"), "",
@@ -285,42 +281,40 @@ void AnnotationStructureEditor::importAnnotationStructure()
     if (filename.isEmpty()) return;
     AnnotationStructure *structure = XMLSerialiserAnnotationStructure::read(filename);
     if (!structure) return;
-    obs->corpus()->importAnnotationStructure(structure);
-    refreshAnnotationStructureTreeView(obs->corpus()->annotationStructure());
+    repository->importAnnotationStructure(structure);
+    refreshAnnotationStructureTreeView(repository->annotationStructure());
 }
 
 void AnnotationStructureEditor::exportAnnotationStructure()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getSaveFileName(this, tr("Export Annotation Structure"), "",
                                                     tr("XML File (*.xml);;All Files (*)"), &selectedFilter, options);
     if (filename.isEmpty()) return;
-    XMLSerialiserAnnotationStructure::write(obs->corpus()->annotationStructure(), filename);
+    XMLSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
 }
 
 void AnnotationStructureEditor::renameAnnotationLevel(const QString &oldID, const QString &newID)
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
-    if (!obs->corpus()->datastoreAnnotations()) return;
-    if (obs->corpus()->datastoreAnnotations()->renameAnnotationLevel(oldID, newID)) {
-        obs->corpus()->annotationStructure()->level(oldID)->setID(newID);
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotations()) return;
+    if (repository->annotations()->renameAnnotationLevel(oldID, newID)) {
+        repository->annotationStructure()->level(oldID)->setID(newID);
     }
 }
 
 void AnnotationStructureEditor::renameAnnotationAttribute(const QString &levelID, const QString &oldID, const QString &newID)
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
-    if (!obs->corpus()->datastoreAnnotations()) return;
-    if (obs->corpus()->datastoreAnnotations()->renameAnnotationAttribute(levelID, oldID, newID)) {
-        obs->corpus()->annotationStructure()->level(levelID)->attribute(oldID)->setID(newID);
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotations()) return;
+    if (repository->annotations()->renameAnnotationAttribute(levelID, oldID, newID)) {
+        repository->annotationStructure()->level(levelID)->attribute(oldID)->setID(newID);
     }
 }
 

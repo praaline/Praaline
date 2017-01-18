@@ -1,68 +1,99 @@
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusRecording.h"
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/corpus/CorpusSpeaker.h"
+#include "pncore/corpus/CorpusObjectInfo.h"
 using namespace Praaline::Core;
 
 #include "CorpusObserver.h"
 
-CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointer<CorpusCommunication> com) :
-    TreeNode(com->ID()), communication(com)
+// ==============================================================================================================================
+// Corpus observer: lists all corpora in a repository
+// ==============================================================================================================================
+CorpusObserver::CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent) :
+    QObject(parent), m_repository(repository)
 {
-    setIcon(QIcon(":/icons/corpusexplorer/corpus_communication.png"));
-    connect(communication, SIGNAL(corpusRecordingAdded(QPointer<Praaline::Core::CorpusRecording>)),
-            this, SLOT(recordingAdded(QPointer<Praaline::Core::CorpusRecording>)));
-    connect(communication, SIGNAL(corpusRecordingDeleted(QString, QString)),
-            this, SLOT(recordingDeleted(QString,QString)));
-    connect(communication, SIGNAL(corpusAnnotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)),
-            this, SLOT(annotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)));
-    connect(communication, SIGNAL(corpusAnnotationDeleted(QString, QString)),
-            this, SLOT(annotationDeleted(QString,QString)));
-}
-
-CorpusExplorerTreeNodeSpeaker::CorpusExplorerTreeNodeSpeaker(QPointer<CorpusSpeaker> spk) :
-    TreeNode(spk->ID()), speaker(spk)
-{
-    setIcon(QIcon(":/icons/corpusexplorer/corpus_speaker.png"));
-}
-
-CorpusExplorerTreeNodeRecording::CorpusExplorerTreeNodeRecording(QPointer<CorpusRecording> rec) :
-    TreeNode(rec->ID()), recording(rec)
-{
-    setIcon(QIcon(":/icons/corpusexplorer/corpus_recording.png"));
-}
-
-CorpusExplorerTreeNodeAnnotation::CorpusExplorerTreeNodeAnnotation(QPointer<CorpusAnnotation> annot) :
-    TreeNode(annot->ID()), annotation(annot)
-{
-    setIcon(QIcon(":/icons/corpusexplorer/corpus_annotation.png"));
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-
-CorpusObserver::CorpusObserver(QPointer<Corpus> corpus, QObject *parent)
-    : QObject(parent), m_corpus(corpus)
-{
-    m_nodeCommunications = 0;
-    m_nodeSpeakers = 0;
-    m_nodeCorpus = 0;
-    buildTree();
-    connect(m_corpus, SIGNAL(corpusCommunicationAdded(QPointer<Praaline::Core::CorpusCommunication>)),
-            this, SLOT(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)));
-    connect(m_corpus, SIGNAL(corpusCommunicationDeleted(QString)),
-            this, SLOT(communicationDeleted(QString)));
-    connect(m_corpus, SIGNAL(corpusSpeakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)),
-            this, SLOT(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)));
-    connect(m_corpus, SIGNAL(corpusSpeakerDeleted(QString)),
-            this, SLOT(speakerDeleted(QString)));
+    QList<CorpusObjectInfo> list = m_repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, QString());
+    foreach (CorpusObjectInfo item, list) {
+        Corpus *corpus = new Corpus(item.ID(), item.name(), item.description(), this);
+        m_repository->metadata()->loadCorpus(corpus);
+        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpus);
+        node->refresh();
+        m_nodeRepository->addNode(node);
+    }
 }
 
 CorpusObserver::~CorpusObserver()
 {
 }
 
-void CorpusObserver::clear()
+void CorpusObserver::setCommunicationsGrouping(QStringList groupAttributeIDs)
+{
+
+}
+
+void CorpusObserver::setSpeakersGrouping(QStringList groupAttributeIDs)
+{
+}
+
+// ==============================================================================================================================
+// Corpus tree node
+// ==============================================================================================================================
+
+CorpusExplorerTreeNodeCorpus::CorpusExplorerTreeNodeCorpus(QPointer<Corpus> corpus) :
+    TreeNode(corpus->ID()), m_corpus(corpus)
+{
+    setIcon(QIcon(":/icons/corpusexplorer/corpus.png"));
+    m_nodeCommunications = 0;
+    m_nodeSpeakers = 0;
+    buildTree();
+    connect(corpus, SIGNAL(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)),
+            this, SLOT(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)));
+    connect(corpus, SIGNAL(communicationDeleted(QString)),
+            this, SLOT(communicationDeleted(QString)));
+    connect(corpus, SIGNAL(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)),
+            this, SLOT(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)));
+    connect(corpus, SIGNAL(speakerDeleted(QString)),
+            this, SLOT(speakerDeleted(QString)));
+}
+
+
+void CorpusExplorerTreeNodeCorpus::communicationAdded(QPointer<CorpusCommunication> communication)
+{
+    if (!communication) return;
+    CorpusExplorerTreeNodeCommunication *nodeCom = new CorpusExplorerTreeNodeCommunication(communication);
+    foreach (CorpusRecording *rec, communication->recordings()) {
+        CorpusExplorerTreeNodeRecording *nodeRec = new CorpusExplorerTreeNodeRecording(rec);
+        nodeCom->addNode(nodeRec);
+    }
+    foreach (CorpusAnnotation *annot, communication->annotations()) {
+        CorpusExplorerTreeNodeAnnotation *nodeAnnot = new CorpusExplorerTreeNodeAnnotation(annot);
+        nodeCom->addNode(nodeAnnot);
+    }
+    m_nodeCommunications->addNode(nodeCom, QtilitiesCategory(categoryString(communication, m_groupAttributeIDsCommunication)));
+}
+
+void CorpusExplorerTreeNodeCorpus::communicationDeleted(QString communicationID)
+{
+    m_nodeCommunications->removeItem(communicationID);
+}
+
+void CorpusExplorerTreeNodeCorpus::speakerAdded(QPointer<CorpusSpeaker> speaker)
+{
+    if (!speaker) return;
+    CorpusExplorerTreeNodeSpeaker *nodeSpk = new CorpusExplorerTreeNodeSpeaker(speaker);
+    m_nodeSpeakers->addNode(nodeSpk, QtilitiesCategory(categoryString(speaker, m_groupAttributeIDsSpeaker)));
+}
+
+void CorpusExplorerTreeNodeCorpus::speakerDeleted(QString speakerID)
+{
+    m_nodeSpeakers->removeItem(speakerID);
+}
+
+void CorpusExplorerTreeNodeCorpus::clear()
 {
     if (m_nodeCommunications) {
         m_nodeCommunications->deleteAll();
@@ -74,18 +105,13 @@ void CorpusObserver::clear()
         delete m_nodeSpeakers;
     }
     m_nodeSpeakers = 0;
-    if (m_nodeCorpus) {
-        m_nodeCorpus->deleteAll();
-        delete m_nodeCorpus;
-    }
-    m_nodeCorpus = 0;
 }
 
-void CorpusObserver::refresh() {
+void CorpusExplorerTreeNodeCorpus::refresh() {
     buildTree();
 }
 
-void CorpusObserver::buildTree()
+void CorpusExplorerTreeNodeCorpus::buildTree()
 {
     if (!m_corpus) return;
     clear();
@@ -95,7 +121,7 @@ void CorpusObserver::buildTree()
     m_nodeSpeakers = new TreeNode(tr("Speakers"), this);
     m_nodeSpeakers->enableCategorizedDisplay();
     m_nodeSpeakers->setIcon(QIcon(qti_icon_FOLDER_16X16));
-    m_nodeCorpus = new TreeNode(m_corpus->ID(), this);
+    this->setName(m_corpus->ID());
 
     m_nodeCommunications->startProcessingCycle();
     foreach(QPointer<CorpusCommunication> com, m_corpus->communications()) {
@@ -121,11 +147,11 @@ void CorpusObserver::buildTree()
         m_nodeSpeakers->addNode(nodeSpk);
     }
     m_nodeSpeakers->endProcessingCycle();
-    m_nodeCorpus->addNode(m_nodeCommunications);
-    m_nodeCorpus->addNode(m_nodeSpeakers);
+    this->addNode(m_nodeCommunications);
+    this->addNode(m_nodeSpeakers);
 }
 
-QString CorpusObserver::categoryString(CorpusObject *obj, QStringList groupAttributeIDs)
+QString CorpusExplorerTreeNodeCorpus::categoryString(CorpusObject *obj, QStringList groupAttributeIDs)
 {
     if (!obj) return QString();
     QString ret;
@@ -138,7 +164,7 @@ QString CorpusObserver::categoryString(CorpusObject *obj, QStringList groupAttri
     return ret;
 }
 
-void CorpusObserver::setCommunicationsGrouping(QStringList groupAttributeIDs)
+void CorpusExplorerTreeNodeCorpus::setCommunicationsGrouping(QStringList groupAttributeIDs)
 {
     m_nodeCommunications->startProcessingCycle();
     foreach (QObject *obj, m_nodeCommunications->treeChildren()) {
@@ -152,7 +178,7 @@ void CorpusObserver::setCommunicationsGrouping(QStringList groupAttributeIDs)
     m_groupAttributeIDsCommunication = groupAttributeIDs;
 }
 
-void CorpusObserver::setSpeakersGrouping(QStringList groupAttributeIDs)
+void CorpusExplorerTreeNodeCorpus::setSpeakersGrouping(QStringList groupAttributeIDs)
 {
     m_nodeSpeakers->startProcessingCycle();
     foreach (QObject *obj, m_nodeSpeakers->treeChildren()) {
@@ -166,42 +192,22 @@ void CorpusObserver::setSpeakersGrouping(QStringList groupAttributeIDs)
     m_groupAttributeIDsSpeaker = groupAttributeIDs;
 }
 
-void CorpusObserver::communicationAdded(QPointer<CorpusCommunication> communication)
-{
-    if (!communication) return;
-    m_nodeCommunications->startProcessingCycle();
-    CorpusExplorerTreeNodeCommunication *nodeCom = new CorpusExplorerTreeNodeCommunication(communication);
-    nodeCom->startProcessingCycle();
-    foreach (CorpusRecording *rec, communication->recordings()) {
-        CorpusExplorerTreeNodeRecording *nodeRec = new CorpusExplorerTreeNodeRecording(rec);
-        nodeCom->addNode(nodeRec);
-    }
-    foreach (CorpusAnnotation *annot, communication->annotations()) {
-        CorpusExplorerTreeNodeAnnotation *nodeAnnot = new CorpusExplorerTreeNodeAnnotation(annot);
-        nodeCom->addNode(nodeAnnot);
-    }
-    nodeCom->endProcessingCycle();
-    m_nodeCommunications->addNode(nodeCom, QtilitiesCategory(categoryString(communication, m_groupAttributeIDsCommunication)));
-    m_nodeCommunications->endProcessingCycle();
-}
+// ==============================================================================================================================
+// Communication tree node
+// ==============================================================================================================================
 
-void CorpusObserver::communicationDeleted(QString communicationID)
+CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointer<CorpusCommunication> com) :
+    TreeNode(com->ID()), communication(com)
 {
-    m_nodeCommunications->removeItem(communicationID);
-}
-
-void CorpusObserver::speakerAdded(QPointer<CorpusSpeaker> speaker)
-{
-    if (!speaker) return;
-    m_nodeSpeakers->startProcessingCycle();
-    CorpusExplorerTreeNodeSpeaker *nodeSpk = new CorpusExplorerTreeNodeSpeaker(speaker);
-    m_nodeSpeakers->addNode(nodeSpk, QtilitiesCategory(categoryString(speaker, m_groupAttributeIDsSpeaker)));
-    m_nodeSpeakers->endProcessingCycle();
-}
-
-void CorpusObserver::speakerDeleted(QString speakerID)
-{
-    m_nodeSpeakers->removeItem(speakerID);
+    setIcon(QIcon(":/icons/corpusexplorer/corpus_communication.png"));
+    connect(communication, SIGNAL(corpusRecordingAdded(QPointer<Praaline::Core::CorpusRecording>)),
+            this, SLOT(recordingAdded(QPointer<Praaline::Core::CorpusRecording>)));
+    connect(communication, SIGNAL(corpusRecordingDeleted(QString, QString)),
+            this, SLOT(recordingDeleted(QString,QString)));
+    connect(communication, SIGNAL(corpusAnnotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)),
+            this, SLOT(annotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)));
+    connect(communication, SIGNAL(corpusAnnotationDeleted(QString, QString)),
+            this, SLOT(annotationDeleted(QString,QString)));
 }
 
 void CorpusExplorerTreeNodeCommunication::recordingAdded(QPointer<CorpusRecording> recording)
@@ -232,4 +238,26 @@ void CorpusExplorerTreeNodeCommunication::annotationDeleted(QString communicatio
 {
     Q_UNUSED(communicationID)
     removeItem(annotationID);
+}
+
+// ==============================================================================================================================
+// Other tree nodes (speaker, recording, annotation)
+// ==============================================================================================================================
+
+CorpusExplorerTreeNodeSpeaker::CorpusExplorerTreeNodeSpeaker(QPointer<CorpusSpeaker> spk) :
+    TreeNode(spk->ID()), speaker(spk)
+{
+    setIcon(QIcon(":/icons/corpusexplorer/corpus_speaker.png"));
+}
+
+CorpusExplorerTreeNodeRecording::CorpusExplorerTreeNodeRecording(QPointer<CorpusRecording> rec) :
+    TreeNode(rec->ID()), recording(rec)
+{
+    setIcon(QIcon(":/icons/corpusexplorer/corpus_recording.png"));
+}
+
+CorpusExplorerTreeNodeAnnotation::CorpusExplorerTreeNodeAnnotation(QPointer<CorpusAnnotation> annot) :
+    TreeNode(annot->ID()), annotation(annot)
+{
+    setIcon(QIcon(":/icons/corpusexplorer/corpus_annotation.png"));
 }

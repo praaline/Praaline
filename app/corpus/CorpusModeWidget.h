@@ -2,6 +2,8 @@
 #define CORPUSMODEWIDGET_H
 
 #include <QWidget>
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
 
 namespace Ui {
 class CorpusModeWidget;
@@ -20,17 +22,29 @@ public:
 signals:
     void activateMode();
 
-private:
-    Ui::CorpusModeWidget *ui;
-    CorpusModeWidgetData *d;
-
-    void setupActions();
+public slots:
+    void newCorpusRepository();
+    void openCorpusRepository();
+    void openCorpusRepositoryRecent();
+    void closeCorpusRepository();
+    void saveCorpusRepository();
+    void saveCorpusRepositoryAs();
 
 private slots:
     void showCorpusExplorer();
     void showCorpusExplorerTables();
     void showMetadataStructureEditor();
     void showAnnotationStructureEditor();
+
+private:
+    Ui::CorpusModeWidget *ui;
+    CorpusModeWidgetData *d;
+
+    void setupActions();
+    void setupRecentFilesMenu();
+
+    Praaline::Core::CorpusRepository *openCorpusRepository(const QString &filename, Praaline::Core::CorpusRepositoryDefinition &definition);
+    void activateNextCorpusRepository();
 };
 
 #endif // CORPUSMODEWIDGET_H

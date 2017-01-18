@@ -7,7 +7,7 @@
 #include <QList>
 #include <QHash>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
@@ -32,13 +32,13 @@ public:
     void updatePhoneTierWithBroadClasses(IntervalTier *tier, const QString &attributeBroadClass) const;
     void updateTokenTierWithBroadClasses(IntervalTier *tier_phone, const QString &attributeBroadClassPhone,
                                          IntervalTier *tier_token, const QString &attributeBroadClassToken) const;
-    void prepareBPCTrainingFromCommunications(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications,
+    void prepareBPCTrainingFromCommunications(QList<QPointer<CorpusCommunication> > communications,
                                               const QString &outputPath);
 
 private:
     BroadClassAlignerData *d;
 
-    void prepareTiers(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications);
+    void prepareTiers(QList<QPointer<CorpusCommunication> > communications);
 };
 
 #endif // BROADCLASSALIGNER_H

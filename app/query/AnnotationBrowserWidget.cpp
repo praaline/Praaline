@@ -3,51 +3,53 @@
 #include <QVBoxLayout>
 #include <QMessageBox>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"
 #include "pngui/model/annotation/AnnotationTableModel.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 #include "AnnotationBrowserWidget.h"
 
 
 struct AnnotationBrowserWidgetData {
     AnnotationBrowserWidgetData() :
-        corporaManager(0), corpus(0), model(0)
+        corpusRepositoriesManager(0), repository(0), model(0)
     {}
 
     // User interface elements
-    CorporaManager *corporaManager;
-    QComboBox *comboboxCorpus;
+    CorpusRepositoriesManager *corpusRepositoriesManager;
+    QComboBox *comboboxCorpusRepositories;
     QComboBox *comboboxAnnotationLevel;
     GridViewWidget *gridview;
     // Main toolbar
     QToolBar *toolbarMain;
     QAction *actionSave;
     // Data
-    QPointer<Corpus> corpus;
+    QPointer<CorpusRepository> repository;
     QString levelID;
     QStringList attributeIDs;
     QList<AnnotationElement *> elements;
-    AnnotationTableModel *model;
+    QPointer<AnnotationTableModel> model;
 };
 
 AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     QWidget(parent), d(new AnnotationBrowserWidgetData)
 {
-    // Get Corpora Manager from global object list
+    // Get CorpusRepositoriesManager from global object list
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(corpusAdded(QString)), this, SLOT(corpusAdded(QString)));
-    connect(d->corporaManager, SIGNAL(corpusRemoved(QString)), this, SLOT(corpusRemoved(QString)));
-    // Corpus and Annotation Level selection combo-boxes
-    d->comboboxCorpus = new QComboBox(this);
-    connect(d->comboboxCorpus, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedCorpusChanged(int)));
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
+    // Corpus repositories and Annotation Level selection combo-boxes
+    d->comboboxCorpusRepositories = new QComboBox(this);
+    connect(d->comboboxCorpusRepositories, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedCorpusRepositoryChanged(int)));
     d->comboboxAnnotationLevel = new QComboBox(this);
     QPushButton *commandRefresh = new QPushButton("Load Annotation Data", this);
     connect(commandRefresh, SIGNAL(clicked(bool)), this, SLOT(loadAnnotationData()));
@@ -63,7 +65,7 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     QGroupBox *groupboxSelection = new QGroupBox(tr("Corpus and Annotation Level"), this);
     QHBoxLayout *layoutSelection = new QHBoxLayout(this);
     layoutSelection->addWidget(new QLabel(tr("Corpus:"), this));
-    layoutSelection->addWidget(d->comboboxCorpus);
+    layoutSelection->addWidget(d->comboboxCorpusRepositories);
     layoutSelection->addWidget(new QLabel(tr("Annotation Level:"), this));
     layoutSelection->addWidget(d->comboboxAnnotationLevel);
     layoutSelection->addWidget(commandRefresh);
@@ -97,49 +99,49 @@ void AnnotationBrowserWidget::setupActions()
     d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 }
 
-void AnnotationBrowserWidget::corpusAdded(QString corpusID)
+void AnnotationBrowserWidget::corpusRepositoryAdded(const QString &repositoryID)
 {
-    if (!d->corporaManager) return;
-    Corpus *corpus = d->corporaManager->corpusByID(corpusID);
-    if (!corpus) return;
-    d->comboboxCorpus->addItem(corpus->name(), corpusID);
+    if (!d->corpusRepositoriesManager) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    d->comboboxCorpusRepositories->addItem(repository->ID(), repositoryID);
 }
 
-void AnnotationBrowserWidget::corpusRemoved(QString corpusID)
+void AnnotationBrowserWidget::corpusRepositoryRemoved(const QString &repositoryID)
 {
-    if (!d->corporaManager) return;
-    int index = d->comboboxCorpus->findData(corpusID);
+    if (!d->corpusRepositoriesManager) return;
+    int index = d->comboboxCorpusRepositories->findData(repositoryID);
     if (index >= 0) {
-        if (index == d->comboboxCorpus->currentIndex()) {
+        if (index == d->comboboxCorpusRepositories->currentIndex()) {
             d->comboboxAnnotationLevel->clear();
         }
-        d->comboboxCorpus->removeItem(index);
+        d->comboboxCorpusRepositories->removeItem(index);
     }
 }
 
-void AnnotationBrowserWidget::selectedCorpusChanged(int index)
+void AnnotationBrowserWidget::selectedCorpusRepositoryChanged(int index)
 {
-    if (!d->corporaManager) return;
-    Corpus *corpus = d->corporaManager->corpusByID(d->comboboxCorpus->itemData(index).toString());
-    if (!corpus) return;
+    if (!d->corpusRepositoriesManager) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(d->comboboxCorpusRepositories->itemData(index).toString());
+    if (!repository) return;
     // New corpus selected, update the annotation levels
     d->comboboxAnnotationLevel->clear();
-    foreach (AnnotationStructureLevel *level, corpus->annotationStructure()->levels()) {
+    foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
         d->comboboxAnnotationLevel->addItem(level->name(), level->ID());
     }
 }
 
 void AnnotationBrowserWidget::loadAnnotationData()
 {
-    if (!d->corporaManager) return;
-    // Get corpus
-    Corpus *corpus = d->corporaManager->corpusByID(d->comboboxCorpus->currentData().toString());
-    if (!corpus) return;
+    if (!d->corpusRepositoriesManager) return;
+    // Get corpus repository
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(d->comboboxCorpusRepositories->currentData().toString());
+    if (!repository) return;
     // Get annotation level
-    AnnotationStructureLevel *level = corpus->annotationStructure()->level(d->comboboxAnnotationLevel->currentData().toString());
+    AnnotationStructureLevel *level = repository->annotationStructure()->level(d->comboboxAnnotationLevel->currentData().toString());
     if (!level) return;
     // Get data
-    QList<AnnotationElement *> elements = corpus->datastoreAnnotations()->getAnnotationElements(
+    QList<AnnotationElement *> elements = repository->annotations()->getAnnotationElements(
                 AnnotationDatastore::Selection("", "", level->ID()));
     // Set data model
     AnnotationTableModel *model = new AnnotationTableModel(AnnotationElement::Type_Interval, elements, level->attributeIDs(), this);
@@ -148,7 +150,7 @@ void AnnotationBrowserWidget::loadAnnotationData()
     if (d->model) delete d->model;
     qDeleteAll(d->elements);
     d->model = model;
-    d->corpus = corpus;
+    d->repository = repository;
     d->levelID = level->ID();
     d->attributeIDs = level->attributeIDs();
     d->elements = elements;
@@ -156,8 +158,8 @@ void AnnotationBrowserWidget::loadAnnotationData()
 
 void AnnotationBrowserWidget::saveAnnotationData()
 {
-    if (!d->corpus) return;
-    bool result = d->corpus->datastoreAnnotations()->saveAnnotationElements(d->elements, d->levelID, d->attributeIDs);
+    if (!d->repository) return;
+    bool result = d->repository->annotations()->saveAnnotationElements(d->elements, d->levelID, d->attributeIDs);
     if (result && d->model) {
         d->model->modelSavedInDatabase();
     } else {

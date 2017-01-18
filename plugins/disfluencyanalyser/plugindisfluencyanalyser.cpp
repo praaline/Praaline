@@ -8,6 +8,9 @@
 #include "plugindisfluencyanalyser.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusBookmark.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
@@ -109,7 +112,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::DisfluencyAnalyser:
     return parameters;
 }
 
-void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("commandPatternsREP")) d->commandPatternsREP = parameters.value("commandPatternsREP").toBool();
     if (parameters.contains("commandPatternsINS")) d->commandPatternsINS = parameters.value("commandPatternsINS").toBool();
@@ -119,7 +122,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParamet
     if (parameters.contains("commandCreateSequences")) d->commandCreateSequences = parameters.value("commandCreateSequences").toBool();
 }
 
-void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(const QList<QPointer<CorpusCommunication> > &communications)
 {
     bool withSyllData = true;
     int countDone = 0;
@@ -130,7 +133,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
@@ -144,7 +147,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
 
                 DisfluencyAnalyserTool *DA = new DisfluencyAnalyserTool(tier_tok_min, this);
                 DA->readFromTier(tier_tok_min, "disfluency");
-                QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+                // QPointer<CorpusSpeaker> spk = com->corpus()->speaker(speakerID);
                 foreach (Disfluency *disf, DA->disfluencies()) {
 
                     // Only repetitions
@@ -271,7 +274,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequences
-    (Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+    (const QList<QPointer<CorpusCommunication> > &communications)
 {
     int countDone = 0;
     madeProgress(0);
@@ -283,7 +286,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
@@ -293,7 +296,6 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
 
                 DisfluencyAnalyserTool *DA = new DisfluencyAnalyserTool(tier_tok_min, this);
                 DA->readFromTier(tier_tok_min, "disfluency");
-                QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
                 foreach (Disfluency *disf, DA->disfluencies()) {
                     // THIS IS WHERE WE WOULD CREATE A SEQUENCE RECORD IN THE DATABASE
 
@@ -309,7 +311,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
-        Corpus *corpus, QList<QPointer<CorpusCommunication> > communications, const QStringList &codes)
+        const QList<QPointer<CorpusCommunication> > &communications, const QStringList &codes)
 {
     int countDone = 0;
     madeProgress(0);
@@ -322,7 +324,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -340,18 +342,18 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
                 if (codes.contains("INS")) {
                     QList<DisfluencyPatternDetector::InsertionInfo> insertions = PD->detectInsertionPatterns();
                     PD->codeInsertions(insertions);
-                    bookmarks << PD->createBookmarks(corpus->ID(), com->ID(), annotationID, insertions);
+                    bookmarks << PD->createBookmarks(com->corpusID(), com->ID(), annotationID, insertions);
                 }
                 if (codes.contains("SUB")) {
                     QList<DisfluencyPatternDetector::SubstitutionInfo> substitutions = PD->detectSubstitutionPatterns();
                     PD->codeSubstitutions(substitutions);
-                    bookmarks << PD->createBookmarks(corpus->ID(), com->ID(), annotationID, substitutions);
+                    bookmarks << PD->createBookmarks(com->corpusID(), com->ID(), annotationID, substitutions);
                 }
                 delete PD;
             }
-            corpus->datastoreAnnotations()->saveTiersAllSpeakers(annotationID, tiersAll);
+            com->repository()->annotations()->saveTiersAllSpeakers(annotationID, tiersAll);
             qDeleteAll(tiersAll);
-            XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, corpus->basePath() + "/autodisfluencies_bookmarks.xml");
+            XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, com->repository()->files()->basePath() + "/autodisfluencies_bookmarks.xml");
         }
         countDone++;
         madeProgress(countDone * 100 / communications.count());
@@ -359,21 +361,21 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMultiTierTextgrids(
-        Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+        const QList<QPointer<CorpusCommunication> > &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Exporting multi-tier textgrid"));
-    QString path = corpus->basePath();
 
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        QString path = com->repository()->files()->basePath();
         printMessage(QString("Exporting %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
@@ -485,14 +487,14 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
     }
 }
 
-void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QStringList patternsToAnnotate;
     if (d->commandPatternsREP) patternsToAnnotate << "REP";
     if (d->commandPatternsINS) patternsToAnnotate << "INS";
     if (d->commandPatternsSUB) patternsToAnnotate << "SUB";
     if (!patternsToAnnotate.isEmpty())
-        patterns(corpus, communications, patternsToAnnotate);
+        patterns(communications, patternsToAnnotate);
     if (d->commandConcordances) {
         QString title = "annotationID\tspeakerID\ttMinSeqence\ttMaxSequence\tindexStart\tindexInterruption\tindexEnd\t";
         title = title.append("startReparandum\tendReparandum\tstartInterregnum\tendInterregnum\tstartReparans\tendReparans\t");
@@ -506,13 +508,13 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(Co
         title = title.append("reparans_arc\tinterregnum_arc\treparans_arc");
         printMessage(title);
 
-        concordances(corpus, communications);
+        concordances(communications);
     }
     if (d->commandCreateSequences) {
-        createSequences(corpus, communications);
+        createSequences(communications);
     }
     if (d->commandExportMultiTierTextgrids)
-        exportMultiTierTextgrids(corpus, communications);
+        exportMultiTierTextgrids(communications);
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

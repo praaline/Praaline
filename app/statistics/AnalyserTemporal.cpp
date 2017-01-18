@@ -9,6 +9,10 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
@@ -149,7 +153,7 @@ QPair<IntervalTier *, IntervalTier *> getSpeakerTimeline(AnalyserTemporalData *d
 
     // A timeline on the syllable level with detailed = true means there will be an interval for each syllable
     // and possibly segmented syllables when two speakers overlap.
-    IntervalTier *tier_timelineSyll = corpus->datastoreAnnotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
+    IntervalTier *tier_timelineSyll = corpus->repository()->annotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
     if (!tier_timelineSyll) return ret;
 
     // Exclude silence at the begining and end of recording
@@ -219,12 +223,12 @@ void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpu
     IntervalTier *tier_timelineSyll(timelines.first);
     IntervalTier *tier_timelineSpk(timelines.second);
 
-    QString path = corpus->basePath();
+    QString path = corpus->repository()->files()->basePath();
     QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -395,8 +399,8 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
     d->measuresCom.insert("TurnChangesRate_Overlap", ((double)turnChangesWithOverlap) * 60.0 / timeTotalSample.toDouble());
 
     foreach (QString annotationID, com->annotationIDs()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID, QStringList() <<
-                                                                                                                     d->levelSyllables << d->levelTokens);
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
+                corpus->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -525,7 +529,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             // Pause lists
             for (int i = 0; i < durationsPauseSIL.count(); ++i) {
                 pauseListSIL << com->ID() << "\t" << speakerID << "\t";
-                foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                foreach (QPointer<MetadataStructureAttribute> attr, corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
                     pauseListSIL << com->property(attr->ID()).toString() << "\t";
                 }
                 pauseListSIL << QString::number(durationsPauseSIL.at(i)) << "\t";
@@ -537,7 +541,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             }
             foreach (double dur, durationsPauseFIL) {
                 pauseListFIL << com->ID() << "\t" << speakerID << "\t";
-                foreach (QPointer<MetadataStructureAttribute> attr, corpus->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                foreach (QPointer<MetadataStructureAttribute> attr, corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
                     pauseListFIL << com->property(attr->ID()).toString() << "\t";
                 }
                 pauseListFIL << QString::number(dur) << "\n";

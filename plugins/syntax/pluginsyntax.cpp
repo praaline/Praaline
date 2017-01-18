@@ -6,7 +6,9 @@
 #include <ExtensionSystemConstants>
 
 #include "pluginsyntax.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 #include "CoNLLUReader.h"
@@ -90,11 +92,11 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Syntax::PluginSynta
     return parameters;
 }
 
-void Praaline::Plugins::Syntax::PluginSyntax::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::Syntax::PluginSyntax::setParameters(const QHash<QString, QVariant> &parameters)
 {
 }
 
-void readUDCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -103,11 +105,11 @@ void readUDCorpus(Corpus *corpus, QList<QPointer<CorpusCommunication> > communic
         com->addAnnotation(annot);
         AnnotationTierGroup *group = new AnnotationTierGroup();
         CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
-        corpus->datastoreAnnotations()->saveTiers(com->ID(), "ud", group);
+        com->repository()->annotations()->saveTiers(com->ID(), "ud", group);
     }
 }
 
-void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString filename = "D:/CORPORA/C-PERCEO/corpus_perceo_oral.txt";
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -116,7 +118,7 @@ void Praaline::Plugins::Syntax::PluginSyntax::process(Corpus *corpus, QList<QPoi
         com->addAnnotation(annot);
         QMap<QString, QPointer<AnnotationTierGroup> > tiers;
         CorpusImporter::readPerceo(filename, tiers);
-        corpus->datastoreAnnotations()->saveTiersAllSpeakers(com->ID(), tiers);
+       com->repository()->annotations()->saveTiersAllSpeakers(com->ID(), tiers);
     }
 }
 

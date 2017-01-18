@@ -7,16 +7,19 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTier.h"
+#include "pncore/structure/AnnotationStructure.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/widgets/GridViewWidget.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 
 struct BatchEditWidgetData {
-    BatchEditWidgetData() : corporaManager(0), tableDistinctValues(0), modelDistinctValues(0) {}
+    BatchEditWidgetData() : corpusRepositoriesManager(0), tableDistinctValues(0), modelDistinctValues(0) {}
 
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoriesManager;
     GridViewWidget *tableDistinctValues;
     QStandardItemModel *modelDistinctValues;
     QStringList modelAttributeIDs;
@@ -30,12 +33,12 @@ BatchEditorWidget::BatchEditorWidget(QWidget *parent) :
 
     // Corpora manager
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
     connect(ui->comboBoxLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelChanged(QString)));
 
     // Manual selection model - table
@@ -54,13 +57,13 @@ BatchEditorWidget::~BatchEditorWidget()
     delete d;
 }
 
-void BatchEditorWidget::activeCorpusChanged(const QString &corpusID)
+void BatchEditorWidget::activeCorpusRepositoryChanged(const QString &repositoryID)
 {
-    Q_UNUSED(corpusID)
+    Q_UNUSED(repositoryID)
     ui->comboBoxLevel->clear();
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
-    foreach (AnnotationStructureLevel *level, corpus->annotationStructure()->levels()) {
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
         ui->comboBoxLevel->addItem(level->name(), level->ID());
     }
     levelChanged("");
@@ -69,10 +72,10 @@ void BatchEditorWidget::activeCorpusChanged(const QString &corpusID)
 void BatchEditorWidget::levelChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     QString levelID = ui->comboBoxLevel->currentData().toString();
-    AnnotationStructureLevel *level = corpus->annotationStructure()->level(levelID);
+    AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
     ui->comboBoxAttributes->clear();
     ui->comboBoxAttributes->insertItem(0, tr("(text)"), true);
@@ -92,10 +95,10 @@ void BatchEditorWidget::levelChanged(const QString &text)
 
 void BatchEditorWidget::actionGetDistinctValues()
 {
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     QString levelID = ui->comboBoxLevel->currentData().toString();
-    AnnotationStructureLevel *level = corpus->annotationStructure()->level(levelID);
+    AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
     QStringList attributeIDs;
     QStringList headers;
@@ -118,7 +121,7 @@ void BatchEditorWidget::actionGetDistinctValues()
     }
     headers << tr("Count") << tr("Update?") << tr("New Value");
 
-    QList<QPair<QList<QVariant>, long> > data = corpus->datastoreAnnotations()->getDistinctLabels(levelID, attributeIDs);
+    QList<QPair<QList<QVariant>, long> > data = repository->annotations()->getDistinctLabels(levelID, attributeIDs);
     QPair<QList<QVariant>, long> rowData;
 
     QPointer<QStandardItemModel> model = new QStandardItemModel();
@@ -152,10 +155,10 @@ void BatchEditorWidget::actionGetDistinctValues()
 
 void BatchEditorWidget::actionUpdateValues()
 {
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     QString levelID = ui->comboBoxLevel->currentData().toString();
-    AnnotationStructureLevel *level = corpus->annotationStructure()->level(levelID);
+    AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
     QString attributeID = ui->comboBoxAttributeToUpdate->currentData().toString();
     if ((!attributeID.isEmpty()) && (!level->hasAttribute(attributeID))) return;
@@ -174,7 +177,7 @@ void BatchEditorWidget::actionUpdateValues()
                 criteria << crit;
             }
             changesMade = true;
-            corpus->datastoreAnnotations()->batchUpdate(level->ID(), attributeID, newValue, criteria);
+            repository->annotations()->batchUpdate(level->ID(), attributeID, newValue, criteria);
         }
     }
 

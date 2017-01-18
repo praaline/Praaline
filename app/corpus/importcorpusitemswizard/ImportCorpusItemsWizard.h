@@ -3,7 +3,7 @@
 
 #include <QWizard>
 #include <QPointer>
-#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
 using namespace Praaline::Core;
 
 namespace Ui {
@@ -17,7 +17,7 @@ class ImportCorpusItemsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizard(QPointer<Corpus> corpus, QWidget *parent = 0);
+    explicit ImportCorpusItemsWizard(QPointer<CorpusRepository> repository, QWidget *parent = 0);
     ~ImportCorpusItemsWizard();
 
 private:

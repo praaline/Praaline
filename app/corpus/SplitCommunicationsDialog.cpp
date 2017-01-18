@@ -7,6 +7,10 @@
 #include <QFileInfo>
 #include <QStandardItemModel>
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
+#include "pncore/annotation/Interval.h"
 
 #include "pnlib/mediautil/AudioSegmenter.h"
 
@@ -46,7 +50,7 @@ SplitCommunicationsDialog::SplitCommunicationsDialog(QPointer<Corpus> corpus, QW
     d->modelCorpusCommunications->setHorizontalHeaderLabels(QStringList() << tr("Communication ID"));
     ui->treeViewCorpusItems->setModel(d->modelCorpusCommunications);
 
-    ui->comboBoxLevel->addItems(d->corpus->annotationStructure()->levelIDs());
+    ui->comboBoxLevel->addItems(d->corpus->repository()->annotationStructure()->levelIDs());
     annotationLevelChanged();
 }
 
@@ -61,9 +65,9 @@ void SplitCommunicationsDialog::annotationLevelChanged()
     if (!d->corpus) return;
     ui->comboBoxAttribute->clear();
     QString levelID = ui->comboBoxLevel->currentText();
-    if (!d->corpus->annotationStructure()->hasLevel(levelID)) return;
+    if (!d->corpus->repository()->annotationStructure()->hasLevel(levelID)) return;
     ui->comboBoxAttribute->addItem("");
-    ui->comboBoxAttribute->addItems(d->corpus->annotationStructure()->level(levelID)->attributeIDs());
+    ui->comboBoxAttribute->addItems(d->corpus->repository()->annotationStructure()->level(levelID)->attributeIDs());
     ui->comboBoxAttribute->setCurrentText("");
     annotationAttributeChanged();
 }
@@ -74,7 +78,7 @@ void SplitCommunicationsDialog::annotationAttributeChanged()
     QString levelID = ui->comboBoxLevel->currentText();
     QString attributeID = ui->comboBoxAttribute->currentText();
     QStringList attributeIDs; attributeIDs << attributeID;
-    QList<QPair<QList<QVariant>, long> > tuples = d->corpus->datastoreAnnotations()->getDistinctLabels(levelID, attributeIDs);
+    QList<QPair<QList<QVariant>, long> > tuples = d->corpus->repository()->annotations()->getDistinctLabels(levelID, attributeIDs);
     if (d->modelDistinctValues) delete d->modelDistinctValues;
     d->modelDistinctValues = new QStandardItemModel(this);
     for (int row = 0; row < tuples.count(); ++row) {
@@ -97,7 +101,7 @@ void SplitCommunicationsDialog::doSplit()
     if (!d->modelCorpusCommunications) return;
     if (!d->modelDistinctValues) return;
     QString levelID = ui->comboBoxLevel->currentText();
-    if (!d->corpus->annotationStructure()->hasLevel(levelID)) return;
+    if (!d->corpus->repository()->annotationStructure()->hasLevel(levelID)) return;
     QString attributeID = ui->comboBoxAttribute->currentText();
     //
     QStringList selectedCommunicationIDs;
@@ -121,14 +125,14 @@ void SplitCommunicationsDialog::doSplit()
         if (!com) continue;
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             if (!rec) continue;
-            QString originalFilename = d->corpus->baseMediaPath() + rec->filename();
+            QString originalFilename = rec->filePath();
             QString originalPath = QFileInfo(originalFilename).canonicalPath();
-            QDir dirMedia = QDir(d->corpus->baseMediaPath());
+            QDir dirMedia = QDir(rec->basePath());
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
                 QList<Interval *> segments;
                 int i = 1;
-                QList<Interval *> intervals = d->corpus->datastoreAnnotations()->getIntervals(
+                QList<Interval *> intervals = d->corpus->repository()->annotations()->getIntervals(
                             AnnotationDatastore::Selection(annot->ID(), "", levelID));
                 foreach (Interval *intv, intervals) {
                     QString label = (attributeID.isEmpty()) ? intv->text() : intv->attribute(attributeID).toString();

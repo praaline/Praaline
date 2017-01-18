@@ -5,7 +5,10 @@
 #include <QApplication>
 #include <ExtensionSystemConstants>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/annotation/IntervalTier.h"
 #include "pluginprosobox.h"
 #include "prosoboxscript.h"
 
@@ -87,17 +90,17 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosobox::PluginPro
     return parameters;
 }
 
-void Praaline::Plugins::Prosobox::PluginProsobox::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::Prosobox::PluginProsobox::setParameters(const QHash<QString, QVariant> &parameters)
 {
 }
 
-QString temporalVariables(Corpus *corpus, QString annotationID, QString speakerID)
+QString temporalVariables(CorpusCommunication *com, QString annotationID, QString speakerID)
 {
-    AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annotationID, speakerID);
+    AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annotationID, speakerID);
     if (!tiers) return QString();
     IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
     IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotationID, "segment");
+    IntervalTier *tier_timeline = com->repository()->annotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
         tier_timeline->replaceTextLabels(speakerID, "L1");
         tier_timeline->replaceTextLabels("L1+L2", "L1");
@@ -152,7 +155,7 @@ QString temporalVariables(Corpus *corpus, QString annotationID, QString speakerI
     return result;
 }
 
-void Praaline::Plugins::Prosobox::PluginProsobox::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::Prosobox::PluginProsobox::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -160,12 +163,12 @@ void Praaline::Plugins::Prosobox::PluginProsobox::process(Corpus *corpus, QList<
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
-            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID == "L2") continue;
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
-                ProsoboxScript::createTextGrid(corpus->baseMediaPath(), corpus, annotationID, speakerID);
+                // ProsoboxScript::createTextGrid(corpus->baseMediaPath(), corpus, annotationID, speakerID);
                 // QString t = temporalVariables(corpus, annotationID, speakerID);
                 // emit printMessage(t);
             }

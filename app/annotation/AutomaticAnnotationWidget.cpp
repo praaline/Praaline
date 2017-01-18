@@ -265,8 +265,6 @@ void AutomaticAnnotationWidget::actionAnnotate()
                              tr("No annotation plugins selected. Select at least one automatic annotation plugin to run!"));
         return;
     }
-    Corpus *corpus = 0;
-    if (!communications.empty()) corpus = qobject_cast<Corpus *>(selectedCommunications().first()->parent());
     ui->progressBar->setValue(0);
     d->runningPlugins = plugins.count();
 
@@ -285,7 +283,7 @@ void AutomaticAnnotationWidget::actionAnnotate()
         // Send parameters to plugin
         plugin->setParameters(parameterValues);
         // Launch annotation plugin
-        plugin->process(corpus, communications);
+        plugin->process(communications);
         // Disconnect signals
         disconnect(dynamic_cast<QObject *>(plugin), SIGNAL(printMessage(QString)), this, SLOT(logAnnotationMessage(QString)));
         disconnect(dynamic_cast<QObject *>(plugin), SIGNAL(madeProgress(int)), this, SLOT(pluginMadeProgress(int)));

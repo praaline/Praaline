@@ -26,7 +26,7 @@ public:
     ~AnnotationStructureEditor();
 
 private slots:
-    void activeCorpusChanged(const QString &newActiveCorpusID);
+    void activeCorpusRepositoryChanged(const QString &repositoryID);
 
     void addAnnotationStructureLevel();
     void addAnnotationStructureAttribute();

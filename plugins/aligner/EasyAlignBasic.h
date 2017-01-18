@@ -6,7 +6,7 @@
 
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
-using namespace Praaline::Core;
+#include "pncore/annotation/IntervalTier.h"
 
 #include "annotationpluginpraatscript.h"
 
@@ -25,14 +25,14 @@ public:
     void setTiernamePhonetisation(const QString &tiername) { m_tiernamePhonetisation = tiername; }
     void setPreciseUtteranceBoundaries(bool precise) { m_preciseUtteranceBoundaries = precise; }
 
-    QString prepareAlignmentTextgrid(QList<Interval *> intervalsToAlign, IntervalTier *tier_ortho, QString filenameTextGrid);
+    QString prepareAlignmentTextgrid(QList<Praaline::Core::Interval *> intervalsToAlign, Praaline::Core::IntervalTier *tier_ortho, QString filenameTextGrid);
     void runEasyAlign(QString filenameSound, QString filenameTextgrid);
     QString postAlignment(const QString &filenameTextgrid);
     void runSyllabify(QString filenameTextgrid);
 
-    QString mergeFiles(CorpusCommunication *com);
+    QString mergeFiles(Praaline::Core::CorpusCommunication *com);
 
-    static QString runAllEasyAlignSteps(Corpus *corpus, CorpusCommunication *com);
+    static QString runAllEasyAlignSteps(Praaline::Core::CorpusCommunication *com);
 
 signals:
 

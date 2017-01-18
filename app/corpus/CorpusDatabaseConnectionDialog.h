@@ -2,8 +2,7 @@
 #define CORPUSDATABASECONNECTIONDIALOG_H
 
 #include <QDialog>
-#include "pncore/serialisers/CorpusDefinition.h"
-using namespace Praaline::Core;
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
 
 namespace Ui {
 class CorpusDatabaseConnectionDialog;
@@ -17,7 +16,7 @@ public:
     explicit CorpusDatabaseConnectionDialog(QWidget *parent = 0);
     ~CorpusDatabaseConnectionDialog();
 
-    CorpusDefinition corpusDefinition();
+    Praaline::Core::CorpusRepositoryDefinition corpusDefinition();
 
 private slots:
     void selectBaseFolder();

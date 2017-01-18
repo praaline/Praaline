@@ -1,6 +1,8 @@
-#include "pncore/structure/MetadataStructureAttribute.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusSpeaker.h"
+#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
 using namespace Praaline::Core;
 
 #include "observers/CorpusObserver.h"

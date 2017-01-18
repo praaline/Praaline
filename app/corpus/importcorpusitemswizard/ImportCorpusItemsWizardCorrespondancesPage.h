@@ -6,7 +6,7 @@
 #include <QSet>
 #include <QMultiHash>
 #include <QStandardItemModel>
-#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
 #include "ImportCorpusItemsWizardAnalysePage.h"
 #include "ImportAnnotations.h"
 
@@ -14,12 +14,14 @@ namespace Ui {
 class ImportCorpusItemsWizardCorrespondancesPage;
 }
 
+struct ImportCorpusItemsWizardCorrespondancesPageData;
+
 class ImportCorpusItemsWizardCorrespondancesPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<Corpus> corpus,
+    explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<CorpusRepository> corpus,
                                                         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                         QSet<QString> &tierNamesCommon,
                                                         QWidget *parent = 0);
@@ -32,12 +34,7 @@ private slots:
 
 private:
     Ui::ImportCorpusItemsWizardCorrespondancesPage *ui;
-
-    QPointer<Corpus> m_corpus;
-    QMultiHash<QString, TierCorrespondance> &m_tierCorrespondances;
-    QSet<QString> &m_tierNamesCommon;
-
-    QStandardItemModel *m_modelTiers;
+    ImportCorpusItemsWizardCorrespondancesPageData *d;
 
     void guessCorrespondance(int i, QString tierName);
     void guessCorrespondances();

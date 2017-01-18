@@ -17,9 +17,9 @@ signals:
 public slots:
 
 protected slots:
-    void corpusAdded(QString);
-    void corpusRemoved(QString);
-    void selectedCorpusChanged(int index);
+    void corpusRepositoryAdded(const QString &repositoryID);
+    void corpusRepositoryRemoved(const QString &repositoryID);
+    void selectedCorpusRepositoryChanged(int index);
     void loadAnnotationData();
     void saveAnnotationData();
 

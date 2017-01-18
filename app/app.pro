@@ -129,12 +129,10 @@ SOURCES += main.cpp \
     corpus/CorpusExplorerOptionsDialog.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
-    corpus/NewCorpusWizard.cpp \
     corpus/SplitCommunicationsDialog.cpp \
     statistics/InterraterAgreement.cpp \
     statistics/StatisticsMode.cpp \
     statistics/StatisticsModeWidget.cpp \
-    CorporaManager.cpp \
     NetworkPermissionTester.cpp \
     PraalineSplash.cpp \
     visualisation/AudioEnabledWidget.cpp \
@@ -165,7 +163,9 @@ SOURCES += main.cpp \
     scripting/ScriptEditorWidget.cpp \
     corpus/structureeditors/NameValueListEditor.cpp \
     query/AnnotationBrowserWidget.cpp \
-    query/dataseteditor/DatasetEditorWidget.cpp
+    query/dataseteditor/DatasetEditorWidget.cpp \
+    CorpusRepositoriesManager.cpp \
+    corpus/NewCorpusRepositoryWizard.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -216,7 +216,6 @@ HEADERS  += \
     corpus/CorpusExplorerOptionsDialog.h \
     corpus/CorpusMode.h \
     corpus/CorpusModeWidget.h \
-    corpus/NewCorpusWizard.h \
     corpus/SplitCommunicationsDialog.h \
     scripting/ScriptingMode.h \
     scripting/ScriptingModeWidget.h \
@@ -231,7 +230,6 @@ HEADERS  += \
     visualisation/VisualisationMode.h \
     visualisation/VisualisationModeWidget.h \
     visualisation/VisualiserWidget.h \
-    CorporaManager.h \
     NetworkPermissionTester.h \
     PraalineSplash.h \
     Version.h \
@@ -256,7 +254,9 @@ HEADERS  += \
     corpus/structureeditors/NameValueListEditor.h \
     query/AnnotationBrowserWidget.h \
     query/dataseteditor/DatasetEditorWidget.h \
-    query/dataseteditor/DatasetEditorModels.h
+    query/dataseteditor/DatasetEditorModels.h \
+    CorpusRepositoriesManager.h \
+    corpus/NewCorpusRepositoryWizard.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -282,7 +282,6 @@ FORMS    += \
     statistics/StatisticsModeWidget.ui \
     scripting/ScriptingModeWidget.ui \
     corpus/SplitCommunicationsDialog.ui \
-    corpus/NewCorpusWizard.ui \
     corpus/CorpusModeWidget.ui \
     corpus/CorpusExplorerWidget.ui \
     corpus/CorpusExplorerTableWidget.ui \
@@ -310,7 +309,8 @@ FORMS    += \
     help/ContentWidget.ui \
     help/HelpModeConfig.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
-    corpus/structureeditors/AddLevelDialog.ui
+    corpus/structureeditors/AddLevelDialog.ui \
+    corpus/NewCorpusRepositoryWizard.ui
 
 RESOURCES += \
     praaline.qrc \

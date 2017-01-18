@@ -6,27 +6,29 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 #include <QDebug>
-#include "NewCorpusWizard.h"
-#include "ui_NewCorpusWizard.h"
-#include "pncore/serialisers/DatastoreInfo.h"
+#include "NewCorpusRepositoryWizard.h"
+#include "ui_NewCorpusRepositoryWizard.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
 #include "pncore/structure/MetadataStructure.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
+using namespace Praaline::Core;
 
-struct NewCorpusWizardData {
-    NewCorpusWizardData() : newCorpus(0), modelMetadataTemplates(0), modelAnnotationTemplates(0)
+struct NewCorpusRepositoryWizardData {
+    NewCorpusRepositoryWizardData() : newCorpusRepository(0), modelMetadataTemplates(0), modelAnnotationTemplates(0)
     {}
 
-    CorpusDefinition newDefinition;
-    Corpus *newCorpus;
+    CorpusRepositoryDefinition newDefinition;
+    CorpusRepository *newCorpusRepository;
     // Models for metadata and annotation schema templates
     QStandardItemModel *modelMetadataTemplates;
     QStandardItemModel *modelAnnotationTemplates;
 };
 
-NewCorpusWizard::NewCorpusWizard(QWidget *parent) :
-    QWizard(parent), ui(new Ui::NewCorpusWizard), d(new NewCorpusWizardData)
+NewCorpusRepositoryWizard::NewCorpusRepositoryWizard(QWidget *parent) :
+    QWizard(parent), ui(new Ui::NewCorpusRepositoryWizard), d(new NewCorpusRepositoryWizardData)
 {
     ui->setupUi(this);
     // XML files with metadata and annotation templates
@@ -37,23 +39,23 @@ NewCorpusWizard::NewCorpusWizard(QWidget *parent) :
     connect(ui->optionSameDatastore, SIGNAL(toggled(bool)), this, SLOT(localDbDatabaseNameChanged()));
 }
 
-NewCorpusWizard::~NewCorpusWizard()
+NewCorpusRepositoryWizard::~NewCorpusRepositoryWizard()
 {
     delete ui;
     delete d;
 }
 
-CorpusDefinition NewCorpusWizard::newDefinition()
+CorpusRepositoryDefinition NewCorpusRepositoryWizard::newDefinition()
 {
     return d->newDefinition;
 }
 
-Corpus *NewCorpusWizard::newCorpus()
+CorpusRepository *NewCorpusRepositoryWizard::newCorpusRepository()
 {
-    return d->newCorpus;
+    return d->newCorpusRepository;
 }
 
-void NewCorpusWizard::populateTemplates()
+void NewCorpusRepositoryWizard::populateTemplates()
 {
     d->modelMetadataTemplates = new QStandardItemModel(this);
     d->modelAnnotationTemplates = new QStandardItemModel(this);
@@ -97,7 +99,7 @@ void NewCorpusWizard::populateTemplates()
     ui->treeviewAnnotationTemplates->setHeaderHidden(true);
 }
 
-bool NewCorpusWizard::validateCurrentPage()
+bool NewCorpusRepositoryWizard::validateCurrentPage()
 {
     if (currentId() == 0) {
         if (ui->editCorpusID->text().isEmpty()) {
@@ -112,18 +114,17 @@ bool NewCorpusWizard::validateCurrentPage()
         }
     }
     else if (currentId() == 1) {
-        if (ui->optionLocalDB->isChecked()) {
-            createLocalDbCorpus();
-        }
-        else if (ui->optionRemoteDB->isChecked())
-            createRemoteDbCorpus();
+        if (ui->optionLocalDB->isChecked())
+            createLocalSQLRepository();
         else if (ui->optionFiles->isChecked())
-            createFilesCorpus();
+            createLocalXMLRepository();
+        else if (ui->optionRemoteDB->isChecked())
+            createRemoteSQLRepository();
     }
     return true;
 }
 
-void NewCorpusWizard::localDbSelectFolder()
+void NewCorpusRepositoryWizard::localDbSelectFolder()
 {
     QString directory = QFileDialog::getExistingDirectory(this, tr("Select Directory"), ui->editBaseFolder->text(),
                                                           QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
@@ -131,7 +132,7 @@ void NewCorpusWizard::localDbSelectFolder()
         ui->editBaseFolder->setText(directory);
 }
 
-void NewCorpusWizard::localDbDatabaseNameChanged()
+void NewCorpusRepositoryWizard::localDbDatabaseNameChanged()
 {
     if (ui->optionSameDatastore->isChecked()) {
         ui->editAnnotationDatabase->setText(ui->editMetadataDatabase->text());
@@ -142,54 +143,54 @@ void NewCorpusWizard::localDbDatabaseNameChanged()
     }
 }
 
-void NewCorpusWizard::createLocalDbCorpus()
+void NewCorpusRepositoryWizard::createLocalSQLRepository()
 {
-    QString corpusID = ui->editCorpusID->text();
-    QString corpusName = ui->editCorpusName->text();
+    QString repositoryID = ui->editCorpusID->text();
+    QString repositoryName = ui->editCorpusName->text();
     QDir dir(ui->editBaseFolder->text());
-    QString baseFolder = dir.absolutePath() + "/";
+    QString basePath = dir.absolutePath() + "/";
     QString databaseNameMetadata = ui->editMetadataDatabase->text();
     QString databaseNameAnnotations = ui->editAnnotationDatabase->text();
     QString errorMessages;
     if      (databaseNameMetadata.isEmpty())    databaseNameMetadata = databaseNameAnnotations;
     else if (databaseNameAnnotations.isEmpty()) databaseNameAnnotations = databaseNameMetadata;
     if (databaseNameMetadata.isEmpty()) {
-        databaseNameMetadata = databaseNameAnnotations = corpusID;
+        databaseNameMetadata = databaseNameAnnotations = repositoryID;
     }
 
-    d->newDefinition.corpusID = corpusID;
-    d->newDefinition.corpusName = corpusName;
-    d->newDefinition.datastoreMetadata = DatastoreInfo(
+    d->newDefinition.repositoryID = repositoryID;
+    d->newDefinition.repositoryName = repositoryName;
+    d->newDefinition.infoDatastoreMetadata = DatastoreInfo(
                 DatastoreInfo::SQL, "QSQLITE", "",
-                baseFolder  + databaseNameMetadata + ".db", "", "");
-    d->newDefinition.datastoreAnnotations = DatastoreInfo(
+                basePath + databaseNameMetadata + ".db", "", "");
+    d->newDefinition.infoDatastoreAnnotations = DatastoreInfo(
                 DatastoreInfo::SQL, "QSQLITE", "",
-                baseFolder  + databaseNameAnnotations + ".db", "", "");
-    d->newDefinition.baseMediaPath = baseFolder;
-    d->newCorpus = Corpus::create(d->newDefinition, errorMessages);
-    if (!d->newCorpus) {
-        QMessageBox::warning(this, tr("Error creating corpus"), QString("%1\n%2")
-                             .arg(tr("There was an error while creating the new corpus."))
+                basePath + databaseNameAnnotations + ".db", "", "");
+    d->newDefinition.basePath = basePath;
+    d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
+    if (!d->newCorpusRepository) {
+        QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")
+                             .arg(tr("There was an error while creating the new repository."))
                              .arg(errorMessages));
         return;
     }
-    d->newDefinition.save(baseFolder + corpusID + ".corpus");
+    d->newDefinition.save(basePath + repositoryID + ".PraalineRepository");
     applyTemplates();
 }
 
-void NewCorpusWizard::createRemoteDbCorpus()
+void NewCorpusRepositoryWizard::createRemoteSQLRepository()
 {
 
 }
 
-void NewCorpusWizard::createFilesCorpus()
+void NewCorpusRepositoryWizard::createLocalXMLRepository()
 {
 
 }
 
-void NewCorpusWizard::applyTemplates()
+void NewCorpusRepositoryWizard::applyTemplates()
 {
-    if (!d->newCorpus) return;
+    if (!d->newCorpusRepository) return;
     // Metadata
     for (int i = 0; i < d->modelMetadataTemplates->rowCount(); ++i) {
         QStandardItem *item = d->modelMetadataTemplates->item(i, 0);
@@ -197,7 +198,7 @@ void NewCorpusWizard::applyTemplates()
             QString filenameXML = item->data().toString();
             MetadataStructure *metadataStructure = XMLSerialiserMetadataStructure::read(filenameXML);
             if (metadataStructure) {
-                d->newCorpus->importMetadataStructure(metadataStructure);
+                d->newCorpusRepository->importMetadataStructure(metadataStructure);
             }
         }
     }
@@ -208,7 +209,7 @@ void NewCorpusWizard::applyTemplates()
             QString filenameXML = item->data().toString();
             AnnotationStructure *annotationStructure = XMLSerialiserAnnotationStructure::read(filenameXML);
             if (annotationStructure) {
-                d->newCorpus->importAnnotationStructure(annotationStructure);
+                d->newCorpusRepository->importAnnotationStructure(annotationStructure);
             }
         }
     }

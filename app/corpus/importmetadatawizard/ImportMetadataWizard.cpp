@@ -9,18 +9,39 @@
 #include "ui_ImportMetadataWizard.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/structure/MetadataStructure.h"
+
 #include "pngui/model/corpus/CorpusCommunicationTableModel.h"
 #include "pngui/model/corpus/CorpusSpeakerTableModel.h"
 #include "pngui/model/corpus/CorpusRecordingTableModel.h"
 #include "pngui/model/corpus/CorpusAnnotationTableModel.h"
 #include "pngui/model/corpus/CorpusParticipationTableModel.h"
 
+struct ImportMetadataWizardData {
+    ImportMetadataWizardData() : columnCount(0), fileLineCount(0) {}
+
+    QPointer<Corpus> corpus;
+    CorpusObject::Type corpusObjectType;
+    QString filename;
+    QString encoding;
+    QString delimiter;
+    QString textQualifier;
+    QList<QList<QString> > preview;
+    int columnCount;
+    int fileLineCount;
+    QPointer<QStandardItemModel> previewModel;
+    QMap<QString, ImportMetadataWizard::ColumnCorrespondance> columnCorrespondances;
+};
 
 ImportMetadataWizard::ImportMetadataWizard(const QString &filename, Corpus *corpus, QWidget *parent) :
-    QWizard(parent), ui(new Ui::ImportMetadataWizard),
-    m_corpus(corpus), m_filename(filename), m_columnCount(0), m_previewModel(0)
+    QWizard(parent), ui(new Ui::ImportMetadataWizard), d(new ImportMetadataWizardData)
 {
     ui->setupUi(this);
+
+    d->corpus = corpus;
+    d->filename = filename;
+
     ui->tableViewPreviewIntro->verticalHeader()->setDefaultSectionSize(20);
     ui->tableViewPreviewIntro->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableViewPreviewIntro->setSelectionBehavior(QAbstractItemView::SelectColumns);
@@ -52,9 +73,9 @@ ImportMetadataWizard::ImportMetadataWizard(const QString &filename, Corpus *corp
     dateFormats << "d/M/yyyy" << "M/d/yyyy" << "d/M/yy" << "M/d/yy";
     ui->comboDateFormat->addItems(dateFormats);
     // Sensible defaults (set before connecting signals to slots to avoid side-effects)
-    m_encoding = "UTF-8";
-    m_delimiter = "\t";
-    m_textQualifier = "";
+    d->encoding = "UTF-8";
+    d->delimiter = "\t";
+    d->textQualifier = "";
     ui->optionCommunications->setChecked(true);
     ui->checkHeaderLine->setChecked(true);
     ui->optionFormatText->setChecked(true);
@@ -82,42 +103,43 @@ ImportMetadataWizard::ImportMetadataWizard(const QString &filename, Corpus *corp
 ImportMetadataWizard::~ImportMetadataWizard()
 {
     delete ui;
+    delete d;
 }
 
 // private slot
 void ImportMetadataWizard::objectTypeChanged()
 {
-    if (ui->optionCommunications->isChecked()) m_corpusObjectType = CorpusObject::Type_Communication;
-    else if (ui->optionSpeakers->isChecked()) m_corpusObjectType = CorpusObject::Type_Speaker;
-    else if (ui->optionRecordings->isChecked()) m_corpusObjectType = CorpusObject::Type_Recording;
-    else if (ui->optionAnnotations->isChecked()) m_corpusObjectType = CorpusObject::Type_Annotation;
-    else if (ui->optionParticipations->isChecked()) m_corpusObjectType = CorpusObject::Type_Participation;
+    if (ui->optionCommunications->isChecked()) d->corpusObjectType = CorpusObject::Type_Communication;
+    else if (ui->optionSpeakers->isChecked()) d->corpusObjectType = CorpusObject::Type_Speaker;
+    else if (ui->optionRecordings->isChecked()) d->corpusObjectType = CorpusObject::Type_Recording;
+    else if (ui->optionAnnotations->isChecked()) d->corpusObjectType = CorpusObject::Type_Annotation;
+    else if (ui->optionParticipations->isChecked()) d->corpusObjectType = CorpusObject::Type_Participation;
 
-    m_ColumnCorrespondances.clear();
+    d->columnCorrespondances.clear();
     ui->comboAttribute->clear();
-    QPointer<MetadataStructure> mstr = m_corpus->metadataStructure();
+    QPointer<MetadataStructure> mstr = d->corpus->repository()->metadataStructure();
     if (!mstr) return;
     QString mandatory = "You must link the following attributes to a column before being able to import corpus items: ";
     ui->comboAttribute->addItem("None (ignored)", "");
     if (ui->optionCommunications->isChecked()) {
-        m_ColumnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Communication ID", "text"));
-        m_ColumnCorrespondances.insert("name", ColumnCorrespondance("name", "Communication Name", "text"));
+        d->columnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Communication ID", "text"));
+        d->columnCorrespondances.insert("name", ColumnCorrespondance("name", "Communication Name", "text"));
         ui->comboAttribute->addItem("Communication ID", "ID");
         ui->comboAttribute->addItem("Communication Name", "name");
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Communication ID</b>");
     }
     else if (ui->optionSpeakers->isChecked()) {
-        m_ColumnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Speaker ID", "text"));
-        m_ColumnCorrespondances.insert("name", ColumnCorrespondance("name", "Speaker Name", "text"));
+        d->columnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Speaker ID", "text"));
+        d->columnCorrespondances.insert("name", ColumnCorrespondance("name", "Speaker Name", "text"));
         ui->comboAttribute->addItem("Speaker ID", "ID");
         ui->comboAttribute->addItem("Speaker Name", "name");
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Speaker ID</b>");
     }
     else if (ui->optionRecordings->isChecked()) {
-        m_ColumnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Recording ID", "text"));
-        m_ColumnCorrespondances.insert("name", ColumnCorrespondance("name", "Recording Name", "text"));
-        m_ColumnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
-        m_ColumnCorrespondances.insert("filename", ColumnCorrespondance("filename", "Filename", "text"));
+        d->columnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Recording ID", "text"));
+        d->columnCorrespondances.insert("name", ColumnCorrespondance("name", "Recording Name", "text"));
+        d->columnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
+        d->columnCorrespondances.insert("filename", ColumnCorrespondance("filename", "Filename", "text"));
         ui->comboAttribute->addItem("Recording ID", "ID");
         ui->comboAttribute->addItem("Recording Name", "name");
         ui->comboAttribute->addItem("Communication ID", "communicationID");
@@ -125,26 +147,26 @@ void ImportMetadataWizard::objectTypeChanged()
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Recording ID, Communication ID</b>");
     }
     else if (ui->optionAnnotations->isChecked()) {
-        m_ColumnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Annotation ID", "text"));
-        m_ColumnCorrespondances.insert("name", ColumnCorrespondance("name", "Annotation Name", "text"));
-        m_ColumnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
+        d->columnCorrespondances.insert("ID", ColumnCorrespondance("ID", "Annotation ID", "text"));
+        d->columnCorrespondances.insert("name", ColumnCorrespondance("name", "Annotation Name", "text"));
+        d->columnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
         ui->comboAttribute->addItem("Annotation ID", "ID");
         ui->comboAttribute->addItem("Annotation Name", "name");
         ui->comboAttribute->addItem("Communication ID", "communicationID");
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Annotation ID, Communication ID</b>");
     }
     else if (ui->optionParticipations->isChecked()) {
-        m_ColumnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
-        m_ColumnCorrespondances.insert("speakerID", ColumnCorrespondance("speakerID", "Speaker ID", "text"));
-        m_ColumnCorrespondances.insert("role", ColumnCorrespondance("role", "Role", "text"));
+        d->columnCorrespondances.insert("communicationID", ColumnCorrespondance("communicationID", "Communication ID", "text"));
+        d->columnCorrespondances.insert("speakerID", ColumnCorrespondance("speakerID", "Speaker ID", "text"));
+        d->columnCorrespondances.insert("role", ColumnCorrespondance("role", "Role", "text"));
         ui->comboAttribute->addItem("Communication ID", "communicationID");
         ui->comboAttribute->addItem("Speaker ID", "speakerID");
         ui->comboAttribute->addItem("Role", "role");
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Communication ID, Speaker ID</b>");
     }
-    foreach (QPointer<MetadataStructureAttribute> mattr, mstr->attributes(m_corpusObjectType)) {
+    foreach (QPointer<MetadataStructureAttribute> mattr, mstr->attributes(d->corpusObjectType)) {
         if (!mattr) continue;
-        m_ColumnCorrespondances.insert(mattr->ID(), ColumnCorrespondance(mattr->ID(), mattr->name(), mattr->datatypeString()));
+        d->columnCorrespondances.insert(mattr->ID(), ColumnCorrespondance(mattr->ID(), mattr->name(), mattr->datatypeString()));
         ui->comboAttribute->addItem(mattr->name(), mattr->ID());
     }
     guessCorrespondances();
@@ -157,20 +179,20 @@ void ImportMetadataWizard::fileParametersChanged()
     QString selectedTextQualifier = ui->comboTextQualifier->currentText();
     QString selectedEncoding = ui->comboEncoding->currentText();
     // Delimiter
-    if (selectedDelimiter == "Tab") m_delimiter = "\t";
-    else if (selectedDelimiter == "Comma (,)") m_delimiter = ",";
-    else if (selectedDelimiter == "Semicolon (;))") m_delimiter = ";";
-    else if (selectedDelimiter == "Colon (:)") m_delimiter = ":";
-    else if (selectedDelimiter == "Double colon (::)") m_delimiter = "::";
+    if (selectedDelimiter == "Tab") d->delimiter = "\t";
+    else if (selectedDelimiter == "Comma (,)") d->delimiter = ",";
+    else if (selectedDelimiter == "Semicolon (;))") d->delimiter = ";";
+    else if (selectedDelimiter == "Colon (:)") d->delimiter = ":";
+    else if (selectedDelimiter == "Double colon (::)") d->delimiter = "::";
     // Text qualifier
-    if (selectedTextQualifier == "None") m_textQualifier = "";
-    else if (selectedTextQualifier == "Single quote (')") m_textQualifier = "'";
-    else if (selectedTextQualifier == "Double quote (\")") m_textQualifier = "\"";
+    if (selectedTextQualifier == "None") d->textQualifier = "";
+    else if (selectedTextQualifier == "Single quote (')") d->textQualifier = "'";
+    else if (selectedTextQualifier == "Double quote (\")") d->textQualifier = "\"";
     // Encoding
     if (selectedEncoding.contains("\t"))
-        m_encoding = selectedEncoding.section("\t", 1, 1);
+        d->encoding = selectedEncoding.section("\t", 1, 1);
     else
-        m_encoding = selectedEncoding;
+        d->encoding = selectedEncoding;
     // Reread file
     readFile();
 }
@@ -181,7 +203,7 @@ void ImportMetadataWizard::previewSelectionChanged(const QItemSelection &selecte
     Q_UNUSED(deselected)
     if (selected.indexes().isEmpty()) return;
     int j = selected.indexes().first().column();
-    foreach (ColumnCorrespondance correspondance, m_ColumnCorrespondances) {
+    foreach (ColumnCorrespondance correspondance, d->columnCorrespondances) {
         if (correspondance.column == j) {
             ui->comboAttribute->setCurrentText(correspondance.displayName);
             if (correspondance.datatype == "text") ui->optionFormatText->setChecked(true);
@@ -198,32 +220,32 @@ void ImportMetadataWizard::previewSelectionChanged(const QItemSelection &selecte
 // private slot
 void ImportMetadataWizard::correspondanceChanged()
 {
-    if (!m_previewModel) return;
+    if (!d->previewModel) return;
     QModelIndexList selection = ui->tableViewPreviewColumns->selectionModel()->selectedColumns();
     if (selection.isEmpty()) return;
     int column = selection.first().column();
     // reset this column
-    foreach (QString attributeID, m_ColumnCorrespondances.keys())
-        if (m_ColumnCorrespondances[attributeID].column == column)
-            m_ColumnCorrespondances[attributeID].column = -1;
-    m_previewModel->setHorizontalHeaderItem(column, new QStandardItem(""));
+    foreach (QString attributeID, d->columnCorrespondances.keys())
+        if (d->columnCorrespondances[attributeID].column == column)
+            d->columnCorrespondances[attributeID].column = -1;
+    d->previewModel->setHorizontalHeaderItem(column, new QStandardItem(""));
     // handle cases where the user wants the attribute ignored
     if (ui->comboAttribute->currentText() == "None (ignored)") return;
     // associate this column
     QString attributeID = ui->comboAttribute->currentData().toString();
-    if (!m_ColumnCorrespondances.contains(attributeID)) return;
-    m_ColumnCorrespondances[attributeID].column = column;
+    if (!d->columnCorrespondances.contains(attributeID)) return;
+    d->columnCorrespondances[attributeID].column = column;
     if (ui->optionFormatText->isChecked()) {
-        m_ColumnCorrespondances[attributeID].datatype = "text";
-        m_ColumnCorrespondances[attributeID].formatString = "";
+        d->columnCorrespondances[attributeID].datatype = "text";
+        d->columnCorrespondances[attributeID].formatString = "";
     }
     else if (ui->optionFormatNumber->isChecked()) {
-        m_ColumnCorrespondances[attributeID].datatype = "number";
-        m_ColumnCorrespondances[attributeID].formatString = "";
+        d->columnCorrespondances[attributeID].datatype = "number";
+        d->columnCorrespondances[attributeID].formatString = "";
     }
     else if (ui->optionFormatDate->isChecked()) {
-        m_ColumnCorrespondances[attributeID].datatype = "datatime";
-        m_ColumnCorrespondances[attributeID].formatString = ui->comboDateFormat->currentText();
+        d->columnCorrespondances[attributeID].datatype = "datatime";
+        d->columnCorrespondances[attributeID].formatString = ui->comboDateFormat->currentText();
     }
     // update headers (all of them, to ensure all column changes are visible)
     updateColumnHeaders();
@@ -231,27 +253,27 @@ void ImportMetadataWizard::correspondanceChanged()
 
 void ImportMetadataWizard::readFile()
 {
-    m_preview.clear();
+    d->preview.clear();
     QString line;
-    QFile file(m_filename);
+    QFile file(d->filename);
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
     QTextStream stream(&file);
-    stream.setCodec(m_encoding.toLatin1().constData());
+    stream.setCodec(d->encoding.toLatin1().constData());
     int columnCount = 0;
-    m_fileLineCount = 0;
+    d->fileLineCount = 0;
     do {
         line = stream.readLine();
-        if (m_fileLineCount <= 100) {
-            QList<QString> fields = line.split(m_delimiter);
+        if (d->fileLineCount <= 100) {
+            QList<QString> fields = line.split(d->delimiter);
             if (columnCount < fields.count()) columnCount = fields.count();
-            m_preview << fields;
+            d->preview << fields;
         }
-        m_fileLineCount++;
+        d->fileLineCount++;
     } while (!stream.atEnd());
     file.close();
-    m_columnCount = columnCount;
+    d->columnCount = columnCount;
     // reset correspondances
-    foreach (ColumnCorrespondance correspondance, m_ColumnCorrespondances) {
+    foreach (ColumnCorrespondance correspondance, d->columnCorrespondances) {
         correspondance.column = -1;
         correspondance.datatype = "text";
         correspondance.formatString = "";
@@ -263,22 +285,22 @@ void ImportMetadataWizard::readFile()
 void ImportMetadataWizard::preparePreview()
 {
     bool hasHeader = ui->checkHeaderLine->isChecked();
-    if (m_previewModel) delete m_previewModel;
-    m_previewModel = new QStandardItemModel(this);
-    m_previewModel->setColumnCount(m_columnCount);
-    m_previewModel->setRowCount((hasHeader) ? m_preview.count() - 1 : m_preview.count());
-    for (int i = 0; i < m_preview.count(); ++i) {
+    if (d->previewModel) delete d->previewModel;
+    d->previewModel = new QStandardItemModel(this);
+    d->previewModel->setColumnCount(d->columnCount);
+    d->previewModel->setRowCount((hasHeader) ? d->preview.count() - 1 : d->preview.count());
+    for (int i = 0; i < d->preview.count(); ++i) {
         if (hasHeader && i == 0) continue;
         int j = 0;
         int model_i = ((hasHeader) ? i - 1 : i);
-        foreach(QString field, m_preview.at(i)) {
-            m_previewModel->setItem(model_i, j, new QStandardItem(field));
+        foreach(QString field, d->preview.at(i)) {
+            d->previewModel->setItem(model_i, j, new QStandardItem(field));
             j++;
         }
     }
     // link model to two preview table views
-    ui->tableViewPreviewIntro->setModel(m_previewModel);
-    ui->tableViewPreviewColumns->setModel(m_previewModel);
+    ui->tableViewPreviewIntro->setModel(d->previewModel);
+    ui->tableViewPreviewColumns->setModel(d->previewModel);
     connect(ui->tableViewPreviewColumns->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SLOT(previewSelectionChanged(QItemSelection,QItemSelection)));
     // next step
@@ -288,11 +310,11 @@ void ImportMetadataWizard::preparePreview()
 void ImportMetadataWizard::guessCorrespondances()
 {
     if (!ui->checkHeaderLine->isChecked()) return;
-    if (m_preview.count() < 1) return;
-    QList<QString> headers = m_preview.at(0);
+    if (d->preview.count() < 1) return;
+    QList<QString> headers = d->preview.at(0);
     for (int j = 0; j < headers.count(); ++j) {
-        if (m_ColumnCorrespondances.contains(headers[j])) {
-            m_ColumnCorrespondances[headers[j]].column = j;
+        if (d->columnCorrespondances.contains(headers[j])) {
+            d->columnCorrespondances[headers[j]].column = j;
         }
     }
     updateColumnHeaders();
@@ -300,15 +322,15 @@ void ImportMetadataWizard::guessCorrespondances()
 
 void ImportMetadataWizard::updateColumnHeaders()
 {
-    if (!m_previewModel) return;
+    if (!d->previewModel) return;
     // empty header labels
     QStringList headers;
-    for (int j = 0; j < m_columnCount; ++j) headers << "";
-    m_previewModel->setHorizontalHeaderLabels(headers);
+    for (int j = 0; j < d->columnCount; ++j) headers << "";
+    d->previewModel->setHorizontalHeaderLabels(headers);
     // update header labels
-    foreach (ColumnCorrespondance correspondence, m_ColumnCorrespondances) {
+    foreach (ColumnCorrespondance correspondence, d->columnCorrespondances) {
         if (correspondence.column != -1)
-            m_previewModel->setHorizontalHeaderItem(correspondence.column, new QStandardItem(correspondence.displayName));
+            d->previewModel->setHorizontalHeaderItem(correspondence.column, new QStandardItem(correspondence.displayName));
     }
 }
 
@@ -323,32 +345,32 @@ bool ImportMetadataWizard::validateCurrentPage()
 {
     QString mandatory = "Before you can import corpus items and their metadata, you must indicate which column contains the following data: ";
     if (currentId() == 1) {
-        if (m_corpusObjectType == CorpusObject::Type_Communication) {
-            if (m_ColumnCorrespondances["ID"].column == -1) {
+        if (d->corpusObjectType == CorpusObject::Type_Communication) {
+            if (d->columnCorrespondances["ID"].column == -1) {
                 QMessageBox::warning(this, "Error", mandatory + "<b>Communication ID</b>.", QMessageBox::Ok);
                 return false;
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Speaker) {
-            if (m_ColumnCorrespondances["ID"].column == -1) {
+        else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
+            if (d->columnCorrespondances["ID"].column == -1) {
                 QMessageBox::warning(this, "Error", mandatory + "<b>Speaker ID</b>.", QMessageBox::Ok);
                 return false;
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Recording) {
-            if ((m_ColumnCorrespondances["ID"].column == -1) || (m_ColumnCorrespondances["communicationID"].column == -1)) {
+        else if (d->corpusObjectType == CorpusObject::Type_Recording) {
+            if ((d->columnCorrespondances["ID"].column == -1) || (d->columnCorrespondances["communicationID"].column == -1)) {
                 QMessageBox::warning(this, "Error", mandatory + "<b>Recording ID, Communication ID</b>.", QMessageBox::Ok);
                 return false;
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Annotation) {
-            if ((m_ColumnCorrespondances["ID"].column == -1) || (m_ColumnCorrespondances["communicationID"].column == -1)) {
+        else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
+            if ((d->columnCorrespondances["ID"].column == -1) || (d->columnCorrespondances["communicationID"].column == -1)) {
                 QMessageBox::warning(this, "Error", mandatory + "<b>Annotation ID, Communication ID</b>.", QMessageBox::Ok);
                 return false;
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Participation) {
-            if ((m_ColumnCorrespondances["communicationID"].column == -1) || (m_ColumnCorrespondances["speakerID"].column == -1)) {
+        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
+            if ((d->columnCorrespondances["communicationID"].column == -1) || (d->columnCorrespondances["speakerID"].column == -1)) {
                 QMessageBox::warning(this, "Error", mandatory + "<b>Communication ID, Speaker ID</b>.", QMessageBox::Ok);
                 return false;
             }
@@ -362,14 +384,14 @@ bool ImportMetadataWizard::validateCurrentPage()
 
 void ImportMetadataWizard::previewImport()
 {
-    if (!m_corpus) return;
-    MetadataStructure *mstr = m_corpus->metadataStructure();
+    if (!d->corpus) return;
+    MetadataStructure *mstr = d->corpus->repository()->metadataStructure();
     QStandardItemModel *model = new QStandardItemModel();
     QString line;
-    QFile file(m_filename);
+    QFile file(d->filename);
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
     QTextStream stream(&file);
-    stream.setCodec(m_encoding.toLatin1().constData());
+    stream.setCodec(d->encoding.toLatin1().constData());
     bool firstLine = true;
     int i = 0;
     QFont font;
@@ -377,27 +399,27 @@ void ImportMetadataWizard::previewImport()
     ui->progressBarImport->setValue(0);
     // List of attributes to show on the preview
     QStringList attributeList, headerList;
-    if (m_corpusObjectType == CorpusObject::Type_Communication) {
+    if (d->corpusObjectType == CorpusObject::Type_Communication) {
         attributeList << "ID" << "name";
         headerList << "Communication ID" << "Name";
     }
-    else if (m_corpusObjectType == CorpusObject::Type_Speaker) {
+    else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
         attributeList << "ID" << "name";
         headerList << "Speaker ID" << "Name";
     }
-    else if (m_corpusObjectType == CorpusObject::Type_Recording) {
+    else if (d->corpusObjectType == CorpusObject::Type_Recording) {
         attributeList << "ID" << "communicationID" << "name";
         headerList << "Recording ID" << "Communication ID" << "Name";
     }
-    else if (m_corpusObjectType == CorpusObject::Type_Annotation) {
+    else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
         attributeList << "ID" << "communicationID" << "name";
         headerList << "Annotation ID" << "Communication ID" << "Name";
     }
-    else if (m_corpusObjectType == CorpusObject::Type_Participation) {
+    else if (d->corpusObjectType == CorpusObject::Type_Participation) {
         attributeList << "communicationID" << "speakerID" << "role";
         headerList << "Communication ID" << "Speaker ID" << "Role";
     }
-    foreach (QPointer<MetadataStructureAttribute> attribute, mstr->attributes(m_corpusObjectType)) {
+    foreach (QPointer<MetadataStructureAttribute> attribute, mstr->attributes(d->corpusObjectType)) {
         if (attribute) attributeList << attribute->ID();
         headerList << attribute->name();
     }
@@ -410,33 +432,33 @@ void ImportMetadataWizard::previewImport()
         }
         CorpusObject *existing;
         QString communicationID, speakerID, recordingID, annotationID;
-        if (m_corpusObjectType == CorpusObject::Type_Communication) {
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            existing = m_corpus->communication(communicationID);
+        if (d->corpusObjectType == CorpusObject::Type_Communication) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            existing = d->corpus->communication(communicationID);
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Speaker) {
-            speakerID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            existing = m_corpus->speaker(speakerID);
+        else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            existing = d->corpus->speaker(speakerID);
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Recording) {
-            recordingID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            if (m_corpus->communication(communicationID)) existing = m_corpus->communication(communicationID)->recording(recordingID);
+        else if (d->corpusObjectType == CorpusObject::Type_Recording) {
+            recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            if (d->corpus->communication(communicationID)) existing = d->corpus->communication(communicationID)->recording(recordingID);
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Annotation) {
-            annotationID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            if (m_corpus->communication(communicationID)) existing = m_corpus->communication(communicationID)->annotation(annotationID);
+        else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
+            annotationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            if (d->corpus->communication(communicationID)) existing = d->corpus->communication(communicationID)->annotation(annotationID);
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Participation) {
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            speakerID = line.section(m_delimiter, m_ColumnCorrespondances["speakerID"].column, m_ColumnCorrespondances["speakerID"].column);
-            existing = m_corpus->participation(communicationID, speakerID);
+        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
+            existing = d->corpus->participation(communicationID, speakerID);
         }
         int j = 0;
         foreach (QString attributeID, attributeList) {
-            if (!m_ColumnCorrespondances.contains(attributeID)) continue;
-            ColumnCorrespondance correspondance = m_ColumnCorrespondances.value(attributeID);
+            if (!d->columnCorrespondances.contains(attributeID)) continue;
+            ColumnCorrespondance correspondance = d->columnCorrespondances.value(attributeID);
             QStandardItem *item;
             if (correspondance.column == -1) {
                 if (existing)
@@ -446,13 +468,13 @@ void ImportMetadataWizard::previewImport()
                 item->setFont(font);
             }
             else {
-                QString field = line.section(m_delimiter, correspondance.column, correspondance.column);
-                if (mstr->attribute(m_corpusObjectType, attributeID)) {
-                    if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::Integer)
+                QString field = line.section(d->delimiter, correspondance.column, correspondance.column);
+                if (mstr->attribute(d->corpusObjectType, attributeID)) {
+                    if (mstr->attribute(d->corpusObjectType, attributeID)->datatype().base() == DataType::Integer)
                         item = new QStandardItem(QString::number(field.toInt()));
-                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::Double)
+                    else if (mstr->attribute(d->corpusObjectType, attributeID)->datatype().base() == DataType::Double)
                         item = new QStandardItem(QString::number(field.toDouble()));
-                    else if (mstr->attribute(m_corpusObjectType, attributeID)->datatype().base() == DataType::DateTime)
+                    else if (mstr->attribute(d->corpusObjectType, attributeID)->datatype().base() == DataType::DateTime)
                         item = new QStandardItem(QDate::fromString(field, correspondance.formatString).toString());
                     else
                         item = new QStandardItem(field);
@@ -465,7 +487,7 @@ void ImportMetadataWizard::previewImport()
         }
         i++;
         QApplication::processEvents();
-        ui->progressBarImport->setValue((i * 100) / m_fileLineCount);
+        ui->progressBarImport->setValue((i * 100) / d->fileLineCount);
     } while (!stream.atEnd());
     file.close();
     ui->progressBarImport->setValue(100);
@@ -477,13 +499,13 @@ void ImportMetadataWizard::previewImport()
 
 void ImportMetadataWizard::doImport()
 {
-    if (!m_corpus) return;
-    MetadataStructure *mstr = m_corpus->metadataStructure();
+    if (!d->corpus) return;
+    MetadataStructure *mstr = d->corpus->repository()->metadataStructure();
     QString line;
-    QFile file(m_filename);
+    QFile file(d->filename);
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
     QTextStream stream(&file);
-    stream.setCodec(m_encoding.toLatin1().constData());
+    stream.setCodec(d->encoding.toLatin1().constData());
     bool firstLine = true;
     do {
         line = stream.readLine();
@@ -493,28 +515,28 @@ void ImportMetadataWizard::doImport()
         }
         QString communicationID, speakerID, recordingID, annotationID;
         CorpusObject *item = 0;
-        if (m_corpusObjectType == CorpusObject::Type_Communication) {
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
+        if (d->corpusObjectType == CorpusObject::Type_Communication) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             if (ui->optionModeUpdate->isChecked())
-                item = m_corpus->communication(communicationID);
+                item = d->corpus->communication(communicationID);
             if (!item) {
-                m_corpus->addCommunication(new CorpusCommunication(communicationID));
-                item = m_corpus->communication(communicationID);
+                d->corpus->addCommunication(new CorpusCommunication(communicationID));
+                item = d->corpus->communication(communicationID);
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Speaker) {
-            speakerID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
+        else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             if (ui->optionModeUpdate->isChecked())
-                item = m_corpus->speaker(speakerID);
+                item = d->corpus->speaker(speakerID);
             if (!item) {
-                m_corpus->addSpeaker(new CorpusSpeaker(speakerID));
-                item = m_corpus->speaker(speakerID);
+                d->corpus->addSpeaker(new CorpusSpeaker(speakerID));
+                item = d->corpus->speaker(speakerID);
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Recording) {
-            recordingID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            QPointer<CorpusCommunication> com = m_corpus->communication(communicationID);
+        else if (d->corpusObjectType == CorpusObject::Type_Recording) {
+            recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
             if (!com) continue; // skip this item when a corresponding communication does not exist
             if (ui->optionModeUpdate->isChecked())
                 item = com->recording(recordingID);
@@ -523,10 +545,10 @@ void ImportMetadataWizard::doImport()
                 item = com->recording(recordingID);
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Annotation) {
-            annotationID = line.section(m_delimiter, m_ColumnCorrespondances["ID"].column, m_ColumnCorrespondances["ID"].column);
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            QPointer<CorpusCommunication> com = m_corpus->communication(communicationID);
+        else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
+            annotationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
             if (!com) continue; // skip this item when a corresponding communication does not exist
             if (ui->optionModeUpdate->isChecked())
                 item = com->annotation(annotationID);
@@ -535,30 +557,30 @@ void ImportMetadataWizard::doImport()
                 item = com->annotation(annotationID);
             }
         }
-        else if (m_corpusObjectType == CorpusObject::Type_Participation) {
-            communicationID = line.section(m_delimiter, m_ColumnCorrespondances["communicationID"].column, m_ColumnCorrespondances["communicationID"].column);
-            speakerID = line.section(m_delimiter, m_ColumnCorrespondances["speakerID"].column, m_ColumnCorrespondances["speakerID"].column);
-            qDebug() << m_ColumnCorrespondances["speakerID"].column << speakerID;
-            QPointer<CorpusCommunication> com = m_corpus->communication(communicationID);
-            QPointer<CorpusSpeaker> spk = m_corpus->speaker(speakerID);
+        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
+            qDebug() << d->columnCorrespondances["speakerID"].column << speakerID;
+            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
+            QPointer<CorpusSpeaker> spk = d->corpus->speaker(speakerID);
             if (!com || !spk) continue;
             if (ui->optionModeUpdate->isChecked())
-                item = m_corpus->participation(communicationID, speakerID);
+                item = d->corpus->participation(communicationID, speakerID);
             if (!item) {
-                item = m_corpus->addParticipation(communicationID, speakerID);
+                item = d->corpus->addParticipation(communicationID, speakerID);
             }
         }
         if (!item) continue; // this should never happen
-        foreach (ColumnCorrespondance correspondance, m_ColumnCorrespondances) {
+        foreach (ColumnCorrespondance correspondance, d->columnCorrespondances) {
             if (correspondance.column == -1)
                 continue; // this attribute is not linked to a column, skip
-            QString field = line.section(m_delimiter, correspondance.column, correspondance.column);
-            if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)) {
-                if  (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Integer)
+            QString field = line.section(d->delimiter, correspondance.column, correspondance.column);
+            if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)) {
+                if  (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Integer)
                     item->setProperty(correspondance.attributeID, field.toInt());
-                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Double)
+                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Double)
                     item->setProperty(correspondance.attributeID, field.toDouble());
-                else if (mstr->attribute(m_corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::DateTime)
+                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::DateTime)
                     item->setProperty(correspondance.attributeID, QDate::fromString(field, correspondance.formatString));
                 else
                     item->setProperty(correspondance.attributeID, field);

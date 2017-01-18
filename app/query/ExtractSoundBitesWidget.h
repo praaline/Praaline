@@ -12,6 +12,7 @@ class ExtractSoundBitesWidget;
 
 namespace Praaline {
 namespace Core {
+class CorpusRepository;
 class Corpus;
 class CorpusAnnotation;
 }
@@ -28,7 +29,7 @@ public:
     ~ExtractSoundBitesWidget();
 
 private slots:
-    void activeCorpusChanged(const QString &corpusID);
+    void activeCorpusRepositoryChanged(const QString &repositoryID);
     void browseForFolder();
     void extractSoundBites();
 
@@ -36,8 +37,8 @@ private:
     Ui::ExtractSoundBitesWidget *ui;
     ExtractSoundBitesWidgetData *d;
 
-    void prepareCopyOverCorpus(QPointer<Praaline::Core::Corpus> corpusSource, const QString &outputPath);
-    void carryOverAnnotations(QPointer<Praaline::Core::Corpus> corpusSource,
+    void prepareCopyOverCorpus(QPointer<Praaline::Core::CorpusRepository> repositorySource, const QString &outputPath);
+    void carryOverAnnotations(QPointer<Praaline::Core::CorpusRepository> repositorySource,
                               QPointer<Praaline::Core::CorpusAnnotation> annotSource,
                               QPointer<Praaline::Core::CorpusAnnotation> annotDestination,
                               RealTime start, RealTime end);

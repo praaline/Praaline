@@ -6,7 +6,10 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
@@ -102,7 +105,7 @@ QString AnalyserPitch::calculate(QPointer<Corpus> corpus, const QString &communi
     labels << measureIDs("");
     d->model->setHorizontalHeaderLabels(labels);
     // Process data
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()
             ->getTiersAllSpeakers(annotationID, QStringList() << d->levelPhones << d->levelSyllables << d->levelTokens);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);

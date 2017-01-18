@@ -125,7 +125,7 @@ void Corpus::addCommunication(CorpusCommunication *communication)
     m_communications.insert(communication->ID(), communication);
     // connect(communication, SIGNAL(changedID(QString,QString)), this, SLOT(communicationChangedID(QString,QString)));
     m_isDirty = true;
-    emit corpusCommunicationAdded(communication);
+    emit communicationAdded(communication);
 }
 
 void Corpus::removeCommunication(const QString &communicationID)
@@ -142,7 +142,7 @@ void Corpus::removeCommunication(const QString &communicationID)
     delete communication;
     m_isDirty = true;
     deletedCommunicationIDs << communicationID;
-    emit corpusCommunicationDeleted(communicationID);
+    emit communicationDeleted(communicationID);
 }
 
 void Corpus::communicationChangedID(const QString &oldID, const QString &newID)
@@ -201,7 +201,7 @@ void Corpus::addSpeaker(CorpusSpeaker *speaker)
     m_speakers.insert(speaker->ID(), speaker);
     connect(speaker, SIGNAL(changedID(QString,QString)), this, SLOT(speakerChangedID(QString,QString)));
     m_isDirty = true;
-    emit corpusSpeakerAdded(speaker);
+    emit speakerAdded(speaker);
 }
 
 void Corpus::removeSpeaker(const QString &speakerID)
@@ -220,7 +220,7 @@ void Corpus::removeSpeaker(const QString &speakerID)
     delete speaker;
     m_isDirty = true;
     deletedSpeakerIDs << speakerID;
-    emit corpusSpeakerDeleted(speakerID);
+    emit speakerDeleted(speakerID);
 }
 
 void Corpus::speakerChangedID(const QString &oldID, const QString &newID)

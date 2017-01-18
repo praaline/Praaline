@@ -8,24 +8,23 @@
 #include "MetadataStructureEditor.h"
 #include "ui_MetadataStructureEditor.h"
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/MetadataStructureTreeModel.h"
-#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
-#include "pngui/observers/CorpusObserver.h"
 #include "NameValueListEditor.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
 
 struct MetadataStructureEditorData {
-    MetadataStructureEditorData() : corporaManager(0), treemodelMetadataStructure(0)
+    MetadataStructureEditorData() : corpusRepositoriesManager(0), treemodelMetadataStructure(0)
     { }
 
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoriesManager;
 
     QAction *actionAddMetadataStructureSection;
     QAction *actionAddMetadataStructureAttribute;
@@ -49,12 +48,12 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
 
     // Get Corpora Manager from global object list
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
 
     // Toolbars and actions
     d->toolbarMetadataStructure = new QToolBar("Metadata Structure", this);
@@ -157,17 +156,17 @@ void MetadataStructureEditor::refreshMetadataStructureTreeView(MetadataStructure
     if (previousMetadataStructureModel) delete previousMetadataStructureModel;
 }
 
-void MetadataStructureEditor::activeCorpusChanged(const QString &newActiveCorpusID)
+void MetadataStructureEditor::activeCorpusRepositoryChanged(const QString &repositoryID)
 {
-    Q_UNUSED(newActiveCorpusID);
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) {
+    Q_UNUSED(repositoryID);
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) {
         d->treeviewMetadataStructure->setModel(0);
         if (d->treemodelMetadataStructure) delete d->treemodelMetadataStructure;
         d->editorNVList->rebind(0);
     } else {
-        refreshMetadataStructureTreeView(corpus->metadataStructure());
-        d->editorNVList->rebind(corpus->datastoreMetadata());
+        refreshMetadataStructureTreeView(repository->metadataStructure());
+        d->editorNVList->rebind(repository->metadata());
     }
 }
 
@@ -175,10 +174,8 @@ void MetadataStructureEditor::activeCorpusChanged(const QString &newActiveCorpus
 
 void MetadataStructureEditor::addMetadataStructureSection()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
-
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     if (!d->treemodelMetadataStructure) return;
     QModelIndex index = d->treeviewMetadataStructure->currentIndex();
     if (!index.isValid()) return;
@@ -193,21 +190,20 @@ void MetadataStructureEditor::addMetadataStructureSection()
     if (category)
         type = category->type;
     else if (section)
-        type = obs->corpus()->metadataStructure()->corpusObjectTypeOfSection(section);
+        type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
     else if (attribute) {
         section = qobject_cast<MetadataStructureSection *>(attribute->parent());
         if (!section) return;
-        type = obs->corpus()->metadataStructure()->corpusObjectTypeOfSection(section);
+        type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
     }
-    obs->corpus()->metadataStructure()->addSection(type, new MetadataStructureSection());
-    refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+    repository->metadataStructure()->addSection(type, new MetadataStructureSection());
+    refreshMetadataStructureTreeView(repository->metadataStructure());
 }
 
 void MetadataStructureEditor::addMetadataStructureAttribute()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
 
     if (!d->treemodelMetadataStructure) return;
     QModelIndex index = d->treeviewMetadataStructure->currentIndex();
@@ -220,7 +216,7 @@ void MetadataStructureEditor::addMetadataStructureAttribute()
     MetadataStructureAttribute *attribute = qobject_cast<MetadataStructureAttribute *>(item);
     if (attribute) section = qobject_cast<MetadataStructureSection *>(attribute->parent());
     if (!section) return;
-    CorpusObject::Type type = obs->corpus()->metadataStructure()->corpusObjectTypeOfSection(section);
+    CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
 
     // Ask for attribute ID and add it
     AddAttributeDialog *dialog = new AddAttributeDialog(this);
@@ -233,19 +229,18 @@ void MetadataStructureEditor::addMetadataStructureAttribute()
     if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
     newAttribute->setDatatype(dt);
 
-    if (!obs->corpus()->datastoreMetadata()->createMetadataAttribute(type, newAttribute))
+    if (!repository->metadata()->createMetadataAttribute(type, newAttribute))
         return; // failed to create attribute
     section->addAttribute(newAttribute);
-    refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+    refreshMetadataStructureTreeView(repository->metadataStructure());
 }
 
 void MetadataStructureEditor::removeMetadataStructureItem()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->metadataStructure()) return;
     if (!d->treemodelMetadataStructure) return;
-    if (!obs->corpus()->metadataStructure()) return;
 
     QModelIndex index = d->treeviewMetadataStructure->currentIndex();
     if (!index.isValid()) return;
@@ -259,11 +254,11 @@ void MetadataStructureEditor::removeMetadataStructureItem()
                                  QString("Do you want to delete all the metadata stored under Section '%1'? "
                                          "This action cannot be reversed!").arg(section->name()),
                                  "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        CorpusObject::Type type = obs->corpus()->metadataStructure()->corpusObjectTypeOfSection(section);
+        CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
         foreach (MetadataStructureAttribute *attribute, section->attributes())
-            obs->corpus()->datastoreMetadata()->deleteMetadataAttribute(type, attribute->ID());
-        obs->corpus()->metadataStructure()->removeSectionByID(type, section->ID());
-        refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+            repository->metadata()->deleteMetadataAttribute(type, attribute->ID());
+        repository->metadataStructure()->removeSectionByID(type, section->ID());
+        refreshMetadataStructureTreeView(repository->metadataStructure());
     }
     else if (attribute) {
         section = qobject_cast<MetadataStructureSection *>(attribute->parent());
@@ -272,30 +267,28 @@ void MetadataStructureEditor::removeMetadataStructureItem()
                                  QString("Do you want to delete all the metadata stored for Attribute '%1'? "
                                          "This action cannot be reversed!").arg(attribute->name()),
                                  "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        CorpusObject::Type type = obs->corpus()->metadataStructure()->corpusObjectTypeOfSection(section);
-        obs->corpus()->datastoreMetadata()->deleteMetadataAttribute(type, attribute->ID());
+        CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
+        repository->metadata()->deleteMetadataAttribute(type, attribute->ID());
         section->removeAttributeByID(attribute->ID());
-        refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+        refreshMetadataStructureTreeView(repository->metadataStructure());
     }
 }
 
 void MetadataStructureEditor::renameMetadataAttribute(Praaline::Core::CorpusObject::Type type,
                                                           const QString &oldID, const QString &newID)
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
-    if (!obs->corpus()->datastoreMetadata()) return;
-    if (obs->corpus()->datastoreMetadata()->renameMetadataAttribute(type, oldID, newID)) {
-        obs->corpus()->metadataStructure()->attribute(type, oldID)->setID(newID);
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->metadata()) return;
+    if (repository->metadata()->renameMetadataAttribute(type, oldID, newID)) {
+        repository->metadataStructure()->attribute(type, oldID)->setID(newID);
     }
 }
 
 void MetadataStructureEditor::importMetadataStructure()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Metadata Structure"), "",
@@ -304,19 +297,18 @@ void MetadataStructureEditor::importMetadataStructure()
     if (filename.isEmpty()) return;
     MetadataStructure *structure = XMLSerialiserMetadataStructure::read(filename);
     if (!structure) return;
-    obs->corpus()->importMetadataStructure(structure);
-    refreshMetadataStructureTreeView(obs->corpus()->metadataStructure());
+    repository->importMetadataStructure(structure);
+    refreshMetadataStructureTreeView(repository->metadataStructure());
 }
 
 void MetadataStructureEditor::exportMetadataStructure()
 {
-    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-    if (!obs) return;
-    if (!obs->corpus()) return;
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getSaveFileName(this, tr("Export Metadata Structure"), "",
                                                     tr("XML File (*.xml);;All Files (*)"), &selectedFilter, options);
     if (filename.isEmpty()) return;
-    XMLSerialiserMetadataStructure::write(obs->corpus()->metadataStructure(), filename);
+    XMLSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
 }

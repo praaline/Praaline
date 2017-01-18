@@ -8,6 +8,8 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
@@ -217,12 +219,12 @@ void TimelineVisualisationWidget::visualiserNewSession(QPointer<Corpus> corpus, 
 void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> corpus, const QString &annotationID)
 {
     if (!corpus) return;
-    if (!corpus->datastoreAnnotations()) return;
+    if (!corpus->repository()) return;
     d->currentCorpus = corpus;
     d->currentAnnotationID = annotationID;
     qDeleteAll(d->currentTierGroups);
     d->currentTierGroups.clear();
-    d->currentTierGroups = corpus->datastoreAnnotations()->getTiersAllSpeakers(d->currentAnnotationID);
+    d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());

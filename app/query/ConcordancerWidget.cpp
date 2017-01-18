@@ -7,6 +7,7 @@
 #include "ui_ConcordancerWidget.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/query/QueryDefinition.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
@@ -16,7 +17,7 @@ using namespace Praaline::Core;
 #include "pngui/model/query/QueryOccurrenceTableModel.h"
 #include "pngui/model/query/QueryFilterSequenceTableModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 
 struct ConcordancerWidgetData {
     ConcordancerWidgetData() {}
@@ -53,8 +54,8 @@ struct ConcordancerWidgetData {
     QAction *actionResultsCreateBookmarks;
     QTableView *tableviewResults;
 
-    // Corpus Manager
-    CorporaManager *corporaManager;
+    // Corpus Repositories Manager
+    CorpusRepositoriesManager *corpusRepositoriesManager;
 
     // Query
     QueryDefinition currentQuery;
@@ -119,12 +120,12 @@ ConcordancerWidget::ConcordancerWidget(QWidget *parent) :
 
     // Corpora manager
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
 
 }
 
@@ -218,11 +219,12 @@ void ConcordancerWidget::setupActions()
 
 }
 
-void ConcordancerWidget::activeCorpusChanged(const QString &corpusID)
+void ConcordancerWidget::activeCorpusRepositoryChanged(const QString &repositoryID)
 {
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
-    AnnotationStructureTreeModel *model = new AnnotationStructureTreeModel(corpus->annotationStructure(), true, true, this);
+    Q_UNUSED(repositoryID)
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    AnnotationStructureTreeModel *model = new AnnotationStructureTreeModel(repository->annotationStructure(), true, true, this);
     d->treeviewLevelsAttributes->setModel(model);
 }
 
@@ -312,8 +314,6 @@ void ConcordancerWidget::searchOccurrences()
     QueryFilterSequenceTableModel *seqmodel = new QueryFilterSequenceTableModel(group.filterSequences[0], this);
     d->treeviewQueryDefinition->setModel(seqmodel);
 
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) return;
 //    if (!d->first){
 //        QList<QueryOccurrence *> occurrences = corpus->datastoreAnnotations()->runQuery(d->currentQuery);
 

@@ -116,14 +116,14 @@ void CorpusItemSelectorWidget::setupActions()
 Corpus *CorpusItemSelectorWidget::findCorpus(QString corpusID)
 {
     QList<QObject *> listCorpora;
-    listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
-    foreach (QObject* obj, listCorpora) {
-        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
-        if (obs && obs->corpus()) {
-            if (obs->corpus()->ID() == corpusID)
-                return obs->corpus();
-        }
-    }
+//    listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
+//    foreach (QObject* obj, listCorpora) {
+//        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
+//        if (obs && obs->corpus()) {
+//            if (obs->corpus()->ID() == corpusID)
+//                return obs->corpus();
+//        }
+//    }
     return 0;
 }
 

@@ -16,12 +16,14 @@ namespace Ui {
 class ImportCorpusItemsWizardFinalPage;
 }
 
+struct ImportCorpusItemsWizardFinalPageData;
+
 class ImportCorpusItemsWizardFinalPage : public QWizardPage
 {
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardFinalPage(QPointer<Corpus> corpus,
+    explicit ImportCorpusItemsWizardFinalPage(QPointer<CorpusRepository> repository,
                                               QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
                                               QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
                                               QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
@@ -34,12 +36,7 @@ public:
 
 private:
     Ui::ImportCorpusItemsWizardFinalPage *ui;
-
-    QPointer<Corpus> m_corpus;
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &m_candidateRecordings;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &m_candidateAnnotations;
-    QMultiHash<QString, TierCorrespondance> &m_tierCorrespondances;
-    QSet<QString> &m_tierNamesCommon;
+    ImportCorpusItemsWizardFinalPageData *d;
 
     void importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
     void importTranscriber(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);

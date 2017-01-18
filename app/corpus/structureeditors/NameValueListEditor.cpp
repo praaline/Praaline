@@ -12,7 +12,7 @@
 #include <QMessageBox>
 
 #include "pncore/structure/NameValueList.h"
-#include "pncore/serialisers/NameValueListDatastore.h"
+#include "pncore/datastore/NameValueListDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/NameValueListTableModel.h"

@@ -9,7 +9,10 @@
 #include <QTextStream>
 
 #include "pluginwebsimplecms.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/FileDatastore.h"
 #include "pncore/structure/MetadataStructure.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
@@ -95,7 +98,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::WebSimpleCMS::Plugi
     return parameters;
 }
 
-void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("pathXML")) d->pathXML = parameters.value("pathXML").toString();
     if (parameters.contains("includeSyllables")) d->includeSyllables = parameters.value("includeSyllables").toBool();
@@ -106,12 +109,12 @@ QString filterNonPrintable(QString text) {
     return ret;
 }
 
-bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot,
+bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot,
                const QString &filename, bool includeSyllables = false)
 {
     // Checks
-    if (!corpus || !com || !rec || !annot) return false;
-    if (!(corpus->datastoreAnnotations())) return false;
+    if (!com || !rec || !annot) return false;
+    if (!(com->repository())) return false;
 
     // Begin XML file
     QFile fileXML(filename);
@@ -127,7 +130,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     xml.writeAttribute("version", "1.0");
 
     // Get annotation tiers
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
 
     // recording data
     xml.writeStartElement("sound");
@@ -137,7 +140,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     xml.writeAttribute("sound_url", com->ID() + ".wav");
     xml.writeAttribute("textgrid_url", com->ID() + ".textgrid");
     xml.writeAttribute("duration", QString::number(rec->duration().toDouble()));
-    foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Communication)) {
+    foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Communication)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
             if (attribute->datatype().base() == DataType::DateTime)
                 xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
@@ -147,7 +150,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
                 xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toString());
         }
     }
-    foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Recording)) {
+    foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Recording)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
             if (attribute->datatype().base() == DataType::DateTime)
                 xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
@@ -180,7 +183,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     // speakers data
     xml.writeStartElement("speakers");
     foreach (QString speakerID, tiersAll.keys()) {
-        CorpusSpeaker *spk = corpus->speaker(speakerID);
+        CorpusSpeaker *spk = com->corpus()->speaker(speakerID);
         if (!spk) {
             xml.writeStartElement("speaker");
             xml.writeAttribute("id", speakerID);
@@ -191,7 +194,7 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
         xml.writeStartElement("speaker");
         xml.writeAttribute("id", spk->ID());
         xml.writeAttribute("name", spk->name());
-        foreach (MetadataStructureSection *section, corpus->metadataStructure()->sections(CorpusObject::Type_Speaker)) {
+        foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Speaker)) {
             foreach (MetadataStructureAttribute *attribute, section->attributes()) {
                 if (attribute->datatype().base() == DataType::DateTime)
                     xml.writeAttribute(attribute->ID(), spk->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
@@ -353,9 +356,9 @@ bool outputXML(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, C
     return true;
 }
 
-void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    if (d->pathXML.isEmpty()) d->pathXML = corpus->basePath();
+    if (d->pathXML.isEmpty()) d->pathXML = ".";
     int countDone = 0;
     madeProgress(0);
     printMessage("XML file creator for Simple CMS v. 1.0");
@@ -366,7 +369,7 @@ void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(Corpus *corpus
             if (!rec) continue;
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
-                outputXML(corpus, com, rec, annot, d->pathXML + "/" + annot->ID() + ".xml", d->includeSyllables);
+                outputXML(com, rec, annot, d->pathXML + "/" + annot->ID() + ".xml", d->includeSyllables);
             }
         }
         countDone++;

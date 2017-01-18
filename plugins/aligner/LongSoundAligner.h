@@ -17,9 +17,9 @@ public:
     explicit LongSoundAligner(QObject *parent = 0);
     ~LongSoundAligner();
 
-    bool createRecognitionLevel(QPointer<Corpus> corpus, int recognitionStep);
-    bool createUtterancesFromProsogramAutosyll(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com);
-    bool recognise(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com, int recognitionStep);
+    bool createRecognitionLevel(CorpusRepository *repository, int recognitionStep);
+    bool createUtterancesFromProsogramAutosyll(QPointer<CorpusCommunication> com);
+    bool recognise(QPointer<CorpusCommunication> com, int recognitionStep);
 
 private:
     LongSoundAlignerData *d;

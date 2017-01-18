@@ -6,8 +6,13 @@
 #include <QMap>
 #include <QDebug>
 
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+using namespace Praaline::Core;
+
 
 #include "pseudolanguage.h"
 
@@ -17,7 +22,7 @@ PseudoLanguage::PseudoLanguage()
 }
 
 // "D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/possible_diphones.txt"
-bool PseudoLanguage::createListOfPossibleDiphones(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications,
+bool PseudoLanguage::createListOfPossibleDiphones(const QList<QPointer<CorpusCommunication> > &communications,
                                                   const QString &filename, int cutOffThreshold)
 {
     QFile fileOut(filename);
@@ -34,7 +39,7 @@ bool PseudoLanguage::createListOfPossibleDiphones(Corpus *corpus, QList<QPointer
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
 
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                 foreach (QString speakerID, tiersAll.keys()) {
                     QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 

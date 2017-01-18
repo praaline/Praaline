@@ -10,7 +10,10 @@
 
 
 #include "pluginfloralpfc.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 
 #include "valibelprocessor.h"
@@ -93,13 +96,13 @@ QString Praaline::Plugins::FloralPFC::PluginFloralPFC::pluginLicense() const {
     return tr("GPL v.3");
 }
 
-void prepareTranscriptions(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void prepareTranscriptions(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QStringList levels; levels << "transcription";
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annot->ID(), annot->ID(), levels);
+            AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
             IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
             if (!transcription) continue;
             foreach (Interval *intv, transcription->intervals()) {
@@ -130,19 +133,19 @@ void prepareTranscriptions(Corpus *corpus, QList<QPointer<CorpusCommunication> >
                 intv->setAttribute("liaison", liaison);
                 intv->setAttribute("comment", comment);
             }
-            corpus->datastoreAnnotations()->saveTier(annot->ID(), annot->ID(), transcription);
+            com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
         }
         qDebug() << com->ID();
     }
 }
 
-void checkSpeakers(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void checkSpeakers(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QStringList levels; levels << "transcription";
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annot->ID(), annot->ID(), levels);
+            AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
             IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
             if (!transcription) continue;
             foreach (Interval *intv, transcription->intervals()) {
@@ -158,7 +161,7 @@ void checkSpeakers(Corpus *corpus, QList<QPointer<CorpusCommunication> > communi
                 l = liaison.split("<").count();
                 if (o != s || o != l || s != l) intv->setAttribute("comment", "num loc b");
             }
-            corpus->datastoreAnnotations()->saveTier(annot->ID(), annot->ID(), transcription);
+            com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
         }
         qDebug() << com->ID();
     }
@@ -189,13 +192,13 @@ QString formatSegment(QString input)
     return ret.trimmed();
 }
 
-void separateSpeakers(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void separateSpeakers(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QStringList levels; levels << "transcription";
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annot->ID(), annot->ID(), levels);
+            AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
             IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
             if (!transcription) continue;
             IntervalTier *segmentMain = new IntervalTier("segment", transcription->tMin(), transcription->tMax());
@@ -293,7 +296,7 @@ void separateSpeakers(Corpus *corpus, QList<QPointer<CorpusCommunication> > comm
             }
 
             foreach (QString spk, tiersAll.keys()) {
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), spk, tiersAll.value(spk));
+                com->repository()->annotations()->saveTier(annot->ID(), spk, tiersAll.value(spk));
             }
 
             delete segment;
@@ -336,12 +339,12 @@ QList<QString> splitToken(QString input)
     return ret;
 }
 
-void tokenise(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void tokenise(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -376,7 +379,7 @@ void tokenise(Corpus *corpus, QList<QPointer<CorpusCommunication> > communicatio
                 tier_tok_min->fillEmptyTextLabelsWith("_");
                 tier_tok_min->mergeIdenticalAnnotations("_");
 
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
                 delete tier_tok_min;
             }
             qDeleteAll(tiersAll);
@@ -385,12 +388,12 @@ void tokenise(Corpus *corpus, QList<QPointer<CorpusCommunication> > communicatio
     }
 }
 
-void tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void tokmin_punctuation(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -416,7 +419,7 @@ void tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusCommunication> > co
                     { l.chop(1); tok_min->setAttribute("liaison", l); }
                     if (l.startsWith("\"")) { l = l.remove(0, 1); tok_min->setAttribute("liaison", l); }
                 }
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             }
             qDeleteAll(tiersAll);
         }
@@ -424,12 +427,12 @@ void tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusCommunication> > co
     }
 }
 
-void liaisonCoding(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void liaisonCoding(const QList<QPointer<CorpusCommunication> > &communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -454,7 +457,7 @@ void liaisonCoding(Corpus *corpus, QList<QPointer<CorpusCommunication> > communi
                         // qDebug() << annot->ID() << speakerID << tok_min->tMin().toDouble() << t << l;
                     }
                 }
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             }
             qDeleteAll(tiersAll);
         }
@@ -474,7 +477,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::FloralPFC::PluginFl
     return parameters;
 }
 
-void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(QHash<QString, QVariant> parameters)
+void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(const QHash<QString, QVariant> &parameters)
 {
     if (parameters.contains("command")) d->command = parameters.value("command").toString();
     if (parameters.contains("corpusType")) d->corpusType = parameters.value("corpusType").toString();
@@ -482,20 +485,20 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(QHash<QString,
     if (parameters.contains("filename")) d->filename = parameters.value("filename").toString();
 }
 
-void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     if (d->corpusType == "valibel") {
-        if (d->command.contains("import")) ValibelProcessor::importValibelFile(corpus, d->path + "/" + d->filename);
-        if (d->command.contains("tokenise")) ValibelProcessor::tokenise(corpus, communications);
-        if (d->command.contains("pauses")) ValibelProcessor::pauses(corpus, communications);
+        if (d->command.contains("import")) ValibelProcessor::importValibelFile(communications.first()->corpus(), d->path + "/" + d->filename);
+        if (d->command.contains("tokenise")) ValibelProcessor::tokenise(communications);
+        if (d->command.contains("pauses")) ValibelProcessor::pauses(communications);
     }
     else if (d->corpusType == "pfc5") {
-        if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(corpus, communications);
-        if (d->command.contains("checkSpeakers")) checkSpeakers(corpus, communications);
-        if (d->command.contains("separateSpeakers")) separateSpeakers(corpus, communications);
-        if (d->command.contains("tokenise")) tokenise(corpus, communications);
-        if (d->command.contains("tokmin_punctuation")) tokmin_punctuation(corpus, communications);
-        if (d->command.contains("liaisonCoding")) liaisonCoding(corpus, communications);
+        if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(communications);
+        if (d->command.contains("checkSpeakers")) checkSpeakers(communications);
+        if (d->command.contains("separateSpeakers")) separateSpeakers(communications);
+        if (d->command.contains("tokenise")) tokenise(communications);
+        if (d->command.contains("tokmin_punctuation")) tokmin_punctuation(communications);
+        if (d->command.contains("liaisonCoding")) liaisonCoding(communications);
     }
 }
 

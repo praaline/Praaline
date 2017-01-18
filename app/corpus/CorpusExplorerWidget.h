@@ -4,6 +4,7 @@
 #include <QWidget>
 
 #include "pncore/corpus/Corpus.h"
+
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"
@@ -23,17 +24,11 @@ public:
     ~CorpusExplorerWidget();
 
 private slots:
+    void corpusRepositoryAdded(const QString &repositoryID);
+    void corpusRepositoryRemoved(const QString &repositoryID);
     void selectionChanged(QList<QObject*>);
 
-    void newCorpus();
-    void openCorpusFile();
-    void openCorpusRecentFile();
-    void openCorpusDbConnection();
-    void closeCorpus();
-    void saveCorpus();
-    void saveCorpusAs();
-    void importCorpus();
-
+    void addCorpus();
     void addCommunication();
     void addSpeaker();
     void addRecording();
@@ -55,8 +50,6 @@ private slots:
 
     void attributesAndGroupings();
 
-    void setupRecentFilesMenu();
-
     void metadataEditorPrimaryStyleTree();
     void metadataEditorPrimaryStyleGroupBox();
     void metadataEditorPrimaryStyleButton();
@@ -71,9 +64,6 @@ private:
     void setupActions();
     void setupMetadataEditorsStylingMenu();
 
-    void openCorpusFile(const QString &filename);
-    Corpus *openCorpus(const QString &filename, CorpusDefinition &definition);
-    void activateNextCorpus();
     QList<CorpusObject *> selectedCorpusItems();
     void updateMetadataEditorsForCom(CorpusCommunication *communication);
     void updateMetadataEditorsForSpk(CorpusSpeaker *speaker);

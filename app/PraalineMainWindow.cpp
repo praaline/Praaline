@@ -41,7 +41,7 @@ using namespace QtilitiesExtensionSystem;
 using namespace QtilitiesProjectManagement;
 using namespace Praaline;
 
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 
 struct PraalineMainWindowData {
     PraalineMainWindowData() : usingDarkPalette(false) {}
@@ -177,8 +177,8 @@ void PraalineMainWindow::initialise()
 
     // REGISTER GLOBALLY AVAILABLE OBJECTS
     // ============================================================================================
-    CorporaManager *corporaManager = new CorporaManager();
-    OBJECT_MANAGER->registerObject(corporaManager, QtilitiesCategory("CorporaManager"));
+    CorpusRepositoriesManager *corpusRepositoryManager = new CorpusRepositoriesManager();
+    OBJECT_MANAGER->registerObject(corpusRepositoryManager, QtilitiesCategory("Corpus"));
 
     // Register main window in object manager
     OBJECT_MANAGER->registerObject(m_mainWindow, QtilitiesCategory("PraalineMainWindow"));

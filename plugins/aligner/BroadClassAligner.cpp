@@ -5,8 +5,11 @@
 #include <QFile>
 #include <QTextStream>
 
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pnlib/asr/sphinx/SphinxAcousticModelTrainer.h"
 #include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
 
@@ -156,11 +159,13 @@ void BroadClassAligner::updateTokenTierWithBroadClasses(IntervalTier *tier_phone
     }
 }
 
-void BroadClassAligner::prepareTiers(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications)
+void BroadClassAligner::prepareTiers(QList<QPointer<CorpusCommunication> > communications)
 {
     foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) return;
+        if (!com->repository()) return;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
@@ -172,18 +177,17 @@ void BroadClassAligner::prepareTiers(QPointer<Corpus> corpus, QList<QPointer<Cor
                 updateTokenTierWithBroadClasses(tier_phone, "broad_phonetic_class",
                                                 tier_token, "broad_phonetic_class");
                 tier_token->replaceAttributeText("broad_phonetic_lcass", "SIL", "");
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_phone);
-                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phone);
+                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_token);
             }
             qDeleteAll(tiersAll);
         }
     }
 }
 
-void BroadClassAligner::prepareBPCTrainingFromCommunications(QPointer<Corpus> corpus, QList<QPointer<CorpusCommunication> > communications,
+void BroadClassAligner::prepareBPCTrainingFromCommunications(QList<QPointer<CorpusCommunication> > communications,
                                                              const QString &outputPath)
 {
-    if (!corpus) return;
     QScopedPointer<SphinxAcousticModelTrainer> trainer(new SphinxAcousticModelTrainer);
     QStringList unknownWords;
 
@@ -191,7 +195,7 @@ void BroadClassAligner::prepareBPCTrainingFromCommunications(QPointer<Corpus> co
 //    BPCA.buildDictionary("/home/george/broad-align/etc/original-french-62k.dic",
 //                         "/home/george/broad-align/etc/broad.dic");
 
-    prepareTiers(corpus, communications);
+    prepareTiers(communications);
 
     d->dictionary.writeToFile(outputPath + "/broad.dic");
 
@@ -199,7 +203,7 @@ void BroadClassAligner::prepareBPCTrainingFromCommunications(QPointer<Corpus> co
     trainer->setTierTokens("cid_syll", "broad_phonetic_class");
     trainer->setOutputPath(outputPath);
     trainer->setPronunciationDictionary(&(d->dictionary));
-    trainer->createFiles(corpus, communications, unknownWords, true, false);
+    trainer->createFiles(communications, unknownWords, true, false);
 }
 
 

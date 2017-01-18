@@ -2,7 +2,7 @@
 #define VALIBELPROCESSOR_H
 
 #include <QString>
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusCommunication.h"
 using namespace Praaline::Core;
 
 class ValibelProcessor
@@ -12,10 +12,10 @@ public:
     ~ValibelProcessor();
 
     static void importValibelFile(Corpus *corpus, const QString &filename);
-    static void tokenise(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+    static void tokenise(const QList<QPointer<CorpusCommunication> > &communications);
     static QList<QString> splitToken(QString input);
-    static void tokmin_punctuation(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
-    static void pauses(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+    static void tokmin_punctuation(const QList<QPointer<CorpusCommunication> > &communications);
+    static void pauses(const QList<QPointer<CorpusCommunication> > &communications);
 
 private:
     static void mergeInsideParentheses(QString &input);

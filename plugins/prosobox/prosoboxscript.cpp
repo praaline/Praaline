@@ -1,6 +1,8 @@
 #include <QTemporaryDir>
 #include <QFileInfo>
 #include "prosoboxscript.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 ProsoboxScript::ProsoboxScript(QObject *parent) : AnnotationPluginPraatScript(parent)
@@ -13,7 +15,7 @@ ProsoboxScript::~ProsoboxScript()
 
 void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annotationID, QString speakerID)
 {
-    AnnotationTierGroup *tiers = corpus->datastoreAnnotations()->getTiers(annotationID, speakerID);
+    AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(annotationID, speakerID);
     if (!tiers) return;
     AnnotationTierGroup *txg = new AnnotationTierGroup();
     IntervalTier *tier_phone = tiers->getIntervalTierByName("phone");
@@ -49,7 +51,7 @@ void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annota
         if (!tier) continue;
         tier->fixBoundariesBasedOnTier(tier_phone);
     }
-    IntervalTier *tier_timeline = corpus->datastoreAnnotations()->getSpeakerTimeline("", annotationID, "segment");
+    IntervalTier *tier_timeline = corpus->repository()->annotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
         tier_timeline->replaceTextLabels(speakerID, "L1");
         tier_timeline->replaceTextLabels("L1+L2", "L1");
@@ -97,7 +99,7 @@ void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, QPointer
     if (!tempDirectory.endsWith("/")) tempDirectory.append("/");
     // Copy the recording file into temp+.wav
     QString filenameTempRec = QString("%1_%2.wav").arg(annotationID).arg(speakerID);
-    QFile::copy(corpus->baseMediaPath() + rec->filename(), tempDirectory + filenameTempRec);
+    QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
     // Copy a textgrid with the needed information into temp+.textgrid
     createTextGrid(tempDirectory, corpus, annotationID, speakerID);
     QString filenameTempAnnot = QString("%1_%2.TextGrid").arg(annotationID).arg(speakerID);

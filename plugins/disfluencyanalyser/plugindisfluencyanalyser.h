@@ -34,39 +34,39 @@ namespace Praaline {
                 ~PluginDisfluencyAnalyser();
 
                 // IObjectBase implementation
-                QObject* objectBase() { return this; }
-                const QObject* objectBase() const { return this; }
+                QObject* objectBase() override { return this; }
+                const QObject* objectBase() const override { return this; }
 
                 // IPlugin implementation
-                bool initialize(const QStringList &arguments, QStringList *error_strings);
-                bool initializeDependencies(QStringList *error_strings);
-                void finalize();
-                QString pluginName() const;
-                QtilitiesCategory pluginCategory() const;
-                VersionInformation pluginVersionInformation() const;
-                QString pluginPublisher() const;
-                QString pluginPublisherWebsite() const;
-                QString pluginPublisherContact() const;
-                QString pluginDescription() const;
-                QString pluginCopyright() const;
-                QString pluginLicense() const;
+                bool initialize(const QStringList &arguments, QStringList *error_strings) override;
+                bool initializeDependencies(QStringList *error_strings) override;
+                void finalize() override;
+                QString pluginName() const override;
+                QtilitiesCategory pluginCategory() const override;
+                VersionInformation pluginVersionInformation() const override;
+                QString pluginPublisher() const override;
+                QString pluginPublisherWebsite() const override;
+                QString pluginPublisherContact() const override;
+                QString pluginDescription() const override;
+                QString pluginCopyright() const override;
+                QString pluginLicense() const override;
 
                 // IAnnotationPlugin implementation
-                QList<PluginParameter> pluginParameters() const;
-                void setParameters(QHash<QString, QVariant> parameters);
-                void process(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                QList<PluginParameter> pluginParameters() const override;
+                void setParameters(const QHash<QString, QVariant> &parameters) override;
+                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
 
             signals:
-                void printMessage(QString message);
+                void printMessage(const QString &message);
                 void madeProgress(int progress);
 
             private:
                 PluginDisfluencyAnalyserPrivateData* d;
 
-                void concordances(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
-                void patterns(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications, const QStringList &codes);
-                void createSequences(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
-                void exportMultiTierTextgrids(Corpus *corpus, QList<QPointer<CorpusCommunication> > communications);
+                void concordances(const QList<QPointer<CorpusCommunication> > &communications);
+                void patterns(const QList<QPointer<CorpusCommunication> > &communications, const QStringList &codes);
+                void createSequences(const QList<QPointer<CorpusCommunication> > &communications);
+                void exportMultiTierTextgrids(const QList<QPointer<CorpusCommunication> > &communications);
             };
         }
     }

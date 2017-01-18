@@ -21,6 +21,8 @@
 #include "pncore/corpus/CorpusObject.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/CorpusCommunicationTableModel.h"
@@ -30,15 +32,15 @@ using namespace Praaline::Core;
 #include "pngui/widgets/SelectionListDataProviderProxy.h"
 #include "pngui/widgets/GridViewWidget.h"
 
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 
 struct CorpusExplorerTableWidgetData
 {
     CorpusExplorerTableWidgetData() :
-        corporaManager(0), corpuObjectType(CorpusObject::Type_Communication), model(0)
+        corpusRepositoryManager(0), corpuObjectType(CorpusObject::Type_Communication), model(0)
     {}
 
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoryManager;
     CorpusObject::Type corpuObjectType;
     QAbstractTableModel *model;
 
@@ -51,14 +53,14 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Get Corpora Manager from global object list
+    // Get Corpus Repositories Manager from global object list
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoryManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoryManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
     // Add grid
     d->tableView = new GridViewWidget(this);
     ui->gridLayoutTable->addWidget(d->tableView);
@@ -95,56 +97,56 @@ void CorpusExplorerTableWidget::corpusObjectTypeChanged(const QString &text)
 
 void CorpusExplorerTableWidget::refreshModel()
 {
-    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-    if (!corpus) {
-        d->tableView->tableView()->setModel(0);
-        if (d->model) delete d->model;
-        d->model = 0;
-        return;
-    }
-    // otherwise, another corpus has been selected
-    QAbstractTableModel *newModel = 0;
-    if (d->corpuObjectType == CorpusObject::Type_Communication) {
-        newModel = new CorpusCommunicationTableModel(corpus->communicationsList(),
-                                                     corpus->metadataStructure()->attributes(CorpusObject::Type_Communication),
-                                                     corpus, true, this);
-    }
-    else if (d->corpuObjectType == CorpusObject::Type_Speaker) {
-        newModel = new CorpusSpeakerTableModel(corpus->speakersList(),
-                                               corpus->metadataStructure()->attributes(CorpusObject::Type_Speaker),
-                                               corpus, true, this);
-    }
-    else if (d->corpuObjectType == CorpusObject::Type_Recording) {
-        newModel = new CorpusRecordingTableModel(corpus->recordingsList(),
-                                                 corpus->metadataStructure()->attributes(CorpusObject::Type_Recording),
-                                                 true, this);
-    }
-    else if (d->corpuObjectType == CorpusObject::Type_Annotation) {
-        newModel = new CorpusAnnotationTableModel(corpus->annotationsList(),
-                                                  corpus->metadataStructure()->attributes(CorpusObject::Type_Annotation),
-                                                  true, this);
-    }
-    // try to update model, if not possible show an empty table
-    if (newModel) {
-        d->tableView->tableView()->setModel(newModel);
-        d->tableView->tableView()->horizontalHeader()->setSectionsClickable(true);
-        d->tableView->tableView()->setDefaultFilterType(0, QTextFilter::Type);
-        connect(d->tableView->tableView()->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
-                this, SLOT(resultChanged(int,int)));
-        connect(d->tableView->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
-                this, SLOT(selectionChanged(QItemSelection, QItemSelection)));
+//    QPointer<Corpus> corpus = d->corpusRepositoryManager->activeCorpus();
+//    if (!corpus) {
+//        d->tableView->tableView()->setModel(0);
+//        if (d->model) delete d->model;
+//        d->model = 0;
+//        return;
+//    }
+//    // otherwise, another corpus has been selected
+//    QAbstractTableModel *newModel = 0;
+//    if (d->corpuObjectType == CorpusObject::Type_Communication) {
+//        newModel = new CorpusCommunicationTableModel(corpus->communicationsList(),
+//                                                     corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication),
+//                                                     corpus, true, this);
+//    }
+//    else if (d->corpuObjectType == CorpusObject::Type_Speaker) {
+//        newModel = new CorpusSpeakerTableModel(corpus->speakersList(),
+//                                               corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Speaker),
+//                                               corpus, true, this);
+//    }
+//    else if (d->corpuObjectType == CorpusObject::Type_Recording) {
+//        newModel = new CorpusRecordingTableModel(corpus->recordingsList(),
+//                                                 corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Recording),
+//                                                 true, this);
+//    }
+//    else if (d->corpuObjectType == CorpusObject::Type_Annotation) {
+//        newModel = new CorpusAnnotationTableModel(corpus->annotationsList(),
+//                                                  corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Annotation),
+//                                                  true, this);
+//    }
+//    // try to update model, if not possible show an empty table
+//    if (newModel) {
+//        d->tableView->tableView()->setModel(newModel);
+//        d->tableView->tableView()->horizontalHeader()->setSectionsClickable(true);
+//        d->tableView->tableView()->setDefaultFilterType(0, QTextFilter::Type);
+//        connect(d->tableView->tableView()->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
+//                this, SLOT(resultChanged(int,int)));
+//        connect(d->tableView->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
+//                this, SLOT(selectionChanged(QItemSelection, QItemSelection)));
 
-        if (d->model) delete d->model;
-        d->model = newModel;
-    }
-    else {
-        d->tableView->tableView()->setModel(0);
-        if (d->model) delete d->model;
-        d->model = 0;
-    }
+//        if (d->model) delete d->model;
+//        d->model = newModel;
+//    }
+//    else {
+//        d->tableView->tableView()->setModel(0);
+//        if (d->model) delete d->model;
+//        d->model = 0;
+//    }
 }
 
-void CorpusExplorerTableWidget::activeCorpusChanged(const QString &newActiveCorpusID)
+void CorpusExplorerTableWidget::activeCorpusRepositoryChanged(const QString &newActiveCorpusID)
 {
     Q_UNUSED(newActiveCorpusID);
     refreshModel();

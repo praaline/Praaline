@@ -19,14 +19,14 @@
 #include "grid/qvaluefilter.h"
 
 #include "pngui/widgets/GridViewWidget.h"
-#include "CorporaManager.h"
+#include "CorpusRepositoriesManager.h"
 #include "sql/SqlTextEdit.h"
 
 struct AdvancedQueriesWidgetData {
-    AdvancedQueriesWidgetData() : corporaManager(0), model(0)
+    AdvancedQueriesWidgetData() : corpusRepositoriesManager(0), model(0)
     {}
 
-    CorporaManager *corporaManager;
+    CorpusRepositoriesManager *corpusRepositoriesManager;
     QAbstractTableModel *model;
 
     SqlTextEdit *sqlEditor;
@@ -39,14 +39,15 @@ AdvancedQueriesWidget::AdvancedQueriesWidget(QWidget *parent) :
     d(new AdvancedQueriesWidgetData)
 {
     ui->setupUi(this);
-    // Get Corpora Manager from global object list
+    // Get Corpus Repositories Manager from global object list
     QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorporaManager");
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
-        CorporaManager *manager = qobject_cast<CorporaManager *>(obj);
-        if (manager) d->corporaManager = manager;
+        CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
+        if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)),
+            this, SLOT(activeCorpusRepositoryChanged(QString)));
     // Add results grid
     d->tableView = new GridViewWidget(this);
     ui->gridLayoutTable->addWidget(d->tableView);
@@ -62,7 +63,7 @@ AdvancedQueriesWidget::~AdvancedQueriesWidget()
     delete d;
 }
 
-void AdvancedQueriesWidget::activeCorpusChanged(const QString &newActiveCorpusID)
+void AdvancedQueriesWidget::activeCorpusRepositoryChanged(const QString &newActiveCorpusRepositoryID)
 {
 
 }

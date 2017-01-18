@@ -226,7 +226,7 @@ void Praaline::Plugins::Aligner::PluginAligner::futureFinished()
 
 struct LSAStep
 {
-    LSAStep(QPointer<Corpus> corpus) : m_corpus(corpus) { }
+    LSAStep() { }
     typedef QString result_type;
 
     QString operator() (const QPointer<CorpusCommunication> &com)
@@ -239,8 +239,9 @@ struct LSAStep
             return QString("%1\tNo Recordings").arg(com->ID());
         }
         //com->setProperty("language_model", QString("valibel_lm/%1.lm.dmp").arg(com->ID()));
+        LSA->createRecognitionLevel(com->repository(), 0);
         timer.start();
-        LSA->recognise(m_corpus, com, 0);
+        LSA->recognise(com, 0);
         double secRecognitionTime = timer.elapsed() / 1000.0;
         double secRecording = com->recordings().first()->durationSec();
         return QString("%1\tDuration:\t%2\tRecognition:\t%3\tRatio:\t%4\txRT").
@@ -248,8 +249,6 @@ struct LSAStep
                 arg(secRecognitionTime / ((secRecording > 300.0) ? 300.0 : secRecording));
         // For testing: return QString("%1 %2 %3").arg(com->ID()).arg(com->recordingsCount()).arg(timer.elapsed());
     }
-
-    QPointer<Corpus> m_corpus;
 };
 
 struct DownsampleWaveFileStep
@@ -414,8 +413,6 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
     }
 
     if (d->commandLongSoundAligner) {
-        QPointer<LongSoundAligner> LSA = new LongSoundAligner();
-        LSA->createRecognitionLevel(0);
         d->future = QtConcurrent::mapped(communications, LSAStep());
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();

@@ -26,7 +26,7 @@ public:
     ~MetadataStructureEditor();
 
 private slots:
-    void activeCorpusChanged(const QString &newActiveCorpusID);
+    void activeCorpusRepositoryChanged(const QString &repositoryID);
 
     void addMetadataStructureSection();
     void addMetadataStructureAttribute();
