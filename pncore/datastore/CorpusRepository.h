@@ -47,6 +47,8 @@ public:
     QString description() const;
     void setDescription(const QString &description);
 
+    CorpusRepositoryDefinition definition() const;
+
     // Datastores
     // ==========================================================================================================================
     QPointer<AnnotationDatastore> annotations() const;

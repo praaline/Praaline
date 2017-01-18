@@ -26,6 +26,7 @@ struct CorpusRepositoryData {
     QPointer<MetadataDatastore> datastoreMetadata;
     QPointer<AnnotationDatastore> datastoreAnnotations;
     QPointer<FileDatastore> datastoreFiles;
+    CorpusRepositoryDefinition definition;
 };
 
 CorpusRepository::CorpusRepository(const CorpusRepositoryDefinition &definition, QObject *parent) :
@@ -36,6 +37,7 @@ CorpusRepository::CorpusRepository(const CorpusRepositoryDefinition &definition,
     d->datastoreAnnotations = DatastoreFactory::getAnnotationDatastore(definition.infoDatastoreAnnotations, d->annotationStructure, this);
     d->datastoreMetadata = DatastoreFactory::getMetadataDatastore(definition.infoDatastoreMetadata, d->metadataStructure, this);
     d->datastoreFiles = new FileDatastore(this);
+    d->definition = definition;
 }
 
 CorpusRepository::~CorpusRepository()
@@ -138,6 +140,11 @@ QString CorpusRepository::description() const
 void CorpusRepository::setDescription(const QString &description)
 {
     d->repositoryDescription = description;
+}
+
+CorpusRepositoryDefinition CorpusRepository::definition() const
+{
+    return d->definition;
 }
 
 // ==============================================================================================================================

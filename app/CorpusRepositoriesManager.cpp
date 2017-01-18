@@ -1,4 +1,5 @@
 #include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"
@@ -76,3 +77,11 @@ CorpusObserver *CorpusRepositoriesManager::activeCorpusObserver()
     return Q_NULLPTR;
 }
 
+bool CorpusRepositoriesManager::isAlreadyOpen(const QString &filenameDefinition)
+{
+    foreach (QPointer<CorpusRepository> repository, m_repositories.values()) {
+        if (repository->definition().filenameDefinition == filenameDefinition)
+            return true;
+    }
+    return false;
+}

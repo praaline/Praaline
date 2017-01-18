@@ -234,113 +234,63 @@ void CorpusModeWidget::newCorpusRepository()
 
 void CorpusModeWidget::openCorpusRepository()
 {
-//    QFileDialog::Options options;
-//    QString selectedFilter;
-//    QString filename = QFileDialog::getOpenFileName(this, tr("Open Corpus"), "",
-//                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"),
-//                                                    &selectedFilter, options);
-//    if (filename.isEmpty()) return;
-//    openCorpusFile(filename);
+    QFileDialog::Options options;
+    QString selectedFilter;
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open Corpus"), "",
+                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"),
+                                                    &selectedFilter, options);
+    if (filename.isEmpty()) return;
+    openCorpusRepositoryFromDefinition(filename);
 }
 
 void CorpusModeWidget::openCorpusRepositoryRecent()
 {
-//    QObject *obj = sender();
-//    QAction *action = dynamic_cast<QAction *>(obj);
-//    if (!action) {
-//        qDebug() << "WARNING: openRecentFile: sender is not an action" << endl;
-//        return;
-//    }
-//    QString filename = action->text();
-//    if (filename.isEmpty()) return;
-//    openCorpusFile(filename);
+    QObject *obj = sender();
+    QAction *action = dynamic_cast<QAction *>(obj);
+    if (!action) {
+        qDebug() << "WARNING: openRecentFile: sender is not an action" << endl;
+        return;
+    }
+    QString filename = action->text();
+    if (filename.isEmpty()) return;
+    openCorpusRepositoryFromDefinition(filename);
 }
 
-CorpusRepository *CorpusModeWidget::openCorpusRepository(const QString &filename, CorpusRepositoryDefinition &definition)
+void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filename)
 {
-
+    // Check whether the corpus is already open
+    if (d->corpusRepositoriesManager->isAlreadyOpen(filename)) {
+        QMessageBox::warning(this, tr("Corpus already open"),
+                             QString(tr("This corpus (%1) is already open.")).arg(filename), QMessageBox::Ok);
+        return;
+    }
+    // Open the corpus definition
+    CorpusRepositoryDefinition definition;
+    if (!definition.load(filename)) {
+        QMessageBox::warning(this, tr("Cannot open corpus"),
+                             QString(tr("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?")).arg(filename),
+                             QMessageBox::Ok);
+    }
+    // Ask for password, if needed
+    QString password;
+    if (definition.infoDatastoreMetadata.usePassword == true || definition.infoDatastoreAnnotations.usePassword) {
+        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus"),
+                                         QLineEdit::Password);
+        if (definition.infoDatastoreMetadata.usePassword)    definition.infoDatastoreMetadata.password = password;
+        if (definition.infoDatastoreAnnotations.usePassword) definition.infoDatastoreAnnotations.password = password;
+    }
+    // Attempt to open corpus repository
+    QString errorMessages;
+    CorpusRepository *repository = CorpusRepository::open(definition, errorMessages);
+    if ((!errorMessages.isEmpty()) || (!repository)) {
+        QMessageBox::warning(this, tr("Error opening corpus repository.\n%1"), errorMessages, QMessageBox::Ok);
+        return;
+    }
+    // Corpus repository opened succesfully. Register corpus with the Corpus Manager and global object pool.
+    d->corpusRepositoriesManager->addCorpusRepository(repository);
+    d->corpusRepositoriesManager->setActiveCorpusRepository(repository->ID());
+    d->recentFiles->addFile(filename);
 }
-
-
-//Corpus *CorpusModeWidget::openCorpus(const QString &filename, CorpusDefinition &definition)
-//{
-//    // Open the corpus definition
-//    if (!definition.load(filename)) {
-//        QMessageBox::warning(this, tr("Cannot open corpus"),
-//                             QString(tr("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?")).arg(filename),
-//                             QMessageBox::Ok);
-//        return 0;
-//    }
-//    // Ask for password, if needed
-//    QString password;
-//    if (definition.datastoreMetadata.usePassword == true || definition.datastoreAnnotations.usePassword) {
-//        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus"),
-//                                         QLineEdit::Password);
-//        if (definition.datastoreMetadata.usePassword) definition.datastoreMetadata.password = password;
-//        if (definition.datastoreAnnotations.usePassword) definition.datastoreAnnotations.password = password;
-//    }
-//    // Attempt to open corpus
-//    QString errorMessages;
-//    Corpus *corpus = Corpus::open(definition, errorMessages);
-//    if (!errorMessages.isEmpty()) {
-//        QMessageBox::warning(this, tr("Error opening corpus"), errorMessages, QMessageBox::Ok);
-//        return 0;
-//    }
-//    return corpus;
-//}
-
-//void CorpusModeWidget::openCorpusFile(const QString &filename)
-//{
-//    // Check whether the corpus is already open
-//    QList<QObject *> listCorpora;
-//    listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
-//    int countCorpora = 0;
-//    foreach (QObject* obj, listCorpora) {
-//        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
-//        if (obs) {
-//            countCorpora++;
-//            if (obs->definition().filenameDefinition == filename) {
-//                QMessageBox::warning(this, tr("Corpus already open"),
-//                                     QString(tr("This corpus (%1) is already open.")).arg(filename), QMessageBox::Ok);
-//                return;
-//            }
-//        }
-//    }
-//    // Attempt to open corpus
-//    CorpusDefinition definition;
-//    Corpus *corpus = openCorpus(filename, definition);
-//    if (!corpus) return;
-//    // Register corpus with the Corpus Manager and global object pool
-//    CorpusObserver *cobs = new CorpusObserver(corpus);
-//    cobs->setDefinition(definition);
-//    OBJECT_MANAGER->registerObject(cobs, QtilitiesCategory("Corpus"));
-//    d->corporaTopLevelNode->addNode(cobs->nodeCorpus());
-//    d->corporaManager->addCorpus(corpus);
-//    d->corporaManager->setActiveCorpus(corpus->ID());
-//    //cobs->setCommunicationsGrouping(QStringList() << "type");
-//    d->recentFiles->addFile(filename);
-//}
-
-//void CorpusModeWidget::openCorpusDbConnection()
-//{
-//    QPointer<CorpusDatabaseConnectionDialog> dialog = new CorpusDatabaseConnectionDialog(this);
-//    dialog->exec();
-//    CorpusDefinition definition = dialog->corpusDefinition();
-//    QString errorMessages;
-//    Corpus *corpus = Corpus::open(definition, errorMessages);
-//    if (!errorMessages.isEmpty()) {
-//        QMessageBox::warning(this, tr("Error opening corpus"), errorMessages, QMessageBox::Ok);
-//        return;
-//    }
-//    if (!corpus) return;
-//    // Register corpus with the Corpus Manager and global object pool
-//    CorpusObserver *cobs = new CorpusObserver(corpus);
-//    cobs->setDefinition(definition);
-//    OBJECT_MANAGER->registerObject(cobs, QtilitiesCategory("Corpus"));
-//    d->corporaTopLevelNode->addNode(cobs->nodeCorpus());
-//    d->corporaManager->addCorpus(corpus);
-//    d->corporaManager->setActiveCorpus(corpus->ID());
-//}
 
 void CorpusModeWidget::closeCorpusRepository()
 {

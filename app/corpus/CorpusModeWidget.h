@@ -43,6 +43,7 @@ private:
     void setupActions();
     void setupRecentFilesMenu();
 
+    void openCorpusRepositoryFromDefinition(const QString &filename);
     Praaline::Core::CorpusRepository *openCorpusRepository(const QString &filename, Praaline::Core::CorpusRepositoryDefinition &definition);
     void activateNextCorpusRepository();
 };

@@ -32,6 +32,8 @@ public:
 
     CorpusObserver *activeCorpusObserver();
 
+    bool isAlreadyOpen(const QString &filenameDefinition);
+
 signals:
     void corpusRepositoryAdded(const QString &repositoryID);
     void corpusRepositoryRemoved(const QString &repositoryID);
