@@ -33,8 +33,7 @@ public:
 
     virtual QString getFeatureDescription(View *v, QPoint &) const;
 
-    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame,
-                                    int &resolution, SnapType snap) const;
+    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const;
 
     virtual void drawStart(View *v, QMouseEvent *);
     virtual void drawDrag(View *v, QMouseEvent *);
@@ -92,7 +91,7 @@ protected:
 
     virtual int getDefaultColourHint(bool dark, bool &impose);
 
-    // AnnotationGridModel::PointList getLocalPoints(View *v, int x, int y) const;
+    AnnotationGridPointModel::PointList getLocalPoints(View *v, int x, int y) const;
 
     // bool getPointToDrag(View *v, int x, int y, AnnotationGridModel::Point &) const;
 

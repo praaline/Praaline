@@ -234,19 +234,16 @@ TextLayer::getFeatureDescription(View *v, QPoint &pos) const
 //!!! too much overlap with TimeValueLayer/TimeInstantLayer
 
 bool
-TextLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-                              int &resolution,
-                              SnapType snap) const
+TextLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-        return Layer::snapToFeatureFrame(v, frame, resolution, snap);
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
     }
 
     resolution = m_model->getResolution();
     TextModel::PointList points;
 
     if (snap == SnapNeighbouring) {
-
         points = getLocalPoints(v, v->getXForFrame(frame), -1);
         if (points.empty()) return false;
         frame = points.begin()->frame;
@@ -257,39 +254,28 @@ TextLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
     sv_frame_t snapped = frame;
     bool found = false;
 
-    for (TextModel::PointList::const_iterator i = points.begin();
-         i != points.end(); ++i) {
-
+    for (TextModel::PointList::const_iterator i = points.begin(); i != points.end(); ++i) {
         if (snap == SnapRight) {
-
             if (i->frame > frame) {
                 snapped = i->frame;
                 found = true;
                 break;
             }
-
         } else if (snap == SnapLeft) {
-
             if (i->frame <= frame) {
                 snapped = i->frame;
                 found = true; // don't break, as the next may be better
             } else {
                 break;
             }
-
         } else { // nearest
-
             TextModel::PointList::const_iterator j = i;
             ++j;
-
             if (j == points.end()) {
-
                 snapped = i->frame;
                 found = true;
                 break;
-
             } else if (j->frame >= frame) {
-
                 if (j->frame - frame < frame - i->frame) {
                     snapped = j->frame;
                 } else {
@@ -363,8 +349,7 @@ TextLayer::paint(View *v, QPainter &paint, QRect rect) const
     paint.save();
     paint.setClipRect(rect.x(), 0, rect.width() + boxMaxWidth, v->height());
     
-    for (TextModel::PointList::const_iterator i = points.begin();
-         i != points.end(); ++i) {
+    for (TextModel::PointList::const_iterator i = points.begin(); i != points.end(); ++i) {
 
         const TextModel::Point &p(*i);
 

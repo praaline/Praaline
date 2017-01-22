@@ -7,13 +7,16 @@ namespace Praaline {
 namespace Core {
 
 CorpusParticipation::CorpusParticipation(QPointer<CorpusCommunication> com, QPointer<CorpusSpeaker> spk,
-                                         QString role, QObject *parent)
-    : CorpusObject(parent), m_communication(com), m_speaker(spk), m_role(role)
+                                         QString role, QObject *parent) :
+    CorpusObject(0, parent), m_communication(com), m_speaker(spk), m_role(role)
 {
-    if (com && spk)
+    if (com && spk) {
         m_ID = QString("%1_x_%2").arg(m_communication->ID()).arg(m_speaker->ID());
-    else
+        m_repository = com->repository();
+    }
+    else {
         m_ID = "(deleted)";
+    }
 }
 
 void CorpusParticipation::copyProperties(CorpusParticipation *other)

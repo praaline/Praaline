@@ -62,6 +62,10 @@ namespace Praaline {
 
             private:
                 PluginPromisePrivateData* d;
+
+                void runSpeechRateEstimator(const QList<QPointer<CorpusCommunication> > &communications);
+                void runSyllableProminenceAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
+                void runProsodicBoundariesAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
             };
         }
     }

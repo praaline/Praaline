@@ -175,7 +175,6 @@ HEADERS += \
     model/diff/DiffSESForIntervalsTableModel.h \
     model/query/QueryDefinitionTreeModel.h \
     model/query/QueryFilterSequenceTableModel.h \
-    model/corpus/CorporaTableModel.h \
     widgets/MediaPlayerControls.h \
     widgets/MediaPlayerVideoWidget.h \
     widgets/MiniTranscriptionWidget.h \
@@ -211,7 +210,8 @@ HEADERS += \
     nodeeditor/QStringStdHash.h \
     nodeeditor/Serializable.h \
     nodeeditor/Style.h \
-    nodeeditor/StyleCollection.h
+    nodeeditor/StyleCollection.h \
+    model/corpus/CorpusTableModel.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -318,7 +318,6 @@ SOURCES += \
     model/diff/DiffSESForIntervalsTableModel.cpp \
     model/query/QueryFilterSequenceTableModel.cpp \
     model/query/QueryDefinitionTreeModel.cpp \
-    model/corpus/CorporaTableModel.cpp \
     widgets/MediaPlayerControls.cpp \
     widgets/MediaPlayerVideoWidget.cpp \
     widgets/MiniTranscriptionWidget.cpp \
@@ -345,7 +344,8 @@ SOURCES += \
     nodeeditor/NodeState.cpp \
     nodeeditor/NodeStyle.cpp \
     nodeeditor/Properties.cpp \
-    nodeeditor/StyleCollection.cpp
+    nodeeditor/StyleCollection.cpp \
+    model/corpus/CorpusTableModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

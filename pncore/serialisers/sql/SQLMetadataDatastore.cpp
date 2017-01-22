@@ -149,38 +149,44 @@ bool SQLMetadataDatastore::deleteNameValueList(const QString &listID)
 // ==========================================================================================================================
 // Corpus object info lists
 // ==========================================================================================================================
-QList<CorpusObjectInfo> SQLMetadataDatastore::getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID)
+QList<CorpusObjectInfo> SQLMetadataDatastore::getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection)
 {
-    return SQLSerialiserMetadata::getCorpusObjectInfoList(type, parentID, d->database, this);
+    return SQLSerialiserMetadata::getCorpusObjectInfoList(type, selection, d->database, d->structure, this);
 }
 
 // ==========================================================================================================================
 // Corpus
 // ==========================================================================================================================
-// Load metadata information in already created corpus objects
-bool SQLMetadataDatastore::loadCorpus(Corpus *corpus)
+// Load metadata information
+Corpus *SQLMetadataDatastore::getCorpus(const QString &corpusID)
 {
-    return SQLSerialiserMetadata::loadCorpus(corpus, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getCorpus(corpusID, d->database, d->structure, this);
 }
 
-bool SQLMetadataDatastore::loadCommunications(QList<QPointer<CorpusCommunication> > &communications)
+QList<QPointer<CorpusCommunication> > SQLMetadataDatastore::getCommunications(const Selection &selection)
 {
-    return SQLSerialiserMetadata::loadCommunications(communications, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getCommunications(selection, d->database, d->structure, this);
 }
 
-bool SQLMetadataDatastore::loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers)
+QList<QPointer<CorpusSpeaker> > SQLMetadataDatastore::getSpeakers(const Selection &selection)
 {
-    return SQLSerialiserMetadata::loadSpeakers(speakers, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getSpeakers(selection, d->database, d->structure, this);
 }
 
-bool SQLMetadataDatastore::loadRecordings(QList<QPointer<CorpusRecording> > &recordings)
+QList<QPointer<CorpusRecording> > SQLMetadataDatastore::getRecordings(const Selection &selection)
 {
-    return SQLSerialiserMetadata::loadRecordings(recordings, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getRecordings(selection, d->database, d->structure, this);
 }
 
-bool SQLMetadataDatastore::loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations)
+QList<QPointer<CorpusAnnotation> > SQLMetadataDatastore::getAnnotations(const Selection &selection)
 {
-    return SQLSerialiserMetadata::loadAnnotations(annotations, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getAnnotations(selection, d->database, d->structure, this);
+}
+
+QList<QPointer<CorpusParticipation> > SQLMetadataDatastore::getParticipations(const Selection &selection)
+{
+    QList<QPointer<CorpusParticipation> > ret;
+    return ret; //SQLSerialiserMetadata::getParticipations(selection, d->database, d->structure, this);
 }
 
 // Save (insert or update) corpus objects
@@ -204,7 +210,7 @@ bool SQLMetadataDatastore::saveSpeakers(QList<QPointer<CorpusSpeaker> > &speaker
     bool success = true;
     foreach (QPointer<CorpusSpeaker> spk, speakers) {
         if (!spk) continue;
-        success = success && SQLSerialiserMetadata::saveSpeakers(spk, d->database, d->structure, this);
+        success = success && SQLSerialiserMetadata::saveSpeaker(spk, d->database, d->structure, this);
     }
     return success;
 }
@@ -214,7 +220,7 @@ bool SQLMetadataDatastore::saveRecordings(QList<QPointer<CorpusRecording> > &rec
     bool success = true;
     foreach (QPointer<CorpusRecording> rec, recordings) {
         if (!rec) continue;
-        success = success && SQLSerialiserMetadata::saveRecordings(rec, d->database, d->structure, this);
+        success = success && SQLSerialiserMetadata::saveRecording(rec, d->database, d->structure, this);
     }
     return success;
 }
@@ -224,7 +230,7 @@ bool SQLMetadataDatastore::saveAnnotations(QList<QPointer<CorpusAnnotation> >  &
     bool success = true;
     foreach (QPointer<CorpusAnnotation> annot, annotations) {
         if (!annot) continue;
-        success = success && SQLSerialiserMetadata::saveAnnotations(annot, d->database, d->structure, this);
+        success = success && SQLSerialiserMetadata::saveAnnotation(annot, d->database, d->structure, this);
     }
     return success;
 }
@@ -234,7 +240,7 @@ bool SQLMetadataDatastore::saveParticipations(QList<QPointer<CorpusParticipation
     bool success = true;
     foreach (QPointer<CorpusParticipation> part, participations) {
         if (!part) continue;
-        success = success && SQLSerialiserMetadata::saveParticipations(part, d->database, d->structure, this);
+        success = success && SQLSerialiserMetadata::saveParticipation(part, d->database, d->structure, this);
     }
     return success;
 }
@@ -242,32 +248,32 @@ bool SQLMetadataDatastore::saveParticipations(QList<QPointer<CorpusParticipation
 // Delete corpus objects
 bool SQLMetadataDatastore::deleteCorpus(const QString &corpusID)
 {
-    return SQLSerialiserMetadata::deleteCorpus(corpusID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteCorpus(corpusID, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::deleteCommunication(const QString &communicationID)
 {
-    return SQLSerialiserMetadata::deleteCommunication(communicationID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteCommunication(communicationID, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::deleteSpeaker(const QString &speakerID)
 {
-    return SQLSerialiserMetadata::deleteSpeaker(speakerID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteSpeaker(speakerID, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::deleteRecording(const QString &recordingID)
 {
-    return SQLSerialiserMetadata::deleteRecording(recordingID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteRecording(recordingID, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::deleteAnnotation(const QString &annotationID)
 {
-    return SQLSerialiserMetadata::deleteAnnotation(annotationID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteAnnotation(annotationID, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::deleteParticipation(const QString &communicationID, const QString &speakerID)
 {
-    return SQLSerialiserMetadata::deleteParticipation(communicationID, speakerID, d->database, d->structure, d->repository);
+    return SQLSerialiserMetadata::deleteParticipation(communicationID, speakerID, d->database, d->structure, this);
 }
 
 } // namespace Core

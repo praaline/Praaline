@@ -33,7 +33,7 @@ public:
 
     virtual QString getFeatureDescription(View *v, QPoint &) const;
 
-    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap) const;
+    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const;
 
     virtual PropertyList getProperties() const;
     virtual QString getPropertyLabel(const PropertyName &) const;
@@ -55,7 +55,7 @@ public:
                        QString extraAttributes = "") const;
 
 
-    /// VerticalScaleLayer methods
+    // VerticalScaleLayer methods
     virtual int getYForValue(View *, double value) const;
     virtual double getValueForY(View *, int y) const;
     virtual QString getScaleUnits() const;
@@ -64,7 +64,7 @@ protected:
     void getScaleExtents(View *, double &min, double &max, bool &log) const;
     virtual int getDefaultColourHint(bool dark, bool &impose);
 
-    // ProsogramModel::PointList getLocalPoints(View *v, int x, int y) const;
+    ProsogramTonalSegmentModel::PointList getLocalTonalSegments(View *v, int x) const;
     void paintAnnotationTier(View *v, QPainter &paint, sv_frame_t frame0, sv_frame_t frame1,
                              int tier_y0, int tier_y1, Qt::PenStyle verticalLinePenstyle,
                              QPointer<AnnotationGridPointModel> model) const;

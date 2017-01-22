@@ -55,18 +55,20 @@ PRE_TARGETDEPS += \
 
 HEADERS += \ 
     pluginpromise_global.h \
-    pluginpromise.h \ 
     annotationpluginpraatscript.h \
     pluginprosobox5.h \
     attributenametranslation.h \
     ProsodicBoundariesAnnotator.h \
-    SyllableProminenceAnnotator.h
+    SyllableProminenceAnnotator.h \
+    SpeechRateEstimator.h \
+    PluginPromise.h
 	
 SOURCES += \ 
-    pluginpromise.cpp \ 
     annotationpluginpraatscript.cpp \
     pluginprosobox5.cpp \
     attributenametranslation.cpp \
     ProsodicBoundariesAnnotator.cpp \
-    SyllableProminenceAnnotator.cpp
+    SyllableProminenceAnnotator.cpp \
+    SpeechRateEstimator.cpp \
+    PluginPromise.cpp
 	

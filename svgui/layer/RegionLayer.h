@@ -54,12 +54,8 @@ public:
     virtual QString getFeatureDescription(View *v, QPoint &) const;
     virtual QString getLabelPreceding(sv_frame_t) const;
 
-    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame,
-				    int &resolution,
-				    SnapType snap) const;
-    virtual bool snapToSimilarFeature(View *v, sv_frame_t &frame,
-                                      int &resolution,
-                                      SnapType snap) const;
+    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y = 0) const;
+    virtual bool snapToSimilarFeature(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y = 0) const;
 
     virtual void drawStart(View *v, QMouseEvent *);
     virtual void drawDrag(View *v, QMouseEvent *);

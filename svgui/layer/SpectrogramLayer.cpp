@@ -2970,10 +2970,7 @@ SpectrogramLayer::getYScaleValue(const View *v, int y,
 }
 
 bool
-SpectrogramLayer::snapToFeatureFrame(View *,
-                                     sv_frame_t &frame,
-                                     int &resolution,
-                                     SnapType snap) const
+SpectrogramLayer::snapToFeatureFrame(View *, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     resolution = getWindowIncrement();
     sv_frame_t left = (frame / resolution) * resolution;

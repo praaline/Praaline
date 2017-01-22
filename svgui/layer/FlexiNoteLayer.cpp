@@ -606,19 +606,16 @@ FlexiNoteLayer::getFeatureDescription(View *v, QPoint &pos) const
 }
 
 bool
-FlexiNoteLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-                                   int &resolution,
-                                   SnapType snap) const
+FlexiNoteLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-        return Layer::snapToFeatureFrame(v, frame, resolution, snap);
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
     }
 
     resolution = m_model->getResolution();
     FlexiNoteModel::PointList points;
 
     if (snap == SnapNeighbouring) {
-    
         points = getLocalPoints(v, v->getXForFrame(frame));
         if (points.empty()) return false;
         frame = points.begin()->frame;
@@ -635,7 +632,6 @@ FlexiNoteLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
         cerr << "FlexiNoteModel: point at " << i->frame << endl;
 
         if (snap == SnapRight) {
-
             if (i->frame > frame) {
                 snapped = i->frame;
                 found = true;
@@ -645,29 +641,22 @@ FlexiNoteLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
                 found = true;
                 break;
             }
-
         } else if (snap == SnapLeft) {
-
             if (i->frame <= frame) {
                 snapped = i->frame;
                 found = true; // don't break, as the next may be better
             } else {
                 break;
             }
-
         } else { // nearest
-
             FlexiNoteModel::PointList::const_iterator j = i;
             ++j;
 
             if (j == points.end()) {
-
                 snapped = i->frame;
                 found = true;
                 break;
-
             } else if (j->frame >= frame) {
-
                 if (j->frame - frame < frame - i->frame) {
                     snapped = j->frame;
                 } else {

@@ -17,9 +17,112 @@ using namespace Praaline::Core;
 
 #include "SyllableProminenceAnnotator.h"
 
+struct SyllableProminenceAnnotatorData {
+    SyllableProminenceAnnotatorData() :
+        fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0)
+    {}
+
+    QString currentAnnotationID;
+    QString modelsPath;
+    QString modelFilenameWithoutPOS;
+    QString modelFilenameWithPOS;
+    QFile *fileFeaturesTable;
+    QTextStream *streamFeaturesTable;
+    QFile *fileCRFData;
+    QTextStream *streamCRFData;
+};
+
+
 SyllableProminenceAnnotator::SyllableProminenceAnnotator(QObject *parent) :
-    QObject(parent)
+    QObject(parent), d(new SyllableProminenceAnnotatorData)
 {
+}
+
+SyllableProminenceAnnotator::~SyllableProminenceAnnotator()
+{
+    if (d->streamFeaturesTable) { d->streamFeaturesTable->flush();  delete d->streamFeaturesTable;  }
+    if (d->streamCRFData)       { d->streamCRFData->flush();        delete d->streamCRFData;        }
+    if (d->fileFeaturesTable)   { d->fileFeaturesTable->close();    delete d->fileFeaturesTable;    }
+    if (d->fileCRFData)         { d->fileCRFData->close();          delete d->fileCRFData;          }
+    delete d;
+}
+
+QString SyllableProminenceAnnotator::modelsPath() const
+{
+    return d->modelsPath;
+}
+
+void SyllableProminenceAnnotator::setModelsPath(const QString &modelsPath)
+{
+    d->modelsPath = modelsPath;
+}
+
+QString SyllableProminenceAnnotator::modelFilenameWithoutPOS() const
+{
+    return d->modelFilenameWithoutPOS;
+}
+
+void SyllableProminenceAnnotator::setModelFilenameWithoutPOS(const QString &filename)
+{
+    d->modelFilenameWithoutPOS = filename;
+}
+
+QString SyllableProminenceAnnotator::modelFilenameWithPOS() const
+{
+    return d->modelFilenameWithPOS;
+}
+
+void SyllableProminenceAnnotator::setModelFilenameWithPOS(const QString &filename)
+{
+    d->modelFilenameWithPOS = filename;
+}
+
+bool SyllableProminenceAnnotator::openFeaturesTableFile(const QString &filename)
+{
+    d->fileFeaturesTable = new QFile(filename);
+    if (! d->fileFeaturesTable->open(QFile::WriteOnly | QFile::Text)) return false;
+    d->streamFeaturesTable = new QTextStream(d->fileFeaturesTable);
+    d->streamFeaturesTable->setCodec("UTF-8");
+    d->streamFeaturesTable->generateByteOrderMark();
+    return true;
+}
+
+bool SyllableProminenceAnnotator::openCRFDataFile(const QString &filename)
+{
+    d->fileCRFData = new QFile(filename);
+    if (! d->fileCRFData->open(QFile::WriteOnly | QFile::Text)) return false;
+    d->streamCRFData = new QTextStream(d->fileCRFData);
+    d->streamCRFData->setCodec("UTF-8");
+    d->streamCRFData->generateByteOrderMark();
+    return true;
+}
+
+void SyllableProminenceAnnotator::closeFeaturesTableFile()
+{
+    if (d->streamFeaturesTable) {
+        d->streamFeaturesTable->flush();
+        delete d->streamFeaturesTable;
+        d->streamFeaturesTable = Q_NULLPTR;
+    }
+    if (d->fileFeaturesTable) {
+        d->fileFeaturesTable->close();
+        delete d->fileFeaturesTable;
+        d->fileFeaturesTable = Q_NULLPTR;
+    }
+}
+
+void SyllableProminenceAnnotator::closeCRFDataFile()
+{
+    if (d->streamCRFData) {
+        d->streamCRFData->flush();
+        delete d->streamCRFData;
+        d->streamCRFData = Q_NULLPTR;
+    }
+    if (d->fileCRFData) {
+        d->fileCRFData->close();
+        delete d->fileCRFData;
+        d->fileCRFData = Q_NULLPTR;
+    }
 }
 
 // static
@@ -93,7 +196,7 @@ QString doubleToString(double number, QString decimalSeparator = ".")
 }
 
 void SyllableProminenceAnnotator::outputRFACE(const QString &sampleID, IntervalTier *tier_syll, IntervalTier *tier_token,
-                                           QHash<QString, RealValueList> &features, QTextStream &out)
+                                              QHash<QString, RealValueList> &features, QTextStream &out)
 {
     QStringList featureSelection;
     featureSelection << "syll_dur_log_rel22_z" << "syll_dur_log_rel33_z" << "syll_dur_log_rel44_z" << "syll_dur_log_rel55_z" <<
@@ -191,12 +294,12 @@ void SyllableProminenceAnnotator::readRFACEprediction(QString filename, Interval
 }
 
 void SyllableProminenceAnnotator::annotateRFACE(QString filenameModel, const QString &sampleID,
-                                             IntervalTier *tier_syll, IntervalTier *tier_token,
-                                             QHash<QString, RealValueList> &features, QString attributeOutput)
+                                                IntervalTier *tier_syll, IntervalTier *tier_token,
+                                                QHash<QString, RealValueList> &features, QString attributeOutput)
 {
     // Get a temporary file
-    QString filenameFeatures = m_modelsPath + "/prompraaline.afm";
-    QString filenamePrediction = m_modelsPath + "/predpraaline.tsv";
+    QString filenameFeatures = d->modelsPath + "/prompraaline.afm";
+    QString filenamePrediction = d->modelsPath + "/predpraaline.tsv";
     // QTemporaryFile fileFeatures, filePrediction;
     // Write out features
     QFile fileFeatures(filenameFeatures);
@@ -206,7 +309,9 @@ void SyllableProminenceAnnotator::annotateRFACE(QString filenameModel, const QSt
         QTextStream streamFeatures(&fileFeatures);
         streamFeatures.setCodec("UTF-8");
         streamFeatures.setGenerateByteOrderMark(true);
-        streamFeatures << "\tN:syll_dur_log_rel22_z\tN:syll_dur_log_rel33_z\tN:syll_dur_log_rel44_z\tN:f0_max_st_rel22_z\tN:f0_max_st_rel33_z\tN:f0_max_st_rel44_z\tN:f0_mean_st_rel22_z\tN:f0_mean_st_rel33_z\tN:f0_mean_st_rel44_z\tN:f0_up\tN:f0_down\tN:f0_mvt\tN:f0_traj\tN:intensity_rel22_z\tN:intensity_rel33_z\tN:intensity_rel44_z\tB:pause_after\tB:filled_pause\tC:position\tB:schwa\tB:prom\n";
+        streamFeatures << "\tN:syll_dur_log_rel22_z\tN:syll_dur_log_rel33_z\tN:syll_dur_log_rel44_z\tN:f0_max_st_rel22_z\tN:f0_max_st_rel33_z"
+                          "\tN:f0_max_st_rel44_z\tN:f0_mean_st_rel22_z\tN:f0_mean_st_rel33_z\tN:f0_mean_st_rel44_z\tN:f0_up\tN:f0_down\tN:f0_mvt"
+                          "\tN:f0_traj\tN:intensity_rel22_z\tN:intensity_rel33_z\tN:intensity_rel44_z\tB:pause_after\tB:filled_pause\tC:position\tB:schwa\tB:prom\n";
         outputRFACE(sampleID, tier_syll, tier_token, features, streamFeatures);
         fileFeatures.close();
     // }
@@ -228,7 +333,7 @@ void SyllableProminenceAnnotator::annotateRFACE(QString filenameModel, const QSt
 }
 
 void SyllableProminenceAnnotator::outputSVM(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                         QHash<QString, RealValueList> &features, QTextStream &out)
+                                            QHash<QString, RealValueList> &features, QTextStream &out)
 {
     QStringList featureSelection;
     featureSelection << "syll_dur_log_rel22_z" << "syll_dur_log_rel33_z" << "syll_dur_log_rel44_z" << "syll_dur_log_rel55_z" <<
@@ -310,8 +415,8 @@ int quantize(double x, int factor, int max)
 }
 
 int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                        QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
-                                        bool createSequences)
+                                           QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
+                                           bool createSequences)
 {
     int noSequences = 0;
     QStringList featureSelection;
@@ -349,7 +454,7 @@ int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
 
         if (sylltext.length() == 0) sylltext = "_";
         // ID
-        // out << m_currentAnnotationID << "\t";
+        // out << d->currentAnnotationID << "\t";
         // out << syll->xMin().toDouble() << "\t";
         out << sylltext << "\t";
         // FEATURES
@@ -428,8 +533,8 @@ int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
 }
 
 IntervalTier *SyllableProminenceAnnotator::annotateWithCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                                        QHash<QString, RealValueList> &features, bool withPOS,
-                                                        const QString &filenameModel, const QString &tier_name)
+                                                           QHash<QString, RealValueList> &features, bool withPOS,
+                                                           const QString &filenameModel, const QString &tier_name)
 {
     IntervalTier *promise = new IntervalTier(tier_syll, tier_name);
     foreach (Interval *prom, promise->intervals()) {
@@ -517,125 +622,133 @@ QString outputCRFTemplate() {
     return ret;
 }
 
-IntervalTier *SyllableProminenceAnnotator::annotate(QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-                                                 IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID,
-                                                 QTextStream &streamFeatures, QTextStream &streamFeaturesCRF)
+IntervalTier *SyllableProminenceAnnotator::annotate(const QString &annotationID, const QString &speakerID, const QString &tierName,
+                                                    IntervalTier *tier_syll, IntervalTier *tier_token, bool withPOS)
 {
-    m_currentAnnotationID = annotationID;
-
+    d->currentAnnotationID = annotationID;
     QHash<QString, RealValueList> features;
     prepareFeatures(features, tier_syll);
 
+    QString filenameModel;
+    if (withPOS)
+        filenameModel = d->modelsPath + d->modelFilenameWithPOS;
+    else
+        filenameModel = d->modelsPath + d->modelFilenameWithoutPOS;
     IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, withPOS, filenameModel, tierName);
 
-    if (withPOS == false) return promise;
-    // otherwise, write feature files
+    if (!withPOS) return promise;
 
-    QStringList featureSelection;
-    featureSelection << "syll_dur_log_rel22_z" << "syll_dur_log_rel33_z" << "syll_dur_log_rel44_z" << "syll_dur_log_rel55_z" <<
-                        "f0_max_st_rel22" << "f0_max_st_rel33" << "f0_max_st_rel44" << "f0_max_st_rel55" <<
-                        "f0_mean_st_rel22" << "f0_mean_st_rel33" << "f0_mean_st_rel44" << "f0_mean_st_rel55" <<
-                        "f0_up" << "f0_down" << "f0_mvt" << "f0_traj" <<
-                        "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
-
-    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
-        streamFeatures << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
-        Interval *syll = tier_syll->interval(isyll);
-        streamFeatures << syll->text() << "\t";
-        streamFeatures << syll->tMin().toDouble() << "\t";
-        streamFeatures << syll->tMax().toDouble() << "\t";
-        foreach (QString featureName, featureSelection) {
-            if (featureName.endsWith("_z")) {
-                featureName.chop(2);
-                streamFeatures << features[featureName].zscore(isyll) << "\t";
+    if (d->streamFeaturesTable) {
+        QTextStream &out = (*d->streamFeaturesTable);
+        // Write features table
+        QStringList featureSelection;
+        featureSelection << "syll_dur_log_rel22_z" << "syll_dur_log_rel33_z" << "syll_dur_log_rel44_z" << "syll_dur_log_rel55_z" <<
+                            "f0_max_st_rel22" << "f0_max_st_rel33" << "f0_max_st_rel44" << "f0_max_st_rel55" <<
+                            "f0_mean_st_rel22" << "f0_mean_st_rel33" << "f0_mean_st_rel44" << "f0_mean_st_rel55" <<
+                            "f0_up" << "f0_down" << "f0_mvt" << "f0_traj" <<
+                            "intensity_rel22" << "intensity_rel33" << "intensity_rel44" << "intensity_rel55";
+        for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
+            out << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
+            Interval *syll = tier_syll->interval(isyll);
+            out << syll->text() << "\t";
+            out << syll->tMin().toDouble() << "\t";
+            out << syll->tMax().toDouble() << "\t";
+            foreach (QString featureName, featureSelection) {
+                if (featureName.endsWith("_z")) {
+                    featureName.chop(2);
+                    out << features[featureName].zscore(isyll) << "\t";
+                }
+                else {
+                    out << features[featureName].at(isyll) << "\t";
+                }
             }
-            else {
-                streamFeatures << features[featureName].at(isyll) << "\t";
-            }
+            out << syll->attribute("promise").toString() << "\t";
+            out << syll->attribute("promise_pos").toString() << "\n";
         }
-        streamFeatures << syll->attribute("promise").toString() << "\t";
-        streamFeatures << syll->attribute("promise_pos").toString() << "\n";
     }
 
-    outputCRF(tier_syll, tier_token, features, withPOS, streamFeaturesCRF, false);
+    if (d->streamCRFData) {
+        outputCRF(tier_syll, tier_token, features, withPOS, (*d->streamCRFData), false);
+    }
+
     return promise;
 }
 
 
-QString SyllableProminenceAnnotator::process(AnnotationTierGroup *txg, QString annotationID, QTextStream &out)
-{
-    QString ret;
+//QString SyllableProminenceAnnotator::process(AnnotationTierGroup *txg, QString annotationID, QTextStream &out)
+//{
+//    QString ret;
 
-    IntervalTier *tier_phones = txg->getIntervalTierByName("phone");
-    if (!tier_phones) return QString("Tier not found phones");
-    IntervalTier *tier_syll = txg->getIntervalTierByName("syll");
-    if (!tier_syll) return QString("Tier not found syll");
-    IntervalTier *tier_token = txg->getIntervalTierByName("tok_min");
-    if (!tier_token) return QString("Tier not found tok-min");
-    m_currentAnnotationID = annotationID;
+//    IntervalTier *tier_phones = txg->getIntervalTierByName("phone");
+//    if (!tier_phones) return QString("Tier not found phones");
+//    IntervalTier *tier_syll = txg->getIntervalTierByName("syll");
+//    if (!tier_syll) return QString("Tier not found syll");
+//    IntervalTier *tier_token = txg->getIntervalTierByName("tok_min");
+//    if (!tier_token) return QString("Tier not found tok-min");
+//    d->currentAnnotationID = annotationID;
 
-    // TRAINING
-    // --------------------------------------------------------------------
-    QHash<QString, RealValueList> features;
-    prepareFeatures(features, tier_syll);
+//    // TRAINING
+//    // --------------------------------------------------------------------
+//    QHash<QString, RealValueList> features;
+//    prepareFeatures(features, tier_syll);
 
-//    outputRFACE(annot->ID(), tier_syll, tier_token, features, out);
-//    outputSVM(tier_syll, tier_token, features, out);
-//    QString filenameModel = "D:/PROMRF/promacoustic_5.sf";
-//    annotateRFACE(filenameModel, com->ID(), tier_syll, tier_token, features, "prom-rf");
+////    outputRFACE(annot->ID(), tier_syll, tier_token, features, out);
+////    outputSVM(tier_syll, tier_token, features, out);
+////    QString filenameModel = "D:/PROMRF/promacoustic_5.sf";
+////    annotateRFACE(filenameModel, com->ID(), tier_syll, tier_token, features, "prom-rf");
 
-    // CRF training file
-//    int noSeq = outputCRF(tier_syll, tier_token, features, true, out);
+//    // CRF training file
+////    int noSeq = outputCRF(tier_syll, tier_token, features, true, out);
 
-    // ANNOTATE WITH CRF
-    QString filenameModel;
+//    // ANNOTATE WITH CRF
+//    QString filenameModel;
 
-    filenameModel = "d:/promcrf/train_cregio_nopos.model";
-    IntervalTier *promiseA = annotateWithCRF(tier_syll, tier_token, features, false, filenameModel, "promise-cregio");
-    filenameModel = "d:/promcrf/train_cross_nopos.model";
-    IntervalTier *promiseB = annotateWithCRF(tier_syll, tier_token, features, false, filenameModel, "promise-cross");
+//    filenameModel = "d:/promcrf/train_cregio_nopos.model";
+//    IntervalTier *promiseA = annotateWithCRF(tier_syll, tier_token, features, false, filenameModel, "promise-cregio");
+//    filenameModel = "d:/promcrf/train_cross_nopos.model";
+//    IntervalTier *promiseB = annotateWithCRF(tier_syll, tier_token, features, false, filenameModel, "promise-cross");
 
-    AnnotationTierGroup *txgOut = new AnnotationTierGroup();
-    PraatTextGrid::load(QString("D:/Sandrine_promise/audiobook2/%1.textgrid").arg(annotationID), txgOut);
+//    AnnotationTierGroup *txgOut = new AnnotationTierGroup();
+//    PraatTextGrid::load(QString("D:/Sandrine_promise/audiobook2/%1.textgrid").arg(annotationID), txgOut);
 
-    txgOut->removeTierByName("promise");
-    txgOut->removeTierByName("promise-pos");
+//    txgOut->removeTierByName("promise");
+//    txgOut->removeTierByName("promise-pos");
 
-    int index = txgOut->getTierIndexByName("prom");
-    if (index < 0) index = txgOut->getTierIndexByName("syll");
-    txgOut->insertTierReplacing(index + 1, promiseB);
-    txgOut->insertTierReplacing(index + 1, promiseA);
+//    int index = txgOut->getTierIndexByName("prom");
+//    if (index < 0) index = txgOut->getTierIndexByName("syll");
+//    txgOut->insertTierReplacing(index + 1, promiseB);
+//    txgOut->insertTierReplacing(index + 1, promiseA);
 
-    PraatTextGrid::save(QString("D:/Sandrine_promise/out/%1.textgrid").arg(annotationID), txgOut);
-    delete txgOut;
+//    PraatTextGrid::save(QString("D:/Sandrine_promise/out/%1.textgrid").arg(annotationID), txgOut);
+//    delete txgOut;
 
-//    filenameModel = "d:/promcrf/promcrf_pos_all.model";
-//    IntervalTier *promisepos = annotateWithCRF(tier_syll, tier_token, features, true, filenameModel, "promise-pos");
-//    index = txg->getTierIndexByName("promise");
-//    txg->insertTierReplacing(index + 1, promisepos);
+////    filenameModel = "d:/promcrf/promcrf_pos_all.model";
+////    IntervalTier *promisepos = annotateWithCRF(tier_syll, tier_token, features, true, filenameModel, "promise-pos");
+////    index = txg->getTierIndexByName("promise");
+////    txg->insertTierReplacing(index + 1, promisepos);
 
-    // CREATE CHECK TIER
-//    int index = txg->getTierIndexByName("prom");
-//    IntervalTier *prom = txg->getIntervalTierByName("prom");
-//    IntervalTier *check = new IntervalTier(prom, "prom-check");
-//    for (int i = 0; i < tier_syll->countItems(); ++i) {
-//        if (tier_syll->interval(i)->attribute("prom").toString().toUpper() != promise->interval(i)->text())
-//            check->interval(i)->setText("*");
-//    }
-//    txg->insertTierReplacing(index + 1, check);
+//    // CREATE CHECK TIER
+////    int index = txg->getTierIndexByName("prom");
+////    IntervalTier *prom = txg->getIntervalTierByName("prom");
+////    IntervalTier *check = new IntervalTier(prom, "prom-check");
+////    for (int i = 0; i < tier_syll->countItems(); ++i) {
+////        if (tier_syll->interval(i)->attribute("prom").toString().toUpper() != promise->interval(i)->text())
+////            check->interval(i)->setText("*");
+////    }
+////    txg->insertTierReplacing(index + 1, check);
 
-//    delete promisepos;
+////    delete promisepos;
 
-//    foreach (Interval *syll, tier_syll->intervals()) {
-//        ret.append(syll->text()).append("\t");
-//        ret.append(syll->attribute("prom").toString()).append("\t");
-//        ret.append(syll->attribute("prom-rf").toString()).append("\n");
-//    }
+////    foreach (Interval *syll, tier_syll->intervals()) {
+////        ret.append(syll->text()).append("\t");
+////        ret.append(syll->attribute("prom").toString()).append("\t");
+////        ret.append(syll->attribute("prom-rf").toString()).append("\n");
+////    }
 
-    //return outputCRFTemplate();
+//    //return outputCRFTemplate();
 
-    qDebug() << annotationID; // << noSeq;
-    ret.append(annotationID + "OK"); //.append("\t").append(QString::number(noSeq));
-    return ret;
-}
+//    qDebug() << annotationID; // << noSeq;
+//    ret.append(annotationID + "OK"); //.append("\t").append(QString::number(noSeq));
+//    return ret;
+//}
 

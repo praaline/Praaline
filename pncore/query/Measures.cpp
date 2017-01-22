@@ -11,21 +11,43 @@ namespace Core {
 // static
 QPair<int, int> Measures::window(IntervalTier *tier, int i, int windowLeft, int windowRight, bool pauseBlocksWindow)
 {
-    QPair<int, int> ret;
-    ret.first = i; ret.second = i;
+    QPair<int, int> ret(-1, -1);
     // Checks
     if (!tier) return ret;
     if (i < 0 || i >= tier->count()) return ret;
+    ret.first = i; ret.second = i;
     if (tier->interval(i)->isPauseSilent() && pauseBlocksWindow) return ret;
     // Calculation
-    ret.first = i - windowLeft;
-    if (ret.first < 0) ret.first = 0;
-    while ((ret.first < i) &&
-           ((tier->interval(i)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow))) ret.first++;
-    ret.second = i + windowRight;
-    if (ret.second >= tier->count()) ret.second = tier->count() - 1;
-    while ((ret.second > i) &&
-           ((tier->interval(ret.second)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow))) ret.second--;
+    while ((ret.first > 0) &&
+           (i - (ret.first - 1) <= windowLeft) &&
+           ((tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+        ret.first = ret.first - 1;
+    while ((ret.second < tier->count() - 1) &&
+           ((ret.second + 1) - i <= windowRight) &&
+           ((tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+        ret.second = ret.second + 1;
+    return ret;
+}
+
+// static
+QPair<int, int> Measures::window(IntervalTier *tier, RealTime centre, RealTime windowLeft, RealTime windowRight, bool pauseBlocksWindow)
+{
+    QPair<int, int> ret(-1, -1);
+    // Checks
+    if (!tier) return ret;
+    int i = tier->intervalIndexAtTime(centre);
+    if (i < 0 || i >= tier->count()) return ret;
+    ret.first = i; ret.second = i;
+    if (tier->interval(i)->isPauseSilent() && pauseBlocksWindow) return ret;
+    // Calculation
+    while ((ret.first > 0) &&
+           (centre - tier->interval(ret.first - 1)->tMax() <= windowLeft) &&
+           ((tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+        ret.first = ret.first - 1;
+    while ((ret.second < tier->count() - 1) &&
+           (tier->interval(ret.second + 1)->tMin() - centre <= windowRight) &&
+           ((tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+        ret.second = ret.second + 1;
     return ret;
 }
 
@@ -39,6 +61,7 @@ bool Measures::mean(double &mean, IntervalTier *tier, QString attributeName, int
     int count = 0;
     for (int j = wnd.first; j <= wnd.second; j++) {
         Interval *intv = tier->interval(j);
+        if (!intv) continue;
         if (!checkAttribute.isEmpty()) {
             if (intv->attribute(checkAttribute).toInt() == 0) continue; // check if attribute is non-zero
             // e.g. used to check if a syllable is stylised

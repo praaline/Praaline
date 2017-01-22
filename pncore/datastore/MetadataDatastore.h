@@ -45,6 +45,19 @@ class PRAALINE_CORE_SHARED_EXPORT MetadataDatastore : public CorpusDatastore, pu
 {
     Q_OBJECT
 public:
+    class Selection {
+    public:
+        QString corpusID;
+        QString communicationID;
+        QString speakerID;
+        QStringList attributeIDs;
+
+        Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID) :
+            corpusID(corpusID), communicationID(communicationID), speakerID(speakerID) {}
+        Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID, const QStringList &attributeIDs) :
+            corpusID(corpusID), communicationID(communicationID), speakerID(speakerID), attributeIDs(attributeIDs) {}
+    };
+
     MetadataDatastore(CorpusRepository *repository, QObject *parent = 0) :
         CorpusDatastore(repository, parent) {}
     virtual ~MetadataDatastore() {}
@@ -78,17 +91,18 @@ public:
     // ==========================================================================================================================
     // Corpus object info lists
     // ==========================================================================================================================
-    virtual QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID) = 0;
+    virtual QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection) = 0;
 
     // ==========================================================================================================================
     // Corpus
     // ==========================================================================================================================
-    // Load metadata information in already created corpus objects
-    virtual bool loadCorpus(Corpus *corpus) = 0;
-    virtual bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications) = 0;
-    virtual bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) = 0;
-    virtual bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings) = 0;
-    virtual bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) = 0;
+    // Load metadata information
+    virtual Corpus *getCorpus(const QString &corpusID) = 0;
+    virtual QList<QPointer<CorpusCommunication> > getCommunications(const Selection &selection) = 0;
+    virtual QList<QPointer<CorpusSpeaker> > getSpeakers(const Selection &selection) = 0;
+    virtual QList<QPointer<CorpusRecording> > getRecordings(const Selection &selection) = 0;
+    virtual QList<QPointer<CorpusAnnotation> > getAnnotations(const Selection &selection) = 0;
+    virtual QList<QPointer<CorpusParticipation> > getParticipations(const Selection &selection) = 0;
 
     // Save (insert or update) corpus objects
     virtual bool saveCorpus(Corpus *corpus) = 0;

@@ -196,7 +196,8 @@ public:
     virtual bool snapToFeatureFrame(View * /* v */,
                                     sv_frame_t & /* frame */,
                                     int &resolution,
-                                    SnapType /* snap */) const {
+                                    SnapType /* snap */,
+                                    int y = 0) const {
         resolution = 1;
         return false;
     }
@@ -220,7 +221,8 @@ public:
     virtual bool snapToSimilarFeature(View * /* v */,
                                       sv_frame_t & /* source frame */,
                                       int &resolution,
-                                      SnapType /* snap */) const {
+                                      SnapType /* snap */,
+                                      int y = 0) const {
         resolution = 1;
         return false;
     }

@@ -1,4 +1,4 @@
-#include "CorporaTableModel.h"
+#include "CorpusTableModel.h"
 
 CorporaTableModel::CorporaTableModel(QObject *parent)
     : QAbstractTableModel(parent)

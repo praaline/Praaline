@@ -67,6 +67,7 @@ private:
     QList<CorpusObject *> selectedCorpusItems();
     void updateMetadataEditorsForCom(CorpusCommunication *communication);
     void updateMetadataEditorsForSpk(CorpusSpeaker *speaker);
+    void updateMetadataEditorsForCorpus(Corpus *corpus);
 };
 
 #endif // CORPUSEXPLORERWIDGET_H

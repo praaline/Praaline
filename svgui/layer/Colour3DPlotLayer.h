@@ -62,9 +62,7 @@ public:
 
     virtual QString getFeatureDescription(View *v, QPoint &) const;
 
-    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, 
-				    int &resolution,
-				    SnapType snap) const;
+    virtual bool snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y = 0) const;
 
     virtual void setLayerDormant(const View *v, bool dormant);
 

@@ -60,7 +60,7 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
 
     connect(ui->comboBoxLeftLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelLeftChanged(QString)));
     connect(ui->comboBoxRightLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelRightChanged(QString)));

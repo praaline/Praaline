@@ -17,9 +17,100 @@ using namespace Praaline::Core;
 
 #include "ProsodicBoundariesAnnotator.h"
 
+struct ProsodicBoundariesAnnotatorData {
+    ProsodicBoundariesAnnotatorData() :
+        fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0)
+    {}
+
+    QString currentAnnotationID;
+    QString modelsPath;
+    QString modelFilename;
+    QFile *fileFeaturesTable;
+    QTextStream *streamFeaturesTable;
+    QFile *fileCRFData;
+    QTextStream *streamCRFData;
+};
+
 ProsodicBoundariesAnnotator::ProsodicBoundariesAnnotator(QObject *parent) :
-    QObject(parent)
+    QObject(parent), d(new ProsodicBoundariesAnnotatorData)
 {
+}
+
+ProsodicBoundariesAnnotator::~ProsodicBoundariesAnnotator()
+{
+    if (d->streamFeaturesTable) { d->streamFeaturesTable->flush();  delete d->streamFeaturesTable;  }
+    if (d->streamCRFData)       { d->streamCRFData->flush();        delete d->streamCRFData;        }
+    if (d->fileFeaturesTable)   { d->fileFeaturesTable->close();    delete d->fileFeaturesTable;    }
+    if (d->fileCRFData)         { d->fileCRFData->close();          delete d->fileCRFData;          }
+    delete d;
+}
+
+QString ProsodicBoundariesAnnotator::modelsPath() const
+{
+    return d->modelsPath;
+}
+
+void ProsodicBoundariesAnnotator::setModelsPath(const QString &modelsPath)
+{
+    d->modelsPath = modelsPath;
+}
+
+QString ProsodicBoundariesAnnotator::modelFilename() const
+{
+    return d->modelFilename;
+}
+
+void ProsodicBoundariesAnnotator::setModelFilename(const QString &filename)
+{
+    d->modelFilename = filename;
+}
+
+bool ProsodicBoundariesAnnotator::openFeaturesTableFile(const QString &filename)
+{
+    d->fileFeaturesTable = new QFile(filename);
+    if (! d->fileFeaturesTable->open(QFile::WriteOnly | QFile::Text)) return false;
+    d->streamFeaturesTable = new QTextStream(d->fileFeaturesTable);
+    d->streamFeaturesTable->setCodec("UTF-8");
+    d->streamFeaturesTable->generateByteOrderMark();
+    return true;
+}
+
+bool ProsodicBoundariesAnnotator::openCRFDataFile(const QString &filename)
+{
+    d->fileCRFData = new QFile(filename);
+    if (! d->fileCRFData->open(QFile::WriteOnly | QFile::Text)) return false;
+    d->streamCRFData = new QTextStream(d->fileCRFData);
+    d->streamCRFData->setCodec("UTF-8");
+    d->streamCRFData->generateByteOrderMark();
+    return true;
+}
+
+void ProsodicBoundariesAnnotator::closeFeaturesTableFile()
+{
+    if (d->streamFeaturesTable) {
+        d->streamFeaturesTable->flush();
+        delete d->streamFeaturesTable;
+        d->streamFeaturesTable = Q_NULLPTR;
+    }
+    if (d->fileFeaturesTable) {
+        d->fileFeaturesTable->close();
+        delete d->fileFeaturesTable;
+        d->fileFeaturesTable = Q_NULLPTR;
+    }
+}
+
+void ProsodicBoundariesAnnotator::closeCRFDataFile()
+{
+    if (d->streamCRFData) {
+        d->streamCRFData->flush();
+        delete d->streamCRFData;
+        d->streamCRFData = Q_NULLPTR;
+    }
+    if (d->fileCRFData) {
+        d->fileCRFData->close();
+        delete d->fileCRFData;
+        d->fileCRFData = Q_NULLPTR;
+    }
 }
 
 // static
@@ -85,8 +176,8 @@ int ProsodicBoundariesAnnotator::quantize(double x, int factor, int max)
 }
 
 int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                        QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
-                                        bool createSequences)
+                                           QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
+                                           bool createSequences)
 {
     int noSequences = 0;
     QStringList featureSelection;
@@ -95,7 +186,6 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
                         "syll_dur_log_rel20" << "syll_dur_log_rel30" << "syll_dur_log_rel40" <<
                         "f0_mean_st_rel20" << "f0_mean_st_rel30" << "f0_mean_st_rel40" << "f0_mean_st_rel50" <<
                         "f0_up" << "f0_down"<< "f0_traj";
-
     bool endSequence = true;
     for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Get attributes: syllable text
@@ -258,42 +348,45 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
     return promise;
 }
 
-IntervalTier *ProsodicBoundariesAnnotator::annotate(QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-                                                 IntervalTier *tier_syll, IntervalTier *tier_token, QString speakerID,
-                                                 QTextStream &streamFeatures, QTextStream &streamFeaturesCRF)
+IntervalTier *ProsodicBoundariesAnnotator::annotate(const QString &annotationID, const QString &speakerID, const QString &tierName,
+                                                    Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token)
 {
-    m_currentAnnotationID = annotationID;
-
+    d->currentAnnotationID = annotationID;
     QHash<QString, RealValueList> features;
     prepareFeatures(features, tier_syll);
+    QString filenameModel = d->modelsPath + d->modelFilename;
 
-    IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, withPOS, filenameModel, tierName);
-    return promise;
+    IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, true, filenameModel, tierName);
 
-    // Write feature files
-    QStringList featureSelection;
-    featureSelection << "following_pause_dur" << "following_pause_dur_log" <<
-                        "syll_dur_rel20" << "syll_dur_rel30" << "syll_dur_rel40" <<
-                        "syll_dur_log_rel20" << "syll_dur_log_rel30" << "syll_dur_log_rel40" <<
-                        "f0_mean_st_rel20" << "f0_mean_st_rel30" << "f0_mean_st_rel40" << "f0_mean_st_rel50" <<
-                        "f0_up" << "f0_down"<< "f0_traj";
-    for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
-        streamFeatures << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
-        Interval *syll = tier_syll->interval(isyll);
-        streamFeatures << syll->text() << "\t";
-        streamFeatures << syll->tMin().toDouble() << "\t";
-        streamFeatures << syll->tMax().toDouble() << "\t";
-        foreach (QString featureName, featureSelection) {
-            if (featureName.endsWith("_z")) {
-                featureName.chop(2);
-                streamFeatures << features[featureName].zscore(isyll) << "\t";
+    if (d->streamFeaturesTable) {
+        QTextStream &out = (*d->streamFeaturesTable);
+        // Write features table
+        QStringList featureSelection;
+        featureSelection << "following_pause_dur" << "following_pause_dur_log" <<
+                            "syll_dur_rel20" << "syll_dur_rel30" << "syll_dur_rel40" <<
+                            "syll_dur_log_rel20" << "syll_dur_log_rel30" << "syll_dur_log_rel40" <<
+                            "f0_mean_st_rel20" << "f0_mean_st_rel30" << "f0_mean_st_rel40" << "f0_mean_st_rel50" <<
+                            "f0_up" << "f0_down"<< "f0_traj";
+        for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
+            out << annotationID << "\t" << speakerID  << "\t" << isyll << "\t";
+            Interval *syll = tier_syll->interval(isyll);
+            out << syll->text() << "\t";
+            out << syll->tMin().toDouble() << "\t";
+            out << syll->tMax().toDouble() << "\t";
+            foreach (QString featureName, featureSelection) {
+                if (featureName.endsWith("_z")) {
+                    featureName.chop(2);
+                    out << features[featureName].zscore(isyll) << "\t";
+                }
+                else {
+                    out << features[featureName].at(isyll) << "\t";
+                }
             }
-            else {
-                streamFeatures << features[featureName].at(isyll) << "\t";
-            }
+            out << syll->attribute("promise_boundary").toString() << "\n";
         }
-        streamFeatures << syll->attribute("boundary_auto").toString() << "\n";
     }
-    outputCRF(tier_syll, tier_token, features, withPOS, streamFeaturesCRF, false);
+    if (d->streamCRFData) {
+        outputCRF(tier_syll, tier_token, features, true, (*d->streamCRFData), false);
+    }
     return promise;
 }

@@ -59,7 +59,7 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-//    connect(d->corporaManager, SIGNAL(activeCorpusChanged(QString)), this, SLOT(activeCorpusChanged(QString)));
+//    connect(d->corporaManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
 
     // Output messages of running statistical analysis plugins
     d->textResults = new QTextEdit(this);

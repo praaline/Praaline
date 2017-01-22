@@ -58,6 +58,7 @@ public:
         bool operator()(const ProsogramTonalSegment &p1, const ProsogramTonalSegment &p2) const {
             if (p1.frame != p2.frame) return p1.frame < p2.frame;
             if (p1.speakerID != p2.speakerID) return p1.speakerID < p2.speakerID;
+            if (p1.duration != p2.duration) return p1.duration < p2.duration;
             return p1.index < p2.index;
         }
     };

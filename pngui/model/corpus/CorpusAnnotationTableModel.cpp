@@ -18,8 +18,8 @@ struct CorpusAnnotationTableModelData {
 
 CorpusAnnotationTableModel::CorpusAnnotationTableModel(QList<QPointer<CorpusAnnotation> > items,
                                                        QList<QPointer<MetadataStructureAttribute> > attributes,
-                                                       bool multiCommunication, QObject *parent)
-    : QAbstractTableModel(parent), d(new CorpusAnnotationTableModelData)
+                                                       bool multiCommunication, QObject *parent) :
+    QAbstractTableModel(parent), d(new CorpusAnnotationTableModelData)
 {
     d->items = items;
     d->attributes = attributes;

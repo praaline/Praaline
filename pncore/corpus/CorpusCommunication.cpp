@@ -12,24 +12,25 @@
 namespace Praaline {
 namespace Core {
 
-CorpusCommunication::CorpusCommunication(QObject *parent) :
-    CorpusObject(parent)
+CorpusCommunication::CorpusCommunication(CorpusRepository *repository, QObject *parent) :
+    CorpusObject(repository, parent)
 {
 }
 
-CorpusCommunication::CorpusCommunication(const QString &ID, QObject *parent) :
-    CorpusObject(ID, parent)
+CorpusCommunication::CorpusCommunication(const QString &ID, CorpusRepository *repository, QObject *parent) :
+    CorpusObject(ID, repository, parent)
 {
 }
 
 CorpusCommunication::CorpusCommunication(CorpusCommunication *other, QObject *parent) :
-    CorpusObject(parent)
+    CorpusObject(0, parent)
 {
     if (!other) return;
     m_ID = other->m_ID;
     m_originalID = other->m_originalID;
     m_name = other->m_name;
     m_corpusID = other->m_corpusID;
+    m_repository = other->m_repository;
     copyPropertiesFrom(other);
 }
 

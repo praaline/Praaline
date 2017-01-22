@@ -51,8 +51,8 @@ public:
     // User-friendly and translated names
     static QString typeToString(CorpusObject::Type type);
 
-    explicit CorpusObject(QObject *parent = 0);
-    CorpusObject(const QString &ID, QObject *parent = 0);
+    explicit CorpusObject(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusObject(const QString &ID, CorpusRepository *repository = 0, QObject *parent = 0);
     virtual ~CorpusObject() {}
 
     virtual QString ID() const { return m_ID; }

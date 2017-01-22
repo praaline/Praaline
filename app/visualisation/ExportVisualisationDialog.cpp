@@ -190,3 +190,61 @@ void ExportVisualisationDialog::doExport()
 //}
 
 //delete image;
+
+//void VisualiserWidget::exportPDF(const QString &filename)
+//{
+//    // ****************************************************************************
+//    // temp
+//    // ****************************************************************************
+//    Model *model = m_document->getMainModel();
+//    int zoomLevel = 210;
+
+//    if (!model) return;
+
+//    sv_frame_t width = 10 * model->getSampleRate();
+//    sv_frame_t start = model->getStartFrame();
+//    sv_frame_t end = model->getEndFrame();
+
+//    int iter = 0;
+//    QPdfWriter pdf(filename);
+//    pdf.setResolution(220);
+//    pdf.setPageOrientation(QPageLayout::Landscape);
+//    QPainter painterPDF;
+//    painterPDF.begin(&pdf);
+//    int y = 0;
+
+//    for (sv_frame_t f0 = start; f0 < end; f0 += width) {
+//        sv_frame_t f1 = f0 + width;
+//        if (f1 > end) f1 = end;
+
+//        QList<QImage *> images;
+//        for (int paneIndex = 1; paneIndex < m_paneStack->getPaneCount(); ++paneIndex) {
+//            Pane *pane = m_paneStack->getPane(paneIndex);
+//            if (!pane) continue;
+
+//            pane->setZoomLevel(zoomLevel);
+//            QImage *img = pane->toNewImage(f0, f1);
+//            images << img;
+//            // img->save(QString("export_%1_%2.png").arg(iter).arg(paneIndex), "PNG");
+//        }
+
+//        int compositeWidth = 0, compositeHeight = 0;
+//        foreach (QImage *img, images) {
+//            if (img->width() > compositeWidth) compositeWidth = img->width();
+//            compositeHeight = compositeHeight + img->height() + 1;
+//        }
+
+//        // QImage composite(compositeWidth, compositeHeight, QImage::Format_RGB32);
+
+//        if ((iter > 0) && (iter % 4 == 0)) { y = 0; pdf.newPage(); }
+//        foreach (QImage *img, images) {
+//            painterPDF.drawImage(compositeWidth - img->width(), y, *img);
+//            y = y + img->height() + 1;
+//        }
+//        y += 5;
+//        // composite.save(QString("composite_%1.png").arg(iter), "PNG");
+//        ++iter;
+//    }
+//    painterPDF.end();
+
+//}

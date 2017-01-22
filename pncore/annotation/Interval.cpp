@@ -77,13 +77,16 @@ QVariant Interval::attribute(const QString &name) const
     if (name == "tMax") return tMax().toDouble();
     if (name == "tMaxNanoseconds") return tMax().toNanoseconds();
     if (name == "tCenter") return tCenter().toDouble();
+    if (name == "tCenterNanoseconds") return tCenter().toNanoseconds();
     if (name == "duration") return duration().toDouble();
+    if (name == "durationNanoseconds") return duration().toNanoseconds();
     return AnnotationElement::attribute(name);
 }
 
 void Interval::setAttribute(const QString &name, QVariant value) {
     if ((name == "tMin") || (name == "tMinNanoseconds") || (name == "tMax") || (name == "tMaxNanoseconds") ||
-        (name == "tCenter") || (name == "duration")) return;
+        (name == "tCenter") || (name == "tCenterNanoseconds") || (name == "duration") || (name == "durationNanoseconds"))
+        return; // these are read-only properties (use tier to move intervals)
     AnnotationElement::setAttribute(name, value);
 }
 

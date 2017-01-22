@@ -14,17 +14,15 @@ struct CorpusSpeakerTableModelData {
     bool multiCorpus;
     QList<QPointer<CorpusSpeaker> > items;
     QList<QPointer<MetadataStructureAttribute> > attributes;
-    QPointer<Corpus> corpus;
 };
 
 CorpusSpeakerTableModel::CorpusSpeakerTableModel(QList<QPointer<CorpusSpeaker> > items,
                                                  QList<QPointer<MetadataStructureAttribute> > attributes,
-                                                 QPointer<Corpus> corpus, bool multiCorpus, QObject *parent)
+                                                 bool multiCorpus, QObject *parent)
     : QAbstractTableModel(parent), d(new CorpusSpeakerTableModelData)
 {
     d->items = items;
     d->attributes = attributes;
-    d->corpus = corpus;
     d->multiCorpus = multiCorpus;
 }
 

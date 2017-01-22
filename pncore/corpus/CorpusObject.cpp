@@ -3,20 +3,22 @@
 #include <QVariant>
 #include <QDynamicPropertyChangeEvent>
 #include "base/ISaveable.h"
+#include "datastore/CorpusRepository.h"
 #include "CorpusObject.h"
+
 
 namespace Praaline {
 namespace Core {
 
-CorpusObject::CorpusObject(QObject *parent) :
-    QObject(parent), m_ID(QString()), m_originalID(QString())
+CorpusObject::CorpusObject(CorpusRepository *repository, QObject *parent) :
+    QObject(parent), m_ID(QString()), m_originalID(QString()), m_repository(repository)
 {
     m_isDirty = true;
     m_isNew = true;
 }
 
-CorpusObject::CorpusObject(const QString &ID, QObject *parent) :
-    QObject(parent), m_ID(ID), m_originalID(ID)
+CorpusObject::CorpusObject(const QString &ID, CorpusRepository *repository, QObject *parent) :
+    QObject(parent), m_ID(ID), m_originalID(ID), m_repository(repository)
 {
     m_isDirty = true;
     m_isNew = true;

@@ -356,7 +356,7 @@ void VisualiserWidget::setupFileMenu()
     icon = il.load("fileopen");
     action = new QAction(icon, tr("&Export..."), this);
     action->setStatusTip(tr("Export Visualisation"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportImage()));
+    connect(action, SIGNAL(triggered()), this, SLOT(exportVisualisation()));
     m_keyReference->registerShortcut(action);
     toolbar->addAction(action);
 
@@ -472,7 +472,7 @@ void VisualiserWidget::setupFileMenu()
 
     action = new QAction(tr("Export Image File..."), this);
     action->setStatusTip(tr("Export a single pane to an image file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportImage()));
+    connect(action, SIGNAL(triggered()), this, SLOT(exportVisualisation()));
     connect(this, SIGNAL(canExportImage(bool)), action, SLOT(setEnabled(bool)));
     command = ACTION_MANAGER->registerAction("Visualisation.ExportImage", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
@@ -2385,7 +2385,7 @@ VisualiserWidget::exportLayer()
 }
 
 void
-VisualiserWidget::exportImage()
+VisualiserWidget::exportVisualisation()
 {
     QPointer<ExportVisualisationDialog> d = new ExportVisualisationDialog(m_document, m_paneStack, m_viewManager);
     d->exec();
@@ -3366,7 +3366,7 @@ void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<Annotat
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
 
-    addTappingDataPane(tiers);
+   // addTappingDataPane(tiers);
 }
 
 void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec)
@@ -3390,15 +3390,39 @@ void VisualiserWidget::addLayerTimeInstantsFromIntevalTier(IntervalTier *tier)
     Pane *pane = m_paneStack->getPane(0);
     LayerFactory::LayerType type = LayerFactory::Type("TimeInstants");
     Layer *newLayer = m_document->createEmptyLayer(type);
-    m_toolActions[ViewManager::DrawMode]->trigger();
-    m_document->addLayerToView(pane, newLayer);
-    m_paneStack->setCurrentLayer(pane, newLayer);
     SparseOneDimensionalModel *model = qobject_cast<SparseOneDimensionalModel *>(newLayer->getModel());
-
     foreach(Interval *intv, tier->intervals()) {
         SparseOneDimensionalModel::Point point(RealTime::realTime2Frame(intv->tMin(), model->getSampleRate()), intv->text());
         model->addPoint(point);
     }
+    m_document->addLayerToView(pane, newLayer);
+    m_paneStack->setCurrentLayer(pane, newLayer);
+}
+
+void VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
+        AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID)
+{
+    if (!tier) return;
+    if (!getMainModel()) return;
+    CommandHistory::getInstance()->startCompoundOperation("Add Pane", true);
+    AddPaneCommand *command = new AddPaneCommand(this);
+    CommandHistory::getInstance()->addCommand(command);
+    Pane *pane = command->getPane();
+    LayerFactory::LayerType type = LayerFactory::Type("TimeValues");
+    Layer *newLayer = m_document->createEmptyLayer(type);
+    newLayer->setPresentationName(tier->name());
+    SparseTimeValueModel *model = qobject_cast<SparseTimeValueModel *>(newLayer->getModel());
+    for (int i = 0; i < tier->count(); ++i) {
+        RealTime t = RealTime::fromNanoseconds(tier->at(i)->attribute(timeAttributeID).toLongLong());
+        SparseTimeValueModel::Point point(RealTime::realTime2Frame(t , model->getSampleRate()),
+                                          tier->at(i)->attribute(valueAttributeID).toDouble(),
+                                          tier->at(i)->attribute(labelAttributeID).toString());
+        model->addPoint(point);
+    }
+    m_document->addLayerToView(pane, newLayer);
+    m_paneStack->setCurrentLayer(pane, newLayer);
+    CommandHistory::getInstance()->endCompoundOperation();
+    updateMenuStates();
 }
 
 void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
@@ -3498,60 +3522,3 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     }
 }
 
-void VisualiserWidget::exportPDF(const QString &filename)
-{
-    // ****************************************************************************
-    // temp
-    // ****************************************************************************
-    Model *model = m_document->getMainModel();
-    int zoomLevel = 210;
-
-    if (!model) return;
-
-    sv_frame_t width = 10 * model->getSampleRate();
-    sv_frame_t start = model->getStartFrame();
-    sv_frame_t end = model->getEndFrame();
-
-    int iter = 0;
-    QPdfWriter pdf(filename);
-    pdf.setResolution(220);
-    pdf.setPageOrientation(QPageLayout::Landscape);
-    QPainter painterPDF;
-    painterPDF.begin(&pdf);
-    int y = 0;
-
-    for (sv_frame_t f0 = start; f0 < end; f0 += width) {
-        sv_frame_t f1 = f0 + width;
-        if (f1 > end) f1 = end;
-
-        QList<QImage *> images;
-        for (int paneIndex = 1; paneIndex < m_paneStack->getPaneCount(); ++paneIndex) {
-            Pane *pane = m_paneStack->getPane(paneIndex);
-            if (!pane) continue;
-
-            pane->setZoomLevel(zoomLevel);
-            QImage *img = pane->toNewImage(f0, f1);
-            images << img;
-            // img->save(QString("export_%1_%2.png").arg(iter).arg(paneIndex), "PNG");
-        }
-
-        int compositeWidth = 0, compositeHeight = 0;
-        foreach (QImage *img, images) {
-            if (img->width() > compositeWidth) compositeWidth = img->width();
-            compositeHeight = compositeHeight + img->height() + 1;
-        }
-
-        // QImage composite(compositeWidth, compositeHeight, QImage::Format_RGB32);
-
-        if ((iter > 0) && (iter % 4 == 0)) { y = 0; pdf.newPage(); }
-        foreach (QImage *img, images) {
-            painterPDF.drawImage(compositeWidth - img->width(), y, *img);
-            y = y + img->height() + 1;
-        }
-        y += 5;
-        // composite.save(QString("composite_%1.png").arg(iter), "PNG");
-        ++iter;
-    }
-    painterPDF.end();
-
-}

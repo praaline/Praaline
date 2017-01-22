@@ -19,10 +19,13 @@ class CorpusAnnotationTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit CorpusAnnotationTableModel(QList<QPointer<Praaline::Core::CorpusAnnotation> > items,
-                                        QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                                        bool multiCommunication = false, QObject *parent = 0);
+    CorpusAnnotationTableModel(QList<QPointer<Praaline::Core::CorpusAnnotation> > items,
+                               QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
+                               bool multiCommunication = true, QObject *parent = 0);
     ~CorpusAnnotationTableModel();
+
+    void refresh(const QString &corpusID = QString());
+    bool saveAll();
 
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

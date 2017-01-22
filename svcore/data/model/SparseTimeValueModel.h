@@ -81,22 +81,17 @@ class SparseTimeValueModel : public SparseValueModel<TimeValuePoint>
     Q_OBJECT
     
 public:
-    SparseTimeValueModel(sv_samplerate_t sampleRate, int resolution,
-                         bool notifyOnAdd = true) :
-        SparseValueModel<TimeValuePoint>(sampleRate, resolution,
-                                         notifyOnAdd)
+    SparseTimeValueModel(sv_samplerate_t sampleRate, int resolution, bool notifyOnAdd = true) :
+        SparseValueModel<TimeValuePoint>(sampleRate, resolution, notifyOnAdd)
     {
         // Model is playable, but may not sound (if units not Hz or
         // range unsuitable)
         PlayParameterRepository::getInstance()->addPlayable(this);
     }
 
-    SparseTimeValueModel(sv_samplerate_t sampleRate, int resolution,
-                         float valueMinimum, float valueMaximum,
+    SparseTimeValueModel(sv_samplerate_t sampleRate, int resolution, float valueMinimum, float valueMaximum,
                          bool notifyOnAdd = true) :
-        SparseValueModel<TimeValuePoint>(sampleRate, resolution,
-                                         valueMinimum, valueMaximum,
-                                         notifyOnAdd)
+        SparseValueModel<TimeValuePoint>(sampleRate, resolution, valueMinimum, valueMaximum, notifyOnAdd)
     {
         // Model is playable, but may not sound (if units not Hz or
         // range unsuitable)

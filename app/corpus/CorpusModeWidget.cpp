@@ -294,54 +294,35 @@ void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filenam
 
 void CorpusModeWidget::closeCorpusRepository()
 {
-//    // Corpus Explorer observer
-//    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-//    if (!obs) return;
-//    obs->corpus()->close();
-//    d->corporaTopLevelNode->removeItem(d->corporaManager->activeCorpusID());
-//    d->corporaManager->removeCorpus(d->corporaManager->activeCorpusID());
-//    OBJECT_MANAGER->removeObject(obs);
-//    delete obs;
-//    // Metadata editors
-//    d->metadataEditorPrimary->clear();
-//    d->metadataEditorSecondary->clear();
-//    // Activate next corpus (if available)
-//    QList<QObject *> listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
-//    foreach (QObject* obj, listCorpora) {
-//        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
-//        if (obs && obs->corpus()) {
-//            d->corporaManager->setActiveCorpus(obs->corpus()->ID());
-//            break;
-//        }
-//    }
+    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepository()->ID();
+    d->corpusRepositoriesManager->activeCorpusRepository()->close();
+    // Remove the repository from the manager. It will automatically activate the next one, if available.
+    d->corpusRepositoriesManager->removeCorpusRepository(repositoryID);
 }
 
 void CorpusModeWidget::saveCorpusRepository()
 {
-//    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-//    if (!obs) return;
-//    if (!obs->corpus()) return;
-//    if (!obs->definition().filenameDefinition.isEmpty()) {
-//        obs->corpus()->save();
-//    } else {
-//        // database corpus
-//        saveCorpusAs();
-//    }
+    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository->definition().filenameDefinition.isEmpty()) {
+        repository->definition().save(repository->definition().filenameDefinition);
+    } else {
+        saveCorpusRepositoryAs();
+    }
 }
 
 void CorpusModeWidget::saveCorpusRepositoryAs()
 {
-//    CorpusObserver *obs = d->corporaManager->activeCorpusObserver();
-//    if (!obs) return;
-//    if (!obs->corpus()) return;
-//    QFileDialog::Options options;
-//    QString selectedFilter;
-//    QString filename = QFileDialog::getSaveFileName(this, tr("Save Corpus As..."), obs->definition().filenameDefinition,
-//                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"), &selectedFilter, options);
-//    if (filename.isEmpty()) return;
-//    obs->definition().save(filename);
-//    obs->corpus()->save();
-//    // else show error message
-//    // m_mainStatusBar->showMessage("Saved corpus \"" + fileName, 5000);
+    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QFileDialog::Options options;
+    QString selectedFilter;
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save Corpus As..."), repository->definition().filenameDefinition,
+                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"), &selectedFilter, options);
+    if (filename.isEmpty()) return;
+    repository->definition().save(filename);
+    // else show error message
+    // m_mainStatusBar->showMessage("Saved corpus \"" + fileName, 5000);
 }
 

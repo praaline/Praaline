@@ -36,9 +36,9 @@ class PRAALINE_CORE_SHARED_EXPORT CorpusCommunication : public CorpusObject
     Q_PROPERTY(double durationSec READ durationSec)
 
 public:
-    explicit CorpusCommunication(QObject *parent = 0);
-    CorpusCommunication(const QString &ID, QObject *parent = 0);
-    CorpusCommunication(CorpusCommunication *other, QObject *parent = 0);
+    explicit CorpusCommunication(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusCommunication(const QString &ID, CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusCommunication(CorpusCommunication *other, QObject *parent = 0);
     ~CorpusCommunication();
 
     CorpusObject::Type type() const override { return CorpusObject::Type_Communication; }

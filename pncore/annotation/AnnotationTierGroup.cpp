@@ -61,6 +61,14 @@ AnnotationTier *AnnotationTierGroup::tier(int index) const
     return m_tiers.value(index);
 }
 
+AnnotationTier *AnnotationTierGroup::tier(const QString &name) const
+{
+    foreach (AnnotationTier *tier, m_tiers) {
+        if (tier->name() == name) return tier;
+    }
+    return Q_NULLPTR;
+}
+
 int AnnotationTierGroup::tiersCount() const
 {
     return m_tiers.count();

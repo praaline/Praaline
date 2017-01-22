@@ -16,10 +16,18 @@ using namespace Praaline::Core;
 CorpusObserver::CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent) :
     QObject(parent), m_repository(repository)
 {
-    QList<CorpusObjectInfo> list = m_repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, QString());
-    foreach (CorpusObjectInfo item, list) {
-        Corpus *corpus = new Corpus(item.ID(), item.name(), item.description(), this);
-        m_repository->metadata()->loadCorpus(corpus);
+    m_nodeRepository = new TreeNode(repository->ID(), this);
+//    QList<CorpusObjectInfo> list = m_repository->metadata()->getCorpusObjectInfoList(
+//                CorpusObject::Type_Corpus, MetadataDatastore::Selection("", "", ""));
+//    foreach (CorpusObjectInfo item, list) {
+//        Corpus *corpus = new Corpus(item.ID(), item.name(), item.description(), this);
+//        m_repository->metadata()->loadCorpus(corpus);
+//        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpus);
+//        node->refresh();
+//        m_nodeRepository->addNode(node);
+//    }
+    Corpus *corpus = m_repository->metadata()->getCorpus(repository->ID());
+    if (corpus) {
         CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpus);
         node->refresh();
         m_nodeRepository->addNode(node);

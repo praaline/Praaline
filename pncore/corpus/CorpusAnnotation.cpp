@@ -12,27 +12,28 @@
 namespace Praaline {
 namespace Core {
 
-CorpusAnnotation::CorpusAnnotation(QObject *parent) :
-    CorpusObject(parent)
+CorpusAnnotation::CorpusAnnotation(CorpusRepository *repository, QObject *parent) :
+    CorpusObject(repository, parent)
 {
     m_filename = QString();
     m_format = "tiers"; // by default
 }
 
-CorpusAnnotation::CorpusAnnotation(const QString ID, QObject *parent) :
-    CorpusObject(ID, parent)
+CorpusAnnotation::CorpusAnnotation(const QString ID, CorpusRepository *repository, QObject *parent) :
+    CorpusObject(ID, repository, parent)
 {
     m_filename = QString();
 }
 
 CorpusAnnotation::CorpusAnnotation(CorpusAnnotation *other, QObject *parent) :
-    CorpusObject(parent)
+    CorpusObject(0, parent)
 {
     if (!other) return;
     m_ID = other->m_ID;
     m_originalID = other->m_originalID;
     m_name = other->m_name;
     m_corpusID = other->m_corpusID;
+    m_repository = other->m_repository;
     m_recordingID = other->m_recordingID;
     m_filename = other->m_filename;
     m_format = other->m_format;

@@ -106,14 +106,14 @@ ImageLayer::getPropertyType(const PropertyName &name) const
 
 int
 ImageLayer::getPropertyRangeAndValue(const PropertyName &name,
-				    int *min, int *max, int *deflt) const
+                                     int *min, int *max, int *deflt) const
 {
     return Layer::getPropertyRangeAndValue(name, min, max, deflt);
 }
 
 QString
 ImageLayer::getPropertyValueLabel(const PropertyName &name,
-				 int value) const
+                                  int value) const
 {
     return Layer::getPropertyValueLabel(name, value);
 }
@@ -142,16 +142,16 @@ ImageLayer::getLocalPoints(View *v, int x, int ) const
 {
     if (!m_model) return ImageModel::PointList();
 
-//    cerr << "ImageLayer::getLocalPoints(" << x << "," << y << "):";
+    //    cerr << "ImageLayer::getLocalPoints(" << x << "," << y << "):";
     const ImageModel::PointList &points(m_model->getPoints());
 
     ImageModel::PointList rv;
 
     for (ImageModel::PointList::const_iterator i = points.begin();
-	 i != points.end(); ) {
+         i != points.end(); ) {
 
-	const ImageModel::Point &p(*i);
-	int px = v->getXForFrame(p.frame);
+        const ImageModel::Point &p(*i);
+        int px = v->getXForFrame(p.frame);
         if (px > x) break;
 
         ++i;
@@ -170,7 +170,7 @@ ImageLayer::getLocalPoints(View *v, int x, int ) const
         int width = 32;
         if (m_scaled[v].find(p.image) != m_scaled[v].end()) {
             width = m_scaled[v][p.image].width();
-//            cerr << "scaled width = " << width << endl;
+            //            cerr << "scaled width = " << width << endl;
         }
 
         if (x >= px && x < px + width) {
@@ -178,7 +178,7 @@ ImageLayer::getLocalPoints(View *v, int x, int ) const
         }
     }
 
-//    cerr << rv.size() << " point(s)" << endl;
+    //    cerr << rv.size() << " point(s)" << endl;
 
     return rv;
 }
@@ -193,28 +193,28 @@ ImageLayer::getFeatureDescription(View *v, QPoint &pos) const
     ImageModel::PointList points = getLocalPoints(v, x, pos.y());
 
     if (points.empty()) {
-	if (!m_model->isReady()) {
-	    return tr("In progress");
-	} else {
-	    return "";
-	}
+        if (!m_model->isReady()) {
+            return tr("In progress");
+        } else {
+            return "";
+        }
     }
 
-//    int useFrame = points.begin()->frame;
+    //    int useFrame = points.begin()->frame;
 
-//    RealTime rt = RealTime::frame2RealTime(useFrame, m_model->getSampleRate());
+    //    RealTime rt = RealTime::frame2RealTime(useFrame, m_model->getSampleRate());
 
     QString text;
-/*    
+    /*
     if (points.begin()->label == "") {
-	text = QString(tr("Time:\t%1\nHeight:\t%2\nLabel:\t%3"))
-	    .arg(rt.toText(true).c_str())
-	    .arg(points.begin()->height)
-	    .arg(points.begin()->label);
+    text = QString(tr("Time:\t%1\nHeight:\t%2\nLabel:\t%3"))
+        .arg(rt.toText(true).c_str())
+        .arg(points.begin()->height)
+        .arg(points.begin()->label);
     }
 
     pos = QPoint(v->getXForFrame(useFrame),
-		 getYForHeight(v, points.begin()->height));
+         getYForHeight(v, points.begin()->height));
 */
     return text;
 }
@@ -223,71 +223,69 @@ ImageLayer::getFeatureDescription(View *v, QPoint &pos) const
 //!!! too much overlap with TimeValueLayer/TimeInstantLayer/TextLayer
 
 bool
-ImageLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-			      int &resolution,
-			      SnapType snap) const
+ImageLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-	return Layer::snapToFeatureFrame(v, frame, resolution, snap);
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
     }
 
     resolution = m_model->getResolution();
     ImageModel::PointList points;
 
     if (snap == SnapNeighbouring) {
-	
-	points = getLocalPoints(v, v->getXForFrame(frame), -1);
-	if (points.empty()) return false;
-	frame = points.begin()->frame;
-	return true;
-    }    
+
+        points = getLocalPoints(v, v->getXForFrame(frame), -1);
+        if (points.empty()) return false;
+        frame = points.begin()->frame;
+        return true;
+    }
 
     points = m_model->getPoints(frame, frame);
     sv_frame_t snapped = frame;
     bool found = false;
 
     for (ImageModel::PointList::const_iterator i = points.begin();
-	 i != points.end(); ++i) {
+         i != points.end(); ++i) {
 
-	if (snap == SnapRight) {
+        if (snap == SnapRight) {
 
-	    if (i->frame > frame) {
-		snapped = i->frame;
-		found = true;
-		break;
-	    }
+            if (i->frame > frame) {
+                snapped = i->frame;
+                found = true;
+                break;
+            }
 
-	} else if (snap == SnapLeft) {
+        } else if (snap == SnapLeft) {
 
-	    if (i->frame <= frame) {
-		snapped = i->frame;
-		found = true; // don't break, as the next may be better
-	    } else {
-		break;
-	    }
+            if (i->frame <= frame) {
+                snapped = i->frame;
+                found = true; // don't break, as the next may be better
+            } else {
+                break;
+            }
 
-	} else { // nearest
+        } else { // nearest
 
-	    ImageModel::PointList::const_iterator j = i;
-	    ++j;
+            ImageModel::PointList::const_iterator j = i;
+            ++j;
 
-	    if (j == points.end()) {
+            if (j == points.end()) {
 
-		snapped = i->frame;
-		found = true;
-		break;
+                snapped = i->frame;
+                found = true;
+                break;
 
-	    } else if (j->frame >= frame) {
+            } else if (j->frame >= frame) {
 
-		if (j->frame - frame < frame - i->frame) {
-		    snapped = j->frame;
-		} else {
-		    snapped = i->frame;
-		}
-		found = true;
-		break;
-	    }
-	}
+                if (j->frame - frame < frame - i->frame) {
+                    snapped = j->frame;
+                } else {
+                    snapped = i->frame;
+                }
+                found = true;
+                break;
+            }
+        }
     }
 
     frame = snapped;
@@ -302,9 +300,9 @@ ImageLayer::paint(View *v, QPainter &paint, QRect rect) const
     sv_samplerate_t sampleRate = m_model->getSampleRate();
     if (!sampleRate) return;
 
-//    Profiler profiler("ImageLayer::paint", true);
+    //    Profiler profiler("ImageLayer::paint", true);
 
-//    int x0 = rect.left(), x1 = rect.right();
+    //    int x0 = rect.left(), x1 = rect.right();
     int x0 = 0, x1 = v->width();
 
     sv_frame_t frame0 = v->getFrameForX(x0);
@@ -331,11 +329,11 @@ ImageLayer::paint(View *v, QPainter &paint, QRect rect) const
     paint.setRenderHint(QPainter::Antialiasing, true);
 
     for (ImageModel::PointList::const_iterator i = points.begin();
-	 i != points.end(); ++i) {
+         i != points.end(); ++i) {
 
-	const ImageModel::Point &p(*i);
+        const ImageModel::Point &p(*i);
 
-	int x = v->getXForFrame(p.frame);
+        int x = v->getXForFrame(p.frame);
 
         int nx = x + 2000;
         ImageModel::PointList::const_iterator j = i;
@@ -390,8 +388,8 @@ ImageLayer::drawImage(View *v, QPainter &paint, const ImageModel::Point &p,
         int likelyHeight = v->height() / 4;
 
         int likelyWidth = // available height times image aspect
-            ((maxBoxHeight - likelyHeight) * imageSize.width())
-            / imageSize.height();
+                ((maxBoxHeight - likelyHeight) * imageSize.width())
+                / imageSize.height();
 
         if (likelyWidth > imageSize.width()) {
             likelyWidth = imageSize.width();
@@ -407,8 +405,8 @@ ImageLayer::drawImage(View *v, QPainter &paint, const ImageModel::Point &p,
         }
 
         labelRect = paint.fontMetrics().boundingRect
-            (QRect(0, 0, likelyWidth, likelyHeight),
-             Qt::AlignCenter | Qt::TextWordWrap, label);
+                (QRect(0, 0, likelyWidth, likelyHeight),
+                 Qt::AlignCenter | Qt::TextWordWrap, label);
 
         labelRect.setWidth(labelRect.width() + 6);
     }
@@ -448,7 +446,7 @@ ImageLayer::drawImage(View *v, QPainter &paint, const ImageModel::Point &p,
         }
         boxHeight += paint.fontMetrics().height();
         division += paint.fontMetrics().height();
-    }                
+    }
 
     bottomMargin = v->height() - topMargin - boxHeight;
     if (bottomMargin > topMargin + v->height()/7) {
@@ -482,7 +480,7 @@ ImageLayer::drawImage(View *v, QPainter &paint, const ImageModel::Point &p,
     if (label != "") {
         paint.drawLine(x,
                        topMargin + labelRect.height() + spacing,
-                       x + boxWidth, 
+                       x + boxWidth,
                        topMargin + labelRect.height() + spacing);
 
         paint.drawText(QRect(x,
@@ -515,15 +513,15 @@ ImageLayer::setLayerDormant(const View *v, bool dormant)
 bool
 ImageLayer::getImageOriginalSize(QString name, QSize &size) const
 {
-//    cerr << "getImageOriginalSize: \"" << name << "\"" << endl;
+    //    cerr << "getImageOriginalSize: \"" << name << "\"" << endl;
 
     QMutexLocker locker(&m_imageMapMutex);
     if (m_images.find(name) == m_images.end()) {
-//        cerr << "don't have, trying to open local" << endl;
+        //        cerr << "don't have, trying to open local" << endl;
         m_images[name] = QImage(getLocalFilename(name));
     }
     if (m_images[name].isNull()) {
-//        cerr << "null image" << endl;
+        //        cerr << "null image" << endl;
         return false;
     } else {
         size = m_images[name].size();
@@ -534,15 +532,15 @@ ImageLayer::getImageOriginalSize(QString name, QSize &size) const
 QImage 
 ImageLayer::getImage(View *v, QString name, QSize maxSize) const
 {
-//    cerr << "ImageLayer::getImage(" << v << ", " << name << ", ("
-//              << maxSize.width() << "x" << maxSize.height() << "))" << endl;
+    //    cerr << "ImageLayer::getImage(" << v << ", " << name << ", ("
+    //              << maxSize.width() << "x" << maxSize.height() << "))" << endl;
 
     if (!m_scaled[v][name].isNull()  &&
-        ((m_scaled[v][name].width()  == maxSize.width() &&
-          m_scaled[v][name].height() <= maxSize.height()) ||
-         (m_scaled[v][name].width()  <= maxSize.width() &&
-          m_scaled[v][name].height() == maxSize.height()))) {
-//        cerr << "cache hit" << endl;
+            ((m_scaled[v][name].width()  == maxSize.width() &&
+              m_scaled[v][name].height() <= maxSize.height()) ||
+             (m_scaled[v][name].width()  <= maxSize.width() &&
+              m_scaled[v][name].height() == maxSize.height()))) {
+        //        cerr << "cache hit" << endl;
         return m_scaled[v][name];
     }
 
@@ -553,16 +551,16 @@ ImageLayer::getImage(View *v, QString name, QSize maxSize) const
     }
 
     if (m_images[name].isNull()) {
-//        cerr << "null image" << endl;
+        //        cerr << "null image" << endl;
         m_scaled[v][name] = QImage();
     } else if (m_images[name].width() <= maxSize.width() &&
                m_images[name].height() <= maxSize.height()) {
         m_scaled[v][name] = m_images[name];
     } else {
         m_scaled[v][name] =
-            m_images[name].scaled(maxSize,
-                                  Qt::KeepAspectRatio,
-                                  Qt::SmoothTransformation);
+                m_images[name].scaled(maxSize,
+                                      Qt::KeepAspectRatio,
+                                      Qt::SmoothTransformation);
     }
 
     return m_scaled[v][name];
@@ -571,11 +569,11 @@ ImageLayer::getImage(View *v, QString name, QSize maxSize) const
 void
 ImageLayer::drawStart(View *v, QMouseEvent *e)
 {
-//    cerr << "ImageLayer::drawStart(" << e->x() << "," << e->y() << ")" << endl;
+    //    cerr << "ImageLayer::drawStart(" << e->x() << "," << e->y() << ")" << endl;
 
     if (!m_model) {
-	cerr << "ImageLayer::drawStart: no model" << endl;
-	return;
+        cerr << "ImageLayer::drawStart: no model" << endl;
+        return;
     }
 
     sv_frame_t frame = v->getFrameForX(e->x());
@@ -595,7 +593,7 @@ ImageLayer::drawStart(View *v, QMouseEvent *e)
 void
 ImageLayer::drawDrag(View *v, QMouseEvent *e)
 {
-//    cerr << "ImageLayer::drawDrag(" << e->x() << "," << e->y() << ")" << endl;
+    //    cerr << "ImageLayer::drawDrag(" << e->x() << "," << e->y() << ")" << endl;
 
     if (!m_model || !m_editing) return;
 
@@ -611,7 +609,7 @@ ImageLayer::drawDrag(View *v, QMouseEvent *e)
 void
 ImageLayer::drawEnd(View *, QMouseEvent *)
 {
-//    cerr << "ImageLayer::drawEnd(" << e->x() << "," << e->y() << ")" << endl;
+    //    cerr << "ImageLayer::drawEnd(" << e->x() << "," << e->y() << ")" << endl;
     if (!m_model || !m_editing) return;
 
     ImageDialog dialog(tr("Select image"), "", "");
@@ -620,10 +618,10 @@ ImageLayer::drawEnd(View *, QMouseEvent *)
 
         checkAddSource(dialog.getImage());
 
-	ImageModel::ChangeImageCommand *command =
-	    new ImageModel::ChangeImageCommand
-            (m_model, m_editingPoint, dialog.getImage(), dialog.getLabel());
-	m_editingCommand->addCommand(command);
+        ImageModel::ChangeImageCommand *command =
+                new ImageModel::ChangeImageCommand
+                (m_model, m_editingPoint, dialog.getImage(), dialog.getLabel());
+        m_editingCommand->addCommand(command);
     } else {
         m_editingCommand->deletePoint(m_editingPoint);
     }
@@ -646,7 +644,7 @@ ImageLayer::addImage(sv_frame_t frame, QString url)
 
     ImageModel::Point point(frame, url, "");
     ImageModel::EditCommand *command =
-        new ImageModel::EditCommand(m_model, "Add Image");
+            new ImageModel::EditCommand(m_model, "Add Image");
     command->addPoint(point);
     finish(command);
     return true;
@@ -655,7 +653,7 @@ ImageLayer::addImage(sv_frame_t frame, QString url)
 void
 ImageLayer::editStart(View *v, QMouseEvent *e)
 {
-//    cerr << "ImageLayer::editStart(" << e->x() << "," << e->y() << ")" << endl;
+    //    cerr << "ImageLayer::editStart(" << e->x() << "," << e->y() << ")" << endl;
 
     if (!m_model) return;
 
@@ -667,8 +665,8 @@ ImageLayer::editStart(View *v, QMouseEvent *e)
     m_originalPoint = m_editingPoint;
 
     if (m_editingCommand) {
-	finish(m_editingCommand);
-	m_editingCommand = 0;
+        finish(m_editingCommand);
+        m_editingCommand = 0;
     }
 
     m_editing = true;
@@ -686,7 +684,7 @@ ImageLayer::editDrag(View *v, QMouseEvent *e)
     frame = (frame / m_model->getResolution()) * m_model->getResolution();
 
     if (!m_editingCommand) {
-	m_editingCommand = new ImageModel::EditCommand(m_model, tr("Move Image"));
+        m_editingCommand = new ImageModel::EditCommand(m_model, tr("Move Image"));
     }
 
     m_editingCommand->deletePoint(m_editingPoint);
@@ -697,11 +695,11 @@ ImageLayer::editDrag(View *v, QMouseEvent *e)
 void
 ImageLayer::editEnd(View *, QMouseEvent *)
 {
-//    cerr << "ImageLayer::editEnd(" << e->x() << "," << e->y() << ")" << endl;
+    //    cerr << "ImageLayer::editEnd(" << e->x() << "," << e->y() << ")" << endl;
     if (!m_model || !m_editing) return;
 
     if (m_editingCommand) {
-	finish(m_editingCommand);
+        finish(m_editingCommand);
     }
     
     m_editingCommand = 0;
@@ -727,9 +725,9 @@ ImageLayer::editOpen(View *v, QMouseEvent *e)
 
         checkAddSource(dialog.getImage());
 
-	ImageModel::ChangeImageCommand *command =
-	    new ImageModel::ChangeImageCommand
-            (m_model, *points.begin(), dialog.getImage(), dialog.getLabel());
+        ImageModel::ChangeImageCommand *command =
+                new ImageModel::ChangeImageCommand
+                (m_model, *points.begin(), dialog.getImage(), dialog.getLabel());
 
         CommandHistory::getInstance()->addCommand(command);
     }
@@ -743,20 +741,20 @@ ImageLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
     if (!m_model) return;
 
     ImageModel::EditCommand *command =
-	new ImageModel::EditCommand(m_model, tr("Drag Selection"));
+            new ImageModel::EditCommand(m_model, tr("Drag Selection"));
 
     ImageModel::PointList points =
-	m_model->getPoints(s.getStartFrame(), s.getEndFrame());
+            m_model->getPoints(s.getStartFrame(), s.getEndFrame());
 
     for (ImageModel::PointList::iterator i = points.begin();
-	 i != points.end(); ++i) {
+         i != points.end(); ++i) {
 
-	if (s.contains(i->frame)) {
-	    ImageModel::Point newPoint(*i);
-	    newPoint.frame = i->frame + newStartFrame - s.getStartFrame();
-	    command->deletePoint(*i);
-	    command->addPoint(newPoint);
-	}
+        if (s.contains(i->frame)) {
+            ImageModel::Point newPoint(*i);
+            newPoint.frame = i->frame + newStartFrame - s.getStartFrame();
+            command->deletePoint(*i);
+            command->addPoint(newPoint);
+        }
     }
 
     finish(command);
@@ -768,29 +766,29 @@ ImageLayer::resizeSelection(Selection s, Selection newSize)
     if (!m_model) return;
 
     ImageModel::EditCommand *command =
-	new ImageModel::EditCommand(m_model, tr("Resize Selection"));
+            new ImageModel::EditCommand(m_model, tr("Resize Selection"));
 
     ImageModel::PointList points =
-	m_model->getPoints(s.getStartFrame(), s.getEndFrame());
+            m_model->getPoints(s.getStartFrame(), s.getEndFrame());
 
     double ratio =
-	double(newSize.getEndFrame() - newSize.getStartFrame()) /
-	double(s.getEndFrame() - s.getStartFrame());
+            double(newSize.getEndFrame() - newSize.getStartFrame()) /
+            double(s.getEndFrame() - s.getStartFrame());
 
     for (ImageModel::PointList::iterator i = points.begin();
-	 i != points.end(); ++i) {
+         i != points.end(); ++i) {
 
-	if (s.contains(i->frame)) {
+        if (s.contains(i->frame)) {
 
-	    double target = double(i->frame);
-	    target = double(newSize.getStartFrame()) +
-		target - double(s.getStartFrame()) * ratio;
+            double target = double(i->frame);
+            target = double(newSize.getStartFrame()) +
+                    target - double(s.getStartFrame()) * ratio;
 
-	    ImageModel::Point newPoint(*i);
-	    newPoint.frame = lrint(target);
-	    command->deletePoint(*i);
-	    command->addPoint(newPoint);
-	}
+            ImageModel::Point newPoint(*i);
+            newPoint.frame = lrint(target);
+            command->deletePoint(*i);
+            command->addPoint(newPoint);
+        }
     }
 
     finish(command);
@@ -802,14 +800,14 @@ ImageLayer::deleteSelection(Selection s)
     if (!m_model) return;
 
     ImageModel::EditCommand *command =
-	new ImageModel::EditCommand(m_model, tr("Delete Selection"));
+            new ImageModel::EditCommand(m_model, tr("Delete Selection"));
 
     ImageModel::PointList points =
-	m_model->getPoints(s.getStartFrame(), s.getEndFrame());
+            m_model->getPoints(s.getStartFrame(), s.getEndFrame());
 
     for (ImageModel::PointList::iterator i = points.begin();
-	 i != points.end(); ++i) {
-	if (s.contains(i->frame)) command->deletePoint(*i);
+         i != points.end(); ++i) {
+        if (s.contains(i->frame)) command->deletePoint(*i);
     }
 
     finish(command);
@@ -821,11 +819,11 @@ ImageLayer::copy(View *v, Selection s, Clipboard &to)
     if (!m_model) return;
 
     ImageModel::PointList points =
-	m_model->getPoints(s.getStartFrame(), s.getEndFrame());
+            m_model->getPoints(s.getStartFrame(), s.getEndFrame());
 
     for (ImageModel::PointList::iterator i = points.begin();
-	 i != points.end(); ++i) {
-	if (s.contains(i->frame)) {
+         i != points.end(); ++i) {
+        if (s.contains(i->frame)) {
             Clipboard::Point point(i->frame, i->label);
             point.setReferenceFrame(alignToReference(v, i->frame));
             to.addPoint(point);
@@ -845,10 +843,10 @@ ImageLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOffset */, 
     if (clipboardHasDifferentAlignment(v, from)) {
 
         QMessageBox::StandardButton button =
-            QMessageBox::question(v, tr("Re-align pasted items?"),
-                                  tr("The items you are pasting came from a layer with different source material from this one.  Do you want to re-align them in time, to match the source material for this layer?"),
-                                  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
-                                  QMessageBox::Yes);
+                QMessageBox::question(v, tr("Re-align pasted items?"),
+                                      tr("The items you are pasting came from a layer with different source material from this one.  Do you want to re-align them in time, to match the source material for this layer?"),
+                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel,
+                                      QMessageBox::Yes);
 
         if (button == QMessageBox::Cancel) {
             return false;
@@ -860,7 +858,7 @@ ImageLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOffset */, 
     }
 
     ImageModel::EditCommand *command =
-	new ImageModel::EditCommand(m_model, tr("Paste"));
+            new ImageModel::EditCommand(m_model, tr("Paste"));
 
     for (Clipboard::PointList::const_iterator i = points.begin();
          i != points.end(); ++i) {
@@ -940,7 +938,7 @@ ImageLayer::checkAddSources()
     const ImageModel::PointList &points(m_model->getPoints());
 
     for (ImageModel::PointList::const_iterator i = points.begin();
-	 i != points.end(); ++i) {
+         i != points.end(); ++i) {
         
         checkAddSource((*i).image);
     }
@@ -949,7 +947,7 @@ ImageLayer::checkAddSources()
 void
 ImageLayer::fileSourceReady()
 {
-//    cerr << "ImageLayer::fileSourceReady" << endl;
+    //    cerr << "ImageLayer::fileSourceReady" << endl;
 
     FileSource *rf = dynamic_cast<FileSource *>(sender());
     if (!rf) return;
@@ -959,7 +957,7 @@ ImageLayer::fileSourceReady()
          i != m_fileSources.end(); ++i) {
         if (i->second == rf) {
             img = i->first;
-//            cerr << "it's image \"" << img << "\"" << endl;
+            //            cerr << "it's image \"" << img << "\"" << endl;
             break;
         }
     }

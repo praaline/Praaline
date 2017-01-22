@@ -31,9 +31,9 @@ class PRAALINE_CORE_SHARED_EXPORT CorpusSpeaker : public CorpusObject
     Q_PROPERTY(QString name READ name WRITE setName)
 
 public:
-    explicit CorpusSpeaker(QObject *parent = 0);
-    CorpusSpeaker(const QString &ID, QObject *parent = 0);
-    CorpusSpeaker(CorpusSpeaker *other, QObject *parent = 0);
+    explicit CorpusSpeaker(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusSpeaker(const QString &ID, CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusSpeaker(CorpusSpeaker *other, QObject *parent = 0);
 
     CorpusObject::Type type() const override { return CorpusObject::Type_Speaker; }
     bool save() override;

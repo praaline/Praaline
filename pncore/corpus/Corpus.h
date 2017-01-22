@@ -38,8 +38,8 @@ class PRAALINE_CORE_SHARED_EXPORT Corpus : public CorpusObject
     Q_PROPERTY(QString name READ name WRITE setName)
 
 public:
-    explicit Corpus(QObject *parent = 0);
-    Corpus(const QString &ID, const QString &name = QString(), const QString &description = QString(), QObject *parent = 0);
+    explicit Corpus(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit Corpus(const QString &ID, CorpusRepository *repository = 0, QObject *parent = 0);
     ~Corpus();
 
     // ----------------------------------------------------------------------------------------------------------------

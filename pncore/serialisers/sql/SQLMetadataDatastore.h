@@ -48,17 +48,18 @@ public:
     // ==========================================================================================================================
     // Corpus object info lists
     // ==========================================================================================================================
-    QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID) override;
+    QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection) override;
 
     // ==========================================================================================================================
     // Corpus
     // ==========================================================================================================================
-    // Load metadata information in already created corpus objects
-    bool loadCorpus(Corpus *corpus) override;
-    bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
-    bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
-    bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
-    bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
+    // Load metadata information
+    Corpus *getCorpus(const QString &corpusID) override;
+    QList<QPointer<CorpusCommunication> > getCommunications(const Selection &selection) override;
+    QList<QPointer<CorpusSpeaker> > getSpeakers(const Selection &selection) override;
+    QList<QPointer<CorpusRecording> > getRecordings(const Selection &selection) override;
+    QList<QPointer<CorpusAnnotation> > getAnnotations(const Selection &selection) override;
+    QList<QPointer<CorpusParticipation> > getParticipations(const Selection &selection) override;
 
     // Save (insert or update) corpus objects
     bool saveCorpus(Corpus *corpus) override;

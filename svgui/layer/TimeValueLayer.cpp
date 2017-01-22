@@ -642,19 +642,16 @@ TimeValueLayer::getFeatureDescription(View *v, QPoint &pos) const
 }
 
 bool
-TimeValueLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-                                   int &resolution,
-                                   SnapType snap) const
+TimeValueLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-        return Layer::snapToFeatureFrame(v, frame, resolution, snap);
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
     }
 
     resolution = m_model->getResolution();
     SparseTimeValueModel::PointList points;
 
     if (snap == SnapNeighbouring) {
-
         points = getLocalPoints(v, v->getXForFrame(frame));
         if (points.empty()) return false;
         frame = points.begin()->frame;
@@ -665,39 +662,28 @@ TimeValueLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
     sv_frame_t snapped = frame;
     bool found = false;
 
-    for (SparseTimeValueModel::PointList::const_iterator i = points.begin();
-         i != points.end(); ++i) {
-
+    for (SparseTimeValueModel::PointList::const_iterator i = points.begin(); i != points.end(); ++i) {
         if (snap == SnapRight) {
-
             if (i->frame > frame) {
                 snapped = i->frame;
                 found = true;
                 break;
             }
-
         } else if (snap == SnapLeft) {
-
             if (i->frame <= frame) {
                 snapped = i->frame;
                 found = true; // don't break, as the next may be better
             } else {
                 break;
             }
-
         } else { // nearest
-
             SparseTimeValueModel::PointList::const_iterator j = i;
             ++j;
-
             if (j == points.end()) {
-
                 snapped = i->frame;
                 found = true;
                 break;
-
             } else if (j->frame >= frame) {
-
                 if (j->frame - frame < frame - i->frame) {
                     snapped = j->frame;
                 } else {
@@ -714,12 +700,10 @@ TimeValueLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
 }
 
 bool
-TimeValueLayer::snapToSimilarFeature(View *v, sv_frame_t &frame,
-                                     int &resolution,
-                                     SnapType snap) const
+TimeValueLayer::snapToSimilarFeature(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-        return Layer::snapToSimilarFeature(v, frame, resolution, snap);
+        return Layer::snapToSimilarFeature(v, frame, resolution, snap, y);
     }
 
     resolution = m_model->getResolution();

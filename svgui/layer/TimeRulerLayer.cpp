@@ -53,8 +53,7 @@ void TimeRulerLayer::setModel(Model *model)
 }
 
 bool
-TimeRulerLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-                                   int &resolution, SnapType snap) const
+TimeRulerLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
         resolution = 1;
@@ -200,7 +199,7 @@ TimeRulerLayer::paint(View *v, QPainter &paint, QRect rect) const
 {
 #ifdef DEBUG_TIME_RULER_LAYER
     cerr << "TimeRulerLayer::paint (" << rect.x() << "," << rect.y()
-            << ") [" << rect.width() << "x" << rect.height() << "]" << endl;
+         << ") [" << rect.width() << "x" << rect.height() << "]" << endl;
 #endif
     
     if (!m_model || !m_model->isOK()) return;

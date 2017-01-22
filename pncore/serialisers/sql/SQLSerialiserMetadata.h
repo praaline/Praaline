@@ -11,6 +11,7 @@
 #include "corpus/CorpusRecording.h"
 #include "corpus/CorpusAnnotation.h"
 #include "corpus/CorpusParticipation.h"
+#include "datastore/MetadataDatastore.h"
 
 namespace Praaline {
 namespace Core {
@@ -23,21 +24,25 @@ class SQLSerialiserMetadata : public IDatastore
 public:
     // Use this function to get the basic information for each corpus object and construct an hierarchical structure
     // of (lazy-loaded) corpus objects
-    // parentID: (ignored) for Corpus, corpusID for Communication and Speaker, communicationID for Recording and Annotation
-    static QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID,
-                                                           QSqlDatabase &db, CorpusDatastore *datastore);
+    static QList<CorpusObjectInfo> getCorpusObjectInfoList(
+            CorpusObject::Type type, const MetadataDatastore::Selection &selection,
+            QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
 
-    // These functions load metadata information in already created corpus objects
-    static bool loadCorpus(Corpus *corpus,
-                           QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
-    static bool loadCommunications(QList<QPointer<CorpusCommunication> > &communications,
-                                   QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
-    static bool loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers,
-                             QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
-    static bool loadRecordings(QList<QPointer<CorpusRecording> > &recordings,
-                               QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
-    static bool loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations,
-                                QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    // Load metadata information
+    static Corpus *getCorpus(
+            const QString &corpusID, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QList<QPointer<CorpusCommunication> > getCommunications(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QList<QPointer<CorpusSpeaker> > getSpeakers(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QList<QPointer<CorpusRecording> > getRecordings(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QList<QPointer<CorpusAnnotation> > getAnnotations(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QMultiMap<QString, QPointer<CorpusRecording> > getRecordingsByCommunication(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QMultiMap<QString, QPointer<CorpusAnnotation> > getAnnotationsByCommunication(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
 
     // Save means insert or update, appropriately
     static bool saveCorpus(Corpus *corpus,
@@ -70,6 +75,8 @@ public:
 private:
     SQLSerialiserMetadata() {}
 
+    static void readRecording(QSqlQuery &q, CorpusRecording *rec, MetadataStructure *structure);
+    static void readAnnotation(QSqlQuery &q, CorpusAnnotation *annot, MetadataStructure *structure);    
     static QString prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what);
     static QString prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what);
     static bool execSaveCommunication(CorpusCommunication *com, MetadataStructure *structure, QSqlDatabase &db);

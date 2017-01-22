@@ -15,13 +15,13 @@
 namespace Praaline {
 namespace Core {
 
-Corpus::Corpus(QObject *parent) :
-    CorpusObject(parent)
+Corpus::Corpus(CorpusRepository *repository, QObject *parent) :
+    CorpusObject(repository, parent)
 {
 }
 
-Corpus::Corpus(const QString &ID, const QString &name, const QString &description, QObject *parent) :
-    CorpusObject(ID, parent), m_name(name), m_description(description)
+Corpus::Corpus(const QString &ID, CorpusRepository *repository, QObject *parent) :
+    CorpusObject(ID, repository, parent)
 {
     m_corpusID = ID;
 }

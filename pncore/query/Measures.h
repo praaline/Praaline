@@ -18,6 +18,7 @@
 #include "pncore_global.h"
 #include <QString>
 #include <QPair>
+#include "base/RealTime.h"
 
 namespace Praaline {
 namespace Core {
@@ -28,10 +29,13 @@ class PRAALINE_CORE_SHARED_EXPORT Measures
 {
 public:
     static QPair<int, int> window(IntervalTier *tier, int i, int windowLeft, int windowRight, bool pauseBlocksWindow = true);
+    static QPair<int, int> window(IntervalTier *tier, RealTime centre, RealTime windowLeft, RealTime windowRight, bool pauseBlocksWindow);
+
     static bool mean(double &mean, IntervalTier *tier, QString attributeName, int i, int windowLeft, int windowRight,
                      bool pauseBlocksWindow = true, QString checkAttribute = QString());
     static double mean(IntervalTier *tier, QString attributeName, int i, int windowLeft, int windowRight,
                        bool pauseBlocksWindow = true, QString checkAttribute = QString());
+
     static double relative(IntervalTier *tier, QString attributeName, int i, int windowLeft, int windowRight,
                            bool pauseBlocksWindow = true, QString checkAttribute = QString(), bool logarithmic = false);
 

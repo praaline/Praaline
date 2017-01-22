@@ -1,27 +1,27 @@
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusObject.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/structure/MetadataStructure.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
 using namespace Praaline::Core;
 
 #include "CorpusCommunicationTableModel.h"
 
 struct CorpusCommunicationTableModelData {
-    CorpusCommunicationTableModelData() : multiCorpus(false) {}
+    CorpusCommunicationTableModelData() : multiCorpus(true) {}
 
     bool multiCorpus;
     QList<QPointer<CorpusCommunication> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;
-    QPointer<Corpus> corpus;
+    QList<QPointer<MetadataStructureAttribute> > attributes;    
 };
 
 CorpusCommunicationTableModel::CorpusCommunicationTableModel(QList<QPointer<CorpusCommunication> > items,
                                                              QList<QPointer<MetadataStructureAttribute> > attributes,
-                                                             QPointer<Corpus> corpus, bool multiCorpus, QObject *parent)
-    : QAbstractTableModel(parent), d(new CorpusCommunicationTableModelData)
+                                                             bool multiCorpus, QObject *parent) :
+    QAbstractTableModel(parent), d(new CorpusCommunicationTableModelData)
 {
     d->items = items;
     d->attributes = attributes;
-    d->corpus = corpus;
     d->multiCorpus = multiCorpus;
 }
 

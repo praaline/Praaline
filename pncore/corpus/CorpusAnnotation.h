@@ -36,9 +36,9 @@ class PRAALINE_CORE_SHARED_EXPORT CorpusAnnotation : public CorpusObject
     Q_PROPERTY(QString communicationID READ communicationID)
 
 public:
-    explicit CorpusAnnotation(QObject *parent = 0);
-    CorpusAnnotation(const QString ID, QObject *parent = 0);
-    CorpusAnnotation(CorpusAnnotation *other, QObject *parent = 0);
+    explicit CorpusAnnotation(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusAnnotation(const QString ID, CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusAnnotation(CorpusAnnotation *other, QObject *parent = 0);
     ~CorpusAnnotation() {}
 
     CorpusObject::Type type() const override { return CorpusObject::Type_Annotation; }

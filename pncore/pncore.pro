@@ -177,7 +177,6 @@ HEADERS += \
     serialisers/sql/SQLSerialiserAnnotation.h \
     serialisers/sql/SQLSerialiserAnnotationStructure.h \
     serialisers/sql/SQLSerialiserBase.h \
-    serialisers/sql/SQLSerialiserCorpus.h \
     query/Dataset.h \
     query/Measures.h \
     serialisers/mocadb/MocaDBSerialiserAnnotationStructure.h \
@@ -350,7 +349,6 @@ SOURCES += \
     serialisers/sql/SQLSerialiserAnnotation.cpp \
     serialisers/sql/SQLSerialiserAnnotationStructure.cpp \
     serialisers/sql/SQLSerialiserBase.cpp \
-    serialisers/sql/SQLSerialiserCorpus.cpp \
     serialisers/sql/SQLSerialiserMetadataStructure.cpp \
     serialisers/mocadb/MocaDBSerialiserMetadataStructure.cpp \
     serialisers/mocadb/MocaDBSerialiserMetadata.cpp \

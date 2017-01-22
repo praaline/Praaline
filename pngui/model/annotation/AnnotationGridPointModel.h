@@ -27,8 +27,8 @@ public:
     sv_frame_t duration;
     QString speakerID;
     QString levelID;
-    QString label;
     int itemNo;
+    QString label;
 
     QString getLabel() const { return (label.isEmpty()) ? QString("%1 %2 %3").arg(speakerID).arg(levelID).arg(itemNo) : label; }
 

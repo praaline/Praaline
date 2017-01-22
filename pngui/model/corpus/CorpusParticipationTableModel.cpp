@@ -6,23 +6,21 @@ using namespace Praaline::Core;
 #include "CorpusParticipationTableModel.h"
 
 struct CorpusParticipationTableModelData {
-    CorpusParticipationTableModelData() : multiCorpus(false) {}
+    CorpusParticipationTableModelData() : multiCorpus(true) {}
 
     bool multiCorpus;
     QList<QPointer<CorpusParticipation> > items;
     QList<QPointer<MetadataStructureAttribute> > attributes;
-    QPointer<Corpus> corpus;
 };
 
 
 CorpusParticipationTableModel::CorpusParticipationTableModel(QList<QPointer<CorpusParticipation> > items,
                                                              QList<QPointer<MetadataStructureAttribute> > attributes,
-                                                             QPointer<Corpus> corpus, bool multiCorpus, QObject *parent)
-    : QAbstractTableModel(parent), d(new CorpusParticipationTableModelData)
+                                                             bool multiCorpus, QObject *parent) :
+    QAbstractTableModel(parent), d(new CorpusParticipationTableModelData)
 {
     d->items = items;
     d->attributes = attributes;
-    d->corpus = corpus;
     d->multiCorpus = multiCorpus;
 }
 

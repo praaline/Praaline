@@ -14,6 +14,7 @@ namespace Praaline {
 namespace Core {
 class CorpusCommunication;
 class CorpusRecording;
+class AnnotationTier;
 class IntervalTier;
 class AnnotationTierGroup;
 }
@@ -32,6 +33,9 @@ public:
     virtual ~VisualiserWidget();
 
     void addLayerTimeInstantsFromIntevalTier(IntervalTier *tier);
+    void addLayerTimeValuesFromAnnotationTier(AnnotationTier *tier,
+                                              const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID);
+
 
 signals:
     void canChangeSolo(bool);
@@ -50,8 +54,8 @@ public slots:
     void addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                     const QList<QPair<QString, QString> > &attributes);
     void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
+
     void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
-    void exportPDF(const QString &filename);
 
 protected slots:
     virtual void importAudio();
@@ -64,7 +68,7 @@ protected slots:
     virtual void exportAudioData();
     virtual void importLayer();
     virtual void exportLayer();
-    virtual void exportImage();
+    virtual void exportVisualisation();
     virtual void saveSession();
     virtual void saveSessionAs();
     virtual void newSession();

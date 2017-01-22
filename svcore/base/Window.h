@@ -5,7 +5,7 @@
     An audio file viewer and annotation editor.
     Centre for Digital Music, Queen Mary, University of London.
     This file copyright 2006 Chris Cannam.
-    
+
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License as
     published by the Free Software Foundation; either version 2 of the
@@ -41,7 +41,7 @@ class Window
 {
 public:
     /**
-     * Construct a windower of the given type and size. 
+     * Construct a windower of the given type and size.
      *
      * Note that the cosine windows are periodic by design, rather
      * than symmetrical. (A window of size N is equivalent to a
@@ -50,17 +50,17 @@ public:
     Window(WindowType type, int size) : m_type(type), m_size(size) { encache(); }
     Window(const Window &w) : m_type(w.m_type), m_size(w.m_size) { encache(); }
     Window &operator=(const Window &w) {
-	if (&w == this) return *this;
-	m_type = w.m_type;
-	m_size = w.m_size;
-	encache();
-	return *this;
+        if (&w == this) return *this;
+        m_type = w.m_type;
+        m_size = w.m_size;
+        encache();
+        return *this;
     }
     virtual ~Window() { delete[] m_cache; }
-    
+
     void cut(T *src) const { cut(src, src); }
     void cut(T *src, T *dst) const {
-	for (int i = 0; i < m_size; ++i) dst[i] = src[i] * m_cache[i];
+        for (int i = 0; i < m_size; ++i) dst[i] = src[i] * m_cache[i];
     }
 
     T getArea() { return m_area; }
@@ -80,7 +80,7 @@ protected:
     int m_size;
     T *m_cache;
     T m_area;
-    
+
     void encache();
     void cosinewin(T *, double, double, double, double);
 };
@@ -94,38 +94,38 @@ void Window<T>::encache()
     for (i = 0; i < n; ++i) mult[i] = 1.0;
 
     switch (m_type) {
-		
+
     case RectangularWindow:
-	for (i = 0; i < n; ++i) {
-	    mult[i] *= T(0.5);
-	}
-	break;
-	    
+        for (i = 0; i < n; ++i) {
+            mult[i] *= T(0.5);
+        }
+        break;
+
     case BartlettWindow:
-	for (i = 0; i < n/2; ++i) {
-	    mult[i] *= T(i) / T(n/2);
-	    mult[i + n/2] *= T(1.0) - T(i) / T(n/2);
-	}
-	break;
-	    
+        for (i = 0; i < n/2; ++i) {
+            mult[i] *= T(i) / T(n/2);
+            mult[i + n/2] *= T(1.0) - T(i) / T(n/2);
+        }
+        break;
+
     case HammingWindow:
         cosinewin(mult, 0.54, 0.46, 0.0, 0.0);
-	break;
-	    
+        break;
+
     case HanningWindow:
         cosinewin(mult, 0.50, 0.50, 0.0, 0.0);
-	break;
-	    
+        break;
+
     case BlackmanWindow:
         cosinewin(mult, 0.42, 0.50, 0.08, 0.0);
-	break;
-	    
+        break;
+
     case GaussianWindow:
-	for (i = 0; i < n; ++i) {
+        for (i = 0; i < n; ++i) {
             mult[i] *= T(pow(2, - pow((i - (n-1)/2.0) / ((n-1)/2.0 / 3), 2)));
-	}
-	break;
-	    
+        }
+        break;
+
     case ParzenWindow:
     {
         int N = n-1;
@@ -139,19 +139,19 @@ void Window<T>::encache()
             T m = T(1.0 - 6 * pow(T(wn) / (T(N)/2), 2) * (1.0 - T(abs(wn)) / (T(N)/2)));
             mult[i] *= m;
             mult[N-i] *= m;
-        }            
+        }
         break;
     }
 
     case NuttallWindow:
         cosinewin(mult, 0.3635819, 0.4891775, 0.1365995, 0.0106411);
-	break;
+        break;
 
     case BlackmanHarrisWindow:
         cosinewin(mult, 0.35875, 0.48829, 0.14128, 0.01168);
         break;
     }
-	
+
     m_cache = mult;
 
     m_area = 0;

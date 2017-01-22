@@ -12,24 +12,34 @@
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 
+struct SyllableProminenceAnnotatorData;
+
 class SyllableProminenceAnnotator : public QObject
 {
     Q_OBJECT
 public:
     explicit SyllableProminenceAnnotator(QObject *parent = 0);
+    ~SyllableProminenceAnnotator();
+
+    QString modelsPath() const;
+    void setModelsPath(const QString &modelsPath);
+    QString modelFilenameWithoutPOS() const;
+    void setModelFilenameWithoutPOS(const QString &filename);
+    QString modelFilenameWithPOS() const;
+    void setModelFilenameWithPOS(const QString &filename);
+
+    bool openFeaturesTableFile(const QString &filename);
+    bool openCRFDataFile(const QString &filename);
+    void closeFeaturesTableFile();
+    void closeCRFDataFile();
 
     static void prepareFeatures(QHash<QString, RealValueList> &features,
                                 Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_phones = 0);
 
     Praaline::Core::IntervalTier *annotate(
-            QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-            Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token, QString speakerID,
-            QTextStream &streamFeatures, QTextStream &streamFeaturesCRF);
-
-    QString process(Praaline::Core::AnnotationTierGroup *txg, QString annotationID, QTextStream &out);
-
-    QString modelsPath() const { return m_modelsPath; }
-    void setModelsPath(const QString &modelsPath) { m_modelsPath = modelsPath; }
+            const QString &annotationID, const QString &speakerID, const QString &tierName,
+            Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token,
+            bool withPOS = true);
 
 signals:
 
@@ -51,10 +61,9 @@ private:
     Praaline::Core::IntervalTier *annotateWithCRF(
             Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token,
             QHash<QString, RealValueList> &features, bool withPOS,
-            const QString &filenameModel, const QString &tier_name = "promise");
+            const QString &filenameModel, const QString &tierName = "promise");
 
-    QString m_modelsPath;
-    QString m_currentAnnotationID;
+    SyllableProminenceAnnotatorData *d;
 };
 
 #endif // SYLLABLEPROMINENCEANNOTATOR_H

@@ -48,6 +48,7 @@ public:
     RealTime duration() const { return tMax() - tMin(); }
 
     AnnotationTier *tier(int index) const;
+    AnnotationTier *tier(const QString &name) const;
     int tiersCount() const;
     bool hasTiers() const;
     QList<AnnotationTier *> tiers() const;

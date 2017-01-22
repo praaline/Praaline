@@ -9,18 +9,30 @@
 #include "pncore/annotation/Interval.h"
 #include "pncore/annotation/IntervalTier.h"
 
+struct ProsodicBoundariesAnnotatorData;
+
 class ProsodicBoundariesAnnotator : public QObject
 {
     Q_OBJECT
 public:
     explicit ProsodicBoundariesAnnotator(QObject *parent = 0);
+    ~ProsodicBoundariesAnnotator();
+
+    QString modelsPath() const;
+    void setModelsPath(const QString &modelsPath);
+    QString modelFilename() const;
+    void setModelFilename(const QString &filename);
+
+    bool openFeaturesTableFile(const QString &filename);
+    bool openCRFDataFile(const QString &filename);
+    void closeFeaturesTableFile();
+    void closeCRFDataFile();
 
     static void prepareFeatures(QHash<QString, RealValueList> &features, Praaline::Core::IntervalTier *tier_syll);
 
     Praaline::Core::IntervalTier *annotate(
-            QString annotationID, const QString &filenameModel, bool withPOS, const QString &tierName,
-            Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token, QString speakerID,
-            QTextStream &streamFeatures, QTextStream &streamFeaturesCRF);
+            const QString &annotationID, const QString &speakerID, const QString &tierName,
+            Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token);
 
 private:
     int outputCRF(Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token,
@@ -33,7 +45,7 @@ private:
 
     static int quantize(double x, int factor, int max);
 
-    QString m_currentAnnotationID;
+    ProsodicBoundariesAnnotatorData *d;
 };
 
 #endif // PROSODICBOUNDARIESANNOTATOR_H

@@ -45,9 +45,9 @@ class PRAALINE_CORE_SHARED_EXPORT CorpusRecording : public CorpusObject
     Q_PROPERTY(QString communicationID READ communicationID)
 
 public:
-    explicit CorpusRecording(QObject *parent = 0);
-    CorpusRecording(const QString ID, QObject *parent = 0);
-    CorpusRecording(CorpusRecording *other, QObject *parent = 0);
+    explicit CorpusRecording(CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusRecording(const QString ID, CorpusRepository *repository = 0, QObject *parent = 0);
+    explicit CorpusRecording(CorpusRecording *other, QObject *parent = 0);
     ~CorpusRecording() {}
 
     CorpusObject::Type type() const override { return CorpusObject::Type_Recording; }

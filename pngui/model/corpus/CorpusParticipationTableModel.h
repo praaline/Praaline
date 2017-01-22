@@ -8,7 +8,6 @@
 
 namespace Praaline {
 namespace Core {
-class Corpus;
 class CorpusParticipation;
 class MetadataStructureAttribute;
 }
@@ -22,7 +21,7 @@ class CorpusParticipationTableModel : public QAbstractTableModel
 public:
     explicit CorpusParticipationTableModel(QList<QPointer<Praaline::Core::CorpusParticipation> > items,
                                            QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                                           QPointer<Praaline::Core::Corpus> corpus, bool multiCorpus = false, QObject *parent = 0);
+                                           bool multiCorpus = false, QObject *parent = 0);
     ~CorpusParticipationTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

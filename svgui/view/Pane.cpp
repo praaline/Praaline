@@ -1086,65 +1086,47 @@ Pane::drawDurationAndRate(QRect r, const Model *waveformModel,
     }
 }
 
-bool
-Pane::render(QPainter &paint, int xorigin, sv_frame_t f0, sv_frame_t f1)
+bool Pane::render(QPainter &paint, int xorigin, sv_frame_t f0, sv_frame_t f1)
 {
     if (!View::render(paint, xorigin + m_scaleWidth, f0, f1)) {
         return false;
     }
-
     if (m_scaleWidth > 0) {
-
         Layer *layer = getTopLayer();
-
         if (layer) {
-            
             paint.save();
-            
             paint.setPen(getForeground());
             paint.setBrush(getBackground());
             paint.drawRect(xorigin, -1, m_scaleWidth, height()+1);
-            
             paint.setBrush(Qt::NoBrush);
             layer->paintVerticalScale
                 (this, m_manager->shouldShowVerticalColourScale(),
                  paint, QRect(xorigin, 0, m_scaleWidth, height()));
-            
             paint.restore();
         }
     }
-
     return true;
 }
 
-QImage *
-Pane::toNewImage(sv_frame_t f0, sv_frame_t f1)
+QImage *Pane::toNewImage(sv_frame_t f0, sv_frame_t f1)
 {
     int x0 = int(f0 / getZoomLevel());
     int x1 = int(f1 / getZoomLevel());
-
-    QImage *image = new QImage(x1 - x0 + m_scaleWidth,
-                               height(), QImage::Format_RGB32);
-
+    QImage *image = new QImage(x1 - x0 + m_scaleWidth, height(), QImage::Format_RGB32);
     int formerScaleWidth = m_scaleWidth;
-            
     if (m_manager && m_manager->shouldShowVerticalScale()) {
         Layer *layer = getTopLayer();
         if (layer) {
             QPainter paint(image);
-            m_scaleWidth = layer->getVerticalScaleWidth
-                (this, m_manager->shouldShowVerticalColourScale(), paint);
+            m_scaleWidth = layer->getVerticalScaleWidth(this, m_manager->shouldShowVerticalColourScale(), paint);
         }
     } else {
         m_scaleWidth = 0;
     }
-
     if (m_scaleWidth != formerScaleWidth) {
         delete image;
-        image = new QImage(x1 - x0 + m_scaleWidth,
-                           height(), QImage::Format_RGB32);
+        image = new QImage(x1 - x0 + m_scaleWidth, height(), QImage::Format_RGB32);
     }        
-
     QPainter *paint = new QPainter(image);
     if (!render(*paint, 0, f0, f1)) {
         delete paint;
@@ -1156,8 +1138,7 @@ Pane::toNewImage(sv_frame_t f0, sv_frame_t f1)
     }
 }
 
-QSize
-Pane::getImageSize(sv_frame_t f0, sv_frame_t f1)
+QSize Pane::getImageSize(sv_frame_t f0, sv_frame_t f1)
 {
     QSize s = View::getImageSize(f0, f1);
     QImage *image = new QImage(100, 100, QImage::Format_RGB32);
@@ -1175,8 +1156,7 @@ Pane::getImageSize(sv_frame_t f0, sv_frame_t f1)
     return QSize(sw + s.width(), s.height());
 }
 
-sv_frame_t
-Pane::getFirstVisibleFrame() const
+sv_frame_t Pane::getFirstVisibleFrame() const
 {
     sv_frame_t f0 = getFrameForX(m_scaleWidth);
     sv_frame_t f = View::getFirstVisibleFrame();
@@ -1184,8 +1164,7 @@ Pane::getFirstVisibleFrame() const
     return f0;
 }
 
-Selection
-Pane::getSelectionAt(int x, bool &closeToLeftEdge, bool &closeToRightEdge) const
+Selection Pane::getSelectionAt(int x, bool &closeToLeftEdge, bool &closeToRightEdge) const
 {
     closeToLeftEdge = closeToRightEdge = false;
 
@@ -1369,8 +1348,7 @@ Pane::mousePressEvent(QMouseEvent *e)
             Layer *layer = getInteractionLayer();
             if (layer && !m_shiftPressed &&
                 !qobject_cast<TimeRulerLayer *>(layer)) { // don't snap to secs
-                layer->snapToFeatureFrame(this, snapFrame,
-                                          resolution, Layer::SnapLeft);
+                layer->snapToFeatureFrame(this, snapFrame, resolution, Layer::SnapLeft, e->y());
             }
         
             if (snapFrame < 0) snapFrame = 0;
@@ -2086,10 +2064,8 @@ Pane::dragExtendSelection(QMouseEvent *e)
     Layer *layer = getInteractionLayer();
     if (layer && !m_shiftPressed &&
         !qobject_cast<TimeRulerLayer *>(layer)) { // don't snap to secs
-        layer->snapToFeatureFrame(this, snapFrameLeft,
-                                  resolution, Layer::SnapLeft);
-        layer->snapToFeatureFrame(this, snapFrameRight,
-                                  resolution, Layer::SnapRight);
+        layer->snapToFeatureFrame(this, snapFrameLeft, resolution, Layer::SnapLeft, e->y());
+        layer->snapToFeatureFrame(this, snapFrameRight, resolution, Layer::SnapRight, e->y());
     }
 	
 //	cerr << "snap: frame = " << mouseFrame << ", start frame = " << m_selectionStartFrame << ", left = " << snapFrameLeft << ", right = " << snapFrameRight << endl;

@@ -230,6 +230,13 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
     d->visualiser->addAnnotationPaneToSession(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
+    d->visualiser->addProsogramPaneToSession(corpus->communication(d->currentCommunicationID)->recording(d->currentRecordingID));
+    d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+                                                        "timeNanoseconds", "rate_syll", "text");
+    d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+                                                        "timeNanoseconds", "rate_phone", "text");
+
+
     // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
 }
 

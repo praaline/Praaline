@@ -46,7 +46,9 @@ AnnotationGridLayer::setModel(AnnotationGridModel *model)
     emit modelReplaced();
 }
 
-// ====================================================================================================================
+// ==============================================================================================================================
+// Properties
+// ==============================================================================================================================
 
 Layer::PropertyList
 AnnotationGridLayer::getProperties() const
@@ -117,6 +119,8 @@ AnnotationGridLayer::getValueExtents(double &, double &, bool &, QString &) cons
     return false;
 }
 
+// ==============================================================================================================================
+
 bool
 AnnotationGridLayer::isLayerScrollable(const View *v) const
 {
@@ -135,50 +139,46 @@ void AnnotationGridLayer::setPlotStyle(PlotStyle style)
     emit layerParametersChanged();
 }
 
+int AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
+{
+    int h = v->height();
+    if ((m_plotStyle == PlotBlendedSpeakers) && m_model) {
+        int i = m_tierTuples.at(tierIndex).indexLevelAttributePair;
+        int c = m_model->countLevelsAttributes();
+        int y = i * h / c;
+        qDebug() << "Tier index " << tierIndex << " height " << y;
+        return y;
+    }
+    return int(tierIndex * h / m_tierTuples.count());
+}
 
-//AnnotationGridModel::PointList
-//AnnotationGridLayer::getLocalPoints(View *v, int x, int y) const
-//{
-//    if (!m_model) return AnnotationGridModel::PointList();
+int AnnotationGridLayer::getTierIndexForY(View *v, int y) const
+{
+    int h = v->height();
+    if ((m_plotStyle == PlotBlendedSpeakers) && m_model)
+        return int(y * m_model->countLevelsAttributes() / h);
+    return int(y * m_tierTuples.count() / h);
+}
 
-//    sv_frame_t frame0 = v->getFrameForX(-150);
-//    sv_frame_t frame1 = v->getFrameForX(v->width() + 150);
+AnnotationGridPointModel::PointList AnnotationGridLayer::getLocalPoints(View *v, int x, int y) const
+{
+    if (!m_model) return AnnotationGridPointModel::PointList();
+    // Info for the tier at the y-coordinate
+    int tierIndex = getTierIndexForY(v, y);
+    if (tierIndex < 0 || tierIndex >= m_tierTuples.count()) return AnnotationGridPointModel::PointList();
+    QString levelID = m_tierTuples.at(tierIndex).levelID;
+    // Frame from the x-coordinate
+    sv_frame_t frame = v->getFrameForX(x);
+    // Points for this tier
+    QPointer<AnnotationGridPointModel> boundaryModel = m_model->boundariesForLevel(levelID);
+    if (!boundaryModel) return AnnotationGridPointModel::PointList();
 
-//    AnnotationGridModel::PointList points(m_model->getPoints(frame0, frame1));
+    AnnotationGridPointModel::PointList onPoints = boundaryModel->getPoints(frame);
+    if (!onPoints.empty()) return onPoints;
 
-//    AnnotationGridModel::PointList rv;
-//    QFontMetrics metrics = QFontMetrics(QFont());
-
-//    for (AnnotationGridModel::PointList::iterator i = points.begin();
-//         i != points.end(); ++i) {
-
-//        const AnnotationGridModel::Point &p(*i);
-
-//        int px = v->getXForFrame(p.frame);
-//        int py = getYForHeight(v, p.height);
-
-//        QString label = p.label;
-//        if (label == "") {
-//            label = tr("<no text>");
-//        }
-
-//        QRect rect = metrics.boundingRect
-//                (QRect(0, 0, 150, 200),
-//                 Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, label);
-
-//        if (py + rect.height() > v->height()) {
-//            if (rect.height() > v->height()) py = 0;
-//            else py = v->height() - rect.height() - 1;
-//        }
-
-//        if (x >= px && x < px + rect.width() &&
-//                y >= py && y < py + rect.height()) {
-//            rv.insert(p);
-//        }
-//    }
-
-//    return rv;
-//}
+    AnnotationGridPointModel::PointList prevPoints = boundaryModel->getPreviousPoints(frame);
+    return prevPoints;
+}
 
 //bool
 //AnnotationGridLayer::getPointToDrag(View *v, int x, int y, AnnotationGridModel::Point &p) const
@@ -208,141 +208,106 @@ void AnnotationGridLayer::setPlotStyle(PlotStyle style)
 //    return true;
 //}
 
-QString
-AnnotationGridLayer::getFeatureDescription(View *v, QPoint &pos) const
-{
-    return "";
-//    int x = pos.x();
+QString AnnotationGridLayer::getFeatureDescription(View *v, QPoint &pos) const
+{    
+    if (!m_model || !m_model->getSampleRate()) return "";
 
-//    if (!m_model || !m_model->getSampleRate()) return "";
+    int x = pos.x();
+    AnnotationGridPointModel::PointList points = getLocalPoints(v, x, pos.y());
 
-//    AnnotationGridModel::PointList points = getLocalPoints(v, x, pos.y());
+    if (points.empty()) {
+        if (!m_model->isReady()) {
+            return tr("In progress");
+        } else {
+            return "";
+        }
+    }
 
-//    if (points.empty()) {
-//        if (!m_model->isReady()) {
-//            return tr("In progress");
-//        } else {
-//            return "";
-//        }
-//    }
+    sv_frame_t frame = points.begin()->frame;
+    sv_frame_t duration = points.begin()->duration;
+    RealTime rt = RealTime::frame2RealTime(frame, m_model->getSampleRate());
+    RealTime rd = RealTime::frame2RealTime(duration, m_model->getSampleRate());
 
-//    sv_frame_t useFrame = points.begin()->frame;
+    QString text = QString(tr("Time:\t%1\nDuration:\t%2"))
+            .arg(rt.toText(true).c_str()).arg(rd.toText(true).c_str());
 
-//    RealTime rt = RealTime::frame2RealTime(useFrame, m_model->getSampleRate());
-
-//    QString text;
-
-//    if (points.begin()->label == "") {
-//        text = QString(tr("Time:\t%1\nHeight:\t%2\nLabel:\t%3"))
-//                .arg(rt.toText(true).c_str())
-//                .arg(points.begin()->height)
-//                .arg(points.begin()->label);
-//    }
-
-//    pos = QPoint(v->getXForFrame(useFrame),
-//                 getYForHeight(v, points.begin()->height));
-//    return text;
+    pos = QPoint(v->getXForFrame(frame), pos.y());
+    return text;
 }
 
 
-bool
-AnnotationGridLayer::snapToFeatureFrame(View *v, sv_frame_t &frame,
-                                        int &resolution,
-                                        SnapType snap) const
+bool AnnotationGridLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
     if (!m_model) {
-        return Layer::snapToFeatureFrame(v, frame, resolution, snap);
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
     }
 
-//    resolution = m_model->getResolution();
-//    AnnotationGridModel::PointList points;
+    int tierIndex = getTierIndexForY(v, y);
+    QString levelID = m_tierTuples.at(tierIndex).levelID;
+    QPointer<AnnotationGridPointModel> boundaryModel = m_model->boundariesForLevel(levelID);
+    if (!boundaryModel) return false;
+    resolution = boundaryModel->getResolution();
 
-//    if (snap == SnapNeighbouring) {
+    AnnotationGridPointModel::PointList points;
 
-//        points = getLocalPoints(v, v->getXForFrame(frame), -1);
-//        if (points.empty()) return false;
-//        frame = points.begin()->frame;
-//        return true;
-//    }
-
-//    points = m_model->getPoints(frame, frame);
-//    sv_frame_t snapped = frame;
-//    bool found = false;
-
-//    for (AnnotationGridModel::PointList::const_iterator i = points.begin();
-//         i != points.end(); ++i) {
-
-//        if (snap == SnapRight) {
-
-//            if (i->frame > frame) {
-//                snapped = i->frame;
-//                found = true;
-//                break;
-//            }
-
-//        } else if (snap == SnapLeft) {
-
-//            if (i->frame <= frame) {
-//                snapped = i->frame;
-//                found = true; // don't break, as the next may be better
-//            } else {
-//                break;
-//            }
-
-//        } else { // nearest
-
-//            AnnotationGridModel::PointList::const_iterator j = i;
-//            ++j;
-
-//            if (j == points.end()) {
-
-//                snapped = i->frame;
-//                found = true;
-//                break;
-
-//            } else if (j->frame >= frame) {
-
-//                if (j->frame - frame < frame - i->frame) {
-//                    snapped = j->frame;
-//                } else {
-//                    snapped = i->frame;
-//                }
-//                found = true;
-//                break;
-//            }
-//        }
-//    }
-
-//    frame = snapped;
-//    return found;
-    return false;
-}
-
-int
-AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
-{
-    int h = v->height();
-    if ((m_plotStyle == PlotBlendedSpeakers) && m_model) {
-        int i = m_tierTuples.at(tierIndex).indexLevelAttributePair;
-        int c = m_model->countLevelsAttributes();
-        int y = i * h / c;
-        qDebug() << "Tier index " << tierIndex << " height " << y;
-        return y;
+    if (snap == SnapNeighbouring) {
+        points = getLocalPoints(v, v->getXForFrame(frame), y);
+        if (points.empty()) return false;
+        frame = points.begin()->frame;
+        return true;
     }
-    return int(tierIndex * h / m_tierTuples.count());
+
+    points = boundaryModel->getPoints(frame, frame);
+    sv_frame_t snapped = frame;
+    bool found = false;
+
+    for (AnnotationGridPointModel::PointList::const_iterator i = points.begin(); i != points.end(); ++i) {
+        if (snap == SnapRight) {
+            // The best frame to snap to is the end frame of whichever feature we would have snapped to the start frame of if
+            // we had been snapping left.
+            if (i->frame <= frame) {
+                if (i->frame + i->duration > frame) {
+                    snapped = i->frame + i->duration;
+                    found = true; // don't break, as the next may be better
+                }
+            } else {
+                if (!found) {
+                    snapped = i->frame;
+                    found = true;
+                }
+                break;
+            }
+        } else if (snap == SnapLeft) {
+            if (i->frame <= frame) {
+                snapped = i->frame;
+                found = true; // don't break, as the next may be better
+            } else {
+                break;
+            }
+        } else { // nearest
+            AnnotationGridPointModel::PointList::const_iterator j = i;
+            ++j;
+            if (j == points.end()) {
+                snapped = i->frame;
+                found = true;
+                break;
+            } else if (j->frame >= frame) {
+                if (j->frame - frame < frame - i->frame) {
+                    snapped = j->frame;
+                } else {
+                    snapped = i->frame;
+                }
+                found = true;
+                break;
+            }
+        }
+    }
+
+    frame = snapped;
+    return found;
 }
 
-int
-AnnotationGridLayer::getTierIndexForY(View *v, int y) const
-{
-    int h = v->height();
-    if ((m_plotStyle == PlotBlendedSpeakers) && m_model)
-        return int(y * m_model->countLevelsAttributes() / h);
-    return int(y * m_tierTuples.count() / h);
-}
-
-void
-AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
+void AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
 {
     if (!m_model || !m_model->isOK()) return;
 
@@ -360,9 +325,17 @@ AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
     QColor penColour;
     penColour = v->getForeground();
     paint.setPen(penColour);
+    paint.setRenderHint(QPainter::Antialiasing, false);
     for (int tierIndex = 1; tierIndex < tierCount; ++ tierIndex) {
         int y = getYForTierIndex(v, tierIndex);
-        paint.drawLine(v->getXForFrame(0), y, rect.right(), y);
+        paint.drawLine(rect.left(), y, rect.right(), y);
+    }
+
+    QPoint localPos;
+    AnnotationGridPointModel::Point pointToIlluminate(0);
+    if (v->shouldIlluminateLocalFeatures(this, localPos)) {
+        AnnotationGridPointModel::PointList localPoints = getLocalPoints(v, localPos.x(), localPos.y());
+        if (!localPoints.empty()) pointToIlluminate = *(localPoints.begin());
     }
 
     // Draw boundaries and data
@@ -413,21 +386,40 @@ AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
                     boundaryWidth = 2;
                 }
             }
-            // illuminate goes here
+            // Illuminate goes here
+            bool shouldIlluminate =  (!AnnotationGridPointModel::Point::Comparator()(pointToIlluminate, p) &&
+                                      !AnnotationGridPointModel::Point::Comparator()(p, pointToIlluminate));
+//            if (AnnotationGridPointModel::Point::Comparator()(pointToIlluminate, p) || AnnotationGridPointModel::Point::Comparator()(p, pointToIlluminate)) {
+                paint.setPen(penColour);
+                paint.setBrush(brushColour);
+//            } else {
+//                paint.setBrush(penColour);
+//                paint.setPen(v->getBackground());
+//            }
+//            if (AnnotationGridPointModel::Point::Comparator(pointToIlluminate, p)) {
+//                paint.setPen(getForegroundQColor(v));
+//                paint.setBrush(getForegroundQColor(v));
+//            } else {
+//                paint.setPen(getBaseQColor());
+//                paint.setBrush(brushColour);
+//            }
             // Draw boundary
-            paint.setPen(getBaseQColor());
-            paint.setBrush(brushColour);
             if (boundaryWidth > 1) {
                 paint.drawRect(x, y0, boundaryWidth - 1, boundaryHeight);
             } else {
                 paint.drawLine(x, y0, x, boundaryHeight);
             }
-            // Contents
-            QString label = m_model->data(speakerID, levelID, attributeID, p.itemNo).toString();
-            if (label.isEmpty()) continue;
+            // Contents rectangle
             int boxMaxWidth = v->getXForFrame(p.frame + p.duration) - x - 6;
             int boxMaxHeight = y1 - y0 - 4;
             QRect textRect = QRect(x + 3, y0 + 2, boxMaxWidth, boxMaxHeight);
+//            if (shouldIlluminate) {
+//                paint.setBrush(Qt::yellow);
+//                paint.drawRect(textRect);
+//            }
+            // Label
+            QString label = m_model->data(speakerID, levelID, attributeID, p.itemNo).toString();
+            if (label.isEmpty()) continue;
             QRect boundingRect = paint.fontMetrics().boundingRect(QRect(0, 0, boxMaxWidth, boxMaxHeight),
                                                                   Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap,
                                                                   label);
@@ -437,9 +429,11 @@ AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
                 paint.drawText(textRect, Qt::AlignLeft | Qt::AlignVCenter | Qt::TextWordWrap, label);
             else
                 paint.drawText(textRect, Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap, label);
+            paint.setRenderHint(QPainter::Antialiasing, false);
             // cerr << tierIndex << " " << speakerID << " " << levelID << " " << attributeID << " " << y0 << " " << y1 << " " << label << endl;
         }
     }
+
 }
 
 void
@@ -633,6 +627,34 @@ bool
 AnnotationGridLayer::editOpen(View *v, QMouseEvent *e)
 {
     if (!m_model) return false;
+
+    int tierIndex = getTierIndexForY(v, e->y());
+    sv_frame_t frame = v->getFrameForX(e->x());
+
+    // Info for this tier
+    QString speakerID = m_tierTuples.at(tierIndex).speakerID;
+    QString levelID = m_tierTuples.at(tierIndex).levelID;
+    QString attributeID = m_tierTuples.at(tierIndex).attributeID;
+
+    // Points for this tier
+    QPointer<AnnotationGridPointModel> boundaryModel = m_model->boundariesForLevel(levelID);
+    if (!boundaryModel) return false;
+    AnnotationGridPointModel::PointList prevPoints = boundaryModel->getPreviousPoints(frame);
+
+    if (!prevPoints.empty()) {
+        QString label = m_model->data(speakerID, levelID, attributeID, prevPoints.begin()->itemNo).toString();
+
+        QLineEdit *edit = new QLineEdit(v);
+
+
+        edit->move(v->getXForFrame(prevPoints.begin()->frame), getYForTierIndex(v, tierIndex));
+        edit->show();
+
+//        QMessageBox::information(v, "test", QString("speakerID: %1\nlevelID: %2\nattributeID: %3\nframe: %4\nlabel: %5\nitemNo: %6")
+//                                 .arg(speakerID).arg(levelID).arg(attributeID).arg(frame)
+//                                 .arg(label).arg(prevPoints.begin()->itemNo));
+    }
+
 
 //    AnnotationGridModel::Point text(0);
 //    if (!getPointToDrag(v, e->x(), e->y(), text)) return false;

@@ -13,22 +13,25 @@
 namespace Praaline {
 namespace Core {
 
-CorpusRecording::CorpusRecording(QObject *parent)
-    : CorpusObject(parent), m_channels(0), m_sampleRate(0), m_precisionBits(0), m_bitRate(0), m_fileSize(0)
+CorpusRecording::CorpusRecording(CorpusRepository *repository, QObject *parent) :
+    CorpusObject(repository, parent),
+    m_channels(0), m_sampleRate(0), m_precisionBits(0), m_bitRate(0), m_fileSize(0)
 {
 }
 
-CorpusRecording::CorpusRecording(const QString ID, QObject *parent)
-    : CorpusObject(ID, parent), m_channels(0), m_sampleRate(0), m_precisionBits(0), m_bitRate(0), m_fileSize(0)
+CorpusRecording::CorpusRecording(const QString ID, CorpusRepository *repository, QObject *parent) :
+    CorpusObject(ID, repository, parent),
+    m_channels(0), m_sampleRate(0), m_precisionBits(0), m_bitRate(0), m_fileSize(0)
 {
 }
 
 CorpusRecording::CorpusRecording(CorpusRecording *other, QObject *parent) :
-    CorpusObject(parent)
+    CorpusObject(0, parent)
 {
     if (!other) return;
     m_ID = other->m_ID;
     m_originalID = other->m_originalID;
+    m_repository = other->m_repository;
     m_name = other->m_name;
     m_filename = other->m_filename;
     m_format = other->m_format;
@@ -68,7 +71,7 @@ QPointer<Corpus> CorpusRecording::corpus() const
 
 QString CorpusRecording::filePath() const
 {
-    return QFileInfo(basePath() + "/" + filename()).path();
+    return basePath() + "/" + filename();
 }
 
 bool CorpusRecording::isFileAvailable() const

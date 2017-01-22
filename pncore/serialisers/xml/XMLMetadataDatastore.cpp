@@ -101,7 +101,7 @@ bool XMLMetadataDatastore::deleteNameValueList(const QString &listID)
 // ==========================================================================================================================
 // Corpus object info lists
 // ==========================================================================================================================
-QList<CorpusObjectInfo> XMLMetadataDatastore::getCorpusObjectInfoList(CorpusObject::Type type, const QString &parentID)
+QList<CorpusObjectInfo> XMLMetadataDatastore::getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection)
 {
     QList<CorpusObjectInfo> ret;
     return ret;
@@ -110,30 +110,40 @@ QList<CorpusObjectInfo> XMLMetadataDatastore::getCorpusObjectInfoList(CorpusObje
 // ==========================================================================================================================
 // Corpus
 // ==========================================================================================================================
-// Load metadata information in already created corpus objects
-bool XMLMetadataDatastore::loadCorpus(Corpus *corpus)
+// Load metadata information
+Corpus *XMLMetadataDatastore::getCorpus(const QString &corpusID)
 {
-    return false;
+    return Q_NULLPTR;
 }
 
-bool XMLMetadataDatastore::loadCommunications(QList<QPointer<CorpusCommunication> > &communications)
+QList<QPointer<CorpusCommunication> > XMLMetadataDatastore::getCommunications(const Selection &selection)
 {
-    return false;
+    QList<QPointer<CorpusCommunication> > list;
+    return list;
 }
 
-bool XMLMetadataDatastore::loadSpeakers(QList<QPointer<CorpusSpeaker> > &speakers)
+QList<QPointer<CorpusSpeaker> > XMLMetadataDatastore::getSpeakers(const Selection &selection)
 {
-    return false;
+    QList<QPointer<CorpusSpeaker> > list;
+    return list;
 }
 
-bool XMLMetadataDatastore::loadRecordings(QList<QPointer<CorpusRecording> > &recordings)
+QList<QPointer<CorpusRecording> > XMLMetadataDatastore::getRecordings(const Selection &selection)
 {
-    return false;
+    QList<QPointer<CorpusRecording> > list;
+    return list;
 }
 
-bool XMLMetadataDatastore::loadAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations)
+QList<QPointer<CorpusAnnotation> > XMLMetadataDatastore::getAnnotations(const Selection &selection)
 {
-    return false;
+    QList<QPointer<CorpusAnnotation> > list;
+    return list;
+}
+
+QList<QPointer<CorpusParticipation> > XMLMetadataDatastore::getParticipations(const Selection &selection)
+{
+    QList<QPointer<CorpusParticipation> > list;
+    return list;
 }
 
 // Save (insert or update) corpus objects
