@@ -155,9 +155,14 @@ int AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
 int AnnotationGridLayer::getTierIndexForY(View *v, int y) const
 {
     int h = v->height();
+    int tierIndex(0);
     if ((m_plotStyle == PlotBlendedSpeakers) && m_model)
-        return int(y * m_model->countLevelsAttributes() / h);
-    return int(y * m_tierTuples.count() / h);
+        tierIndex = int(y * m_model->countLevelsAttributes() / h);
+    else
+        tierIndex = (y * m_tierTuples.count() / h);
+    if (tierIndex < 0) tierIndex = 0;
+    if (tierIndex >= m_tierTuples.count()) tierIndex = m_tierTuples.count() - 1;
+    return tierIndex;
 }
 
 AnnotationGridPointModel::PointList AnnotationGridLayer::getLocalPoints(View *v, int x, int y) const
@@ -238,14 +243,16 @@ QString AnnotationGridLayer::getFeatureDescription(View *v, QPoint &pos) const
 
 bool AnnotationGridLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
-    if (!m_model) {
-        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
-    }
+    if (!m_model) return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
 
     int tierIndex = getTierIndexForY(v, y);
+    if (tierIndex < 0 || tierIndex >= m_tierTuples.count())
+        return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
+
     QString levelID = m_tierTuples.at(tierIndex).levelID;
     QPointer<AnnotationGridPointModel> boundaryModel = m_model->boundariesForLevel(levelID);
-    if (!boundaryModel) return false;
+    if (!boundaryModel) return Layer::snapToFeatureFrame(v, frame, resolution, snap, y);
+
     resolution = boundaryModel->getResolution();
 
     AnnotationGridPointModel::PointList points;

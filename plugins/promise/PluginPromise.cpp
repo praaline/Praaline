@@ -276,11 +276,15 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
         QString filenameFeaturesTable = QDir::homePath() + "/promise_boundary_features.txt";
         if (promise->openFeaturesTableFile(filenameFeaturesTable))
             printMessage(QString("Features table will be saved in: %1").arg(filenameFeaturesTable));
+        else
+            printMessage(QString("Error opening file for writing the features table: %1").arg(filenameFeaturesTable));
     }
     if (d->createCRFData) {
         QString filenameCRFData = QDir::homePath() + "/promise_boundary_crf.txt";
         if (promise->openCRFDataFile(filenameCRFData))
             printMessage(QString("CRF data will be saved in: %1").arg(filenameCRFData));
+        else
+            printMessage(QString("Error opening file for writing CRF data: %1").arg(filenameCRFData));
     }
 
     foreach(QPointer<CorpusCommunication> com, communications) {

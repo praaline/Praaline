@@ -34,6 +34,10 @@ public:
     double f0StartST() const { return 12.0 * log2(f0StartHz); }
     double f0EndST() const   { return 12.0 * log2(f0EndHz);   }
 
+    double movement() const  { return f0EndST() - f0StartST(); }
+    bool rising(double threshold = 0.0) const { return (movement() > threshold); }
+    bool falling(double threshold = 0.0) const { return (movement() < -threshold); }
+
     QString getLabel() const {
         return QString("Spk: %1 ToneSeg %2: from %3 Hz to %4 Hz Dur: %5 frames")
                 .arg(speakerID).arg(index).arg(f0StartHz).arg(f0EndHz).arg(duration);

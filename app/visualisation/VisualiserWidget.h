@@ -33,7 +33,7 @@ public:
     virtual ~VisualiserWidget();
 
     void addLayerTimeInstantsFromIntevalTier(IntervalTier *tier);
-    void addLayerTimeValuesFromAnnotationTier(AnnotationTier *tier,
+    Layer * addLayerTimeValuesFromAnnotationTier(AnnotationTier *tier,
                                               const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID);
 
 

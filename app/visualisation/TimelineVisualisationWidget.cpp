@@ -17,6 +17,8 @@ using namespace Praaline::Core;
 #include "pngui/widgets/AnnotationTimelineEditor.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"
 
+#include "svgui/layer/Layer.h"
+
 #include "VisualiserWidget.h"
 
 
@@ -231,10 +233,12 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
 
     d->visualiser->addAnnotationPaneToSession(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->visualiser->addProsogramPaneToSession(corpus->communication(d->currentCommunicationID)->recording(d->currentRecordingID));
-    d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
                                                         "timeNanoseconds", "rate_syll", "text");
-    d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+    layer_rate_syll->setDisplayExtents(0.0, 15.0);
+    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
                                                         "timeNanoseconds", "rate_phone", "text");
+    layer_rate_phone->setDisplayExtents(0.0, 30.0);
 
 
     // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));

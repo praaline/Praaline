@@ -65,7 +65,8 @@ HEADERS += \
     InterraterAgreement.h \
     ProsodyCourse.h \
     MyExperiments.h \
-    DisfluenciesExperiments.h
+    DisfluenciesExperiments.h \
+    SpeechRateExperiments.h
 
 
 SOURCES += \ 
@@ -78,4 +79,5 @@ SOURCES += \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
     MyExperiments.cpp \
-    DisfluenciesExperiments.cpp
+    DisfluenciesExperiments.cpp \
+    SpeechRateExperiments.cpp

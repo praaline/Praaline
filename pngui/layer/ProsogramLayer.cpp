@@ -23,7 +23,8 @@
 
 ProsogramLayer::ProsogramLayer() :
     SingleColourLayer(),
-    m_model(0), m_layerIntensity(new TimeValueLayer), m_layerPitch(new TimeValueLayer)
+    m_model(0), m_layerIntensity(new TimeValueLayer), m_layerPitch(new TimeValueLayer),
+    m_showPitch(true), m_showPitchRange(true), m_showIntensity(true), m_showVerticalLines(true)
 {
     m_layerIntensity->setBaseColour(ColourDatabase::getInstance()->getColourIndex(QString("Green")));
     m_layerIntensity->setPlotStyle(TimeValueLayer::PlotCurve);
@@ -63,39 +64,97 @@ ProsogramLayer::setModel(ProsogramModel *model)
 Layer::PropertyList ProsogramLayer::getProperties() const
 {
     PropertyList list = SingleColourLayer::getProperties();
+    list.push_back("Show Pitch");
+    list.push_back("Show Pitch Range");
+    list.push_back("Show Intensity");
+    list.push_back("Show Vertical Lines");
     return list;
 }
 
 QString ProsogramLayer::getPropertyLabel(const PropertyName &name) const
 {
+    if (name == "Show Pitch")           return tr("Show Pitch");
+    if (name == "Show Pitch Range")     return tr("Show Pitch Range");
+    if (name == "Show Intensity")       return tr("Show Intensity");
+    if (name == "Show Vertical Lines")  return tr("Show Vertical Lines");
     return SingleColourLayer::getPropertyLabel(name);
 }
 
 Layer::PropertyType ProsogramLayer::getPropertyType(const PropertyName &name) const
 {
+    if (name == "Show Pitch")           return ToggleProperty;
+    if (name == "Show Pitch Range")     return ToggleProperty;
+    if (name == "Show Intensity")       return ToggleProperty;
+    if (name == "Show Vertical Lines")  return ToggleProperty;
     return SingleColourLayer::getPropertyType(name);
 }
 
-int ProsogramLayer::getPropertyRangeAndValue(const PropertyName &name,
-                                              int *min, int *max, int *deflt) const
+int ProsogramLayer::getPropertyRangeAndValue(const PropertyName &name, int *min, int *max, int *deflt) const
 {
+    int garbage0(0), garbage1(0), garbage2(0);
+    if (!min) min = &garbage0;
+    if (!max) max = &garbage1;
+    if (!deflt) deflt = &garbage2;
+    if (name == "Show Pitch")           return m_showPitch ? 1 : 0;
+    if (name == "Show Pitch Range")     return m_showPitchRange ? 1 : 0;
+    if (name == "Show Intensity")       return m_showIntensity ? 1 : 0;
+    if (name == "Show Vertical Lines")  return m_showVerticalLines ? 1 : 0;
     return SingleColourLayer::getPropertyRangeAndValue(name, min, max, deflt);
 }
 
-QString ProsogramLayer::getPropertyValueLabel(const PropertyName &name,
-                                           int value) const
+QString ProsogramLayer::getPropertyValueLabel(const PropertyName &name, int value) const
 {
     return SingleColourLayer::getPropertyValueLabel(name, value);
 }
 
 void ProsogramLayer::setProperty(const PropertyName &name, int value)
 {
-    SingleColourLayer::setProperty(name, value);
+    if      (name == "Show Pitch")           setShowPitch(value ? true : false);
+    else if (name == "Show Pitch Range")     setShowPitchRange(value ? true : false);
+    else if (name == "Show Intensity")       setShowIntensity(value ? true : false);
+    else if (name == "Show Vertical Lines")  setShowVerticalLines(value ? true : false);
+    else SingleColourLayer::setProperty(name, value);
 }
 
 void ProsogramLayer::setProperties(const QXmlAttributes &attributes)
 {
     SingleColourLayer::setProperties(attributes);
+    bool showPitch = (attributes.value("showPitch").trimmed() == "true");
+    setShowPitch(showPitch);
+    bool showPitchRange = (attributes.value("showPitchRange").trimmed() == "true");
+    setShowPitchRange(showPitchRange);
+    bool showIntensity = (attributes.value("showIntensity").trimmed() == "true");
+    setShowIntensity(showIntensity);
+    bool showVerticalLines = (attributes.value("showVerticalLines").trimmed() == "true");
+    setShowVerticalLines(showVerticalLines);
+}
+
+void ProsogramLayer::setShowPitch(bool show)
+{
+    if (m_showPitch == show) return;
+    m_showPitch = show;
+    emit layerParametersChanged();
+}
+
+void ProsogramLayer::setShowPitchRange(bool show)
+{
+    if (m_showPitchRange == show) return;
+    m_showPitchRange = show;
+    emit layerParametersChanged();
+}
+
+void ProsogramLayer::setShowIntensity(bool show)
+{
+    if (m_showIntensity == show) return;
+    m_showIntensity = show;
+    emit layerParametersChanged();
+}
+
+void ProsogramLayer::setShowVerticalLines(bool show)
+{
+    if (m_showVerticalLines == show) return;
+    m_showVerticalLines = show;
+    emit layerParametersChanged();
 }
 
 // ====================================================================================================================
@@ -359,11 +418,15 @@ void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t fr
         const AnnotationGridPointModel::Point &p(*i);
         int x = v->getXForFrame(p.frame);
         paint.setRenderHint(QPainter::Antialiasing, false);
+        // Boundary line inside tier
         paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
         paint.drawLine(x, tier_y0, x, tier_y1);
-        paint.setPen(QPen(Qt::black, 1, verticalLinePenstyle));
-        paint.drawLine(x, 0, x, tier_y0);
-
+        // Vertical lines (optionally)
+        if (m_showVerticalLines) {
+            paint.setPen(QPen(Qt::black, 1, verticalLinePenstyle));
+            paint.drawLine(x, 0, x, tier_y0);
+        }
+        // Label (convert SAMPA to IPA)
         if (p.label.isEmpty()) continue;
         QString label = convertSAMPAtoIPAUnicode(p.label);
         int boxMaxWidth = v->getXForFrame(p.frame + p.duration) - x - 2;
@@ -423,13 +486,19 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
 
     // Draw pitch range
     // ----------------------------------------------------------------------------------------------------------------
+    if (m_showPitchRange) {
 
+    }
 
     // Draw intensity and pitch
     // ----------------------------------------------------------------------------------------------------------------
-    m_layerIntensity->paint(v, paint, rect);
-    m_layerPitch->setDisplayExtents(min, max);
-    m_layerPitch->paint(v, paint, rect);
+    if (m_showIntensity) {
+        m_layerIntensity->paint(v, paint, rect);
+    }
+    if (m_showPitch) {
+        m_layerPitch->setDisplayExtents(min, max);
+        m_layerPitch->paint(v, paint, rect);
+    }
 
     // Draw phones + syllables
     // ----------------------------------------------------------------------------------------------------------------
@@ -469,7 +538,9 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     // Draw tonal segments
     // ----------------------------------------------------------------------------------------------------------------
     QPen penTonalSegment(Qt::black, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
-    QPen penTonalSegmentIlluminated(Qt::red, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+    QPen penTonalSegmentIlluminated(Qt::magenta, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+    QPen penTonalSegmentRising(Qt::darkRed, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
+    QPen penTonalSegmentFalling(Qt::darkGreen, 3, Qt::SolidLine, Qt::SquareCap, Qt::RoundJoin);
 
     ProsogramTonalSegmentModel::PointList segments = segmentModel->getPoints(frame0, frame1);
     for (ProsogramTonalSegmentModel::PointList::const_iterator i = segments.begin(); i != segments.end(); ++i) {
@@ -485,7 +556,9 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
         if (p.frame == illuminateFrame) {
             paint.setPen(penTonalSegmentIlluminated);
         } else {
-            paint.setPen(penTonalSegment);
+            if      (p.rising(3.0))  paint.setPen(penTonalSegmentRising);
+            else if (p.falling(3.0)) paint.setPen(penTonalSegmentFalling);
+            else                     paint.setPen(penTonalSegment);
         }
         paint.setBrush(getBaseQColor());
         paint.drawLine(x0, y0, x1, y1);

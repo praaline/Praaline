@@ -48,7 +48,7 @@ SpectrumLayer::SpectrumLayer() :
 SpectrumLayer::~SpectrumLayer()
 {
     Model *m = const_cast<Model *>
-        (static_cast<const Model *>(m_sliceableModel));
+            (static_cast<const Model *>(m_sliceableModel));
     if (m) m->aboutToDelete();
     m_sliceableModel = 0;
     delete m;
@@ -72,7 +72,7 @@ SpectrumLayer::setModel(DenseTimeValueModel *model)
 
     if (m_sliceableModel) {
         Model *m = const_cast<Model *>
-            (static_cast<const Model *>(m_sliceableModel));
+                (static_cast<const Model *>(m_sliceableModel));
         m->aboutToDelete();
         setSliceableModel(0);
         delete m;
@@ -104,7 +104,7 @@ SpectrumLayer::setupFFT()
 {
     if (m_sliceableModel) {
         Model *m = const_cast<Model *>
-            (static_cast<const Model *>(m_sliceableModel));
+                (static_cast<const Model *>(m_sliceableModel));
         m->aboutToDelete();
         setSliceableModel(0);
         delete m;
@@ -175,8 +175,7 @@ SpectrumLayer::getPropertyType(const PropertyName &name) const
 QString
 SpectrumLayer::getPropertyGroupName(const PropertyName &name) const
 {
-    if (name == "Window Size" ||
-	name == "Window Increment") return tr("Window");
+    if (name == "Window Size" || name == "Window Increment") return tr("Window");
     if (name == "Show Peak Frequencies") return tr("Bins");
     return SliceLayer::getPropertyGroupName(name);
 }
@@ -194,22 +193,22 @@ SpectrumLayer::getPropertyRangeAndValue(const PropertyName &name,
 
     if (name == "Window Size") {
 
-	*min = 0;
-	*max = 15;
+        *min = 0;
+        *max = 15;
         *deflt = 5;
-	
-	val = 0;
-	int ws = m_windowSize;
-	while (ws > 32) { ws >>= 1; val ++; }
+
+        val = 0;
+        int ws = m_windowSize;
+        while (ws > 32) { ws >>= 1; val ++; }
 
     } else if (name == "Window Increment") {
-	
-	*min = 0;
-	*max = 5;
+
+        *min = 0;
+        *max = 5;
         *deflt = 2;
-	
+
         val = m_windowHopLevel;
-    
+
     } else if (name == "Show Peak Frequencies") {
 
         return m_showPeaks ? 1 : 0;
@@ -224,21 +223,21 @@ SpectrumLayer::getPropertyRangeAndValue(const PropertyName &name,
 
 QString
 SpectrumLayer::getPropertyValueLabel(const PropertyName &name,
-				    int value) const
+                                     int value) const
 {
     if (name == "Window Size") {
-	return QString("%1").arg(32 << value);
+        return QString("%1").arg(32 << value);
     }
     if (name == "Window Increment") {
-	switch (value) {
-	default:
-	case 0: return tr("None");
-	case 1: return tr("25 %");
-	case 2: return tr("50 %");
-	case 3: return tr("75 %");
-	case 4: return tr("87.5 %");
-	case 5: return tr("93.75 %");
-	}
+        switch (value) {
+        default:
+        case 0: return tr("None");
+        case 1: return tr("25 %");
+        case 2: return tr("50 %");
+        case 3: return tr("75 %");
+        case 4: return tr("87.5 %");
+        case 5: return tr("93.75 %");
+        }
     }
     return SliceLayer::getPropertyValueLabel(name, value);
 }
@@ -253,7 +252,7 @@ void
 SpectrumLayer::setProperty(const PropertyName &name, int value)
 {
     if (name == "Window Size") {
-	setWindowSize(32 << value);
+        setWindowSize(32 << value);
     } else if (name == "Window Increment") {
         setWindowHopLevel(value);
     } else if (name == "Show Peak Frequencies") {
@@ -574,7 +573,7 @@ SpectrumLayer::getFeatureDescription(View *v, QPoint &p) const
 
     int minbin = 0, maxbin = 0, range = 0;
     QString genericDesc = SliceLayer::getFeatureDescriptionAux
-        (v, p, false, minbin, maxbin, range);
+            (v, p, false, minbin, maxbin, range);
 
     if (genericDesc == "") return "";
 
@@ -583,7 +582,7 @@ SpectrumLayer::getFeatureDescription(View *v, QPoint &p) const
 
     double maxvalue = minvalue;
     if (maxbin < int(m_values.size())) maxvalue = m_values[maxbin];
-        
+
     if (minvalue > maxvalue) std::swap(minvalue, maxvalue);
     
     QString binstr;
@@ -637,20 +636,20 @@ SpectrumLayer::getFeatureDescription(View *v, QPoint &p) const
 
     if (range > int(m_sliceableModel->getResolution())) {
         description = tr("%1\nBin:\t%2 (%3)\n%4 value:\t%5\ndB:\t%6")
-            .arg(genericDesc)
-            .arg(binstr)
-            .arg(hzstr)
-            .arg(m_samplingMode == NearestSample ? tr("First") :
-                 m_samplingMode == SampleMean ? tr("Mean") : tr("Peak"))
-            .arg(valuestr)
-            .arg(dbstr);
+                .arg(genericDesc)
+                .arg(binstr)
+                .arg(hzstr)
+                .arg(m_samplingMode == NearestSample ? tr("First") :
+                                                       m_samplingMode == SampleMean ? tr("Mean") : tr("Peak"))
+                .arg(valuestr)
+                .arg(dbstr);
     } else {
         description = tr("%1\nBin:\t%2 (%3)\nValue:\t%4\ndB:\t%5")
-            .arg(genericDesc)
-            .arg(binstr)
-            .arg(hzstr)
-            .arg(valuestr)
-            .arg(dbstr);
+                .arg(genericDesc)
+                .arg(binstr)
+                .arg(hzstr)
+                .arg(valuestr)
+                .arg(dbstr);
     }
     
     return description;
@@ -660,7 +659,7 @@ void
 SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
 {
     if (!m_originModel || !m_originModel->isOK() ||
-        !m_originModel->isReady()) {
+            !m_originModel->isReady()) {
         cerr << "SpectrumLayer::paint: no origin model, or origin model not OK or not ready" << endl;
         return;
     }
@@ -671,7 +670,7 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
     }
 
     FFTModel *fft = dynamic_cast<FFTModel *>
-        (const_cast<DenseThreeDimensionalModel *>(m_sliceableModel));
+            (const_cast<DenseThreeDimensionalModel *>(m_sliceableModel));
 
     double thresh = (pow(10, -6) / m_gain) * (m_windowSize / 2.0); // -60dB adj
 
@@ -679,9 +678,9 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
     int w = v->width() - xorigin - 1;
 
     int pkh = 0;
-//!!!    if (m_binScale == LogBins) {
-        pkh = 10;
-//!!!    }
+    //!!!    if (m_binScale == LogBins) {
+    pkh = 10;
+    //!!!    }
 
     paint.save();
 
@@ -689,7 +688,7 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
 
         // draw peak lines
 
-//        cerr << "Showing peaks..." << endl;
+        //        cerr << "Showing peaks..." << endl;
 
         int col = int(v->getCentreFrame() / fft->getResolution());
 
@@ -703,7 +702,7 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
         peakmaxbin = int(((peakmaxfreq * fft->getHeight() * 2) / fft->getSampleRate()));
         
         FFTModel::PeakSet peaks = fft->getPeakFrequencies
-            (FFTModel::MajorPitchAdaptivePeaks, col, peakminbin, peakmaxbin);
+                (FFTModel::MajorPitchAdaptivePeaks, col, peakminbin, peakmaxbin);
 
         ColourMapper mapper(ColourMapper::BlackOnWhite, 0, 1);
 
@@ -724,12 +723,12 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
 
             int bin = i->first;
             
-//            cerr << "bin = " << bin << ", thresh = " << thresh << ", value = " << fft->getMagnitudeAt(col, bin) << endl;
+            //            cerr << "bin = " << bin << ", thresh = " << thresh << ", value = " << fft->getMagnitudeAt(col, bin) << endl;
 
             if (!fft->isOverThreshold(col, bin, float(thresh))) continue;
             
             double freq = i->second;
-          
+
             int x = int(lrint(getXForFrequency(freq, w)));
 
             double norm = 0.f;
@@ -753,79 +752,79 @@ SpectrumLayer::paint(View *v, QPainter &paint, QRect rect) const
     //relevant to Colour3DPlotLayer with unit Hz, but that's a bigger
     //proposition.
 
-//    if (m_binScale == LogBins) {
+    //    if (m_binScale == LogBins) {
 
-//        int pkh = 10;
-        int h = v->height();
+    //        int pkh = 10;
+    int h = v->height();
 
-        // piano keyboard
-        //!!! should be in a new paintHorizontalScale()?
-        // nice to have a piano keyboard class, of course
+    // piano keyboard
+    //!!! should be in a new paintHorizontalScale()?
+    // nice to have a piano keyboard class, of course
 
-	paint.drawLine(xorigin, h - pkh - 1, w + xorigin, h - pkh - 1);
+    paint.drawLine(xorigin, h - pkh - 1, w + xorigin, h - pkh - 1);
 
-	int px = xorigin, ppx = xorigin;
-	paint.setBrush(paint.pen().color());
+    int px = xorigin, ppx = xorigin;
+    paint.setBrush(paint.pen().color());
 
-	for (int i = 0; i < 128; ++i) {
+    for (int i = 0; i < 128; ++i) {
 
-	    double f = Pitch::getFrequencyForPitch(i);
-	    int x = int(lrint(getXForFrequency(f, w)));
-                           
-            x += xorigin;
+        double f = Pitch::getFrequencyForPitch(i);
+        int x = int(lrint(getXForFrequency(f, w)));
 
-            if (i == 0) {
-                px = ppx = x;
-            }
-            if (i == 1) {
-                ppx = px - (x - px);
-            }
+        x += xorigin;
 
-            if (x < xorigin) {
-                ppx = px;
-                px = x;
-                continue;
-            }
-                
-            if (x > w) {
-                break;
-            }
+        if (i == 0) {
+            px = ppx = x;
+        }
+        if (i == 1) {
+            ppx = px - (x - px);
+        }
 
-	    int n = (i % 12);
-
-            if (n == 1) {
-                // C# -- fill the C from here
-                QColor col = Qt::gray;
-                if (i == 61) { // filling middle C
-                    col = Qt::blue;
-                    col = col.light(150);
-                }
-                if (x - ppx > 2) {
-                    paint.fillRect((px + ppx) / 2 + 1,
-                                   h - pkh,
-                                   x - (px + ppx) / 2 - 1,
-                                   pkh,
-                                   col);
-                }
-            }
-
-	    if (n == 1 || n == 3 || n == 6 || n == 8 || n == 10) {
-		// black notes
-		paint.drawLine(x, h - pkh, x, h);
-		int rw = int(lrint(double(x - px) / 4) * 2);
-		if (rw < 2) rw = 2;
-		paint.drawRect(x - rw/2, h - pkh, rw, pkh/2);
-	    } else if (n == 0 || n == 5) {
-		// C, F
-		if (px < w) {
-		    paint.drawLine((x + px) / 2, h - pkh, (x + px) / 2, h);
-		}
-	    }
-
+        if (x < xorigin) {
             ppx = px;
-	    px = x;
-	}
-//    }
+            px = x;
+            continue;
+        }
+
+        if (x > w) {
+            break;
+        }
+
+        int n = (i % 12);
+
+        if (n == 1) {
+            // C# -- fill the C from here
+            QColor col = Qt::gray;
+            if (i == 61) { // filling middle C
+                col = Qt::blue;
+                col = col.light(150);
+            }
+            if (x - ppx > 2) {
+                paint.fillRect((px + ppx) / 2 + 1,
+                               h - pkh,
+                               x - (px + ppx) / 2 - 1,
+                               pkh,
+                               col);
+            }
+        }
+
+        if (n == 1 || n == 3 || n == 6 || n == 8 || n == 10) {
+            // black notes
+            paint.drawLine(x, h - pkh, x, h);
+            int rw = int(lrint(double(x - px) / 4) * 2);
+            if (rw < 2) rw = 2;
+            paint.drawRect(x - rw/2, h - pkh, rw, pkh/2);
+        } else if (n == 0 || n == 5) {
+            // C, F
+            if (px < w) {
+                paint.drawLine((x + px) / 2, h - pkh, (x + px) / 2, h);
+            }
+        }
+
+        ppx = px;
+        px = x;
+    }
+    //    }
 
     paint.restore();
 }
@@ -843,9 +842,9 @@ SpectrumLayer::toXml(QTextStream &stream,
     QString s = QString("windowSize=\"%1\" "
                         "windowHopLevel=\"%2\" "
                         "showPeaks=\"%3\" ")
-        .arg(m_windowSize)
-        .arg(m_windowHopLevel)
-        .arg(m_showPeaks ? "true" : "false");
+            .arg(m_windowSize)
+            .arg(m_windowHopLevel)
+            .arg(m_showPeaks ? "true" : "false");
 
     SliceLayer::toXml(stream, indent, extraAttributes + " " + s);
 }
@@ -867,4 +866,4 @@ SpectrumLayer::setProperties(const QXmlAttributes &attributes)
     setShowPeaks(showPeaks);
 }
 
-    
+

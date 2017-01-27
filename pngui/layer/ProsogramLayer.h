@@ -54,6 +54,15 @@ public:
     virtual void toXml(QTextStream &stream, QString indent = "",
                        QString extraAttributes = "") const;
 
+    // Properties
+    void setShowPitch(bool);
+    bool getShowPitch() const { return m_showPitch; }
+    void setShowPitchRange(bool);
+    bool getShowPitchRange() const { return m_showPitchRange; }
+    void setShowIntensity(bool);
+    bool getShowIntensity() const { return m_showIntensity; }
+    void setShowVerticalLines(bool);
+    bool getShowVerticalLines() const { return m_showVerticalLines; }
 
     // VerticalScaleLayer methods
     virtual int getYForValue(View *, double value) const;
@@ -75,6 +84,10 @@ protected:
 
     mutable double m_scaleMinimum;
     mutable double m_scaleMaximum;
+    bool m_showPitch;
+    bool m_showPitchRange;
+    bool m_showIntensity;
+    bool m_showVerticalLines;
 };
 
 #endif // PROSOGRAMLAYER_H

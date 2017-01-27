@@ -3378,6 +3378,7 @@ void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec)
     CommandHistory::getInstance()->addCommand(command);
     Pane *pane = command->getPane();
     Layer *newLayer = m_document->createImportedLayer(model);
+    newLayer->setProperty("Show Vertical Lines", 0);
     m_document->addLayerToView(pane, newLayer);
     m_paneStack->setCurrentPane(pane);
     m_paneStack->setCurrentLayer(pane, newLayer);
@@ -3399,11 +3400,11 @@ void VisualiserWidget::addLayerTimeInstantsFromIntevalTier(IntervalTier *tier)
     m_paneStack->setCurrentLayer(pane, newLayer);
 }
 
-void VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
+Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
         AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID)
 {
-    if (!tier) return;
-    if (!getMainModel()) return;
+    if (!tier) return 0;
+    if (!getMainModel()) return 0;
     CommandHistory::getInstance()->startCompoundOperation("Add Pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
     CommandHistory::getInstance()->addCommand(command);
@@ -3411,6 +3412,7 @@ void VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
     LayerFactory::LayerType type = LayerFactory::Type("TimeValues");
     Layer *newLayer = m_document->createEmptyLayer(type);
     newLayer->setPresentationName(tier->name());
+    newLayer->setProperty("Plot Type", 0);
     SparseTimeValueModel *model = qobject_cast<SparseTimeValueModel *>(newLayer->getModel());
     for (int i = 0; i < tier->count(); ++i) {
         RealTime t = RealTime::fromNanoseconds(tier->at(i)->attribute(timeAttributeID).toLongLong());
@@ -3423,6 +3425,7 @@ void VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
     m_paneStack->setCurrentLayer(pane, newLayer);
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
+    return newLayer;
 }
 
 void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
