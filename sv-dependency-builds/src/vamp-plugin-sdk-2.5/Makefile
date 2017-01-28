@@ -34,13 +34,13 @@ RDFGENDIR	= rdf/generator
 #   clean     -- remove binary targets
 #   distclean -- remove all targets
 #
-default:	sdk plugins
+default:	sdk plugins host rdfgen test
 
 # Compile flags
 #
 CC		= gcc
 CXX		= g++
-CXXFLAGS	= -I. -g -O2 -fPIC -Wall 
+CXXFLAGS	= -I. -g -O2 -fPIC -Wall -I/usr/local/Cellar/libsndfile/1.0.26/include
 
 # ar, ranlib
 #
@@ -59,7 +59,7 @@ PLUGIN_EXT	= .so
 
 # Libraries required for the host.
 #
-HOST_LIBS	= ./libvamp-hostsdk.a  
+HOST_LIBS	= ./libvamp-hostsdk.a -L/usr/local/Cellar/libsndfile/1.0.26/lib -lsndfile 
 
 # Libraries required for the RDF template generator.
 #

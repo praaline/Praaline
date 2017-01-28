@@ -163,7 +163,6 @@ HEADERS += \
     serialisers/xml/XMLSerialiserAnnotation.h \
     serialisers/xml/XMLSerialiserAnnotationStructure.h \
     serialisers/xml/XMLSerialiserBase.h \
-    serialisers/xml/XMLSerialiserCorpus.h \
     serialisers/xml/XMLSerialiserCorpusBookmark.h \
     serialisers/xml/XMLSerialiserMetadataStructure.h \
     query/QueryDefinition.h \
@@ -204,7 +203,8 @@ HEADERS += \
     datastore/FileDatastore.h \
     structure/StructureAttributeBase.h \
     base/IDatastore.h \
-    base/ISaveable.h
+    base/ISaveable.h \
+    serialisers/xml/XMLSerialiserMetadata.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -335,7 +335,6 @@ SOURCES += \
     serialisers/xml/XMLSerialiserAnnotation.cpp \
     serialisers/xml/XMLSerialiserAnnotationStructure.cpp \
     serialisers/xml/XMLSerialiserBase.cpp \
-    serialisers/xml/XMLSerialiserCorpus.cpp \
     serialisers/xml/XMLSerialiserCorpusBookmark.cpp \
     serialisers/xml/XMLSerialiserMetadataStructure.cpp \
     query/QueryDefinition.cpp \
@@ -370,7 +369,8 @@ SOURCES += \
     datastore/CorpusRepository.cpp \
     datastore/FileDatastore.cpp \
     structure/StructureAttributeBase.cpp \
-    datastore/CorpusDatastore.cpp
+    datastore/CorpusDatastore.cpp \
+    serialisers/xml/XMLSerialiserMetadata.cpp
 
 DISTFILES += \
     pncore.qmodel

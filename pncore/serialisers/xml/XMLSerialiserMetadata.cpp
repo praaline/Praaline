@@ -12,7 +12,7 @@
 #include "corpus/CorpusAnnotation.h"
 #include "XMLSerialiserMetadataStructure.h"
 #include "XMLSerialiserAnnotationStructure.h"
-#include "XMLSerialiserCorpus.h"
+#include "XMLSerialiserMetadata.h"
 
 namespace Praaline {
 namespace Core {
