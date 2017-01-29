@@ -113,27 +113,27 @@ void CorpusExplorerTableWidget::refreshModel()
     if (d->corpuObjectType == CorpusObject::Type_Communication) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Communication);
         QList<QPointer<CorpusCommunication> > items = repository->metadata()->getCommunications(MetadataDatastore::Selection("", "", ""));
-        newModel = new CorpusCommunicationTableModel(items, attributes, true, this);
+        newModel = new CorpusCommunicationTableModel(items, attributes, true);
     }
     else if (d->corpuObjectType == CorpusObject::Type_Speaker) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Speaker);
         QList<QPointer<CorpusSpeaker> > items = repository->metadata()->getSpeakers(MetadataDatastore::Selection("", "", ""));
-        newModel = new CorpusSpeakerTableModel(items, attributes, true, this);
+        newModel = new CorpusSpeakerTableModel(items, attributes, true);
     }
     else if (d->corpuObjectType == CorpusObject::Type_Recording) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Recording);
         QList<QPointer<CorpusRecording> > items = repository->metadata()->getRecordings(MetadataDatastore::Selection("", "", ""));
-        newModel = new CorpusRecordingTableModel(items, attributes, true, this);
+        newModel = new CorpusRecordingTableModel(items, attributes, true);
     }
     else if (d->corpuObjectType == CorpusObject::Type_Annotation) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Annotation);
         QList<QPointer<CorpusAnnotation> > items = repository->metadata()->getAnnotations(MetadataDatastore::Selection("", "", ""));
-        newModel = new CorpusAnnotationTableModel(items, attributes, true, this);
+        newModel = new CorpusAnnotationTableModel(items, attributes, true);
     }
     else if (d->corpuObjectType == CorpusObject::Type_Participation) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Participation);
         QList<QPointer<CorpusParticipation> > items = repository->metadata()->getParticipations(MetadataDatastore::Selection("", "", ""));
-        newModel = new CorpusParticipationTableModel(items, attributes, true, this);
+        newModel = new CorpusParticipationTableModel(items, attributes, true);
     }
     // try to update model, if not possible show an empty table
     if (newModel) {

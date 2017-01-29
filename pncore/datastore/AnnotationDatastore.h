@@ -101,6 +101,7 @@ public:
     // Annotation Structure
     // ==========================================================================================================================
     virtual bool loadAnnotationStructure() = 0;
+    virtual bool saveAnnotationStructure() = 0;
     virtual bool createAnnotationLevel(AnnotationStructureLevel *newLevel) = 0;
     virtual bool renameAnnotationLevel(const QString &levelID, const QString &newLevelID) = 0;
     virtual bool deleteAnnotationLevel(const QString &levelID) = 0;

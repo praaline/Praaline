@@ -101,7 +101,7 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     d->waitingSpinner->setLineLength(15);
     d->waitingSpinner->setLineWidth(5);
     d->waitingSpinner->setInnerRadius(10);
-    d->waitingSpinner->setRevolutionsPerSecond(1);
+    d->waitingSpinner->setRevolutionsPerSecond(10);
     d->waitingSpinner->setColor(QColor(81, 4, 71));
 }
 
@@ -233,12 +233,19 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
 
     d->visualiser->addAnnotationPaneToSession(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->visualiser->addProsogramPaneToSession(corpus->communication(d->currentCommunicationID)->recording(d->currentRecordingID));
-    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
-                                                        "timeNanoseconds", "rate_syll", "text");
-    layer_rate_syll->setDisplayExtents(0.0, 15.0);
-    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
-                                                        "timeNanoseconds", "rate_phone", "text");
-    layer_rate_phone->setDisplayExtents(0.0, 30.0);
+//    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+//                                                        "timeNanoseconds", "rate_syll", "text");
+//    if (layer_rate_syll) layer_rate_syll->setDisplayExtents(0.0, 15.0);
+//    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+//                                                        "timeNanoseconds", "rate_phone", "text");
+//    if (layer_rate_phone) layer_rate_phone->setDisplayExtents(0.0, 30.0);
+    Layer *layer_joystick_sprate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                d->currentTierGroups.first()->tier("joystick_speechrate"), "timeNanoseconds", "axis1", "text");
+    if (layer_joystick_sprate) layer_joystick_sprate->setDisplayExtents(-32768.0, 32768.0);
+
+    Layer *layer_joystick_pitch = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                d->currentTierGroups.first()->tier("joystick_pitchmovement"), "timeNanoseconds", "axis1", "text");
+    if (layer_joystick_pitch) layer_joystick_pitch->setDisplayExtents(-32768.0, 32768.0);
 
 
     // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));

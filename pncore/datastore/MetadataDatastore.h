@@ -73,6 +73,7 @@ public:
     // Metadata Structure
     // ==========================================================================================================================
     virtual bool loadMetadataStructure() = 0;
+    virtual bool saveMetadataStructure() = 0;
     virtual bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) = 0;
     virtual bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) = 0;
     virtual bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) = 0;
@@ -106,7 +107,9 @@ public:
 
     // Save (insert or update) corpus objects
     virtual bool saveCorpus(Corpus *corpus) = 0;
+    virtual bool saveCommunication(CorpusCommunication *communication) = 0;
     virtual bool saveCommunications(QList<QPointer<CorpusCommunication> > &communications) = 0;
+    virtual bool saveSpeaker(CorpusSpeaker *speaker) = 0;
     virtual bool saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) = 0;
     virtual bool saveRecordings(QList<QPointer<CorpusRecording> > &recordings) = 0;
     virtual bool saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) = 0;

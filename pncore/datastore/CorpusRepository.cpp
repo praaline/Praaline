@@ -53,12 +53,6 @@ CorpusRepository *CorpusRepository::create(const CorpusRepositoryDefinition &def
 {
     errorMessages.clear();
     CorpusRepository *repository = new CorpusRepository(definition, parent);
-    repository->metadataStructure()->addSection(CorpusObject::Type_Corpus, new MetadataStructureSection("corpus", "Corpus", "(Default section)"));
-    repository->metadataStructure()->addSection(CorpusObject::Type_Communication, new MetadataStructureSection("communication", "Communication", "(Default section)"));
-    repository->metadataStructure()->addSection(CorpusObject::Type_Recording, new MetadataStructureSection("recording", "Recording", "(Default section)"));
-    repository->metadataStructure()->addSection(CorpusObject::Type_Annotation, new MetadataStructureSection("annotation", "Annotation", "(Default section)"));
-    repository->metadataStructure()->addSection(CorpusObject::Type_Speaker, new MetadataStructureSection("speaker", "Speaker", "(Default section)"));
-    repository->metadataStructure()->addSection(CorpusObject::Type_Participation, new MetadataStructureSection("participation", "Participation", "(Default section)"));
     if (repository->annotations()) {
         if (!repository->annotations()->createDatastore(definition.infoDatastoreAnnotations)) {
             errorMessages.append("Error creating annotation datastore: ").append(repository->lastError()).append("\n");

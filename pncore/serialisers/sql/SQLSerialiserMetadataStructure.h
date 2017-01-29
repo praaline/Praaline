@@ -14,9 +14,11 @@ class SQLSerialiserMetadataStructure : public SQLSchemaProxyBase, public SQLSeri
 public:
     static bool initialiseMetadataStructureSchema(QSqlDatabase &db);
     static bool upgradeMetadataStructureSchema(QSqlDatabase &db);
-    static bool createMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool initialiseMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool upgradeMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
     static bool loadMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db);
+    static bool saveMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db);
 
     static bool createMetadataSection(CorpusObject::Type type, QPointer<MetadataStructureSection> newSection, QSqlDatabase &db);
     static bool updateMetadataSection(CorpusObject::Type type, QPointer<MetadataStructureSection> updatedSection, QSqlDatabase &db);

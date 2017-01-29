@@ -2,6 +2,8 @@
     error( Could not find the common.pri file! )
 }
 
+QT += core gui widgets
+
 CONFIG += staticlib
 TARGET = sys
 

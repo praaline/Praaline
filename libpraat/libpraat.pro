@@ -24,5 +24,5 @@ SUBDIRS += external/gsl \
            artsynth \
            contrib/ola
 
-# SUBDIRS += main
-SUBDIRS += qpraat
+SUBDIRS += main
+# SUBDIRS += qpraat

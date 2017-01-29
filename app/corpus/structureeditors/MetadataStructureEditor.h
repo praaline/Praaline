@@ -28,6 +28,7 @@ public:
 private slots:
     void activeCorpusRepositoryChanged(const QString &repositoryID);
 
+    void saveMetadataStructure();
     void addMetadataStructureSection();
     void addMetadataStructureAttribute();
     void removeMetadataStructureItem();

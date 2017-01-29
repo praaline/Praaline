@@ -13,7 +13,9 @@ class SQLSerialiserAnnotationStructure : public SQLSchemaProxyBase
 {
 public:
     static bool initialiseAnnotationStructureTables(QSqlDatabase &db);
+
     static bool loadAnnotationStructure(QPointer<AnnotationStructure> structure, QSqlDatabase &db);
+    static bool saveAnnotationStructure(QPointer<AnnotationStructure> structure, QSqlDatabase &db);
 
     static bool createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel, QSqlDatabase &db);
     static bool updateAnnotationLevel(QPointer<AnnotationStructureLevel> updatedLevel, QSqlDatabase &db);

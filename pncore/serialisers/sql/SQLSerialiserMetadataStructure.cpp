@@ -139,7 +139,7 @@ bool createNewSchema(MetadataStructure *structure, CorpusObject::Type what, QSql
 }
 
 // static
-bool SQLSerialiserMetadataStructure::createMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db)
+bool SQLSerialiserMetadataStructure::initialiseMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
     db.transaction();
     if (!createNewSchema(structure, CorpusObject::Type_Corpus, db))         { db.rollback(); return false; }
@@ -153,6 +153,19 @@ bool SQLSerialiserMetadataStructure::createMetadataSchema(QPointer<MetadataStruc
 }
 
 // static
+bool SQLSerialiserMetadataStructure::upgradeMetadataSchema(QPointer<MetadataStructure> structure, QSqlDatabase &db)
+{
+    bool result = true;
+    if (!db.tables().contains("corpus"))        result = result && createNewSchema(structure, CorpusObject::Type_Corpus, db);
+    if (!db.tables().contains("communication")) result = result && createNewSchema(structure, CorpusObject::Type_Communication, db);
+    if (!db.tables().contains("speaker"))       result = result && createNewSchema(structure, CorpusObject::Type_Speaker, db);
+    if (!db.tables().contains("recording"))     result = result && createNewSchema(structure, CorpusObject::Type_Recording, db);
+    if (!db.tables().contains("annotation"))    result = result && createNewSchema(structure, CorpusObject::Type_Annotation, db);
+    if (!db.tables().contains("participation")) result = result && createNewSchema(structure, CorpusObject::Type_Participation, db);
+    return result;
+}
+
+// static
 bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
     if (!structure) return false;
@@ -160,17 +173,25 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
     q1.setForwardOnly(true);
     q1.prepare("SELECT * FROM praalineMetadataSections ORDER BY itemOrder");
     q2.setForwardOnly(true);
-    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE sectionID = :sectionID ORDER BY itemOrder");
+    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE objectType=:objectType AND sectionID = :sectionID ORDER BY itemOrder");
     //
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
     structure->clearAll();
     while (q1.next()) {
         CorpusObject::Type objectType = SQLSerialiserSystem::corpusObjectTypeFromCode(q1.value("objectType").toString());
-        MetadataStructureSection *section = new MetadataStructureSection(q1.value("sectionID").toString(),
-                                                                         q1.value("name").toString(),
-                                                                         q1.value("description").toString(),
-                                                                         q1.value("itemOrder").toInt());
+        MetadataStructureSection *section(0);
+        bool sectionExists(false);
+        section = structure->section(objectType, q1.value("sectionID").toString());
+        if (section)
+            sectionExists = true;
+        else {
+            section = new MetadataStructureSection(q1.value("sectionID").toString(),
+                                                   q1.value("name").toString(),
+                                                   q1.value("description").toString(),
+                                                   q1.value("itemOrder").toInt());
+        }
+        q2.bindValue(":objectType", q1.value("objectType").toString());
         q2.bindValue(":sectionID", section->ID());
         q2.exec();
         while (q2.next()) {
@@ -187,10 +208,55 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
             attribute->setParent(section);
             section->addAttribute(attribute);
         }
-        section->setParent(structure);
-        structure->addSection(objectType, section);
+        if (!sectionExists) {
+            section->setParent(structure);
+            structure->addSection(objectType, section);
+        }
     }
     return true;
+}
+
+// static
+bool SQLSerialiserMetadataStructure::saveMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db)
+{
+    if (!structure) return false;
+    QSqlQuery q1(db), q2(db);
+    q1.setForwardOnly(true);
+    q1.prepare("SELECT sectionID FROM praalineMetadataSections WHERE objectType = :objectType");
+    q2.setForwardOnly(true);
+    q2.prepare("SELECT attributeID FROM praalineMetadataAttributes WHERE objectType = :objectType");
+    QList<CorpusObject::Type> objectTypes;
+    objectTypes << CorpusObject::Type_Corpus << CorpusObject::Type_Communication << CorpusObject::Type_Speaker
+                << CorpusObject::Type_Recording << CorpusObject::Type_Annotation << CorpusObject::Type_Participation;
+    bool result = true;
+    foreach (CorpusObject::Type objectType, objectTypes) {
+        QStringList sectionIDsInDatabase, sectionIDsInStructure, attributeIDsInDatabase, attributeIDsInStructure;
+        q1.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(objectType));
+        q1.exec();
+        while (q1.next()) sectionIDsInDatabase << q1.value("sectionID").toString();
+        q2.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(objectType));
+        q2.exec();
+        while (q2.next()) attributeIDsInDatabase << q2.value("attributeID").toString();
+        // Update (possilby insert)
+        foreach (QPointer<MetadataStructureSection> section, structure->sections(objectType)) {
+            result = result && updateMetadataSection(objectType, section, db);
+            sectionIDsInStructure << section->ID();
+            foreach (QPointer<MetadataStructureAttribute> attribute, section->attributes()) {
+                result = result && updateMetadataAttribute(objectType, attribute, db);
+                attributeIDsInStructure << attribute->ID();
+            }
+        }
+        // Delete if necessary
+        foreach (QString attributeID, attributeIDsInDatabase) {
+            if (!attributeIDsInStructure.contains(attributeID))
+                result = result && deleteMetadataAttribute(objectType, attributeID, db);
+        }
+        foreach (QString sectionID, sectionIDsInDatabase) {
+            if (!sectionIDsInStructure.contains(sectionID))
+                result = result && deleteMetadataSection(objectType, sectionID, db);
+        }
+    }
+    return result;
 }
 
 // static
@@ -214,7 +280,15 @@ bool SQLSerialiserMetadataStructure::createMetadataSection(CorpusObject::Type ty
 bool SQLSerialiserMetadataStructure::updateMetadataSection(CorpusObject::Type type, QPointer<MetadataStructureSection> updatedSection, QSqlDatabase &db)
 {
     if (!updatedSection) return false;
-    QSqlQuery q(db);
+    QSqlQuery q_exists(db), q(db);
+    // Check if section exists - if not, create it
+    q_exists.prepare("SELECT sectionID FROM praalineMetadataSections WHERE sectionID=:sectionID ");
+    q_exists.bindValue(":sectionID", updatedSection->ID());
+    q_exists.exec();
+    bool exists = false;
+    while (q_exists.next()) exists = true;
+    if (!exists) return createMetadataSection(type, updatedSection, db);
+    // Otherwise, ok to update
     q.prepare("UPDATE praalineMetadataSections SET name=:name, description=:description, itemOrder=:itemOrder "
               "WHERE objectType=:objectType AND sectionID=:sectionID ");
     q.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(type));
@@ -282,7 +356,15 @@ bool SQLSerialiserMetadataStructure::updateMetadataAttribute(CorpusObject::Type 
                                                              QSqlDatabase &db)
 {
     if (!updatedAttribute) return false;
-    QSqlQuery q(db);
+    QSqlQuery q_exists(db), q(db);
+    // Check if attribute exists - if not, create it
+    q_exists.prepare("SELECT attributeID FROM praalineMetadataAttributes WHERE attributeID=:attributeID ");
+    q_exists.bindValue(":attributeID", updatedAttribute->ID());
+    q_exists.exec();
+    bool exists = false;
+    while (q_exists.next()) exists = true;
+    if (!exists) return createMetadataAttribute(type, updatedAttribute, db);
+    // Otherwise, ok to update
     q.prepare("UPDATE praalineMetadataAttributes SET sectionID=:sectionID, name=:name, description=:description, "
               "nameValueList=:nameValueList, mandatory=:mandatory, itemOrder=:itemOrder "
               "WHERE objectType=:objectType AND attributeID=:attributeID");

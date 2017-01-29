@@ -103,6 +103,47 @@ bool SQLSerialiserAnnotationStructure::loadAnnotationStructure(QPointer<Annotati
 }
 
 // static
+bool SQLSerialiserAnnotationStructure::saveAnnotationStructure(QPointer<AnnotationStructure> structure, QSqlDatabase &db)
+{
+    if (!structure) return false;
+    QSqlQuery q1(db), q2(db);
+    q1.setForwardOnly(true);
+    q1.prepare("SELECT levelID FROM praalineAnnotationLevels");
+    q2.setForwardOnly(true);
+    q2.prepare("SELECT attributeID FROM praalineMetadataAttributes WHERE levelID = :levelID");
+    bool result = true;
+    // Get levelIDs in database
+    QStringList levelIDsInDatabase, levelIDsInStructure;
+    q1.exec();
+    while (q1.next()) levelIDsInDatabase << q1.value("levelID").toString();
+    // Update (possilby insert)
+    foreach (QPointer<AnnotationStructureLevel> level, structure->levels()) {
+        result = result && updateAnnotationLevel(level, db);
+        levelIDsInStructure << level->ID();
+        // Get attributeIDs in database
+        QStringList attributeIDsInDatabase, attributeIDsInStructure;
+        q2.bindValue(":levelID", level->ID());
+        q2.exec();
+        while (q2.next()) attributeIDsInDatabase << q2.value("attributeID").toString();
+        foreach (QPointer<AnnotationStructureAttribute> attribute, level->attributes()) {
+            result = result && updateAnnotationAttribute(level->ID(), attribute, db);
+            attributeIDsInStructure << attribute->ID();
+        }
+        // Delete attributes if necessary
+        foreach (QString attributeID, attributeIDsInDatabase) {
+            if (!attributeIDsInStructure.contains(attributeID))
+                result = result && deleteAnnotationAttribute(level->ID(), attributeID, db);
+        }
+    }
+    // Delete levels if necessary
+    foreach (QString levelID, levelIDsInDatabase) {
+        if (!levelIDsInStructure.contains(levelID))
+            result = result && deleteAnnotationLevel(levelID, db);
+    }
+    return result;
+}
+
+// static
 bool SQLSerialiserAnnotationStructure::createAnnotationLevel(QPointer<AnnotationStructureLevel> newLevel, QSqlDatabase &db)
 {
     Migrations::Migration createLevel;
@@ -192,7 +233,26 @@ bool SQLSerialiserAnnotationStructure::createAnnotationLevel(QPointer<Annotation
 // static
 bool SQLSerialiserAnnotationStructure::updateAnnotationLevel(QPointer<AnnotationStructureLevel> updatedLevel, QSqlDatabase &db)
 {
-    return false;
+    if (!updatedLevel) return false;
+    QSqlQuery q_exists(db), q(db);
+    // Check if level exists - if not, create it
+    q_exists.prepare("SELECT levelID FROM praalineAnnotationLevels WHERE levelID=:levelID ");
+    q_exists.bindValue(":levelID", updatedLevel->ID());
+    q_exists.exec();
+    bool exists = false;
+    while (q_exists.next()) exists = true;
+    if (!exists) return createAnnotationLevel(updatedLevel, db);
+    // Otherwise, ok to update
+    q.prepare("UPDATE praalineAnnotationLevels SET name=:name, description=:description, parentLevelID=:parentLevelID, nameValueList=:nameValueList "
+              "WHERE levelID=:levelID ");
+    q.bindValue(":levelID", updatedLevel->ID());
+    q.bindValue(":name", updatedLevel->name());
+    q.bindValue(":description", updatedLevel->description());
+    q.bindValue(":parentLevelID", updatedLevel->parentLevelID());
+    q.bindValue(":nameValueList", updatedLevel->nameValueList());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
 }
 
 // static
@@ -271,7 +331,27 @@ bool SQLSerialiserAnnotationStructure::createAnnotationAttribute(const QString &
 bool SQLSerialiserAnnotationStructure::updateAnnotationAttribute(const QString &levelID, QPointer<AnnotationStructureAttribute> updatedAttribute,
                                                                  QSqlDatabase &db)
 {
-    return false;
+    if (!updatedAttribute) return false;
+    QSqlQuery q_exists(db), q(db);
+    // Check if attribute exists - if not, create it
+    q_exists.prepare("SELECT attributeID FROM praalineAnnotationAttributes WHERE attributeID=:attributeID ");
+    q_exists.bindValue(":attributeID", updatedAttribute->ID());
+    q_exists.exec();
+    bool exists = false;
+    while (q_exists.next()) exists = true;
+    if (!exists) return createAnnotationAttribute(levelID, updatedAttribute, db);
+    // Otherwise, ok to update
+    q.prepare("UPDATE praalineAnnotationAttributes SET name=:name, description=:description, nameValueList=:nameValueList "
+              "WHERE levelID=:levelID AND attributeID=:attributeID");
+    q.bindValue(":levelID", levelID);
+    q.bindValue(":attributeID", updatedAttribute->ID());
+    q.bindValue(":name", updatedAttribute->name());
+    q.bindValue(":description", updatedAttribute->description());
+    q.bindValue(":nameValueList", updatedAttribute->nameValueList());
+    // q.bindValue(":itemOrder", updatedAttribute->itemOrder());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
 }
 
 // static

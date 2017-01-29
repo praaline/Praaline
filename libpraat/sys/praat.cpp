@@ -46,6 +46,10 @@
 #include "ScriptEditor.h"
 #include "Strings_.h"
 
+#include <QDebug>
+#include <QWindow>
+#include <QMainWindow>
+
 #if gtk
 	#include <gdk/gdkx.h>
 #endif
@@ -1348,7 +1352,8 @@ void praat_init (const char32 *title, unsigned int argc, char **argv) {
 		praat_actions_createDynamicMenu (raam);
 		trace (U"showing the Objects window");
 		GuiThing_show (raam);
-	//Melder_fatal (U"stop");
+
+        //Melder_fatal (U"stop");
 		#if defined (UNIX) && ! defined (NO_GRAPHICS)
 			try {
 				autofile f = Melder_fopen (& pidFile, "a");
@@ -1378,7 +1383,7 @@ void praat_init (const char32 *title, unsigned int argc, char **argv) {
 
 	trace (U"creating the Picture window");
 	trace (U"before picture window shows: locale is ", Melder_peek8to32 (setlocale (LC_ALL, NULL)));
-	if (! praatP.dontUsePictureWindow) praat_picture_init ();
+    if (! praatP.dontUsePictureWindow) praat_picture_init ();
 	trace (U"after picture window shows: locale is ", Melder_peek8to32 (setlocale (LC_ALL, NULL)));
 
 	if (unknownCommandLineOption) {
@@ -1746,7 +1751,14 @@ void praat_run (void) {
 			#endif
 			trace (U"start the GTK event loop");
 			trace (U"locale is ", Melder_peek8to32 (setlocale (LC_ALL, NULL)));
-			gtk_main ();
+
+//            const WId wid = GDK_WINDOW_XID( GDK_DRAWABLE (GTK_WIDGET (theCurrentPraatApplication -> topShell -> d_gtkWindow)->window ));
+//            QWindow* window = QWindow::fromWinId(wid);
+//            QWidget* container = QWidget::createWindowContainer(window);
+//            container->show();
+//            qDebug() << "The WIN ID is " << wid;
+
+            gtk_main ();
 		#elif cocoa
 			[NSApp run];
 		#elif motif

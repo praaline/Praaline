@@ -27,6 +27,7 @@ public:
     // Metadata Structure
     // ==========================================================================================================================
     bool loadMetadataStructure() override;
+    bool saveMetadataStructure() override;
     bool createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute) override;
     bool renameMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const QString &newAttributeID) override;
     bool deleteMetadataAttribute(CorpusObject::Type type, const QString &attributeID) override;
@@ -60,7 +61,9 @@ public:
 
     // Save (insert or update) corpus objects
     bool saveCorpus(Corpus *corpus) override;
+    bool saveCommunication(CorpusCommunication *communication) override;
     bool saveCommunications(QList<QPointer<CorpusCommunication> > &communications) override;
+    bool saveSpeaker(CorpusSpeaker *speaker) override;
     bool saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
     bool saveRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
     bool saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;

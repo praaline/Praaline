@@ -44,6 +44,11 @@ bool XMLMetadataDatastore::loadMetadataStructure()
     return false;
 }
 
+bool XMLMetadataDatastore::saveMetadataStructure()
+{
+    return false;
+}
+
 bool XMLMetadataDatastore::createMetadataAttribute(CorpusObject::Type type, QPointer<MetadataStructureAttribute> newAttribute)
 {
     return false;
@@ -152,7 +157,17 @@ bool XMLMetadataDatastore::saveCorpus(Corpus *corpus)
     return false;
 }
 
+bool XMLMetadataDatastore::saveCommunication(CorpusCommunication *communication)
+{
+    return false;
+}
+
 bool XMLMetadataDatastore::saveCommunications(QList<QPointer<CorpusCommunication> > &communications)
+{
+    return false;
+}
+
+bool XMLMetadataDatastore::saveSpeaker(CorpusSpeaker *speaker)
 {
     return false;
 }

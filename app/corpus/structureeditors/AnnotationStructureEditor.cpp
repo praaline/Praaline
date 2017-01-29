@@ -26,6 +26,7 @@ struct AnnotationStructureEditorData {
 
     CorpusRepositoriesManager *corpusRepositoriesManager;
 
+    QAction *actionSaveAnnotationStructure;
     QAction *actionAddAnnotationStructureLevel;
     QAction *actionAddAnnotationStructureAttribute;
     QAction *actionRemoveAnnotationStructureItem;
@@ -77,7 +78,7 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
 
     // Set proportions
     ui->splitter->setSizes(QList<int>() << 100 << 100);
-    ui->splitter->setStretchFactor(0, 3);
+    ui->splitter->setStretchFactor(0, 4);
     ui->splitter->setStretchFactor(1, 1);
 }
 
@@ -105,6 +106,12 @@ void AnnotationStructureEditor::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // STRUCTURE EDITOR
     // ------------------------------------------------------------------------------------------------------
+
+    d->actionSaveAnnotationStructure = new QAction(QIcon(":icons/actions/save.png"), "Save", this);
+    connect(d->actionSaveAnnotationStructure, SIGNAL(triggered()), SLOT(saveAnnotationStructure()));
+    command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveAnnotationStructure", d->actionSaveAnnotationStructure, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarAnnotationStructure->addAction(d->actionSaveAnnotationStructure);
 
     d->actionAddAnnotationStructureLevel = new QAction(QIcon(":icons/actions/list_add.png"), "Add Level", this);
     connect(d->actionAddAnnotationStructureLevel, SIGNAL(triggered()), SLOT(addAnnotationStructureLevel()));
@@ -173,6 +180,14 @@ void AnnotationStructureEditor::activeCorpusRepositoryChanged(const QString &rep
 }
 
 // ----------------------------------------------- annotations --------------------------------------------------------
+
+void AnnotationStructureEditor::saveAnnotationStructure()
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->annotations()) return;
+    repository->annotations()->saveAnnotationStructure();
+}
 
 void AnnotationStructureEditor::addAnnotationStructureLevel()
 {

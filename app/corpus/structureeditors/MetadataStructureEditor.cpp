@@ -26,6 +26,7 @@ struct MetadataStructureEditorData {
 
     CorpusRepositoriesManager *corpusRepositoriesManager;
 
+    QAction *actionSaveMetadataStructure;
     QAction *actionAddMetadataStructureSection;
     QAction *actionAddMetadataStructureAttribute;
     QAction *actionRemoveMetadataStructureItem;
@@ -104,6 +105,12 @@ void MetadataStructureEditor::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // STRUCTURE EDITOR
     // ------------------------------------------------------------------------------------------------------
+    d->actionSaveMetadataStructure = new QAction(QIcon(":icons/actions/save.png"), "Save", this);
+    connect(d->actionSaveMetadataStructure, SIGNAL(triggered()), SLOT(saveMetadataStructure()));
+    command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveMetadataStructure", d->actionSaveMetadataStructure, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarMetadataStructure->addAction(d->actionSaveMetadataStructure);
+
     d->actionAddMetadataStructureSection = new QAction(QIcon(":icons/actions/list_add.png"), "Add Section", this);
     connect(d->actionAddMetadataStructureSection, SIGNAL(triggered()), SLOT(addMetadataStructureSection()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.AddMetadataSection", d->actionAddMetadataStructureSection, context);
@@ -172,6 +179,14 @@ void MetadataStructureEditor::activeCorpusRepositoryChanged(const QString &repos
 
 // ----------------------------------------------- metadata --------------------------------------------------------
 
+void MetadataStructureEditor::saveMetadataStructure()
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    if (!repository->metadata()) return;
+    repository->metadata()->saveMetadataStructure();
+}
+
 void MetadataStructureEditor::addMetadataStructureSection()
 {
     QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
@@ -228,6 +243,7 @@ void MetadataStructureEditor::addMetadataStructureAttribute()
     DataType dt = DataType(dialog->datatype());
     if (dialog->datalength() > 0) dt = DataType(dt.base(), dialog->datalength());
     newAttribute->setDatatype(dt);
+    newAttribute->setParent(section);
 
     if (!repository->metadata()->createMetadataAttribute(type, newAttribute))
         return; // failed to create attribute

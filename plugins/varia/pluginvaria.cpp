@@ -24,6 +24,7 @@
 #include "MyExperiments.h"
 #include "ProsodyCourse.h"
 #include "DisfluenciesExperiments.h"
+#include "SpeechRateExperiments.h"
 
 #include "pluginvaria.h"
 
@@ -158,9 +159,15 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {    
-    // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);
-    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
+    if (communications.isEmpty()) return;
+    SpeechRateExperiments sr;
+    sr.readResultsFile(communications.first()->repository(),
+                       "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/results_P0.txt");
     return;
+
+//    // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);
+//    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
+//    return;
 
 
     int countDone = 0;

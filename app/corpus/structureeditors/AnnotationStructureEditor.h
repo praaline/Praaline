@@ -28,6 +28,7 @@ public:
 private slots:
     void activeCorpusRepositoryChanged(const QString &repositoryID);
 
+    void saveAnnotationStructure();
     void addAnnotationStructureLevel();
     void addAnnotationStructureAttribute();
     void removeAnnotationStructureItem();

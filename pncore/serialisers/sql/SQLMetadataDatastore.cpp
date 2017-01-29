@@ -52,7 +52,7 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
     }
     // Initialise database
     SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(d->database);
-    SQLSerialiserMetadataStructure::createMetadataSchema(d->structure, d->database);
+    SQLSerialiserMetadataStructure::initialiseMetadataSchema(d->structure, d->database);
     SQLSerialiserNameValueList::initialiseNameValueListSchema(d->database);
     return true;
 }
@@ -72,6 +72,7 @@ bool SQLMetadataDatastore::openDatastore(const DatastoreInfo &info)
     }
     // Upgrade database if needed
     SQLSerialiserMetadataStructure::upgradeMetadataStructureSchema(d->database);
+    SQLSerialiserMetadataStructure::upgradeMetadataSchema(d->structure, d->database);
     SQLSerialiserNameValueList::upgradeNameValueListSchema(d->database);
     return true;
 }
@@ -110,6 +111,11 @@ bool SQLMetadataDatastore::retypeMetadataAttribute(CorpusObject::Type type, cons
 bool SQLMetadataDatastore::loadMetadataStructure()
 {
     return SQLSerialiserMetadataStructure::loadMetadataStructure(d->structure, d->database);
+}
+
+bool SQLMetadataDatastore::saveMetadataStructure()
+{
+    return SQLSerialiserMetadataStructure::saveMetadataStructure(d->structure, d->database);
 }
 
 // ==========================================================================================================================
@@ -195,6 +201,11 @@ bool SQLMetadataDatastore::saveCorpus(Corpus *corpus)
     return SQLSerialiserMetadata::saveCorpus(corpus, d->database, d->structure, this);
 }
 
+bool SQLMetadataDatastore::saveCommunication(CorpusCommunication *communication)
+{
+    return SQLSerialiserMetadata::saveCommunication(communication, d->database, d->structure, this);
+}
+
 bool SQLMetadataDatastore::saveCommunications(QList<QPointer<CorpusCommunication> > &communications)
 {
     bool success = true;
@@ -203,6 +214,11 @@ bool SQLMetadataDatastore::saveCommunications(QList<QPointer<CorpusCommunication
         success = success && SQLSerialiserMetadata::saveCommunication(com, d->database, d->structure, this);
     }
     return success;
+}
+
+bool SQLMetadataDatastore::saveSpeaker(CorpusSpeaker *speaker)
+{
+    return SQLSerialiserMetadata::saveSpeaker(speaker, d->database, d->structure, this);
 }
 
 bool SQLMetadataDatastore::saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers)

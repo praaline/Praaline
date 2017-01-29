@@ -8,18 +8,18 @@ CONFIG += thread
 
 QMAKE_CFLAGS += -std=gnu99 -O1
 
-win32 {
+win* {
     QMAKE_CXXFLAGS += -std=c++0x -Wshadow
     DEFINES += PRAAT_LIB "WINVER=0x0600" "_WIN32_WINNT=0x0600" "_WIN32_IE=0x0700" UNICODE "_FILE_OFFSET_BITS=64" #"main=wingwmain"
 }
-unix:!macx {
+linux* {
     QMAKE_CFLAGS += -Werror=missing-prototypes -Werror=implicit -Wreturn-type -Wunused -Wunused-parameter -Wuninitialized -g1 -pthread
     CONFIG += link_pkgconfig
     PKGCONFIG += gtk+-2.0
     QMAKE_CXXFLAGS += -std=c++11 -Wshadow
-    DEFINES += PRAAT_LIB UNIX linux ALSA "_FILE_OFFSET_BITS=64"
+    DEFINES += PRAAT_LIB UNIX linux ALSA HAVE_PULSEAUDIO "_FILE_OFFSET_BITS=64"
 }
-mac {
+macx* {
     DEFINES += PRAAT_LIB macintosh "_FILE_OFFSET_BITS=64"
     QMAKE_CXXFLAGS += -std=c++11 -Wshadow
 }
