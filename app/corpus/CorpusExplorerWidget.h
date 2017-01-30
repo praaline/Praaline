@@ -28,6 +28,8 @@ private slots:
     void corpusRepositoryRemoved(const QString &repositoryID);
     void selectionChanged(QList<QObject*>);
 
+    void saveMetadata();
+
     void addCorpus();
     void addCommunication();
     void addSpeaker();

@@ -39,7 +39,7 @@ QString AddAttributeDialog::datatype() const
 {
     if      (ui->comboDatatype->currentText() == "Text")                return "varchar";
     else if (ui->comboDatatype->currentText() == "Number (real)")       return "double";
-    else if (ui->comboDatatype->currentText() == "Number (integer)")    return "int";
+    else if (ui->comboDatatype->currentText() == "Number (integer)")    return "integer";
     else if (ui->comboDatatype->currentText() == "Yes/No (boolean)")    return "bool";
     else if (ui->comboDatatype->currentText() == "Date/Time")           return "datetime";
     return "varchar";

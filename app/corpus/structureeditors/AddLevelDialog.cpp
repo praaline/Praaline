@@ -59,7 +59,7 @@ QString AddLevelDialog::datatype() const
 {
     if (ui->comboDatatype->currentText() == "Text")                     return "varchar";
     else if (ui->comboDatatype->currentText() == "Number (real)")       return "double";
-    else if (ui->comboDatatype->currentText() == "Number (integer)")    return "int";
+    else if (ui->comboDatatype->currentText() == "Number (integer)")    return "integer";
     else if (ui->comboDatatype->currentData() == "Yes/No (boolean)")    return "bool";
     else if (ui->comboDatatype->currentData() == "Date/Time")           return "datetime";
     return "varchar";

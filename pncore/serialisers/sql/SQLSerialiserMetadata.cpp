@@ -85,6 +85,7 @@ bool prepareSelectQuery(QSqlQuery &query, CorpusObject::Type type, const Metadat
     if (!selection.corpusID.isEmpty())          query.bindValue(":corpusID", selection.corpusID);
     if (!selection.communicationID.isEmpty())   query.bindValue(":communicationID", selection.communicationID);
     if (!selection.speakerID.isEmpty())         query.bindValue(":speakerID", selection.speakerID);
+    return true;
 }
 
 // static
@@ -107,25 +108,35 @@ Corpus *SQLSerialiserMetadata::getCorpus(
         const QString &corpusID, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
 {
     if (!structure) return Q_NULLPTR;
-    Corpus *corpus = new Corpus();
+    Corpus *corpus = new Corpus(corpusID);
+    QSqlQuery q(db);
+    prepareSelectQuery(q, CorpusObject::Type_Corpus, MetadataDatastore::Selection(corpusID, "", ""));
+    q.exec();
+    while (q.next()) {
+        corpus->setName(q.value("corpusName").toString());
+        corpus->setDescription(q.value("description").toString());
+        foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Corpus)) {
+            corpus->setProperty(attribute->ID(), q.value(attribute->ID()));
+        }
+    }
     // Read communications and speakers
     foreach (CorpusCommunication *com, getCommunications(MetadataDatastore::Selection(corpusID, "", ""), db, structure, datastore))
         corpus->addCommunication(com);
     foreach (CorpusSpeaker *spk, getSpeakers(MetadataDatastore::Selection(corpusID, "", ""), db, structure, datastore))
         corpus->addSpeaker(spk);
     // Read participations
-    QSqlQuery q(db);
-    prepareSelectQuery(q, CorpusObject::Type_Participation, MetadataDatastore::Selection(corpusID, "", ""));
-    q.exec();
-    while (q.next()) {
-        QString communicationID = q.value("communicationID").toString();
-        QString speakerID = q.value("speakerID").toString();
-        QString role = q.value("role").toString();
+    QSqlQuery qpart(db);
+    prepareSelectQuery(qpart, CorpusObject::Type_Participation, MetadataDatastore::Selection(corpusID, "", ""));
+    qpart.exec();
+    while (qpart.next()) {
+        QString communicationID = qpart.value("communicationID").toString();
+        QString speakerID = qpart.value("speakerID").toString();
+        QString role = qpart.value("role").toString();
         CorpusParticipation *participation = corpus->addParticipation(communicationID, speakerID, role);
         if (participation) {
             participation->setCorpusID(corpus->ID());
             foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Participation)) {
-                participation->setProperty(attribute->ID(), q.value(attribute->ID()));
+                participation->setProperty(attribute->ID(), qpart.value(attribute->ID()));
             }
             setClean(participation);
             datastore->setRepository(participation);

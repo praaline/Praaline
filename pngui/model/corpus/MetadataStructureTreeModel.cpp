@@ -75,6 +75,7 @@ QModelIndex MetadataStructureTreeModel::index(int row, int column, const QModelI
         return QModelIndex();
     QObject *parentItem = getItem(parent);
     if (d->structure == parentItem) {
+        if (row < 0 || row >= d->corpusObjectCategories.count()) return QModelIndex();
         MetadataStructureTreeModelCategory *child = d->corpusObjectCategories.at(row);
         return createIndex(row, column, child);
     }

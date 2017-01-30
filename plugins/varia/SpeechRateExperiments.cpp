@@ -217,7 +217,7 @@ bool SpeechRateExperiments::readResultsFile(CorpusRepository *repository, const 
         }
         else if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "identification" && state == InExperiment) {
             QStringList attributes;
-            attributes << "age=" << "sex" << "email" << "L1" << "hearingprob" << "musicaltraining" << "annotexperience";
+            attributes << "age" << "sex" << "email" << "L1" << "hearingprob" << "musicaltraining" << "annotexperience";
             readAttributesToCorpusObject(xml, participant.data(), attributes);
         }
         else if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "workingmemory" && state == InExperiment) {

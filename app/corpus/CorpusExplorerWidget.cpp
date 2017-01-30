@@ -44,6 +44,7 @@ struct CorpusExplorerWidgetData {
         metadataEditorPrimary(0), metadataEditorSecondary(0), preview(0)
     { }
 
+    QAction *actionSaveMetadata;
     QAction *actionAddCorpus;
     QAction *actionAddCommunication;
     QAction *actionAddSpeaker;
@@ -184,6 +185,13 @@ void CorpusExplorerWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // CORPUS MENU
     // ------------------------------------------------------------------------------------------------------
+    d->actionSaveMetadata = new QAction(QIcon(":icons/actions/save.png"), tr("Save Metadata"), this);
+    connect(d->actionSaveMetadata, SIGNAL(triggered()), SLOT(saveMetadata()));
+    command = ACTION_MANAGER->registerAction("Corpus.SaveMetadata", d->actionSaveMetadata, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    corpus_menu->addAction(command);
+    d->toolbarCorpusExplorer->addAction(d->actionSaveMetadata);
+
     d->actionAddCorpus = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Corpus..."), this);
     connect(d->actionAddCorpus, SIGNAL(triggered()), SLOT(addCorpus()));
     command = ACTION_MANAGER->registerAction("Corpus.AddCorpus", d->actionAddCorpus, context);
@@ -491,6 +499,14 @@ void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
         d->preview->openCommunication(communication);
         return;
     }
+}
+
+// =========================================================================================================================================
+// Save
+// =========================================================================================================================================
+void CorpusExplorerWidget::saveMetadata()
+{
+    d->activeCorpus->save();
 }
 
 // =========================================================================================================================================
