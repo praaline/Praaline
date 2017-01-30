@@ -4,16 +4,13 @@
 #include "pncore/corpus/Corpus.h"
 
 struct ExportMetadataWizardData {
-    ExportMetadataWizardData() : corpus(0) {}
-
-    QPointer<Corpus> corpus;
+    ExportMetadataWizardData() {}
 };
 
-ExportMetadataWizard::ExportMetadataWizard(Corpus *corpus, QWidget *parent) :
+ExportMetadataWizard::ExportMetadataWizard(QWidget *parent) :
     QWizard(parent), ui(new Ui::ExportMetadataWizard), d(new ExportMetadataWizardData)
 {
     ui->setupUi(this);
-    d->corpus = corpus;
 }
 
 ExportMetadataWizard::~ExportMetadataWizard()

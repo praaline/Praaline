@@ -874,18 +874,14 @@ void CorpusExplorerWidget::importMetadata()
 
 void CorpusExplorerWidget::exportMetadata()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    ExportMetadataWizard *wizard = new ExportMetadataWizard(corpus, this);
-//    wizard->exec(); // MODAL!
+    ExportMetadataWizard *wizard = new ExportMetadataWizard(this);
+    wizard->exec(); // MODAL!
 }
 
 void CorpusExplorerWidget::exportAnnotations()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    ExportAnnotationsWizard *wizard = new ExportAnnotationsWizard(corpus, this);
-//    wizard->exec(); // MODAL!
+    ExportAnnotationsWizard *wizard = new ExportAnnotationsWizard(this);
+    wizard->exec(); // MODAL!
 }
 
 void CorpusExplorerWidget::checkMediaFiles()

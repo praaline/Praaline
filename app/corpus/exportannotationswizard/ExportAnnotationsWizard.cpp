@@ -3,24 +3,21 @@
 #include "ExportAnnotationsWizardPraatPage.h"
 
 struct ExportAnnotationsWizardData {
-    ExportAnnotationsWizardData() :
-        corpus(0)
+    ExportAnnotationsWizardData()
     {}
 
     // Pages
     ExportAnnotationsWizardPraatPage *pagePraat;
     // State
-    QPointer<Corpus> corpus;
 };
 
 
-ExportAnnotationsWizard::ExportAnnotationsWizard(QPointer<Corpus> corpus, QWidget *parent) :
+ExportAnnotationsWizard::ExportAnnotationsWizard(QWidget *parent) :
     QWizard(parent), ui(new Ui::ExportAnnotationsWizard), d(new ExportAnnotationsWizardData)
 {
     ui->setupUi(this);
 
-    d->corpus = corpus;
-    d->pagePraat = new ExportAnnotationsWizardPraatPage(d->corpus, this);
+    d->pagePraat = new ExportAnnotationsWizardPraatPage(this);
 
     addPage(d->pagePraat);
 }

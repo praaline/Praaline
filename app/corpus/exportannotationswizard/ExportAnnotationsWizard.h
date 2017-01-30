@@ -17,7 +17,7 @@ class ExportAnnotationsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ExportAnnotationsWizard(QPointer<Corpus> corpus, QWidget *parent = 0);
+    explicit ExportAnnotationsWizard(QWidget *parent = 0);
     ~ExportAnnotationsWizard();
 
 private:
