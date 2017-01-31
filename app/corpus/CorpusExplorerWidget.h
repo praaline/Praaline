@@ -28,11 +28,12 @@ private slots:
     void corpusRepositoryRemoved(const QString &repositoryID);
     void corporaObserverWidgetSelectedObjectsChanged(QList<QObject*>);
     void corporaObserverWidgetDoubleClickRequest(QObject*, Observer*);
-
+    // Corpora
+    void createCorpus();
     void openCorpus();
     void saveMetadata();
-
-    void addCorpus();
+    void deleteCorpus();
+    // Corpus items
     void addCommunication();
     void addSpeaker();
     void addRecording();
@@ -40,20 +41,20 @@ private slots:
     void addParticipation();
     void removeCorpusItems();
     void relinkCorpusItem();
-
+    // Import-export
     void addItemsFromFolder();
     void importMetadata();
     void exportMetadata();
+    void importAnnotations();
     void exportAnnotations();
-
+    // Tools
     void checkMediaFiles();
     void createAnnotationsFromRecordings();
     void createSpeakersFromAnnotations();
     void cleanUpParticipationsFromAnnotations();
     void splitCommunications();
-
+    // Presentation
     void attributesAndGroupings();
-
     void metadataEditorPrimaryStyleTree();
     void metadataEditorPrimaryStyleGroupBox();
     void metadataEditorPrimaryStyleButton();

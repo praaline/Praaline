@@ -735,7 +735,30 @@ bool SQLSerialiserMetadata::deleteCorpus(const QString &corpusID,
 {
     Q_UNUSED(structure)
     Q_UNUSED(datastore)
-    return false;
+    QSqlQuery q(db);
+    db.transaction();
+    q.prepare("DELETE FROM recording WHERE recordingID IN "
+              "(SELECT r.recordingID FROM recording r INNER JOIN communication c ON r.communicationID=c.communicationID WHERE c.corpusID=:corpusID)");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete recordings: " << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM annotation WHERE annotationID IN "
+              "(SELECT a.annotationID FROM annotation a INNER JOIN communication c ON a.communicationID=c.communicationID WHERE c.corpusID=:corpusID)");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete annotations: " << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM participation WHERE corpusID=:corpusID");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete participations: " << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM communication WHERE corpusID=:corpusID");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete communications: " << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM speaker WHERE corpusID=:corpusID");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete speakers: " << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM corpus WHERE corpusID=:corpusID");
+    q.bindValue(":corpusID", corpusID);
+    if (!q.exec()) { db.rollback(); qDebug() << "delete corpus: " << q.lastError().text(); return false; }
+    db.commit();
+    return true;
 }
 
 // static
@@ -745,9 +768,21 @@ bool SQLSerialiserMetadata::deleteCommunication(const QString &communicationID,
     Q_UNUSED(structure)
     Q_UNUSED(datastore)
     QSqlQuery q(db);
+    db.transaction();
+    q.prepare("DELETE FROM recording WHERE communicationID = :communicationID");
+    q.bindValue(":communicationID", communicationID);
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM annotation WHERE communicationID = :communicationID");
+    q.bindValue(":communicationID", communicationID);
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
+    q.prepare("DELETE FROM participation WHERE communicationID = :communicationID");
+    q.bindValue(":communicationID", communicationID);
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
     q.prepare("DELETE FROM communication WHERE communicationID = :communicationID");
     q.bindValue(":communicationID", communicationID);
-    return q.exec();
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
+    db.commit();
+    return true;
 }
 
 // static
@@ -757,9 +792,15 @@ bool SQLSerialiserMetadata::deleteSpeaker(const QString &speakerID,
     Q_UNUSED(structure)
     Q_UNUSED(datastore)
     QSqlQuery q(db);
+    db.transaction();
+    q.prepare("DELETE FROM participation WHERE speakerID = :speakerID");
+    q.bindValue(":speakerID", speakerID);
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
     q.prepare("DELETE FROM speaker WHERE speakerID = :speakerID");
     q.bindValue(":speakerID", speakerID);
-    return q.exec();
+    if (!q.exec()) { db.rollback(); qDebug() << q.lastError().text(); return false; }
+    db.commit();
+    return true;
 }
 
 // static

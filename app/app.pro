@@ -109,19 +109,6 @@ SOURCES += main.cpp \
     annotation/ManualAnnotationWidget.cpp \
     annotation/TranscriberWidget.cpp \
     scripting/ScriptingModeWidget.cpp \
-    corpus/exportannotationswizard/ExportAnnotationsWizard.cpp \
-    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.cpp \
-    corpus/exportmetadatawizard/ExportMetadataWizard.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.cpp \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.cpp \
-    corpus/importmetadatawizard/ImportMetadataWizard.cpp \
-    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.cpp \
-    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.cpp \
-    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.cpp \
     corpus/AddNewCorpusItemDialog.cpp \
     corpus/CheckMediaFilesDialog.cpp \
     corpus/ConnectToCorpusDatabaseDialog.cpp \
@@ -165,7 +152,20 @@ SOURCES += main.cpp \
     query/AnnotationBrowserWidget.cpp \
     query/dataseteditor/DatasetEditorWidget.cpp \
     CorpusRepositoriesManager.cpp \
-    corpus/NewCorpusRepositoryWizard.cpp
+    corpus/NewCorpusRepositoryWizard.cpp \
+    corpus/exportannotations/ExportAnnotationsWizard.cpp \
+    corpus/exportannotations/ExportAnnotationsWizardPraatPage.cpp \
+    corpus/exportmetadata/ExportMetadataWizard.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizard.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizardCorrespondancesPage.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizardFinalPage.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizardProcessMediaPage.cpp \
+    corpus/importcorpusitems/ImportCorpusItemsWizardSelectionPage.cpp \
+    corpus/importmetadata/ImportMetadataWizard.cpp \
+    corpus/importmetadata/ImportMetadataWizardBasicInfoPage.cpp \
+    corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
+    corpus/importmetadata/ImportMetadataWizardFinalPage.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -195,20 +195,6 @@ HEADERS  += \
     annotation/CompareAnnotationsWidget.h \
     annotation/ManualAnnotationWidget.h \
     annotation/TranscriberWidget.h \
-    corpus/exportannotationswizard/ExportAnnotationsWizard.h \
-    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.h \
-    corpus/exportmetadatawizard/ExportMetadataWizard.h \
-    corpus/importcorpusitemswizard/ImportAnnotations.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.h \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.h \
-    corpus/importmetadatawizard/ImportMetadataWizard.h \
-    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.h \
-    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.h \
-    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.h \
     corpus/AddNewCorpusItemDialog.h \
     corpus/CheckMediaFilesDialog.h \
     corpus/ConnectToCorpusDatabaseDialog.h \
@@ -256,7 +242,21 @@ HEADERS  += \
     query/dataseteditor/DatasetEditorWidget.h \
     query/dataseteditor/DatasetEditorModels.h \
     CorpusRepositoriesManager.h \
-    corpus/NewCorpusRepositoryWizard.h
+    corpus/NewCorpusRepositoryWizard.h \
+    corpus/exportannotations/ExportAnnotationsWizard.h \
+    corpus/exportannotations/ExportAnnotationsWizardPraatPage.h \
+    corpus/exportmetadata/ExportMetadataWizard.h \
+    corpus/importcorpusitems/ImportAnnotations.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizard.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizardCorrespondancesPage.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizardFinalPage.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizardProcessMediaPage.h \
+    corpus/importcorpusitems/ImportCorpusItemsWizardSelectionPage.h \
+    corpus/importmetadata/ImportMetadataWizard.h \
+    corpus/importmetadata/ImportMetadataWizardBasicInfoPage.h \
+    corpus/importmetadata/ImportMetadataWizardColumnsPage.h \
+    corpus/importmetadata/ImportMetadataWizardFinalPage.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -290,19 +290,6 @@ FORMS    += \
     corpus/ConnectToCorpusDatabaseDialog.ui \
     corpus/CheckMediaFilesDialog.ui \
     corpus/AddNewCorpusItemDialog.ui \
-    corpus/importmetadatawizard/ImportMetadataWizard.ui \
-    corpus/importmetadatawizard/ImportMetadataWizardBasicInfoPage.ui \
-    corpus/importmetadatawizard/ImportMetadataWizardColumnsPage.ui \
-    corpus/importmetadatawizard/ImportMetadataWizardFinalPage.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizard.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardAnalysePage.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardCorrespondancesPage.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardFinalPage.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardProcessMediaPage.ui \
-    corpus/importcorpusitemswizard/ImportCorpusItemsWizardSelectionPage.ui \
-    corpus/exportmetadatawizard/ExportMetadataWizard.ui \
-    corpus/exportannotationswizard/ExportAnnotationsWizard.ui \
-    corpus/exportannotationswizard/ExportAnnotationsWizardPraatPage.ui \
     annotation/BatchEditorWidget.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
@@ -310,7 +297,20 @@ FORMS    += \
     help/HelpModeConfig.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
     corpus/structureeditors/AddLevelDialog.ui \
-    corpus/NewCorpusRepositoryWizard.ui
+    corpus/NewCorpusRepositoryWizard.ui \
+    corpus/exportannotations/ExportAnnotationsWizard.ui \
+    corpus/exportannotations/ExportAnnotationsWizardPraatPage.ui \
+    corpus/exportmetadata/ExportMetadataWizard.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizard.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizardCorrespondancesPage.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizardFinalPage.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizardProcessMediaPage.ui \
+    corpus/importcorpusitems/ImportCorpusItemsWizardSelectionPage.ui \
+    corpus/importmetadata/ImportMetadataWizard.ui \
+    corpus/importmetadata/ImportMetadataWizardBasicInfoPage.ui \
+    corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
+    corpus/importmetadata/ImportMetadataWizardFinalPage.ui
 
 RESOURCES += \
     praaline.qrc \

@@ -183,3 +183,15 @@ bool CorpusRepositoriesManager::saveCorpusMetadata(const QString &corpusID)
     }
     return result;
 }
+
+bool CorpusRepositoriesManager::removeCorpus(const QString &corpusID)
+{
+    QPointer<Corpus> corpus = d->corpora.value(corpusID, Q_NULLPTR);
+    if (!corpus) return false;
+    QString repositoryID = (corpus->repository()) ? corpus->repository()->ID() : "";
+    d->corpora.remove(corpusID);
+    delete corpus;
+    CorpusObserver *obs = corpusObserverForRepository(repositoryID);
+    if (obs) obs->removeCorpus(corpusID);
+    return true;
+}

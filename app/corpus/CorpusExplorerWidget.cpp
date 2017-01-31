@@ -33,10 +33,10 @@ using namespace QtilitiesProjectManagement;
 #include "CheckMediaFilesDialog.h"
 #include "SplitCommunicationsDialog.h"
 
-#include "importmetadatawizard/ImportMetadataWizard.h"
-#include "exportmetadatawizard/ExportMetadataWizard.h"
-#include "importcorpusitemswizard/ImportCorpusItemsWizard.h"
-#include "exportannotationswizard/ExportAnnotationsWizard.h"
+#include "importmetadata/ImportMetadataWizard.h"
+#include "exportmetadata/ExportMetadataWizard.h"
+#include "importcorpusitems/ImportCorpusItemsWizard.h"
+#include "exportannotations/ExportAnnotationsWizard.h"
 
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
@@ -44,9 +44,12 @@ struct CorpusExplorerWidgetData {
         metadataEditorPrimary(0), metadataEditorSecondary(0), preview(0)
     { }
 
+    // Corpora
+    QAction *actionCreateCorpus;
     QAction *actionOpenCorpus;
     QAction *actionSaveMetadata;
-    QAction *actionAddCorpus;
+    QAction *actionDeleteCorpus;
+    // Corpus items
     QAction *actionAddCommunication;
     QAction *actionAddSpeaker;
     QAction *actionAddRecording;
@@ -54,16 +57,20 @@ struct CorpusExplorerWidgetData {
     QAction *actionAddParticipation;
     QAction *actionRemoveCorpusItems;
     QAction *actionRelinkCorpusItem;
+    // Import-export
     QAction *actionAddItemsFromFolder;
     QAction *actionImportMetadata;
     QAction *actionExportMetadata;
+    QAction *actionImportAnnotations;
     QAction *actionExportAnnotations;
-    QAction *actionAttributesAndGroupings;
+    // Tools
     QAction *actionCheckMediaFiles;
     QAction *actionCreateAnnotationsFromRecordings;
     QAction *actionCreateSpeakersFromAnnotations;
     QAction *actionSplitCommunications;
     QAction *actionCleanUpParticipations;
+    // Presentation
+    QAction *actionAttributesAndGroupings;
     QAction *actionMetadataEditorPrimaryStyleTree;
     QAction *actionMetadataEditorPrimaryStyleGroupBox;
     QAction *actionMetadataEditorPrimaryStyleButton;
@@ -185,10 +192,19 @@ void CorpusExplorerWidget::setupActions()
     if (!existed) menu_bar->addMenu(view_menu, qti_action_HELP);
     ActionContainer* corpus_menu = ACTION_MANAGER->createMenu(tr("&Corpus"), existed);
     if (!existed) menu_bar->addMenu(corpus_menu, qti_action_HELP);
+    ActionContainer* annotation_menu = ACTION_MANAGER->createMenu(tr("&Annotation"), existed);
+    if (!existed) menu_bar->addMenu(annotation_menu, qti_action_HELP);
 
     // ------------------------------------------------------------------------------------------------------
     // CORPUS MENU
     // ------------------------------------------------------------------------------------------------------
+    d->actionCreateCorpus = new QAction(QIcon(":icons/actions/action_new.png"), tr("Create New Corpus..."), this);
+    connect(d->actionCreateCorpus, SIGNAL(triggered()), SLOT(createCorpus()));
+    command = ACTION_MANAGER->registerAction("Corpus.CreateCorpus", d->actionCreateCorpus, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    corpus_menu->addAction(command);
+    d->toolbarCorpusExplorer->addAction(d->actionCreateCorpus);
+
     d->actionOpenCorpus = new QAction(QIcon(":icons/actions/action_open.png"), tr("Open Corpus"), this);
     connect(d->actionOpenCorpus, SIGNAL(triggered()), SLOT(openCorpus()));
     command = ACTION_MANAGER->registerAction("Corpus.OpenCorpus", d->actionOpenCorpus, context);
@@ -203,13 +219,16 @@ void CorpusExplorerWidget::setupActions()
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionSaveMetadata);
 
-    d->actionAddCorpus = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Corpus..."), this);
-    connect(d->actionAddCorpus, SIGNAL(triggered()), SLOT(addCorpus()));
-    command = ACTION_MANAGER->registerAction("Corpus.AddCorpus", d->actionAddCorpus, context);
+    d->actionDeleteCorpus = new QAction(QIcon(":icons/actions/action_delete.png"), tr("Delete Corpus"), this);
+    connect(d->actionDeleteCorpus, SIGNAL(triggered()), SLOT(deleteCorpus()));
+    command = ACTION_MANAGER->registerAction("Corpus.DeleteCorpus", d->actionDeleteCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
-    d->toolbarCorpusExplorer->addAction(d->actionAddCorpus);
 
+    corpus_menu->addSeparator();
+
+    // Corpus Items
+    // --------------------------------------------------------------------------------------------
     d->actionAddCommunication = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Communication..."), this);
     connect(d->actionAddCommunication, SIGNAL(triggered()), SLOT(addCommunication()));
     command = ACTION_MANAGER->registerAction("Corpus.AddCommunication", d->actionAddCommunication, context);
@@ -261,6 +280,13 @@ void CorpusExplorerWidget::setupActions()
     corpus_menu->addSeparator();
 
     // Import - export functionality
+    // --------------------------------------------------------------------------------------------
+
+    d->actionAddItemsFromFolder = new QAction(tr("Add corpus items from folder..."), this);
+    connect(d->actionAddItemsFromFolder, SIGNAL(triggered()), SLOT(addItemsFromFolder()));
+    command = ACTION_MANAGER->registerAction("Corpus.AddItemsFromFolder", d->actionAddItemsFromFolder, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    corpus_menu->addAction(command);
 
     d->actionImportMetadata = new QAction(tr("Import corpus metadata..."), this);
     connect(d->actionImportMetadata, SIGNAL(triggered()), SLOT(importMetadata()));
@@ -274,19 +300,10 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
-    d->actionAddItemsFromFolder = new QAction(tr("Add corpus items from folder..."), this);
-    connect(d->actionAddItemsFromFolder, SIGNAL(triggered()), SLOT(addItemsFromFolder()));
-    command = ACTION_MANAGER->registerAction("Corpus.AddItemsFromFolder", d->actionAddItemsFromFolder, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
-
-    d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
-    connect(d->actionExportAnnotations, SIGNAL(triggered()), SLOT(exportAnnotations()));
-    command = ACTION_MANAGER->registerAction("Corpus.ExportAnnotations", d->actionExportAnnotations, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
-
     corpus_menu->addSeparator();
+
+    // Tools
+    // --------------------------------------------------------------------------------------------
 
     d->actionCheckMediaFiles = new QAction(tr("Check files of Media Recordings..."), this);
     connect(d->actionCheckMediaFiles, SIGNAL(triggered()), SLOT(checkMediaFiles()));
@@ -317,6 +334,22 @@ void CorpusExplorerWidget::setupActions()
     command = ACTION_MANAGER->registerAction("Corpus.CleanUpParticipationsFromAnnotations", d->actionCleanUpParticipations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
+
+    // ------------------------------------------------------------------------------------------------------
+    // ANNOTATION MENU
+    // ------------------------------------------------------------------------------------------------------
+
+    d->actionImportAnnotations = new QAction(tr("Import annotations..."), this);
+    connect(d->actionImportAnnotations, SIGNAL(triggered()), SLOT(importAnnotations()));
+    command = ACTION_MANAGER->registerAction("Corpus.ImportAnnotations", d->actionImportAnnotations, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    annotation_menu->addAction(command);
+
+    d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
+    connect(d->actionExportAnnotations, SIGNAL(triggered()), SLOT(exportAnnotations()));
+    command = ACTION_MANAGER->registerAction("Corpus.ExportAnnotations", d->actionExportAnnotations, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    annotation_menu->addAction(command);
 
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
@@ -531,38 +564,14 @@ void CorpusExplorerWidget::corporaObserverWidgetDoubleClickRequest(QObject *obje
 // Corpora
 // =========================================================================================================================================
 
-void CorpusExplorerWidget::openCorpus()
-{
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) {
-        QMessageBox::warning(this, tr("Open Corpus"), tr("Please open a Corpus Repository first."), QMessageBox::Ok);
-        return;
-    }
-    QInputDialog dialog;
-    dialog.setOptions(QInputDialog::UseListViewForComboBoxItems);
-    dialog.setComboBoxItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repository->ID()));
-    dialog.setWindowTitle("Select the corpus to open");
-    if (dialog.exec()) {
-       QString corpusID = dialog.textValue();
-       d->corpusRepositoriesManager->openCorpus(corpusID, repository->ID());
-    }
-}
-
-void CorpusExplorerWidget::saveMetadata()
-{
-    d->corpusRepositoriesManager->saveCorpusMetadata();
-}
-
-// =========================================================================================================================================
-// Add and remove corpus objects
-// =========================================================================================================================================
-
-void CorpusExplorerWidget::addCorpus()
+void CorpusExplorerWidget::createCorpus()
 {
     QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
     if (repositoryID.isEmpty()) {
-        QMessageBox::warning(this, tr("Add Corpus to Repository"),
-                             tr("Please select (create or open) a Corpus Repository to which the new Corpus will be added."),
+        QMessageBox::warning(this, tr("Create Corpus"),
+                             tr("Please create or open a Corpus Repository first.\n"
+                                "Praaline corpora are stored in repositories (i.e. databases stored locally on the computer "
+                                "or on a remote server)."),
                              QMessageBox::Ok);
         return;
     }
@@ -572,6 +581,65 @@ void CorpusExplorerWidget::addCorpus()
     if (!ok || corpusID.isEmpty()) return;
     d->corpusRepositoriesManager->createCorpus(corpusID, repositoryID);
 }
+
+void CorpusExplorerWidget::openCorpus()
+{
+    QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
+    if (repositoryID.isEmpty()) {
+        QMessageBox::warning(this, tr("Open Corpus"), tr("Please open a Corpus Repository first."), QMessageBox::Ok);
+        return;
+    }
+    QInputDialog dialog;
+    dialog.setOptions(QInputDialog::UseListViewForComboBoxItems);
+    dialog.setComboBoxItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID));
+    dialog.setWindowTitle("Select the corpus to open");
+    if (dialog.exec()) {
+       QString corpusID = dialog.textValue();
+       d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+    }
+}
+
+void CorpusExplorerWidget::saveMetadata()
+{
+    d->corpusRepositoriesManager->saveCorpusMetadata();
+}
+
+void CorpusExplorerWidget::deleteCorpus()
+{
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("Delete Corpus"), tr("Please select the Corpus that you want to delete."),
+                             QMessageBox::Ok);
+        return;
+    }
+    bool alsoDeleteData = false;
+    if (QMessageBox::warning(this, tr("Delete Corpus?"),
+                             QString(tr("Do you want to permanently delete Corpus %1?"))
+                             .arg(d->activeCorpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+    if (QMessageBox::warning(this, tr("Permanently delete data?"),
+                             QString(tr("Do you also want to delete all the annotation data of Corpus %1?"))
+                             .arg(d->activeCorpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+        alsoDeleteData = true;
+    }
+    if (alsoDeleteData) {
+        foreach (QPointer<CorpusCommunication> com, d->activeCorpus->communications()) {
+            if (!com) continue;
+            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+                if (!annot) continue;
+                d->activeCorpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
+            }
+        }
+    }
+    QString corpusID = d->activeCorpus->ID();
+    if (!d->activeCorpus->repository()->metadata()->deleteCorpus(corpusID)) {
+        return;
+    }
+    d->corpusRepositoriesManager->removeCorpus(corpusID);
+    d->activeCorpus = 0;
+}
+
+// =========================================================================================================================================
+// Add and remove corpus objects
+// =========================================================================================================================================
 
 void CorpusExplorerWidget::addCommunication()
 {
@@ -903,6 +971,10 @@ void CorpusExplorerWidget::relinkCorpusItem()
     }
 }
 
+// ==============================================================================================================================
+// Import - Export
+// ==============================================================================================================================
+
 void CorpusExplorerWidget::addItemsFromFolder()
 {
     QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
@@ -935,11 +1007,21 @@ void CorpusExplorerWidget::exportMetadata()
     wizard->exec(); // MODAL!
 }
 
+void CorpusExplorerWidget::importAnnotations()
+{
+//    ImportAnnotationsWizard *wizard = new ImportAnnotationsWizard(this);
+//    wizard->exec(); // MODAL!
+}
+
 void CorpusExplorerWidget::exportAnnotations()
 {
     ExportAnnotationsWizard *wizard = new ExportAnnotationsWizard(this);
     wizard->exec(); // MODAL!
 }
+
+// ==============================================================================================================================
+// Tools
+// ==============================================================================================================================
 
 void CorpusExplorerWidget::checkMediaFiles()
 {
@@ -1064,6 +1146,10 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
     }
     d->corporaTopLevelNode->endTreeProcessingCycle();
 }
+
+// ==============================================================================================================================
+// Presentation
+// ==============================================================================================================================
 
 void CorpusExplorerWidget::attributesAndGroupings()
 {
