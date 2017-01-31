@@ -4,7 +4,8 @@ namespace Praaline {
 namespace Core {
 
 CorpusObjectInfo::CorpusObjectInfo(
-        CorpusObject::Type type, const QString &ID, const QString &parentID, const QString &name, const QString &description,
+        CorpusObject::Type type, const QString &ID, const QString &parentID,
+        const QString &name, const QString &description,
         const QString &createdBy, const QDateTime &createdTimestamp,
         const QString &lastUpdatedBy, const QDateTime &lastUpdatedTimestamp) :
     m_type(type), m_ID(ID), m_parentID(parentID), m_name(name), m_description(description),

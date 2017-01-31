@@ -26,8 +26,10 @@ public:
 private slots:
     void corpusRepositoryAdded(const QString &repositoryID);
     void corpusRepositoryRemoved(const QString &repositoryID);
-    void selectionChanged(QList<QObject*>);
+    void corporaObserverWidgetSelectedObjectsChanged(QList<QObject*>);
+    void corporaObserverWidgetDoubleClickRequest(QObject*, Observer*);
 
+    void openCorpus();
     void saveMetadata();
 
     void addCorpus();

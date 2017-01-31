@@ -25,9 +25,10 @@ namespace Core {
 class PRAALINE_CORE_SHARED_EXPORT CorpusObjectInfo
 {
 public:
-    CorpusObjectInfo(CorpusObject::Type type, const QString &ID, const QString &parentID, const QString &name, const QString &description,
-                     const QString &createdBy, const QDateTime &createdTimestamp,
-                     const QString &lastUpdatedBy, const QDateTime &lastUpdatedTimestamp);
+    CorpusObjectInfo(CorpusObject::Type type, const QString &ID, const QString &parentID,
+                     const QString &name = QString(), const QString &description = QString(),
+                     const QString &createdBy = QString(), const QDateTime &createdTimestamp = QDateTime(),
+                     const QString &lastUpdatedBy = QString(), const QDateTime &lastUpdatedTimestamp = QDateTime());
 
     CorpusObject::Type type() const;
     QString ID() const;

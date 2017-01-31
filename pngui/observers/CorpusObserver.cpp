@@ -13,65 +13,110 @@ using namespace Praaline::Core;
 // ==============================================================================================================================
 // Corpus observer: lists all corpora in a repository
 // ==============================================================================================================================
+
+struct CorpusObserverData {
+    QPointer<Praaline::Core::CorpusRepository> repository;
+    TreeNode *nodeRepository;
+    QHash<QString, QPointer<CorpusExplorerTreeNodeCorpus> > corpusNodes;
+};
+
 CorpusObserver::CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent) :
-    QObject(parent), m_repository(repository)
+    QObject(parent), d(new CorpusObserverData)
 {
-    m_nodeRepository = new TreeNode(repository->ID(), this);
-//    QList<CorpusObjectInfo> list = m_repository->metadata()->getCorpusObjectInfoList(
-//                CorpusObject::Type_Corpus, MetadataDatastore::Selection("", "", ""));
-//    foreach (CorpusObjectInfo item, list) {
-//        Corpus *corpus = new Corpus(item.ID(), item.name(), item.description(), this);
-//        m_repository->metadata()->loadCorpus(corpus);
-//        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpus);
-//        node->refresh();
-//        m_nodeRepository->addNode(node);
-//    }
-    Corpus *corpus = m_repository->metadata()->getCorpus(repository->ID());
-    if (corpus) {
-        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpus);
-        node->refresh();
-        m_nodeRepository->addNode(node);
+    d->repository = repository;
+    d->nodeRepository = new TreeNode(d->repository->ID(), this);
+    foreach (CorpusObjectInfo item, d->repository->listCorporaInfo()) {
+        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(item.ID());
+        d->corpusNodes.insert(item.ID(), node);
+        d->nodeRepository->addNode(node);
     }
 }
 
 CorpusObserver::~CorpusObserver()
 {
+    delete d;
+}
+
+QPointer<CorpusRepository> CorpusObserver::repository() const
+{
+    return d->repository;
+}
+
+TreeNode *CorpusObserver::nodeRepository() const
+{
+    return d->nodeRepository;
+}
+
+void CorpusObserver::addCorpus(QPointer<Corpus> corpus)
+{
+    if (!corpus) return;
+    CorpusExplorerTreeNodeCorpus *node = d->corpusNodes.value(corpus->ID(), Q_NULLPTR);
+    if (!node) {
+        node = new CorpusExplorerTreeNodeCorpus(corpus->ID());
+        d->corpusNodes.insert(corpus->ID(), node);
+        d->nodeRepository->addNode(node);
+    }
+    node->setCorpus(corpus);
+}
+
+void CorpusObserver::removeCorpus(QString corpusID)
+{
+    d->nodeRepository->removeItem(corpusID);
 }
 
 void CorpusObserver::setCommunicationsGrouping(QStringList groupAttributeIDs)
 {
-
+    foreach (QObject *obj, d->nodeRepository->treeChildren()) {
+        CorpusExplorerTreeNodeCorpus *node = qobject_cast<CorpusExplorerTreeNodeCorpus *>(obj);
+        if (node) node->setCommunicationsGrouping(groupAttributeIDs);
+    }
 }
 
 void CorpusObserver::setSpeakersGrouping(QStringList groupAttributeIDs)
 {
+    foreach (QObject *obj, d->nodeRepository->treeChildren()) {
+        CorpusExplorerTreeNodeCorpus *node = qobject_cast<CorpusExplorerTreeNodeCorpus *>(obj);
+        if (node) node->setSpeakersGrouping(groupAttributeIDs);
+    }
 }
 
 // ==============================================================================================================================
 // Corpus tree node
 // ==============================================================================================================================
 
-CorpusExplorerTreeNodeCorpus::CorpusExplorerTreeNodeCorpus(QPointer<Corpus> corpus) :
-    TreeNode(corpus->ID()), m_corpus(corpus)
+CorpusExplorerTreeNodeCorpus::CorpusExplorerTreeNodeCorpus(const QString &corpusID) :
+    TreeNode(corpusID), m_corpus(0)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus.png"));
     m_nodeCommunications = 0;
     m_nodeSpeakers = 0;
-    buildTree();
-    connect(corpus, SIGNAL(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)),
-            this, SLOT(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)));
-    connect(corpus, SIGNAL(communicationDeleted(QString)),
-            this, SLOT(communicationDeleted(QString)));
-    connect(corpus, SIGNAL(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)),
-            this, SLOT(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)));
-    connect(corpus, SIGNAL(speakerDeleted(QString)),
-            this, SLOT(speakerDeleted(QString)));
+    this->setName(corpusID);
 }
 
+void CorpusExplorerTreeNodeCorpus::setCorpus(QPointer<Praaline::Core::Corpus> corpus)
+{
+    if (m_corpus) {
+        // disconnect all signals from the previous corpus to this object
+        disconnect(m_corpus, 0, this, 0);
+    }
+    m_corpus = corpus;
+    buildTree();
+    if (m_corpus) {
+        connect(m_corpus, SIGNAL(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)),
+                this, SLOT(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)));
+        connect(m_corpus, SIGNAL(communicationDeleted(QString)),
+                this, SLOT(communicationDeleted(QString)));
+        connect(m_corpus, SIGNAL(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)),
+                this, SLOT(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)));
+        connect(m_corpus, SIGNAL(speakerDeleted(QString)),
+                this, SLOT(speakerDeleted(QString)));
+    }
+}
 
 void CorpusExplorerTreeNodeCorpus::communicationAdded(QPointer<CorpusCommunication> communication)
 {
     if (!communication) return;
+    if (!m_nodeCommunications) return;
     CorpusExplorerTreeNodeCommunication *nodeCom = new CorpusExplorerTreeNodeCommunication(communication);
     foreach (CorpusRecording *rec, communication->recordings()) {
         CorpusExplorerTreeNodeRecording *nodeRec = new CorpusExplorerTreeNodeRecording(rec);
@@ -86,18 +131,21 @@ void CorpusExplorerTreeNodeCorpus::communicationAdded(QPointer<CorpusCommunicati
 
 void CorpusExplorerTreeNodeCorpus::communicationDeleted(QString communicationID)
 {
+    if (!m_nodeCommunications) return;
     m_nodeCommunications->removeItem(communicationID);
 }
 
 void CorpusExplorerTreeNodeCorpus::speakerAdded(QPointer<CorpusSpeaker> speaker)
 {
     if (!speaker) return;
+    if (!m_nodeSpeakers) return;
     CorpusExplorerTreeNodeSpeaker *nodeSpk = new CorpusExplorerTreeNodeSpeaker(speaker);
     m_nodeSpeakers->addNode(nodeSpk, QtilitiesCategory(categoryString(speaker, m_groupAttributeIDsSpeaker)));
 }
 
 void CorpusExplorerTreeNodeCorpus::speakerDeleted(QString speakerID)
 {
+    if (!m_nodeSpeakers) return;
     m_nodeSpeakers->removeItem(speakerID);
 }
 
@@ -115,14 +163,10 @@ void CorpusExplorerTreeNodeCorpus::clear()
     m_nodeSpeakers = 0;
 }
 
-void CorpusExplorerTreeNodeCorpus::refresh() {
-    buildTree();
-}
-
 void CorpusExplorerTreeNodeCorpus::buildTree()
 {
-    if (!m_corpus) return;
     clear();
+    if (!m_corpus) return;
     m_nodeCommunications = new TreeNode(tr("Communications"), this);
     m_nodeCommunications->enableCategorizedDisplay();
     m_nodeCommunications->setIcon(QIcon(qti_icon_FOLDER_16X16));
@@ -174,6 +218,7 @@ QString CorpusExplorerTreeNodeCorpus::categoryString(CorpusObject *obj, QStringL
 
 void CorpusExplorerTreeNodeCorpus::setCommunicationsGrouping(QStringList groupAttributeIDs)
 {
+    if (!m_nodeCommunications) return;
     m_nodeCommunications->startProcessingCycle();
     foreach (QObject *obj, m_nodeCommunications->treeChildren()) {
         CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
@@ -188,6 +233,7 @@ void CorpusExplorerTreeNodeCorpus::setCommunicationsGrouping(QStringList groupAt
 
 void CorpusExplorerTreeNodeCorpus::setSpeakersGrouping(QStringList groupAttributeIDs)
 {
+    if (!m_nodeSpeakers) return;
     m_nodeSpeakers->startProcessingCycle();
     foreach (QObject *obj, m_nodeSpeakers->treeChildren()) {
         CorpusExplorerTreeNodeSpeaker *nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(obj);

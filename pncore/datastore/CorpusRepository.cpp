@@ -158,6 +158,19 @@ QPointer<FileDatastore> CorpusRepository::files() const
     return d->datastoreFiles;
 }
 
+QList<CorpusObjectInfo> CorpusRepository::listCorporaInfo() const
+{
+    QList<CorpusObjectInfo> list;
+    if (d->datastoreMetadata)
+        list = d->datastoreMetadata->getCorpusObjectInfoList(CorpusObject::Type_Corpus,
+                                                             MetadataDatastore::Selection("", "", ""));
+    if (list.isEmpty()) {
+        // Probably old-style database with only one corpus
+        list << CorpusObjectInfo(CorpusObject::Type_Corpus, ID(), "", ID());
+    }
+    return list;
+}
+
 // ==============================================================================================================================
 // Metadata and annotation structures
 // ==============================================================================================================================

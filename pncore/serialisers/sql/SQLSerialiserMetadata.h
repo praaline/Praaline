@@ -76,9 +76,12 @@ private:
     SQLSerialiserMetadata() {}
 
     static void readRecording(QSqlQuery &q, CorpusRecording *rec, MetadataStructure *structure);
-    static void readAnnotation(QSqlQuery &q, CorpusAnnotation *annot, MetadataStructure *structure);    
+    static void readAnnotation(QSqlQuery &q, CorpusAnnotation *annot, MetadataStructure *structure);
+
     static QString prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what);
     static QString prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what);
+
+    static bool execSaveCorpus(Corpus *corpus, MetadataStructure *structure, QSqlDatabase &db);
     static bool execSaveCommunication(CorpusCommunication *com, MetadataStructure *structure, QSqlDatabase &db);
     static bool execSaveSpeaker(CorpusSpeaker *spk, MetadataStructure *structure, QSqlDatabase &db);
     static bool execSaveRecording(QString communicationID, CorpusRecording *rec, MetadataStructure *structure, QSqlDatabase &db);

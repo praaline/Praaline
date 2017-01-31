@@ -93,12 +93,27 @@ QList<CorpusObjectInfo> SQLSerialiserMetadata::getCorpusObjectInfoList(
         CorpusObject::Type type, const MetadataDatastore::Selection &selection,
         QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
 {
+    Q_UNUSED(structure)
+    Q_UNUSED(datastore)
+
     QList<CorpusObjectInfo> list;
+    QString fieldID("ID"), fieldName("name"), fieldDescription("description");
+    QString parentID;
+    if      (type == CorpusObject::Type_Corpus)         { fieldID = "corpusID";         fieldName = "corpusName";        parentID = "";                 }
+    else if (type == CorpusObject::Type_Communication)  { fieldID = "communicationID";  fieldName = "communicationName"; parentID = selection.corpusID; }
+    else if (type == CorpusObject::Type_Speaker)        { fieldID = "speakerID";        fieldName = "speakerName";       parentID = selection.corpusID; }
+    else if (type == CorpusObject::Type_Recording)      { fieldID = "recordingID";      fieldName = "recordingName";     parentID = selection.communicationID; }
+    else if (type == CorpusObject::Type_Annotation)     { fieldID = "annotationID";     fieldName = "annotationName";    parentID = selection.communicationID; }
+    else return list; // corpus object type not supported
+
     QSqlQuery q(db);
     prepareSelectQuery(q, type, selection);
     q.exec();
     while (q.next()) {
-
+        list << CorpusObjectInfo(type, q.value(fieldID).toString(), parentID,
+                                 q.value(fieldName).toString(), q.value(fieldDescription).toString(),
+                                 q.value("createdBy").toString(), q.value("createdTimestamp").toDateTime(),
+                                 q.value("lastUpdatedBy").toString(), q.value("lastUpdatedTimestamp").toDateTime());
     }
     return list;
 }
@@ -283,7 +298,11 @@ QMultiMap<QString, QPointer<CorpusAnnotation> > SQLSerialiserMetadata::getAnnota
 QString SQLSerialiserMetadata::prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what)
 {
     QString sql1, sql2;
-    if (what == CorpusObject::Type_Communication) {
+    if (what == CorpusObject::Type_Corpus) {
+        sql1 = "INSERT INTO corpus (corpusID, corpusName, description";
+        sql2 = "VALUES (:corpusID, :corpusName, :description";
+    }
+    else if (what == CorpusObject::Type_Communication) {
         sql1 = "INSERT INTO communication (communicationID, corpusID, communicationName";
         sql2 = "VALUES (:communicationID, :corpusID, :communicationName";
     }
@@ -320,7 +339,11 @@ QString SQLSerialiserMetadata::prepareInsertSQL(MetadataStructure *structure, Co
 QString SQLSerialiserMetadata::prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what)
 {
     QString sql1, sql2;
-    if (what == CorpusObject::Type_Communication) {
+    if (what == CorpusObject::Type_Corpus) {
+        sql1 = "UPDATE corpus SET corpusName = :corpusName, description = :description";
+        sql2 = "WHERE corpusID = :corpusID";
+    }
+    else if (what == CorpusObject::Type_Communication) {
         sql1 = "UPDATE communication SET corpusID = :corpusID, communicationName = :communicationName";
         sql2 = "WHERE communicationID = :communicationID";
     }
@@ -348,6 +371,29 @@ QString SQLSerialiserMetadata::prepareUpdateSQL(MetadataStructure *structure, Co
         }
     }
     return QString("%1 %2").arg(sql1).arg(sql2);
+}
+
+// static private
+bool SQLSerialiserMetadata::execSaveCorpus(Corpus *corpus, MetadataStructure *structure, QSqlDatabase &db)
+{
+    if (!corpus) return false;
+    QSqlQuery q(db);
+    if (corpus->isNew()) {
+        q.prepare(prepareInsertSQL(structure, CorpusObject::Type_Corpus));
+    } else {
+        q.prepare(prepareUpdateSQL(structure, CorpusObject::Type_Corpus));
+    }
+    q.bindValue(":corpusID", corpus->ID());
+    q.bindValue(":corpusName", corpus->name());
+    q.bindValue(":description", corpus->description());
+    foreach (MetadataStructureSection *section, structure->sections(CorpusObject::Type_Corpus)) {
+        foreach (MetadataStructureAttribute *attribute, section->attributes()) {
+            q.bindValue(QString(":%1").arg(attribute->ID()), corpus->property(attribute->ID()));
+        }
+    }
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    return true;
 }
 
 // static private
@@ -544,6 +590,8 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
         queryParticipationDelete.exec();
     }
     corpus->deletedParticipationIDs.clear();
+    // Corpus metadata
+    execSaveCorpus(corpus, structure, db);
     // Update
     foreach (CorpusCommunication *com, corpus->communications()) {
         execCleanUpCommunication(com, db);

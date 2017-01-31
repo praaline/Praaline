@@ -44,6 +44,7 @@ struct CorpusExplorerWidgetData {
         metadataEditorPrimary(0), metadataEditorSecondary(0), preview(0)
     { }
 
+    QAction *actionOpenCorpus;
     QAction *actionSaveMetadata;
     QAction *actionAddCorpus;
     QAction *actionAddCommunication;
@@ -136,7 +137,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
     d->corporaObserverWidget->setRefreshMode(ObserverWidget::RefreshModeShowTree);
     d->corporaObserverWidget->setGlobalMetaType("Corpus Tree Meta Type");
     d->corporaObserverWidget->setAcceptDrops(true);
-    connect(d->corporaObserverWidget, SIGNAL(selectedObjectsChanged(QList<QObject*>)), SLOT(selectionChanged(QList<QObject*>)));
+    connect(d->corporaObserverWidget, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
+            this, SLOT(corporaObserverWidgetSelectedObjectsChanged(QList<QObject*>)));
+    connect(d->corporaObserverWidget, SIGNAL(doubleClickRequest(QObject*,Observer*)),
+            this, SLOT(corporaObserverWidgetDoubleClickRequest(QObject*,Observer*)));
     d->corporaObserverWidget->setObserverContext(d->corporaTopLevelNode);
     d->corporaObserverWidget->layout()->setMargin(0);
     d->corporaObserverWidget->initialize();
@@ -185,7 +189,14 @@ void CorpusExplorerWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // CORPUS MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionSaveMetadata = new QAction(QIcon(":icons/actions/save.png"), tr("Save Metadata"), this);
+    d->actionOpenCorpus = new QAction(QIcon(":icons/actions/action_open.png"), tr("Open Corpus"), this);
+    connect(d->actionOpenCorpus, SIGNAL(triggered()), SLOT(openCorpus()));
+    command = ACTION_MANAGER->registerAction("Corpus.OpenCorpus", d->actionOpenCorpus, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    corpus_menu->addAction(command);
+    d->toolbarCorpusExplorer->addAction(d->actionOpenCorpus);
+
+    d->actionSaveMetadata = new QAction(QIcon(":icons/actions/action_save.png"), tr("Save Metadata"), this);
     connect(d->actionSaveMetadata, SIGNAL(triggered()), SLOT(saveMetadata()));
     command = ACTION_MANAGER->registerAction("Corpus.SaveMetadata", d->actionSaveMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -387,6 +398,10 @@ void CorpusExplorerWidget::corpusRepositoryAdded(const QString &repositoryID)
     OBJECT_MANAGER->registerObject(obs, QtilitiesCategory("CorpusObserver"));
     d->observersForCorpusRepositories.insert(repositoryID, obs);
     d->corporaTopLevelNode->addNode(obs->nodeRepository());
+    // If there is only one corpus in the repository, open it
+    if (d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).count() == 1) {
+        d->corpusRepositoriesManager->openCorpus(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).first(), repositoryID);
+    }
 }
 
 void CorpusExplorerWidget::corpusRepositoryRemoved(const QString &repositoryID)
@@ -457,7 +472,7 @@ void CorpusExplorerWidget::updateMetadataEditorsForCorpus(Corpus *corpus)
     d->metadataEditorSecondary->rebind(corpus->repository()->metadataStructure(), itemsSecondary, false, false);
 }
 
-void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
+void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QObject*> selected)
 {
     if (selected.isEmpty()) {
         return;
@@ -501,12 +516,41 @@ void CorpusExplorerWidget::selectionChanged(QList<QObject*> selected)
     }
 }
 
+void CorpusExplorerWidget::corporaObserverWidgetDoubleClickRequest(QObject *object, Observer* parent_observer)
+{
+    CorpusExplorerTreeNodeCorpus *nodeCorpus = qobject_cast<CorpusExplorerTreeNodeCorpus *>(object);
+    if (nodeCorpus && (!nodeCorpus->corpus())) {
+        // It is a corpus but not opened yet.
+        QString repositoryID = parent_observer->observerName();
+        QString corpusID = nodeCorpus->getName();
+        d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+    }
+}
+
 // =========================================================================================================================================
-// Save
+// Corpora
 // =========================================================================================================================================
+
+void CorpusExplorerWidget::openCorpus()
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) {
+        QMessageBox::warning(this, tr("Open Corpus"), tr("Please open a Corpus Repository first."), QMessageBox::Ok);
+        return;
+    }
+    QInputDialog dialog;
+    dialog.setOptions(QInputDialog::UseListViewForComboBoxItems);
+    dialog.setComboBoxItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repository->ID()));
+    dialog.setWindowTitle("Select the corpus to open");
+    if (dialog.exec()) {
+       QString corpusID = dialog.textValue();
+       d->corpusRepositoriesManager->openCorpus(corpusID, repository->ID());
+    }
+}
+
 void CorpusExplorerWidget::saveMetadata()
 {
-    d->activeCorpus->save();
+    d->corpusRepositoriesManager->saveCorpusMetadata();
 }
 
 // =========================================================================================================================================
@@ -515,7 +559,18 @@ void CorpusExplorerWidget::saveMetadata()
 
 void CorpusExplorerWidget::addCorpus()
 {
-
+    QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
+    if (repositoryID.isEmpty()) {
+        QMessageBox::warning(this, tr("Add Corpus to Repository"),
+                             tr("Please select (create or open) a Corpus Repository to which the new Corpus will be added."),
+                             QMessageBox::Ok);
+        return;
+    }
+    bool ok;
+    QString corpusID = QInputDialog::getText(this, tr("Add New Corpus"),
+                                             tr("Corpus ID:"), QLineEdit::Normal, "", &ok);
+    if (!ok || corpusID.isEmpty()) return;
+    d->corpusRepositoriesManager->createCorpus(corpusID, repositoryID);
 }
 
 void CorpusExplorerWidget::addCommunication()
@@ -809,41 +864,43 @@ void CorpusExplorerWidget::removeCorpusItems()
 
 void CorpusExplorerWidget::relinkCorpusItem()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    QList<CorpusObject *> selected = selectedCorpusItems();
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
+    QList<CorpusObject *> selected = selectedCorpusItems();
 
-//    if (selected.count() < 1) {
-//        QMessageBox::warning(this, tr("Relink Corpus Items"),
-//                             tr("Please select Recording(s) and Annotation(s) to change their association with a Communication."),
-//                             QMessageBox::Ok);
-//        return;
-//    }
-//    // Get destination communication
-//    bool ok;
-//    QString communicationID = QInputDialog::getItem (this, tr("Relink Corpus Item"),
-//                                                    tr("Please select the ID of the Communication to which you want to move the selected Recording"),
-//                                                    corpus->communicationIDs(), 0, false, &ok);
-//    if (!ok || communicationID.isEmpty()) return;
-//    // Relink
-//    foreach (CorpusObject *cobj, selected) {
-//        if (cobj->type() == CorpusObject::Type_Recording) {
-//            CorpusRecording *rec = qobject_cast<CorpusRecording *>(cobj);
-//            QPointer<CorpusCommunication> com = corpus->communication(rec->communicationID());
-//            if (!com) return;
-////            com->unlinkRecording(rec->ID());
-////            com = corpus->communication(communicationID);
-////            com->addRecording(rec);
-//        }
-//        else if (cobj->type() == CorpusObject::Type_Annotation) {
-//            CorpusAnnotation *annot = qobject_cast<CorpusAnnotation *>(cobj);
-//            QPointer<CorpusCommunication> com = corpus->communication(annot->communicationID());
-//            if (!com) return;
-////            com->unlinkAnnotation(annot->ID());
-////            com = corpus->communication(communicationID);
-////            com->addAnnotation(annot);
-//        }
-//    }
+    if (selected.count() < 1) {
+        QMessageBox::warning(this, tr("Relink Corpus Items"),
+                             tr("Please select Recording(s) and Annotation(s) to change their association with a Communication."),
+                             QMessageBox::Ok);
+        return;
+    }
+    // Get destination communication
+    bool ok;
+    QString communicationID = QInputDialog::getItem (this, tr("Relink Corpus Item"),
+                                                    tr("Please select the ID of the Communication to which you want to move the selected Recording"),
+                                                    d->activeCorpus->communicationIDs(), 0, false, &ok);
+    if (!ok || communicationID.isEmpty()) return;
+    // Relink
+    foreach (CorpusObject *cobj, selected) {
+        if (cobj->type() == CorpusObject::Type_Recording) {
+            CorpusRecording *rec = qobject_cast<CorpusRecording *>(cobj);
+            QPointer<CorpusCommunication> com = d->activeCorpus->communication(rec->communicationID());
+            if (!com) return;
+//            com->unlinkRecording(rec->ID());
+//            com = corpus->communication(communicationID);
+//            com->addRecording(rec);
+        }
+        else if (cobj->type() == CorpusObject::Type_Annotation) {
+            CorpusAnnotation *annot = qobject_cast<CorpusAnnotation *>(cobj);
+            QPointer<CorpusCommunication> com = d->activeCorpus->communication(annot->communicationID());
+            if (!com) return;
+//            com->unlinkAnnotation(annot->ID());
+//            com = corpus->communication(communicationID);
+//            com->addAnnotation(annot);
+        }
+    }
 }
 
 void CorpusExplorerWidget::addItemsFromFolder()
@@ -886,116 +943,126 @@ void CorpusExplorerWidget::exportAnnotations()
 
 void CorpusExplorerWidget::checkMediaFiles()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    CheckMediaFilesDialog *dialog = new CheckMediaFilesDialog(corpus, this);
-//    dialog->exec();
-//    delete dialog;
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
+    CheckMediaFilesDialog *dialog = new CheckMediaFilesDialog(d->activeCorpus, this);
+    dialog->exec();
+    delete dialog;
 }
 
 void CorpusExplorerWidget::splitCommunications()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    SplitCommunicationsDialog *dialog = new SplitCommunicationsDialog(corpus, this);
-//    dialog->exec();
-//    delete dialog;
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
+    SplitCommunicationsDialog *dialog = new SplitCommunicationsDialog(d->activeCorpus, this);
+    dialog->exec();
+    delete dialog;
 }
 
 void CorpusExplorerWidget::createAnnotationsFromRecordings()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    d->corporaTopLevelNode->startTreeProcessingCycle();
-//    foreach (CorpusCommunication *com, corpus->communications()) {
-//        if (!com) continue;
-//        if (com->hasAnnotations()) continue;
-//        foreach (CorpusRecording *rec, com->recordings()) {
-//            if (!rec) continue;
-//            CorpusAnnotation *annot = new CorpusAnnotation(rec->ID());
-//            com->addAnnotation(annot);
-//        }
-//    }
-//    d->corporaTopLevelNode->endTreeProcessingCycle();
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
+    d->corporaTopLevelNode->startTreeProcessingCycle();
+    foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
+        if (!com) continue;
+        if (com->hasAnnotations()) continue;
+        foreach (CorpusRecording *rec, com->recordings()) {
+            if (!rec) continue;
+            CorpusAnnotation *annot = new CorpusAnnotation(rec->ID());
+            com->addAnnotation(annot);
+        }
+    }
+    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusExplorerWidget::createSpeakersFromAnnotations()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    d->corporaTopLevelNode->startTreeProcessingCycle();
-//    foreach (CorpusCommunication *com, corpus->communications()) {
-//        if (!com) continue;
-//        foreach (CorpusAnnotation *annot, com->annotations()) {
-//            if (!annot) continue;
-//            QList<QString> speakerIDs = corpus->datastoreAnnotations()->getSpeakersInAnnotation(annot->ID());
-//            foreach (QString speakerID, speakerIDs) {
-//                if (!corpus->hasSpeaker(speakerID))
-//                    corpus->addSpeaker(new CorpusSpeaker(speakerID));
-//                if (!corpus->hasParticipation(com->ID(), speakerID))
-//                    corpus->addParticipation(com->ID(), speakerID);
-//            }
-//        }
-//    }
-//    d->corporaTopLevelNode->endTreeProcessingCycle();
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
+    d->corporaTopLevelNode->startTreeProcessingCycle();
+    foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
+        if (!com) continue;
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            if (!annot) continue;
+            QList<QString> speakerIDs = d->activeCorpus->repository()->annotations()->getSpeakersInAnnotation(annot->ID());
+            foreach (QString speakerID, speakerIDs) {
+                if (!d->activeCorpus->hasSpeaker(speakerID))
+                    d->activeCorpus->addSpeaker(new CorpusSpeaker(speakerID));
+                if (!d->activeCorpus->hasParticipation(com->ID(), speakerID))
+                    d->activeCorpus->addParticipation(com->ID(), speakerID);
+            }
+        }
+    }
+    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
 {
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please open a Corpus first."), QMessageBox::Ok);
+        return;
+    }
 
-//    bool deleteSpeakers = false;
-//    if (QMessageBox::question(this, tr("Clean up Speakers as well?"), tr("When a speaker does not participate in a Communication, based on its Annotations, "
-//                              "the Participation will be deleted. Should the Speaker metadata also be deleted? (Caution: this operation cannot be undone!)"))
-//            == QMessageBox::Yes) {
-//        deleteSpeakers = true;
-//    }
-//    QSet<QString> allActiveSpeakerIDs;
+    bool deleteSpeakers = false;
+    if (QMessageBox::question(this, tr("Clean up Speakers as well?"), tr("When a speaker does not participate in a Communication, based on its Annotations, "
+                              "the Participation will be deleted. Should the Speaker metadata also be deleted? (Caution: this operation cannot be undone!)"))
+            == QMessageBox::Yes) {
+        deleteSpeakers = true;
+    }
+    QSet<QString> allActiveSpeakerIDs;
 
-//    d->corporaTopLevelNode->startTreeProcessingCycle();
+    d->corporaTopLevelNode->startTreeProcessingCycle();
 
-//    QProgressDialog progressDialog(this);
-//    progressDialog.setCancelButtonText(tr("&Cancel"));
-//    progressDialog.setRange(0, corpus->communicationsCount());
-//    progressDialog.setWindowTitle(tr("Analysing Corpus Data"));
+    QProgressDialog progressDialog(this);
+    progressDialog.setCancelButtonText(tr("&Cancel"));
+    progressDialog.setRange(0, d->activeCorpus->communicationsCount());
+    progressDialog.setWindowTitle(tr("Analysing Corpus Data"));
 
-//    int i = 1;
-//    foreach (CorpusCommunication *com, corpus->communications()) {
-//        progressDialog.setValue(i);
-//        progressDialog.setLabelText(tr("Analysing Communication %1 of %2...")
-//                                    .arg(i).arg(corpus->communicationsCount()));
-//        ++i;
-//        qApp->processEvents();
+    int i = 1;
+    foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
+        progressDialog.setValue(i);
+        progressDialog.setLabelText(tr("Analysing Communication %1 of %2...")
+                                    .arg(i).arg(d->activeCorpus->communicationsCount()));
+        ++i;
+        qApp->processEvents();
 
-//        if (!com) continue;
-//        QStringList activeSpeakerIDs;
-//        foreach (CorpusAnnotation *annot, com->annotations()) {
-//            if (!annot) continue;
-//            QList<QString> speakerIDs = corpus->datastoreAnnotations()->getSpeakersActiveInAnnotation(annot->ID());
-//            foreach (QString speakerID, speakerIDs)
-//                if (!activeSpeakerIDs.contains(speakerID)) activeSpeakerIDs << speakerID;
-//        }
-//        allActiveSpeakerIDs.unite(QSet<QString>::fromList(activeSpeakerIDs));
-//        QStringList inactiveSpeakerIDs;
-//        foreach (QPointer<CorpusParticipation> participation, corpus->participationsForCommunication(com->ID())) {
-//            if (!participation) continue;
-//            if (!activeSpeakerIDs.contains(participation->speakerID()))
-//                if (!inactiveSpeakerIDs.contains(participation->speakerID()))
-//                    inactiveSpeakerIDs << participation->speakerID();
-//        }
-//        foreach (QString speakerID, inactiveSpeakerIDs) {
-//            corpus->removeParticipation(com->ID(), speakerID);
-//        }
-//    }
-//    if (deleteSpeakers) {
-//        foreach (QString speakerID, corpus->speakerIDs()) {
-//            if (!allActiveSpeakerIDs.contains(speakerID)) {
-//                corpus->removeSpeaker(speakerID);
-//            }
-//        }
-//    }
-//    d->corporaTopLevelNode->endTreeProcessingCycle();
+        if (!com) continue;
+        QStringList activeSpeakerIDs;
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            if (!annot) continue;
+            QList<QString> speakerIDs = d->activeCorpus->repository()->annotations()->getSpeakersActiveInAnnotation(annot->ID());
+            foreach (QString speakerID, speakerIDs)
+                if (!activeSpeakerIDs.contains(speakerID)) activeSpeakerIDs << speakerID;
+        }
+        allActiveSpeakerIDs.unite(QSet<QString>::fromList(activeSpeakerIDs));
+        QStringList inactiveSpeakerIDs;
+        foreach (QPointer<CorpusParticipation> participation, d->activeCorpus->participationsForCommunication(com->ID())) {
+            if (!participation) continue;
+            if (!activeSpeakerIDs.contains(participation->speakerID()))
+                if (!inactiveSpeakerIDs.contains(participation->speakerID()))
+                    inactiveSpeakerIDs << participation->speakerID();
+        }
+        foreach (QString speakerID, inactiveSpeakerIDs) {
+            d->activeCorpus->removeParticipation(com->ID(), speakerID);
+        }
+    }
+    if (deleteSpeakers) {
+        foreach (QString speakerID, d->activeCorpus->speakerIDs()) {
+            if (!allActiveSpeakerIDs.contains(speakerID)) {
+                d->activeCorpus->removeSpeaker(speakerID);
+            }
+        }
+    }
+    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusExplorerWidget::attributesAndGroupings()

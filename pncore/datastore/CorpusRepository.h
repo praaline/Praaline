@@ -19,6 +19,7 @@
 #include <QObject>
 #include <QString>
 #include <QPointer>
+#include "pncore/corpus/CorpusObjectInfo.h"
 
 namespace Praaline {
 namespace Core {
@@ -54,6 +55,7 @@ public:
     QPointer<AnnotationDatastore> annotations() const;
     QPointer<MetadataDatastore> metadata() const;
     QPointer<FileDatastore> files() const;
+    QList<CorpusObjectInfo> listCorporaInfo() const;
 
     // Metadata and Annotation structures
     // ==========================================================================================================================

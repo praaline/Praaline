@@ -259,22 +259,22 @@ void CorpusModeWidget::openCorpusRepositoryRecent()
 void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filename)
 {
     // Check whether the corpus is already open
-    if (d->corpusRepositoriesManager->isAlreadyOpen(filename)) {
-        QMessageBox::warning(this, tr("Corpus already open"),
-                             QString(tr("This corpus (%1) is already open.")).arg(filename), QMessageBox::Ok);
+    if (d->corpusRepositoriesManager->isRepositoryDefinitionAlreadyOpen(filename)) {
+        QMessageBox::warning(this, tr("Corpus repository already open"),
+                             QString(tr("This corpus repository (%1) is already open.")).arg(filename), QMessageBox::Ok);
         return;
     }
     // Open the corpus definition
     CorpusRepositoryDefinition definition;
     if (!definition.load(filename)) {
-        QMessageBox::warning(this, tr("Cannot open corpus"),
-                             QString(tr("Cannot open corpus definition file (%1). Is it a valid Praaline XML corpus definition?")).arg(filename),
+        QMessageBox::warning(this, tr("Cannot open corpus repository"),
+                             QString(tr("Cannot open corpus repository definition file (%1). Is it a valid Praaline XML corpus repository definition?")).arg(filename),
                              QMessageBox::Ok);
     }
     // Ask for password, if needed
     QString password;
     if (definition.infoDatastoreMetadata.usePassword == true || definition.infoDatastoreAnnotations.usePassword) {
-        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus"),
+        password = QInputDialog::getText(this, tr("Enter password"), tr("Enter password to connect to this corpus repository"),
                                          QLineEdit::Password);
         if (definition.infoDatastoreMetadata.usePassword)    definition.infoDatastoreMetadata.password = password;
         if (definition.infoDatastoreAnnotations.usePassword) definition.infoDatastoreAnnotations.password = password;

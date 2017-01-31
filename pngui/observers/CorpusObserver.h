@@ -13,6 +13,7 @@ class CorpusRecording;
 class CorpusAnnotation;
 class CorpusSpeaker;
 class CorpusObject;
+class CorpusObjectInfo;
 }
 }
 
@@ -23,6 +24,7 @@ using namespace Qtilities;
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
 
+struct CorpusObserverData;
 class CorpusObserver : public QObject
 {
     Q_OBJECT
@@ -30,27 +32,30 @@ public:
     CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent = 0);
     ~CorpusObserver();
 
-    QPointer<Praaline::Core::CorpusRepository> repository() const { return m_repository; }
-    TreeNode *nodeRepository() const { return m_nodeRepository; }
+    QPointer<Praaline::Core::CorpusRepository> repository() const;
+    TreeNode *nodeRepository() const;
+
+    void addCorpus(QPointer<Praaline::Core::Corpus> corpus);
+    void removeCorpus(QString corpusID);
 
     void setCommunicationsGrouping(QStringList groupAttributeIDs);
     void setSpeakersGrouping(QStringList groupAttributeIDs);
+
 private:
-    QPointer<Praaline::Core::CorpusRepository> m_repository;
-    TreeNode *m_nodeRepository;
+    CorpusObserverData *d;
 };
 
 class CorpusExplorerTreeNodeCorpus : public TreeNode
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeNodeCorpus(QPointer<Praaline::Core::Corpus> corpus);
+    CorpusExplorerTreeNodeCorpus(const QString &corpusID);
 
     QPointer<Praaline::Core::Corpus> corpus() const { return m_corpus; }
+    void setCorpus(QPointer<Praaline::Core::Corpus> corpus = 0);
+
     TreeNode *nodeCommunications() const { return m_nodeCommunications; }
     TreeNode *nodeSpeakers() const { return m_nodeSpeakers; }
-
-    void refresh();
 
     QStringList communicationsGrouping() const { return m_groupAttributeIDsCommunication; }
     QStringList speakersGrouping() const { return m_groupAttributeIDsSpeaker; }
