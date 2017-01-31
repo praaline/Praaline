@@ -36,6 +36,7 @@ using namespace QtilitiesProjectManagement;
 #include "importmetadata/ImportMetadataWizard.h"
 #include "exportmetadata/ExportMetadataWizard.h"
 #include "importcorpusitems/ImportCorpusItemsWizard.h"
+#include "importannotations/ImportAnnotationsWizard.h"
 #include "exportannotations/ExportAnnotationsWizard.h"
 
 struct CorpusExplorerWidgetData {
@@ -995,10 +996,10 @@ void CorpusExplorerWidget::importMetadata()
                                                     tr("Text File (*.txt);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-//    d->corporaTopLevelNode->startTreeProcessingCycle();
-//    ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, repository, this);
-//    wizard->exec(); // MODAL!
-//    d->corporaTopLevelNode->endTreeProcessingCycle();
+    d->corporaTopLevelNode->startTreeProcessingCycle();
+    ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, repository, this);
+    wizard->exec(); // MODAL!
+    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusExplorerWidget::exportMetadata()
@@ -1009,8 +1010,8 @@ void CorpusExplorerWidget::exportMetadata()
 
 void CorpusExplorerWidget::importAnnotations()
 {
-//    ImportAnnotationsWizard *wizard = new ImportAnnotationsWizard(this);
-//    wizard->exec(); // MODAL!
+    ImportAnnotationsWizard *wizard = new ImportAnnotationsWizard(this);
+    wizard->exec(); // MODAL!
 }
 
 void CorpusExplorerWidget::exportAnnotations()
@@ -1153,15 +1154,17 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
 
 void CorpusExplorerWidget::attributesAndGroupings()
 {
-//    QPointer<CorpusObserver> obs = d->corporaManager->activeCorpusObserver();
-//    if (!obs) return;
-//    QPointer<Corpus> corpus = d->corporaManager->activeCorpus();
-//    if (!corpus) return;
-//    CorpusExplorerOptionsDialog *dialog = new CorpusExplorerOptionsDialog(corpus->metadataStructure(), this);
-//    if (dialog->exec() != QDialog::Accepted) return;
-
-//    obs->setCommunicationsGrouping(dialog->groupAttributesForCommunications());
-//    obs->setSpeakersGrouping(dialog->groupAttributesForSpeakers());
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+    // Ask user for new groupings
+    CorpusExplorerOptionsDialog *dialog = new CorpusExplorerOptionsDialog(repository->metadataStructure(), this);
+    if (dialog->exec() != QDialog::Accepted) return;
+    // Apply to observer
+    QPointer<CorpusObserver> obs = d->corpusRepositoriesManager->activeCorpusObserver();
+    if (obs) {
+        obs->setCommunicationsGrouping(dialog->groupAttributesForCommunications());
+        obs->setSpeakersGrouping(dialog->groupAttributesForSpeakers());
+    }
 }
 
 // ==============================================================================================================================

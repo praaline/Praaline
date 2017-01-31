@@ -31,42 +31,52 @@
         <property name="title">
          <string>Corpus item type</string>
         </property>
-        <layout class="QGridLayout" name="gridLayoutPreviewIntroduction">
-         <item row="4" column="0">
-          <widget class="QRadioButton" name="optionAnnotations">
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QRadioButton" name="optionCorpora">
            <property name="text">
-            <string>Annotations</string>
+            <string>Corpora</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
+          <widget class="QRadioButton" name="optionCommunications">
+           <property name="text">
+            <string>Communications</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
           <widget class="QRadioButton" name="optionSpeakers">
            <property name="text">
             <string>Speakers</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="3" column="0">
           <widget class="QRadioButton" name="optionParticipations">
            <property name="text">
             <string>Participations</string>
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
+         <item row="4" column="0">
           <widget class="QRadioButton" name="optionRecordings">
            <property name="text">
             <string>Recordings</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QRadioButton" name="optionCommunications">
+         <item row="5" column="0">
+          <widget class="QRadioButton" name="optionAnnotations">
            <property name="text">
-            <string>Communications</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
+            <string>Annotations</string>
            </property>
           </widget>
          </item>

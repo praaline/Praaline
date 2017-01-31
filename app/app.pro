@@ -165,7 +165,8 @@ SOURCES += main.cpp \
     corpus/importmetadata/ImportMetadataWizard.cpp \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.cpp \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
-    corpus/importmetadata/ImportMetadataWizardFinalPage.cpp
+    corpus/importmetadata/ImportMetadataWizardFinalPage.cpp \
+    corpus/importannotations/ImportAnnotationsWizard.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -256,7 +257,8 @@ HEADERS  += \
     corpus/importmetadata/ImportMetadataWizard.h \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.h \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.h \
-    corpus/importmetadata/ImportMetadataWizardFinalPage.h
+    corpus/importmetadata/ImportMetadataWizardFinalPage.h \
+    corpus/importannotations/ImportAnnotationsWizard.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -310,7 +312,8 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizard.ui \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.ui \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
-    corpus/importmetadata/ImportMetadataWizardFinalPage.ui
+    corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
+    corpus/importannotations/ImportAnnotationsWizard.ui
 
 RESOURCES += \
     praaline.qrc \
