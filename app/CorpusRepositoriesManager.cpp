@@ -159,6 +159,7 @@ QPointer<Corpus> CorpusRepositoriesManager::openCorpus(const QString &corpusID, 
     QString repID = (repositoryID.isEmpty()) ? activeCorpusRepositoryID() : repositoryID;
     QPointer<CorpusRepository> repository = corpusRepositoryByID(repID);
     if (!repository) return Q_NULLPTR;
+    if (!repository->metadata()) return Q_NULLPTR;
     QPointer<Corpus> corpus = repository->metadata()->getCorpus(corpusID);
     CorpusObserver *obs = corpusObserverForRepository(repID);
     if (obs) {

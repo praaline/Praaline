@@ -430,9 +430,11 @@ void CorpusExplorerWidget::corpusRepositoryAdded(const QString &repositoryID)
     OBJECT_MANAGER->registerObject(obs, QtilitiesCategory("CorpusObserver"));
     d->observersForCorpusRepositories.insert(repositoryID, obs);
     d->corporaTopLevelNode->addNode(obs->nodeRepository());
-    // If there is only one corpus in the repository, open it
-    if (d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).count() == 1) {
-        d->corpusRepositoriesManager->openCorpus(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).first(), repositoryID);
+    // If there is only one corpus in one repository, open it
+    if (d->corpusRepositoriesManager->listAvailableCorpusIDs().count() == 1) {
+        QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(
+                    d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).first(), repositoryID);
+        if (corpus) d->activeCorpus = corpus;
     }
 }
 
@@ -578,7 +580,8 @@ void CorpusExplorerWidget::createCorpus()
     QString corpusID = QInputDialog::getText(this, tr("Add New Corpus"),
                                              tr("Corpus ID:"), QLineEdit::Normal, "", &ok);
     if (!ok || corpusID.isEmpty()) return;
-    d->corpusRepositoriesManager->createCorpus(corpusID, repositoryID);
+    QPointer<Corpus> corpus = d->corpusRepositoriesManager->createCorpus(corpusID, repositoryID);
+    if (corpus) d->activeCorpus = corpus;
 }
 
 void CorpusExplorerWidget::openCorpus()
@@ -594,7 +597,8 @@ void CorpusExplorerWidget::openCorpus()
     dialog.setWindowTitle("Select the corpus to open");
     if (dialog.exec()) {
        QString corpusID = dialog.textValue();
-       d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+       QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+       if (corpus) d->activeCorpus = corpus;
     }
 }
 
@@ -976,10 +980,12 @@ void CorpusExplorerWidget::relinkCorpusItem()
 
 void CorpusExplorerWidget::addItemsFromFolder()
 {
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) return;
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("No Corpus Selected"),  tr("Please select a Corpus first."), QMessageBox::Ok);
+        return;
+    }
     d->corporaTopLevelNode->startTreeProcessingCycle();
-    ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(repository, this);
+    ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
     wizard->exec(); // MODAL!
     d->corporaTopLevelNode->endTreeProcessingCycle();
 }

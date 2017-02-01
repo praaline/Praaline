@@ -348,12 +348,12 @@ QString SQLSerialiserMetadata::prepareInsertSQL(MetadataStructure *structure, Co
     foreach (QString attributeID, attributeIDs) {
         if (attributeID != attributeIDs.first()) sql1.append(", ");
         sql1.append(attributeID);
-        if (attributeID != attributeIDs.first()) sql2.append(", :");
-        sql2.append(attributeID);
+        if (attributeID != attributeIDs.first()) sql2.append(", ");
+        sql2.append(":").append(attributeID);
     }
     sql1.append(")");
     sql2.append(")");
-    // qDebug() << sql1 << " " << sql2;
+    qDebug() << sql1 << " " << sql2;
     return QString("%1 %2").arg(sql1).arg(sql2);
 }
 
@@ -390,7 +390,7 @@ QString SQLSerialiserMetadata::prepareUpdateSQL(MetadataStructure *structure, Co
         if (attributeID != attributeIDs.first()) sql1.append(", ");
         sql1.append(attributeID).append(" = :").append(attributeID);
     }
-    // qDebug() << sql1 << " " << sql2;
+    qDebug() << sql1 << " " << sql2;
     return QString("%1 %2").arg(sql1).arg(sql2);
 }
 
@@ -418,7 +418,7 @@ bool SQLSerialiserMetadata::saveCorpusObjectInfo(
         if (query.exec()) {
             setClean(&item);
         } else {
-            qDebug() << query.lastError();
+            qDebug() << "ERROR: saveCorpusObjectInfo: " << query.lastError();
             success = false;
         }
     }
@@ -444,7 +444,7 @@ bool SQLSerialiserMetadata::execSaveCorpus(Corpus *corpus, MetadataStructure *st
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveCorpus: ID:" << corpus->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -467,7 +467,7 @@ bool SQLSerialiserMetadata::execSaveCommunication(CorpusCommunication *com, Meta
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveCommunication: ID:" << com->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -489,7 +489,7 @@ bool SQLSerialiserMetadata::execSaveSpeaker(CorpusSpeaker *spk, MetadataStructur
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveSpeaker: ID:" << spk->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -521,7 +521,7 @@ bool SQLSerialiserMetadata::execSaveRecording(QString communicationID, CorpusRec
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveRecording: ID:" << rec->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -544,7 +544,7 @@ bool SQLSerialiserMetadata::execSaveAnnotation(QString communicationID, CorpusAn
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveAnnotation: ID:" << annot->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -567,7 +567,7 @@ bool SQLSerialiserMetadata::execSaveParticipation(CorpusParticipation *participa
         }
     }
     q.exec();
-    if (q.lastError().isValid()) { qDebug() << q.lastError().text(); return false; }
+    if (q.lastError().isValid()) { qDebug() << "ERROR: execSaveParticipation: ID:" << participation->ID() << " error:" << q.lastError().text(); return false; }
     return true;
 }
 
@@ -580,7 +580,9 @@ bool SQLSerialiserMetadata::execCleanUpCommunication(CorpusCommunication *com, Q
     queryCommunicationRecordingDelete.bindValue(":communicationID", com->ID());
     foreach (QString recordingID, com->deletedRecordingIDs) {
         queryCommunicationRecordingDelete.bindValue(":recordingID", recordingID);
-        queryCommunicationRecordingDelete.exec();
+        if (!queryCommunicationRecordingDelete.exec()) {
+            qDebug() << "ERROR: queryCommunicationRecordingDelete: ID: " << recordingID << " error:" << queryCommunicationRecordingDelete.lastError().text();
+        }
     }
     com->deletedRecordingIDs.clear();
     // deleted annotations
@@ -589,7 +591,9 @@ bool SQLSerialiserMetadata::execCleanUpCommunication(CorpusCommunication *com, Q
     queryCommunicationAnnotationDelete.bindValue(":communicationID", com->ID());
     foreach (QString annotationID, com->deletedAnnotationIDs) {
         queryCommunicationAnnotationDelete.bindValue(":annotationID", annotationID);
-        queryCommunicationAnnotationDelete.exec();
+        if (queryCommunicationAnnotationDelete.exec()) {
+            qDebug() << "ERROR: queryCommunicationAnnotationDelete: ID: " << annotationID << " error:" << queryCommunicationAnnotationDelete.lastError().text();
+        }
     }
     com->deletedAnnotationIDs.clear();
     return true;

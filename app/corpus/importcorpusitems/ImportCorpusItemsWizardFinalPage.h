@@ -23,7 +23,7 @@ class ImportCorpusItemsWizardFinalPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardFinalPage(QPointer<CorpusRepository> repository,
+    explicit ImportCorpusItemsWizardFinalPage(QPointer<Corpus> corpus,
                                               QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
                                               QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
                                               QMultiHash<QString, TierCorrespondance> &tierCorrespondances,

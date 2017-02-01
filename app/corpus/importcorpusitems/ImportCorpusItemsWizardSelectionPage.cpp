@@ -1,18 +1,19 @@
 #include <QFileDialog>
+#include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/FileDatastore.h"
 #include "ImportCorpusItemsWizardSelectionPage.h"
 #include "ui_ImportCorpusItemsWizardSelectionPage.h"
 
 struct ImportCorpusItemsWizardSelectionPageData {
-    ImportCorpusItemsWizardSelectionPageData(QPointer<CorpusRepository> repository,
+    ImportCorpusItemsWizardSelectionPageData(QPointer<Corpus> corpus,
                                              QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
                                              QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations) :
-        repository(repository), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
+        corpus(corpus), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
         abort(false)
     {}
 
-    QPointer<CorpusRepository> repository;
+    QPointer<Corpus> corpus;
     QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings;
     QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations;
     QPointer<QStandardItemModel> modelFormatsRecording;
@@ -21,19 +22,20 @@ struct ImportCorpusItemsWizardSelectionPageData {
 };
 
 ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
-        QPointer<CorpusRepository> repository,
+        QPointer<Corpus> corpus,
         QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
         QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardSelectionPage),
-    d(new ImportCorpusItemsWizardSelectionPageData(repository, candidateRecordings, candidateAnnotations))
+    d(new ImportCorpusItemsWizardSelectionPageData(corpus, candidateRecordings, candidateAnnotations))
 {
     ui->setupUi(this);
     connect(ui->commandSelectFolder, SIGNAL(clicked()), this, SLOT(selectFolder()));
     connect(ui->commandAbort, SIGNAL(clicked()), this, SLOT(abortProcess()));
 
     // Set path
-    ui->editFolderName->setText(d->repository->files()->basePath());
+    if (corpus && corpus->repository() && corpus->repository()->files())
+        ui->editFolderName->setText(corpus->repository()->files()->basePath());
 
     // Check lists for file formats
     d->modelFormatsRecording = new QStandardItemModel(this);

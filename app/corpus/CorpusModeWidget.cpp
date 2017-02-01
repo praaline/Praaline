@@ -230,6 +230,7 @@ void CorpusModeWidget::newCorpusRepository()
     if (!repository) return;
     d->corpusRepositoriesManager->addCorpusRepository(repository);
     d->corpusRepositoriesManager->setActiveCorpusRepository(repository->ID());
+    d->recentFiles->addFile(repository->definition().filenameDefinition);
 }
 
 void CorpusModeWidget::openCorpusRepository()
@@ -270,6 +271,7 @@ void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filenam
         QMessageBox::warning(this, tr("Cannot open corpus repository"),
                              QString(tr("Cannot open corpus repository definition file (%1). Is it a valid Praaline XML corpus repository definition?")).arg(filename),
                              QMessageBox::Ok);
+        return;
     }
     // Ask for password, if needed
     QString password;

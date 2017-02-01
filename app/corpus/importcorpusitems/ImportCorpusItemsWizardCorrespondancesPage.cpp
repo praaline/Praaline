@@ -6,6 +6,7 @@
 #include <QMultiHash>
 #include <QStandardItemModel>
 
+#include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/structure/AnnotationStructure.h"
@@ -15,25 +16,25 @@
 #include "ui_ImportCorpusItemsWizardCorrespondancesPage.h"
 
 struct ImportCorpusItemsWizardCorrespondancesPageData {
-    ImportCorpusItemsWizardCorrespondancesPageData(QPointer<CorpusRepository> repository,
+    ImportCorpusItemsWizardCorrespondancesPageData(QPointer<Corpus> corpus,
                                                    QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                    QSet<QString> &tierNamesCommon) :
-        repository(repository), tierCorrespondances(tierCorrespondances), tierNamesCommon(tierNamesCommon)
+        corpus(corpus), tierCorrespondances(tierCorrespondances), tierNamesCommon(tierNamesCommon)
     {}
 
-    QPointer<CorpusRepository> repository;
+    QPointer<Corpus> corpus;
     QMultiHash<QString, TierCorrespondance> &tierCorrespondances;
     QSet<QString> &tierNamesCommon;
     QPointer<QStandardItemModel> modelTiers;
 };
 
 ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondancesPage(
-        QPointer<CorpusRepository> repository,
+        QPointer<Corpus> corpus,
         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardCorrespondancesPage),
-    d(new ImportCorpusItemsWizardCorrespondancesPageData(repository, tierCorrespondances, tierNamesCommon))
+    d(new ImportCorpusItemsWizardCorrespondancesPageData(corpus, tierCorrespondances, tierNamesCommon))
 {
     ui->setupUi(this);
     setTitle(tr("Correspondances between annotation files and Annotation Levels/Attributes"));
@@ -145,14 +146,18 @@ void ImportCorpusItemsWizardCorrespondancesPage::batchUpdate()
 
 void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondance(int i, QString tierName)
 {
+    // Get annotation structure of the current corpus
+    CorpusRepository *repository = d->corpus->repository();
+    if (!repository) return;
+    if (!repository->annotationStructure()) return;
     // Best match
-    foreach (QString levelID, d->repository->annotationStructure()->levelIDs()) {
+    foreach (QString levelID, repository->annotationStructure()->levelIDs()) {
         if ((tierName == levelID) || (tierName.replace("-", "_") == levelID)) {
             d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
             return;
         }
         else {
-            foreach (QString attributeID, d->repository->annotationStructure()->level(levelID)->attributeIDs()) {
+            foreach (QString attributeID, repository->annotationStructure()->level(levelID)->attributeIDs()) {
                 if ((tierName == attributeID) || (tierName.replace("-", "_") == attributeID)) {
                     d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
                     d->modelTiers->setData(d->modelTiers->index(i, 2), attributeID);
@@ -162,13 +167,13 @@ void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondance(int i, QStr
         }
     }
     // Next best match
-    foreach (QString levelID, d->repository->annotationStructure()->levelIDs()) {
+    foreach (QString levelID, repository->annotationStructure()->levelIDs()) {
         if (tierName.startsWith(levelID) || tierName.replace("-", "_").startsWith(levelID)) {
             d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
             return;
         }
         else {
-            foreach (QString attributeID, d->repository->annotationStructure()->level(levelID)->attributeIDs()) {
+            foreach (QString attributeID, repository->annotationStructure()->level(levelID)->attributeIDs()) {
                 if (tierName.startsWith(attributeID) || tierName.replace("-", "_").startsWith(attributeID)) {
                     d->modelTiers->setData(d->modelTiers->index(i, 1), levelID);
                     d->modelTiers->setData(d->modelTiers->index(i, 2), attributeID);
@@ -181,8 +186,10 @@ void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondance(int i, QStr
 
 void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondances()
 {
-    if (!d->repository) return;
-    if (!d->repository->annotationStructure()) return;
+    // Get annotation structure of the current corpus
+    CorpusRepository *repository = d->corpus->repository();
+    if (!repository) return;
+    if (!repository->annotationStructure()) return;
 
     for (int i = 0; i < d->modelTiers->rowCount(); ++i) {
         QString tierName = d->modelTiers->item(i, 0)->data(Qt::DisplayRole).toString();
@@ -192,6 +199,11 @@ void ImportCorpusItemsWizardCorrespondancesPage::guessCorrespondances()
 
 bool ImportCorpusItemsWizardCorrespondancesPage::validatePage()
 {
+    // Get annotation structure of the current corpus
+    CorpusRepository *repository = d->corpus->repository();
+    if (!repository) return false;
+    if (!repository->annotationStructure()) return false;
+
     QHash<QString, QPair<QString, QString> > correspondances;
     bool structureChanges = false;
 
@@ -203,19 +215,19 @@ bool ImportCorpusItemsWizardCorrespondancesPage::validatePage()
         // Create levels and attributes if they do not exist
         // IMPROVE this: should lead to a next wizard page asking to define the data types of the new level/attributes
         // for now, just use varchar(1024)
-        if (d->repository && ui->optionCreateLevelsAttributes->isChecked()) {
-            if (!d->repository->annotationStructure()->hasLevel(annotationLevelID)) {
+        if (repository && ui->optionCreateLevelsAttributes->isChecked()) {
+            if ((!annotationLevelID.isEmpty()) && (!repository->annotationStructure()->hasLevel(annotationLevelID))) {
                 QPointer<AnnotationStructureLevel> level =
                         new AnnotationStructureLevel(annotationLevelID, AnnotationStructureLevel::IndependentIntervalsLevel, annotationLevelID);
-                if (d->repository->annotations()->createAnnotationLevel(level)) {
-                    d->repository->annotationStructure()->addLevel(level);
+                if (repository->annotations()->createAnnotationLevel(level)) {
+                    repository->annotationStructure()->addLevel(level);
                     structureChanges = true;
                 }
             }
-            AnnotationStructureLevel *level = d->repository->annotationStructure()->level(annotationLevelID);
+            AnnotationStructureLevel *level = repository->annotationStructure()->level(annotationLevelID);
             if (level && (!annotationAttributeID.isEmpty()) && (!level->hasAttribute(annotationAttributeID))) {
                 QPointer<AnnotationStructureAttribute> attr = new AnnotationStructureAttribute(annotationAttributeID, annotationAttributeID);
-                if (d->repository->annotations()->createAnnotationAttribute(level->ID(), attr)) {
+                if (repository->annotations()->createAnnotationAttribute(level->ID(), attr)) {
                     level->addAttribute(attr);
                     structureChanges = true;
                 }

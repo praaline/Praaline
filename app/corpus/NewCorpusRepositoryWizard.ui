@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>711</width>
-    <height>490</height>
+    <width>748</width>
+    <height>587</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,10 +18,10 @@
   </property>
   <widget class="QWizardPage" name="pageDatastoreType">
    <property name="title">
-    <string>New Corpus</string>
+    <string>New Corpus Repository</string>
    </property>
    <property name="subTitle">
-    <string>This wizard will guide you through the process of creating a new Praaline corpus.</string>
+    <string>This wizard will guide you through the process of creating a new Praaline corpus repository.</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
@@ -34,24 +34,24 @@
         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
        </property>
        <item row="0" column="0">
-        <widget class="QLabel" name="labelCorpusID">
+        <widget class="QLabel" name="labelCorpusRepositoryID">
          <property name="text">
-          <string>Corpus ID:</string>
+          <string>Repository ID:</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="editCorpusID"/>
+        <widget class="QLineEdit" name="editCorpusRepositoryID"/>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="labelCorpusName">
+        <widget class="QLabel" name="labelCorpusDescription">
          <property name="text">
-          <string>Corpus Name:</string>
+          <string>Description:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="editCorpusName"/>
+        <widget class="QLineEdit" name="editCorpusRepositoryDescription"/>
        </item>
       </layout>
      </widget>
@@ -65,7 +65,7 @@
        </sizepolicy>
       </property>
       <property name="title">
-       <string>Corpus storage method</string>
+       <string>Corpus repository storage method</string>
       </property>
       <layout class="QGridLayout" name="gridLayout_7" columnstretch="1,0">
        <item row="1" column="0">
@@ -115,7 +115,7 @@
          <item row="1" column="1">
           <widget class="QLabel" name="labelLocalDb">
            <property name="text">
-            <string>Corpus metadata and annotation data will be stored on a local SQLite database. Media files are stored filesystem folders. This is the default mode for individual projects.</string>
+            <string>Corpus metadata and annotation data will be stored on a local SQLite database. Media files are stored as files in folders. This is the default mode for individual projects.</string>
            </property>
            <property name="wordWrap">
             <bool>true</bool>
@@ -205,7 +205,7 @@
        <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="labelDatastoreType">
          <property name="text">
-          <string>Praaline supports many different ways to store and organise your corpus data. Please select the type of corpus you want to create:</string>
+          <string>Praaline supports many different ways to store and organise your corpus data. Please select the type of repository that you want to create:</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -219,10 +219,10 @@
   </widget>
   <widget class="QWizardPage" name="pageLocalDB">
    <property name="title">
-    <string>New Corpus - Local database</string>
+    <string>New Corpus Repository: Local Database</string>
    </property>
    <property name="subTitle">
-    <string>In this step, you may complete the information necessary to create a new Corpus as a local database. You may also select templates to help you get started with the structure of its metadata and annotations.</string>
+    <string>In this step, you may complete the information necessary to create a new Corpus Repository as a local database. You may also select templates to help you get started with the structure of its metadata and annotations.</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_6">
     <item row="0" column="0" colspan="2">
@@ -251,7 +251,7 @@
        <item row="1" column="0" colspan="2">
         <widget class="QCheckBox" name="optionSameDatastore">
          <property name="text">
-          <string>Save metadata and annotations in the same file</string>
+          <string>Save metadata and annotations in the same database (default)</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -313,8 +313,8 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>editCorpusID</tabstop>
-  <tabstop>editCorpusName</tabstop>
+  <tabstop>editCorpusRepositoryID</tabstop>
+  <tabstop>editCorpusRepositoryDescription</tabstop>
   <tabstop>optionLocalDB</tabstop>
   <tabstop>optionRemoteDB</tabstop>
   <tabstop>optionFiles</tabstop>

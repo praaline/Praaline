@@ -6,7 +6,7 @@
 #include <QSet>
 #include <QMultiHash>
 #include <QStandardItemModel>
-#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/corpus/Corpus.h"
 #include "ImportCorpusItemsWizardAnalysePage.h"
 #include "ImportAnnotations.h"
 
@@ -21,7 +21,7 @@ class ImportCorpusItemsWizardCorrespondancesPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<CorpusRepository> corpus,
+    explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<Corpus> corpus,
                                                         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                         QSet<QString> &tierNamesCommon,
                                                         QWidget *parent = 0);

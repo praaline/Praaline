@@ -25,7 +25,7 @@ class ImportCorpusItemsWizardSelectionPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardSelectionPage(QPointer<CorpusRepository> repository,
+    explicit ImportCorpusItemsWizardSelectionPage(QPointer<Corpus> corpus,
                                                   QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
                                                   QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
                                                   QWidget *parent = 0);

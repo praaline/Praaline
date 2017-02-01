@@ -102,15 +102,15 @@ void NewCorpusRepositoryWizard::populateTemplates()
 bool NewCorpusRepositoryWizard::validateCurrentPage()
 {
     if (currentId() == 0) {
-        if (ui->editCorpusID->text().isEmpty()) {
-            QMessageBox::warning(this, tr("Corpus ID cannot be empty"),
-                                 tr("You must provide an ID for your corpus. "
-                                    "This is a short name that will be used to identify samples belonging to this corpus in the database."));
+        if (ui->editCorpusRepositoryID->text().isEmpty()) {
+            QMessageBox::warning(this, tr("Corpus Repository ID cannot be empty"),
+                                 tr("You must provide an ID for your corpus repository. "
+                                    "This is a short name that will be used to identify the repository."));
             return false;
         }
         if (ui->optionLocalDB->isChecked()) {
-            ui->editMetadataDatabase->setText(ui->editCorpusID->text());
-            ui->editAnnotationDatabase->setText(ui->editCorpusID->text());
+            ui->editMetadataDatabase->setText(ui->editCorpusRepositoryID->text());
+            ui->editAnnotationDatabase->setText(ui->editCorpusRepositoryID->text());
         }
     }
     else if (currentId() == 1) {
@@ -145,8 +145,8 @@ void NewCorpusRepositoryWizard::localDbDatabaseNameChanged()
 
 void NewCorpusRepositoryWizard::createLocalSQLRepository()
 {
-    QString repositoryID = ui->editCorpusID->text();
-    QString repositoryName = ui->editCorpusName->text();
+    QString repositoryID = ui->editCorpusRepositoryID->text();
+    QString repositoryName = ui->editCorpusRepositoryDescription->text();
     QDir dir(ui->editBaseFolder->text());
     QString basePath = dir.absolutePath() + "/";
     QString databaseNameMetadata = ui->editMetadataDatabase->text();
@@ -167,6 +167,7 @@ void NewCorpusRepositoryWizard::createLocalSQLRepository()
                 DatastoreInfo::SQL, "QSQLITE", "",
                 basePath + databaseNameAnnotations + ".db", "", "");
     d->newDefinition.basePath = basePath;
+    d->newDefinition.filenameDefinition = basePath + repositoryID + ".PraalineRepository";
     d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
     if (!d->newCorpusRepository) {
         QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")
@@ -174,7 +175,7 @@ void NewCorpusRepositoryWizard::createLocalSQLRepository()
                              .arg(errorMessages));
         return;
     }
-    d->newDefinition.save(basePath + repositoryID + ".PraalineRepository");
+    d->newDefinition.save(d->newDefinition.filenameDefinition);
     applyTemplates();
 }
 
