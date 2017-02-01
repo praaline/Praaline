@@ -56,6 +56,7 @@ public:
     // Direct access to attributes
     QPointer<MetadataStructureAttribute> attribute(CorpusObject::Type what, const QString &ID) const;
     QList<QPointer<MetadataStructureAttribute> > attributes(CorpusObject::Type what) const;
+    QStringList attributeIDs(CorpusObject::Type what) const;
     CorpusObject::Type corpusObjectTypeOfSection(QPointer<MetadataStructureSection> section) const;
 
 signals:

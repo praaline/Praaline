@@ -4,6 +4,8 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QVariant>
+#include <QDateTime>
 #include "MocaDBSerialiserSystem.h"
 #include "MocaDBSerialiserMetadata.h"
 
@@ -61,10 +63,12 @@ QList<CorpusObjectInfo> MocaDBSerialiserMetadata::getCorpusObjectInfoList(Corpus
     q.exec();
     if (q.lastError().isValid()) { qDebug() << q.lastError(); return list; }
     while (q.next()) {
-        CorpusObjectInfo item(type, q.value("data_id").toString(), q.value("parent_id").toString(),
-                              q.value("name").toString(), q.value("description").toString(),
-                              q.value("created_by").toString(), q.value("created_timestamp").toDateTime(),
-                              q.value("last_update_by").toString(), q.value("last_update_timestamp").toDateTime());
+        CorpusObjectInfo item;
+        item.setAttribute("",  q.value("data_id")); // etc
+//        foreach (QString attributeID, attributeIDs) {
+//            if (q.value(attributeID).isValid()) item.setAttribute(attributeID, q.value(attributeID));
+//        }
+        setClean(&item);
         list << item;
     }
     return list;

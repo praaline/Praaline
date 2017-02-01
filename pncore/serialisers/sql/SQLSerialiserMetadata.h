@@ -27,6 +27,9 @@ public:
     static QList<CorpusObjectInfo> getCorpusObjectInfoList(
             CorpusObject::Type type, const MetadataDatastore::Selection &selection,
             QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static bool saveCorpusObjectInfo(
+            CorpusObject::Type type, const QList<CorpusObjectInfo> &list,
+            QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
 
     // Load metadata information
     static Corpus *getCorpus(
@@ -78,8 +81,8 @@ private:
     static void readRecording(QSqlQuery &q, CorpusRecording *rec, MetadataStructure *structure);
     static void readAnnotation(QSqlQuery &q, CorpusAnnotation *annot, MetadataStructure *structure);
 
-    static QString prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what);
-    static QString prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what);
+    static QString prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what, QStringList requestedAttributeIDs = QStringList());
+    static QString prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what, QStringList requestedAttributeIDs = QStringList());
 
     static bool execSaveCorpus(Corpus *corpus, MetadataStructure *structure, QSqlDatabase &db);
     static bool execSaveCommunication(CorpusCommunication *com, MetadataStructure *structure, QSqlDatabase &db);

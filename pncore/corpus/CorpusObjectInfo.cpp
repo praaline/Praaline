@@ -3,60 +3,25 @@
 namespace Praaline {
 namespace Core {
 
-CorpusObjectInfo::CorpusObjectInfo(
-        CorpusObject::Type type, const QString &ID, const QString &parentID,
-        const QString &name, const QString &description,
-        const QString &createdBy, const QDateTime &createdTimestamp,
-        const QString &lastUpdatedBy, const QDateTime &lastUpdatedTimestamp) :
-    m_type(type), m_ID(ID), m_parentID(parentID), m_name(name), m_description(description),
-    m_createdBy(createdBy), m_createdTimestamp(createdTimestamp),
-    m_lastUpdatedBy(lastUpdatedBy), m_lastUpdatedTimestamp(lastUpdatedTimestamp)
+CorpusObjectInfo::CorpusObjectInfo() :
+    m_type(CorpusObject::Type_Undefined)
 {
+    m_isNew = true;
+    m_isDirty = true;
 }
 
-CorpusObject::Type CorpusObjectInfo::type() const
+CorpusObjectInfo::CorpusObjectInfo(CorpusObject::Type type) :
+    m_type(type)
 {
-    return m_type;
+    m_isNew = true;
+    m_isDirty = true;
 }
 
-QString CorpusObjectInfo::ID() const
+CorpusObjectInfo::CorpusObjectInfo(const CorpusObjectInfo &other) :
+    m_type(other.m_type), m_attributes(other.m_attributes)
 {
-    return m_ID;
-}
-
-QString CorpusObjectInfo::parentID() const
-{
-    return m_parentID;
-}
-
-QString CorpusObjectInfo::name() const
-{
-    return m_name;
-}
-
-QString CorpusObjectInfo::description() const
-{
-    return m_description;
-}
-
-QString CorpusObjectInfo::createdBy() const
-{
-    return m_createdBy;
-}
-
-QDateTime CorpusObjectInfo::createdTimestamp() const
-{
-    return m_createdTimestamp;
-}
-
-QString CorpusObjectInfo::lastUpdatedBy() const
-{
-    return m_lastUpdatedBy;
-}
-
-QDateTime CorpusObjectInfo::lastUpdatedTimestamp() const
-{
-    return m_lastUpdatedTimestamp;
+    m_isNew = true;
+    m_isDirty = true;
 }
 
 } // namespace Core

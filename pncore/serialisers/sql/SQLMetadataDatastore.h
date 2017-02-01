@@ -50,6 +50,7 @@ public:
     // Corpus object info lists
     // ==========================================================================================================================
     QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection) override;
+    bool saveCorpusObjectInfo(CorpusObject::Type type, const QList<CorpusObjectInfo> &list) override;
 
     // ==========================================================================================================================
     // Corpus
@@ -70,7 +71,7 @@ public:
     bool saveSpeakers(QList<QPointer<CorpusSpeaker> > &speakers) override;
     bool saveRecordings(QList<QPointer<CorpusRecording> > &recordings) override;
     bool saveAnnotations(QList<QPointer<CorpusAnnotation> >  &annotations) override;
-    bool saveParticipations(QList<QPointer<CorpusParticipation> >  &participations) override;
+    bool saveParticipations(QList<QPointer<CorpusParticipation> >  &participations) override;  
 
     // Delete corpus objects
     bool deleteCorpus(const QString &corpusID) override;

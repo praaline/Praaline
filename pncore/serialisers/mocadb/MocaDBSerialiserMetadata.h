@@ -3,6 +3,7 @@
 
 #include <QPointer>
 #include <QSqlDatabase>
+#include "base/IDatastore.h"
 #include "structure/MetadataStructure.h"
 #include "corpus/CorpusObjectInfo.h"
 #include "corpus/Corpus.h"
@@ -15,7 +16,7 @@
 namespace Praaline {
 namespace Core {
 
-class MocaDBSerialiserMetadata
+class MocaDBSerialiserMetadata : public IDatastore
 {
 public:
     // Use this function to get the basic information for each corpus object and construct an hierarchical structure

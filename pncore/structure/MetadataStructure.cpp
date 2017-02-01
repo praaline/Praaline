@@ -143,6 +143,17 @@ QList<QPointer<MetadataStructureAttribute> > MetadataStructure::attributes(Corpu
     return ret;
 }
 
+QStringList MetadataStructure::attributeIDs(CorpusObject::Type what) const
+{
+    QStringList ret;
+    if (!m_sections.contains(what)) return ret;
+    foreach (QPointer<MetadataStructureSection> section, m_sections[what]) {
+        if (!section) continue;
+        ret << section->attributeIDs();
+    }
+    return ret;
+}
+
 // ==========================================================================================================
 // Management
 // ==========================================================================================================

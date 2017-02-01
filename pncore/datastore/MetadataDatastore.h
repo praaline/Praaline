@@ -26,6 +26,7 @@
 #include "CorpusRepository.h"
 #include "NameValueListDatastore.h"
 #include "corpus/CorpusObject.h"
+#include "corpus/CorpusObjectInfo.h"
 
 namespace Praaline {
 namespace Core {
@@ -33,7 +34,6 @@ namespace Core {
 class DatastoreInfo;
 class MetadataStructureAttribute;
 class NameValueList;
-class CorpusObjectInfo;
 class Corpus;
 class CorpusCommunication;
 class CorpusSpeaker;
@@ -50,12 +50,20 @@ public:
         QString corpusID;
         QString communicationID;
         QString speakerID;
+        QString recordingID;
+        QString annotationID;
         QStringList attributeIDs;
 
         Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID) :
             corpusID(corpusID), communicationID(communicationID), speakerID(speakerID) {}
         Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID, const QStringList &attributeIDs) :
             corpusID(corpusID), communicationID(communicationID), speakerID(speakerID), attributeIDs(attributeIDs) {}
+        Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID, const QString &recordingID, const QString &annotationID) :
+            corpusID(corpusID), communicationID(communicationID), speakerID(speakerID), recordingID(recordingID), annotationID(annotationID) {}
+        Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID, const QString &recordingID, const QString &annotationID,
+                  const QStringList &attributeIDs) :
+            corpusID(corpusID), communicationID(communicationID), speakerID(speakerID), recordingID(recordingID), annotationID(annotationID),
+            attributeIDs(attributeIDs) {}
     };
 
     MetadataDatastore(CorpusRepository *repository, QObject *parent = 0) :
@@ -93,6 +101,7 @@ public:
     // Corpus object info lists
     // ==========================================================================================================================
     virtual QList<CorpusObjectInfo> getCorpusObjectInfoList(CorpusObject::Type type, const Selection &selection) = 0;
+    virtual bool saveCorpusObjectInfo(CorpusObject::Type type, const QList<CorpusObjectInfo> &list) = 0;
 
     // ==========================================================================================================================
     // Corpus

@@ -24,7 +24,7 @@
     <string>This wizard will assist you in creating corpus objects and importing metadata from a text file.</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_5">
-    <item row="0" column="0">
+    <item row="1" column="0">
      <layout class="QGridLayout" name="gridLayoutBasicInfo">
       <item row="0" column="0">
        <widget class="QGroupBox" name="groupBoxCorpusItemType">
@@ -217,7 +217,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="2" column="0">
      <widget class="QGroupBox" name="groupBoxPreviewIntro">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -238,6 +238,18 @@
           </sizepolicy>
          </property>
         </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBoxCorpusRepository">
+      <property name="title">
+       <string>Import metadata into the following Corpus Repository</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <widget class="QComboBox" name="comboBoxCorpusRepository"/>
        </item>
       </layout>
      </widget>
@@ -291,43 +303,6 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="1">
-     <layout class="QGridLayout" name="gridLayoutColumnAttribute">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelAttribute">
-        <property name="text">
-         <string>Attribute for selected column:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0">
-       <widget class="QComboBox" name="comboAttribute"/>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="labelMandatoryAttributes">
-        <property name="text">
-         <string>You must link the following attributes to a column before being able to import corpus items:</string>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
     <item row="1" column="0" colspan="2">
      <widget class="QGroupBox" name="groupBoxPreviewColumns">
       <property name="sizePolicy">
@@ -345,6 +320,57 @@
        </item>
       </layout>
      </widget>
+    </item>
+    <item row="0" column="1">
+     <layout class="QGridLayout" name="gridLayoutColumnAttribute">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCorpusID">
+        <property name="text">
+         <string>Corpus (used unless the import file contains a column with the Corpus ID):</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelAttribute">
+        <property name="text">
+         <string>Attribute for selected column:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <spacer name="verticalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="3" column="0">
+       <widget class="QComboBox" name="comboAttribute"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelMandatoryAttributes">
+        <property name="text">
+         <string>You must link the following attributes to a column before being able to import corpus items:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QComboBox" name="comboBoxCorpusID">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -370,11 +396,13 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>optionCommunications</tabstop>
-  <tabstop>optionSpeakers</tabstop>
-  <tabstop>optionParticipations</tabstop>
-  <tabstop>optionRecordings</tabstop>
-  <tabstop>optionAnnotations</tabstop>
+  <tabstop>optionFormatText</tabstop>
+  <tabstop>optionFormatNumber</tabstop>
+  <tabstop>optionFormatDate</tabstop>
+  <tabstop>comboDateFormat</tabstop>
+  <tabstop>comboBoxCorpusID</tabstop>
+  <tabstop>comboAttribute</tabstop>
+  <tabstop>tableViewPreviewColumns</tabstop>
   <tabstop>optionModeUpdate</tabstop>
   <tabstop>optionModeReplace</tabstop>
   <tabstop>comboDelimiter</tabstop>
@@ -382,13 +410,14 @@
   <tabstop>comboEncoding</tabstop>
   <tabstop>checkHeaderLine</tabstop>
   <tabstop>tableViewPreviewIntro</tabstop>
-  <tabstop>comboDateFormat</tabstop>
-  <tabstop>comboAttribute</tabstop>
   <tabstop>tableViewResults</tabstop>
-  <tabstop>optionFormatDate</tabstop>
-  <tabstop>tableViewPreviewColumns</tabstop>
-  <tabstop>optionFormatNumber</tabstop>
-  <tabstop>optionFormatText</tabstop>
+  <tabstop>optionCommunications</tabstop>
+  <tabstop>optionAnnotations</tabstop>
+  <tabstop>optionCorpora</tabstop>
+  <tabstop>comboBoxCorpusRepository</tabstop>
+  <tabstop>optionRecordings</tabstop>
+  <tabstop>optionSpeakers</tabstop>
+  <tabstop>optionParticipations</tabstop>
  </tabstops>
  <resources/>
  <connections/>

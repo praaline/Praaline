@@ -15,6 +15,44 @@ namespace Core {
 // ==============================================================================================================================
 
 // Helper functions
+QStringList getEffectiveAttributeIDs(MetadataStructure *structure,  CorpusObject::Type type, const QStringList &requestedAttributeIDs = QStringList())
+{
+    QStringList effectiveAttributeIDs;
+    if (!structure) return effectiveAttributeIDs;
+    // Basic attributes, based on corpus object type
+    if      (type == CorpusObject::Type_Corpus)         {
+        effectiveAttributeIDs << "corpusID" << "corpusName" << "description";
+    }
+    else if (type == CorpusObject::Type_Communication)  {
+        effectiveAttributeIDs << "communicationID" << "communicationName" << "corpusID";
+    }
+    else if (type == CorpusObject::Type_Speaker) {
+        effectiveAttributeIDs << "speakerID" << "speakerName" << "corpusID";
+    }
+    else if (type == CorpusObject::Type_Recording) {
+        effectiveAttributeIDs << "recordingID" << "recordingName" << "communicationID"
+                     << "filename" << "format" << "duration" << "channels" << "sampleRate" << "precisionBits" << "bitRate"
+                     << "encoding" << "fileSize" << "checksumMD5";
+    }
+    else if (type == CorpusObject::Type_Annotation) {
+        effectiveAttributeIDs << "annotationID" << "annotationName" << "communicationID" << "recordingID";
+    }
+    else if (type == CorpusObject::Type_Participation) {
+        effectiveAttributeIDs << "corpusID" << "communicationID" << "speakerID" << "role";
+    }
+    // Extra attributes
+    if (requestedAttributeIDs.isEmpty())
+        effectiveAttributeIDs << structure->attributeIDs(type);
+    else {
+        QStringList structureAttributeIDs = structure->attributeIDs(type);
+        foreach (QString attributeID, requestedAttributeIDs) {
+            if (structureAttributeIDs.contains(attributeID))
+                effectiveAttributeIDs << attributeID;
+        }
+    }
+    return effectiveAttributeIDs;
+}
+
 // private static
 void SQLSerialiserMetadata::readRecording(QSqlQuery &q, CorpusRecording *rec, MetadataStructure *structure)
 {
@@ -50,33 +88,36 @@ bool prepareSelectQuery(QSqlQuery &query, CorpusObject::Type type, const Metadat
     QString sql;
     if (type == CorpusObject::Type_Corpus) {
         sql = "SELECT * FROM corpus WHERE 1 = 1 ";
-        if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
+        if (!selection.corpusID.isEmpty())          sql.append("AND corpusID = :corpusID ");
     }
     else if (type == CorpusObject::Type_Communication) {
         sql = "SELECT * FROM communication WHERE 1 = 1 ";
         if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
-        if (!selection.communicationID.isEmpty()) sql.append("AND communicationID = :communicationID ");
+        if (!selection.communicationID.isEmpty())   sql.append("AND communicationID = :communicationID ");
     }
     else if (type == CorpusObject::Type_Speaker) {
         sql = "SELECT * FROM speaker WHERE 1 = 1 ";
-        if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
-        if (!selection.speakerID.isEmpty()) sql.append("AND speakerID = :speakerID ");
+        if (!selection.corpusID.isEmpty())          sql.append("AND corpusID = :corpusID ");
+        if (!selection.speakerID.isEmpty())         sql.append("AND speakerID = :speakerID ");
     }
     else if (type == CorpusObject::Type_Participation) {
         sql = "SELECT * FROM participation WHERE 1 = 1 ";
         if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
-        if (!selection.communicationID.isEmpty()) sql.append("AND communicationID = :communicationID ");
-        if (!selection.speakerID.isEmpty()) sql.append("AND speakerID = :speakerID ");
+        if (!selection.communicationID.isEmpty())   sql.append("AND communicationID = :communicationID ");
+        if (!selection.speakerID.isEmpty())         sql.append("AND speakerID = :speakerID ");
     }
     else if (type == CorpusObject::Type_Recording) {
         sql = "SELECT r.* FROM recording r LEFT JOIN communication c ON r.communicationID=c.communicationID WHERE 1 = 1 ";
-        if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
-        if (!selection.communicationID.isEmpty()) sql.append("AND communicationID = :communicationID ");
+        if (!selection.corpusID.isEmpty())          sql.append("AND corpusID = :corpusID ");
+        if (!selection.communicationID.isEmpty())   sql.append("AND communicationID = :communicationID ");
+        if (!selection.recordingID.isEmpty())       sql.append("AND recordingID = :recordingID ");
     }
     else if (type == CorpusObject::Type_Annotation) {
         sql = "SELECT a.* FROM annotation a LEFT JOIN communication c ON a.communicationID=c.communicationID WHERE 1 = 1 ";
-        if (!selection.corpusID.isEmpty()) sql.append("AND corpusID = :corpusID ");
-        if (!selection.communicationID.isEmpty()) sql.append("AND communicationID = :communicationID ");
+        if (!selection.corpusID.isEmpty())          sql.append("AND corpusID = :corpusID ");
+        if (!selection.communicationID.isEmpty())   sql.append("AND communicationID = :communicationID ");
+        if (!selection.recordingID.isEmpty())       sql.append("AND recordingID = :recordingID ");
+        if (!selection.annotationID.isEmpty())      sql.append("AND annotationID = :annotationID ");
     }
     // Prepare query
     query.setForwardOnly(true);
@@ -85,6 +126,8 @@ bool prepareSelectQuery(QSqlQuery &query, CorpusObject::Type type, const Metadat
     if (!selection.corpusID.isEmpty())          query.bindValue(":corpusID", selection.corpusID);
     if (!selection.communicationID.isEmpty())   query.bindValue(":communicationID", selection.communicationID);
     if (!selection.speakerID.isEmpty())         query.bindValue(":speakerID", selection.speakerID);
+    if (!selection.recordingID.isEmpty())       query.bindValue(":recordingID", selection.recordingID);
+    if (!selection.annotationID.isEmpty())      query.bindValue(":annotationID", selection.annotationID);
     return true;
 }
 
@@ -93,27 +136,22 @@ QList<CorpusObjectInfo> SQLSerialiserMetadata::getCorpusObjectInfoList(
         CorpusObject::Type type, const MetadataDatastore::Selection &selection,
         QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
 {
-    Q_UNUSED(structure)
     Q_UNUSED(datastore)
 
     QList<CorpusObjectInfo> list;
-    QString fieldID("ID"), fieldName("name"), fieldDescription("description");
-    QString parentID;
-    if      (type == CorpusObject::Type_Corpus)         { fieldID = "corpusID";         fieldName = "corpusName";        parentID = "";                 }
-    else if (type == CorpusObject::Type_Communication)  { fieldID = "communicationID";  fieldName = "communicationName"; parentID = selection.corpusID; }
-    else if (type == CorpusObject::Type_Speaker)        { fieldID = "speakerID";        fieldName = "speakerName";       parentID = selection.corpusID; }
-    else if (type == CorpusObject::Type_Recording)      { fieldID = "recordingID";      fieldName = "recordingName";     parentID = selection.communicationID; }
-    else if (type == CorpusObject::Type_Annotation)     { fieldID = "annotationID";     fieldName = "annotationName";    parentID = selection.communicationID; }
-    else return list; // corpus object type not supported
-
+    // Create the list of attributes depending on the type of the corpus object requested
+    QStringList attributeIDs = getEffectiveAttributeIDs(structure, type);
+    if (attributeIDs.isEmpty()) return list; // means unsupported type, not in database
     QSqlQuery q(db);
     prepareSelectQuery(q, type, selection);
     q.exec();
     while (q.next()) {
-        list << CorpusObjectInfo(type, q.value(fieldID).toString(), parentID,
-                                 q.value(fieldName).toString(), q.value(fieldDescription).toString(),
-                                 q.value("createdBy").toString(), q.value("createdTimestamp").toDateTime(),
-                                 q.value("lastUpdatedBy").toString(), q.value("lastUpdatedTimestamp").toDateTime());
+        CorpusObjectInfo item;
+        foreach (QString attributeID, attributeIDs) {
+            if (q.value(attributeID).isValid()) item.setAttribute(attributeID, q.value(attributeID));
+        }
+        setClean(&item);
+        list << item;
     }
     return list;
 }
@@ -295,82 +333,96 @@ QMultiMap<QString, QPointer<CorpusAnnotation> > SQLSerialiserMetadata::getAnnota
 // ==============================================================================================================================
 
 // static private
-QString SQLSerialiserMetadata::prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what)
-{
-    QString sql1, sql2;
-    if (what == CorpusObject::Type_Corpus) {
-        sql1 = "INSERT INTO corpus (corpusID, corpusName, description";
-        sql2 = "VALUES (:corpusID, :corpusName, :description";
-    }
-    else if (what == CorpusObject::Type_Communication) {
-        sql1 = "INSERT INTO communication (communicationID, corpusID, communicationName";
-        sql2 = "VALUES (:communicationID, :corpusID, :communicationName";
-    }
-    else if (what == CorpusObject::Type_Speaker) {
-        sql1 = "INSERT INTO speaker (speakerID, corpusID, speakerName";
-        sql2 = "VALUES (:speakerID, :corpusID, :speakerName";
-    }
-    else if (what == CorpusObject::Type_Recording) {
-        sql1 = "INSERT INTO recording (recordingID, communicationID, recordingName, filename, format, duration, channels, "
-               "sampleRate, precisionBits, bitRate, encoding, fileSize, checksumMD5";
-        sql2 = "VALUES (:recordingID, :communicationID, :recordingName, :filename, :format, :duration, :channels, "
-                ":sampleRate, :precisionBits, :bitRate, :encoding, :fileSize, :checksumMD5";
-    }
-    else if (what == CorpusObject::Type_Annotation) {
-        sql1 = "INSERT INTO annotation (annotationID, communicationID, recordingID, annotationName";
-        sql2 = "VALUES (:annotationID, :communicationID, :recordingID, :annotationName";
-    }
-    else if (what == CorpusObject::Type_Participation) {
-        sql1 = "INSERT INTO participation (corpusID, communicationID, speakerID, role";
-        sql2 = "VALUES (:corpusID, :communicationID, :speakerID, :role";
-    }
-    foreach (MetadataStructureSection *section, structure->sections(what)) {
-        foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            sql1.append(", ").append(attribute->ID());
-            sql2.append(", :").append(attribute->ID());
-        }
+QString SQLSerialiserMetadata::prepareInsertSQL(MetadataStructure *structure, CorpusObject::Type what, QStringList requestedAttributeIDs)
+{   
+    QString tableName;
+    if      (what == CorpusObject::Type_Corpus)         tableName = "corpus";
+    else if (what == CorpusObject::Type_Communication)  tableName = "communication";
+    else if (what == CorpusObject::Type_Speaker)        tableName = "speaker";
+    else if (what == CorpusObject::Type_Recording)      tableName = "recording";
+    else if (what == CorpusObject::Type_Annotation)     tableName = "annotation";
+    else if (what == CorpusObject::Type_Participation)  tableName = "participation";
+    QString sql1 = QString("INSERT INTO %1 (").arg(tableName);
+    QString sql2 = "VALUES (";
+    QStringList attributeIDs = getEffectiveAttributeIDs(structure, what, requestedAttributeIDs);
+    foreach (QString attributeID, attributeIDs) {
+        if (attributeID != attributeIDs.first()) sql1.append(", ");
+        sql1.append(attributeID);
+        if (attributeID != attributeIDs.first()) sql2.append(", :");
+        sql2.append(attributeID);
     }
     sql1.append(")");
     sql2.append(")");
+    // qDebug() << sql1 << " " << sql2;
     return QString("%1 %2").arg(sql1).arg(sql2);
 }
 
 // static private
-QString SQLSerialiserMetadata::prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what)
+QString SQLSerialiserMetadata::prepareUpdateSQL(MetadataStructure *structure, CorpusObject::Type what, QStringList requestedAttributeIDs)
 {
     QString sql1, sql2;
     if (what == CorpusObject::Type_Corpus) {
-        sql1 = "UPDATE corpus SET corpusName = :corpusName, description = :description";
+        sql1 = "UPDATE corpus SET ";
         sql2 = "WHERE corpusID = :corpusID";
     }
     else if (what == CorpusObject::Type_Communication) {
-        sql1 = "UPDATE communication SET corpusID = :corpusID, communicationName = :communicationName";
+        sql1 = "UPDATE communication SET ";
         sql2 = "WHERE communicationID = :communicationID";
     }
     else if (what == CorpusObject::Type_Speaker) {
-        sql1 = "UPDATE speaker SET corpusID = :corpusID, speakerName = :speakerName";
+        sql1 = "UPDATE speaker SET ";
         sql2 = "WHERE speakerID = :speakerID";
     }
     else if (what == CorpusObject::Type_Recording) {
-        sql1 = "UPDATE recording SET communicationID = :communicationID, recordingName = :recordingName, "
-               "filename = :filename, format = :format, duration = :duration, channels = :channels, sampleRate = :sampleRate, "
-               "precisionBits = :precisionBits, bitRate = :bitRate, fileSize = :fileSize, checksumMD5 = :checksumMD5";
+        sql1 = "UPDATE recording SET ";
         sql2 = "WHERE recordingID = :recordingID";
     }
     else if (what == CorpusObject::Type_Annotation) {
-        sql1 = "UPDATE annotation SET communicationID = :communicationID, recordingID = :recordingID, annotationName = :annotationName";
+        sql1 = "UPDATE annotation SET ";
         sql2 = "WHERE annotationID = :annotationID";
     }
     else if (what == CorpusObject::Type_Participation) {
-        sql1 = "UPDATE participation SET corpusID = :corpusID, communicationID = :communicationID, speakerID = :speakerID, role = :role";
+        sql1 = "UPDATE participation SET ";
         sql2 = "WHERE communicationID = :communicationID AND speakerID = :speakerID";
     }
-    foreach (MetadataStructureSection *section, structure->sections(what)) {
-        foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            sql1.append(", ").append(attribute->ID()).append(" = :").append(attribute->ID());
+    QStringList attributeIDs = getEffectiveAttributeIDs(structure, what, requestedAttributeIDs);
+    foreach (QString attributeID, attributeIDs) {
+        if (attributeID != attributeIDs.first()) sql1.append(", ");
+        sql1.append(attributeID).append(" = :").append(attributeID);
+    }
+    // qDebug() << sql1 << " " << sql2;
+    return QString("%1 %2").arg(sql1).arg(sql2);
+}
+
+// static
+bool SQLSerialiserMetadata::saveCorpusObjectInfo(
+        CorpusObject::Type type, const QList<CorpusObjectInfo> &list,
+        QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
+{
+    Q_UNUSED(datastore)
+    if (!structure) return false;
+    // Derive the list of attributes that will be requested from the database
+    QStringList effectiveAttributeIDs = getEffectiveAttributeIDs(structure, type);
+    QSqlQuery queryInsert(db), queryUpdate(db);
+    queryInsert.prepare(prepareInsertSQL(structure, type));
+    queryUpdate.prepare(prepareUpdateSQL(structure, type));
+    bool success = true;
+    foreach (CorpusObjectInfo item, list) {
+        if (item.isClean()) continue;
+        QSqlQuery &query(queryUpdate);
+        if (item.isNew()) query = queryInsert;
+        // Bind parameters
+        foreach (QString attributeID, effectiveAttributeIDs) {
+            query.bindValue(QString(":%1").arg(attributeID), item.attribute(attributeID));
+        }
+        if (query.exec()) {
+            setClean(&item);
+        } else {
+            qDebug() << query.lastError();
+            success = false;
         }
     }
-    return QString("%1 %2").arg(sql1).arg(sql2);
+    return success;
 }
 
 // static private
@@ -485,6 +537,7 @@ bool SQLSerialiserMetadata::execSaveAnnotation(QString communicationID, CorpusAn
     q.bindValue(":annotationID", annot->ID());
     q.bindValue(":communicationID", communicationID);
     q.bindValue(":annotationName", annot->name());
+    q.bindValue(":recordingID", annot->recordingID());
     foreach (MetadataStructureSection *section, structure->sections(CorpusObject::Type_Annotation)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
             q.bindValue(QString(":%1").arg(attribute->ID()), annot->property(attribute->ID()));

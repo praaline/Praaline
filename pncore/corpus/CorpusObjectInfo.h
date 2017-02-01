@@ -16,41 +16,46 @@
 */
 
 #include <QString>
-#include <QDateTime>
+#include <QVariant>
 #include "CorpusObject.h"
+#include "base/ISaveable.h"
 
 namespace Praaline {
 namespace Core {
 
-class PRAALINE_CORE_SHARED_EXPORT CorpusObjectInfo
+class PRAALINE_CORE_SHARED_EXPORT CorpusObjectInfo : public ISaveable
 {
+    friend class MetadataDatastore;
+
 public:
-    CorpusObjectInfo(CorpusObject::Type type, const QString &ID, const QString &parentID,
-                     const QString &name = QString(), const QString &description = QString(),
-                     const QString &createdBy = QString(), const QDateTime &createdTimestamp = QDateTime(),
-                     const QString &lastUpdatedBy = QString(), const QDateTime &lastUpdatedTimestamp = QDateTime());
+    explicit CorpusObjectInfo();
+    CorpusObjectInfo(CorpusObject::Type type);
+    CorpusObjectInfo(const CorpusObjectInfo &other);
+    virtual ~CorpusObjectInfo() {}
+    // Notes: Requirements for QVariant are a public default constructor, a public copy constructor, and a public destructor.
+    // All constructors set isNew and isDirty to true. If the object is retrieved from the database, the datastore will set
+    // its state to Clean.
 
-    CorpusObject::Type type() const;
-    QString ID() const;
-    QString parentID() const;
-    QString name() const;
-    QString description() const;
+    inline virtual CorpusObject::Type type() const {
+        return m_type;
+    }
 
-    QString createdBy() const;
-    QDateTime createdTimestamp() const;
-    QString lastUpdatedBy() const;
-    QDateTime lastUpdatedTimestamp() const;
+    inline virtual QVariant attribute(const QString &name) const {
+        return m_attributes.value(name, QVariant());
+    }
+
+    inline virtual void setAttribute(const QString &name, QVariant value) {
+        m_attributes.insert(name, value);
+        m_isDirty = true;
+    }
+
+    inline virtual const QVariantHash &attributes() const {
+        return m_attributes;
+    }
 
 private:
     CorpusObject::Type m_type;
-    QString m_ID;
-    QString m_parentID;
-    QString m_name;
-    QString m_description;
-    QString m_createdBy;
-    QDateTime m_createdTimestamp;
-    QString m_lastUpdatedBy;
-    QDateTime m_lastUpdatedTimestamp;
+    QVariantHash m_attributes;
 };
 
 } // namespace Core

@@ -166,7 +166,9 @@ QList<CorpusObjectInfo> CorpusRepository::listCorporaInfo() const
                                                              MetadataDatastore::Selection("", "", ""));
     if (list.isEmpty()) {
         // Probably old-style database with only one corpus
-        list << CorpusObjectInfo(CorpusObject::Type_Corpus, ID(), "", ID());
+        CorpusObjectInfo corpusInfo(CorpusObject::Type_Corpus);
+        corpusInfo.setAttribute("corpusID", ID());
+        list << corpusInfo;
     }
     return list;
 }

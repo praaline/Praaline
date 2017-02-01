@@ -34,7 +34,7 @@ public:
         QString formatString;
     };
 
-    ImportMetadataWizard(const QString &filename, Corpus *corpus, QWidget *parent = 0);
+    ImportMetadataWizard(const QString &filename, QWidget *parent = 0);
     ~ImportMetadataWizard();
 
 private:
@@ -53,12 +53,11 @@ private:
     void initializePage(int id);
 
 private slots:
+    void corpusRepositoryChanged();
     void objectTypeChanged();
     void fileParametersChanged();
     void previewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void correspondanceChanged();
 };
-
-
 
 #endif // IMPORTMETADATAWIZARD_H

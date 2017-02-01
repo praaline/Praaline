@@ -160,6 +160,12 @@ QList<CorpusObjectInfo> SQLMetadataDatastore::getCorpusObjectInfoList(CorpusObje
     return SQLSerialiserMetadata::getCorpusObjectInfoList(type, selection, d->database, d->structure, this);
 }
 
+bool SQLMetadataDatastore::saveCorpusObjectInfo(CorpusObject::Type type, const QList<CorpusObjectInfo> &list)
+{
+    return SQLSerialiserMetadata::saveCorpusObjectInfo(type, list, d->database, d->structure, this);
+}
+
+
 // ==========================================================================================================================
 // Corpus
 // ==========================================================================================================================

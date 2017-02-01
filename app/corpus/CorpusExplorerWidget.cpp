@@ -104,9 +104,7 @@ CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
 
     // Get Corpus Repositories Manager from global object list. When corpus repositories are opened or closed (i.e. added or removed from the manager)
     // we will receive a signal, and update the corpus explorer tree accordingly.
-    QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
-    foreach (QObject* obj, list) {
+    foreach (QObject* obj, OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager")) {
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
@@ -997,7 +995,7 @@ void CorpusExplorerWidget::importMetadata()
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
     d->corporaTopLevelNode->startTreeProcessingCycle();
-    ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, repository, this);
+    ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, this);
     wizard->exec(); // MODAL!
     d->corporaTopLevelNode->endTreeProcessingCycle();
 }

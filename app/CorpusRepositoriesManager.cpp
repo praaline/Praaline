@@ -122,7 +122,7 @@ QStringList CorpusRepositoriesManager::listAvailableCorpusIDs(const QString repo
         if (!repository) continue;
         if ((!repositoryID.isEmpty()) && (repository->ID() != repositoryID)) continue;
         foreach (CorpusObjectInfo item, repository->listCorporaInfo()) {
-            list << item.ID();
+            list << item.attribute("corpusID").toString();
         }
     }
     return list;

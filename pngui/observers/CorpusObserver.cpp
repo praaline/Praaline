@@ -1,3 +1,6 @@
+#include <QString>
+#include <QVariant>
+#include <QHash>
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/corpus/Corpus.h"
@@ -26,8 +29,10 @@ CorpusObserver::CorpusObserver(QPointer<Praaline::Core::CorpusRepository> reposi
     d->repository = repository;
     d->nodeRepository = new TreeNode(d->repository->ID(), this);
     foreach (CorpusObjectInfo item, d->repository->listCorporaInfo()) {
-        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(item.ID());
-        d->corpusNodes.insert(item.ID(), node);
+        QString corpusID = item.attribute("corpusID").toString();
+        if (corpusID.isEmpty()) continue;
+        CorpusExplorerTreeNodeCorpus *node = new CorpusExplorerTreeNodeCorpus(corpusID);
+        d->corpusNodes.insert(corpusID, node);
         d->nodeRepository->addNode(node);
     }
 }
