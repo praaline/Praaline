@@ -14,7 +14,7 @@ TARGET = praaline-asr
 
 # Linking dynamically with PocketSphinx
 win32 {
-    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+    POCKETSPHINX_BASE_PATH = C:/Qt/5.8.0-x32/Tools/mingw530_32
 }
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local

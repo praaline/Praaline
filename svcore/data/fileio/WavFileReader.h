@@ -18,6 +18,11 @@
 
 #include "AudioFileReader.h"
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+#define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#endif
+
 #include <sndfile.h>
 #include <QMutex>
 

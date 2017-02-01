@@ -9,6 +9,7 @@
 
 #include <QtGui>
 #include <QTextBrowser>
+#include <QSslSocket>
 
 #include <QtilitiesCoreGui>
 using namespace QtilitiesCoreGui;
@@ -158,9 +159,10 @@ void HelpBrowser::handle_loadUrl( ){
         if (!QSslSocket::supportsSsl()) {
             QMessageBox msgBox;
             msgBox.setWindowTitle(tr("Failed To Load Webpage"));
-            msgBox.setText(tr("Your system and/or Qt installation does not support websites using SSL (thus https://).\n\nThe page you are trying to load uses SSL and therefore cannot be loaded:\n") + d->web_view->url().toString());
+            msgBox.setText(tr("Your system and/or Qt installation does not support websites using SSL (thus https://).\n\n"
+                              "The page you are trying to load uses SSL and therefore cannot be loaded:\n") + d->browser->source().toString());
             msgBox.exec();
-            LOG_ERROR("Error while loading secure page at " + d->text_browser->source().toString() + ". SSL is not supported.");
+            LOG_ERROR("Error while loading secure page at " + d->browser->source().toString() + ". SSL is not supported.");
             return;
         }
         #else

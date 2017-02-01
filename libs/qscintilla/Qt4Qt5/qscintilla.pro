@@ -24,7 +24,8 @@
 
 TEMPLATE = lib
 TARGET = qscintilla2
-CONFIG += qt warn_off release thread exceptions hide_symbols
+CONFIG += qt warn_off thread exceptions hide_symbols
+# CONFIG += release
 INCLUDEPATH += . ../include ../lexlib ../src
 
 !CONFIG(staticlib) {

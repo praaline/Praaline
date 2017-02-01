@@ -35,7 +35,12 @@ WavFileReader::WavFileReader(FileSource source, bool fileUpdating) :
 
     m_fileInfo.format = 0;
     m_fileInfo.frames = 0;
+
+#ifdef Q_OS_WIN
+    m_file = sf_wchar_open((LPCWSTR)m_path.utf16(), SFM_READ, &m_fileInfo);
+#else
     m_file = sf_open(m_path.toLocal8Bit(), SFM_READ, &m_fileInfo);
+#endif
 
     if (!m_file || (!fileUpdating && m_fileInfo.channels <= 0)) {
         cerr << "WavFileReader::initialize: Failed to open file at \""

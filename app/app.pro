@@ -51,7 +51,15 @@ INCLUDEPATH += libs/qtilities/include
 # QScintilla
 INCLUDEPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5
-win* { LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/release }
+win* {
+    CONFIG( debug, debug|release ) {
+        # debug
+        LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/debug
+    } else {
+        # release
+        LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/release
+    }
+}
 LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
 DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 
