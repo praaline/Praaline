@@ -2,12 +2,14 @@
 #define EXPORTMETADATAWIZARD_H
 
 #include <QWizard>
-#include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusObject.h"
 using namespace Praaline::Core;
 
 namespace Ui {
 class ExportMetadataWizard;
 }
+
+class QStandardItemModel;
 
 struct ExportMetadataWizardData;
 
@@ -19,9 +21,15 @@ public:
     explicit ExportMetadataWizard(QWidget *parent = 0);
     ~ExportMetadataWizard();
 
+private slots:
+    void exportFormatChanged(int);
+    void corpusRepositoryChanged(QString);
+
 private:
     Ui::ExportMetadataWizard *ui;
     ExportMetadataWizardData *d;
+
+    QStandardItemModel *createAttributeModel(CorpusObject::Type type, bool checkable);
 };
 
 #endif // EXPORTMETADATAWIZARD_H

@@ -24,7 +24,7 @@ macx* {
     QMAKE_CXXFLAGS += -std=c++11 -Wshadow
 }
 # For a shared libary:
-DEFINES += PRAAT_LIB_SHARED_LIBRARY
+# DEFINES += PRAAT_LIB_SHARED_LIBRARY
 
 # The following keeps the generated files at least somewhat separate
 # from the source files.

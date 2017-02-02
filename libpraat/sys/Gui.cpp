@@ -34,6 +34,10 @@
 #include <math.h>   // floor
 #include <locale.h>
 
+#if qtgui
+#include <QScreen>
+#endif
+
 Thing_implement (GuiThing, Thing, 0);
 Thing_implement (GuiControl, GuiThing, 0);
 
@@ -133,6 +137,12 @@ void Gui_getWindowPositioningBounds (double *x, double *y, double *width, double
 		if (y) *y = 0;
 		if (width) *width = gdk_screen_get_width (screen);
 		if (height) *height = gdk_screen_get_height (screen);
+    #elif qtgui
+        QScreen *screen = QApplication::screens().at(0);
+        if (*x) *x = 0;
+        if (*y) *y = 0;
+        if (width) *width = screen->availableSize().width();
+        if (height) *height = screen->availableSize().width();
 	#elif ! defined (NO_GRAPHICS)
 		if (x) *x = 0;
 		if (y) *y = 0;

@@ -48,7 +48,10 @@
 
 #include "Collection.h"
 
-#if gtk
+#if qtgui
+    #include <QObject>
+    #include <QWidget>
+#elif gtk
 	#include <gtk/gtk.h>
 	#include <gdk/gdk.h>
 	#include <cairo/cairo.h>
@@ -95,7 +98,9 @@
 
 #define Gui_HOMOGENEOUS  1
 
-#if gtk
+#if qtgui
+    typedef QWidget *GuiObject;
+#elif gtk
 	typedef GMainContext *AppContext;
 	typedef gint Dimension;
 	typedef gboolean Boolean;
@@ -356,7 +361,9 @@ Thing_define (GuiForm, GuiControl) {
 
 Thing_define (GuiShell, GuiForm) {
 	int d_width, d_height;
-	#if gtk
+    #if qtgui
+        QMainWindow *d_mainWindow;
+    #elif gtk
 		GtkWindow *d_gtkWindow;
 	#elif cocoa
 		GuiCocoaWindow *d_cocoaWindow;
@@ -562,7 +569,9 @@ Thing_define (GuiList, GuiControl) {
 	void *d_selectionChangedBoss;
 	void (*d_doubleClickCallback) (void *boss, GuiListEvent event);
 	void *d_doubleClickBoss;
-	#if gtk
+    #if qtgui
+        QStandardItemModel *d_model;
+    #elif gtk
 		GtkListStore *d_liststore;
 	#elif cocoa
 	#elif motif && useCarbon
@@ -596,7 +605,9 @@ Thing_declare (GuiMenuItem);
 Thing_define (GuiMenu, GuiThing) {
 	GuiMenuItem d_menuItem;
 	GuiButton d_cascadeButton;
-	#if gtk
+    #if qtgui
+        QMenu *d_menu;
+    #elif gtk
 		GtkMenuItem *d_gtkMenuTitle;
 	#elif cocoa
 		GuiCocoaMenu *d_cocoaMenu;
@@ -889,7 +900,9 @@ void GuiText_undo (GuiText me);
 /********** GuiWindow **********/
 
 Thing_define (GuiWindow, GuiShell) { public:
-	#if gtk
+    #if qtgui
+        QMenuBar *d_menuBar;
+    #elif gtk
 		GtkMenuBar *d_gtkMenuBar;
 	#elif cocoa
 		int d_menuBarWidth;

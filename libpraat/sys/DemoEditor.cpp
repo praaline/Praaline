@@ -22,6 +22,10 @@
 #include "praatP.h"
 #include "UnicodeData.h"
 
+#if qtgui
+#include <QApplication>
+#endif
+
 Thing_implement (DemoEditor, Editor, 0);
 
 static DemoEditor theDemoEditor;
@@ -207,7 +211,11 @@ void Demo_waitForInput (Interpreter interpreter) {
 		bool wasBackgrounding = Melder_backgrounding;
 		if (wasBackgrounding) praat_foreground ();
 		try {
-			#if gtk
+            #if qtgui
+                do {
+                    QApplication::processEvents();
+                } while (! theDemoEditor -> clicked && ! theDemoEditor -> keyPressed && ! theDemoEditor -> userWantsToClose);
+            #elif gtk
 				do {
 					gtk_main_iteration ();
 				} while (! theDemoEditor -> clicked && ! theDemoEditor -> keyPressed && ! theDemoEditor -> userWantsToClose);
