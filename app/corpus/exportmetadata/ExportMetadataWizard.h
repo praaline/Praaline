@@ -3,6 +3,7 @@
 
 #include <QWizard>
 #include "pncore/corpus/CorpusObject.h"
+#include "pncore/corpus/CorpusObjectInfo.h"
 using namespace Praaline::Core;
 
 namespace Ui {
@@ -22,14 +23,22 @@ public:
     ~ExportMetadataWizard();
 
 private slots:
+    void selectFileFolder();
     void exportFormatChanged(int);
-    void corpusRepositoryChanged(QString);
+    void corpusRepositoryChanged(const QString &repositoryID);
+    void corpusObjectClicked(const QModelIndex &index);
 
 private:
     Ui::ExportMetadataWizard *ui;
     ExportMetadataWizardData *d;
 
     QStandardItemModel *createAttributeModel(CorpusObject::Type type, bool checkable);
+
+    // Override methods from QWizard
+    bool validateCurrentPage() override;
+
+    void doExport();
+    bool doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list);
 };
 
 #endif // EXPORTMETADATAWIZARD_H

@@ -5,6 +5,8 @@
 #include "ui_ExportMetadataWizard.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/corpus/CorpusObject.h"
+#include "pncore/corpus/CorpusObjectInfo.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/structure/MetadataStructure.h"
@@ -45,7 +47,7 @@ ExportMetadataWizard::ExportMetadataWizard(QWidget *parent) :
     ui->comboBoxExportFormat->setCurrentIndex(0);
     connect(ui->comboBoxExportFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(exportFormatChanged(int)));
     // Select file or folder button
-
+    connect(ui->commandSelectFileFolder, SIGNAL(clicked()), this, SLOT(selectFileFolder()));
     // List of corpus objects
     d->modelCorpusObjectTypes = QSharedPointer<QStandardItemModel>(new  QStandardItemModel(this));
     d->modelCorpusObjectTypes->setColumnCount(1);
@@ -61,6 +63,7 @@ ExportMetadataWizard::ExportMetadataWizard(QWidget *parent) :
         ++i;
     }
     ui->treeViewCorpusObjectTypes->setModel(d->modelCorpusObjectTypes.data());
+    connect(ui->treeViewCorpusObjectTypes, SIGNAL(clicked(QModelIndex)), this, SLOT(corpusObjectClicked(QModelIndex)));
     // Presentation
     ui->treeViewRepositoriesCorpora->setHeaderHidden(true);
     ui->treeViewCorpusObjectTypes->setHeaderHidden(true);
@@ -94,13 +97,21 @@ QStandardItemModel *ExportMetadataWizard::createAttributeModel(CorpusObject::Typ
     return model;
 }
 
-
 void ExportMetadataWizard::exportFormatChanged(int)
 {
-
 }
 
-void ExportMetadataWizard::corpusRepositoryChanged(QString repositoryID)
+void ExportMetadataWizard::selectFileFolder()
+{
+    QFileDialog::Options options;
+    QString selectedFilter;
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export Metadata"), "praaline_metadata.txt",
+                                                    tr("Text Files (*.txt);;All Files (*)"), &selectedFilter, options);
+    if (filename.isEmpty()) return;
+    ui->editFileFolder->setText(filename);
+}
+
+void ExportMetadataWizard::corpusRepositoryChanged(const QString &repositoryID)
 {
     if (d->repositoryID == repositoryID) return;
     if (!d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID)) return;
@@ -121,5 +132,46 @@ void ExportMetadataWizard::corpusRepositoryChanged(QString repositoryID)
     foreach (CorpusObject::Type type, d->corpusObjectTypes) {
         d->modelsAttributes.insert(type, QSharedPointer<QStandardItemModel>(createAttributeModel(type, true)));
     }
-    ui->treeViewMetadataAttributes->setModel(d->modelsAttributes.value(CorpusObject::Type_Corpus));
+    ui->treeViewMetadataAttributes->setModel(d->modelsAttributes.value(CorpusObject::Type_Corpus).data());
+}
+
+void ExportMetadataWizard::corpusObjectClicked(const QModelIndex &index)
+{
+    if (!index.isValid()) return;
+    int t = d->modelCorpusObjectTypes->item(index.row(), 0)->data().toInt();
+    if (t < 0 || t >= d->corpusObjectTypes.count()) return;
+    ui->treeViewMetadataAttributes->setModel(d->modelsAttributes.value(d->corpusObjectTypes.at(t)).data());
+}
+
+bool ExportMetadataWizard::validateCurrentPage()
+{
+    if (currentId() == 1) doExport();
+    return true;
+}
+
+void ExportMetadataWizard::doExport()
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID);
+    if (!repository) return;
+    if (!repository->metadata()) return;
+    if (!repository->metadataStructure()) return;
+    // Loop by (selected) corpus object type, then by (selected) corpus
+    for (int i = 0; i < d->modelCorpusObjectTypes->rowCount(); ++i) {
+        if (d->modelCorpusObjectTypes->item(i)->checkState() != Qt::Checked) continue;
+        CorpusObject::Type type = d->corpusObjectTypes.at(d->modelCorpusObjectTypes->item(i)->data().toInt());
+        QList<CorpusObjectInfo> list; // all data for this corpus object type
+        for (int j = 0; j < d->modelCorpora->rowCount(); ++j) {
+            if (d->modelCorpora->item(j)->checkState() != Qt::Checked) continue;
+            QString corpusID = d->modelCorpora->item(j)->text();
+            list.append(repository->metadata()->getCorpusObjectInfoList(type, MetadataDatastore::Selection(corpusID, "", "")));
+        }
+        // Export to the selected format
+        doExportText(type, list);
+    }
+}
+
+bool ExportMetadataWizard::doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list)
+{
+
+
 }

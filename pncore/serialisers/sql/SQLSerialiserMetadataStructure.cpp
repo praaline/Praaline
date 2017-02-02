@@ -165,15 +165,32 @@ bool SQLSerialiserMetadataStructure::upgradeMetadataSchema(QPointer<MetadataStru
     return result;
 }
 
+void readAttribute(QSqlQuery &q, MetadataStructureAttribute *attribute)
+{
+    attribute->setID(q.value("attributeID").toString());
+    attribute->setName(q.value("name").toString());
+    attribute->setDescription(q.value("description").toString());
+    attribute->setDatatype(DataType(q.value("datatype").toString()));
+    attribute->setDatatype(DataType(attribute->datatype().base(), q.value("length").toInt()));
+    if (q.value("isIndexed").toInt() > 0) attribute->setIndexed(true); else attribute->setIndexed(false);
+    attribute->setNameValueList(q.value("nameValueList").toString());
+    attribute->setMandatory(q.value("mandatory").toBool());
+    attribute->setItemOrder(q.value("itemOrder").toInt());
+}
+
 // static
 bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
     if (!structure) return false;
-    QSqlQuery q1(db), q2(db);
+    QSqlQuery q1(db), q2(db), q3(db);
     q1.setForwardOnly(true);
     q1.prepare("SELECT * FROM praalineMetadataSections ORDER BY itemOrder");
     q2.setForwardOnly(true);
-    q2.prepare("SELECT * FROM praalineMetadataAttributes WHERE objectType=:objectType AND sectionID = :sectionID ORDER BY itemOrder");
+    q2.prepare("SELECT * FROM praalineMetadataAttributes "
+               "WHERE objectType=:objectType AND sectionID = :sectionID ORDER BY itemOrder");
+    q3.setForwardOnly(true);
+    q3.prepare("SELECT * FROM praalineMetadataAttributes "
+               "WHERE objectType=:objectType AND sectionID IS NULL ORDER BY itemOrder");
     //
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
@@ -182,7 +199,9 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
         CorpusObject::Type objectType = SQLSerialiserSystem::corpusObjectTypeFromCode(q1.value("objectType").toString());
         MetadataStructureSection *section(0);
         bool sectionExists(false);
-        section = structure->section(objectType, q1.value("sectionID").toString());
+        QString sectionID = q1.value("sectionID").toString();
+        if (sectionID.isEmpty()) sectionID = MetadataStructure::defaultSectionID(objectType);
+        section = structure->section(objectType, sectionID);
         if (section)
             sectionExists = true;
         else {
@@ -196,21 +215,32 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
         q2.exec();
         while (q2.next()) {
             MetadataStructureAttribute *attribute = new MetadataStructureAttribute();
-            attribute->setID(q2.value("attributeID").toString());
-            attribute->setName(q2.value("name").toString());
-            attribute->setDescription(q2.value("description").toString());
-            attribute->setDatatype(DataType(q2.value("datatype").toString()));
-            attribute->setDatatype(DataType(attribute->datatype().base(), q2.value("length").toInt()));
-            if (q2.value("isIndexed").toInt() > 0) attribute->setIndexed(true); else attribute->setIndexed(false);
-            attribute->setNameValueList(q2.value("nameValueList").toString());
-            attribute->setMandatory(q2.value("mandatory").toBool());
-            attribute->setItemOrder(q2.value("itemOrder").toInt());
+            readAttribute(q2, attribute);
             attribute->setParent(section);
             section->addAttribute(attribute);
         }
         if (!sectionExists) {
             section->setParent(structure);
             structure->addSection(objectType, section);
+        }
+    }
+    // For attributes without a section (move to default section)
+    QList<CorpusObject::Type> objectTypes;
+    objectTypes << CorpusObject::Type_Corpus << CorpusObject::Type_Communication << CorpusObject::Type_Speaker
+                << CorpusObject::Type_Recording << CorpusObject::Type_Annotation << CorpusObject::Type_Participation;
+    foreach (CorpusObject::Type objectType, objectTypes) {
+        QString sectionID = MetadataStructure::defaultSectionID(objectType);
+        MetadataStructureSection *section(0);
+        section = structure->section(objectType, sectionID);
+        if (!section) continue;
+        q3.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(objectType));
+        q3.exec();
+        if (q3.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
+        while (q3.next()) {
+            MetadataStructureAttribute *attribute = new MetadataStructureAttribute();
+            readAttribute(q3, attribute);
+            attribute->setParent(section);
+            section->addAttribute(attribute);
         }
     }
     return true;
@@ -267,7 +297,8 @@ bool SQLSerialiserMetadataStructure::createMetadataSection(CorpusObject::Type ty
     q.prepare("INSERT INTO praalineMetadataSections (objectType, sectionID, name, description, itemOrder) "
               "VALUES (:objectType, :sectionID, :name, :description, :itemOrder) ");
     q.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(type));
-    q.bindValue(":sectionID", newSection->ID());
+    QString sectionID = (newSection->ID().isEmpty()) ? MetadataStructure::defaultSectionID(type) : newSection->ID();
+    q.bindValue(":sectionID", sectionID);
     q.bindValue(":name", newSection->name());
     q.bindValue(":description", newSection->description());
     q.bindValue(":itemOrder", newSection->itemOrder());
@@ -292,7 +323,8 @@ bool SQLSerialiserMetadataStructure::updateMetadataSection(CorpusObject::Type ty
     q.prepare("UPDATE praalineMetadataSections SET name=:name, description=:description, itemOrder=:itemOrder "
               "WHERE objectType=:objectType AND sectionID=:sectionID ");
     q.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(type));
-    q.bindValue(":sectionID", updatedSection->ID());
+    QString sectionID = (updatedSection->ID().isEmpty()) ? MetadataStructure::defaultSectionID(type) : updatedSection->ID();
+    q.bindValue(":sectionID", sectionID);
     q.bindValue(":name", updatedSection->name());
     q.bindValue(":description", updatedSection->description());
     q.bindValue(":itemOrder", updatedSection->itemOrder());
