@@ -42,6 +42,7 @@ public:
 signals:
     void renameAnnotationLevel(QString oldID, QString newID);
     void renameAnnotationAttribute(QString levelID, QString oldID, QString newID);
+    void annotationLevelAttributeSelectionChanged(QString levelID, QString attributeID, bool selected);
 
 public slots:
 

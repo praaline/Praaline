@@ -14,7 +14,7 @@
    <string>Wizard</string>
   </property>
   <property name="wizardStyle">
-   <enum>QWizard::ClassicStyle</enum>
+   <enum>QWizard::ModernStyle</enum>
   </property>
   <widget class="QWizardPage" name="pageCorpusItemsSelection">
    <property name="title">
@@ -24,44 +24,93 @@
     <string>Select the corpus items you want to export. Selecting a Communication will export all the associated Annotations.</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="0">
-     <widget class="QGroupBox" name="groupBoxExportFolder">
+    <item row="0" column="0" colspan="3">
+     <layout class="QGridLayout" name="gridLayoutTop">
+      <item row="1" column="2">
+       <widget class="QPushButton" name="commandSelectFileFolder">
+        <property name="text">
+         <string>Select</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" rowspan="2">
+       <layout class="QGridLayout" name="gridLayoutExport">
+        <item row="0" column="0">
+         <widget class="QComboBox" name="comboBoxExportFormat">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="editFileFolder"/>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelFileFolder">
+        <property name="text">
+         <string>Folder:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelExportFormat">
+        <property name="text">
+         <string>Export format:</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="labelRepository">
+      <property name="text">
+       <string>Export annotations from Corpus Repository: </string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="comboBoxRepository"/>
+    </item>
+    <item row="1" column="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>353</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QGroupBox" name="groupBoxAnnotations">
       <property name="title">
-       <string>Save export files to the following folder</string>
+       <string>Select Annotations to Export</string>
       </property>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QLineEdit" name="textExportFolder"/>
-       </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="commandSelectFolder">
-         <property name="text">
-          <string>Select folder</string>
-         </property>
-        </widget>
+        <widget class="QTreeView" name="treeViewAnnotations"/>
        </item>
       </layout>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QGroupBox" name="groupBoxCorpusItems">
-      <property name="title">
-       <string>Corpus Items to export</string>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3"/>
-     </widget>
-    </item>
    </layout>
   </widget>
-  <widget class="QWizardPage" name="pageLevelsAttributesSelection">
-   <property name="title">
-    <string>Select Annotation Levels and Attributes</string>
-   </property>
-   <property name="subTitle">
-    <string>Select which annotation levels and attributes you want to include in the exported files.</string>
-   </property>
-  </widget>
  </widget>
+ <tabstops>
+  <tabstop>comboBoxExportFormat</tabstop>
+  <tabstop>editFileFolder</tabstop>
+  <tabstop>commandSelectFileFolder</tabstop>
+  <tabstop>comboBoxRepository</tabstop>
+  <tabstop>treeViewAnnotations</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

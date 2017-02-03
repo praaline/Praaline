@@ -57,9 +57,14 @@ public:
     QPointer<MetadataStructureAttribute> attribute(CorpusObject::Type what, const QString &ID) const;
     QList<QPointer<MetadataStructureAttribute> > attributes(CorpusObject::Type what) const;
     QStringList attributeIDs(CorpusObject::Type what) const;
+    QStringList attributeNames(CorpusObject::Type what) const;
     CorpusObject::Type corpusObjectTypeOfSection(QPointer<MetadataStructureSection> section) const;
-    // Default section IDs
+    // Defaults
     static QString defaultSectionID(CorpusObject::Type type);
+    static QStringList basicAttributeIDs(CorpusObject::Type type);
+    static QStringList basicAttributeNames(CorpusObject::Type type);
+    QStringList allAttributeIDs(CorpusObject::Type what) const;
+    QStringList allAttributeNames(CorpusObject::Type what) const;
 
 signals:
     void MetadataStructureChanged();

@@ -6,12 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>881</width>
-    <height>501</height>
+    <width>861</width>
+    <height>509</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>WizardPage</string>
+  </property>
+  <property name="title">
+   <string>Export Annotations to Praat Textgrids</string>
+  </property>
+  <property name="subTitle">
+   <string>In this step you can define the structure of the exported TextGrids.</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
    <item row="0" column="0" colspan="2">
@@ -20,50 +26,20 @@
       <string>Speaker strategy</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="optionAllSpeakers">
-        <property name="text">
-         <string>Include all speakers in the same TextGrid</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QRadioButton" name="optionOneSpeakerPerFile">
         <property name="text">
          <string>Create a separate TextGrid file for each speaker</string>
         </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupboxAnnotations">
-     <property name="title">
-      <string>Corpus Annotations to export</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0" colspan="3">
-       <widget class="QTreeView" name="treeviewAnnotations"/>
-      </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="buttonGroupBy">
-        <property name="text">
-         <string>Group by...</string>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QToolButton" name="buttonSelectAll">
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="optionAllSpeakers">
         <property name="text">
-         <string>Select All</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QToolButton" name="buttonSelectNone">
-        <property name="text">
-         <string>Select None</string>
+         <string>Include all speakers in the same TextGrid</string>
         </property>
        </widget>
       </item>
@@ -121,8 +97,42 @@
      </layout>
     </widget>
    </item>
+   <item row="0" column="2">
+    <widget class="QGroupBox" name="groupBoxFilenameTemplate">
+     <property name="title">
+      <string>Filenames template</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="editFilenameTemplate"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelFilenameTemplate">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>You may use the following fields: $CorpusID, $CommunicationID, $SpeakerID, $AnnotationID and $RecordingID.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>editFilenameTemplate</tabstop>
+  <tabstop>treeviewLevelsAttributes</tabstop>
+  <tabstop>tableviewTextgridStructure</tabstop>
+  <tabstop>buttonMoveUp</tabstop>
+  <tabstop>buttonMoveDown</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

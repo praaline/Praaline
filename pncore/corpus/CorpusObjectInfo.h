@@ -61,4 +61,6 @@ private:
 } // namespace Core
 } // namespace Praaline
 
+Q_DECLARE_METATYPE(Praaline::Core::CorpusObjectInfo)
+
 #endif // CORPUSOBJECTINFO_H

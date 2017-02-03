@@ -74,6 +74,14 @@ QStringList MetadataStructureSection::attributeIDs() const
     return ret;
 }
 
+QStringList MetadataStructureSection::attributeNames() const
+{
+    QStringList ret;
+    foreach (QPointer<MetadataStructureAttribute> attribute, m_attributes)
+        if (attribute) ret << attribute->name();
+    return ret;
+}
+
 QList<QPointer<MetadataStructureAttribute> > MetadataStructureSection::attributes() const
 {
     return m_attributes;

@@ -46,7 +46,7 @@ int CorpusAnnotationTableModel::rowCount(const QModelIndex &parent) const
 int CorpusAnnotationTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    int basicPropertiesCount = 3;
+    int basicPropertiesCount = 4;
     return basicPropertiesCount + d->attributes.count();
 }
 
@@ -55,11 +55,12 @@ QVariant CorpusAnnotationTableModel::headerData(int section, Qt::Orientation ori
     if (role != Qt::DisplayRole)
         return QVariant();
     if (orientation == Qt::Horizontal) {
-        if (section == 0) return tr("Communication ID");
-        else if (section == 1) return tr("Annotation ID");
-        else if (section == 2) return tr("Name");
-        else if ((section - 3) >= 0 && (section - 3) < d->attributes.count())
-            return d->attributes.at(section - 3)->name();
+        if      (section == 0) return tr("Corpus ID");
+        else if (section == 1) return tr("Communication ID");
+        else if (section == 2) return tr("Annotation ID");
+        else if (section == 3) return tr("Name");
+        else if ((section - 4) >= 0 && (section - 4) < d->attributes.count())
+            return d->attributes.at(section - 4)->name();
         else
             return QVariant();
     }
@@ -86,11 +87,12 @@ QVariant CorpusAnnotationTableModel::data(const QModelIndex &index, int role) co
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         QPointer<CorpusAnnotation> annot = d->items.at(index.row());
         if (!annot) return QVariant();
-        if (index.column() == 0) return annot->property("communicationID");
-        else if (index.column() == 1) return annot->property("ID");
-        else if (index.column() == 2) return annot->property("name");
-        else if ((index.column() - 3) >= 0 && (index.column() - 3) < d->attributes.count())
-            return annot->property(d->attributes.at(index.column() - 3)->ID());
+        if      (index.column() == 0) return annot->property("corpusID");
+        else if (index.column() == 1) return annot->property("communicationID");
+        else if (index.column() == 2) return annot->property("ID");
+        else if (index.column() == 3) return annot->property("name");
+        else if ((index.column() - 4) >= 0 && (index.column() - 4) < d->attributes.count())
+            return annot->property(d->attributes.at(index.column() - 4)->ID());
         else
             return QVariant();
 
@@ -116,11 +118,11 @@ bool CorpusAnnotationTableModel::setData(const QModelIndex &index, const QVarian
     if (role == Qt::EditRole) {
         QPointer<CorpusAnnotation> annot = d->items.at(index.row());
         if (!annot) return false;
-        // communicationID is read-only
-        if      (index.column() == 1) return annot->setProperty("ID", value);
-        else if (index.column() == 2) return annot->setProperty("name", value);
-        else if ((index.column() - 3) >= 0 && (index.column() - 3) < d->attributes.count())
-            return annot->setProperty(d->attributes.at(index.column() - 3)->ID(), value);
+        // corpusID, communicationID is read-only
+        if      (index.column() == 2) return annot->setProperty("ID", value);
+        else if (index.column() == 3) return annot->setProperty("name", value);
+        else if ((index.column() - 4) >= 0 && (index.column() - 4) < d->attributes.count())
+            return annot->setProperty(d->attributes.at(index.column() - 4)->ID(), value);
         else
             return false;
 

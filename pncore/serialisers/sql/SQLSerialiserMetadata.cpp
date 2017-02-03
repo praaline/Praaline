@@ -20,26 +20,7 @@ QStringList getEffectiveAttributeIDs(MetadataStructure *structure,  CorpusObject
     QStringList effectiveAttributeIDs;
     if (!structure) return effectiveAttributeIDs;
     // Basic attributes, based on corpus object type
-    if      (type == CorpusObject::Type_Corpus)         {
-        effectiveAttributeIDs << "corpusID" << "corpusName" << "description";
-    }
-    else if (type == CorpusObject::Type_Communication)  {
-        effectiveAttributeIDs << "communicationID" << "communicationName" << "corpusID";
-    }
-    else if (type == CorpusObject::Type_Speaker) {
-        effectiveAttributeIDs << "speakerID" << "speakerName" << "corpusID";
-    }
-    else if (type == CorpusObject::Type_Recording) {
-        effectiveAttributeIDs << "recordingID" << "recordingName" << "communicationID"
-                     << "filename" << "format" << "duration" << "channels" << "sampleRate" << "precisionBits" << "bitRate"
-                     << "encoding" << "fileSize" << "checksumMD5";
-    }
-    else if (type == CorpusObject::Type_Annotation) {
-        effectiveAttributeIDs << "annotationID" << "annotationName" << "communicationID" << "recordingID";
-    }
-    else if (type == CorpusObject::Type_Participation) {
-        effectiveAttributeIDs << "corpusID" << "communicationID" << "speakerID" << "role";
-    }
+    effectiveAttributeIDs << MetadataStructure::basicAttributeIDs(type);
     // Extra attributes
     if (requestedAttributeIDs.isEmpty())
         effectiveAttributeIDs << structure->attributeIDs(type);

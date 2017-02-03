@@ -134,7 +134,7 @@ QVariant AnnotationStructureTreeModel::headerData(int Level, Qt::Orientation ori
 
 Qt::ItemFlags AnnotationStructureTreeModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid()) return 0;
+    if (!index.isValid()) return Qt::NoItemFlags;
     if (!d->readOnly) {
         if (d->checkboxes && (index.column() == 0) )
             return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
@@ -142,21 +142,24 @@ Qt::ItemFlags AnnotationStructureTreeModel::flags(const QModelIndex &index) cons
             return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     } else {
         if (d->checkboxes && (index.column() == 0) )
-            return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
+            return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
     }
-    return QAbstractItemModel::flags(index);
+    return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
 QVariant AnnotationStructureTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) return QVariant();
-    if (role != Qt::DisplayRole && role != Qt::EditRole && role != Qt::CheckStateRole)
-        return QVariant();
+    if ((role != Qt::DisplayRole) && (role != Qt::EditRole) && (role != Qt::CheckStateRole)) return QVariant();
 
     QObject *item = getItem(index);
     bool isAttribute = (qobject_cast<AnnotationStructureAttribute *>(item) != 0);
 
-    if (role == Qt::CheckStateRole && index.column() == 0) {
+    // Check boxes (if this model supports them)
+    if (role == Qt::CheckStateRole) {
+        if (!d->checkboxes) return QVariant();
+        if (index.column() != 0) return QVariant();
+        // otherwise, give checkbox value
         QString levelID, attributeID;
         if (isAttribute) {
             QModelIndex parentIndex = this->parent(index);
@@ -173,8 +176,9 @@ QVariant AnnotationStructureTreeModel::data(const QModelIndex &index, int role) 
             else
                 return Qt::Unchecked;
         }
-    } else if (role == Qt::CheckStateRole && index.column() != 0)
-        return QVariant();
+    }
+
+    // Actual data
     switch (index.column()) {
     case 0: return item->property("ID"); break;
     case 1: return item->property("name"); break;
@@ -193,8 +197,7 @@ bool AnnotationStructureTreeModel::setData(const QModelIndex &index, const QVari
 {
     bool result = false;
     if (d->readOnly) {
-        if ((!d->checkboxes) || (role != Qt::CheckStateRole))
-            return false;
+        if ((!d->checkboxes) && (role == Qt::CheckStateRole)) return false;
     } else {
         if (role != Qt::EditRole) return false;
     }
@@ -214,9 +217,15 @@ bool AnnotationStructureTreeModel::setData(const QModelIndex &index, const QVari
     // Change selection if the user has clicked on the checkboxes
     if (role == Qt::CheckStateRole && index.column() == 0) {
         if (d->selected.contains(pair)) {
-            if (value == Qt::Unchecked) d->selected.removeOne(pair);
+            if (value == Qt::Unchecked) {
+                d->selected.removeOne(pair);
+                emit annotationLevelAttributeSelectionChanged(pair.first, pair.second, false);
+            }
         } else {
-            if (value == Qt::Checked) d->selected.append(pair);
+            if (value == Qt::Checked) {
+                d->selected.append(pair);
+                emit annotationLevelAttributeSelectionChanged(pair.first, pair.second, true);
+            }
         }
         emit dataChanged(index, index);
         return true;

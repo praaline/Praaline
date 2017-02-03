@@ -38,7 +38,8 @@ private:
     bool validateCurrentPage() override;
 
     void doExport();
-    bool doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list);
+    bool doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list,
+                      const QList<QPair<QString, QString> > &attributes);
 };
 
 #endif // EXPORTMETADATAWIZARD_H

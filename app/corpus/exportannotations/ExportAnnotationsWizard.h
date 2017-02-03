@@ -20,9 +20,19 @@ public:
     explicit ExportAnnotationsWizard(QWidget *parent = 0);
     ~ExportAnnotationsWizard();
 
+private slots:
+    void selectFileFolder();
+    void exportFormatChanged(int);
+    void corpusRepositoryChanged(const QString &repositoryID);
+
 private:
     Ui::ExportAnnotationsWizard *ui;
     ExportAnnotationsWizardData *d;
+
+    // Override methods from QWizard
+    bool validateCurrentPage() override;
+
+    void doExport();
 };
 
 #endif // EXPORTANNOTATIONSWIZARD_H

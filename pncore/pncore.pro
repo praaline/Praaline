@@ -204,7 +204,8 @@ HEADERS += \
     structure/StructureAttributeBase.h \
     base/IDatastore.h \
     base/ISaveable.h \
-    serialisers/xml/XMLSerialiserMetadata.h
+    serialisers/xml/XMLSerialiserMetadata.h \
+    interfaces/praat/AnnotationInterfacePraat.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -370,7 +371,8 @@ SOURCES += \
     datastore/FileDatastore.cpp \
     structure/StructureAttributeBase.cpp \
     datastore/CorpusDatastore.cpp \
-    serialisers/xml/XMLSerialiserMetadata.cpp
+    serialisers/xml/XMLSerialiserMetadata.cpp \
+    interfaces/praat/AnnotationInterfacePraat.cpp
 
 DISTFILES += \
     pncore.qmodel

@@ -56,6 +56,7 @@ public:
     bool hasAttributes() const;
     bool hasAttribute(const QString &ID);
     QStringList attributeIDs() const;
+    QStringList attributeNames() const;
     QList<QPointer<MetadataStructureAttribute> > attributes() const;
     void insertAttribute(int index, MetadataStructureAttribute *attribute);
     void addAttribute(MetadataStructureAttribute *attribute);

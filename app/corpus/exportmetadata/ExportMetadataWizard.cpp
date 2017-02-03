@@ -1,6 +1,9 @@
 #include <QString>
 #include <QHash>
 #include <QStandardItemModel>
+#include <QFile>
+#include <QTextStream>
+
 #include "ExportMetadataWizard.h"
 #include "ui_ExportMetadataWizard.h"
 
@@ -84,6 +87,15 @@ QStandardItemModel *ExportMetadataWizard::createAttributeModel(CorpusObject::Typ
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setColumnCount(1);
     int i = 0;
+    // basic attributes
+    for (i = 0; i < MetadataStructure::basicAttributeIDs(type).count(); ++i) {
+        QStandardItem *item = new QStandardItem(MetadataStructure::basicAttributeNames(type).at(i));
+        item->setData(MetadataStructure::basicAttributeIDs(type).at(i));
+        item->setCheckable(checkable);
+        if (checkable) item->setCheckState(Qt::Checked);
+        model->setItem(i, item);
+    }
+    // user-defined attributes
     foreach (QPointer<MetadataStructureAttribute> attribute,
              d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)->metadataStructure()->attributes(type)) {
         if (!attribute) continue;
@@ -159,19 +171,51 @@ void ExportMetadataWizard::doExport()
     for (int i = 0; i < d->modelCorpusObjectTypes->rowCount(); ++i) {
         if (d->modelCorpusObjectTypes->item(i)->checkState() != Qt::Checked) continue;
         CorpusObject::Type type = d->corpusObjectTypes.at(d->modelCorpusObjectTypes->item(i)->data().toInt());
-        QList<CorpusObjectInfo> list; // all data for this corpus object type
+        // List of attributes to export
+        QList<QPair<QString, QString> > attributes;
+        QStandardItemModel *modelAttributes = d->modelsAttributes.value(type).data();
+        if (!modelAttributes) continue;
+        for (int j = 0; j < modelAttributes->rowCount(); ++j) {
+            if (modelAttributes->item(j)->checkState() != Qt::Checked) continue;
+            QString attributeID = modelAttributes->item(j)->data().toString();
+            QString attributeName = modelAttributes->item(j)->text();
+            attributes << QPair<QString, QString>(attributeID, attributeName);
+        }
+        // List of corpus objects to export
+        QList<CorpusObjectInfo> list;
         for (int j = 0; j < d->modelCorpora->rowCount(); ++j) {
             if (d->modelCorpora->item(j)->checkState() != Qt::Checked) continue;
             QString corpusID = d->modelCorpora->item(j)->text();
             list.append(repository->metadata()->getCorpusObjectInfoList(type, MetadataDatastore::Selection(corpusID, "", "")));
         }
         // Export to the selected format
-        doExportText(type, list);
+        doExportText(type, list, attributes);
     }
 }
 
-bool ExportMetadataWizard::doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list)
+bool ExportMetadataWizard::doExportText(CorpusObject::Type type, const QList<CorpusObjectInfo> &list,
+                                        const QList<QPair<QString, QString> > &attributes)
 {
-
-
+    QString filename = ui->editFileFolder->text();
+    if (filename.endsWith(".txt")) filename.chop(4);
+    filename = filename.append("_").append(CorpusObject::typeToString(type)).append(".txt");
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadWrite | QIODevice::Text ) ) return false;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out.setGenerateByteOrderMark(true);
+    for (int i = 0; i < attributes.count(); i++) {
+        out << attributes.at(i).second;
+        if (i < attributes.count() - 1) out << "\t";
+    }
+    out << "\n";
+    foreach (CorpusObjectInfo item, list) {
+        for (int i = 0; i < attributes.count(); i++) {
+            out << item.attribute(attributes.at(i).first).toString();
+            if (i < attributes.count() - 1) out << "\t";
+        }
+        out << "\n";
+    }
+    file.close();
+    return true;
 }

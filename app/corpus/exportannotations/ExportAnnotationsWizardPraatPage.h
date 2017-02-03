@@ -5,6 +5,7 @@
 #include <QWizardPage>
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/datastore/CorpusRepository.h"
 using namespace Praaline::Core;
 
 namespace Ui {
@@ -20,6 +21,13 @@ class ExportAnnotationsWizardPraatPage : public QWizardPage
 public:
     explicit ExportAnnotationsWizardPraatPage(QWidget *parent = 0);
     ~ExportAnnotationsWizardPraatPage();
+
+    void setRepository(CorpusRepository *repository);
+    void setExportPath(const QString &path);
+    void doExport(const QList<CorpusObjectInfo> &annotations);
+
+private slots:
+    void annotationLevelAttributeSelectionChanged(const QString &levelID, const QString &attributeID, bool selected);
 
 private:
     Ui::ExportAnnotationsWizardPraatPage *ui;

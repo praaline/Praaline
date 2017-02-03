@@ -154,6 +154,17 @@ QStringList MetadataStructure::attributeIDs(CorpusObject::Type what) const
     return ret;
 }
 
+QStringList MetadataStructure::attributeNames(CorpusObject::Type what) const
+{
+    QStringList ret;
+    if (!m_sections.contains(what)) return ret;
+    foreach (QPointer<MetadataStructureSection> section, m_sections[what]) {
+        if (!section) continue;
+        ret << section->attributeNames();
+    }
+    return ret;
+}
+
 // ==========================================================================================================
 // Management
 // ==========================================================================================================
@@ -212,6 +223,68 @@ QString MetadataStructure::defaultSectionID(CorpusObject::Type type)
     else if (type == CorpusObject::Type_Annotation)     return "annotation";
     else if (type == CorpusObject::Type_Participation)  return "participation";
     return QString();
+}
+
+// static
+QStringList MetadataStructure::basicAttributeIDs(CorpusObject::Type type)
+{
+    QStringList attributeIDs;
+    if      (type == CorpusObject::Type_Corpus)
+        attributeIDs << "corpusID" << "corpusName" << "description";
+    else if (type == CorpusObject::Type_Communication)
+        attributeIDs << "communicationID" << "corpusID" << "communicationName";
+    else if (type == CorpusObject::Type_Speaker)
+        attributeIDs << "speakerID" << "corpusID" << "speakerName";
+    else if (type == CorpusObject::Type_Recording)
+        attributeIDs << "recordingID" << "communicationID" << "recordingName" << "filename" << "format" << "duration"
+                     << "channels" << "sampleRate" << "precisionBits" << "bitRate" << "encoding" << "fileSize" << "checksumMD5";
+    else if (type == CorpusObject::Type_Annotation)
+        attributeIDs << "annotationID" << "communicationID" << "annotationName" << "recordingID";
+    else if (type == CorpusObject::Type_Participation)
+        attributeIDs << "corpusID" << "communicationID" << "speakerID" << "role";
+    return attributeIDs;
+}
+
+// static
+QStringList MetadataStructure::basicAttributeNames(CorpusObject::Type type)
+{
+    QStringList attributeNames;
+    if      (type == CorpusObject::Type_Corpus)
+        attributeNames << "Corpus ID" << "Corpus Name" << "Description";
+    else if (type == CorpusObject::Type_Communication)
+        attributeNames << "Communication ID" << "Corpus ID" << "Communication Name";
+    else if (type == CorpusObject::Type_Speaker)
+        attributeNames << "Speaker ID" << "Corpus ID" << "Speaker Name";
+    else if (type == CorpusObject::Type_Recording)
+        attributeNames << "Recording ID" << "Communication ID" << "Recording Name" << "Filename" << "Format" << "Duration"
+                     << "Channels" << "Sample Rate" << "Precision Bits" << "Bitrate" << "Encoding" << "File Size" << "Checksum MD5";
+    else if (type == CorpusObject::Type_Annotation)
+        attributeNames << "Annotation ID" << "Communication ID" << "Annotation Name" << "Recording ID";
+    else if (type == CorpusObject::Type_Participation)
+        attributeNames << "Corpus ID" << "Communication ID" << "Speaker ID" << "Role";
+    return attributeNames;
+}
+
+QStringList MetadataStructure::allAttributeIDs(CorpusObject::Type what) const
+{
+    QStringList ret;
+    ret << basicAttributeIDs(what);
+    if (!m_sections.contains(what)) return ret;
+    foreach (QPointer<MetadataStructureSection> section, m_sections[what]) {
+        if (!section) continue;
+        ret << section->attributeIDs();
+    }
+}
+
+QStringList MetadataStructure::allAttributeNames(CorpusObject::Type what) const
+{
+    QStringList ret;
+    ret << basicAttributeNames(what);
+    if (!m_sections.contains(what)) return ret;
+    foreach (QPointer<MetadataStructureSection> section, m_sections[what]) {
+        if (!section) continue;
+        ret << section->attributeNames();
+    }
 }
 
 } // namespace Core

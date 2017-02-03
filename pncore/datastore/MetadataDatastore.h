@@ -54,6 +54,7 @@ public:
         QString annotationID;
         QStringList attributeIDs;
 
+        Selection() {}
         Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID) :
             corpusID(corpusID), communicationID(communicationID), speakerID(speakerID) {}
         Selection(const QString &corpusID, const QString &communicationID, const QString &speakerID, const QStringList &attributeIDs) :
