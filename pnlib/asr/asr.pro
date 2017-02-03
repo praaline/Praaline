@@ -32,12 +32,6 @@ unix {
 HEADERS += \
     SpeechToken.h \
     SpeechRecognitionRecipes.h \
-    AbstractSpeechRecogniser.h \
-    AbstractLanguageModelTrainer.h \
-    AbstractForcedAligner.h \
-    AbstractFeatureExtractor.h \
-    AbstractAcousticModelTrainer.h \
-    AbstractAcousticModelAdapter.h \
     sphinx/SphinxSegmentation.h \
     sphinx/SphinxRecogniser.h \
     sphinx/SphinxPronunciationDictionary.h \
@@ -49,11 +43,17 @@ HEADERS += \
     phonetiser/RuleBasedPhonetiser.h \
     phonetiser/ExternalPhonetiser.h \
     phonetiser/DictionaryPhonetiser.h \
-    phonetiser/AbstractPhonetiser.h \
     syllabifier/AbstractSyllabifier.h \
     sphinx/SphinxConfiguration.h \
     sphinx/SphinxOfflineRecogniser.h \
-    sphinx/SphinxAcousticModelTrainer.h
+    sphinx/SphinxAcousticModelTrainer.h \
+    AcousticModelAdapter.h \
+    AcousticModelTrainer.h \
+    SpeechRecogniser.h \
+    LanguageModelTrainer.h \
+    FeatureExtractor.h \
+    ForcedAligner.h \
+    Phonetiser.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \

@@ -5,11 +5,14 @@
 #include <QString>
 #include "pncore/annotation/IntervalTier.h"
 #include "pnlib/asr/SpeechToken.h"
-#include "pnlib/asr/phonetiser/AbstractPhonetiser.h"
+#include "pnlib/asr/Phonetiser.h"
+
+namespace Praaline {
+namespace ASR {
 
 struct ExternalPhonetiserData;
 
-class ExternalPhonetiser : public AbstractPhonetiser
+class ExternalPhonetiser : public Phonetiser
 {
     Q_OBJECT
 public:
@@ -28,5 +31,8 @@ public slots:
 private:
     ExternalPhonetiserData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // EXTERNALPHONETISER_H

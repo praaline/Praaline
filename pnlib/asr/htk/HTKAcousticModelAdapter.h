@@ -2,7 +2,7 @@
 #define HTKACOUSTICMODELADAPTER_H
 
 #include <QObject>
-#include "pnlib/asr/AbstractAcousticModelAdapter.h"
+#include "pnlib/asr/AcousticModelAdapter.h"
 
 class HTKAcousticModelAdapter : public AbstractAcousticModelAdapter
 {

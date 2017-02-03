@@ -2,7 +2,7 @@
 #define DICTIONARYPHONETISER_H
 
 #include <QObject>
-#include "AbstractPhonetiser.h"
+#include "Phonetiser.h"
 
 class DictionaryPhonetiser : public AbstractPhonetiser
 {
