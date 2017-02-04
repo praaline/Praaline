@@ -13,7 +13,7 @@ class AnnotationTierGroup;
 
 struct AnnotationInterfacePraatData;
 
-class AnnotationInterfacePraat : public QObject
+class PRAALINE_CORE_SHARED_EXPORT AnnotationInterfacePraat : public QObject
 {
     Q_OBJECT
 public:
