@@ -2,11 +2,14 @@
 #define RULEBASEDPHONETISER_H
 
 #include <QObject>
-#include "AbstractPhonetiser.h"
+#include "Phonetiser.h"
+
+namespace Praaline {
+namespace ASR {
 
 struct RuleBasedPhonetiserData;
 
-class RuleBasedPhonetiser : public AbstractPhonetiser
+class RuleBasedPhonetiser : public Phonetiser
 {
     Q_OBJECT
 public:
@@ -16,6 +19,9 @@ public:
     bool readRuleFile(const QString &filename);
     QString phonetise(const QString &input);
 
+    QString phonetiseWord(const QString &word) override {}
+    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override {}
+
 signals:
 
 public slots:
@@ -23,5 +29,8 @@ public slots:
 private:
     RuleBasedPhonetiserData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // RULEBASEDPHONETISER_H

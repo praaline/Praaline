@@ -6,6 +6,9 @@
 #include <QHash>
 #include "pncore/annotation/IntervalTier.h"
 
+namespace Praaline {
+namespace ASR {
+
 class SphinxSegmentation : public QObject
 {
     Q_OBJECT
@@ -13,11 +16,14 @@ public:
     explicit SphinxSegmentation(QObject *parent = 0);
     ~SphinxSegmentation();
 
-    static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Praaline::Core::Interval *> > &utterances);
+    static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Core::Interval *> > &utterances);
 
 signals:
 
 public slots:
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXSEGMENTATION_H

@@ -7,11 +7,14 @@
 #include <QList>
 
 namespace Praaline {
+
 namespace Core {
 class Corpus;
 class CorpusCommunication;
 }
-}
+
+namespace ASR {
+
 class SphinxPronunciationDictionary;
 struct SphinxAcousticModelTrainerData;
 
@@ -41,5 +44,8 @@ public slots:
 private:
     SphinxAcousticModelTrainerData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXACOUSTICMODELTRAINER_H

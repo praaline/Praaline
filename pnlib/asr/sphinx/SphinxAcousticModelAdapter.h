@@ -5,6 +5,9 @@
 #include "pncore/corpus/Corpus.h"
 #include "SphinxPronunciationDictionary.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxAcousticModelAdapterData;
 
 class SphinxAcousticModelAdapter : public QObject
@@ -22,5 +25,8 @@ public slots:
 private:
     SphinxAcousticModelAdapterData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXACOUSTICMODELADAPTER_H

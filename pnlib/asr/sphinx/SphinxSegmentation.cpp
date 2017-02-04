@@ -12,6 +12,9 @@ using namespace Praaline::Core;
 
 #include "SphinxSegmentation.h"
 
+namespace Praaline {
+namespace ASR {
+
 SphinxSegmentation::SphinxSegmentation(QObject *parent) : QObject(parent)
 {
 
@@ -76,4 +79,6 @@ bool SphinxSegmentation::readSegmentationHypothesisFile(const QString &filename,
     return true;
 }
 
+} // namespace ASR
+} // namespace Praaline
 

@@ -5,6 +5,9 @@
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/annotation/Interval.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxRecogniserData;
 
 class SphinxRecogniser : public QObject
@@ -40,5 +43,8 @@ public slots:
 private:
     SphinxRecogniserData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXRECOGNISER_H

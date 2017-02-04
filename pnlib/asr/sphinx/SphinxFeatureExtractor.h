@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QPointer>
 
+namespace Praaline {
+namespace ASR {
+
 class SphinxFeatureExtractor : public QObject
 {
     Q_OBJECT
@@ -25,5 +28,8 @@ private:
     quint64 m_sampleRate;
 
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXFEATUREEXTRACTOR_H

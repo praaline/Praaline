@@ -6,7 +6,6 @@
 #include <QPointer>
 
 #include "pncore/corpus/Corpus.h"
-using namespace Praaline::Core;
 
 struct LongSoundAlignerData;
 
@@ -17,9 +16,9 @@ public:
     explicit LongSoundAligner(QObject *parent = 0);
     ~LongSoundAligner();
 
-    bool createRecognitionLevel(CorpusRepository *repository, int recognitionStep);
-    bool createUtterancesFromProsogramAutosyll(QPointer<CorpusCommunication> com);
-    bool recognise(QPointer<CorpusCommunication> com, int recognitionStep);
+    bool createRecognitionLevel(Praaline::Core::CorpusRepository *repository, int recognitionStep);
+    bool createUtterancesFromProsogramAutosyll(QPointer<Praaline::Core::CorpusCommunication> com);
+    bool recognise(QPointer<Praaline::Core::CorpusCommunication> com, int recognitionStep);
 
 private:
     LongSoundAlignerData *d;

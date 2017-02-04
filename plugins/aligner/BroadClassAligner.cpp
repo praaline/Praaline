@@ -10,8 +10,11 @@
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+using namespace Praaline::Core;
+
 #include "pnlib/asr/sphinx/SphinxAcousticModelTrainer.h"
 #include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
+using namespace Praaline::ASR;
 
 #include "BroadClassAligner.h"
 

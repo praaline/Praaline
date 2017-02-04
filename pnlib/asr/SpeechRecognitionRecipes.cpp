@@ -18,6 +18,9 @@
 
 using namespace Praaline::Core;
 
+namespace Praaline {
+namespace ASR {
+
 SpeechRecognitionRecipes::SpeechRecognitionRecipes()
 {
 
@@ -173,3 +176,6 @@ bool SpeechRecognitionRecipes::preapareAdapationData(QPointer<CorpusCommunicatio
 
     return true;
 }
+
+} // namespace ASR
+} // namespace Praaline

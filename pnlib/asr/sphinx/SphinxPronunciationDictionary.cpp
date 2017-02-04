@@ -7,6 +7,9 @@
 
 #include "SphinxPronunciationDictionary.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxPronunciationDictionaryData {
     QMap<QString, QString> dictionary;
     QSet<QString> phonemes;
@@ -78,3 +81,6 @@ bool SphinxPronunciationDictionary::contains(const QString &word) const
 {
     return d->dictionary.contains(word);
 }
+
+} // namespace ASR
+} // namespace Praaline

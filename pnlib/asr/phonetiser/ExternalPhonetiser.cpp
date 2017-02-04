@@ -10,6 +10,9 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
+namespace Praaline {
+namespace ASR {
+
 class PUtterance {
 public:
     PUtterance(QList<int> &ptokens, QString orthographic) : ptokens(ptokens), orthographic(orthographic) {}
@@ -24,7 +27,7 @@ struct ExternalPhonetiserData {
 };
 
 ExternalPhonetiser::ExternalPhonetiser(QObject *parent) :
-    AbstractPhonetiser(parent), d(new ExternalPhonetiserData)
+    Phonetiser(parent), d(new ExternalPhonetiserData)
 {
 
 }
@@ -247,4 +250,7 @@ void ExternalPhonetiser::addPhonetisationToTokens(IntervalTier *tier_tokens, con
         }
     }
 }
+
+} // namespace ASR
+} // namespace Praaline
 

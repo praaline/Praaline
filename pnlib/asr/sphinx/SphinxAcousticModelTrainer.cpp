@@ -17,6 +17,9 @@ using namespace Praaline::Core;
 #include "SphinxPronunciationDictionary.h"
 #include "SphinxAcousticModelTrainer.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxAcousticModelTrainerData
 {
     SphinxAcousticModelTrainerData() {}
@@ -214,3 +217,5 @@ bool SphinxAcousticModelTrainer::createFiles(
     return true;
 }
 
+} // namespace ASR
+} // namespace Praaline

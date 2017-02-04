@@ -20,6 +20,8 @@
 using namespace Praaline::Core;
 
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
+using namespace Praaline::ASR;
+
 #include "EasyAlignBasic.h"
 
 EasyAlignBasic::EasyAlignBasic(QObject *parent) :

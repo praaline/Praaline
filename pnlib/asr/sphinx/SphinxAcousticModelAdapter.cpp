@@ -11,6 +11,9 @@
 
 #include "SphinxAcousticModelAdapter.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxAcousticModelAdapterData {
     QString adaptationPath;
     QString tiernameUtterances;
@@ -30,4 +33,6 @@ SphinxAcousticModelAdapter::~SphinxAcousticModelAdapter()
     delete d;
 }
 
+} // namespace ASR
+} // namespace Praaline
 

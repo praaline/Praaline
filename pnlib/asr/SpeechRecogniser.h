@@ -1,24 +1,24 @@
-#ifndef ABSTRACTRECOGNISER_H
-#define ABSTRACTRECOGNISER_H
+#ifndef SPEECHRECOGNISER_H
+#define SPEECHRECOGNISER_H
 
 #include <QObject>
 
 namespace Praaline {
-namespace Lib {
+namespace ASR {
 
-class AbstractRecogniser : public QObject
+class SpeechRecogniser : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractRecogniser(QObject *parent = 0) {}
-    virtual ~AbstractRecogniser() {}
+    explicit SpeechRecogniser(QObject *parent = 0) {}
+    virtual ~SpeechRecogniser() {}
 
 signals:
 
 public slots:
 };
 
-} // namespace Lib
+} // namespace ASR
 } // namespace Praaline
 
-#endif // ABSTRACTRECOGNISER_H
+#endif // SPEECHRECOGNISER_H

@@ -8,6 +8,9 @@
 #include "SphinxConfiguration.h"
 #include "SphinxFeatureExtractor.h"
 
+namespace Praaline {
+namespace ASR {
+
 SphinxFeatureExtractor::SphinxFeatureExtractor(QObject *parent) :
     QObject(parent), m_filenameSphinxFeatParams("feat.params"), m_sampleRate(16000)
 {
@@ -73,3 +76,6 @@ bool SphinxFeatureExtractor::batchCreateSphinxMFC(QStringList filenamesWave16k)
     qDebug() << err;
     return true;
 }
+
+} // namespace ASR
+} // namespace Praaline

@@ -19,8 +19,8 @@ public:
     explicit Phonetiser(QObject *parent = 0) : QObject(parent) {}
     virtual ~Phonetiser() {}
 
-    QString phonetiseWord(const QString &word) = 0;
-    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) = 0;
+    virtual QString phonetiseWord(const QString &word) = 0;
+    virtual QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) = 0;
 
 signals:
 

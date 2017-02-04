@@ -4,6 +4,9 @@
 #include <QObject>
 #include "pncore/corpus/CorpusCommunication.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct HTKAcousticModelTrainerData;
 
 class HTKAcousticModelTrainer : public QObject
@@ -30,5 +33,8 @@ private:
 
     HTKAcousticModelTrainerData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // HTKACOUSTICMODELTRAINER_H

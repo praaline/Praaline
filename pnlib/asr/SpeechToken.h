@@ -4,8 +4,8 @@
 #include <QString>
 #include "pncore/base/RealTime.h"
 
-//namespace Praaline {
-//namespace Lib {
+namespace Praaline {
+namespace ASR {
 
 class SpeechToken
 {
@@ -32,7 +32,7 @@ public:
     QString token;
 };
 
-//} // namespace Lib
-//} // namespace Praaline
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPEECHTOKEN_H

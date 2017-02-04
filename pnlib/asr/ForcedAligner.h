@@ -1,18 +1,24 @@
-#ifndef ABSTRACTFORCEDALIGNER_H
-#define ABSTRACTFORCEDALIGNER_H
+#ifndef FORCEDALIGNER_H
+#define FORCEDALIGNER_H
 
 #include <QObject>
 
-class AbstractForcedAligner : public QObject
+namespace Praaline {
+namespace ASR {
+
+class ForcedAligner : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractForcedAligner(QObject *parent = 0) : QObject(parent) {}
-    virtual ~AbstractForcedAligner() {}
+    explicit ForcedAligner(QObject *parent = 0) : QObject(parent) {}
+    virtual ~ForcedAligner() {}
 
 signals:
 
 public slots:
 };
 
-#endif // ABSTRACTFORCEDALIGNER_H
+} // namespace ASR
+} // namespace Praaline
+
+#endif // FORCEDALIGNER_H

@@ -7,12 +7,14 @@
 #include <QList>
 
 namespace Praaline {
+
 namespace Core {
 class Corpus;
 class CorpusCommunication;
 class CorpusRecording;
 }
-}
+
+namespace ASR {
 
 class SpeechRecognitionRecipes
 {
@@ -42,5 +44,8 @@ public:
                                       const QString &pathAcousticModel, const QString &filenamePronunciationDictionary,
                                       QStringList &outputTokensWithoutPhonetisationList);
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPEECHRECOGNITIONRECIPES_H

@@ -5,13 +5,17 @@
 #include <QPointer>
 #include <QMutex>
 #include "LongSoundAligner.h"
+
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/structure/AnnotationStructure.h"
+using namespace Praaline::Core;
+
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
+using namespace Praaline::ASR;
 
 struct LongSoundAlignerData
 {

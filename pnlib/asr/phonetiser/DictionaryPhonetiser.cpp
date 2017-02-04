@@ -1,8 +1,18 @@
 #include "DictionaryPhonetiser.h"
 
+namespace Praaline {
+namespace ASR {
+
 DictionaryPhonetiser::DictionaryPhonetiser(QObject *parent) :
-    AbstractPhonetiser(parent)
+    Phonetiser(parent)
 {
 
 }
 
+DictionaryPhonetiser::~DictionaryPhonetiser()
+{
+
+}
+
+} // namespace ASR
+} // namespace Praaline

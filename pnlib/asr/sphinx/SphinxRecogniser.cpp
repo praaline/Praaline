@@ -17,6 +17,9 @@ using namespace Praaline::Core;
 #include "SphinxSegmentation.h"
 #include "SphinxRecogniser.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxRecogniserData {
     SphinxRecogniserData() {}
 
@@ -254,3 +257,6 @@ bool SphinxRecogniser::readRecognitionResults(const QString &fileID, const QStri
     }
     return true;
 }
+
+} // namespace ASR
+} // namespace Praaline

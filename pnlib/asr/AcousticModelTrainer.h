@@ -1,18 +1,25 @@
-#ifndef ABSTRACTACOUSTICMODELTRAINER_H
-#define ABSTRACTACOUSTICMODELTRAINER_H
+#ifndef ACOUSTICMODELTRAINER_H
+#define ACOUSTICMODELTRAINER_H
 
 #include <QObject>
 
-class AbstractAcousticModelTrainer : public QObject
+namespace Praaline {
+namespace ASR {
+
+class AcousticModelTrainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractAcousticModelTrainer(QObject *parent = 0) : QObject(parent) {}
-    virtual ~AbstractAcousticModelTrainer() {}
+    explicit AcousticModelTrainer(QObject *parent = 0) : QObject(parent) {}
+    virtual ~AcousticModelTrainer() {}
 
 signals:
 
 public slots:
 };
 
-#endif // ABSTRACTACOUSTICMODELTRAINER_H
+
+} // namespace ASR
+} // namespace Praaline
+
+#endif // ACOUSTICMODELTRAINER_H

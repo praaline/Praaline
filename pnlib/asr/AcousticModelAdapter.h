@@ -1,18 +1,25 @@
-#ifndef ABSTRACTACOUSTICMODELADAPTER_H
-#define ABSTRACTACOUSTICMODELADAPTER_H
+#ifndef ACOUSTICMODELADAPTER_H
+#define ACOUSTICMODELADAPTER_H
 
 #include <QObject>
 
-class AbstractAcousticModelAdapter : public QObject
+namespace Praaline {
+namespace ASR {
+
+class AcousticModelAdapter : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractAcousticModelAdapter(QObject *parent = 0) : QObject(parent) {}
-    virtual ~AbstractAcousticModelAdapter() {}
+    explicit AcousticModelAdapter(QObject *parent = 0) : QObject(parent) {}
+    virtual ~AcousticModelAdapter() {}
 
 signals:
 
 public slots:
 };
 
-#endif // ABSTRACTACOUSTICMODELADAPTER_H
+} // namespace ASR
+} // namespace Praaline
+
+
+#endif // ACOUSTICMODELADAPTER_H

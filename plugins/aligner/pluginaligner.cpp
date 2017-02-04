@@ -22,6 +22,9 @@
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "pnlib/asr/sphinx/SphinxSegmentation.h"
 #include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
+#include "pnlib/asr/SpeechRecognitionRecipes.h"
+#include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
+using namespace Praaline::ASR;
 
 #include "phonemedatabase.h"
 #include "EasyAlignBasic.h"
@@ -29,10 +32,7 @@
 #include "BroadClassAligner.h"
 
 #include "pnlib/mediautil/AudioSegmenter.h"
-#include "pnlib/asr/SpeechRecognitionRecipes.h"
 #include "pnlib/featextract/OpenSmileVAD.h"
-
-#include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
 
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 

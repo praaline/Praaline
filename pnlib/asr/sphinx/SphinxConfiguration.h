@@ -3,6 +3,9 @@
 
 #include <QString>
 
+namespace Praaline {
+namespace ASR {
+
 class SphinxConfiguration
 {
 public:
@@ -52,5 +55,8 @@ private:
     QString m_filenamePronunciationDictionary;
     QString m_filenameMLLRMatrix;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXCONFIGURATION_H

@@ -2,6 +2,9 @@
 #include <QCoreApplication>
 #include "SphinxConfiguration.h"
 
+namespace Praaline {
+namespace ASR {
+
 SphinxConfiguration::SphinxConfiguration()
 {
 }
@@ -50,3 +53,6 @@ QString SphinxConfiguration::defaultModelsPath()
 #endif
     return appPath + "/plugins/aligner/sphinx/";
 }
+
+} // namespace ASR
+} // namespace Praaline

@@ -5,6 +5,9 @@
 #include "pncore/annotation/IntervalTier.h"
 #include "SpeechToken.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct HTKForcedAlignerData;
 
 class HTKForcedAligner : public QObject
@@ -29,5 +32,8 @@ private:
     bool createFilesDCTandLAB(const QString &filenameBase, QList<SpeechToken> &atokens);
     bool runAligner(const QString &filenameBase, QList<SpeechToken> &atokens, QList<SpeechPhone> &aphones);
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // HTKFORCEDALIGNER_H

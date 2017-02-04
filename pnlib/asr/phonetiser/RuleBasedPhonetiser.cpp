@@ -6,12 +6,15 @@
 
 #include "RuleBasedPhonetiser.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct RuleBasedPhonetiserData {
     QList<QPair<QString, QString> > rules;
 };
 
 RuleBasedPhonetiser::RuleBasedPhonetiser(QObject *parent) :
-    AbstractPhonetiser(parent), d(new RuleBasedPhonetiserData)
+    Phonetiser(parent), d(new RuleBasedPhonetiserData)
 {
 }
 
@@ -68,3 +71,5 @@ QString RuleBasedPhonetiser::phonetise(const QString &input)
     return output;
 }
 
+} // namespace ASR
+} // namespace Praaline

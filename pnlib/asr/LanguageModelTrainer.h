@@ -1,24 +1,24 @@
-#ifndef ABSTRACTLANGUAGEMODELTRAINER_H
-#define ABSTRACTLANGUAGEMODELTRAINER_H
+#ifndef LANGUAGEMODELTRAINER_H
+#define LANGUAGEMODELTRAINER_H
 
 #include <QObject>
 
 namespace Praaline {
-namespace Lib {
+namespace ASR {
 
-class AbstractLanguageModelTrainer : public QObject
+class LanguageModelTrainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractLanguageModelTrainer(QObject *parent = 0) : QObject(parent) {}
-    virtual ~AbstractLanguageModelTrainer() {}
+    explicit LanguageModelTrainer(QObject *parent = 0) : QObject(parent) {}
+    virtual ~LanguageModelTrainer() {}
 
 signals:
 
 public slots:
 };
 
-} // namespace Lib
+} // namespace ASR
 } // namespace Praaline
 
-#endif // ABSTRACTLANGUAGEMODELTRAINER_H
+#endif // LANGUAGEMODELTRAINER_H

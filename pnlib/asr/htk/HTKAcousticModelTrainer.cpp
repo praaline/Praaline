@@ -13,6 +13,9 @@ using namespace Praaline::Core;
 
 #include "HTKAcousticModelTrainer.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct HTKAcousticModelTrainerData {
     QHash<QString, QString> phonemeTranslations;
 };
@@ -154,3 +157,5 @@ bool HTKAcousticModelTrainer::createMasterLabelFileFromTokensAndPhones(
     return createMLF(filename, trainingCommunications, levelSegment, levelToken, levelPhone, "");
 }
 
+} // namespace ASR
+} // namespace Praaline

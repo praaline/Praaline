@@ -8,6 +8,9 @@
 #include "SphinxConfiguration.h"
 #include "SphinxOfflineRecogniser.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxOfflineRecogniserData {
     SphinxOfflineRecogniserData() : pocketSphinx(0), sphinxConfig(0), mfccFileHandle(0),
         mfccShouldSwap(false), mfccVectorLength(0), mfccNumberFeatures(0)
@@ -229,3 +232,6 @@ QList<Interval *> SphinxOfflineRecogniser::getSegmentation() const
     QList<Interval *> words;
     return words;
 }
+
+} // namespace ASR
+} // namespace Praaline

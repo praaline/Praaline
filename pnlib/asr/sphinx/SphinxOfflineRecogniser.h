@@ -9,6 +9,9 @@
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxOfflineRecogniserData;
 
 class SphinxOfflineRecogniser : public QObject
@@ -43,5 +46,8 @@ public slots:
 private:
     SphinxOfflineRecogniserData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXOFFLINERECOGNISER_H

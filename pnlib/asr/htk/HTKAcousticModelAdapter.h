@@ -4,7 +4,10 @@
 #include <QObject>
 #include "pnlib/asr/AcousticModelAdapter.h"
 
-class HTKAcousticModelAdapter : public AbstractAcousticModelAdapter
+namespace Praaline {
+namespace ASR {
+
+class HTKAcousticModelAdapter : public AcousticModelAdapter
 {
     Q_OBJECT
 public:
@@ -15,5 +18,8 @@ signals:
 
 public slots:
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // HTKACOUSTICMODELADAPTER_H

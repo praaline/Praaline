@@ -13,6 +13,9 @@ using namespace Praaline::Core;
 #include "HTKForcedAligner.h"
 #include "phonetiser/ExternalPhonetiser.h"
 
+namespace Praaline {
+namespace ASR {
+
 struct HTKForcedAlignerData {
     QString filenameCFG;
     QString filenameHMM;
@@ -217,3 +220,5 @@ void HTKForcedAligner::alignUtterances(QString waveFile, IntervalTier *tier_utte
     tier_phones->replaceAllIntervals(list_phones);
 }
 
+} // namespace ASR
+} // namespace Praaline

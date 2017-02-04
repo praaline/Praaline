@@ -5,6 +5,9 @@
 #include <QString>
 #include <QList>
 
+namespace Praaline {
+namespace ASR {
+
 struct SphinxPronunciationDictionaryData;
 
 class SphinxPronunciationDictionary : public QObject
@@ -25,5 +28,8 @@ public:
 private:
     SphinxPronunciationDictionaryData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SPHINXPRONUNCIATIONDICTIONARY_H
