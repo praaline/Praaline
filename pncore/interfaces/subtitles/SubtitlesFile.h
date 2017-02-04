@@ -14,8 +14,8 @@ class PRAALINE_CORE_SHARED_EXPORT SubtitlesFile : InterfaceTextFile
 
 public:
     // Public static methods to read and write SRT files
-    static bool loadSRT(const QString &filename, IntervalTier *tier);
-    static bool saveSRT(const QString &filename, IntervalTier *tier);
+    static bool loadSRT(const QString &filename, IntervalTier *tier, const QString &attributeID = QString());
+    static bool saveSRT(const QString &filename, IntervalTier *tier, const QString &attributeID = QString());
 };
 
 } // namespace Core

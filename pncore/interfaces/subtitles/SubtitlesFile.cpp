@@ -18,7 +18,32 @@ RealTime timeCodeToRealTime(const QString &timecode)
     return RealTime::fromSeconds(hours * 3600 + minutes * 60 + seconds) + RealTime::fromMilliseconds(msec);
 }
 
-bool SubtitlesFile::loadSRT(const QString &filename, IntervalTier *tier)
+QString realTimeToTimeCode(const RealTime &realtime)
+{
+    if (realtime < RealTime::zeroTime) return "-" + realTimeToTimeCode(-realtime);
+    QString timecode;
+    if (realtime.sec >= 3600) {
+        int hours = (realtime.sec / 3600);
+        if (hours < 10) timecode = timecode.append("0");
+        timecode = timecode.append(QString("%1:").arg(hours));
+    }
+    if (realtime.sec >= 60) {
+        int minutes = (realtime.sec % 3600) / 60;
+        if (minutes < 10) timecode = timecode.append("0");
+        timecode =timecode.append(QString("%1:").arg(minutes));
+    }
+    if (realtime.sec >= 10) {
+        timecode = timecode.append(QString("%1").arg((realtime.sec % 60) / 10));
+    } else {
+        timecode = timecode.append("0");
+    }
+    timecode = timecode.append(QString("%1").arg(realtime.sec % 10));
+    timecode = timecode.append(QString(",%1").arg(realtime.msec()));
+    return timecode;
+}
+
+
+bool SubtitlesFile::loadSRT(const QString &filename, IntervalTier *tier, const QString &attributeID)
 {
     if (!tier) return false;
     // Open file, create stream, detect encoding
@@ -51,7 +76,9 @@ bool SubtitlesFile::loadSRT(const QString &filename, IntervalTier *tier)
             text.append(line);
         }
         else {
-            intervals << new Interval(tMin, tMax, text);
+            Interval *intv = new Interval(tMin, tMax, "");
+            if (attributeID.isEmpty()) intv->setText(text); else intv->setAttribute(attributeID, text);
+            intervals << intv;
             state = 0;
         }
     }
@@ -59,8 +86,27 @@ bool SubtitlesFile::loadSRT(const QString &filename, IntervalTier *tier)
     return true;
 }
 
-bool SubtitlesFile::saveSRT(const QString &filename, IntervalTier *tier)
+bool SubtitlesFile::saveSRT(const QString &filename, IntervalTier *tier, const QString &attributeID)
 {
+    if (!tier) return false;
+    // Open file, create stream
+    QFile file(filename);
+    if (!file.open(QIODevice::WriteOnly)) return false;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out.setGenerateByteOrderMark(true);
+
+    int subTitleNo = 1;
+    foreach (Interval *intv, tier->intervals()) {
+        if (intv->isPauseSilent()) continue;
+        out << QString::number(subTitleNo) << "\n";
+        out << realTimeToTimeCode(intv->tMin()) << " --> " << realTimeToTimeCode(intv->tMax()) << "\n";
+        QString subtitle = (attributeID.isEmpty()) ? intv->text() : intv->attribute(attributeID).toString();
+        out << subtitle << "\n";
+        out << "\n";
+    }
+
+    file.close();
     return false;
 }
 

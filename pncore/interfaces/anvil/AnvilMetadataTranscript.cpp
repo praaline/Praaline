@@ -130,7 +130,10 @@ AnvilMetadataTranscript::readActor(QXmlStreamReader &xml)
             else if (xml.name() == "Sex")               { actor->sex = xml.readElementText(); }
             else if (xml.name() == "Education")         { actor->education = xml.readElementText(); }
             else if (xml.name() == "Anonymized")        { actor->anonymized = xml.readElementText(); }
-            else if (xml.name() == "Contact")           { ContactData *contact = readContact(xml); }
+            else if (xml.name() == "Contact")           { ContactData *contact = readContact(xml);
+                QStringList contactData; contactData << contact->name << contact->organisation << contact->address << contact->email;
+                actor->contact = contactData.join(", ");
+            }
             else if (xml.name() == "Description")       { actor->description = xml.readElementText(); }
         }
         xml.readNext();
@@ -285,6 +288,8 @@ bool AnvilMetadataTranscript::load(const QString &filename, Corpus *corpus)
 // static
 bool AnvilMetadataTranscript::save(const QString &filename, Corpus *corpus)
 {
+    Q_UNUSED(filename)
+    Q_UNUSED(corpus)
     return false;
 }
 

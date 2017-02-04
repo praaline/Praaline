@@ -712,6 +712,8 @@ bool SQLSerialiserAnnotation::batchUpdate(
 QList<QPair<QList<QVariant>, long> > SQLSerialiserAnnotation::countItems(
         const QString &levelID, const QStringList &groupByAttributeIDs, AnnotationStructure *structure, QSqlDatabase &db)
 {
+    Q_UNUSED(groupByAttributeIDs)
+    Q_UNUSED(db)
     QList<QPair<QList<QVariant>, long> > list;
     if (!structure) return list;
     if (!structure->hasLevel(levelID)) return list;

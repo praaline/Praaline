@@ -104,8 +104,7 @@ bool SQLMetadataDatastore::deleteMetadataAttribute(CorpusObject::Type type, cons
 
 bool SQLMetadataDatastore::retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID, const DataType &newDatatype)
 {
-    // return SQLSerialiserMetadataStructure::retypeMetadataAttribute(type, attributeID, newDatatype, d->database);
-    return false;
+    return SQLSerialiserMetadataStructure::retypeMetadataAttribute(type, attributeID, newDatatype, d->database);
 }
 
 bool SQLMetadataDatastore::loadMetadataStructure()
@@ -197,8 +196,7 @@ QList<QPointer<CorpusAnnotation> > SQLMetadataDatastore::getAnnotations(const Se
 
 QList<QPointer<CorpusParticipation> > SQLMetadataDatastore::getParticipations(const Selection &selection)
 {
-    QList<QPointer<CorpusParticipation> > ret;
-    return ret; //SQLSerialiserMetadata::getParticipations(selection, d->database, d->structure, this);
+    return SQLSerialiserMetadata::getParticipations(selection, d->database, d->structure, this);
 }
 
 // Save (insert or update) corpus objects

@@ -256,6 +256,8 @@ void XMLSerialiserCorpus::readAttributes(CorpusObject *obj, MetadataStructure *m
 // static
 bool XMLSerialiserCorpus::saveCorpus(Corpus *corpus, QXmlStreamWriter &xml)
 {
+    Q_UNUSED(corpus)
+    Q_UNUSED(xml)
 //    xml.writeStartElement("CorpusData");
 //    xml.writeStartElement("Communications");
 //    foreach (CorpusCommunication *com, corpus->communications()) {
@@ -274,11 +276,14 @@ bool XMLSerialiserCorpus::saveCorpus(Corpus *corpus, QXmlStreamWriter &xml)
 //    xml.writeEndElement(); // Participations
 //    xml.writeEndElement(); // CorpusData
 //    return true;
+    return false;
 }
 
 // static
 bool XMLSerialiserCorpus::loadCorpus(Corpus *corpus, QXmlStreamReader &xml)
 {
+    Q_UNUSED(corpus)
+    Q_UNUSED(xml)
 //    while (!(xml.tokenType() == QXmlStreamReader::EndElement && xml.name() == xmlElementName_Corpus)) {
 //        if (xml.tokenType() == QXmlStreamReader::StartElement) {
 //            if (xml.name() == "CorpusData") {
@@ -303,7 +308,8 @@ bool XMLSerialiserCorpus::loadCorpus(Corpus *corpus, QXmlStreamReader &xml)
 //        }
 //        xml.readNext(); // next element
 //    }
-//    return true;
+//    return true
+    return false;
 }
 
 } // namespace Core

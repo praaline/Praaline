@@ -267,6 +267,9 @@ bool TranscriberAnnotationGraph::load(const QString &filename, QList<QPointer<Co
 bool TranscriberAnnotationGraph::save(const QString &filename, QList<QPointer<CorpusSpeaker> > &speakers,
                                       QMap<QString, QPointer<AnnotationTierGroup> > &tiersAll)
 {
+    Q_UNUSED(filename)
+    Q_UNUSED(speakers)
+    Q_UNUSED(tiersAll)
     return true;
 }
 

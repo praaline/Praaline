@@ -433,13 +433,26 @@ bool SQLSerialiserMetadataStructure::renameMetadataAttribute(CorpusObject::Type 
 
 // static
 bool SQLSerialiserMetadataStructure::retypeMetadataAttribute(CorpusObject::Type type, const QString &attributeID,
-                                                             const DataType &oldDataType, const DataType &newDataType, QSqlDatabase &db)
+                                                             const DataType &newDataType, QSqlDatabase &db)
 {
+    QSqlQuery q(db);
+    q.prepare("SELECT datatype, length FROM praalineMetadataAttributes "
+              "WHERE objectType=:objectType AND attributeID=:attributeID ");
+    q.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(type));
+    q.bindValue(":attributeID", attributeID);
+    if (!q.exec()) { qDebug() << q.lastError(); return false; }
+    DataType oldDataType("");
+    while (q.next()) {
+        oldDataType = DataType(q.value("datatype").toString());
+        oldDataType = DataType(oldDataType.base(), q.value("length").toInt());
+    }
+    if (!oldDataType.isValid()) return false;
+
     QString tableName = SQLSerialiserSystem::tableNameForCorpusObjectType(type);
     if (tableName.isEmpty()) return false;
     bool result = retypeColumn(tableName, attributeID, oldDataType, newDataType, db);
     if (!result) return false;
-    QSqlQuery q(db);
+
     q.prepare("UPDATE praalineMetadataAttributes SET datatype=:datatype, length=:length "
               "WHERE objectType=:objectType AND attributeID=:attributeID ");
     q.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(type));

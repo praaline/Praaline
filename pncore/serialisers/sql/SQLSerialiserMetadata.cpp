@@ -236,6 +236,37 @@ QList<QPointer<CorpusSpeaker> > SQLSerialiserMetadata::getSpeakers(
 }
 
 // static
+QList<QPointer<CorpusParticipation> > SQLSerialiserMetadata::getParticipations(
+        const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
+{
+    QList<QPointer<CorpusParticipation> > participations;
+    QSqlQuery q(db);
+    prepareSelectQuery(q, CorpusObject::Type_Participation, selection);
+    q.exec();
+    while (q.next()) {
+        QString corpusID =  q.value("corpusID").toString();
+        QString communicationID = q.value("communicationID").toString();
+        QString speakerID = q.value("speakerID").toString();
+        QList<QPointer<CorpusCommunication> > communications = getCommunications(MetadataDatastore::Selection(corpusID, communicationID, ""), db, structure, datastore);
+        QList<QPointer<CorpusSpeaker> > speakers = getSpeakers(MetadataDatastore::Selection(corpusID, "", speakerID), db, structure, datastore);
+        if ((communications.count() != 1) || (speakers.count() != 1)) {
+            qDeleteAll(communications);
+            qDeleteAll(speakers);
+            continue;
+        }
+        CorpusParticipation *participation = new CorpusParticipation(communications.first(), speakers.first());
+        participation->setRole(q.value("role").toString());
+        foreach (MetadataStructureAttribute *attribute, structure->attributes(CorpusObject::Type_Participation)) {
+            participation->setProperty(attribute->ID(), q.value(attribute->ID()));
+        }
+        setClean(participation);
+        datastore->setRepository(participation);
+        participations << participation;
+    }
+    return participations;
+}
+
+// static
 QList<QPointer<CorpusRecording> > SQLSerialiserMetadata::getRecordings(
         const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore)
 {
@@ -636,14 +667,17 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
         bool result = execSaveCommunication(com, structure, db);
         if (result) {
             setClean(com);
+            datastore->setRepository(com);
             foreach (CorpusRecording *rec, com->recordings()) {
                 if (execSaveRecording(com->ID(), rec, structure, db)) {
                     setClean(rec);
+                    datastore->setRepository(rec);
                 }
             }
             foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (execSaveAnnotation(com->ID(), annot, structure, db)) {
                     setClean(annot);
+                    datastore->setRepository(annot);
                 }
             }
         }
@@ -651,15 +685,17 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
     foreach (CorpusSpeaker *spk, corpus->speakers()) {
         if (execSaveSpeaker(spk, structure, db)) {
             setClean(spk);
+            datastore->setRepository(spk);
         }
     }
     foreach (CorpusParticipation *participation, corpus->participations()) {
         if (execSaveParticipation(participation, structure, db)) {
             setClean(participation);
+            datastore->setRepository(participation);
         }
     }
+    datastore->setRepository(corpus);
     db.commit();
-
     return true;
 }
 

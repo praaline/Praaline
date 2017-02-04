@@ -44,6 +44,7 @@ QSqlQuery getSqlQueryForSequence(const QueryFilterSequence &qsequence, QSqlDatab
                 case QueryFilterSequence::Contains:           sqlOperand = "LIKE";  break;
                 case QueryFilterSequence::DoesNotContain:     sqlOperand = "NOT LIKE"; break;
                 case QueryFilterSequence::Like:               sqlOperand = "LIKE";  break;
+                case QueryFilterSequence::NoCondition:        break;
             }
             if (attributeID == qsequence.annotationLevelID()) attributeID = "xText";
             queryText.append(QString(" AND t%1.%2 %3 :crit_%2_%1 ").arg(i).arg(attributeID).arg(sqlOperand));
@@ -71,6 +72,7 @@ QSqlQuery getSqlQueryForSequence(const QueryFilterSequence &qsequence, QSqlDatab
 
 QList<QueryOccurrencePointer *> SQLQueryEngineAnnotation::runQuery(QueryDefinition *qdef, AnnotationStructure *structure, QSqlDatabase &db)
 {
+    Q_UNUSED(structure)
     QList<QueryOccurrencePointer *> pointers;
 
     if (!qdef) return pointers;
@@ -168,7 +170,9 @@ QueryOccurrence *SQLQueryEngineAnnotation::getOccurrence(QueryOccurrencePointer 
 
 bool SQLQueryEngineAnnotation::updateAnnotationsFromQueryOccurrences(const QList<QueryOccurrence *> &occurrences, AnnotationStructure *structure, QSqlDatabase &db)
 {
-
+    Q_UNUSED(occurrences)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 

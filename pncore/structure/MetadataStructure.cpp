@@ -274,6 +274,7 @@ QStringList MetadataStructure::allAttributeIDs(CorpusObject::Type what) const
         if (!section) continue;
         ret << section->attributeIDs();
     }
+    return ret;
 }
 
 QStringList MetadataStructure::allAttributeNames(CorpusObject::Type what) const
@@ -285,6 +286,7 @@ QStringList MetadataStructure::allAttributeNames(CorpusObject::Type what) const
         if (!section) continue;
         ret << section->attributeNames();
     }
+    return ret;
 }
 
 } // namespace Core

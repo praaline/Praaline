@@ -134,6 +134,9 @@ bool MocaDBSerialiserMetadataStructure::retypeMetadataAttribute(CorpusObject::Ty
                                                                 const DataType &newDataType, QSqlDatabase &db)
 {
     Q_UNUSED(type)
+    Q_UNUSED(attributeID)
+    Q_UNUSED(newDataType)
+    Q_UNUSED(db)
 
 
     return false;

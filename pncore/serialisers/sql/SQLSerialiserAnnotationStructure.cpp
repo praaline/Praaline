@@ -374,7 +374,31 @@ bool SQLSerialiserAnnotationStructure::renameAnnotationAttribute(const QString &
 // static
 bool SQLSerialiserAnnotationStructure::retypeAnnotationAttribute(const QString &levelID, const QString &attributeID, const DataType &newDataType, QSqlDatabase &db)
 {
-    return false;
+    QSqlQuery q(db);
+    q.prepare("SELECT datatype, length FROM praalineAnnotationAttributes "
+              "WHERE levelID = :levelID AND attributeID = :attributeID ");
+    q.bindValue(":levelID", levelID);
+    q.bindValue(":attributeID", attributeID);
+    if (!q.exec()) { qDebug() << q.lastError(); return false; }
+    DataType oldDataType("");
+    while (q.next()) {
+        oldDataType = DataType(q.value("datatype").toString());
+        oldDataType = DataType(oldDataType.base(), q.value("length").toInt());
+    }
+    if (!oldDataType.isValid()) return false;
+
+    bool result = retypeColumn(levelID, attributeID, oldDataType, newDataType, db);
+    if (!result) return false;
+
+    q.prepare("UPDATE praalineAnnotationAttributes SET datatype=:datatype, length=:length "
+              "WHERE levelID = :levelID AND attributeID=:attributeID ");
+    q.bindValue(":levelID", levelID);
+    q.bindValue(":attributeID", attributeID);
+    q.bindValue(":datatype", newDataType.string());
+    q.bindValue(":length", newDataType.precision());
+    q.exec();
+    if (q.lastError().isValid()) { qDebug() << q.lastError(); return false; }
+    return true;
 }
 
 // static

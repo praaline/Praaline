@@ -46,6 +46,8 @@ public:
             const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
     static QMultiMap<QString, QPointer<CorpusAnnotation> > getAnnotationsByCommunication(
             const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
+    static QList<QPointer<CorpusParticipation> > getParticipations(
+            const MetadataDatastore::Selection &selection, QSqlDatabase &db, MetadataStructure *structure, CorpusDatastore *datastore);
 
     // Save means insert or update, appropriately
     static bool saveCorpus(Corpus *corpus,

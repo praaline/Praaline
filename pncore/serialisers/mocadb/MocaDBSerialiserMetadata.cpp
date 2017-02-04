@@ -164,6 +164,7 @@ bool MocaDBSerialiserMetadata::loadParticipation(QPointer<CorpusParticipation> p
 // static
 bool MocaDBSerialiserMetadata::saveCorpusObject(CorpusObject *obj, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(structure)
     if (!obj) return false;
     QString baseTable = MocaDBSerialiserSystem::getMocaBaseTableForPraalineCorpusObjectType(obj->type());
     if (baseTable.isEmpty()) return false;
@@ -186,29 +187,42 @@ bool MocaDBSerialiserMetadata::saveCorpusObject(CorpusObject *obj, QPointer<Meta
 
     }
     db.commit();
+    return true;
 }
 
 // static
 bool MocaDBSerialiserMetadata::saveCommunication(QPointer<CorpusCommunication> com, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(com)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::saveSpeaker(QPointer<CorpusSpeaker> spk, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(spk)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::saveRecording(QPointer<CorpusRecording> rec, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(rec)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::saveAnnotation(QPointer<CorpusAnnotation> annot, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(annot)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
@@ -216,30 +230,45 @@ bool MocaDBSerialiserMetadata::saveAnnotation(QPointer<CorpusAnnotation> annot, 
 bool MocaDBSerialiserMetadata::saveParticipation(QPointer<CorpusParticipation> participation,
                                                  QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(participation)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::deleteCommunication(const QString &communicationID, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(communicationID)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::deleteSpeaker(const QString &speakerID, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(speakerID)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::deleteRecording(const QString &recordingID, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(recordingID)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
 // static
 bool MocaDBSerialiserMetadata::deleteAnnotation(const QString &annotationID, QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(annotationID)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 
@@ -247,6 +276,10 @@ bool MocaDBSerialiserMetadata::deleteAnnotation(const QString &annotationID, QPo
 bool MocaDBSerialiserMetadata::deleteParticipation(const QString &communicationID, const QString &speakerID,
                                                    QPointer<MetadataStructure> structure, QSqlDatabase &db)
 {
+    Q_UNUSED(communicationID)
+    Q_UNUSED(speakerID)
+    Q_UNUSED(structure)
+    Q_UNUSED(db)
     return false;
 }
 

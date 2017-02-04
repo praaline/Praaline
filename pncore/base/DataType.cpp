@@ -34,6 +34,7 @@ DataType::DataType(const QString &string) :
     else if (string == "array")     m_base = DataType::Array;
     else if (string == "multiset")  m_base = DataType::Multiset;
     else if (string == "xml")       m_base = DataType::Xml;
+    else if (string == "geometry")  m_base = DataType::Geometry;
 }
 
 bool DataType::isValid() const
@@ -64,6 +65,7 @@ const QString DataType::string() const
     case DataType::Array:       s = "array";        break;
     case DataType::Multiset:    s = "multiset";     break;
     case DataType::Xml:         s = "xml";          break;
+    case DataType::Geometry:    s = "geometry";     break;
     }
     return s;
 }

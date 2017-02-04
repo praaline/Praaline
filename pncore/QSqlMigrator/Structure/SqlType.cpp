@@ -46,6 +46,7 @@ SqlType::SqlType(const Praaline::Core::DataType& datatype) :
     case DataType::Array:       m_base = SqlType::Array;    break;
     case DataType::Multiset:    m_base = SqlType::Multiset; break;
     case DataType::Xml:         m_base = SqlType::Xml;      break;
+    case DataType::Geometry:    m_base = SqlType::Xml;      break;
     }
 }
 
