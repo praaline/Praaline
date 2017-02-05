@@ -173,6 +173,15 @@ QList<CorpusObjectInfo> CorpusRepository::listCorporaInfo() const
     return list;
 }
 
+QStringList CorpusRepository::listCorporaIDs() const
+{
+    QStringList ret;
+    foreach (CorpusObjectInfo info, listCorporaInfo()) {
+        ret << info.attribute("corpusID").toString();
+    }
+    return ret;
+}
+
 // ==============================================================================================================================
 // Metadata and annotation structures
 // ==============================================================================================================================

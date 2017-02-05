@@ -52,7 +52,7 @@ namespace Praaline {
                 // IStatisticsPlugin implementation
                 QStringList analyserIDs() override;
                 QString analyserName(const QString &analyserID) override;
-                QWidget *analyser(const QString &analyserName, CorpusRepository *repository) override;
+                QWidget *analyser(const QString &analyserName, CorpusRepository *repository, QWidget *parent = 0) override;
 
             private:
                 StatisticsPluginInterraterData* d;

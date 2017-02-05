@@ -56,6 +56,7 @@ public:
     QPointer<MetadataDatastore> metadata() const;
     QPointer<FileDatastore> files() const;
     QList<CorpusObjectInfo> listCorporaInfo() const;
+    QStringList listCorporaIDs() const;
 
     // Metadata and Annotation structures
     // ==========================================================================================================================

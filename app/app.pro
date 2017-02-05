@@ -178,7 +178,8 @@ SOURCES += main.cpp \
     statistics/interrater/StatisticsPluginInterrater.cpp \
     statistics/prosody/StatisticsPluginProsody.cpp \
     statistics/prosody/AnalyserPitch.cpp \
-    statistics/interrater/InterraterAgreement.cpp
+    statistics/interrater/InterraterAgreement.cpp \
+    statistics/temporal/AnalyserTemporalWidgetWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -274,7 +275,8 @@ HEADERS  += \
     statistics/interrater/StatisticsPluginInterrater.h \
     statistics/prosody/StatisticsPluginProsody.h \
     statistics/prosody/AnalyserPitch.h \
-    statistics/interrater/InterraterAgreement.h
+    statistics/interrater/InterraterAgreement.h \
+    statistics/temporal/AnalyserTemporalWidgetWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -329,7 +331,8 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
     corpus/importannotations/ImportAnnotationsWizard.ui \
-    statistics/StatisticalAnalysisBasicWidget.ui
+    statistics/StatisticalAnalysisBasicWidget.ui \
+    statistics/temporal/AnalyserTemporalWidgetWidget.ui
 
 RESOURCES += \
     praaline.qrc \

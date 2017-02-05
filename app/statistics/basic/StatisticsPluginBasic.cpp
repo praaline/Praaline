@@ -100,7 +100,7 @@ QString StatisticsPluginBasic::analyserName(const QString &analyserID)
     return QString();
 }
 
-QWidget *StatisticsPluginBasic::analyser(const QString &analyserID, CorpusRepository *repository)
+QWidget *StatisticsPluginBasic::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
     return new QWidget();
 }

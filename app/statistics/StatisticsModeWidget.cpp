@@ -78,6 +78,9 @@ void StatisticsModeWidget::anayserDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid()) return;
     if (!d->modelStatisticsPlugins) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!repository) return;
+
     QString id = d->modelStatisticsPlugins->data(index, Qt::UserRole + 1).toString();
     if (id.isEmpty()) return;
     if (!id.contains("::")) return;
@@ -87,7 +90,7 @@ void StatisticsModeWidget::anayserDoubleClicked(const QModelIndex &index)
         IStatisticsPlugin *plugin = dynamic_cast<IStatisticsPlugin *>(obj);
         if (!plugin) continue;
         if (plugin->pluginName() ==  pluginName) {
-            QWidget *analyser = plugin->analyser(analyserID, 0);
+            QWidget *analyser = plugin->analyser(analyserID, repository, this);
             d->openDocuments.append(analyser);
             ui->tabWidgetDocuments->addTab(analyser, plugin->analyserName(analyserID));
             ui->tabWidgetDocuments->setCurrentWidget(analyser);

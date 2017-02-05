@@ -100,7 +100,7 @@ QString StatisticsPluginProsody::analyserName(const QString &analyserID)
     return QString();
 }
 
-QWidget *StatisticsPluginProsody::analyser(const QString &analyserID, CorpusRepository *repository)
+QWidget *StatisticsPluginProsody::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
     return new QWidget();
 }

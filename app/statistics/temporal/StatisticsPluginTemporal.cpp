@@ -11,6 +11,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 
 #include "StatisticsPluginTemporal.h"
+#include "AnalyserTemporalWidgetWidget.h"
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
@@ -101,9 +102,9 @@ QString StatisticsPluginTemporal::analyserName(const QString &analyserID)
     return QString();
 }
 
-QWidget *StatisticsPluginTemporal::analyser(const QString &analyserID, CorpusRepository *repository)
+QWidget *StatisticsPluginTemporal::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
-    return new QWidget();
+    return new AnalyserTemporalWidget(repository, parent);
 }
 
 
