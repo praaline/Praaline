@@ -3,8 +3,8 @@
 #include <QDebug>
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
-#include "pncore/query/Measures.h"
 #include "pncore/base/RealValueList.h"
+#include "pncore/statistics/Measures.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "prosodicboundaries.h"

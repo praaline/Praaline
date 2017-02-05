@@ -5,6 +5,11 @@
 #include "QtilitiesCore/QtilitiesCore"
 #include "QtilitiesCoreGui/QtilitiesCoreGui"
 
+#include "basic/StatisticsPluginBasic.h"
+#include "interrater/StatisticsPluginInterrater.h"
+#include "temporal/StatisticsPluginTemporal.h"
+#include "prosody/StatisticsPluginProsody.h"
+
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
 
@@ -30,6 +35,12 @@ StatisticsMode::StatisticsMode(QObject *parent) :
         QtilitiesMainWindow *window = qobject_cast<QtilitiesMainWindow *>(obj);
         if (window) d->mainWindow = window;
     }
+
+    // Register built-in plugins
+    OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginBasic::StatisticsPluginBasic(), QtilitiesCategory("Statistics"));
+    OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginInterrater::StatisticsPluginInterrater(), QtilitiesCategory("Statistics"));
+    OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginTemporal::StatisticsPluginTemporal(), QtilitiesCategory("Statistics"));
+    OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginProsody::StatisticsPluginProsody(), QtilitiesCategory("Statistics"));
 
     if (!d->widget) d->widget = new StatisticsModeWidget();
     connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));

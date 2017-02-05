@@ -13,6 +13,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/datastore/FileDatastore.h"
 #include "pncore/structure/MetadataStructure.h"
+#include "pncore/statistics/Measures.h"
 #include "pncore/statistics/StatisticalMeasureDefinition.h"
 #include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
@@ -146,14 +147,15 @@ QList<QString> AnalyserTemporal::speakerIDs() const
     return d->measuresSpk.keys();
 }
 
-QPair<IntervalTier *, IntervalTier *> getSpeakerTimeline(AnalyserTemporalData *d, QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+QPair<IntervalTier *, IntervalTier *> getSpeakerTimeline(AnalyserTemporalData *d, QPointer<CorpusCommunication> com)
 {
     QPair<IntervalTier *, IntervalTier *> ret(0, 0);
-    if (!corpus || !com) return ret;
+    if (!com) return ret;
+    if (!com->repository()) return ret;
 
     // A timeline on the syllable level with detailed = true means there will be an interval for each syllable
     // and possibly segmented syllables when two speakers overlap.
-    IntervalTier *tier_timelineSyll = corpus->repository()->annotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
+    IntervalTier *tier_timelineSyll = com->repository()->annotations()->getSpeakerTimeline(com->ID(), "", d->levelSyllables, true);
     if (!tier_timelineSyll) return ret;
 
     // Exclude silence at the begining and end of recording
@@ -216,19 +218,22 @@ QPair<IntervalTier *, IntervalTier *> getSpeakerTimeline(AnalyserTemporalData *d
     return ret;
 }
 
-void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<CorpusCommunication> com)
 {
-    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, corpus, com);
+    if (!com) return;
+    if (!com->repository()) return;
+
+    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, com);
     if (!timelines.first || !timelines.second) return;
     IntervalTier *tier_timelineSyll(timelines.first);
     IntervalTier *tier_timelineSpk(timelines.second);
 
-    QString path = corpus->repository()->files()->basePath();
+    QString path = com->repository()->files()->basePath();
     QScopedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -260,98 +265,17 @@ void debugCreateTimelineTextgrid(AnalyserTemporalData *d, QPointer<Corpus> corpu
     PraatTextGrid::save(path + "/" + com->ID() + ".TextGrid", txg.data());
 }
 
-QPair<int, int> windowNoPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight)
+void AnalyserTemporal::calculate(QPointer<CorpusCommunication> com, QTextStream &pauseListSIL, QTextStream &pauseListFIL)
 {
-    QPair<int, int> ret;
-    ret.first = i; ret.second = i;
-    // Checks
-    if (!tier_syll) return ret;
-    if (i < 0 || i >= tier_syll->count()) return ret;
-    if (tier_syll->interval(i)->isPauseSilent()) return ret;
-    // Calculation
-    ret.first = i - windowLeft;
-    if (ret.first < 0) ret.first = 0;
-    while (tier_syll->interval(ret.first)->isPauseSilent() && ret.first < i) ret.first++;
-    ret.second = i + windowRight;
-    if (ret.second >= tier_syll->count()) ret.second = tier_syll->count() - 1;
-    while (tier_syll->interval(ret.second)->isPauseSilent() && ret.second > i) ret.second--;
-    return ret;
-}
-
-QPair<int, int> windowIncludingPause(IntervalTier *tier_syll, int i, int windowLeft, int windowRight)
-{
-    QPair<int, int> ret;
-    ret.first = i; ret.second = i;
-    // Checks
-    if (!tier_syll) return ret;
-    if (i < 0 || i >= tier_syll->count()) return ret;
-    // Calculation
-    ret.first = i - windowLeft;
-    if (ret.first < 0) ret.first = 0;
-    ret.second = i + windowRight;
-    if (ret.second >= tier_syll->count()) ret.second = tier_syll->count() - 1;
-    return ret;
-}
-
-bool mean(double &mean, IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-          bool checkStylized, bool includePause)
-{
-    if (!tier_syll) return 0.0;
-    QPair<int, int> window;
-    if (includePause)   window = windowIncludingPause(tier_syll, i, windowLeft, windowRight);
-    else                window = windowNoPause(tier_syll, i, windowLeft, windowRight);
-    double sum = 0.0;
-    int count = 0;
-    for (int j = window.first; j <= window.second; j++) {
-        Interval *syll = tier_syll->interval(j);
-        if (checkStylized) {
-            if (syll->attribute("f0_min").toInt() == 0) continue; // check if stylised
-        }
-        double x = syll->attribute(attributeName).toDouble();
-        sum = sum + x;
-        count++;
-    }
-    if (count == 0) return false;
-    mean = sum / ((double)count);
-    return true;
-}
-
-double relative(IntervalTier *tier_syll, QString attributeName, int i, int windowLeft, int windowRight,
-                bool checkStylized, bool logarithmic, bool includePause)
-{
-    // When it is impossible to calculate a relative value, return 1 for ratios or 0=log(1) for logarithmic attributes
-    if (!tier_syll) return (logarithmic) ? 0.0 : 1.0;
-    Interval *syll = tier_syll->interval(i);
-    if (!syll) return (logarithmic) ? 0.0 : 1.0;
-    // Check if attribute has to be stylised and if not, try to interpolate
-    double value = syll->attribute(attributeName).toDouble();
-    if (checkStylized && (syll->attribute("f0_min").toInt() == 0)) {
-        if (!mean(value, tier_syll, attributeName, i, 1, 1, true, includePause))
-            return (logarithmic) ? 0.0 : 1.0; // no luck
-    }
-    // Get mean in window
-    double windowMean = 0.0;
-    if (!mean(windowMean, tier_syll, attributeName, i, windowLeft, windowRight, checkStylized, includePause))
-        return (logarithmic) ? 0.0 : 1.0; // no luck
-    // Calculate relative value
-    if (logarithmic) {
-        return value - windowMean;
-    }
-    // else linear
-    return value / windowMean;
-}
-
-void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                                 QTextStream &pauseListSIL, QTextStream &pauseListFIL)
-{
-    if (!corpus || !com) return;
+    if (!com) return;
+    if (!com->repository()) return;
 
     d->measuresCom.clear();
     d->measuresSpk.clear();
 
-    // debugCreateTimelineTextgrid(d, corpus, com);
+    // debugCreateTimelineTextgrid(d, com);
 
-    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, corpus, com);
+    QPair<IntervalTier *, IntervalTier *> timelines = getSpeakerTimeline(d, com);
     if (!timelines.first || !timelines.second) return;
     QScopedPointer<IntervalTier> tier_timelineSyll(timelines.first);
     QScopedPointer<IntervalTier> tier_timelineSpk(timelines.second);
@@ -400,7 +324,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
 
     foreach (QString annotationID, com->annotationIDs()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
-                corpus->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens);
+                com->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -457,11 +381,11 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
                                     if (syllCategory != "ART") syllCategory = "SIL";
                                     timeSilentPause = timeSilentPause + intv->duration();
                                     durationsPauseSIL << intv->duration().toDouble();
-                                    durationsPauseSIL_rel1 << relative(tier_syll, "duration", syllIndex, 1, 1, false, false, true);
-                                    durationsPauseSIL_rel2 << relative(tier_syll, "duration", syllIndex, 2, 2, false, false, true);
-                                    durationsPauseSIL_rel3 << relative(tier_syll, "duration", syllIndex, 3, 3, false, false, true);
-                                    durationsPauseSIL_rel4 << relative(tier_syll, "duration", syllIndex, 4, 4, false, false, true);
-                                    durationsPauseSIL_rel5 << relative(tier_syll, "duration", syllIndex, 5, 5, false, false, true);
+                                    durationsPauseSIL_rel1 << Measures::relative(tier_syll, "duration", syllIndex, 1, 1, false, false, true);
+                                    durationsPauseSIL_rel2 << Measures::relative(tier_syll, "duration", syllIndex, 2, 2, false, false, true);
+                                    durationsPauseSIL_rel3 << Measures::relative(tier_syll, "duration", syllIndex, 3, 3, false, false, true);
+                                    durationsPauseSIL_rel4 << Measures::relative(tier_syll, "duration", syllIndex, 4, 4, false, false, true);
+                                    durationsPauseSIL_rel5 << Measures::relative(tier_syll, "duration", syllIndex, 5, 5, false, false, true);
                                 }
                                 else {
                                     syllCategory = "ART";
@@ -529,7 +453,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             // Pause lists
             for (int i = 0; i < durationsPauseSIL.count(); ++i) {
                 pauseListSIL << com->ID() << "\t" << speakerID << "\t";
-                foreach (QPointer<MetadataStructureAttribute> attr, corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                foreach (QPointer<MetadataStructureAttribute> attr, com->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
                     pauseListSIL << com->property(attr->ID()).toString() << "\t";
                 }
                 pauseListSIL << QString::number(durationsPauseSIL.at(i)) << "\t";
@@ -541,7 +465,7 @@ void AnalyserTemporal::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommuni
             }
             foreach (double dur, durationsPauseFIL) {
                 pauseListFIL << com->ID() << "\t" << speakerID << "\t";
-                foreach (QPointer<MetadataStructureAttribute> attr, corpus->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+                foreach (QPointer<MetadataStructureAttribute> attr, com->repository()->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
                     pauseListFIL << com->property(attr->ID()).toString() << "\t";
                 }
                 pauseListFIL << QString::number(dur) << "\n";

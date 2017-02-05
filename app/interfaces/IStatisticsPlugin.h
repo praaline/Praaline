@@ -15,31 +15,14 @@ namespace Praaline {
         class IStatisticsPlugin : public IPlugin
         {
         public:
-            class PluginParameter {
-            public:
-                QString ID;
-                QString name;
-                int propertyType;
-                QVariant defaultValue;
-                QStringList listOptions;
-                QString description;
-
-                PluginParameter(QString ID, QString name, int propertyType, QVariant defaultValue = QVariant(),
-                                QStringList listOptions = QStringList(), QString description = QString()) :
-                    ID(ID), name(name), propertyType(propertyType), defaultValue(defaultValue),
-                    listOptions(listOptions), description(description)
-                {}
-            };
-
             IStatisticsPlugin() : IPlugin() {}
             virtual ~IStatisticsPlugin() {}
 
-            virtual QList<PluginParameter> pluginParameters() const = 0;
-            virtual void setParameters(QHash<QString, QVariant> parameters) = 0;
-            virtual void process(Corpus *corpus) = 0;
+            virtual QStringList analyserIDs() = 0;
+            virtual QString analyserName(const QString &analyserID) = 0;
+            virtual QWidget *analyser(const QString &analyserID, CorpusRepository *repository) = 0;
+
         signals:
-            virtual void printMessage(QString message) = 0 ;
-            virtual void madeProgress(int progress) = 0;
 
         public slots:
         };

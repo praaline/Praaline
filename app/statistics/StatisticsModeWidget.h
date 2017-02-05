@@ -21,16 +21,14 @@ signals:
     void activateMode();
 
 private slots:
-    void analyse();
-    void analyseT();
-    void analyseFromFile();
-
-    void actionSaveOutput();
-    void actionClearOutput();
+    void anayserDoubleClicked(const QModelIndex &index);
+    void documentTabCloseRequested(int index);
 
 private:
     Ui::StatisticsModeWidget *ui;
     StatisticsModeWidgetData *d;
+
+    void createStatisticsPluginsTree();
 };
 
 #endif // STATISTICSMODEWIDGET_H

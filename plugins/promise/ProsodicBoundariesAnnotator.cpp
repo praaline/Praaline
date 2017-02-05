@@ -11,7 +11,7 @@
 #include <QDebug>
 
 #include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/query/Measures.h"
+#include "pncore/statistics/Measures.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 

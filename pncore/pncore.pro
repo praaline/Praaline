@@ -177,7 +177,6 @@ HEADERS += \
     serialisers/sql/SQLSerialiserAnnotationStructure.h \
     serialisers/sql/SQLSerialiserBase.h \
     query/Dataset.h \
-    query/Measures.h \
     serialisers/mocadb/MocaDBSerialiserAnnotationStructure.h \
     serialisers/mocadb/MocaDBSerialiserMetadata.h \
     serialisers/mocadb/MocaDBSerialiserMetadataStructure.h \
@@ -205,7 +204,8 @@ HEADERS += \
     base/IDatastore.h \
     base/ISaveable.h \
     serialisers/xml/XMLSerialiserMetadata.h \
-    interfaces/praat/AnnotationInterfacePraat.h
+    interfaces/praat/AnnotationInterfacePraat.h \
+    statistics/Measures.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -356,7 +356,6 @@ SOURCES += \
     serialisers/sql/SQLSerialiserMetadata.cpp \
     serialisers/mocadb/MocaDBSerialiserAnnotationStructure.cpp \
     query/Dataset.cpp \
-    query/Measures.cpp \
     serialisers/mocadb/MocaDBSerialiserSystem.cpp \
     serialisers/sql/SQLSerialiserSystem.cpp \
     structure/NameValueList.cpp \
@@ -372,7 +371,8 @@ SOURCES += \
     structure/StructureAttributeBase.cpp \
     datastore/CorpusDatastore.cpp \
     serialisers/xml/XMLSerialiserMetadata.cpp \
-    interfaces/praat/AnnotationInterfacePraat.cpp
+    interfaces/praat/AnnotationInterfacePraat.cpp \
+    statistics/Measures.cpp
 
 DISTFILES += \
     pncore.qmodel

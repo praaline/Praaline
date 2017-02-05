@@ -13,69 +13,61 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <property name="horizontalSpacing">
-    <number>0</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <widget class="QSplitter" name="splitterLeftRight">
+    <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
-     <widget class="QTreeView" name="treeViewModules">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>1</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QDockWidget" name="dockWidgetStatisticalAnalysis">
+      <property name="windowTitle">
+       <string>Statistical Analysis Plugins</string>
       </property>
-     </widget>
-     <widget class="QTabWidget" name="tabWidgetDocuments">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>4</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Data Set</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <layout class="QGridLayout" name="gridLayoutMessages">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetMaximumSize</enum>
-          </property>
-         </layout>
-        </item>
+      <widget class="QWidget" name="dockWidgetStatisticalAnalysisContents">
+       <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QCommandLinkButton" name="commandAnalyse">
+         <widget class="QLabel" name="labelCorpusRepository">
+          <property name="text">
+           <string>Select Corpus Repository:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QComboBox" name="comboBoxCorpusRepository"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelStatisticalAnalysis">
+          <property name="text">
+           <string>Double-click to open:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QTreeView" name="treeviewStatisticsPlugins">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Analyse</string>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
+     </widget>
+     <widget class="QTabWidget" name="tabWidgetDocuments">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
      </widget>
     </widget>
    </item>

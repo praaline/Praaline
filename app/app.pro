@@ -125,7 +125,6 @@ SOURCES += main.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
     corpus/SplitCommunicationsDialog.cpp \
-    statistics/InterraterAgreement.cpp \
     statistics/StatisticsMode.cpp \
     statistics/StatisticsModeWidget.cpp \
     NetworkPermissionTester.cpp \
@@ -138,12 +137,8 @@ SOURCES += main.cpp \
     visualisation/VisualisationMode.cpp \
     visualisation/VisualisationModeWidget.cpp \
     visualisation/VisualiserWidget.cpp \
-    statistics/AnalyserTemporal.cpp \
-    statistics/AnalyserSpeechRate.cpp \
     annotation/dis/AnnotationControlsDisfluencies.cpp \
     annotation/dis/DisfluencyAnalyser.cpp \
-    statistics/AnalyserSegmentDuration.cpp \
-    statistics/AnalyserPitch.cpp \
     corpus/structureeditors/MetadataStructureEditor.cpp \
     corpus/structureeditors/AnnotationStructureEditor.cpp \
     help/SearchWidgetFactory.cpp \
@@ -174,7 +169,16 @@ SOURCES += main.cpp \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.cpp \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
     corpus/importmetadata/ImportMetadataWizardFinalPage.cpp \
-    corpus/importannotations/ImportAnnotationsWizard.cpp
+    corpus/importannotations/ImportAnnotationsWizard.cpp \
+    statistics/StatisticalAnalysisBasicWidget.cpp \
+    statistics/temporal/AnalyserSegmentDuration.cpp \
+    statistics/temporal/AnalyserTemporal.cpp \
+    statistics/temporal/StatisticsPluginTemporal.cpp \
+    statistics/basic/StatisticsPluginBasic.cpp \
+    statistics/interrater/StatisticsPluginInterrater.cpp \
+    statistics/prosody/StatisticsPluginProsody.cpp \
+    statistics/prosody/AnalyserPitch.cpp \
+    statistics/interrater/InterraterAgreement.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -214,7 +218,6 @@ HEADERS  += \
     corpus/SplitCommunicationsDialog.h \
     scripting/ScriptingMode.h \
     scripting/ScriptingModeWidget.h \
-    statistics/InterraterAgreement.h \
     statistics/StatisticsMode.h \
     statistics/StatisticsModeWidget.h \
     visualisation/AudioEnabledWidget.h \
@@ -228,10 +231,6 @@ HEADERS  += \
     NetworkPermissionTester.h \
     PraalineSplash.h \
     Version.h \
-    statistics/AnalyserTemporal.h \
-    statistics/AnalyserSpeechRate.h \
-    statistics/AnalyserSegmentDuration.h \
-    statistics/AnalyserPitch.h \
     corpus/structureeditors/MetadataStructureEditor.h \
     corpus/structureeditors/AnnotationStructureEditor.h \
     help/SearchWidgetFactory.h \
@@ -266,11 +265,19 @@ HEADERS  += \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.h \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.h \
     corpus/importmetadata/ImportMetadataWizardFinalPage.h \
-    corpus/importannotations/ImportAnnotationsWizard.h
+    corpus/importannotations/ImportAnnotationsWizard.h \
+    statistics/StatisticalAnalysisBasicWidget.h \
+    statistics/temporal/AnalyserSegmentDuration.h \
+    statistics/temporal/AnalyserTemporal.h \
+    statistics/temporal/StatisticsPluginTemporal.h \
+    statistics/basic/StatisticsPluginBasic.h \
+    statistics/interrater/StatisticsPluginInterrater.h \
+    statistics/prosody/StatisticsPluginProsody.h \
+    statistics/prosody/AnalyserPitch.h \
+    statistics/interrater/InterraterAgreement.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
-    statistics/CountStatisticsWidget.ui \
     annotation/asr/LanguageModelBuilderWidget.ui \
     query/AdvancedQueriesWidget.ui \
     query/ConcordancerQuickWidget.ui \
@@ -321,7 +328,8 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.ui \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
-    corpus/importannotations/ImportAnnotationsWizard.ui
+    corpus/importannotations/ImportAnnotationsWizard.ui \
+    statistics/StatisticalAnalysisBasicWidget.ui
 
 RESOURCES += \
     praaline.qrc \

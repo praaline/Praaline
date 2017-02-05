@@ -10,7 +10,6 @@ struct AnalyserTemporalData;
 
 namespace Praaline {
 namespace Core {
-class Corpus;
 class CorpusCommunication;
 class IntervalTier;
 }
@@ -33,8 +32,7 @@ public:
     double measureSpk(const QString &speakerID, const QString &measureID) const;
     QList<QString> speakerIDs() const;
 
-    void calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                   QTextStream &pauseListSIL, QTextStream &pauseListFIL);
+    void calculate(QPointer<CorpusCommunication> com, QTextStream &pauseListSIL, QTextStream &pauseListFIL);
 
 signals:
 

@@ -59,13 +59,10 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
     setupActions();
 
     // Find corpus explorer top-level node in object manager
-    QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("Qtilities::CoreGui::TreeNode");
+    QList<QObject *> list = OBJECT_MANAGER->registeredInterfaces("Qtilities::CoreGui::TreeNode");
     foreach (QObject* obj, list) {
         TreeNode *node = qobject_cast<TreeNode *>(obj);
-        if (node && node->observerName() == tr("Corpus Explorer")) {
-            d->corporaTopLevelNode = node;
-        }
+        if (node && node->observerName() == tr("Corpus Explorer")) d->corporaTopLevelNode = node;
     }
 
     d->textResults = new QTextEdit(this);
