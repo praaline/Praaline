@@ -52,7 +52,7 @@ void AnnotationInterfacePraat::addCorrepondance(const QString &levelID, const QS
 
 void AnnotationInterfacePraat::removeCorrepondance(const QString &levelID, const QString &attributeID)
 {
-    bool found;
+    bool found(false);
     int i = 0;
     for (i = 0; i < d->correspondances.count(); ++i) {
         if (d->correspondances.at(i).levelID == levelID && d->correspondances.at(i).attributeID == attributeID) {

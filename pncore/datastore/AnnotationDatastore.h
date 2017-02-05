@@ -47,7 +47,7 @@ class AnnotationTierGroup;
 class IntervalTier;
 class QueryDefinition;
 class QueryOccurrence;
-class QueryOccurrencePointer;
+struct QueryOccurrencePointer;
 
 class PRAALINE_CORE_SHARED_EXPORT AnnotationDatastore : public CorpusDatastore, public IDatastore, public NameValueListDatastore
 {
