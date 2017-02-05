@@ -14,10 +14,10 @@
 #include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
 
-#include "AnalyserPitch.h"
+#include "AnalyserMacroprosody.h"
 
-struct AnalyserPitchData {
-    AnalyserPitchData() : levelPhones("phone"), levelSyllables("syll"), levelTokens("tok_min"), levelMacroUnits("segment"),
+struct AnalyserMacroprosodyData {
+    AnalyserMacroprosodyData() : levelPhones("phone"), levelSyllables("syll"), levelTokens("tok_min"), levelMacroUnits("segment"),
         attributeProminence("promise_pos"), model(0)
     {
         filledPauseTokens << "euh" << "euhm";
@@ -35,25 +35,25 @@ struct AnalyserPitchData {
     QStandardItemModel *model;
 };
 
-AnalyserPitch::AnalyserPitch(QObject *parent)
-    : QObject(parent), d(new AnalyserPitchData)
+AnalyserMacroprosody::AnalyserMacroprosody(QObject *parent)
+    : QObject(parent), d(new AnalyserMacroprosodyData)
 {
     d->model = new QStandardItemModel(this);
 }
 
-AnalyserPitch::~AnalyserPitch()
+AnalyserMacroprosody::~AnalyserMacroprosody()
 {
     delete d;
 }
 
 // static
-QList<QString> AnalyserPitch::groupingLevels()
+QList<QString> AnalyserMacroprosody::groupingLevels()
 {
     return QList<QString>() << "CommunicationID" << "AnnotationID" << "SpeakerID";
 }
 
 // static
-QList<QString> AnalyserPitch::measureIDs(const QString &groupingLevel)
+QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
 {
     return QList<QString>() << "StartTime" << "EndTime" << "Duration"
                             << "StartSyll" << "EndSyll" << "TextTokens" << "TextSyllables"
@@ -70,20 +70,20 @@ QList<QString> AnalyserPitch::measureIDs(const QString &groupingLevel)
 }
 
 // static
-StatisticalMeasureDefinition AnalyserPitch::measureDefinition(const QString &groupingLevel, const QString &measureID)
+StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QString &groupingLevel, const QString &measureID)
 {
     if (measureID == "TimeTotalSample")          return StatisticalMeasureDefinition("TimeTotalSample", "Total sample time", "s");
     if (measureID == "TimeSingleSpeaker")        return StatisticalMeasureDefinition("TimeSingleSpeaker", "Single-speaker time", "s");
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
 
-double AnalyserPitch::measure(const QString &groupingLevel, const QString &key, const QString &measureID) const
+double AnalyserMacroprosody::measure(const QString &groupingLevel, const QString &key, const QString &measureID) const
 {
     Q_UNUSED(groupingLevel)
 
 }
 
-QPointer<QStandardItemModel> AnalyserPitch::model()
+QPointer<QStandardItemModel> AnalyserMacroprosody::model()
 {
     return d->model;
 }
@@ -93,7 +93,7 @@ double HzToSTre1Hz(double Hz)
     return 12.0 * log2(Hz);
 }
 
-QString AnalyserPitch::calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID,
+QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID,
                                  const QList<Interval *> &units)
 {
     if (!corpus) return tr("Error accessing corpus. No statistical analysis produced.");
@@ -265,7 +265,7 @@ QString AnalyserPitch::calculate(QPointer<Corpus> corpus, const QString &communi
     return QString();
 }
 
-QString AnalyserPitch::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
     if (!corpus || !com) return "Error";
     foreach (QString annotationID, com->annotationIDs()) {

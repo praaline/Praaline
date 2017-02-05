@@ -177,9 +177,13 @@ SOURCES += main.cpp \
     statistics/basic/StatisticsPluginBasic.cpp \
     statistics/interrater/StatisticsPluginInterrater.cpp \
     statistics/prosody/StatisticsPluginProsody.cpp \
-    statistics/prosody/AnalyserPitch.cpp \
     statistics/interrater/InterraterAgreement.cpp \
-    statistics/temporal/AnalyserTemporalWidgetWidget.cpp
+    statistics/temporal/AnalyserTemporalWidgetWidget.cpp \
+    statistics/prosody/AnalyserMacroprosodyWidget.cpp \
+    statistics/basic/StatisticsPluginBasicWidget.cpp \
+    statistics/interrater/KappaStatisticsWidget.cpp \
+    statistics/temporal/PauseLengthDistributionWIdget.cpp \
+    statistics/prosody/AnalyserMacroprosody.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -274,9 +278,13 @@ HEADERS  += \
     statistics/basic/StatisticsPluginBasic.h \
     statistics/interrater/StatisticsPluginInterrater.h \
     statistics/prosody/StatisticsPluginProsody.h \
-    statistics/prosody/AnalyserPitch.h \
     statistics/interrater/InterraterAgreement.h \
-    statistics/temporal/AnalyserTemporalWidgetWidget.h
+    statistics/temporal/AnalyserTemporalWidgetWidget.h \
+    statistics/prosody/AnalyserMacroprosodyWidget.h \
+    statistics/basic/StatisticsPluginBasicWidget.h \
+    statistics/interrater/KappaStatisticsWidget.h \
+    statistics/temporal/PauseLengthDistributionWIdget.h \
+    statistics/prosody/AnalyserMacroprosody.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -332,7 +340,11 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
     corpus/importannotations/ImportAnnotationsWizard.ui \
     statistics/StatisticalAnalysisBasicWidget.ui \
-    statistics/temporal/AnalyserTemporalWidgetWidget.ui
+    statistics/temporal/AnalyserTemporalWidgetWidget.ui \
+    statistics/prosody/AnalyserMacroprosodyWidget.ui \
+    statistics/basic/StatisticsPluginBasicWidget.ui \
+    statistics/interrater/KappaStatisticsWidget.ui \
+    statistics/temporal/PauseLengthDistributionWIdget.ui
 
 RESOURCES += \
     praaline.qrc \

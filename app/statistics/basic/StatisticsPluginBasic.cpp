@@ -10,6 +10,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 
+#include "StatisticsPluginBasicWidget.h"
 #include "StatisticsPluginBasic.h"
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -102,7 +103,8 @@ QString StatisticsPluginBasic::analyserName(const QString &analyserID)
 
 QWidget *StatisticsPluginBasic::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
-    return new QWidget();
+    Q_UNUSED(analyserID)
+    return new StatisticsPluginBasicWidget(repository, parent);
 }
 
 

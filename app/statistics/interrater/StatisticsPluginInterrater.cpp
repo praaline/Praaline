@@ -10,6 +10,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 
+#include "KappaStatisticsWidget.h"
 #include "StatisticsPluginInterrater.h"
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -102,7 +103,8 @@ QString StatisticsPluginInterrater::analyserName(const QString &analyserID)
 
 QWidget *StatisticsPluginInterrater::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
-    return new QWidget();
+    Q_UNUSED(analyserID)
+    return new KappaStatisticsWidget(repository, parent);
 }
 
 

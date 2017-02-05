@@ -4,6 +4,7 @@
 #include <QWidget>
 
 namespace Praaline {
+
 namespace Core {
 class CorpusRepository;
 }

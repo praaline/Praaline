@@ -17,14 +17,14 @@ class StatisticalMeasureDefinition;
 }
 }
 
-struct AnalyserPitchData;
+struct AnalyserMacroprosodyData;
 
-class AnalyserPitch : public QObject
+class AnalyserMacroprosody : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserPitch(QObject *parent = 0);
-    virtual ~AnalyserPitch();
+    explicit AnalyserMacroprosody(QObject *parent = 0);
+    virtual ~AnalyserMacroprosody();
 
     static QList<QString> groupingLevels();
     static QList<QString> measureIDs(const QString &groupingLevel);
@@ -44,7 +44,7 @@ signals:
 public slots:
 
 private:
-    AnalyserPitchData *d;
+    AnalyserMacroprosodyData *d;
 };
 
 #endif // ANALYSERPITCH_H
