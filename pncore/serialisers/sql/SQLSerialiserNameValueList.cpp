@@ -74,7 +74,7 @@ NameValueList *SQLSerialiserNameValueList::getNameValueList(const QString &listI
         q2.exec();
         if (q2.lastError().isValid()) { qDebug() << q2.lastError(); delete list; return Q_NULLPTR; }
         while (q2.next()) {
-            list->append(q2.value("displayString").toString(), q2.value("value"));
+            list->append(q2.value("displayText").toString(), q2.value("value"));
         }
         return list;
     }
@@ -140,7 +140,7 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
     Migrations::Migration createList;
     ColumnList columns;
     // Name value lists have an ID (primary key), a unique description and an item order
-    columns << Column("ID", SqlType(newList->datatype()), "", Column::Primary)
+    columns << Column("value", SqlType(newList->datatype()), "", Column::Primary)
             << Column("displayText", SqlType(SqlType::VarChar, 256), "", Column::Unique)
             << Column("itemOrder", SqlType::Integer);
     // Build a database table corresponding to the list
@@ -155,7 +155,7 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
     QSqlQuery q1(db), q2(db), qdel(db);
     q1.prepare("INSERT INTO praalineNameValueLists (listID, listType, name, description, datatype, datatypePrecision) "
                "VALUES (:listID, :listType, :name, :description, :datatype, :datatypePrecision)");
-    q2.prepare(QString("INSERT INTO %1 (ID, displayText) VALUES (:ID, :displayText)").arg(tableName));
+    q2.prepare(QString("INSERT INTO %1 (value, displayText, itemOrder) VALUES (:value, :displayText, :itemOrder)").arg(tableName));
     qdel.prepare("DELETE FROM praalineNameValueLists WHERE listID = :listID");
     qdel.bindValue(":listID", newList->ID());
     qdel.exec();
@@ -169,7 +169,7 @@ bool SQLSerialiserNameValueList::createNameValueList(NameValueList *newList, Nam
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); db.rollback(); return false; }
     for (int i = 0; i < newList->count(); ++i) {
-        q2.bindValue(":ID", newList->value(i));
+        q2.bindValue(":value", newList->value(i));
         q2.bindValue(":displayText", newList->displayString(i));
         q2.bindValue(":itemOrder", i + 1);
         q2.exec();
@@ -200,9 +200,9 @@ bool SQLSerialiserNameValueList::updateNameValueList(NameValueList *list, NameVa
     qdel.prepare(QString("DELETE FROM %1").arg(tableName));
     qdel.exec();
     if (qdel.lastError().isValid()) { qDebug() << q1.lastError(); db.rollback(); return false; }
-    q2.prepare(QString("INSERT INTO %1 (ID, displayText) VALUES (:ID, :displayText)").arg(tableName));
+    q2.prepare(QString("INSERT INTO %1 (value, displayText, itemOrder) VALUES (:value, :displayText, :itemOrder)").arg(tableName));
     for (int i = 0; i < list->count(); ++i) {
-        q2.bindValue(":ID", list->value(i));
+        q2.bindValue(":value", list->value(i));
         q2.bindValue(":displayText", list->displayString(i));
         q2.bindValue(":itemOrder", i + 1);
         q2.exec();

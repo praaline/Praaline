@@ -7,7 +7,7 @@ struct AddAttributeDialogData {
 
 };
 
-AddAttributeDialog::AddAttributeDialog(QWidget *parent) :
+AddAttributeDialog::AddAttributeDialog(bool nameValueListDialog , QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddAttributeDialog),
     d(new AddAttributeDialogData)
@@ -22,6 +22,11 @@ AddAttributeDialog::AddAttributeDialog(QWidget *parent) :
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    // Is this a name-value list dialog?
+    if (nameValueListDialog ) {
+        ui->labelAttributeID->setText(tr("Name-Value List ID:"));
+        this->setWindowTitle(tr("Add new name-value list"));
+    }
 }
 
 AddAttributeDialog::~AddAttributeDialog()

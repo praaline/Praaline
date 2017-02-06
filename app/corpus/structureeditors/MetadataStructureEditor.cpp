@@ -76,9 +76,9 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
     ui->dockNameValueLists->setWidget(d->editorNVList);
 
     // Set proportions
-    ui->splitter->setSizes(QList<int>() << 100 << 100);
-    ui->splitter->setStretchFactor(0, 3);
-    ui->splitter->setStretchFactor(1, 1);
+    QList<int> sizes;
+    sizes << width() * 0.8 << width() * 0.2;
+    ui->splitter->setSizes(sizes);
 }
 
 MetadataStructureEditor::~MetadataStructureEditor()

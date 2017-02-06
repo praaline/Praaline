@@ -6,7 +6,10 @@
 #include <QPlainTextEdit>
 #include <QAction>
 #include <QToolBar>
+#include <QToolButton>
 #include <QTableView>
+#include <QHeaderView>
+#include <QSortFilterProxyModel>
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QMessageBox>
@@ -29,6 +32,9 @@ struct NameValueListEditorData {
     QLineEdit *editListName;
     QPlainTextEdit *textListDescription;
     QLabel *labelDataType;
+    QLineEdit *editNewItemValue;
+    QLineEdit *editNewItemDisplayString;
+    QToolButton *buttonAddItem;
 
     QToolBar *toolbarLists;
     QToolBar *toolbarCurrentList;
@@ -39,7 +45,6 @@ struct NameValueListEditorData {
     QAction *actionDeleteList;
     QAction *actionImportLists;
     QAction *actionExportLists;
-    QAction *actionAddItem;
     QAction *actionRemoveItem;
     QAction *actionMoveItemUp;
     QAction *actionMoveItemDown;
@@ -66,9 +71,16 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     setupActions();
     // Table view for editing the list
     d->tableviewCurrentList = new QTableView(this);
+    d->tableviewCurrentList->verticalHeader()->setDefaultSectionSize(20);
+    // Editing the list
+    d->editNewItemValue = new QLineEdit(this);
+    d->editNewItemDisplayString = new QLineEdit(this);
+    d->buttonAddItem = new QToolButton(this);
+    d->buttonAddItem->setIcon(QIcon(":icons/actions/list_add.png"));
+    connect(d->buttonAddItem, SIGNAL(clicked(bool)), this, SLOT(addItem()));
     // Layout
     QVBoxLayout *layout = new QVBoxLayout(this);
-    layout->addWidget(d->toolbarLists);    
+    layout->addWidget(d->toolbarLists);
     QFormLayout *layoutEditing = new QFormLayout(this);
     layoutEditing->addWidget(new QLabel(tr("Select name-value list: "), this));
     layoutEditing->addWidget(d->comboboxLists);
@@ -80,7 +92,12 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     layoutEditing->addWidget(d->labelDataType);
     layout->addLayout(layoutEditing, 1);
     layout->addWidget(d->toolbarCurrentList);
-    layout->addWidget(d->tableviewCurrentList, 4);
+    QGridLayout *layoutCurrentList = new QGridLayout(this);
+    layoutCurrentList->addWidget(d->editNewItemDisplayString, 0, 1, 1, 1);
+    layoutCurrentList->addWidget(d->editNewItemValue, 0, 0, 1, 1);
+    layoutCurrentList->addWidget(d->buttonAddItem, 0, 2, 1, 1);
+    layoutCurrentList->addWidget(d->tableviewCurrentList, 1, 0, 1, 3);
+    layout->addLayout(layoutCurrentList, 4);
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(3);
     this->setLayout(layout);
@@ -114,10 +131,6 @@ void NameValueListEditor::setupActions()
     d->actionExportLists = new QAction(QIcon(":icons/actions/action_export.png"), "Export", this);
     connect(d->actionExportLists, SIGNAL(triggered()), SLOT(exportLists()));
     d->toolbarLists->addAction(d->actionExportLists);
-
-    d->actionAddItem = new QAction(QIcon(":icons/actions/list_add.png"), "Add", this);
-    connect(d->actionAddItem, SIGNAL(triggered()), SLOT(addItem()));
-    d->toolbarCurrentList->addAction(d->actionAddItem);
 
     d->actionRemoveItem = new QAction(QIcon(":icons/actions/list_remove.png"), "Remove", this);
     connect(d->actionRemoveItem, SIGNAL(triggered()), SLOT(removeItem()));
@@ -246,11 +259,38 @@ void NameValueListEditor::exportLists()
 void NameValueListEditor::addItem()
 {
     if (!d->datastore) return;
+    if (!d->currentList) return;
+    if (!d->model) return;
+    QVariant value = QVariant(d->editNewItemValue->text());
+    QString displayString = d->editNewItemDisplayString->text();
+    if (d->model->insertRows(d->model->rowCount() - 1, 1, QModelIndex())) {
+        QModelIndex index = d->model->index(d->model->rowCount() -1 , 0, QModelIndex());
+        d->model->setData(index, value, Qt::EditRole);
+        index = d->model->index(d->model->rowCount() - 1, 1, QModelIndex());
+        d->model->setData(index, displayString, Qt::EditRole);
+    } else {
+        QMessageBox::information(this, tr("Duplicate Name"),
+                                 tr("A name for \"%1\" already exists.").arg(value.toString()));
+    }
 }
 
 void NameValueListEditor::removeItem()
 {
     if (!d->datastore) return;
+    if (!d->currentList) return;
+    if (!d->model) return;
+    QItemSelectionModel *selectionModel = d->tableviewCurrentList->selectionModel();
+    if (!selectionModel) return;
+    QModelIndexList indexes = selectionModel->selectedIndexes();
+    QModelIndex index;
+    QList<int> rows;
+    foreach (index, indexes) {
+        int row = index.row();
+        if (!rows.contains(row)) rows << row;
+    }
+    foreach(int row, rows) {
+        d->model->removeRows(row, 1, QModelIndex());
+    }
 }
 
 void NameValueListEditor::moveItemUp()

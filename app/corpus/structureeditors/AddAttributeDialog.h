@@ -14,7 +14,7 @@ class AddAttributeDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddAttributeDialog(QWidget *parent = 0);
+    explicit AddAttributeDialog(bool nameValueListDialog = false, QWidget *parent = 0);
     ~AddAttributeDialog();
 
     QString attributeID() const;
