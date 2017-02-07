@@ -169,6 +169,11 @@ QPointer<Corpus> CorpusRepositoriesManager::openCorpus(const QString &corpusID, 
     return corpus;
 }
 
+QPointer<Corpus> CorpusRepositoriesManager::getCorpusAlreadyOpen(const QString &corpusID)
+{
+    return d->corpora.value(corpusID, Q_NULLPTR);
+}
+
 QList<QPointer<Corpus> > CorpusRepositoriesManager::listOpenCorpora() const
 {
     return d->corpora.values();

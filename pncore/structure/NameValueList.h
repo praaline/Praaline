@@ -58,6 +58,7 @@ public:
     bool setValue(int index, const QVariant &value);
     QString displayString(int index) const;
     bool setDisplayString(int index, const QString &displayString);
+    int indexOfValue(QVariant value) const;
 
     QVariant value(const QString &displayString) const;
     QString displayString(const QVariant &value) const;

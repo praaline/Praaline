@@ -204,6 +204,7 @@ bool MetadataStructureTreeModel::setData(const QModelIndex &index, const QVarian
         break;
     case 1: result = item->setProperty("name", value); break;
     case 2: result = item->setProperty("description", value); break;
+    case 6: result = item->setProperty("nameValueList", value); break;
     default: result = false; break;
     }
 

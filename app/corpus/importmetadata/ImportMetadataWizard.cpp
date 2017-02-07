@@ -575,6 +575,17 @@ void ImportMetadataWizard::previewImport()
     ui->tableViewResults->setModel(model);
 }
 
+QPointer<Corpus> ImportMetadataWizard::getCorpus(QString &corpusID)
+{
+    QPointer<Corpus> corpus(0);
+    if (corpusID.isEmpty())
+        corpusID = ui->comboBoxCorpusID->currentText();
+    corpus = d->corpusRepositoriesManager->getCorpusAlreadyOpen(corpusID);
+    if (!corpus) corpus = d->corpusRepositoriesManager->openCorpus(corpusID);
+    if (!corpus) corpus = d->corpusRepositoriesManager->createCorpus(corpusID);
+    return corpus;
+}
+
 void ImportMetadataWizard::doImport()
 {
     // Find selected corpus repository
@@ -584,95 +595,100 @@ void ImportMetadataWizard::doImport()
     QPointer<MetadataStructure> mstr = repository->metadataStructure();
     if (!mstr) return;
 
-//    QString line;
-//    QFile file(d->filename);
-//    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
-//    QTextStream stream(&file);
-//    stream.setCodec(d->encoding.toLatin1().constData());
-//    bool firstLine = true;
-//    do {
-//        line = stream.readLine();
-//        if (firstLine && ui->checkHeaderLine->isChecked()) {
-//            firstLine = false;
-//            continue; // skip header line
-//        }
-//        QString communicationID, speakerID, recordingID, annotationID;
-//        CorpusObject *item = 0;
-//        if (d->corpusObjectType == CorpusObject::Type_Communication) {
-//            communicationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
-//            if (ui->optionModeUpdate->isChecked())
-//                item = d->corpus->communication(communicationID);
-//            if (!item) {
-//                d->corpus->addCommunication(new CorpusCommunication(communicationID));
-//                item = d->corpus->communication(communicationID);
-//            }
-//        }
-//        else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
-//            speakerID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
-//            if (ui->optionModeUpdate->isChecked())
-//                item = d->corpus->speaker(speakerID);
-//            if (!item) {
-//                d->corpus->addSpeaker(new CorpusSpeaker(speakerID));
-//                item = d->corpus->speaker(speakerID);
-//            }
-//        }
-//        else if (d->corpusObjectType == CorpusObject::Type_Recording) {
-//            recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
-//            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-//            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
-//            if (!com) continue; // skip this item when a corresponding communication does not exist
-//            if (ui->optionModeUpdate->isChecked())
-//                item = com->recording(recordingID);
-//            if (!item) {
-//                com->addRecording(new CorpusRecording(recordingID));
-//                item = com->recording(recordingID);
-//            }
-//        }
-//        else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
-//            annotationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
-//            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-//            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
-//            if (!com) continue; // skip this item when a corresponding communication does not exist
-//            if (ui->optionModeUpdate->isChecked())
-//                item = com->annotation(annotationID);
-//            if (!item) {
-//                com->addAnnotation(new CorpusAnnotation(annotationID));
-//                item = com->annotation(annotationID);
-//            }
-//        }
-//        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
-//            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-//            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
-//            qDebug() << d->columnCorrespondances["speakerID"].column << speakerID;
-//            QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
-//            QPointer<CorpusSpeaker> spk = d->corpus->speaker(speakerID);
-//            if (!com || !spk) continue;
-//            if (ui->optionModeUpdate->isChecked())
-//                item = d->corpus->participation(communicationID, speakerID);
-//            if (!item) {
-//                item = d->corpus->addParticipation(communicationID, speakerID);
-//            }
-//        }
-//        if (!item) continue; // this should never happen
-//        foreach (ColumnCorrespondance correspondance, d->columnCorrespondances) {
-//            if (correspondance.column == -1)
-//                continue; // this attribute is not linked to a column, skip
-//            QString field = line.section(d->delimiter, correspondance.column, correspondance.column);
-//            if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)) {
-//                if  (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Integer)
-//                    item->setProperty(correspondance.attributeID, field.toInt());
-//                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Double)
-//                    item->setProperty(correspondance.attributeID, field.toDouble());
-//                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::DateTime)
-//                    item->setProperty(correspondance.attributeID, QDate::fromString(field, correspondance.formatString));
-//                else
-//                    item->setProperty(correspondance.attributeID, field);
-//            }
-//            else
-//                item->setProperty(correspondance.attributeID, field);
-//        }
-//        QApplication::processEvents();
-//    } while (!stream.atEnd());
-//    file.close();
+    QString line;
+    QFile file(d->filename);
+    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
+    QTextStream stream(&file);
+    stream.setCodec(d->encoding.toLatin1().constData());
+    bool firstLine = true;
+    do {
+        line = stream.readLine();
+        if (firstLine && ui->checkHeaderLine->isChecked()) {
+            firstLine = false;
+            continue; // skip header line
+        }
+        QString corpusID, communicationID, speakerID, recordingID, annotationID;
+        CorpusObject *item = 0;
+        corpusID = line.section(d->delimiter, d->columnCorrespondances["corpusID"].column, d->columnCorrespondances["corpusID"].column);
+        QPointer<Corpus> corpus = getCorpus(corpusID);
+        if (!corpus) continue;
+        if (d->corpusObjectType == CorpusObject::Type_Corpus) {
+            item = corpus;
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Communication) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            if (ui->optionModeUpdate->isChecked())
+                item = corpus->communication(communicationID);
+            if (!item) {
+                corpus->addCommunication(new CorpusCommunication(communicationID));
+                item = corpus->communication(communicationID);
+            }
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            if (ui->optionModeUpdate->isChecked())
+                item = corpus->speaker(speakerID);
+            if (!item) {
+                corpus->addSpeaker(new CorpusSpeaker(speakerID));
+                item = corpus->speaker(speakerID);
+            }
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
+            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+            if (!com || !spk) continue;
+            if (ui->optionModeUpdate->isChecked())
+                item = corpus->participation(communicationID, speakerID);
+            if (!item) {
+                item = corpus->addParticipation(communicationID, speakerID);
+            }
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Recording) {
+            recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            if (!com) continue; // skip this item when a corresponding communication does not exist
+            if (ui->optionModeUpdate->isChecked())
+                item = com->recording(recordingID);
+            if (!item) {
+                com->addRecording(new CorpusRecording(recordingID));
+                item = com->recording(recordingID);
+            }
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
+            annotationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            if (!com) continue; // skip this item when a corresponding communication does not exist
+            if (ui->optionModeUpdate->isChecked())
+                item = com->annotation(annotationID);
+            if (!item) {
+                com->addAnnotation(new CorpusAnnotation(annotationID));
+                item = com->annotation(annotationID);
+            }
+        }
+        if (!item) continue; // this should never happen
+        foreach (ColumnCorrespondance correspondance, d->columnCorrespondances) {
+            if (correspondance.column == -1)
+                continue; // this attribute is not linked to a column, skip
+            QString field = line.section(d->delimiter, correspondance.column, correspondance.column);
+            if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)) {
+                if  (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Integer)
+                    item->setProperty(correspondance.attributeID, field.toInt());
+                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::Double)
+                    item->setProperty(correspondance.attributeID, field.toDouble());
+                else if (mstr->attribute(d->corpusObjectType, correspondance.attributeID)->datatype().base() == DataType::DateTime)
+                    item->setProperty(correspondance.attributeID, QDate::fromString(field, correspondance.formatString));
+                else
+                    item->setProperty(correspondance.attributeID, field);
+            }
+            else
+                item->setProperty(correspondance.attributeID, field);
+        }
+        QApplication::processEvents();
+    } while (!stream.atEnd());
+    file.close();
 }
 

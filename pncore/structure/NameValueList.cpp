@@ -68,6 +68,11 @@ bool NameValueList::setDisplayString(int index, const QString &displayString)
     return true;
 }
 
+int NameValueList::indexOfValue(QVariant value) const
+{
+    return m_displayStrings.indexOf(displayString(value));
+}
+
 QVariant NameValueList::value(const QString &displayString) const
 {
     return m_displayToValue.value(displayString, QVariant());

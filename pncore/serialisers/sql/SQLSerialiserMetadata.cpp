@@ -445,7 +445,13 @@ bool SQLSerialiserMetadata::execSaveCorpus(Corpus *corpus, MetadataStructure *st
     if (corpus->isNew()) {
         q.prepare(prepareInsertSQL(structure, CorpusObject::Type_Corpus));
     } else {
-        q.prepare(prepareUpdateSQL(structure, CorpusObject::Type_Corpus));
+        q.prepare("SELECT corpusID FROM corpus WHERE corpusID = :corpusID");
+        q.bindValue(":corpusID", corpus->ID());
+        q.exec();
+        bool exists = false;
+        if (q.next()) exists = true;
+        if (exists) q.prepare(prepareUpdateSQL(structure, CorpusObject::Type_Corpus));
+        else q.prepare(prepareInsertSQL(structure, CorpusObject::Type_Corpus));
     }
     q.bindValue(":corpusID", corpus->ID());
     q.bindValue(":corpusName", corpus->name());
@@ -694,6 +700,7 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
             datastore->setRepository(participation);
         }
     }
+    setClean(corpus);
     datastore->setRepository(corpus);
     db.commit();
     return true;

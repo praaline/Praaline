@@ -45,6 +45,7 @@ public:
     QPointer<Praaline::Core::Corpus> createCorpus(const QString &corpusID, const QString &repositoryID = QString());
     QPointer<Praaline::Core::Corpus> openCorpus(const QString &corpusID, const QString &repositoryID = QString());
     QList<QPointer<Praaline::Core::Corpus> > listOpenCorpora() const;
+    QPointer<Praaline::Core::Corpus> getCorpusAlreadyOpen(const QString &corpusID);
     bool saveCorpusMetadata(const QString &corpusID = QString());
     bool removeCorpus(const QString &corpusID);
 

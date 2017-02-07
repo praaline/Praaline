@@ -48,6 +48,9 @@ private:
     void previewImport();
     void doImport();
 
+    // helper methods
+    QPointer<Corpus> getCorpus(QString &corpusID);
+
     // virtual methods from QWizard
     bool validateCurrentPage();
     void initializePage(int id);
@@ -58,6 +61,7 @@ private slots:
     void fileParametersChanged();
     void previewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
     void correspondanceChanged();
+
 };
 
 #endif // IMPORTMETADATAWIZARD_H

@@ -9,6 +9,10 @@
 #include "pncore/corpus/CorpusParticipation.h"
 #include "pncore/corpus/CorpusObject.h"
 #include "pncore/structure/MetadataStructure.h"
+#include "pncore/structure/NameValueList.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
+#include "pncore/datastore/NameValueListDatastore.h"
 using namespace Praaline::Core;
 
 // Qt property browser
@@ -57,6 +61,8 @@ struct MetadataEditorWidgetData {
 
     QMap<QtProperty *, MetadataEditorWidget::PropertyID> propertyToId;
     QMap<MetadataEditorWidget::PropertyID, QtProperty *> idToProperty;
+
+    QMap<QtProperty *, NameValueList *> nameValueLists;
 };
 
 
@@ -94,7 +100,7 @@ MetadataEditorWidget::MetadataEditorWidget(MetadataEditorWidgetStyle style, QWid
     connect(d->doubleManager, SIGNAL(valueChanged(QtProperty *, double)),
             this, SLOT(valueChanged(QtProperty *, double)));
     connect(d->enumManager, SIGNAL(valueChanged(QtProperty*, int)),
-            this, SLOT(valueChanged(QtProperty *, int)));
+            this, SLOT(enumValueChanged(QtProperty*,int)));
     connect(d->dateManager, SIGNAL(valueChanged(QtProperty*, const QDate &)),
             this, SLOT(valueChanged(QtProperty*, const QDate &)));
     connect(d->timeManager, SIGNAL(valueChanged(QtProperty*,QTime)),
@@ -227,7 +233,20 @@ QtProperty *MetadataEditorWidget::addProperties(QPointer<MetadataStructure> mstr
         foreach (QPointer<MetadataStructureAttribute> attr, sec->attributes()) {
             if (!attr) continue;
             // Select correct manager based on attribute type (string, bool, int, double, enum)
-            if (attr->datatype().base() == DataType::Boolean) {
+            if (!attr->nameValueList().isEmpty()) {
+                property = d->enumManager->addProperty(attr->name());
+                QStringList enumItems;
+                if (item->repository() && item->repository()->metadata()) {
+                    NameValueList *nvl = item->repository()->metadata()->getNameValueList(attr->nameValueList());
+                    if (nvl) {
+                        d->nameValueLists.insert(property, nvl);
+                        enumItems << nvl->displayStrings();
+                        d->enumManager->setEnumNames(property, enumItems);
+                        d->enumManager->setValue(property, nvl->indexOfValue(item->property(attr->ID())));
+                    }
+                }
+            }
+            else if (attr->datatype().base() == DataType::Boolean) {
                 property = d->boolManager->addProperty(attr->name());
                 d->boolManager->setValue(property, item->property(attr->ID()).toBool());
             }
@@ -301,6 +320,7 @@ void MetadataEditorWidget::clear()
     }
     d->propertyToId.clear();
     d->idToProperty.clear();
+    d->nameValueLists.clear();
 }
 
 void MetadataEditorWidget::rebind(QPointer<MetadataStructure> mstructure, QList<QPointer<CorpusObject> > &items,
@@ -399,3 +419,13 @@ void MetadataEditorWidget::valueChanged(QtProperty *property, const QDateTime &v
     item->setProperty(d->propertyToId[property].attributeID, value);
 }
 
+void MetadataEditorWidget::enumValueChanged(QtProperty *property, const int index)
+{
+    if (!d->propertyToId.contains(property)) return;
+    QPointer<CorpusObject> item = d->items.value(QPair<CorpusObject::Type, QString>(d->propertyToId[property].type, d->propertyToId[property].itemID));
+    if (!item) return;
+    NameValueList *nvl = d->nameValueLists.value(property, 0);
+    if (!nvl) return;
+    QVariant value = nvl->value(index);
+    item->setProperty(d->propertyToId[property].attributeID, value);
+}

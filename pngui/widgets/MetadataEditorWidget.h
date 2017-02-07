@@ -53,6 +53,7 @@ private slots:
     void valueChanged(QtProperty *property, const QDate &value);
     void valueChanged(QtProperty *property, const QTime &value);
     void valueChanged(QtProperty *property, const QDateTime &value);
+    void enumValueChanged(QtProperty *property, const int index);
 
 private:
     MetadataEditorWidgetData *d;
