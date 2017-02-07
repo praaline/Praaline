@@ -38,6 +38,8 @@ private slots:
     void showBatchEditor();
     void showCompareAnnotations();
 
+    void createSequenceAnnotation();
+
 };
 
 #endif // ANNOTATIONMODEWIDGET_H

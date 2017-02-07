@@ -41,6 +41,8 @@ public:
     void setCommunicationsGrouping(QStringList groupAttributeIDs);
     void setSpeakersGrouping(QStringList groupAttributeIDs);
 
+    void refresh();
+
 private:
     CorpusObserverData *d;
 };
@@ -56,6 +58,8 @@ public:
 
     TreeNode *nodeCommunications() const { return m_nodeCommunications; }
     TreeNode *nodeSpeakers() const { return m_nodeSpeakers; }
+
+    void refresh();
 
     QStringList communicationsGrouping() const { return m_groupAttributeIDsCommunication; }
     QStringList speakersGrouping() const { return m_groupAttributeIDsSpeaker; }

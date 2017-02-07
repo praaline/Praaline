@@ -238,7 +238,7 @@ void CorpusModeWidget::openCorpusRepository()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Open Corpus"), "",
-                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"),
+                                                    tr("Praaline Corpus File (*.PraalineRepository);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
     openCorpusRepositoryFromDefinition(filename);
@@ -321,7 +321,7 @@ void CorpusModeWidget::saveCorpusRepositoryAs()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getSaveFileName(this, tr("Save Corpus As..."), repository->definition().filenameDefinition,
-                                                    tr("Praaline Corpus File (*.corpus);;All Files (*)"), &selectedFilter, options);
+                                                    tr("Praaline Corpus File (*.PraalineRepository);;All Files (*)"), &selectedFilter, options);
     if (filename.isEmpty()) return;
     repository->definition().save(filename);
     // else show error message

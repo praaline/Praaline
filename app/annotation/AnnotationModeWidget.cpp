@@ -6,6 +6,7 @@
 #include "BatchEditorWidget.h"
 #include "CompareAnnotationsWidget.h"
 #include "TranscriberWidget.h"
+#include "CreateSequenceAnnotationDialog.h"
 
 struct AnnotationModeWidgetData {
     AnnotationModeWidgetData()
@@ -16,6 +17,8 @@ struct AnnotationModeWidgetData {
     QAction *actionShowTranscriber;
     QAction *actionShowBatchEditor;
     QAction *actionShowCompareAnnotations;
+
+    QAction *actionCreateSequenceAnnotation;
 
     AutomaticAnnotationWidget *widgetAutomaticAnnotation;
     ManualAnnotationWidget *widgetManualAnnotation;
@@ -75,8 +78,19 @@ void AnnotationModeWidget::setupActions()
     Command* command;
 
     ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
+    ActionContainer* menu_annotation = ACTION_MANAGER->createMenu(tr("&Annotation"), existed);
+    if (!existed) menubar->addMenu(menu_annotation, qti_action_HELP);
     ActionContainer* menu_window = ACTION_MANAGER->createMenu(tr("&Window"), existed);
     if (!existed) menubar->addMenu(menu_window, qti_action_HELP);
+
+    // ------------------------------------------------------------------------------------------------------
+    // ANNOTATION MENU
+    // ------------------------------------------------------------------------------------------------------
+    d->actionCreateSequenceAnnotation = new QAction(tr("Create Sequences from Existing Annotations..."), this);
+    connect(d->actionCreateSequenceAnnotation, SIGNAL(triggered()), SLOT(createSequenceAnnotation()));
+    command = ACTION_MANAGER->registerAction("Annotation.CreateSequences", d->actionCreateSequenceAnnotation, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
 
     // ------------------------------------------------------------------------------------------------------
     // WINDOW MENU
@@ -142,5 +156,12 @@ void AnnotationModeWidget::showCompareAnnotations()
 {
     ui->stackedWidget->setCurrentIndex(4);
     emit activateMode();
+}
+
+void AnnotationModeWidget::createSequenceAnnotation()
+{
+    CreateSequenceAnnotationDialog *dialog = new CreateSequenceAnnotationDialog(this);
+    dialog->exec();
+    delete dialog;
 }
 

@@ -85,6 +85,13 @@ void CorpusObserver::setSpeakersGrouping(QStringList groupAttributeIDs)
     }
 }
 
+void CorpusObserver::refresh()
+{
+    foreach (QPointer<CorpusExplorerTreeNodeCorpus> node, d->corpusNodes.values()) {
+        if (node) node->refresh();
+    }
+}
+
 // ==============================================================================================================================
 // Corpus tree node
 // ==============================================================================================================================
@@ -166,6 +173,11 @@ void CorpusExplorerTreeNodeCorpus::clear()
         delete m_nodeSpeakers;
     }
     m_nodeSpeakers = 0;
+}
+
+void CorpusExplorerTreeNodeCorpus::refresh()
+{
+    buildTree();
 }
 
 void CorpusExplorerTreeNodeCorpus::buildTree()

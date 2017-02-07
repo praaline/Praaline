@@ -1003,6 +1003,8 @@ void CorpusExplorerWidget::importMetadata()
     d->corporaTopLevelNode->startTreeProcessingCycle();
     ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, this);
     wizard->exec(); // MODAL!
+    CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
+    if (obj) obj->refresh();
     d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 

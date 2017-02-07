@@ -504,10 +504,15 @@ void ImportMetadataWizard::previewImport()
             firstLine = false;
             continue; // skip header line
         }
-        QList<CorpusObjectInfo> existing;
+        // Read corpus ID from file, or get it from user
+        int corpusIDcolumnNo = d->columnCorrespondances["corpusID"].column;
         QString corpusID, communicationID, speakerID, recordingID, annotationID;
+        if (corpusIDcolumnNo >= 0)
+            corpusID = line.section(d->delimiter,corpusIDcolumnNo, corpusIDcolumnNo);
+        else
+            corpusID = ui->comboBoxCorpusID->currentText();
+        QList<CorpusObjectInfo> existing;
         if (d->corpusObjectType == CorpusObject::Type_Corpus) {
-            corpusID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             existing = repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, MetadataDatastore::Selection(corpusID, "", ""));
         }
         if (d->corpusObjectType == CorpusObject::Type_Communication) {
@@ -517,6 +522,11 @@ void ImportMetadataWizard::previewImport()
         else if (d->corpusObjectType == CorpusObject::Type_Speaker) {
             speakerID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             existing = repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, MetadataDatastore::Selection("", "", speakerID));
+        }
+        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
+            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
+            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
+            existing = repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, MetadataDatastore::Selection("", communicationID, speakerID));
         }
         else if (d->corpusObjectType == CorpusObject::Type_Recording) {
             recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
@@ -528,11 +538,7 @@ void ImportMetadataWizard::previewImport()
             communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
             existing = repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, MetadataDatastore::Selection("", communicationID, "", "", annotationID));
         }
-        else if (d->corpusObjectType == CorpusObject::Type_Participation) {
-            communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-            speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
-            existing = repository->metadata()->getCorpusObjectInfoList(CorpusObject::Type_Corpus, MetadataDatastore::Selection("", communicationID, speakerID));
-        }
+
         int j = 0;
         foreach (QString attributeID, attributeList) {
             if (!d->columnCorrespondances.contains(attributeID)) continue;
@@ -609,9 +615,15 @@ void ImportMetadataWizard::doImport()
         }
         QString corpusID, communicationID, speakerID, recordingID, annotationID;
         CorpusObject *item = 0;
-        corpusID = line.section(d->delimiter, d->columnCorrespondances["corpusID"].column, d->columnCorrespondances["corpusID"].column);
+        // Read corpus ID from file, or get it from user
+        int corpusIDcolumnNo = d->columnCorrespondances["corpusID"].column;
+        if (corpusIDcolumnNo >= 0)
+            corpusID = line.section(d->delimiter, corpusIDcolumnNo, corpusIDcolumnNo);
+        else
+            corpusID = ui->comboBoxCorpusID->currentText();
         QPointer<Corpus> corpus = getCorpus(corpusID);
         if (!corpus) continue;
+        corpus->blockSignals(true);
         if (d->corpusObjectType == CorpusObject::Type_Corpus) {
             item = corpus;
         }
@@ -687,6 +699,7 @@ void ImportMetadataWizard::doImport()
             else
                 item->setProperty(correspondance.attributeID, field);
         }
+        corpus->blockSignals(false);
         QApplication::processEvents();
     } while (!stream.atEnd());
     file.close();
