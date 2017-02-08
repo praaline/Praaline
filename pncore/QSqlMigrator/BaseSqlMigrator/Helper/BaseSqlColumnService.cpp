@@ -49,7 +49,9 @@ void BaseSqlColumnService::buildColumnOptionsSql(const Column &column,
     if (!column.isNullable()) {
         addOption("NOT NULL");
     }
-    if (column.isUnique()) {
+    if (column.isUnique() && (!column.isPrimary())) {
+        // Note: do not add unique constraint to individual columns belonging to a primary key, because the
+        // primary key may be composite
         addOption("UNIQUE");
     }
     if (column.hasDefaultValue()) {

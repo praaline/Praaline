@@ -81,7 +81,7 @@ void PostgresqlColumnService::buildColumnOptionsSql(const Column &column,
     else if (!column.isAutoIncremented() && !column.isNullable()) {
         addOption("NOT NULL");
     }
-    if (column.isUnique()) {
+    if (column.isUnique() && !column.isPrimary()) {
         addOption("UNIQUE");
     }
     if (column.hasDefaultValue()) {

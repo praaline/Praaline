@@ -72,7 +72,7 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
             this, SLOT(speakerRemoved(QString)));
 
     // Visualiser
-    d->visualiser = new VisualiserWidget();
+    d->visualiser = new VisualiserWidget("Context.VisualisationMode");
     ui->gridLayoutVisualisationEditor->addWidget(d->visualiser);
 
     // Annotation Timeline Editor

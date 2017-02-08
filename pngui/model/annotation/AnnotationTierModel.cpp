@@ -376,6 +376,8 @@ int AnnotationTierModel::timelineIndexAtTime(const RealTime &time) const
     for (timelineIndex = 0; timelineIndex < d->timeline.count(); ++timelineIndex) {
         if (d->timeline.at(timelineIndex).tMin >= time) break;
     }
+    // We found the first time index AFTER the time we should be moving to => subtract 1.
+    if (timelineIndex > 0) timelineIndex--;
     return timelineIndex;
 }
 

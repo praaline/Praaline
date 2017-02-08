@@ -160,7 +160,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
 
     IconLoader il;
     QList<int> context;
-    context.push_front(CONTEXT_MANAGER->contextID("Context.VisualisationMode"));
+    context.push_front(CONTEXT_MANAGER->contextID(m_contextStringID));
 
     m_rightButtonMenu->addSeparator();
     m_rightButtonPlaybackMenu = m_rightButtonMenu->addMenu(tr("Playback"));

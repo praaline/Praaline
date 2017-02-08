@@ -148,8 +148,6 @@ void CorpusModeWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     file_menu->addAction(command, qti_action_FILE_SETTINGS);
 
-    file_menu->addSeparator(qti_action_FILE_SETTINGS);
-
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------

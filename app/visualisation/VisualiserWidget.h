@@ -36,13 +36,9 @@ public:
     Layer * addLayerTimeValuesFromAnnotationTier(AnnotationTier *tier,
                                               const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID);
 
-
 signals:
     void canChangeSolo(bool);
     void canAlign(bool);
-
-    void userScrolledToTime(RealTime);
-    void playbackScrolledToTime(RealTime);
 
 public slots:
     virtual bool commitData(bool mayAskUser);

@@ -146,7 +146,7 @@ int AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
         int i = m_tierTuples.at(tierIndex).indexLevelAttributePair;
         int c = m_model->countLevelsAttributes();
         int y = i * h / c;
-        qDebug() << "Tier index " << tierIndex << " height " << y;
+        // qDebug() << "Tier index " << tierIndex << " height " << y;
         return y;
     }
     return int(tierIndex * h / m_tierTuples.count());

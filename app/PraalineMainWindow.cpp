@@ -433,10 +433,15 @@ void PraalineMainWindow::setupFileMenu()
     QList<int> std_context;
     std_context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
     // File menu
+#ifndef Q_OS_MAC
+    d->menu_file->addSeparator();
+#endif
     Command* command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_SETTINGS, tr("&Settings"), QKeySequence(), std_context);
     connect(command->action(), SIGNAL(triggered()), d->configurationWidget, SLOT(show()));
     d->menu_file->addAction(command);
+#ifndef Q_OS_MAC
     d->menu_file->addSeparator();
+#endif
     command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_EXIT, tr("&Quit"), QKeySequence(QKeySequence::Quit), std_context);
     connect(command->action(), SIGNAL(triggered()), QCoreApplication::instance(), SLOT(quit()));
     d->menu_file->addAction(command);
@@ -504,6 +509,10 @@ void PraalineMainWindow::setupVisualisationMenu()
 
 void PraalineMainWindow::setupPlaybackMenu()
 {
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID("Context.VisualisationMode"));
+    context.push_front(CONTEXT_MANAGER->contextID("Context.Transcriber"));
+
     IconLoader il;
     Command* command;
     // Play / Pause

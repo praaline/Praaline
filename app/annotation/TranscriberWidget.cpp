@@ -45,7 +45,7 @@ struct TranscriberWidgetData {
 };
 
 TranscriberWidget::TranscriberWidget(QWidget *parent) :
-    SimpleVisualiserWidget("Transcriber", true, true),
+    SimpleVisualiserWidget("Context.Transcriber", true, true),
     ui(new Ui::TranscriberWidget), d(new TranscriberWidgetData)
 {
     Q_UNUSED(parent)

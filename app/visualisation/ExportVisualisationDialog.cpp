@@ -80,6 +80,7 @@ void ExportVisualisationDialog::doExport()
 
         int compositeWidth = 0, compositeHeight = 0;
         foreach (QImage *img, images) {
+            if (!img) continue;
             if (img->width() > compositeWidth) compositeWidth = img->width();
             compositeHeight = compositeHeight + img->height() + 1;
         }
