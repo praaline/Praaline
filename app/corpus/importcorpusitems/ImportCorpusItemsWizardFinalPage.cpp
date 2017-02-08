@@ -66,8 +66,6 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
     ui->texteditMessagesFiles->clear();
     // Corpus media directory to relativise media file paths
     QDir dirMedia(d->corpus->repository()->files()->basePath());
-    //
-
     // Add recordings
     int counter = 0;
     for (i = d->candidateRecordings.begin(); i != d->candidateRecordings.end(); ++i) {
@@ -137,7 +135,8 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         ui->progressBarFiles->setValue(count);
         QApplication::processEvents();
     }
-    return true;
+    // Save the corpus metadata, as they have been modified (this step is essential to keep coherence with the annotations).
+    return d->corpus->save();
 }
 
 // ==============================================================================================================================
