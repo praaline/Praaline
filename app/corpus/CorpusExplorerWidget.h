@@ -13,6 +13,8 @@ namespace Ui {
 class CorpusExplorerWidget;
 }
 
+class CorpusModeWidget;
+
 struct CorpusExplorerWidgetData;
 
 class CorpusExplorerWidget : public QMainWindow
@@ -20,7 +22,7 @@ class CorpusExplorerWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CorpusExplorerWidget(QWidget *parent = 0);
+    explicit CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, QWidget *parent = 0);
     ~CorpusExplorerWidget();
 
 private slots:

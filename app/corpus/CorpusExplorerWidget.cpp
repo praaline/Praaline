@@ -8,6 +8,7 @@
 #include <QTreeView>
 #include <QProgressDialog>
 
+#include "CorpusModeWidget.h"
 #include "CorpusExplorerWidget.h"
 #include "ui_CorpusExplorerWidget.h"
 
@@ -28,6 +29,7 @@ using namespace QtilitiesProjectManagement;
 
 #include "CorpusRepositoriesManager.h"
 
+#include "CorpusModeWidget.h"
 #include "AddNewCorpusItemDialog.h"
 #include "CorpusExplorerOptionsDialog.h"
 #include "CheckMediaFilesDialog.h"
@@ -41,10 +43,11 @@ using namespace QtilitiesProjectManagement;
 
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
-        projectItem(0), corpusRepositoriesManager(0), corporaTopLevelNode(0), corporaObserverWidget(0),
+        widgetCorpusMode(0), projectItem(0), corpusRepositoriesManager(0), corporaTopLevelNode(0), corporaObserverWidget(0),
         metadataEditorPrimary(0), metadataEditorSecondary(0), preview(0)
     { }
 
+    CorpusModeWidget *widgetCorpusMode;
     // Corpora
     QAction *actionCreateCorpus;
     QAction *actionOpenCorpus;
@@ -96,11 +99,14 @@ struct CorpusExplorerWidgetData {
     CorpusItemPreview *preview;
 };
 
-CorpusExplorerWidget::CorpusExplorerWidget(QWidget *parent) :
+CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::CorpusExplorerWidget), d(new CorpusExplorerWidgetData)
 {
     ui->setupUi(this);
+
+    // Parent corpus mode widget
+    d->widgetCorpusMode = widgetCorpusMode;
 
     // Get Corpus Repositories Manager from global object list. When corpus repositories are opened or closed (i.e. added or removed from the manager)
     // we will receive a signal, and update the corpus explorer tree accordingly.
@@ -415,6 +421,7 @@ void CorpusExplorerWidget::setupMetadataEditorsStylingMenu()
     toolButtonMetadataEditorStyles->setPopupMode(QToolButton::InstantPopup);
     QWidgetAction* toolButtonActionMetadataEditorStyles = new QWidgetAction(this);
     toolButtonActionMetadataEditorStyles->setDefaultWidget(toolButtonMetadataEditorStyles);
+    toolButtonActionMetadataEditorStyles->setIcon(QIcon(":icons/actions/list_add.png"));
     d->toolbarCorpusExplorer->addAction(toolButtonActionMetadataEditorStyles);
 }
 
@@ -569,11 +576,8 @@ void CorpusExplorerWidget::createCorpus()
 {
     QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
     if (repositoryID.isEmpty()) {
-        QMessageBox::warning(this, tr("Create Corpus"),
-                             tr("Please create or open a Corpus Repository first.\n"
-                                "Praaline corpora are stored in repositories (i.e. databases stored locally on the computer "
-                                "or on a remote server)."),
-                             QMessageBox::Ok);
+        // Create a corpus repository first
+        if (d->widgetCorpusMode) d->widgetCorpusMode->newCorpusRepository();
         return;
     }
     bool ok;
@@ -588,7 +592,8 @@ void CorpusExplorerWidget::openCorpus()
 {
     QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
     if (repositoryID.isEmpty()) {
-        QMessageBox::warning(this, tr("Open Corpus"), tr("Please open a Corpus Repository first."), QMessageBox::Ok);
+        // Open a corpus repository first
+        if (d->widgetCorpusMode) d->widgetCorpusMode->openCorpusRepository();
         return;
     }
     QInputDialog dialog;

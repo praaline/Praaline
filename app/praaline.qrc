@@ -152,5 +152,11 @@
         <file>icons/actions/filter@2x.png</file>
         <file>icons/actions/filter_24.png</file>
         <file>icons/modes/help_mode_48x48.png</file>
+        <file>icons/actions/action_delete.png</file>
+        <file>icons/actions/action_delete@2x.png</file>
+        <file>icons/actions/action_new.png</file>
+        <file>icons/actions/action_new@2x.png</file>
+        <file>icons/corpusexplorer/corpus_explorer_style@2x.png</file>
+        <file>icons/corpusexplorer/corpus_explorer_syle.png</file>
     </qresource>
 </RCC>
