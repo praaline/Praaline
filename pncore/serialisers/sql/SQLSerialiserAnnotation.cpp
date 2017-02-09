@@ -709,14 +709,41 @@ bool SQLSerialiserAnnotation::batchUpdate(
 // ==========================================================================================================================
 // Statistics
 // ==========================================================================================================================
-QList<QPair<QList<QVariant>, long> > SQLSerialiserAnnotation::countItems(
+QList<QPair<QList<QVariant>, long long> > SQLSerialiserAnnotation::countItems(
         const QString &levelID, const QStringList &groupByAttributeIDs, AnnotationStructure *structure, QSqlDatabase &db)
 {
-    Q_UNUSED(groupByAttributeIDs)
-    Q_UNUSED(db)
-    QList<QPair<QList<QVariant>, long> > list;
-    if (!structure) return list;
-    if (!structure->hasLevel(levelID)) return list;
+    QList<QPair<QList<QVariant>, long long> > list;
+    AnnotationStructureLevel *level = structure->level(levelID);
+    if (!level) return list;
+    QStringList groupfields;
+    if (groupByAttributeIDs.contains("annotationID")) groupfields << "annotationID";
+    if (groupByAttributeIDs.contains("speakerID")) groupfields << "speakerID";
+    groupfields << getEffectiveAttributeIDs(level, groupByAttributeIDs);
+
+    QString q1 = "SELECT ";
+    QString q2 = "GROUP BY ";
+    foreach (QString groupfield, groupfields) {
+        q1.append(groupfield).append(", ");
+        q2.append(groupfield).append(", ");
+    }
+    q1.append(QString("COUNT(*) AS praaline_count FROM %1 ").arg(levelID));
+    if (q2.endsWith(", ")) q2.chop(2);
+
+    QSqlQuery q(db);
+    q.setForwardOnly(true);
+    q.prepare(q1 + q2);
+
+    q.exec();
+    while (q.next()) {
+        QList<QVariant> groupvalues;
+        foreach (QString groupfield, groupfields) {
+            groupvalues << q.value(groupfield);
+        }
+        long long count = q.value("praaline_count").toLongLong();
+        QPair<QList<QVariant>, long long> item(groupvalues, count);
+        list << item;
+    }
+
     return list;
 }
 

@@ -35,7 +35,8 @@ public:
     QPointer<QStandardItemModel> model();
 
     QString calculate(QPointer<Praaline::Core::Corpus> corpus, QPointer<Praaline::Core::CorpusCommunication> com);
-    QString calculate(QPointer<Praaline::Core::Corpus> corpus, const QString &communicationID, const QString &annotationID,
+    QString calculate(QPointer<Praaline::Core::Corpus> corpus,
+                      const QString &communicationID, const QString &annotationID, const QString &speakerIDfilter = QString(),
                       const QList<Praaline::Core::Interval *> &units = QList<Praaline::Core::Interval *>());
 
 

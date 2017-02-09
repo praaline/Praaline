@@ -62,6 +62,8 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
                             << "RatioArticulation"
                             << "SpeechRate" << "ArticulationRate" << "RateFILandSyll"
                             << "MeanPitch" << "PitchLow" << "PitchHigh" << "PitchRange"
+                            << "MeanPitchFirstSyll" << "PitchLowFirstSyll" << "PitchHighFirstSyll"
+                            << "MeanPitchLastSyll" << "PitchLowLastSyll" << "PitchHighLastSyll"
                             << "NumRisingSyll" << "NumFallingSyll" << "NumProminentSyll"
                             << "RatioRisingSyll" << "RatioFallingSyll" << "RatioProminentSyll"
                             << "MelodicPath"
@@ -93,8 +95,8 @@ double HzToSTre1Hz(double Hz)
     return 12.0 * log2(Hz);
 }
 
-QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID,
-                                 const QList<Interval *> &units)
+QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID, const QString &speakerIDfilter,
+                                        const QList<Interval *> &units)
 {
     if (!corpus) return tr("Error accessing corpus. No statistical analysis produced.");
     d->model->clear();
@@ -105,15 +107,17 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
     labels << measureIDs("");
     d->model->setHorizontalHeaderLabels(labels);
     // Process data
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    tiersAll = corpus->repository()->annotations()
             ->getTiersAllSpeakers(annotationID, QStringList() << d->levelPhones << d->levelSyllables << d->levelTokens);
     foreach (QString speakerID, tiersAll.keys()) {
+        if ((!speakerIDfilter.isEmpty()) && (speakerIDfilter != speakerID)) continue;
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
         IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllables);
         IntervalTier *tier_tokmin = tiers->getIntervalTierByName(d->levelTokens);
         if (!tier_syll || !tier_tokmin) continue;
-        // Selected units
+        // Selected units: either given by the user, or read from the tier
         QList<Interval *> selection(units);
         if (units.isEmpty() && !d->levelMacroUnits.isEmpty()) {
             IntervalTier *tier_units = tiers->getIntervalTierByName(d->levelMacroUnits);
@@ -134,6 +138,8 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             int numRisingSyll(0), numFallingSyll(0), numProminentSyll(0);
             double sumTrajectory(0);
             int numDisfluencyLEN(0), numDisfluencyFST(0), numDisfluencyREP(0), numDisfluencyStruct(0);
+            double f0_mean_first(-1), f0_min_first(-1), f0_max_first(-1);
+            double f0_mean_last(-1), f0_min_last(-1), f0_max_last(-1);
 
             // For each token
             foreach (Interval *token, tier_tokmin->getIntervalsContainedIn(unit)) {
@@ -188,6 +194,17 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
                     sumTrajectory = sumTrajectory + syll->attribute("trajectory").toDouble();
                     QString prom = syll->attribute(d->attributeProminence).toString();
                     if (d->prominentLabels.contains(prom)) numProminentSyll++;
+                    // First and last syllable
+                    if (i == syllIndices.first) {
+                        f0_mean_first = syll->attribute("f0_mean").toDouble();
+                        f0_min_first = HzToSTre1Hz(syll->attribute("f0_min").toDouble());
+                        f0_max_first = HzToSTre1Hz(syll->attribute("f0_max").toDouble());
+                    }
+                    if (i == syllIndices.second) {
+                        f0_mean_last = syll->attribute("f0_mean").toDouble();
+                        f0_min_last = HzToSTre1Hz(syll->attribute("f0_min").toDouble());
+                        f0_max_last = HzToSTre1Hz(syll->attribute("f0_max").toDouble());
+                    }
                 }
             } // end foreach syll
             // Calculate measures for this unit
@@ -244,6 +261,13 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             else {
                 items << new QStandardItem("NA") << new QStandardItem("NA") << new QStandardItem("NA") << new QStandardItem("NA");
             }
+            // pitch of first and last syllable
+            item = new QStandardItem(); if (f0_mean_first >= 0) item->setData(f0_mean_first, Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            item = new QStandardItem(); if (f0_min_first  >= 0) item->setData(f0_min_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            item = new QStandardItem(); if (f0_max_first  >= 0) item->setData(f0_max_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            item = new QStandardItem(); if (f0_mean_last  >= 0) item->setData(f0_mean_last,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            item = new QStandardItem(); if (f0_min_last   >= 0) item->setData(f0_min_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            item = new QStandardItem(); if (f0_max_last   >= 0) item->setData(f0_max_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
             // rises, falls, prominences
             item = new QStandardItem(); item->setData(numRisingSyll, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(numFallingSyll, Qt::DisplayRole); items << item;
@@ -271,4 +295,5 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, QPointer<Corpus
     foreach (QString annotationID, com->annotationIDs()) {
         calculate(corpus, com->ID(), annotationID);
     }
+    return QString();
 }

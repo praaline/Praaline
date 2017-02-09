@@ -27,6 +27,7 @@ public:
     ~AnalyserMacroprosodyWidget();
 
 private slots:
+    void openFileMUList();
     void analyse();
 
 private:

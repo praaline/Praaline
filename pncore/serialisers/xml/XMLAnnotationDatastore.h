@@ -100,7 +100,7 @@ public:
     // ==========================================================================================================================
     // Statistics
     // ==========================================================================================================================
-    QList<QPair<QList<QVariant>, long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) override;
+    QList<QPair<QList<QVariant>, long long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) override;
 
 private:
     QString m_path;
