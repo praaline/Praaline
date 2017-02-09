@@ -54,13 +54,13 @@ CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
 {
     // List of available recordings (media files) to preview
     d->recordingsComboBox = new QComboBox(this);
-    connect(d->recordingsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(recordingsIndexChanged(int)));
+    connect(d->recordingsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(recordingChanged(QString)));
     // List of available annotations (for transcription preview)
     d->annotationsComboBox = new QComboBox(this);
-    connect(d->annotationsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(annotationsIndexChanged(int)));
+    connect(d->annotationsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(annotationChanged(QString)));
     // List of available annotation levels
     d->annotationLevelsComboBox = new QComboBox(this);
-    connect(d->annotationLevelsComboBox, SIGNAL(currentIndexChanged(int)), SLOT(annotationLevelsIndexChanged(int)));
+    connect(d->annotationLevelsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(annotationLevelChanged(QString)));
     // Status label
     d->labelStatus = new QLabel(this);
     // Media player
@@ -166,6 +166,19 @@ bool CorpusItemPreview::isPlayerAvailable() const
     return d->player->isAvailable();
 }
 
+void CorpusItemPreview::clear()
+{
+    // Clear state
+    d->communication = Q_NULLPTR;
+    d->recordingsIDs.clear();
+    d->annotationIDs.clear();
+    d->recordingsComboBox->clear();
+    d->annotationsComboBox->clear();
+    d->annotationLevelsComboBox->clear();
+    d->player->stop();
+    d->transcriptionWidget->clear();
+}
+
 void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
 {
     if (d->communication == com) return;
@@ -202,33 +215,30 @@ void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
             d->annotationLevelsComboBox->clear();
             d->annotationLevelsComboBox->insertItems(0, levelIDs);
             d->levelIDs = levelIDs;
+            annotationLevelChanged("");
         }
     }
 }
 
-void CorpusItemPreview::recordingsIndexChanged(int index)
+void CorpusItemPreview::recordingChanged(const QString &recordingID)
 {
-    if ((index < 0) || (index >= d->recordingsIDs.count())) return;
     if (!d->communication) { d->player->setMedia(QUrl()); return; }
-    QString recordingID = d->recordingsIDs.at(index);
     QPointer<CorpusRecording> rec = d->communication->recording(recordingID);
     if (!rec) { d->player->setMedia(QUrl()); return; }
     d->player->setMedia(rec->mediaUrl());
 }
 
-void CorpusItemPreview::annotationsIndexChanged(int index)
+void CorpusItemPreview::annotationChanged(const QString &annotationID)
 {
-    if ((index < 0) || (index >= d->annotationIDs.count())) return;
     if (!d->communication) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
-    QString annotationID = d->annotationIDs.at(index);
     QPointer<CorpusAnnotation> annot = d->communication->annotation(annotationID);
     if (!annot) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
     d->transcriptionWidget->setAnnotation(annot);
 }
 
-void CorpusItemPreview::annotationLevelsIndexChanged(int)
+void CorpusItemPreview::annotationLevelChanged(const QString &levelID)
 {
-    d->transcriptionWidget->setTranscriptionLevelID(d->annotationLevelsComboBox->currentText());
+    d->transcriptionWidget->setTranscriptionLevelID(levelID);
 }
 
 void CorpusItemPreview::durationChanged(qint64 duration)

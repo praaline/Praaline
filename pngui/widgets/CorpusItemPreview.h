@@ -21,14 +21,15 @@ public:
 
     bool isPlayerAvailable() const;
     void openCommunication(QPointer<Praaline::Core::CorpusCommunication> com);
+    void clear();
 
 signals:
     void fullScreenChanged(bool fullScreen);
 
 private slots:
-    void recordingsIndexChanged(int);
-    void annotationsIndexChanged(int);
-    void annotationLevelsIndexChanged(int);
+    void recordingChanged(const QString &);
+    void annotationChanged(const QString &);
+    void annotationLevelChanged(const QString &);
 
     void durationChanged(qint64 duration);
     void positionChanged(qint64 progress);

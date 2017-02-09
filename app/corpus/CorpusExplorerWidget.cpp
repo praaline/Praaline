@@ -457,6 +457,7 @@ void CorpusExplorerWidget::corpusRepositoryRemoved(const QString &repositoryID)
     // Metadata editors
     d->metadataEditorPrimary->clear();
     d->metadataEditorSecondary->clear();
+    d->preview->clear();
 }
 
 // ==============================================================================================================================
@@ -544,7 +545,7 @@ void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QOb
         d->activeCorpus = nodeRec->recording->corpus();
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeRec->recording->parent());
         updateMetadataEditorsForCom(communication);
-        d->preview->openCommunication(communication);
+        d->preview->openCommunication(nodeCom->communication);
         return;
     }
     CorpusExplorerTreeNodeAnnotation *nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(obj);
@@ -552,7 +553,7 @@ void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QOb
         d->activeCorpus = nodeAnnot->annotation->corpus();
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeAnnot->annotation->parent());
         updateMetadataEditorsForCom(communication);
-        d->preview->openCommunication(communication);
+        d->preview->openCommunication(nodeCom->communication);
         return;
     }
 }

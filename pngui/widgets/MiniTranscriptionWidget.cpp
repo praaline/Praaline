@@ -3,6 +3,10 @@
 #include <QBoxLayout>
 #include <QTreeWidget>
 #include <QStandardItemModel>
+#include <QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QMutex>
 #include "MiniTranscriptionWidget.h"
 
 #include "pncore/corpus/CorpusAnnotation.h"
@@ -13,13 +17,14 @@ using namespace Praaline::Core;
 
 struct MiniTranscriptionWidgetData {
     MiniTranscriptionWidgetData() :
-        transcriptionView(0)
+        transcriptionView(0), watcher(0)
     {}
 
     QString transcriptionLevelID;
     QPointer<CorpusAnnotation> annotation;
     QTreeWidget *transcriptionView;
     QList<QTreeWidgetItem *> lines;
+    QSharedPointer<QFutureWatcher<void> > watcher;
 };
 
 MiniTranscriptionWidget::MiniTranscriptionWidget(QWidget *parent) :
@@ -64,6 +69,34 @@ void MiniTranscriptionWidget::setAnnotation(QPointer<Praaline::Core::CorpusAnnot
     rebind(annot, d->transcriptionLevelID);
 }
 
+void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::CorpusAnnotation> annot)
+{
+    static QMutex mutex;
+    mutex.lock();
+    QList<Interval *> intervals = annot->repository()->annotations()->getIntervals(
+                AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
+    mutex.unlock();
+    foreach (Interval *intv, intervals) {
+        QStringList fields;
+        fields << QString::fromStdString(intv->tMin().toText())
+               << intv->attribute("speakerID").toString()
+               << intv->text();
+        d->lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
+    }
+}
+
+void MiniTranscriptionWidget::clear()
+{
+    d->transcriptionView->clear();
+    if (d->watcher) d->watcher->cancel();
+}
+
+void MiniTranscriptionWidget::asyncCreateTranscriptFinished()
+{
+    d->transcriptionView->clear();
+    d->transcriptionView->insertTopLevelItems(0, d->lines);
+}
+
 void MiniTranscriptionWidget::rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID)
 {
     d->transcriptionView->clear();
@@ -72,14 +105,13 @@ void MiniTranscriptionWidget::rebind(QPointer<Praaline::Core::CorpusAnnotation> 
     if (!annot->repository()) return;
     if (!annot->repository()->annotations()) return;
     if (!levelID.isEmpty()) d->transcriptionLevelID = levelID;
-    foreach (Interval *intv, annot->repository()->annotations()->getIntervals(
-                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID))) {
-        QStringList fields;
-        fields << QString::fromStdString(intv->tMin().toText())
-               << intv->attribute("speakerID").toString()
-               << intv->text();
-        d->lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
-    }
-    d->transcriptionView->insertTopLevelItems(0, d->lines);
     d->annotation = annot;
+
+    d->transcriptionView->insertTopLevelItem(0,
+        new QTreeWidgetItem((QTreeWidget*)0, QStringList() << "Loading..." << "Loading..." << "Loading..."));
+    d->watcher = QSharedPointer<QFutureWatcher<void> >(new QFutureWatcher<void>());
+    connect(d->watcher.data(), SIGNAL(finished()), this, SLOT(asyncCreateTranscriptFinished()));
+
+    QFuture<void> future = QtConcurrent::run(this, &MiniTranscriptionWidget::asyncCreateTranscript, annot);
+    d->watcher->setFuture(future);
 }

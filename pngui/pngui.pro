@@ -7,7 +7,7 @@
 
 CONFIG += staticlib qt thread warn_on stl rtti exceptions c++14
 
-QT += xml sql gui printsupport multimedia multimediawidgets
+QT += xml sql gui printsupport multimedia multimediawidgets concurrent
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
 }

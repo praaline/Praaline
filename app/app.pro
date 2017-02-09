@@ -13,7 +13,7 @@ TEMPLATE = app
 
 CONFIG += qt thread warn_on stl rtti exceptions c++14
 
-QT += core gui network xml sql svg opengl multimedia multimediawidgets help
+QT += core gui network xml sql svg opengl multimedia multimediawidgets help concurrent
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets printsupport
     macx:QT += macextras

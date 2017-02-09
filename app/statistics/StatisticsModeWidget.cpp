@@ -79,7 +79,11 @@ void StatisticsModeWidget::anayserDoubleClicked(const QModelIndex &index)
     if (!index.isValid()) return;
     if (!d->modelStatisticsPlugins) return;
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) return;
+    if (!repository) {
+        QMessageBox::warning(this, tr("Statistics"), tr("Please open or connect to a Corpus Repository first."),
+                             QMessageBox::Ok);
+        return;
+    }
 
     QString id = d->modelStatisticsPlugins->data(index, Qt::UserRole + 1).toString();
     if (id.isEmpty()) return;

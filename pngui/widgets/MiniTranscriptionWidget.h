@@ -19,17 +19,19 @@ public:
     explicit MiniTranscriptionWidget(QWidget *parent = 0);
     virtual ~MiniTranscriptionWidget();
 
-    void setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
     void setTranscriptionLevelID(const QString &levelID);
     QString transcriptionLevelID() const;
 
-signals:
-
-public slots:
+    void setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
+    void clear();
 
 private:
     MiniTranscriptionWidgetData *d;
     void rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID);
+    void asyncCreateTranscript(QPointer<Praaline::Core::CorpusAnnotation> annot);
+
+private slots:
+    void asyncCreateTranscriptFinished();
 };
 
 #endif // MINITRANSCRIPTIONWIDGET_H
