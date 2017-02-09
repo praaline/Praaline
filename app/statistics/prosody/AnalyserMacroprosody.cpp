@@ -55,6 +55,7 @@ QList<QString> AnalyserMacroprosody::groupingLevels()
 // static
 QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
 {
+    Q_UNUSED(groupingLevel)
     return QList<QString>() << "StartTime" << "EndTime" << "Duration"
                             << "StartSyll" << "EndSyll" << "TextTokens" << "TextSyllables"
                             << "TimeArticulation" << "TimeFilledPause" << "TimeSilentPause"
@@ -74,6 +75,7 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
 // static
 StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QString &groupingLevel, const QString &measureID)
 {
+    Q_UNUSED(groupingLevel)
     if (measureID == "TimeTotalSample")          return StatisticalMeasureDefinition("TimeTotalSample", "Total sample time", "s");
     if (measureID == "TimeSingleSpeaker")        return StatisticalMeasureDefinition("TimeSingleSpeaker", "Single-speaker time", "s");
     return StatisticalMeasureDefinition(measureID, measureID, "");
@@ -82,7 +84,9 @@ StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QStri
 double AnalyserMacroprosody::measure(const QString &groupingLevel, const QString &key, const QString &measureID) const
 {
     Q_UNUSED(groupingLevel)
-
+    Q_UNUSED(key)
+    Q_UNUSED(measureID)
+    return 0;
 }
 
 QPointer<QStandardItemModel> AnalyserMacroprosody::model()

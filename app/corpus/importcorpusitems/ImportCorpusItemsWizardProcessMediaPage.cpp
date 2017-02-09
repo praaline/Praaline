@@ -77,7 +77,7 @@ bool ImportCorpusItemsWizardProcessMediaPage::validatePage()
             continue;
         }
         SoundInfo info;
-        bool ok = SoundInfo::getSoundInfo(filename, info);
+        bool ok = SoundInfo::getSoundInfo(rec->filePath(), info);
         if (!ok) {
             m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;

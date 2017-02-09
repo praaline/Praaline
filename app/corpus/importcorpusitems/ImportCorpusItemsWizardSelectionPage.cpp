@@ -211,7 +211,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
     if (isRecording) {
         CorpusRecording *rec = new CorpusRecording(baseFilename);
         rec->setName(baseFilename);
-        rec->setFilename(info.canonicalFilePath());
+        rec->setFilename(d->corpus->repository()->files()->getRelativeToBasePath(info.canonicalFilePath()));
         d->candidateRecordings.insert(QPair<QString, QString>(communicationID, baseFilename), rec);
         ui->texteditMessages->appendPlainText(QString("MEDIA RECORDING %1 >> Communication ID: %2, Recording ID: %3")
                                               .arg(info.canonicalFilePath()).arg(communicationID).arg(baseFilename));
