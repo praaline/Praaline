@@ -11,14 +11,14 @@ namespace Core {
 // ==========================================================================================================
 // Constructors - destructor
 // ==========================================================================================================
-SequenceTier::SequenceTier(const QString &name, QObject *parent) :
-    AnnotationTier(parent)
+SequenceTier::SequenceTier(const QString &name, AnnotationTier *baseTier, QObject *parent) :
+    AnnotationTier(parent), m_baseTier(baseTier)
 {
     m_name = name;
 }
 
-SequenceTier::SequenceTier(const QString &name, const QList<Sequence *> &sequences, QObject *parent) :
-    AnnotationTier(parent)
+SequenceTier::SequenceTier(const QString &name, const QList<Sequence *> &sequences, AnnotationTier *baseTier, QObject *parent) :
+    AnnotationTier(parent), m_baseTier(baseTier)
 {
     m_name = name;
     m_sequences = sequences;
@@ -27,10 +27,11 @@ SequenceTier::SequenceTier(const QString &name, const QList<Sequence *> &sequenc
 }
 
 SequenceTier::SequenceTier(const SequenceTier *copy, QString name, QObject *parent) :
-    AnnotationTier(parent)
+    AnnotationTier(parent), m_baseTier(0)
 {
     if (!copy) return;
     m_name = (name.isEmpty()) ? copy->name() : name;
+    m_baseTier = copy->baseTier();
     // deep copy of Sequences
     foreach (Sequence *sequence, copy->sequences()) {
         m_sequences << new Sequence(*sequence);
@@ -123,6 +124,20 @@ void SequenceTier::fillEmptyAttributeTextWith(const QString &attributeID,const Q
 }
 
 // ==============================================================================================================================
+// Base tier
+// ==============================================================================================================================
+
+AnnotationTier *SequenceTier::baseTier() const
+{
+    return m_baseTier;
+}
+
+void SequenceTier::setBaseTier(AnnotationTier *tier)
+{
+    m_baseTier = tier;
+}
+
+// ==============================================================================================================================
 // Accessors and mutators for Sequences
 // ==============================================================================================================================
 
@@ -158,6 +173,20 @@ void SequenceTier::addSequences(QList<Sequence *> sequences)
 void SequenceTier::removeSequenceAt(int i)
 {
     m_sequences.removeAt(i);
+}
+
+QList<AnnotationElement *> SequenceTier::sequenceElements(int sequenceIndex) const
+{
+    QList<AnnotationElement *> elements;
+    if (!m_baseTier) return elements;
+    if (sequenceIndex < 0 || sequenceIndex >= m_sequences.count()) {
+        int from = m_sequences.at(sequenceIndex)->indexFrom();
+        int to = m_sequences.at(sequenceIndex)->indexTo();
+        for (int i = from; i <= to; ++i) {
+            if (i > 0 && i < m_baseTier->count()) elements << m_baseTier->at(i);
+        }
+    }
+    return elements;
 }
 
 } // namespace Core

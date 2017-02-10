@@ -15,33 +15,30 @@ class Interval;
 }
 using namespace Praaline::Core;
 
+struct InterraterAgreementData;
+
 class InterraterAgreement
 {
 public:
     InterraterAgreement();
     ~InterraterAgreement();
 
-    void addGroup(QString groupName, QStringList labels, bool includeEmpty = false);
-    void removeGroup(QString groupName);
+    void addClass(const QString &className, const QStringList &labels, bool includeEmpty = false);
+    void removeClass(const QString &className);
+    QString classify(const QString &label) const;
 
     void reset();
     void resetCounts();
-    void categorise(QString annotatorID, const QList<Interval *> &intervals, QString attributeID = QString());
-    double getFleissKappa() const;
+    void categorise(const QString &annotatorID, const QList<Interval *> &intervals, const QString &attributeID = QString());
     QStandardItemModel *createTableModel();
 
-    double getCohenKappa(const QString &groupName_1, const QString &groupName_2,
+    double getCohenKappa(const QString &className_1, const QString &className_2,
                          const QList<Interval *> &intervals,
-                         QString attributeID_1 = QString(), QString attributeID_2 = QString()) const;
+                         const QString &attributeID_1 = QString(), const QString &attributeID_2 = QString()) const;
+    double getFleissKappa() const;
 
 private:
-    QHash<QString, QStringList> m_groups;
-    QString m_groupForEmpty;
-    QHash<QString, QString> m_classification;
-    // A list of annotators (columns): each containing the count for a given category
-    QMap<QString, QHash<QString, int> > m_counts;
-
-    QString groupNameForLabel(const QString &label) const;
+    InterraterAgreementData *d;
 };
 
 #endif // INTERRATERAGREEMENT_H

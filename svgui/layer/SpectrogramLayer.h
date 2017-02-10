@@ -50,7 +50,7 @@ class SpectrogramLayer : public SliceableLayer,
     Q_OBJECT
 
 public:
-    enum Configuration { FullRangeDb, MelodicRange, MelodicPeaks };
+    enum Configuration { FullRangeDb, MelodicRange, MelodicPeaks, Praat };
     
     SpectrogramLayer(Configuration = FullRangeDb);
     ~SpectrogramLayer();

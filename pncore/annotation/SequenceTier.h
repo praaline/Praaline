@@ -30,8 +30,8 @@ class PRAALINE_CORE_SHARED_EXPORT SequenceTier : public AnnotationTier
     Q_OBJECT
 public:
     // Constructors, destructor
-    SequenceTier(const QString &name = QString(), QObject *parent = 0);
-    SequenceTier(const QString &name, const QList<Sequence *> &sequences, QObject *parent = 0);
+    SequenceTier(const QString &name = QString(), AnnotationTier *baseTier = 0, QObject *parent = 0);
+    SequenceTier(const QString &name, const QList<Sequence *> &sequences, AnnotationTier *baseTier = 0, QObject *parent = 0);
     SequenceTier(const SequenceTier *copy, QString name = QString(), QObject *parent = 0);
     virtual ~SequenceTier();
 
@@ -53,6 +53,10 @@ public:
                               Qt::CaseSensitivity cs = Qt::CaseSensitive);
     void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
 
+    // Base tier
+    AnnotationTier *baseTier() const;
+    void setBaseTier(AnnotationTier *tier);
+
     // Accessors for Sequences
     Sequence* sequence(int index) const;
     QList<Sequence *> sequences() const;
@@ -62,7 +66,11 @@ public:
     void addSequences(QList<Sequence *> sequences);
     void removeSequenceAt(int i);
 
+    // Access to base annotation elements
+    QList<AnnotationElement *> sequenceElements(int sequenceIndex) const;
+
 protected:
+    AnnotationTier *m_baseTier;
     QList<Sequence *> m_sequences;
 
 private:

@@ -49,6 +49,11 @@ void SVLayersInitialiser::initialise()
                                   QStringList() << "DenseTimeValueModel",
                                   [](LayerFactory::LayerType type) -> Layer * { Q_UNUSED(type); return new SpectrogramLayer(SpectrogramLayer::FullRangeDb); },
                                   [](Model *) -> Model * { return 0; } ));
+    factory.registerLayerType("PraatSpectrogram", LayerFactory::LayerConfiguration(
+                                  "praatspectrogram", "Spectrogram", "spectrogram", false,
+                                  QStringList() << "DenseTimeValueModel",
+                                  [](LayerFactory::LayerType type) -> Layer * { Q_UNUSED(type); return new SpectrogramLayer(SpectrogramLayer::Praat); },
+                                  [](Model *) -> Model * { return 0; } ));
     factory.registerLayerType("MelodicRangeSpectrogram", LayerFactory::LayerConfiguration(
                                   "melodicrange", "Spectrogram", "spectrogram", false,
                                   QStringList() << "DenseTimeValueModel",

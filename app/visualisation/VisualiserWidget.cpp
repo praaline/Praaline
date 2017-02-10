@@ -1011,6 +1011,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     LayerFactory::LayerType backgroundTypes[] = {
         LayerFactory::Type("Waveform"),
         LayerFactory::Type("Spectrogram"),
+        LayerFactory::Type("PraatSpectrogram"),
         LayerFactory::Type("MelodicRangeSpectrogram"),
         LayerFactory::Type("PeakFrequencySpectrogram"),
         LayerFactory::Type("Spectrum")
@@ -1066,6 +1067,17 @@ void VisualiserWidget::setupPaneAndLayerMenus()
                 } else {
                     shortcutText = tr("Shift+G");
                     tipText = tr("Add a new layer showing a spectrogram");
+                }
+            }
+            else if (type == LayerFactory::Type("PraatSpectrogram")) {
+                icon = il.load("spectrogram");
+                mainText = tr("Add &Phonetics Spectrogram");
+                if (menuType == paneMenuType) {
+                    shortcutText = tr("P");
+                    tipText = tr("Add a new pane showing a spectrogram set up for phonetic analysis (Praat settings)");
+                } else {
+                    shortcutText = tr("Shift+P");
+                    tipText = tr("Add a new layer showing a spectrogram set up for phonetic analysis (Praat settings)");
                 }
             }
             else if (type == LayerFactory::Type("MelodicRangeSpectrogram")) {

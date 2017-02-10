@@ -109,6 +109,16 @@ SpectrogramLayer::SpectrogramLayer(Configuration config) :
         setColourScale(LinearColourScale);
         setBinDisplay(PeakFrequencies);
         setNormalizeColumns(true);
+    } else if (config == Praat) {
+        setWindowSize(256);
+        setWindowHopLevel(5);
+        m_initialMaxFrequency = 5000;
+        setMaxFrequency(5000);
+        setMinFrequency(0);
+        setColourMap(ColourMapper::BlackOnWhite);
+        setGain(-3.0);
+        setColourScale(dBSquaredColourScale);
+        setNormalizeVisibleArea(true);
     }
 
     Preferences *prefs = Preferences::getInstance();
