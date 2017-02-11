@@ -26,8 +26,8 @@ class StatisticalMeasureDefinition
 public:
     StatisticalMeasureDefinition();
     StatisticalMeasureDefinition(const QString &ID, const QString &displayName, const QString &units,
-                                 const QString &description = QString(), QVariant::Type type = QVariant::Double) :
-        m_ID(ID), m_displayName(displayName), m_units(units), m_description(description), m_type(type)
+                                 const QString &description = QString(), QVariant::Type type = QVariant::Double, bool isVector = false) :
+        m_ID(ID), m_displayName(displayName), m_units(units), m_description(description), m_type(type), m_isVector(isVector)
     {}
 
     QString ID() const          { return m_ID; }
@@ -35,6 +35,7 @@ public:
     QString units() const       { return m_units; }
     QString description() const { return m_description; }
     QVariant::Type type() const { return m_type; }
+    bool isVector() const       { return m_isVector; }
 
     QString displayNameUnit() const {
         if (m_units.isEmpty()) return m_displayName;
@@ -47,6 +48,7 @@ private:
     QString m_units;
     QString m_description;
     QVariant::Type m_type;
+    bool m_isVector;
 };
 
 } // namespace Core

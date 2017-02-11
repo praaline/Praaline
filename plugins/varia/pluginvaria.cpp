@@ -161,8 +161,19 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 {    
     if (communications.isEmpty()) return;
     SpeechRateExperiments sr;
-    sr.readResultsFile(communications.first()->repository(),
-                       "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/results_P0.txt");
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/";
+    sr.readResultsFile(communications.first()->repository(), path + "results_P4.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P5.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P6.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P7.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P9.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P10.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P11.xml");
+    sr.readResultsFile(communications.first()->repository(), path + "results_P12.xml");
+
+//    sr.readResultsFile(communications.first()->repository(), path + "results_P1.txt");
+//    sr.readResultsFile(communications.first()->repository(), path + "results_P2.txt");
+//    sr.readResultsFile(communications.first()->repository(), path + "results_P3.txt");
     return;
 
 //    // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);

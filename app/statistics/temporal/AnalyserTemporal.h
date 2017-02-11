@@ -20,19 +20,25 @@ class AnalyserTemporal : public QObject
 {
     Q_OBJECT
 public:
+
+
+
     explicit AnalyserTemporal(QObject *parent = 0);
     virtual ~AnalyserTemporal();
 
-    static StatisticalMeasureDefinition measureDefinitionForCommunication(const QString &measureID);
-    static StatisticalMeasureDefinition measureDefinitionForSpeaker(const QString &measureID);
-    static QList<QString> measureIDsForCommunication();
-    static QList<QString> measureIDsForSpeaker();
+    static QStringList measureIDsForCommunication();
+    static QStringList measureIDsForSpeaker();
+    static QStringList vectorMeasureIDsForCommunication();
+    static QStringList vectorMeasureIDsForSpeaker();
+    static StatisticalMeasureDefinition measureDefinition(const QString &measureID);
 
+    QStringList speakerIDs() const;
     double measureCom(const QString &measureID) const;
     double measureSpk(const QString &speakerID, const QString &measureID) const;
-    QList<QString> speakerIDs() const;
+    QList<double> vectorMeasureCom(const QString &measureID) const;
+    QList<double> vectorMeasureSpk(const QString &speakerID, const QString &measureID) const;
 
-    void calculate(QPointer<CorpusCommunication> com, QTextStream &pauseListSIL, QTextStream &pauseListFIL);
+    void calculate(QPointer<CorpusCommunication> com);
 
 signals:
 
@@ -40,8 +46,6 @@ public slots:
 
 private:
     AnalyserTemporalData *d;
-    static QHash<QString, StatisticalMeasureDefinition> measureDefsCom;
-    static QHash<QString, StatisticalMeasureDefinition> measureDefsSpk;
 };
 
 #endif // ANALYSERTEMPORAL_H

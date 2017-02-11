@@ -22,6 +22,9 @@ public:
     void setTranscriptionLevelID(const QString &levelID);
     QString transcriptionLevelID() const;
 
+    void setSkipPauses(bool skip);
+    bool skipPauses() const;
+
     void setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
     void clear();
 

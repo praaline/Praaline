@@ -61,15 +61,6 @@ void AnalyserTemporalWidget::analyse()
     QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(corpusID);
     if (!corpus) return;
     QScopedPointer<AnalyserTemporal>analyser(new AnalyserTemporal);
-    // Pause lists
-//    QFile filePauseListSIL(corpus->basePath() + "/pauselist_SIL.txt");
-//    if ( !filePauseListSIL.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
-//    QTextStream pauseListSIL(&filePauseListSIL);
-//    pauseListSIL.setCodec("UTF-8");
-//    QFile filePauseListFIL(corpus->basePath() + "/pauselist_FIL.txt");
-//    if ( !filePauseListFIL.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
-//    QTextStream pauseListFIL(&filePauseListFIL);
-//    pauseListFIL.setCodec("UTF-8");
 
     // Models available
     QStandardItemModel *modelCom = new QStandardItemModel(this);
@@ -83,28 +74,21 @@ void AnalyserTemporalWidget::analyse()
     modelCom->setHorizontalHeaderLabels(labels);
     labels.clear();
     labels << "CommunicationID" << "SpeakerID";
-//    pauseListSIL << "CommunicationID\tSpeakerID\t";
-//    pauseListFIL << "CommunicationID\tSpeakerID\t";
     foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
         labels << attr->ID();
-//        pauseListSIL << attr->ID() << "\t";
-//        pauseListFIL << attr->ID() << "\t";
     }
     foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
         labels << attr->ID();
     }
     foreach (QString measureID, analyser->measureIDsForSpeaker()) labels << measureID;
     modelSpk->setHorizontalHeaderLabels(labels);
-//    pauseListSIL << "Duration\tDurationRel1\tDurationRel2\tDurationRel3\tDurationRel4\tDurationRel5\n";
-//    pauseListFIL << "Duration\n";
-    QTextStream SIL;
-    QTextStream FIL;
+
     // Analyse communications / and then speakers
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(corpus->communicationsCount());
     int i = 1;
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
-        analyser->calculate(com, SIL, FIL); // ,pauseListSIL, pauseListFIL);
+        analyser->calculate(com);
         QList<QStandardItem *> itemsCom;
         QStandardItem *item;
         item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsCom << item;
@@ -139,22 +123,17 @@ void AnalyserTemporalWidget::analyse()
         }
         ui->progressBar->setValue(i);
         QApplication::processEvents();
+        i++;
     }
     ui->progressBar->setValue(ui->progressBar->maximum());
     QApplication::processEvents();
 
-    // Update table headers
-    //    for (int i = 0; i < modelCom->columnCount(); ++i)
-    //        model->setHorizontalHeaderItem(i, new QStandardItem(analyser->model()->horizontalHeaderItem(i)->text()));
     // Update table
     QStandardItemModel *model(0);
     if (ui->optionCommunications->isChecked()) model = modelCom; else model = modelSpk;
     d->gridviewResults->tableView()->setModel(model);
     if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
     d->modelResults = model;
-
-//    filePauseListSIL.close();
-//    filePauseListFIL.close();
 }
 
 } // namespace StatisticsPluginTemporal

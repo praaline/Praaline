@@ -239,13 +239,18 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
 //    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
 //                                                        "timeNanoseconds", "rate_phone", "text");
 //    if (layer_rate_phone) layer_rate_phone->setDisplayExtents(0.0, 30.0);
-    Layer *layer_joystick_sprate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                d->currentTierGroups.first()->tier("joystick_speechrate"), "timeNanoseconds", "axis1", "text");
-    if (layer_joystick_sprate) layer_joystick_sprate->setDisplayExtents(-32768.0, 32768.0);
+//    foreach (QString participantID, d->currentTierGroups.keys()) {
+//        if (!participantID.startsWith("P")) continue;
+//        AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);
+//        Layer *layer_joystick_sprate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiers->tier("joystick_speechrate"), "timeNanoseconds", "axis1", "text");
+//        if (layer_joystick_sprate) layer_joystick_sprate->setDisplayExtents(-32768.0, 32768.0);
+////        Layer *layer_joystick_pitch = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+////                    tiers->tier("joystick_pitchmovement"), "timeNanoseconds", "axis1", "text");
+////        if (layer_joystick_pitch) layer_joystick_pitch->setDisplayExtents(-32768.0, 32768.0);
+//    }
 
-    Layer *layer_joystick_pitch = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                d->currentTierGroups.first()->tier("joystick_pitchmovement"), "timeNanoseconds", "axis1", "text");
-    if (layer_joystick_pitch) layer_joystick_pitch->setDisplayExtents(-32768.0, 32768.0);
+
 
 
     // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));

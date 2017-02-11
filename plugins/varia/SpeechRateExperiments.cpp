@@ -36,7 +36,7 @@ bool correctFile(const QString &filename)
     do {
         QString line = stream.readLine();
         if (line.startsWith("<tapper")) {
-            out << QString(line).replace("<tapper", "<gamepadannotator") << "\n";
+            out << QString(line).replace("<tapper", "<gamepadannotator").replace(" />", ">") << "\n";
         }
         else if (line.startsWith("<wmresponse") && !inWMtest) {
             out << "<workingmemory>\n";

@@ -630,6 +630,12 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
     // Clean up statements
     QSqlQuery queryCommunicationDelete(db);
     queryCommunicationDelete.prepare("DELETE FROM communication WHERE corpusID = :corpusID AND communicationID = :communicationID");
+    QSqlQuery queryCommunicationRecordingsDelete(db);
+    queryCommunicationRecordingsDelete.prepare("DELETE FROM recording WHERE communicationID = :communicationID");
+    QSqlQuery queryCommunicationAnnotationsDelete(db);
+    queryCommunicationAnnotationsDelete.prepare("DELETE FROM annotation WHERE communicationID = :communicationID");
+    QSqlQuery queryCommunicationParticipationsDelete(db);
+    queryCommunicationParticipationsDelete.prepare("DELETE FROM participation WHERE corpusID = :corpusID AND communicationID = :communicationID");
     QSqlQuery queryRecordingDelete(db);
     queryRecordingDelete.prepare("DELETE FROM recording WHERE communicationID = :communicationID AND recordingID = :recordingID");
     QSqlQuery queryAnnotationDelete(db);
@@ -640,13 +646,16 @@ bool SQLSerialiserMetadata::saveCorpus(Corpus *corpus,
     queryParticipationDelete.prepare("DELETE FROM participation WHERE corpusID = :corpusID AND communicationID = :communicationID AND speakerID = :speakerID");
     // Clean up Communications (including recordings and annotations)
     queryCommunicationDelete.bindValue(":corpusID", corpus->ID());
+    queryCommunicationParticipationsDelete.bindValue(":corpusID", corpus->ID());
     foreach (QString communicationID, corpus->deletedCommunicationIDs) {
+        queryCommunicationRecordingsDelete.bindValue(":communicationID", communicationID);
+        queryCommunicationRecordingsDelete.exec();
+        queryCommunicationAnnotationsDelete.bindValue(":communicationID", communicationID);
+        queryCommunicationAnnotationsDelete.exec();
+        queryCommunicationParticipationsDelete.bindValue(":communicationID", communicationID);
+        queryCommunicationParticipationsDelete.exec();
         queryCommunicationDelete.bindValue(":communicationID", communicationID);
         queryCommunicationDelete.exec();
-        queryRecordingDelete.bindValue(":communicationID", communicationID);
-        queryRecordingDelete.exec();
-        queryAnnotationDelete.bindValue(":communicationID", communicationID);
-        queryAnnotationDelete.exec();
     }
     corpus->deletedCommunicationIDs.clear();
     // Clean up Speakers

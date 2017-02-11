@@ -6,7 +6,7 @@
 #include "BatchEditorWidget.h"
 #include "CompareAnnotationsWidget.h"
 #include "TranscriberWidget.h"
-#include "CreateSequenceAnnotationDialog.h"
+#include "calculate/AddCalculatedAnnotationDialog.h"
 
 struct AnnotationModeWidgetData {
     AnnotationModeWidgetData()
@@ -160,7 +160,7 @@ void AnnotationModeWidget::showCompareAnnotations()
 
 void AnnotationModeWidget::createSequenceAnnotation()
 {
-    CreateSequenceAnnotationDialog *dialog = new CreateSequenceAnnotationDialog(this);
+    AddCalculatedAnnotationDialog *dialog = new AddCalculatedAnnotationDialog(this);
     dialog->exec();
     delete dialog;
 }

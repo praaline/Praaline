@@ -327,8 +327,3 @@ void AnnotationTimelineEditor::moveToColumn(int column)
     }
 }
 
-
-
-
-
-

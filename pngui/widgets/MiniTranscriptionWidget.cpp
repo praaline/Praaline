@@ -17,9 +17,10 @@ using namespace Praaline::Core;
 
 struct MiniTranscriptionWidgetData {
     MiniTranscriptionWidgetData() :
-        transcriptionView(0), watcher(0)
+        skipPauses(true), transcriptionView(0), watcher(0)
     {}
 
+    bool skipPauses;
     QString transcriptionLevelID;
     QPointer<CorpusAnnotation> annotation;
     QTreeWidget *transcriptionView;
@@ -69,6 +70,18 @@ void MiniTranscriptionWidget::setAnnotation(QPointer<Praaline::Core::CorpusAnnot
     rebind(annot, d->transcriptionLevelID);
 }
 
+bool MiniTranscriptionWidget::skipPauses() const
+{
+    return d->skipPauses;
+}
+
+void MiniTranscriptionWidget::setSkipPauses(bool skip)
+{
+    if (d->skipPauses == skip) return;
+    d->skipPauses = skip;
+    rebind(d->annotation, d->transcriptionLevelID);
+}
+
 void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::CorpusAnnotation> annot)
 {
     static QMutex mutex;
@@ -77,6 +90,7 @@ void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::Cor
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
     mutex.unlock();
     foreach (Interval *intv, intervals) {
+        if (d->skipPauses && intv->isPauseSilent()) continue;
         QStringList fields;
         fields << QString::fromStdString(intv->tMin().toText())
                << intv->attribute("speakerID").toString()

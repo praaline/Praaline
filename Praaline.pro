@@ -11,8 +11,7 @@ SUBDIRS += pncore pnlib pngui \
            libs/qtilities/src/Qtilities.pro \
            libs/qscintilla/Qt4Qt5/qscintilla.pro \
            libs/qcustomplot/qcustomplot.pro \
-           plugins #\
-           #praalinepy
+           plugins # praalinepy
 SUBDIRS += app
 
 sub_dataquay.file = dataquay/libdataquay.pro

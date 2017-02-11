@@ -36,22 +36,24 @@ public:
     virtual ~SequenceTier();
 
     // Implementation of AnnotationTier
-    AnnotationTier::TierType tierType() const
+    AnnotationTier::TierType tierType() const override
         { return AnnotationTier::TierType_Sequences; }
-    int count() const
+    int count() const override
         { return m_sequences.count(); }
-    bool isEmpty() const;
-    void clear();
-    Sequence *at(int index) const;
-    Sequence *first() const;
-    Sequence *last() const;
-    QList<QString> getDistinctTextLabels() const;
-    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
-    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyTextLabelsWith(const QString &filler);
+    RealTime tMin() const override;
+    RealTime tMax() const override;
+    bool isEmpty() const override;
+    void clear() override;
+    Sequence *at(int index) const override;
+    Sequence *first() const override;
+    Sequence *last() const override;
+    QList<QString> getDistinctTextLabels() const override;
+    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const override;
+    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyTextLabelsWith(const QString &filler) override;
     void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
+                              Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler) override;
 
     // Base tier
     AnnotationTier *baseTier() const;

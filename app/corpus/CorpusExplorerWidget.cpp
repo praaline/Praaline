@@ -814,10 +814,8 @@ void CorpusExplorerWidget::removeCorpusItems()
             }
             if (alsoDeleteData) {
                 foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-                    if (annot) {
-                        corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
-                        com->removeAnnotation(annot->ID());
-                    }
+                    if (!annot) continue;
+                    corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
                 }
             }
             corpus->removeCommunication(com->ID());
@@ -858,9 +856,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             }
             if (alsoDeleteData) {
                 Corpus *corpus = qobject_cast<Corpus *>(com->parent());
-                if (corpus) {
-                    corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
-                }
+                if (corpus) corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
             }
             com->removeAnnotation(annot->ID());
             return;
@@ -905,10 +901,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                             CorpusCommunication *com = qobject_cast<CorpusCommunication *>(cobj);
                             if (com) {
                                 foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-                                    if (annot) {
-                                        corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
-                                        com->removeAnnotation(annot->ID());
-                                    }
+                                    if (annot) corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
                                 }
                             }
                         }
@@ -928,9 +921,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                     if (com) com->removeAnnotation(cobj->ID());
                     if (alsoDeleteData) {
                         Corpus *corpus = qobject_cast<Corpus *>(com->parent());
-                        if (corpus) {
-                            corpus->repository()->annotations()->deleteAllTiersAllSpeakers(cobj->ID());
-                        }
+                        if (corpus) corpus->repository()->annotations()->deleteAllTiersAllSpeakers(cobj->ID());
                     }
                 }
             }

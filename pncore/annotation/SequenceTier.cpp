@@ -47,6 +47,18 @@ SequenceTier::~SequenceTier()
 // Implementation of AnnotationTier
 // ==============================================================================================================================
 
+RealTime SequenceTier::tMin() const
+{
+    if (m_baseTier) return m_baseTier->tMin();
+    return m_tMin;
+}
+
+RealTime SequenceTier::tMax() const
+{
+    if (m_baseTier) return m_baseTier->tMax();
+    return m_tMax;
+}
+
 bool SequenceTier::isEmpty() const
 {
     return m_sequences.isEmpty();
