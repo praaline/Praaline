@@ -89,7 +89,7 @@ void PraalineMainWindow::initialise()
 {
     // Set application icon
     QIcon icon;
-    icon.addFile(QString::fromUtf8(":/icons/praaline-alpha.png"), QSize(), QIcon::Normal, QIcon::Off);
+    icon.addFile(QString::fromUtf8(":/icons/praaline.svg"), QSize(), QIcon::Normal, QIcon::Off);
     m_mainWindow->setWindowIcon(icon);
 
     // Create the configuration widget
