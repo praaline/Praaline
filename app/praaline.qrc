@@ -165,5 +165,7 @@
         <file>icons/actions/move_down@2x.png</file>
         <file>icons/actions/move_up.png</file>
         <file>icons/actions/move_up@2x.png</file>
+        <file>icons/corpusexplorer/search.png</file>
+        <file>icons/corpusexplorer/search@2x.png</file>
     </qresource>
 </RCC>

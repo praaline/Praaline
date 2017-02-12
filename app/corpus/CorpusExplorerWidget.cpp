@@ -75,6 +75,7 @@ struct CorpusExplorerWidgetData {
     QAction *actionCleanUpParticipations;
     // Presentation
     QAction *actionAttributesAndGroupings;
+    QAction *actionToggleSearchBox;
     QAction *actionMetadataEditorPrimaryStyleTree;
     QAction *actionMetadataEditorPrimaryStyleGroupBox;
     QAction *actionMetadataEditorPrimaryStyleButton;
@@ -137,13 +138,6 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     // Project Item
     // d->projectItem = new ObserverProjectItemWrapper(d->top_level_node, this);
 
-    // Menu and Toolbar actions
-    d->toolbarCorpusExplorer = new QToolBar(tr("Corpus Explorer"), this);
-    d->toolbarCorpusExplorer->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarCorpusExplorer->setIconSize(QSize(24, 24));
-    setupActions();
-    this->addToolBar(d->toolbarCorpusExplorer);
-
     // Set up corpora observer widget
     d->corporaObserverWidget = new ObserverWidget(Qtilities::TreeView);
     d->corporaObserverWidget->setRefreshMode(ObserverWidget::RefreshModeShowTree);
@@ -156,6 +150,14 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     d->corporaObserverWidget->setObserverContext(d->corporaTopLevelNode);
     d->corporaObserverWidget->layout()->setMargin(0);
     d->corporaObserverWidget->initialize();
+    d->corporaObserverWidget->toggleSearchBox();
+
+    // Menu and Toolbar actions
+    d->toolbarCorpusExplorer = new QToolBar(tr("Corpus Explorer"), this);
+    d->toolbarCorpusExplorer->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarCorpusExplorer->setIconSize(QSize(24, 24));
+    setupActions();
+    this->addToolBar(d->toolbarCorpusExplorer);
 
     // Set up corpus item preview widget
     d->preview = new CorpusItemPreview(this);
@@ -173,8 +175,12 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     ui->dockMetadataSecondary->setWidget(d->metadataEditorSecondary);
 
     // Layout
-    ui->splitterEditorsAndPreview->setStretchFactor(0, 2);
-    ui->splitterEditorsAndPreview->setStretchFactor(1, 1);
+    // Set proportions
+    QList<int> sizes;
+    sizes << width() * 0.3 << width() * 0.7;
+    ui->splitterMainVertical->setSizes(sizes);
+    sizes.clear(); sizes << height() * 0.7 << height() * 0.3;
+    ui->splitterEditorsPreviewHorizontal->setSizes(sizes);
 }
 
 CorpusExplorerWidget::~CorpusExplorerWidget()
@@ -365,6 +371,13 @@ void CorpusExplorerWidget::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     view_menu->addAction(command);
 
+    d->actionToggleSearchBox = new QAction(QIcon(":icons/corpusexplorer/search.png"), tr("Search"), this);
+    connect(d->actionToggleSearchBox, SIGNAL(triggered()), d->corporaObserverWidget, SLOT(toggleSearchBox()));
+    command = ACTION_MANAGER->registerAction("Corpus.Explorer.ToggleSearchBox", d->actionToggleSearchBox, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    corpus_menu->addAction(command);
+    d->toolbarCorpusExplorer->addAction(d->actionToggleSearchBox);
+
     // Metadata editor styling menus (inserted on the toolbar)
     setupMetadataEditorsStylingMenu();
 }
@@ -418,10 +431,12 @@ void CorpusExplorerWidget::setupMetadataEditorsStylingMenu()
     // Add the pop-up menu to the corpus explorer toolbar
     QToolButton* toolButtonMetadataEditorStyles = new QToolButton();
     toolButtonMetadataEditorStyles->setMenu(d->menuMetadataEditorStyles);
+    toolButtonMetadataEditorStyles->setIcon(QIcon(":icons/corpusexplorer/corpus_explorer_syle.png"));
+    toolButtonMetadataEditorStyles->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolButtonMetadataEditorStyles->setPopupMode(QToolButton::InstantPopup);
     QWidgetAction* toolButtonActionMetadataEditorStyles = new QWidgetAction(this);
     toolButtonActionMetadataEditorStyles->setDefaultWidget(toolButtonMetadataEditorStyles);
-    toolButtonActionMetadataEditorStyles->setIcon(QIcon(":icons/actions/list_add.png"));
+
     d->toolbarCorpusExplorer->addAction(toolButtonActionMetadataEditorStyles);
 }
 

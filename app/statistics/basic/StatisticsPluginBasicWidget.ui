@@ -128,17 +128,34 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBoxResults">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>2</verstretch>
-      </sizepolicy>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="tabPosition">
+      <enum>QTabWidget::North</enum>
      </property>
-     <property name="title">
-      <string>Results</string>
+     <property name="tabShape">
+      <enum>QTabWidget::Rounded</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayoutResults"/>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <property name="movable">
+      <bool>true</bool>
+     </property>
+     <property name="tabBarAutoHide">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="tabResultsTable">
+      <attribute name="title">
+       <string>Results Table</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutResults"/>
+     </widget>
+     <widget class="QWidget" name="tabCharts">
+      <attribute name="title">
+       <string>Charts</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutCharts"/>
+     </widget>
     </widget>
    </item>
   </layout>

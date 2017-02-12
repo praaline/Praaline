@@ -28,13 +28,7 @@
      <number>0</number>
     </property>
     <item row="0" column="0">
-     <widget class="QSplitter" name="splitterMain">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+     <widget class="QSplitter" name="splitterMainVertical">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -50,60 +44,37 @@
        </property>
        <widget class="QWidget" name="dockContentsCorpusExplorer"/>
       </widget>
-      <widget class="QSplitter" name="splitterEditorsAndPreview">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QSplitter" name="splitterEditorsPreviewHorizontal">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QSplitter" name="splitterEditors">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QSplitter" name="splitterEditorsVertical">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <widget class="QSplitter" name="splitterEditors2">
+        <widget class="QDockWidget" name="dockMetadataPrimary">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+         <property name="windowTitle">
+          <string>Primary Metadata Editor</string>
          </property>
-         <widget class="QDockWidget" name="dockMetadataPrimary">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string>Primary Metadata Editor</string>
-          </property>
-          <widget class="QWidget" name="dockContentsMetadataPrimary"/>
-         </widget>
-         <widget class="QDockWidget" name="dockMetadataSecondary">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string>Secondary Metadata Editor</string>
-          </property>
-          <widget class="QWidget" name="dockContentsMetadataSecondary"/>
-         </widget>
+         <widget class="QWidget" name="dockContentsMetadataPrimary"/>
+        </widget>
+        <widget class="QDockWidget" name="dockMetadataSecondary">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="windowTitle">
+          <string>Secondary Metadata Editor</string>
+         </property>
+         <widget class="QWidget" name="dockContentsMetadataSecondary"/>
         </widget>
        </widget>
        <widget class="QDockWidget" name="dockCorpusItemPreview">
