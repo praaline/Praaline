@@ -120,15 +120,15 @@ void NameValueListEditor::setupActions()
     connect(d->actionSaveList, SIGNAL(triggered()), SLOT(saveList()));
     d->toolbarLists->addAction(d->actionSaveList);
 
-    d->actionDeleteList = new QAction(QIcon(":icons/actions/list_remove.png"), "Delete", this);
+    d->actionDeleteList = new QAction(QIcon(":icons/actions/action_delete.png"), "Delete", this);
     connect(d->actionDeleteList, SIGNAL(triggered()), SLOT(deleteList()));
     d->toolbarLists->addAction(d->actionDeleteList);
 
-    d->actionImportLists = new QAction(QIcon(":icons/actions/action_import.png"), "Import", this);
+    d->actionImportLists = new QAction(QIcon(":icons/actions/table_import.png"), "Import", this);
     connect(d->actionImportLists, SIGNAL(triggered()), SLOT(importLists()));
     d->toolbarLists->addAction(d->actionImportLists);
 
-    d->actionExportLists = new QAction(QIcon(":icons/actions/action_export.png"), "Export", this);
+    d->actionExportLists = new QAction(QIcon(":icons/actions/table_export.png"), "Export", this);
     connect(d->actionExportLists, SIGNAL(triggered()), SLOT(exportLists()));
     d->toolbarLists->addAction(d->actionExportLists);
 

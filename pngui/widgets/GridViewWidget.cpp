@@ -15,6 +15,8 @@
 #include "GridViewWidget.h"
 #include "ui_gridviewwidget.h"
 
+#include "xlsx/xlsxdocument.h"
+
 struct GridViewWidgetData {
     GridViewWidgetData() {}
 
@@ -45,7 +47,7 @@ GridViewWidget::GridViewWidget(QWidget *parent) :
     ui->clipboardPasteToolButton->setShortcut(QKeySequence("Ctrl+V"));
     connect(ui->findToolButton, SIGNAL(clicked(bool)), this, SLOT(findDialog()));
     ui->findToolButton->setShortcut(QKeySequence("Ctrl+F"));
-    connect(ui->exportToolButton, SIGNAL(clicked(bool)), this, SLOT(exportToTabSeparated()));
+    connect(ui->exportToolButton, SIGNAL(clicked(bool)), this, SLOT(exportToFile()));
 
     d->findDialog = new GridViewFindDialog(this);
     d->findDialog->setModal(false);
@@ -82,39 +84,45 @@ void GridViewWidget::resultCountChanged(int filterRows, int unfilteredRows)
         setResultsLabelText(tr("Count: %1").arg(filterRows));
 }
 
-void GridViewWidget::exportToTabSeparated()
+void GridViewWidget::exportToFile()
 {
     QString filename;
     if (filename.isEmpty()) {
         QFileDialog::Options options;
         QString selectedFilter;
         filename = QFileDialog::getSaveFileName(this, tr("Export to tab-separated file"),
-                                                "praaline_data.txt", tr("Text File (*.txt);;All Files (*)"),
+                                                "praaline_data.xlsx", tr("Excel Spreadsheet (*.xlsx);;Text File (*.txt);;All Files (*)"),
                                                 &selectedFilter, options);
     }
     if (filename.isEmpty()) return;
-    exportToTabSeparated(filename);
+    if (filename.endsWith(".xlsx"))
+        exportToExcel(filename);
+    else
+        exportToTabSeparated(filename);
 }
 
 bool GridViewWidget::exportToTabSeparated(const QString &fileName)
 {
+    // Get model and verify it is ok
+    QAbstractItemModel *model = ui->advancedTableView->model();
+    if (!model) return false;
+    // Open text file
     QFile fileOut(fileName);
     if (! fileOut.open(QFile::WriteOnly | QFile::Text)) return false;
     QTextStream out(&fileOut);
     out.setCodec("UTF-8");
-    QAbstractItemModel *model = ui->advancedTableView->model();
-    if (!model) return false;
+    // Write header
     for (int col = 0; col < model->columnCount(); ++col) {
         out << model->headerData(col, Qt::Horizontal).toString() << "\t";
     }
     out << "\n";
-
+    // Create a process dialog while writing data
     int count = model->rowCount();
     QProgressDialog progressDialog(this);
     progressDialog.setCancelButtonText(tr("&Cancel"));
     progressDialog.setRange(0, count);
     progressDialog.setWindowTitle(tr("Exporting..."));
-
+    // Write data
     for (int row = 0; row < count; ++row) {
         if (progressDialog.wasCanceled()) break;
         progressDialog.setValue(row);
@@ -127,7 +135,44 @@ bool GridViewWidget::exportToTabSeparated(const QString &fileName)
         }
         out << "\n";
     }
+    // Finished
     fileOut.close();
+    return true;
+}
+
+bool GridViewWidget::exportToExcel(const QString &fileName)
+{
+    // Get model and verify it is ok
+    QAbstractItemModel *model = ui->advancedTableView->model();
+    if (!model) return false;
+    // Create an Excel document
+    QXlsx::Document xlsx;
+    // Note: rows and columns start from 1 for QXlsx
+    // Write header
+    QXlsx::Format format_header;
+    format_header.setFontBold(true);
+    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+    for (int col = 0; col < model->columnCount(); ++col) {
+        xlsx.write(1, col + 1, model->headerData(col, Qt::Horizontal), format_header);
+    }
+    // Create a process dialog while writing data
+    int count = model->rowCount();
+    QProgressDialog progressDialog(this);
+    progressDialog.setCancelButtonText(tr("&Cancel"));
+    progressDialog.setRange(0, count);
+    progressDialog.setWindowTitle(tr("Exporting..."));
+    // Write data
+    for (int row = 0; row < count; ++row) {
+        if (progressDialog.wasCanceled()) break;
+        progressDialog.setValue(row);
+        progressDialog.setLabelText(tr("Row %1 of %2...").arg(row).arg(count));
+        qApp->processEvents();
+        for (int col = 0; col < model->columnCount(); ++col) {
+            xlsx.write(row + 2, col + 1, model->data(model->index(row, col)));
+        }
+    }
+    // Finished
+    xlsx.saveAs(fileName);
     return true;
 }
 

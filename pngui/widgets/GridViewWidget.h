@@ -25,6 +25,7 @@ public:
 
     void setResultsLabelText(const QString &);
     bool exportToTabSeparated(const QString &);
+    bool exportToExcel(const QString &);
 
 public slots:
     void resultCountChanged(int filterRows, int unfilteredRows);
@@ -34,7 +35,7 @@ public slots:
     void clipboardPaste();
     void findDialog();
     void findNext();
-    void exportToTabSeparated();
+    void exportToFile();
     void toggleFilterRows();
 
 private:

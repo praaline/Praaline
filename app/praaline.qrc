@@ -158,5 +158,12 @@
         <file>icons/actions/action_new@2x.png</file>
         <file>icons/corpusexplorer/corpus_explorer_style@2x.png</file>
         <file>icons/corpusexplorer/corpus_explorer_syle.png</file>
+        <file>icons/actions/table_import.png</file>
+        <file>icons/actions/table_import@2x.png</file>
+        <file>icons/actions/table_import_24.png</file>
+        <file>icons/actions/move_down.png</file>
+        <file>icons/actions/move_down@2x.png</file>
+        <file>icons/actions/move_up.png</file>
+        <file>icons/actions/move_up@2x.png</file>
     </qresource>
 </RCC>
