@@ -184,7 +184,9 @@ SOURCES += main.cpp \
     statistics/interrater/KappaStatisticsWidget.cpp \
     statistics/temporal/PauseLengthDistributionWIdget.cpp \
     statistics/prosody/AnalyserMacroprosody.cpp \
-    annotation/calculate/AddCalculatedAnnotationDialog.cpp
+    annotation/calculate/AddCalculatedAnnotationDialog.cpp \
+    annotation/calculate/ComposeTranscriptionDialog.cpp \
+    annotation/calculate/CreateSequenceAnnotationDialog.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -286,7 +288,9 @@ HEADERS  += \
     statistics/interrater/KappaStatisticsWidget.h \
     statistics/temporal/PauseLengthDistributionWIdget.h \
     statistics/prosody/AnalyserMacroprosody.h \
-    annotation/calculate/AddCalculatedAnnotationDialog.h
+    annotation/calculate/AddCalculatedAnnotationDialog.h \
+    annotation/calculate/ComposeTranscriptionDialog.h \
+    annotation/calculate/CreateSequenceAnnotationDialog.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -347,7 +351,9 @@ FORMS    += \
     statistics/basic/StatisticsPluginBasicWidget.ui \
     statistics/interrater/KappaStatisticsWidget.ui \
     statistics/temporal/PauseLengthDistributionWIdget.ui \
-    annotation/calculate/AddCalculatedAnnotationDialog.ui
+    annotation/calculate/AddCalculatedAnnotationDialog.ui \
+    annotation/calculate/ComposeTranscriptionDialog.ui \
+    annotation/calculate/CreateSequenceAnnotationDialog.ui
 
 RESOURCES += \
     praaline.qrc \

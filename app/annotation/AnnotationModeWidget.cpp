@@ -6,7 +6,10 @@
 #include "BatchEditorWidget.h"
 #include "CompareAnnotationsWidget.h"
 #include "TranscriberWidget.h"
+
 #include "calculate/AddCalculatedAnnotationDialog.h"
+#include "calculate/CreateSequenceAnnotationDialog.h"
+#include "calculate/ComposeTranscriptionDialog.h"
 
 struct AnnotationModeWidgetData {
     AnnotationModeWidgetData()
@@ -18,7 +21,9 @@ struct AnnotationModeWidgetData {
     QAction *actionShowBatchEditor;
     QAction *actionShowCompareAnnotations;
 
+    QAction *actionAddCalculatedAnnotation;
     QAction *actionCreateSequenceAnnotation;
+    QAction *actionComposeTranscription;
 
     AutomaticAnnotationWidget *widgetAutomaticAnnotation;
     ManualAnnotationWidget *widgetManualAnnotation;
@@ -86,9 +91,21 @@ void AnnotationModeWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // ANNOTATION MENU
     // ------------------------------------------------------------------------------------------------------
+    d->actionAddCalculatedAnnotation = new QAction(tr("Add Annotation from Calculations..."), this);
+    connect(d->actionAddCalculatedAnnotation, SIGNAL(triggered()), SLOT(dialogAddCalculatedAnnotation()));
+    command = ACTION_MANAGER->registerAction("Annotation.AddCalculatedAnnotation", d->actionAddCalculatedAnnotation, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
+
     d->actionCreateSequenceAnnotation = new QAction(tr("Create Sequences from Existing Annotations..."), this);
-    connect(d->actionCreateSequenceAnnotation, SIGNAL(triggered()), SLOT(createSequenceAnnotation()));
-    command = ACTION_MANAGER->registerAction("Annotation.CreateSequences", d->actionCreateSequenceAnnotation, context);
+    connect(d->actionCreateSequenceAnnotation, SIGNAL(triggered()), SLOT(dialogCreateSequenceAnnotation()));
+    command = ACTION_MANAGER->registerAction("Annotation.CreateSequenceAnnotation", d->actionCreateSequenceAnnotation, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
+
+    d->actionComposeTranscription = new QAction(tr("Compose Transcription..."), this);
+    connect(d->actionComposeTranscription, SIGNAL(triggered()), SLOT(dialogComposeTranscription()));
+    command = ACTION_MANAGER->registerAction("Annotation.ComposeTranscription", d->actionComposeTranscription, context);
     command->setCategory(QtilitiesCategory(tr("Annotation")));
     menu_annotation->addAction(command);
 
@@ -158,10 +175,23 @@ void AnnotationModeWidget::showCompareAnnotations()
     emit activateMode();
 }
 
-void AnnotationModeWidget::createSequenceAnnotation()
+void AnnotationModeWidget::dialogAddCalculatedAnnotation()
 {
     AddCalculatedAnnotationDialog *dialog = new AddCalculatedAnnotationDialog(this);
     dialog->exec();
     delete dialog;
 }
 
+void AnnotationModeWidget::dialogCreateSequenceAnnotation()
+{
+    CreateSequenceAnnotationDialog *dialog = new CreateSequenceAnnotationDialog(this);
+    dialog->exec();
+    delete dialog;
+}
+
+void AnnotationModeWidget::dialogComposeTranscription()
+{
+    ComposeTranscriptionDialog *dialog = new ComposeTranscriptionDialog(this);
+    dialog->exec();
+    delete dialog;
+}

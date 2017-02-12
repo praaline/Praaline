@@ -48,15 +48,23 @@ void ExportAnnotationsWizardPraatPage::setRepository(CorpusRepository *repositor
     if (!repository) return;
     if (!repository->annotationStructure()) return;
     d->repository = repository;
+    // Get annotation structure tree model for the current repository and display it in the treeview
     d->modelLevelsAttributes = QSharedPointer<AnnotationStructureTreeModel>(
                 new AnnotationStructureTreeModel(repository->annotationStructure(), true, true, this));
     ui->treeviewLevelsAttributes->setModel(d->modelLevelsAttributes.data());
+    // Whenever the user clicks (selects or deselects) an item (level/attribute) of this treeview, we need to
+    // add it to or remove it from the table showing the structure of the exported textgrids
     connect(d->modelLevelsAttributes.data(), SIGNAL(annotationLevelAttributeSelectionChanged(QString,QString,bool)),
             this, SLOT(annotationLevelAttributeSelectionChanged(QString,QString,bool)));
     // Reset textgrid structure
     d->modelTextgridStructure = QSharedPointer<QStandardItemModel>(new QStandardItemModel);
     d->modelTextgridStructure->setColumnCount(3);
+    d->modelTextgridStructure->setHorizontalHeaderLabels(QStringList() << tr("Level") << tr("Attribute") << tr("TextGrid Tier"));
     ui->tableviewTextgridStructure->setModel(d->modelTextgridStructure.data());
+    ui->tableviewTextgridStructure->verticalHeader()->setDefaultSectionSize(20);
+    // Move items in the textgrid structure up or down
+    connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveUp()));
+    connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveDown()));
 }
 
 void ExportAnnotationsWizardPraatPage::annotationLevelAttributeSelectionChanged(
@@ -114,3 +122,27 @@ void ExportAnnotationsWizardPraatPage::doExport(const QList<CorpusObjectInfo> &a
         interface->exportAnnotation(d->repository, annotationID);
     }
 }
+
+void ExportAnnotationsWizardPraatPage::textgridStructureMoveUp()
+{
+    QModelIndexList indexes = ui->tableviewTextgridStructure->selectionModel()->selection().indexes();
+    if (indexes.isEmpty()) return;
+    int row = indexes.first().row();
+    if (row <= 0) return;
+    QList<QStandardItem*> items = d->modelTextgridStructure->takeRow(row);
+    d->modelTextgridStructure->insertRow(row - 1, items);
+    ui->tableviewTextgridStructure->selectRow(row - 1);
+}
+
+void ExportAnnotationsWizardPraatPage::textgridStructureMoveDown()
+{
+    QModelIndexList indexes = ui->tableviewTextgridStructure->selectionModel()->selection().indexes();
+    if (indexes.isEmpty()) return;
+    int row = indexes.first().row();
+    if (row >= d->modelTextgridStructure->rowCount() - 1) return;
+    QList<QStandardItem*> items = d->modelTextgridStructure->takeRow(row);
+    d->modelTextgridStructure->insertRow(row + 1, items);
+    ui->tableviewTextgridStructure->selectRow(row + 1);
+}
+
+

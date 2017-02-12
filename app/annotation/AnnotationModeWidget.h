@@ -38,8 +38,9 @@ private slots:
     void showBatchEditor();
     void showCompareAnnotations();
 
-    void createSequenceAnnotation();
-
+    void dialogAddCalculatedAnnotation();
+    void dialogCreateSequenceAnnotation();
+    void dialogComposeTranscription();
 };
 
 #endif // ANNOTATIONMODEWIDGET_H
