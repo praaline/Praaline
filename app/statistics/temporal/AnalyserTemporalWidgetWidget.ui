@@ -128,17 +128,22 @@
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBoxResults">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>2</verstretch>
-      </sizepolicy>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <property name="title">
-      <string>Results</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayoutResults"/>
+     <widget class="QWidget" name="tabResultsTable">
+      <attribute name="title">
+       <string>Results Table</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutResults"/>
+     </widget>
+     <widget class="QWidget" name="tabCharts">
+      <attribute name="title">
+       <string>Charts</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutCharts"/>
+     </widget>
     </widget>
    </item>
   </layout>
