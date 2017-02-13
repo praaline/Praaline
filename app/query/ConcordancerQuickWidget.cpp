@@ -21,8 +21,9 @@ using namespace Praaline::Core;
 #include "pngui/model/query/QueryFilterSequenceTableModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/widgets/GridViewWidget.h"
-#include "CorpusRepositoriesManager.h"
 
+#include "PraalineUserInterfaceOptions.h"
+#include "CorpusRepositoriesManager.h"
 
 struct ConcordancerQuickWidgetData {
     ConcordancerQuickWidgetData() : modelLevelsAttributes(0), modelResults(0), corpusRepositoryManager(0), currentQuery(0) {}
@@ -82,19 +83,19 @@ ConcordancerQuickWidget::ConcordancerQuickWidget(QWidget *parent) :
     // Toolbars
     d->toolbarMain = new QToolBar(this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMain->setIconSize(QSize(24, 24));
+    d->toolbarMain->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->toolbarMetadataFilters = new QToolBar(this);
     d->toolbarMetadataFilters->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMetadataFilters->setIconSize(QSize(24, 24));
+    d->toolbarMetadataFilters->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
 //    d->toolbarQueryDefinition = new QToolBar(this);
 //    d->toolbarQueryDefinition->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-//    d->toolbarQueryDefinition->setIconSize(QSize(24, 24));
+//    d->toolbarQueryDefinition->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->toolbarLevelsAttributes = new QToolBar(this);
     d->toolbarLevelsAttributes->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarLevelsAttributes->setIconSize(QSize(24, 24));
+    d->toolbarLevelsAttributes->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->toolbarResults = new QToolBar(this);
     d->toolbarResults->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarResults->setIconSize(QSize(24, 24));
+    d->toolbarResults->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     this->addToolBar(d->toolbarMain);
 
     // Metadata filters

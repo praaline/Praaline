@@ -33,6 +33,8 @@ public:
     virtual ~HistogramCalculator();
 
     void setValues(const QList<double>& values);
+    void setMinimum(double min);
+    void setMaximum(double max);
 
     double optimalBinWidth() const;
     int optimalNumberBins() const;

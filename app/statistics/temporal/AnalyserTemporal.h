@@ -2,6 +2,8 @@
 #define ANALYSERTEMPORAL_H
 
 #include <QObject>
+#include <QString>
+#include <QMap>
 #include "AnalyserTemporalItem.h"
 
 namespace Praaline {
@@ -27,7 +29,10 @@ public:
 
     void analyse();
     AnalyserTemporalItem *item(const QString communicationID);
-
+    QMap<QString, QList<double> > aggregateMeasureCom(
+            const QString &measureID, const QStringList &groupAttributeIDsCom);
+    QMap<QString, QList<double> > aggregateMeasureSpk(
+            const QString &measureID, const QStringList &groupAttributeIDsCom, const QStringList &groupAttributeIDsSpk);
 signals:
     void madeProgress(int);
 

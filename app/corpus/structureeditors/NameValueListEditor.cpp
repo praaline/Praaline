@@ -67,7 +67,9 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     d->labelDataType = new QLabel(this);
     // Toolbars
     d->toolbarLists = new QToolBar("Lists", this);
+    d->toolbarLists->setIconSize(QSize(16, 16));
     d->toolbarCurrentList = new QToolBar("Current List", this);
+    d->toolbarCurrentList->setIconSize(QSize(16, 16));
     setupActions();
     // Table view for editing the list
     d->tableviewCurrentList = new QTableView(this);

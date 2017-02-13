@@ -20,6 +20,8 @@ using namespace Praaline::Core;
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
 
+#include "PraalineUserInterfaceOptions.h"
+
 struct AnnotationStructureEditorData {
     AnnotationStructureEditorData() : corpusRepositoriesManager(0), treemodelAnnotationStructure(0)
     { }
@@ -49,8 +51,7 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
     ui->setupUi(this);
 
     // Get Corpora Manager from global object list
-    QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
+    QList<QObject *> list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
@@ -60,7 +61,7 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
     // Toolbars and actions
     d->toolbarAnnotationStructure = new QToolBar("Annotation Structure", this);
     d->toolbarAnnotationStructure->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarAnnotationStructure->setIconSize(QSize(24, 24));
+    d->toolbarAnnotationStructure->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     setupActions();
 
     // Set up structure editor

@@ -13,7 +13,7 @@ TEMPLATE = app
 
 CONFIG += qt thread warn_on stl rtti exceptions c++14
 
-QT += core gui network xml sql svg opengl multimedia multimediawidgets help concurrent
+QT += core gui network xml sql svg opengl multimedia multimediawidgets help concurrent charts
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets printsupport
     macx:QT += macextras
@@ -292,7 +292,8 @@ HEADERS  += \
     annotation/calculate/ComposeTranscriptionDialog.h \
     annotation/calculate/CreateSequenceAnnotationDialog.h \
     statistics/temporal/AnalyserTemporalItem.h \
-    statistics/temporal/AnalyserTemporal.h
+    statistics/temporal/AnalyserTemporal.h \
+    PraalineUserInterfaceOptions.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

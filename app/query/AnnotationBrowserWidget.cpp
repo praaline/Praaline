@@ -13,6 +13,7 @@ using namespace Praaline::Core;
 #include "CorpusRepositoriesManager.h"
 #include "AnnotationBrowserWidget.h"
 
+#include "PraalineUserInterfaceOptions.h"
 
 struct AnnotationBrowserWidgetData {
     AnnotationBrowserWidgetData() :
@@ -59,7 +60,7 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     // Main toolbar
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMain->setIconSize(QSize(24, 24));
+    d->toolbarMain->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     setupActions();
     // Create layout
     QGroupBox *groupboxSelection = new QGroupBox(tr("Corpus and Annotation Level"), this);

@@ -20,6 +20,8 @@ using namespace Praaline::Core;
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
 
+#include "PraalineUserInterfaceOptions.h"
+
 struct MetadataStructureEditorData {
     MetadataStructureEditorData() : corpusRepositoriesManager(0), treemodelMetadataStructure(0)
     { }
@@ -48,8 +50,7 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
     ui->setupUi(this);
 
     // Get Corpora Manager from global object list
-    QList<QObject *> list;
-    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
+    QList<QObject *> list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
@@ -59,7 +60,7 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
     // Toolbars and actions
     d->toolbarMetadataStructure = new QToolBar("Metadata Structure", this);
     d->toolbarMetadataStructure->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMetadataStructure->setIconSize(QSize(24, 24));
+    d->toolbarMetadataStructure->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     setupActions();
 
     // Set up structure editor

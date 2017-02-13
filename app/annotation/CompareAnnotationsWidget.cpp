@@ -17,6 +17,8 @@ using namespace Praaline::Core;
 #include "pngui/model/diff/DiffSESForIntervalsTableModel.h"
 #include "pngui/widgets/CheckBoxList.h"
 #include "pngui/widgets/GridViewWidget.h"
+
+#include "PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 struct CompareAnnotationsWidgetData {
@@ -44,7 +46,7 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
     // Setup user interfacce
     d->toolbarMain = new QToolBar(tr("Compare Annotations"), this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMain->setIconSize(QSize(24, 24));
+    d->toolbarMain->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     this->addToolBar(d->toolbarMain);
 
     d->gridviewResults = new GridViewWidget(this);

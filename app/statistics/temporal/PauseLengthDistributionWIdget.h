@@ -28,6 +28,9 @@ public:
                                            QWidget *parent = 0);
     ~PauseLengthDistributionWidget();
 
+private slots:
+    void drawCharts();
+
 private:
     Ui::PauseLengthDistributionWIdget *ui;
     PauseLengthDistributionWidgetData *d;

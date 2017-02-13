@@ -27,6 +27,8 @@
 
 #include "dis/AnnotationControlsDisfluencies.h"
 
+#include "PraalineUserInterfaceOptions.h"
+
 struct ManualAnnotationWidgetData {
     ManualAnnotationWidgetData() :
         corpusItemSelector(0), currentCorpus(0),
@@ -116,10 +118,10 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
     d->toolbarMain->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarMain->setIconSize(QSize(24, 24));
+    d->toolbarMain->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->toolbarEditor = new QToolBar(tr("Vertical timeline editor"), this);
     d->toolbarEditor->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarEditor->setIconSize(QSize(24, 24));
+    d->toolbarEditor->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     this->addToolBar(d->toolbarMain);
 
     // Editor

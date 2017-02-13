@@ -27,6 +27,7 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/widgets/CorpusItemPreview.h"
 #include "pngui/observers/CorpusObserver.h"
 
+#include "PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 #include "CorpusModeWidget.h"
@@ -155,7 +156,7 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     // Menu and Toolbar actions
     d->toolbarCorpusExplorer = new QToolBar(tr("Corpus Explorer"), this);
     d->toolbarCorpusExplorer->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    d->toolbarCorpusExplorer->setIconSize(QSize(24, 24));
+    d->toolbarCorpusExplorer->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     setupActions();
     this->addToolBar(d->toolbarCorpusExplorer);
 

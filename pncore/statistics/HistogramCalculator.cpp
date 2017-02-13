@@ -42,6 +42,16 @@ void HistogramCalculator::setValues(const QList<double> &values)
     prepareValues();
 }
 
+void HistogramCalculator::setMinimum(double min)
+{
+    m_min = min;
+}
+
+void HistogramCalculator::setMaximum(double max)
+{
+    m_max = max;
+}
+
 double HistogramCalculator::optimalBinWidth() const
 {
     //Freedman-Diaconis rule

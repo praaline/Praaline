@@ -16,6 +16,8 @@
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/CheckableProxyModel.h"
 
+#include "PraalineUserInterfaceOptions.h"
+
 #include <QtilitiesExtensionSystem>
 using namespace QtilitiesExtensionSystem;
 
@@ -124,7 +126,7 @@ AutomaticAnnotationWidget::~AutomaticAnnotationWidget()
 void AutomaticAnnotationWidget::setupActions()
 {
     ui->toolbarOutput->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->toolbarOutput->setIconSize(QSize(24, 24));
+    ui->toolbarOutput->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     connect(ui->commandAnnotate, SIGNAL(clicked()), this, SLOT(actionAnnotate()));
     d->actionSaveOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), tr("Save output"));
     connect(d->actionSaveOutput, SIGNAL(triggered()), this, SLOT(actionSaveOutput()));
