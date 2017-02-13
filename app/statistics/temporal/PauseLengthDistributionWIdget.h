@@ -4,6 +4,11 @@
 #include <QWidget>
 
 namespace Praaline {
+
+namespace Core {
+class CorpusRepository;
+}
+
 namespace Plugins {
 namespace StatisticsPluginTemporal {
 
@@ -11,16 +16,21 @@ namespace Ui {
 class PauseLengthDistributionWIdget;
 }
 
-class PauseLengthDistributionWIdget : public QWidget
+class AnalyserTemporal;
+struct PauseLengthDistributionWidgetData;
+
+class PauseLengthDistributionWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit PauseLengthDistributionWIdget(QWidget *parent = 0);
-    ~PauseLengthDistributionWIdget();
+    explicit PauseLengthDistributionWidget(Core::CorpusRepository *repository, AnalyserTemporal *analyser,
+                                           QWidget *parent = 0);
+    ~PauseLengthDistributionWidget();
 
 private:
     Ui::PauseLengthDistributionWIdget *ui;
+    PauseLengthDistributionWidgetData *d;
 };
 
 

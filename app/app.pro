@@ -172,7 +172,6 @@ SOURCES += main.cpp \
     corpus/importannotations/ImportAnnotationsWizard.cpp \
     statistics/StatisticalAnalysisBasicWidget.cpp \
     statistics/temporal/AnalyserSegmentDuration.cpp \
-    statistics/temporal/AnalyserTemporal.cpp \
     statistics/temporal/StatisticsPluginTemporal.cpp \
     statistics/basic/StatisticsPluginBasic.cpp \
     statistics/interrater/StatisticsPluginInterrater.cpp \
@@ -186,7 +185,9 @@ SOURCES += main.cpp \
     statistics/prosody/AnalyserMacroprosody.cpp \
     annotation/calculate/AddCalculatedAnnotationDialog.cpp \
     annotation/calculate/ComposeTranscriptionDialog.cpp \
-    annotation/calculate/CreateSequenceAnnotationDialog.cpp
+    annotation/calculate/CreateSequenceAnnotationDialog.cpp \
+    statistics/temporal/AnalyserTemporalItem.cpp \
+    statistics/temporal/AnalyserTemporal.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -276,7 +277,6 @@ HEADERS  += \
     corpus/importannotations/ImportAnnotationsWizard.h \
     statistics/StatisticalAnalysisBasicWidget.h \
     statistics/temporal/AnalyserSegmentDuration.h \
-    statistics/temporal/AnalyserTemporal.h \
     statistics/temporal/StatisticsPluginTemporal.h \
     statistics/basic/StatisticsPluginBasic.h \
     statistics/interrater/StatisticsPluginInterrater.h \
@@ -290,7 +290,9 @@ HEADERS  += \
     statistics/prosody/AnalyserMacroprosody.h \
     annotation/calculate/AddCalculatedAnnotationDialog.h \
     annotation/calculate/ComposeTranscriptionDialog.h \
-    annotation/calculate/CreateSequenceAnnotationDialog.h
+    annotation/calculate/CreateSequenceAnnotationDialog.h \
+    statistics/temporal/AnalyserTemporalItem.h \
+    statistics/temporal/AnalyserTemporal.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

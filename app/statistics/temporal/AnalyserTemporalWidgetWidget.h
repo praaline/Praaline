@@ -16,6 +16,7 @@ namespace Ui {
 class AnalyserTemporalWidget;
 }
 
+class AnalyserTemporal;
 struct AnalyserTemporalWidgetData;
 
 class AnalyserTemporalWidget : public QWidget
@@ -23,15 +24,24 @@ class AnalyserTemporalWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit AnalyserTemporalWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit AnalyserTemporalWidget(Core::CorpusRepository *repository, AnalyserTemporal *analyser,
+                                    QWidget *parent = 0);
     ~AnalyserTemporalWidget();
 
 private slots:
+    void madeProgress(int);
     void analyse();
+    void changeDisplayedModel();
+    void showAnalysisForCom();
+    void showAnalysisForSpk();
+
 
 private:
     Ui::AnalyserTemporalWidget *ui;
     AnalyserTemporalWidgetData *d;
+
+    void buildModelForCom();
+    void buildModelForSpk();
 };
 
 } // namespace StatisticalPluginTemporal

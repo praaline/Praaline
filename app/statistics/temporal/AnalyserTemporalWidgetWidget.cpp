@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QProgressBar>
+#include <QStandardItem>
 #include <QStandardItemModel>
 
 #include "pncore/corpus/Corpus.h"
@@ -13,6 +14,7 @@ using namespace Praaline::Core;
 #include "pngui/widgets/GridViewWidget.h"
 
 #include "AnalyserTemporal.h"
+#include "AnalyserTemporalItem.h"
 #include "AnalyserTemporalWidgetWidget.h"
 #include "ui_AnalyserTemporalWidgetWidget.h"
 
@@ -22,20 +24,25 @@ namespace StatisticsPluginTemporal {
 
 struct AnalyserTemporalWidgetData {
     AnalyserTemporalWidgetData() :
-        repository(0), gridviewResults(0), modelResults(0)
+        repository(0), analyser(0), gridviewResults(0), modelCom(0), modelSpk(0)
     {}
 
     CorpusRepository *repository;
+    AnalyserTemporal *analyser;
     GridViewWidget *gridviewResults;
-    QStandardItemModel *modelResults;
+    QStandardItemModel *modelCom;
+    QStandardItemModel *modelSpk;
 };
 
-AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, QWidget *parent) :
+AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
     QWidget(parent), ui(new Ui::AnalyserTemporalWidget), d(new AnalyserTemporalWidgetData)
 {
     ui->setupUi(this);
     if (!repository) return;
     d->repository = repository;
+    // Analyser
+    d->analyser = analyser;
+    connect(d->analyser, SIGNAL(madeProgress(int)), this, SLOT(madeProgress(int)));
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
     // Command Analyse
@@ -46,6 +53,9 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, QWi
     ui->gridLayoutResults->addWidget(d->gridviewResults);
     // Default
     ui->optionCommunications->setChecked(true);
+    // Change display
+    connect(ui->optionCommunications, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
+    connect(ui->optionSpeakers, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
 }
 
 AnalyserTemporalWidget::~AnalyserTemporalWidget()
@@ -54,41 +64,72 @@ AnalyserTemporalWidget::~AnalyserTemporalWidget()
     delete d;
 }
 
+void AnalyserTemporalWidget::madeProgress(int value)
+{
+    ui->progressBar->setValue(value);
+    QApplication::processEvents();
+}
+
 void AnalyserTemporalWidget::analyse()
 {
     if (!d->repository) return;
     QString corpusID = ui->comboBoxCorpus->currentText();
+
+    // Analyse corpus
     QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(corpusID);
     if (!corpus) return;
-    QScopedPointer<AnalyserTemporal>analyser(new AnalyserTemporal);
+    ui->progressBar->setValue(0);
+    ui->progressBar->setMaximum(corpus->communicationsCount());
+    d->analyser->setCorpus(corpus);
+    d->analyser->analyse();
+    ui->progressBar->setValue(ui->progressBar->maximum());
 
-    // Models available
-    QStandardItemModel *modelCom = new QStandardItemModel(this);
-    QStandardItemModel *modelSpk = new QStandardItemModel(this);
+    changeDisplayedModel();
+}
+
+void AnalyserTemporalWidget::changeDisplayedModel()
+{
+    if (ui->optionCommunications->isChecked())
+        showAnalysisForCom();
+    else
+        showAnalysisForSpk();
+}
+
+void AnalyserTemporalWidget::showAnalysisForCom()
+{
+    if (!d->repository) return;
+    if (!d->analyser->corpus()) return;
+    if (!d->modelCom) buildModelForCom();
+    // Update table
+    d->gridviewResults->tableView()->setModel(d->modelCom);
+}
+
+void AnalyserTemporalWidget::showAnalysisForSpk()
+{
+    if (!d->repository) return;
+    if (!d->analyser->corpus()) return;
+    if (!d->modelSpk) buildModelForSpk();
+    // Update table
+    d->gridviewResults->tableView()->setModel(d->modelSpk);
+}
+
+void AnalyserTemporalWidget::buildModelForCom()
+{
+    if (d->modelCom) delete d->modelCom;
+    d->modelCom = new QStandardItemModel(this);
+    if (!d->analyser->corpus()) return;
     // Create model headers
     QStringList labels;
     labels << "CommunicationID";
     foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication))
         labels << attr->ID();
-    foreach (QString measureID, analyser->measureIDsForCommunication()) labels << measureID;
-    modelCom->setHorizontalHeaderLabels(labels);
-    labels.clear();
-    labels << "CommunicationID" << "SpeakerID";
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
-        labels << attr->ID();
-    }
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
-        labels << attr->ID();
-    }
-    foreach (QString measureID, analyser->measureIDsForSpeaker()) labels << measureID;
-    modelSpk->setHorizontalHeaderLabels(labels);
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication()) labels << measureID;
+    d->modelCom->setHorizontalHeaderLabels(labels);
+    // Data
+    foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
+        if (!com) continue;
+        if (!d->analyser->item(com->ID())) continue;
 
-    // Analyse communications / and then speakers
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMaximum(corpus->communicationsCount());
-    int i = 1;
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
-        analyser->calculate(com);
         QList<QStandardItem *> itemsCom;
         QStandardItem *item;
         item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsCom << item;
@@ -97,14 +138,36 @@ void AnalyserTemporalWidget::analyse()
             item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsCom << item;
         }
         // measures
-        foreach (QString measureID, analyser->measureIDsForCommunication()) {
+        foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication()) {
             // analyser->measureDefinitionForCommunication(measureID).displayNameUnit()
-            item = new QStandardItem(); item->setData(analyser->measureCom(measureID), Qt::DisplayRole); itemsCom << item;
+            item = new QStandardItem(); item->setData(d->analyser->item(com->ID())->measureCom(measureID), Qt::DisplayRole); itemsCom << item;
         }
-        modelCom->appendRow(itemsCom);
+        d->modelCom->appendRow(itemsCom);
+    }
+}
 
-        foreach (QString speakerID, analyser->speakerIDs()) {
+void AnalyserTemporalWidget::buildModelForSpk()
+{
+    if (d->modelSpk) delete d->modelSpk;
+    d->modelSpk = new QStandardItemModel(this);
+    if (!d->analyser->corpus()) return;
+    // Create model headers
+    QStringList labels;
+    labels << "CommunicationID" << "SpeakerID";
+    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        labels << attr->ID();
+    }
+    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+        labels << attr->ID();
+    }
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) labels << measureID;
+    d->modelSpk->setHorizontalHeaderLabels(labels);
+    foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
+        if (!com) continue;
+        if (!d->analyser->item(com->ID())) continue;
+        foreach (QString speakerID, d->analyser->item(com->ID())->speakerIDs()) {
             QList<QStandardItem *> itemsSpk;
+            QStandardItem *item;
             item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsSpk << item;
             item = new QStandardItem(); item->setData(speakerID, Qt::DisplayRole); itemsSpk << item;
             // properties
@@ -115,26 +178,15 @@ void AnalyserTemporalWidget::analyse()
                 item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
             }
             // measures
-            foreach (QString measureID, analyser->measureIDsForSpeaker()) {
+            foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) {
                 // analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
-                item = new QStandardItem(); item->setData(analyser->measureSpk(speakerID, measureID), Qt::DisplayRole); itemsSpk << item;
+                item = new QStandardItem(); item->setData(d->analyser->item(com->ID())->measureSpk(speakerID, measureID), Qt::DisplayRole); itemsSpk << item;
             }
-            modelSpk->appendRow(itemsSpk);
+            d->modelSpk->appendRow(itemsSpk);
         }
-        ui->progressBar->setValue(i);
-        QApplication::processEvents();
-        i++;
     }
-    ui->progressBar->setValue(ui->progressBar->maximum());
-    QApplication::processEvents();
-
-    // Update table
-    QStandardItemModel *model(0);
-    if (ui->optionCommunications->isChecked()) model = modelCom; else model = modelSpk;
-    d->gridviewResults->tableView()->setModel(model);
-    if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
-    d->modelResults = model;
 }
+
 
 } // namespace StatisticsPluginTemporal
 } // namespace Plugins

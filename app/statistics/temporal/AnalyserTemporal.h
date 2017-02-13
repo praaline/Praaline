@@ -2,50 +2,43 @@
 #define ANALYSERTEMPORAL_H
 
 #include <QObject>
-#include <QPointer>
-#include <QTextStream>
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
-
-struct AnalyserTemporalData;
+#include "AnalyserTemporalItem.h"
 
 namespace Praaline {
+
 namespace Core {
-class CorpusCommunication;
-class IntervalTier;
+class Corpus;
 }
-}
-using namespace Praaline::Core;
+
+namespace Plugins {
+namespace StatisticsPluginTemporal {
+
+struct AnalyserTemporalData;
 
 class AnalyserTemporal : public QObject
 {
     Q_OBJECT
 public:
-
-
-
     explicit AnalyserTemporal(QObject *parent = 0);
-    virtual ~AnalyserTemporal();
+    ~AnalyserTemporal();
 
-    static QStringList measureIDsForCommunication();
-    static QStringList measureIDsForSpeaker();
-    static QStringList vectorMeasureIDsForCommunication();
-    static QStringList vectorMeasureIDsForSpeaker();
-    static StatisticalMeasureDefinition measureDefinition(const QString &measureID);
+    Praaline::Core::Corpus *corpus() const;
+    void setCorpus(Praaline::Core::Corpus *corpus);
 
-    QStringList speakerIDs() const;
-    double measureCom(const QString &measureID) const;
-    double measureSpk(const QString &speakerID, const QString &measureID) const;
-    QList<double> vectorMeasureCom(const QString &measureID) const;
-    QList<double> vectorMeasureSpk(const QString &speakerID, const QString &measureID) const;
-
-    void calculate(QPointer<CorpusCommunication> com);
+    void analyse();
+    AnalyserTemporalItem *item(const QString communicationID);
 
 signals:
+    void madeProgress(int);
 
 public slots:
 
 private:
     AnalyserTemporalData *d;
 };
+
+} // namespace StatisticsPluginTemporal
+} // namespace Plugins
+} // namespace Praaline
 
 #endif // ANALYSERTEMPORAL_H
