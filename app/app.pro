@@ -22,6 +22,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 macx {
     # QMAKE_INFO_PLIST = ../deploy/osx/Info.plist
 }
+RC_FILE = praaline.rc
 
 DEPENDPATH += . ../pncore ../pnlib ../pngui
 INCLUDEPATH += . .. ../.. ../pncore ../pnlib ../pngui
@@ -365,4 +366,6 @@ RESOURCES += \
     praaline.qrc \
     ../pngui/grid/qaiv.qrc
 
-DISTFILES +=
+DISTFILES += \
+    praaline.ico \
+    praaline.rc
