@@ -2,6 +2,8 @@
 #define PRAALINE_PLUGINS_STATISTICSPLUGINTEMPORAL_PAUSELENGTHDISTRIBUTIONWIDGET_H
 
 #include <QWidget>
+#include <QChart>
+QT_CHARTS_USE_NAMESPACE
 
 namespace Praaline {
 
@@ -34,6 +36,8 @@ private slots:
 private:
     Ui::PauseLengthDistributionWIdget *ui;
     PauseLengthDistributionWidgetData *d;
+
+    QChart *drawHistogram(const QString &title, QMap<QString, QList<double> > aggregates);
 };
 
 

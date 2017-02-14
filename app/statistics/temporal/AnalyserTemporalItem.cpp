@@ -411,11 +411,11 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
                                     timeSilentPause = timeSilentPause + intv->duration();
                                     durationsPauseSIL << intv->duration().toDouble();
                                     // duration of pause relative to (-1, 1)...(-5, 5) segments - pause does not block window
-                                    durationsPauseSIL_rel1 << Measures::relative(tier_syll, "duration", syllIndex, 1, 1, false);
-                                    durationsPauseSIL_rel2 << Measures::relative(tier_syll, "duration", syllIndex, 2, 2, false);
-                                    durationsPauseSIL_rel3 << Measures::relative(tier_syll, "duration", syllIndex, 3, 3, false);
-                                    durationsPauseSIL_rel4 << Measures::relative(tier_syll, "duration", syllIndex, 4, 4, false);
-                                    durationsPauseSIL_rel5 << Measures::relative(tier_syll, "duration", syllIndex, 5, 5, false);
+//                                    durationsPauseSIL_rel1 << Measures::relative(tier_syll, "duration", syllIndex, 1, 1, false);
+//                                    durationsPauseSIL_rel2 << Measures::relative(tier_syll, "duration", syllIndex, 2, 2, false);
+//                                    durationsPauseSIL_rel3 << Measures::relative(tier_syll, "duration", syllIndex, 3, 3, false);
+//                                    durationsPauseSIL_rel4 << Measures::relative(tier_syll, "duration", syllIndex, 4, 4, false);
+//                                    durationsPauseSIL_rel5 << Measures::relative(tier_syll, "duration", syllIndex, 5, 5, false);
                                 }
                                 else {
                                     syllCategory = "ART";

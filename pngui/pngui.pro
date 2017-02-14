@@ -211,7 +211,8 @@ HEADERS += \
     nodeeditor/Serializable.h \
     nodeeditor/Style.h \
     nodeeditor/StyleCollection.h \
-    model/corpus/CorpusTableModel.h
+    model/corpus/CorpusTableModel.h \
+    FlowLayout.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -345,7 +346,8 @@ SOURCES += \
     nodeeditor/NodeStyle.cpp \
     nodeeditor/Properties.cpp \
     nodeeditor/StyleCollection.cpp \
-    model/corpus/CorpusTableModel.cpp
+    model/corpus/CorpusTableModel.cpp \
+    FlowLayout.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

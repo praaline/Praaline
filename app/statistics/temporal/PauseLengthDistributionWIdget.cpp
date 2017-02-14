@@ -12,6 +12,8 @@ QT_CHARTS_USE_NAMESPACE
 #include "pncore/statistics/HistogramCalculator.h"
 using namespace Praaline::Core;
 
+#include "pngui/FlowLayout.h"
+
 #include "AnalyserTemporal.h"
 
 #include "PauseLengthDistributionWIdget.h"
@@ -34,6 +36,7 @@ struct PauseLengthDistributionWidgetData {
     double maximumValue;
     QStringList groupAttributeIDsCom;
     QStringList groupAttributeIDsSpk;
+    QMap<QString, QList<double> > aggregates;
 };
 
 PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
@@ -44,12 +47,12 @@ PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *r
     d->analyser = analyser;
     // Defaults
     d->measureID = "Pause_SIL_Durations";
-    d->numberOfBins = 10;
+    d->numberOfBins = 20;
     d->minimumValue = 0;
     d->maximumValue = 1.0;
     // Draw charts command
     connect(ui->commandDraw, SIGNAL(clicked(bool)), this, SLOT(drawCharts()));
-    d->groupAttributeIDsCom << "ID";
+    d->groupAttributeIDsCom << "genre";
 }
 
 PauseLengthDistributionWidget::~PauseLengthDistributionWidget()
@@ -58,29 +61,26 @@ PauseLengthDistributionWidget::~PauseLengthDistributionWidget()
     delete d;
 }
 
-void PauseLengthDistributionWidget::drawCharts()
+QChart *PauseLengthDistributionWidget::drawHistogram(const QString &title, QMap<QString, QList<double> > aggregates)
 {
-    if (!d->analyser) return;
-    if (!d->analyser->corpus()) return;
-
-    QMap<QString, QList<double> > aggregates =
-            d->analyser->aggregateMeasureSpk(d->measureID, d->groupAttributeIDsCom, d->groupAttributeIDsSpk);
+    if (!d->analyser) return Q_NULLPTR;
+    if (!d->analyser->corpus()) return Q_NULLPTR;
 
     QBarSeries *series = new QBarSeries();
     QList<QBarSet *> barsets;
-    foreach (QString groupID, aggregates.keys()) {
+    foreach (QString aggregateID, aggregates.keys()) {
         HistogramCalculator hist;
-        hist.setValues(aggregates.value(groupID));
+        hist.setValues(aggregates.value(aggregateID));
         hist.setMinimum(d->minimumValue);
         hist.setMaximum(d->maximumValue);
-        QBarSet *barset = new QBarSet(groupID);
+        QBarSet *barset = new QBarSet(aggregateID);
         foreach (int count, hist.counts(d->numberOfBins)) barset->append(count);
         barsets << barset;
         series->append(barset);
     }
     QChart *chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle(QString("%1").arg(AnalyserTemporalItem::measureDefinition(d->measureID).displayName()));
+    chart->setTitle(title);
     chart->setAnimationOptions(QChart::SeriesAnimations);
     // Bin edges + labels on the x axis
     HistogramCalculator hist;
@@ -93,9 +93,47 @@ void PauseLengthDistributionWidget::drawCharts()
     chart->setAxisX(axis, series);
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    ui->gridLayout->addWidget(chartView);
+    return chart;
+}
+
+void PauseLengthDistributionWidget::drawCharts()
+{
+    if (!d->analyser) return;
+    if (!d->analyser->corpus()) return;
+
+    d->aggregates = d->analyser->aggregateMeasureSpk(d->measureID, d->groupAttributeIDsCom, d->groupAttributeIDsSpk);
+
+    // Create groups if necessary
+    QMap<QString, QMap<QString, QList<double> > > groups;
+    foreach (QString key, d->aggregates.keys()) {
+        if (key.contains("::")) {
+            QString groupID = key.section("::", 0, 0);
+            QString subgroupID = key.section("::", 1);
+            QList<double> data = d->aggregates.value(key);
+            if (groups.contains(groupID)) {
+                groups[groupID].insert(subgroupID, data);
+            } else {
+                groups.insert(groupID, QMap<QString, QList<double> >());
+                groups[groupID].insert(subgroupID, data);
+            }
+        } else {
+            groups.insert(key, QMap<QString, QList<double> >());
+            groups[key].insert(key, d->aggregates.value(key));
+        }
+    }
+
+    QList<QChart *> charts;
+    int chartsPerColumn = 3;
+    int i = 0;
+    foreach (QString groupID, groups.keys()) {
+        QChart *chart = drawHistogram(groupID, groups.value(groupID));
+        if (chart) charts << chart;
+
+        QChartView *chartView = new QChartView(chart);
+        chartView->setRenderHint(QPainter::Antialiasing);
+        ui->gridLayoutCharts->addWidget(chartView, i / chartsPerColumn, i % chartsPerColumn);
+        i++;
+    }
 
 }
 
