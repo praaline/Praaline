@@ -10,6 +10,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 
+#include "GlobalProsodicProfileWidget.h"
 #include "AnalyserMacroprosodyWidget.h"
 #include "StatisticsPluginProsody.h"
 using namespace Qtilities::ExtensionSystem;
@@ -91,20 +92,22 @@ QString StatisticsPluginProsody::pluginLicense() const {
 QStringList StatisticsPluginProsody::analyserIDs()
 {
     QStringList analyserIDs;
-    analyserIDs << "MU";
+    analyserIDs << "GlobalProfile" << "MacroUnits";
     return analyserIDs;
 }
 
 QString StatisticsPluginProsody::analyserName(const QString &analyserID)
 {
-    if (analyserID == "MU") return "Macro-Prosodic Measures";
+    if (analyserID == "GlobalProfile")  return "Global Prosodic Profile";
+    if (analyserID == "MacroUnits")     return "Macro-Prosodic Measures";
     return QString();
 }
 
 QWidget *StatisticsPluginProsody::analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent)
 {
-    Q_UNUSED(analyserID)
-    return new AnalyserMacroprosodyWidget(repository, parent);
+    if (analyserID == "GlobalProfile")  return new GlobalProsodicProfileWidget(repository, parent);
+    if (analyserID == "MacroUnits")     return new AnalyserMacroprosodyWidget(repository, parent);
+    return new QWidget(parent);
 }
 
 

@@ -39,4 +39,5 @@ private:
 } // namespace StatisticsPluginProsody
 } // namespace Plugins
 } // namespace Praaline
+
 #endif // ANALYSERMACROPROSODYWIDGET_H

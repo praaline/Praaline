@@ -8,6 +8,7 @@
 QT_CHARTS_USE_NAMESPACE
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/statistics/HistogramCalculator.h"
 using namespace Praaline::Core;
@@ -37,6 +38,7 @@ struct PauseLengthDistributionWidgetData {
     QStringList groupAttributeIDsCom;
     QStringList groupAttributeIDsSpk;
     QMap<QString, QList<double> > aggregates;
+    QList<QChart *> charts;
 };
 
 PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
@@ -45,14 +47,40 @@ PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *r
     ui->setupUi(this);
     d->repository = repository;
     d->analyser = analyser;
+    if (!analyser) return;
     // Defaults
     d->measureID = "Pause_SIL_Durations";
-    d->numberOfBins = 20;
+    d->numberOfBins = 10;
     d->minimumValue = 0;
     d->maximumValue = 1.0;
+    // Measure combobox
+    ui->comboBoxMeasure->addItems(AnalyserTemporalItem::vectorMeasureIDsForSpeaker());
+    ui->comboBoxMeasure->setCurrentText(d->measureID);
+    // Group by attributes
+    if (d->repository->metadataStructure()) {
+        ui->comboBoxGroupByCom->addItem("", "");
+        ui->comboBoxGroupByCom->addItem("Communication ID", "ID");
+        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+            ui->comboBoxGroupByCom->addItem(attr->name(), attr->ID());
+        }
+        ui->comboBoxGroupByCom->setCurrentText("");
+        // speaker
+        ui->comboBoxGroupBySpk->addItem("", "");
+        ui->comboBoxGroupBySpk->addItem("Speaker ID", "ID");
+        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+            ui->comboBoxGroupBySpk->addItem(attr->name(), attr->ID());
+        }
+        ui->comboBoxGroupBySpk->setCurrentText("");
+    }
+    // Histogram
+    ui->spinBoxNumberOfBins->setValue(d->numberOfBins);
+    ui->doubleSpinBoxMinimum->setValue(d->minimumValue);
+    ui->doubleSpinBoxMaximum->setValue(d->maximumValue);
+    // Number of columns
+    ui->spinBoxNumberOfColumns->setMinimum(1);
+    ui->spinBoxNumberOfColumns->setValue(1);
     // Draw charts command
     connect(ui->commandDraw, SIGNAL(clicked(bool)), this, SLOT(drawCharts()));
-    d->groupAttributeIDsCom << "genre";
 }
 
 PauseLengthDistributionWidget::~PauseLengthDistributionWidget()
@@ -101,6 +129,17 @@ void PauseLengthDistributionWidget::drawCharts()
     if (!d->analyser) return;
     if (!d->analyser->corpus()) return;
 
+    // Get parameters from user interface
+    d->measureID = ui->comboBoxMeasure->currentText();
+    d->groupAttributeIDsCom.clear();
+    d->groupAttributeIDsCom << ui->comboBoxGroupByCom->currentData().toString();
+    d->groupAttributeIDsSpk.clear();
+    d->groupAttributeIDsSpk << ui->comboBoxGroupBySpk->currentData().toString();
+    d->numberOfBins = ui->spinBoxNumberOfBins->value();
+    d->minimumValue = ui->doubleSpinBoxMinimum->value();
+    d->maximumValue = ui->doubleSpinBoxMaximum->value();
+    int numberOfColumns = ui->spinBoxNumberOfColumns->value();
+
     d->aggregates = d->analyser->aggregateMeasureSpk(d->measureID, d->groupAttributeIDsCom, d->groupAttributeIDsSpk);
 
     // Create groups if necessary
@@ -122,18 +161,32 @@ void PauseLengthDistributionWidget::drawCharts()
         }
     }
 
-    QList<QChart *> charts;
-    int chartsPerColumn = 3;
+    // Clear layout, delete chart view widgets
+    QLayoutItem *item;
+    while ((item = ui->gridLayoutCharts->takeAt(0)) != 0) { delete item; }
+    QList<QChartView *> chartviews;
+    chartviews = findChildren<QChartView *>();
+    qDeleteAll(chartviews);
+    d->charts.clear();
+
     int i = 0;
+    ui->gridLayoutCharts->setSizeConstraint(QLayout::SetNoConstraint);
+    int size = ui->scrollAreaWidgetContents->width() / numberOfColumns - 10;
+
     foreach (QString groupID, groups.keys()) {
         QChart *chart = drawHistogram(groupID, groups.value(groupID));
-        if (chart) charts << chart;
+        if (chart) d->charts << chart;
 
         QChartView *chartView = new QChartView(chart);
         chartView->setRenderHint(QPainter::Antialiasing);
-        ui->gridLayoutCharts->addWidget(chartView, i / chartsPerColumn, i % chartsPerColumn);
+        chartView->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        chartView->setMinimumSize(size, size);
+
+        ui->gridLayoutCharts->addWidget(chartView, i / numberOfColumns, i % numberOfColumns);
         i++;
     }
+    chartviews = findChildren<QChartView *>();
+    foreach (QChartView *chartview, chartviews) chartview->resize(size, size);
 
 }
 

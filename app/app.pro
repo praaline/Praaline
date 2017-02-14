@@ -187,7 +187,8 @@ SOURCES += main.cpp \
     annotation/calculate/ComposeTranscriptionDialog.cpp \
     annotation/calculate/CreateSequenceAnnotationDialog.cpp \
     statistics/temporal/AnalyserTemporalItem.cpp \
-    statistics/temporal/AnalyserTemporal.cpp
+    statistics/temporal/AnalyserTemporal.cpp \
+    statistics/prosody/GlobalProsodicProfileWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -293,7 +294,8 @@ HEADERS  += \
     annotation/calculate/CreateSequenceAnnotationDialog.h \
     statistics/temporal/AnalyserTemporalItem.h \
     statistics/temporal/AnalyserTemporal.h \
-    PraalineUserInterfaceOptions.h
+    PraalineUserInterfaceOptions.h \
+    statistics/prosody/GlobalProsodicProfileWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -356,7 +358,8 @@ FORMS    += \
     statistics/temporal/PauseLengthDistributionWIdget.ui \
     annotation/calculate/AddCalculatedAnnotationDialog.ui \
     annotation/calculate/ComposeTranscriptionDialog.ui \
-    annotation/calculate/CreateSequenceAnnotationDialog.ui
+    annotation/calculate/CreateSequenceAnnotationDialog.ui \
+    statistics/prosody/GlobalProsodicProfileWidget.ui
 
 RESOURCES += \
     praaline.qrc \

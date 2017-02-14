@@ -13,15 +13,8 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QPushButton" name="commandDraw">
-     <property name="text">
-      <string>Draw Charts</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="2" column="0" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -32,11 +25,152 @@
         <x>0</x>
         <y>0</y>
         <width>909</width>
-        <height>583</height>
+        <height>451</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayoutCharts"/>
      </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Parameters</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayoutMeasure">
+        <item>
+         <widget class="QLabel" name="labelMeasure">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Measure:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxMeasure"/>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayoutGroupBy">
+        <item>
+         <widget class="QLabel" name="labelGroupByCom">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Group by Metadata: Communication:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxGroupByCom"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelGroupBySpk">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Speaker:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxGroupBySpk"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayoutHistogram">
+        <item>
+         <widget class="QLabel" name="labelNumberOfBins">
+          <property name="text">
+           <string>Histogram: Number of bins:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxNumberOfBins"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelMinimum">
+          <property name="text">
+           <string>Minimum:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimum"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelMaximum">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Maximum:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxMaximum"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="groupBoxDisplay">
+     <property name="title">
+      <string>Display</string>
+     </property>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>12</x>
+        <y>29</y>
+        <width>177</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayoutNumberOfColumns">
+       <item>
+        <widget class="QLabel" name="labelNumberOfColumns">
+         <property name="text">
+          <string>Number of columns;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="spinBoxNumberOfColumns"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QPushButton" name="commandDraw">
+     <property name="text">
+      <string>Draw Charts</string>
+     </property>
     </widget>
    </item>
   </layout>
