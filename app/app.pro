@@ -178,18 +178,18 @@ SOURCES += main.cpp \
     statistics/interrater/StatisticsPluginInterrater.cpp \
     statistics/prosody/StatisticsPluginProsody.cpp \
     statistics/interrater/InterraterAgreement.cpp \
-    statistics/temporal/AnalyserTemporalWidgetWidget.cpp \
     statistics/prosody/AnalyserMacroprosodyWidget.cpp \
     statistics/basic/StatisticsPluginBasicWidget.cpp \
     statistics/interrater/KappaStatisticsWidget.cpp \
-    statistics/temporal/PauseLengthDistributionWIdget.cpp \
     statistics/prosody/AnalyserMacroprosody.cpp \
     annotation/calculate/AddCalculatedAnnotationDialog.cpp \
     annotation/calculate/ComposeTranscriptionDialog.cpp \
     annotation/calculate/CreateSequenceAnnotationDialog.cpp \
     statistics/temporal/AnalyserTemporalItem.cpp \
     statistics/temporal/AnalyserTemporal.cpp \
-    statistics/prosody/GlobalProsodicProfileWidget.cpp
+    statistics/prosody/GlobalProsodicProfileWidget.cpp \
+    statistics/temporal/AnalyserTemporalWidget.cpp \
+    statistics/temporal/PauseLengthDistributionWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -284,11 +284,9 @@ HEADERS  += \
     statistics/interrater/StatisticsPluginInterrater.h \
     statistics/prosody/StatisticsPluginProsody.h \
     statistics/interrater/InterraterAgreement.h \
-    statistics/temporal/AnalyserTemporalWidgetWidget.h \
     statistics/prosody/AnalyserMacroprosodyWidget.h \
     statistics/basic/StatisticsPluginBasicWidget.h \
     statistics/interrater/KappaStatisticsWidget.h \
-    statistics/temporal/PauseLengthDistributionWIdget.h \
     statistics/prosody/AnalyserMacroprosody.h \
     annotation/calculate/AddCalculatedAnnotationDialog.h \
     annotation/calculate/ComposeTranscriptionDialog.h \
@@ -296,7 +294,9 @@ HEADERS  += \
     statistics/temporal/AnalyserTemporalItem.h \
     statistics/temporal/AnalyserTemporal.h \
     PraalineUserInterfaceOptions.h \
-    statistics/prosody/GlobalProsodicProfileWidget.h
+    statistics/prosody/GlobalProsodicProfileWidget.h \
+    statistics/temporal/AnalyserTemporalWidget.h \
+    statistics/temporal/PauseLengthDistributionWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -352,15 +352,15 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
     corpus/importannotations/ImportAnnotationsWizard.ui \
     statistics/StatisticalAnalysisBasicWidget.ui \
-    statistics/temporal/AnalyserTemporalWidgetWidget.ui \
     statistics/prosody/AnalyserMacroprosodyWidget.ui \
     statistics/basic/StatisticsPluginBasicWidget.ui \
     statistics/interrater/KappaStatisticsWidget.ui \
-    statistics/temporal/PauseLengthDistributionWIdget.ui \
     annotation/calculate/AddCalculatedAnnotationDialog.ui \
     annotation/calculate/ComposeTranscriptionDialog.ui \
     annotation/calculate/CreateSequenceAnnotationDialog.ui \
-    statistics/prosody/GlobalProsodicProfileWidget.ui
+    statistics/prosody/GlobalProsodicProfileWidget.ui \
+    statistics/temporal/AnalyserTemporalWidget.ui \
+    statistics/temporal/PauseLengthDistributionWidget.ui
 
 RESOURCES += \
     praaline.qrc \

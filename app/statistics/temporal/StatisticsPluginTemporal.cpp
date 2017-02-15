@@ -13,8 +13,8 @@
 #include "AnalyserTemporal.h"
 
 #include "StatisticsPluginTemporal.h"
-#include "AnalyserTemporalWidgetWidget.h"
-#include "PauseLengthDistributionWIdget.h"
+#include "AnalyserTemporalWidget.h"
+#include "PauseLengthDistributionWidget.h"
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 

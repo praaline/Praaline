@@ -130,7 +130,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabResultsTable">
       <attribute name="title">
@@ -142,7 +142,98 @@
       <attribute name="title">
        <string>Charts</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayoutCharts"/>
+      <layout class="QGridLayout" name="gridLayoutChartsTab">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayoutMeasure">
+         <item>
+          <widget class="QLabel" name="labelMeasure">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Measure:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxMeasure"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupByCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Group by Metadata: Communication:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupByCom"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupBySpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Speaker:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupBySpk"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="commandDrawChart">
+           <property name="text">
+            <string>Draw Chart</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>953</width>
+            <height>362</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayoutChart">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </widget>
    </item>

@@ -17,8 +17,8 @@ using namespace Praaline::Core;
 
 #include "AnalyserTemporal.h"
 
-#include "PauseLengthDistributionWIdget.h"
-#include "ui_PauseLengthDistributionWIdget.h"
+#include "PauseLengthDistributionWidget.h"
+#include "ui_PauseLengthDistributionWidget.h"
 
 namespace Praaline {
 namespace Plugins {
@@ -42,7 +42,7 @@ struct PauseLengthDistributionWidgetData {
 };
 
 PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
-    QWidget(parent), ui(new Ui::PauseLengthDistributionWIdget), d(new PauseLengthDistributionWidgetData)
+    QWidget(parent), ui(new Ui::PauseLengthDistributionWidget), d(new PauseLengthDistributionWidgetData)
 {
     ui->setupUi(this);
     d->repository = repository;

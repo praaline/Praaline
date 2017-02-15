@@ -3,20 +3,28 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
+#include <QtCharts/QChartView>
+#include <QtCharts/QBoxPlotSeries>
+#include <QtCharts/QBoxSet>
+#include <QtCharts/QLegend>
+#include <QtCharts/QBarCategoryAxis>
+QT_CHARTS_USE_NAMESPACE
+
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusSpeaker.h"
 #include "pncore/structure/MetadataStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/MetadataDatastore.h"
+#include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"
 
 #include "AnalyserTemporal.h"
 #include "AnalyserTemporalItem.h"
-#include "AnalyserTemporalWidgetWidget.h"
-#include "ui_AnalyserTemporalWidgetWidget.h"
+#include "AnalyserTemporalWidget.h"
+#include "ui_AnalyserTemporalWidget.h"
 
 namespace Praaline {
 namespace Plugins {
@@ -43,6 +51,9 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     // Analyser
     d->analyser = analyser;
     connect(d->analyser, SIGNAL(madeProgress(int)), this, SLOT(madeProgress(int)));
+    // ================================================================================================================
+    // MAIN WIDGET AND RESUTLS TAB
+    // ================================================================================================================
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
     // Command Analyse
@@ -56,6 +67,32 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     // Change display
     connect(ui->optionCommunications, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
     connect(ui->optionSpeakers, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
+    // ================================================================================================================
+    // BOXPLOTS TAB
+    // ================================================================================================================
+    // Measure combobox (start with measures for Communications by default)
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
+        ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
+    // Group by attributes
+    if (d->repository->metadataStructure()) {
+        ui->comboBoxGroupByCom->addItem("", "");
+        ui->comboBoxGroupByCom->addItem("Communication ID", "ID");
+        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+            ui->comboBoxGroupByCom->addItem(attr->name(), attr->ID());
+        }
+        ui->comboBoxGroupByCom->setCurrentText("");
+        // speaker
+        ui->comboBoxGroupBySpk->addItem("", "");
+        ui->comboBoxGroupBySpk->addItem("Speaker ID", "ID");
+        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+            ui->comboBoxGroupBySpk->addItem(attr->name(), attr->ID());
+        }
+        ui->comboBoxGroupBySpk->setCurrentText("");
+    }
+    // Command Draw Chart
+    connect(ui->commandDrawChart, SIGNAL(clicked(bool)), this, SLOT(drawBoxplot()));
+    // Go to results tab
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 AnalyserTemporalWidget::~AnalyserTemporalWidget()
@@ -89,10 +126,17 @@ void AnalyserTemporalWidget::analyse()
 
 void AnalyserTemporalWidget::changeDisplayedModel()
 {
-    if (ui->optionCommunications->isChecked())
+    if (ui->optionCommunications->isChecked()) {
+        ui->comboBoxMeasure->clear();
+        foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
+            ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
         showAnalysisForCom();
-    else
+    }  else {
+        ui->comboBoxMeasure->clear();
+        foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
+            ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
         showAnalysisForSpk();
+    }
 }
 
 void AnalyserTemporalWidget::showAnalysisForCom()
@@ -187,6 +231,69 @@ void AnalyserTemporalWidget::buildModelForSpk()
     }
 }
 
+void AnalyserTemporalWidget::drawBoxplot()
+{
+    if (!d->analyser) return;
+    if (!d->analyser->corpus()) return;
+
+    // Get parameters from user interface
+    QString measureID = ui->comboBoxMeasure->currentData().toString();
+    QStringList groupAttributeIDsCom; groupAttributeIDsCom << ui->comboBoxGroupByCom->currentData().toString();
+    QStringList groupAttributeIDsSpk; groupAttributeIDsSpk << ui->comboBoxGroupBySpk->currentData().toString();
+    // Aggregate selected measure, over selected metadata attributes
+    QMap<QString, QList<double> > aggregates;
+    QString groupAttributes;
+    if (ui->optionCommunications->isChecked()) {
+        aggregates = d->analyser->aggregateMeasureCom(measureID, groupAttributeIDsCom);
+        groupAttributes = ui->comboBoxGroupByCom->currentText();
+    }
+    else {
+        aggregates = d->analyser->aggregateMeasureSpk(measureID, groupAttributeIDsCom, groupAttributeIDsSpk);
+        QStringList sl; sl << ui->comboBoxGroupByCom->currentText() << ui->comboBoxGroupBySpk->currentText();
+        groupAttributes = sl.join(", ");
+    }
+    if (groupAttributes.endsWith(", ")) groupAttributes.chop(2);
+    // Calculate boxplot series
+    QBoxPlotSeries *series = new QBoxPlotSeries();
+    series->setName(measureID);
+    double min(0), max(0);
+    foreach (QString groupID, aggregates.keys()) {
+        QBoxSet *set = new QBoxSet(groupID);
+        StatisticalSummary summary;
+        summary.calculate(aggregates.value(groupID));
+//        set->setValue(QBoxSet::LowerExtreme, summary.firstQuartile() - 1.5 * summary.interQuartileRange());
+//        set->setValue(QBoxSet::UpperExtreme, summary.thirdQuartile() + 1.5 * summary.interQuartileRange());
+        set->setValue(QBoxSet::LowerExtreme, summary.min());
+        set->setValue(QBoxSet::UpperExtreme, summary.max());
+        set->setValue(QBoxSet::Median, summary.median());
+        set->setValue(QBoxSet::LowerQuartile, summary.firstQuartile());
+        set->setValue(QBoxSet::UpperQuartile, summary.thirdQuartile());
+        series->append(set);
+        if (min > summary.min()) min = summary.min();
+        if (max < summary.max()) max = summary.max();
+    }
+    // Create boxplot chart
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText()).arg(groupAttributes));
+    chart->setAnimationOptions(QChart::SeriesAnimations);
+    chart->createDefaultAxes();
+    chart->axisY()->setMin(qRound(min * 0.9));
+    chart->axisY()->setMax(qRound(max * 1.1));
+    chart->legend()->setVisible(true);
+    chart->legend()->setAlignment(Qt::AlignBottom);
+    // Clear previous chart
+    QLayoutItem *item;
+    while ((item = ui->gridLayoutChart->takeAt(0)) != 0) { delete item; }
+    QList<QChartView *> chartviews;
+    chartviews = findChildren<QChartView *>();
+    qDeleteAll(chartviews);
+    // Create new chart view widget
+    QChartView *chartView = new QChartView(chart, this);
+    chartView->setRenderHint(QPainter::Antialiasing);
+    // Show chart view
+    ui->gridLayoutChart->addWidget(chartView);
+}
 
 } // namespace StatisticsPluginTemporal
 } // namespace Plugins

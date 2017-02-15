@@ -15,7 +15,7 @@ namespace Plugins {
 namespace StatisticsPluginTemporal {
 
 namespace Ui {
-class PauseLengthDistributionWIdget;
+class PauseLengthDistributionWidget;
 }
 
 class AnalyserTemporal;
@@ -34,7 +34,7 @@ private slots:
     void drawCharts();
 
 private:
-    Ui::PauseLengthDistributionWIdget *ui;
+    Ui::PauseLengthDistributionWidget *ui;
     PauseLengthDistributionWidgetData *d;
 
     QChart *drawHistogram(const QString &title, QMap<QString, QList<double> > aggregates);

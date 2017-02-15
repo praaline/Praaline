@@ -110,7 +110,7 @@ QMap<QString, QList<double> > AnalyserTemporal::aggregateMeasureSpk(
             // Create list if it does not exist already;
             if (!aggregates.contains(id))
                 aggregates.insert(id, QList<double>());
-            // Find measure
+            // Find measure. If it is a vector, add the entire vector to the aggregated list; otherwise just the value.
             if (AnalyserTemporalItem::measureDefinition(measureID).isVector()) {
                 aggregates[id].append(theItem->vectorMeasureSpk(speakerID, measureID));
             } else {

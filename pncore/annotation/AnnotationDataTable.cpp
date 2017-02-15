@@ -118,7 +118,7 @@ bool AnnotationDataTable::readFromFile(const QString &filename)
         if (headerLine) {
             int fieldColumn = 0;
             foreach (QString fieldName, line.split("\t")) {
-                m_fieldNames.insert(fieldName, fieldColumn);
+                m_fieldNames.insert(fieldName.trimmed(), fieldColumn);
                 fieldColumn++;
             }
             headerLine = false;

@@ -2,6 +2,7 @@
 #define PRAALINE_PLUGINS_STATISTICSPLUGINPROSODY_GLOBALPROSODICPROFILEWIDGET_H
 
 #include <QWidget>
+#include "pncore/statistics/StatisticalMeasureDefinition.h"
 
 namespace Praaline {
 
@@ -25,6 +26,9 @@ class GlobalProsodicProfileWidget : public QWidget
 public:
     explicit GlobalProsodicProfileWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
     ~GlobalProsodicProfileWidget();
+
+    static QStringList measureIDs();
+    static Praaline::Core::StatisticalMeasureDefinition measureDefinition(const QString &measureID);
 
 private slots:
     void analyse();
