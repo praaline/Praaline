@@ -32,9 +32,7 @@ bool SQLSerialiserNameValueList::initialiseNameValueListSchema(QSqlDatabase &db)
             << Column("datatypePrecision", SqlType::Integer);
     initialiseNameValueListSchema.add(new CreateTable(tableNameValueLists));
     bool result = SQLSerialiserBase::applyMigration("initialiseNameValueListSchema", &initialiseNameValueListSchema, db);
-    if (result) {
-        setPraalineSchemaVersion(2, db);
-    }
+    if (result) setPraalineSchemaVersion(3, db);
     return result;
 }
 

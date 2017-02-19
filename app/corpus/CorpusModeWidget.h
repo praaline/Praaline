@@ -26,6 +26,7 @@ public slots:
     void newCorpusRepository();
     void openCorpusRepository();
     void openCorpusRepositoryRecent();
+    void editCorpusRepository();
     void closeCorpusRepository();
     void saveCorpusRepository();
     void saveCorpusRepositoryAs();

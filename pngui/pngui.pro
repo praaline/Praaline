@@ -33,16 +33,13 @@ DEFINES += XLSX_NO_LIB
 DEFINES += NODE_EDITOR_STATIC
 
 FORMS += \
-    widgets/annotationverticaltimelineeditor.ui \
-    widgets/TableWidgetBase.ui \
     widgets/TimelineEditorConfigWidget.ui \
     widgets/GridViewWidget.ui \
     widgets/GridViewFindDialog.ui \
-    widgets/CorpusLevelsAttributesSelector.ui \
     widgets/CorpusItemSelectorWidget.ui \
-    widgets/AnnotationTimelineEditor.ui \
     grid/QAdvancedTableView.ui \
-    grid/QConditionalDecorationDialog.ui
+    grid/QConditionalDecorationDialog.ui \
+    widgets/ImportDataPreviewWidget.ui
 
 HEADERS += \
     grid/qabstractfilter.h \
@@ -168,7 +165,6 @@ HEADERS += \
     widgets/WaitingSpinnerWidget.h \
     widgets/CorpusItemPreview.h \
     widgets/SelectReorderItemsWidget.h \
-    widgets/TableWidgetBase.h \
     observers/CorpusObserver.h \
     model/DelayedExecutionTimer.h \
     model/CheckableProxyModel.h \
@@ -212,7 +208,8 @@ HEADERS += \
     nodeeditor/Style.h \
     nodeeditor/StyleCollection.h \
     model/corpus/CorpusTableModel.h \
-    FlowLayout.h
+    FlowLayout.h \
+    widgets/ImportDataPreviewWidget.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -312,7 +309,6 @@ SOURCES += \
     widgets/WaitingSpinnerWidget.cpp \
     widgets/CorpusItemPreview.cpp \
     widgets/SelectReorderItemsWidget.cpp \
-    widgets/TableWidgetBase.cpp \
     observers/CorpusObserver.cpp \
     model/DelayedExecutionTimer.cpp \
     model/CheckableProxyModel.cpp \
@@ -347,7 +343,8 @@ SOURCES += \
     nodeeditor/Properties.cpp \
     nodeeditor/StyleCollection.cpp \
     model/corpus/CorpusTableModel.cpp \
-    FlowLayout.cpp
+    FlowLayout.cpp \
+    widgets/ImportDataPreviewWidget.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

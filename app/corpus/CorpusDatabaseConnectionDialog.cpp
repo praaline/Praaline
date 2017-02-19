@@ -14,8 +14,8 @@ CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) 
     connect(ui->commandConnect, SIGNAL(clicked(bool)), this, SLOT(accept()));
     connect(ui->commandCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
     // Database types
-    QStringList databaseTypeNames; databaseTypeNames << tr("MySQL database") << tr("PostgreSQL database");
-    QStringList databaseTypeDrivers; databaseTypeDrivers << "QMYSQL" << "QPSQL";
+    QStringList databaseTypeNames; databaseTypeNames << tr("SQLite database") << tr("MySQL database") << tr("PostgreSQL database");
+    QStringList databaseTypeDrivers; databaseTypeDrivers << "QSQLITE" << "QMYSQL" << "QPSQL";
     for (int i = 0; i < databaseTypeDrivers.count(); ++i) {
         ui->comboBoxDatabaseTypeMetadata->addItem(databaseTypeNames.at(i), databaseTypeDrivers.at(i));
         ui->comboBoxDatabaseTypeAnnotations->addItem(databaseTypeNames.at(i), databaseTypeDrivers.at(i));
@@ -43,6 +43,7 @@ CorpusRepositoryDefinition CorpusDatabaseConnectionDialog::corpusDefinition()
     def.repositoryID = ui->editCorpusID->text();
     def.repositoryName = ui->editCorpusName->text();
     def.basePath = ui->editBaseFolder->text();
+    def.basePathMedia = ui->editBaseFolder->text();
     def.infoDatastoreMetadata.type = DatastoreInfo::SQL;
     def.infoDatastoreMetadata.driver = ui->comboBoxDatabaseTypeMetadata->currentData().toString();
     def.infoDatastoreMetadata.hostname = ui->editHostnameMetadata->text();
@@ -83,8 +84,12 @@ void CorpusDatabaseConnectionDialog::useSameDatabaseChanged()
 {
     if (ui->optionUseSameDatabase->isChecked()) {
         ui->groupBoxAnnotationsDb->setEnabled(false);
+        ui->groupBoxMetadataDb->setTitle(tr("Metadata Database Connection"));
+        ui->groupBoxAnnotationsDb->setTitle(tr("Annotations Database Connection"));
         datastoreInfoChanged();
     } else {
+        ui->groupBoxMetadataDb->setTitle(tr("Metadata and Annotations Database Connection"));
+        ui->groupBoxAnnotationsDb->setTitle("");
         ui->groupBoxAnnotationsDb->setEnabled(true);
     }
 }

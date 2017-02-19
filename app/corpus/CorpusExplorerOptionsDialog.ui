@@ -91,12 +91,20 @@
           <property name="text">
            <string>Up</string>
           </property>
+          <property name="icon">
+           <iconset resource="../praaline.qrc">
+            <normaloff>:/icons/actions/move_up.png</normaloff>:/icons/actions/move_up.png</iconset>
+          </property>
          </widget>
         </item>
         <item row="2" column="1">
          <widget class="QPushButton" name="commandComDown">
           <property name="text">
            <string>Down</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../praaline.qrc">
+            <normaloff>:/icons/actions/move_down.png</normaloff>:/icons/actions/move_down.png</iconset>
           </property>
          </widget>
         </item>
@@ -172,12 +180,20 @@
           <property name="text">
            <string>Up</string>
           </property>
+          <property name="icon">
+           <iconset resource="../praaline.qrc">
+            <normaloff>:/icons/actions/move_up.png</normaloff>:/icons/actions/move_up.png</iconset>
+          </property>
          </widget>
         </item>
         <item row="2" column="1">
          <widget class="QPushButton" name="commandSpkDown">
           <property name="text">
            <string>Down</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../praaline.qrc">
+            <normaloff>:/icons/actions/move_down.png</normaloff>:/icons/actions/move_down.png</iconset>
           </property>
          </widget>
         </item>
@@ -198,7 +214,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../praaline.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

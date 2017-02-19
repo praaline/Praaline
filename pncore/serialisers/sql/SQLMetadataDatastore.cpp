@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QSqlError>
 #include "corpus/CorpusObject.h"
 #include "corpus/CorpusObjectInfo.h"
@@ -42,13 +43,32 @@ bool SQLMetadataDatastore::createDatastore(const DatastoreInfo &info)
     if (d->database.isOpen()) d->database.close();
     d->database = QSqlDatabase::addDatabase(info.driver, info.datasource + "_metadata");
     d->database.setHostName(info.hostname);
-    d->database.setDatabaseName(info.datasource);
     d->database.setUserName(info.username);
     d->database.setPassword(info.password);
+    if (info.driver == "QSQLITE") {
+        d->database.setDatabaseName(info.datasource);
+    }
+    // Test if the connection is valid
+    if (!d->database.isValid()){
+        d->repository->setLastError(d->database.lastError().text());
+        qDebug() << d->database.lastError().text();
+        return false;
+    }
+    // Test if we can open the database
     if (!d->database.open()) {
         d->repository->setLastError(d->database.lastError().text());
         qDebug() << d->database.lastError().text();
         return false;
+    }
+    // Try creating database
+    if (info.driver != "QSQLITE") {
+        d->database.exec(QString("CREATE DATABASE IF NOT EXISTS %1").arg(info.datasource));
+        if (d->database.lastError().isValid()) {
+            d->repository->setLastError(d->database.lastError().text());
+            qDebug() << d->database.lastError().text();
+            return false;
+        }
+        d->database.setDatabaseName(info.datasource);
     }
     // Initialise database
     SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(d->database);
@@ -71,6 +91,7 @@ bool SQLMetadataDatastore::openDatastore(const DatastoreInfo &info)
         return false;
     }
     // Upgrade database if needed
+    SQLSerialiserBase::upgradeSchema(d->database);
     SQLSerialiserMetadataStructure::upgradeMetadataStructureSchema(d->database);
     SQLSerialiserMetadataStructure::upgradeMetadataSchema(d->structure, d->database);
     SQLSerialiserNameValueList::upgradeNameValueListSchema(d->database);

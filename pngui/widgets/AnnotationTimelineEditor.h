@@ -12,10 +12,6 @@
 #include "model/annotation/AnnotationTierModel.h"
 #include "SelectionListDataProviderProxy.h"
 
-namespace Ui {
-class AnnotationTimelineEditor;
-}
-
 struct AnnotationTimelineEditorData;
 
 class AnnotationTimelineEditor : public QWidget
@@ -71,7 +67,6 @@ private:
     void moveToRow(int row);
     void moveToColumn(int row);
 
-    Ui::AnnotationTimelineEditor *ui;
     AnnotationTimelineEditorData *d;
 };
 

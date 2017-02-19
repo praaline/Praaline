@@ -21,7 +21,8 @@ using namespace Praaline::Core;
 using std::vector;
 
 #include "CorpusRepositoriesManager.h"
-#include "NewCorpusRepositoryWizard.h"
+#include "CorpusRepositoryCreateWizard.h"
+#include "CorpusRepositoryPropertiesDialog.h"
 
 struct CorpusModeWidgetData {
     CorpusModeWidgetData() :
@@ -30,6 +31,7 @@ struct CorpusModeWidgetData {
 
     QAction *actionNewCorpusRepository;
     QAction *actionOpenCorpusRepository;
+    QAction *actionEditCorpusRepository;
     QAction *actionCloseCorpusRepository;
     QAction *actionSaveCorpusRepository;
     QAction *actionSaveCorpusRepositoryAs;
@@ -103,8 +105,8 @@ void CorpusModeWidget::setupActions()
     Command* command;
 
     ActionContainer* menubar = ACTION_MANAGER->menuBar(qti_action_MENUBAR_STANDARD);
-    ActionContainer* file_menu = ACTION_MANAGER->menu(qti_action_FILE);
-    Q_ASSERT(file_menu);
+    ActionContainer* menu_file = ACTION_MANAGER->menu(qti_action_FILE);
+    Q_ASSERT(menu_file);
     ActionContainer* menu_window = ACTION_MANAGER->createMenu(tr("&Window"), existed);
     if (!existed) menubar->addMenu(menu_window, tr("&Window"));
 
@@ -115,38 +117,48 @@ void CorpusModeWidget::setupActions()
     connect(d->actionNewCorpusRepository, SIGNAL(triggered()), SLOT(newCorpusRepository()));
     command = ACTION_MANAGER->registerAction("File.NewCorpusRepository", d->actionNewCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    file_menu->addAction(command, qti_action_FILE_SETTINGS);
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
     d->actionOpenCorpusRepository = new QAction(tr("Open Corpus Repository..."), this);
     connect(d->actionOpenCorpusRepository, SIGNAL(triggered()), SLOT(openCorpusRepository()));
     command = ACTION_MANAGER->registerAction("File.OpenCorpusRepository", d->actionOpenCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    file_menu->addAction(command, qti_action_FILE_SETTINGS);
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
     d->recentFilesMenu = ACTION_MANAGER->createMenu(tr("Open &Recent Corpus Repository"), existed);
-    if (!existed) file_menu->addMenu(d->recentFilesMenu, qti_action_FILE_SETTINGS);
+    if (!existed) menu_file->addMenu(d->recentFilesMenu, qti_action_FILE_SETTINGS);
     setupRecentFilesMenu();
     connect(d->recentFiles, SIGNAL(recentChanged()), this, SLOT(setupRecentFilesMenu()));
 
-    file_menu->addSeparator(qti_action_FILE_SETTINGS);
+    menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
-    d->actionSaveCorpusRepository = new QAction(tr("Save Corpus Repository Access File"), this);
+    d->actionEditCorpusRepository = new QAction(tr("Edit Corpus Repository Properties..."), this);
+    connect(d->actionEditCorpusRepository, SIGNAL(triggered()), SLOT(editCorpusRepository()));
+    command = ACTION_MANAGER->registerAction("File.EditCorpusRepository", d->actionEditCorpusRepository, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
+
+    menu_file->addSeparator(qti_action_FILE_SETTINGS);
+
+    d->actionSaveCorpusRepository = new QAction(tr("Save Corpus Repository Properties File"), this);
     connect(d->actionSaveCorpusRepository, SIGNAL(triggered()), SLOT(saveCorpusRepository()));
     command = ACTION_MANAGER->registerAction("File.SaveCorpusRepository", d->actionSaveCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    file_menu->addAction(command, qti_action_FILE_SETTINGS);
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
-    d->actionSaveCorpusRepositoryAs = new QAction(tr("Save Corpus Repository Access File As..."), this);
+    d->actionSaveCorpusRepositoryAs = new QAction(tr("Save Corpus Repository Properties File As..."), this);
     connect(d->actionSaveCorpusRepositoryAs, SIGNAL(triggered()), SLOT(saveCorpusRepositoryAs()));
     command = ACTION_MANAGER->registerAction("File.SaveCorpusRepositoryAs", d->actionSaveCorpusRepositoryAs, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    file_menu->addAction(command, qti_action_FILE_SETTINGS);
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
+
+    menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionCloseCorpusRepository = new QAction(tr("Close Corpus Repository"), this);
     connect(d->actionCloseCorpusRepository, SIGNAL(triggered()), SLOT(closeCorpusRepository()));
     command = ACTION_MANAGER->registerAction("File.CloseCorpusRepository", d->actionCloseCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    file_menu->addAction(command, qti_action_FILE_SETTINGS);
+    menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
@@ -222,7 +234,7 @@ void CorpusModeWidget::showAnnotationStructureEditor()
 
 void CorpusModeWidget::newCorpusRepository()
 {
-    NewCorpusRepositoryWizard *wizard = new NewCorpusRepositoryWizard(this);
+    CorpusRepositoryCreateWizard *wizard = new CorpusRepositoryCreateWizard(this);
     wizard->exec();
     CorpusRepository *repository = wizard->newCorpusRepository();
     if (!repository) return;
@@ -290,6 +302,14 @@ void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filenam
     d->corpusRepositoriesManager->addCorpusRepository(repository);
     d->corpusRepositoriesManager->setActiveCorpusRepository(repository->ID());
     d->recentFiles->addFile(filename);
+}
+
+void CorpusModeWidget::editCorpusRepository()
+{
+    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    CorpusRepositoryPropertiesDialog *dialog = new CorpusRepositoryPropertiesDialog(repository, this);
+    dialog->exec();
 }
 
 void CorpusModeWidget::closeCorpusRepository()

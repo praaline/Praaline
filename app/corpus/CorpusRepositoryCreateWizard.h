@@ -6,18 +6,18 @@
 #include "pncore/datastore/CorpusRepository.h"
 
 namespace Ui {
-class NewCorpusRepositoryWizard;
+class CorpusRepositoryCreateWizard;
 }
 
-struct NewCorpusRepositoryWizardData;
+struct CorpusRepositoryCreateWizardData;
 
-class NewCorpusRepositoryWizard : public QWizard
+class CorpusRepositoryCreateWizard : public QWizard
 {
     Q_OBJECT
 
 public:
-    explicit NewCorpusRepositoryWizard(QWidget *parent = 0);
-    ~NewCorpusRepositoryWizard();
+    explicit CorpusRepositoryCreateWizard(QWidget *parent = 0);
+    ~CorpusRepositoryCreateWizard();
 
     bool validateCurrentPage();
 
@@ -25,12 +25,12 @@ public:
     Praaline::Core::CorpusRepository *newCorpusRepository();
 
 private slots:
-    void localDbSelectFolder();
-    void localDbDatabaseNameChanged();
+    void selectMediaBaseFolder();
+    void databaseNameChanged();
 
 private:
-    Ui::NewCorpusRepositoryWizard *ui;
-    NewCorpusRepositoryWizardData *d;
+    Ui::CorpusRepositoryCreateWizard *ui;
+    CorpusRepositoryCreateWizardData *d;
 
     void populateTemplates();
     void createLocalSQLRepository();

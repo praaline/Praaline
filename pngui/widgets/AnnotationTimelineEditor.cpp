@@ -1,9 +1,11 @@
 #include <QObject>
+#include <QPointer>
+#include <QMap>
+#include <QGridLayout>
 #include <QFileDialog>
 #include <QSortFilterProxyModel>
 #include "model/annotation/AnnotationTierModel.h"
 #include "AnnotationTimelineEditor.h"
-#include "ui_annotationtimelineeditor.h"
 
 #include "grid/qadvancedtableview.h"
 #include "grid/qadvancedheaderview.h"
@@ -42,13 +44,17 @@ struct AnnotationTimelineEditorData {
 };
 
 AnnotationTimelineEditor::AnnotationTimelineEditor(QWidget *parent) :
-    QWidget(parent),
-    d(new AnnotationTimelineEditorData),
-    ui(new Ui::AnnotationTimelineEditor)
+    QWidget(parent), d(new AnnotationTimelineEditorData)
 {
-    ui->setupUi(this);
+    // Grid layout
+    QGridLayout *gridLayout;
+    gridLayout = new QGridLayout(this);
+    gridLayout->setSpacing(0);
+    gridLayout->setObjectName(QStringLiteral("gridLayout"));
+    gridLayout->setContentsMargins(0, 0, 0, 0);
+    // GridViewWidget
     d->view = new GridViewWidget(this);
-    ui->gridLayout->addWidget(d->view);
+    gridLayout->addWidget(d->view);
     // make grid a little tighter
     d->view->tableView()->verticalHeader()->setDefaultSectionSize(20);
     d->view->tableView()->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive); // StretchLastSection(true);
@@ -57,8 +63,8 @@ AnnotationTimelineEditor::AnnotationTimelineEditor(QWidget *parent) :
 
 AnnotationTimelineEditor::~AnnotationTimelineEditor()
 {
-    delete ui;
     if (d->model) delete d->model;
+    delete d;
 }
 
 void AnnotationTimelineEditor::annotationsSplit(const RealTime &time)

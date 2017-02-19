@@ -118,9 +118,7 @@ SOURCES += main.cpp \
     annotation/ManualAnnotationWidget.cpp \
     annotation/TranscriberWidget.cpp \
     scripting/ScriptingModeWidget.cpp \
-    corpus/AddNewCorpusItemDialog.cpp \
     corpus/CheckMediaFilesDialog.cpp \
-    corpus/ConnectToCorpusDatabaseDialog.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
     corpus/CorpusExplorerOptionsDialog.cpp \
     corpus/CorpusMode.cpp \
@@ -156,7 +154,6 @@ SOURCES += main.cpp \
     query/AnnotationBrowserWidget.cpp \
     query/dataseteditor/DatasetEditorWidget.cpp \
     CorpusRepositoriesManager.cpp \
-    corpus/NewCorpusRepositoryWizard.cpp \
     corpus/exportannotations/ExportAnnotationsWizard.cpp \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.cpp \
     corpus/exportmetadata/ExportMetadataWizard.cpp \
@@ -189,7 +186,9 @@ SOURCES += main.cpp \
     statistics/temporal/AnalyserTemporal.cpp \
     statistics/prosody/GlobalProsodicProfileWidget.cpp \
     statistics/temporal/AnalyserTemporalWidget.cpp \
-    statistics/temporal/PauseLengthDistributionWidget.cpp
+    statistics/temporal/PauseLengthDistributionWidget.cpp \
+    corpus/CorpusRepositoryPropertiesDialog.cpp \
+    corpus/CorpusRepositoryCreateWizard.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -219,9 +218,7 @@ HEADERS  += \
     annotation/CompareAnnotationsWidget.h \
     annotation/ManualAnnotationWidget.h \
     annotation/TranscriberWidget.h \
-    corpus/AddNewCorpusItemDialog.h \
     corpus/CheckMediaFilesDialog.h \
-    corpus/ConnectToCorpusDatabaseDialog.h \
     corpus/CorpusDatabaseConnectionDialog.h \
     corpus/CorpusExplorerOptionsDialog.h \
     corpus/CorpusMode.h \
@@ -261,7 +258,6 @@ HEADERS  += \
     query/dataseteditor/DatasetEditorWidget.h \
     query/dataseteditor/DatasetEditorModels.h \
     CorpusRepositoriesManager.h \
-    corpus/NewCorpusRepositoryWizard.h \
     corpus/exportannotations/ExportAnnotationsWizard.h \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.h \
     corpus/exportmetadata/ExportMetadataWizard.h \
@@ -296,7 +292,9 @@ HEADERS  += \
     PraalineUserInterfaceOptions.h \
     statistics/prosody/GlobalProsodicProfileWidget.h \
     statistics/temporal/AnalyserTemporalWidget.h \
-    statistics/temporal/PauseLengthDistributionWidget.h
+    statistics/temporal/PauseLengthDistributionWidget.h \
+    corpus/CorpusRepositoryPropertiesDialog.h \
+    corpus/CorpusRepositoryCreateWizard.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -326,9 +324,7 @@ FORMS    += \
     corpus/CorpusExplorerTableWidget.ui \
     corpus/CorpusExplorerOptionsDialog.ui \
     corpus/CorpusDatabaseConnectionDialog.ui \
-    corpus/ConnectToCorpusDatabaseDialog.ui \
     corpus/CheckMediaFilesDialog.ui \
-    corpus/AddNewCorpusItemDialog.ui \
     annotation/BatchEditorWidget.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
@@ -336,7 +332,6 @@ FORMS    += \
     help/HelpModeConfig.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
     corpus/structureeditors/AddLevelDialog.ui \
-    corpus/NewCorpusRepositoryWizard.ui \
     corpus/exportannotations/ExportAnnotationsWizard.ui \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.ui \
     corpus/exportmetadata/ExportMetadataWizard.ui \
@@ -360,7 +355,9 @@ FORMS    += \
     annotation/calculate/CreateSequenceAnnotationDialog.ui \
     statistics/prosody/GlobalProsodicProfileWidget.ui \
     statistics/temporal/AnalyserTemporalWidget.ui \
-    statistics/temporal/PauseLengthDistributionWidget.ui
+    statistics/temporal/PauseLengthDistributionWidget.ui \
+    corpus/CorpusRepositoryPropertiesDialog.ui \
+    corpus/CorpusRepositoryCreateWizard.ui
 
 RESOURCES += \
     praaline.qrc \

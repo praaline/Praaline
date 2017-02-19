@@ -47,7 +47,7 @@ bool SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(QSqlDatab
 
     bool result = SQLSerialiserBase::applyMigration("initializeMetadataStructure", &initializeMetadataStructure, db);
     if (result) {
-        setPraalineSchemaVersion(1, db);
+        setPraalineSchemaVersion(3, db);
     }
     return result;
 }
@@ -62,7 +62,7 @@ bool SQLSerialiserMetadataStructure::upgradeMetadataStructureSchema(QSqlDatabase
             result = result && addColumnToTable("praalineMetadataSections", "itemOrder", DataType::Integer, db);
             result = result && addColumnToTable("praalineMetadataAttributes", "mandatory", DataType::Boolean, db);
             result = result && addColumnToTable("praalineMetadataAttributes", "itemOrder", DataType::Integer, db);
-            if (result) setPraalineSchemaVersion(1, db);
+            if (result) setPraalineSchemaVersion(3, db);
         }
         else {
             return initialiseMetadataStructureSchema(db);

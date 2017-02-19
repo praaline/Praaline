@@ -3,9 +3,7 @@
 
 #include <QWidget>
 
-namespace Ui {
-class CorpusLevelsAttributesSelector;
-}
+struct CorpusLevelsAttributesSelectorData;
 
 class CorpusLevelsAttributesSelector : public QWidget
 {
@@ -16,7 +14,7 @@ public:
     ~CorpusLevelsAttributesSelector();
 
 private:
-    Ui::CorpusLevelsAttributesSelector *ui;
+    CorpusLevelsAttributesSelectorData *d;
 };
 
 #endif // CORPUSLEVELSATTRIBUTESSELECTOR_H

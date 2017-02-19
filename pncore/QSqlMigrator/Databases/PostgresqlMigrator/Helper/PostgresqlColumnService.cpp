@@ -76,7 +76,7 @@ void PostgresqlColumnService::buildColumnOptionsSql(const Column &column,
                                                     const BaseSqlColumnService::StringOutputFunction &addOption) const
 {
     if (column.isPrimary()) {
-        addOption("PRIMARY KEY");
+        // addOption("PRIMARY KEY");
     }
     else if (!column.isAutoIncremented() && !column.isNullable()) {
         addOption("NOT NULL");

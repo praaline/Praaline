@@ -32,6 +32,7 @@ public:
 
     static int getPraalineSchemaVersion(QSqlDatabase &db);
     static bool setPraalineSchemaVersion(int version, QSqlDatabase &db);
+    static bool upgradeSchema(QSqlDatabase &db);
 
 private:
     SQLSerialiserBaseData *d;

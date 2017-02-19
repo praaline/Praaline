@@ -53,7 +53,7 @@ void MysqlColumnService::buildColumnOptionsSql(const Column &column,
     } // default is NULL for columns
     if (column.isPrimary()) {
         // TODO: handle PRIMARY KEY in function which call this one, so compound keys are handled easily
-        addOption("PRIMARY KEY");
+        // addOption("PRIMARY KEY");
         if (column.isAutoIncremented()) { // primary key may be automatically incremented
             addOption("AUTO_INCREMENT");
         }
@@ -66,7 +66,7 @@ void MysqlColumnService::buildColumnOptionsSql(const Column &column,
         addOption("UNIQUE");
     }
     if (column.hasDefaultValue()) {
-        addOption(QString("DEFAULT (%1)").arg(column.defaultValue()));
+        addOption(QString("DEFAULT %1").arg(column.defaultValue()));
     }
 }
 

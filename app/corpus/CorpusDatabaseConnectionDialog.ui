@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>717</width>
-    <height>378</height>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
       <item row="0" column="0">
        <widget class="QLabel" name="labelCorpusID">
         <property name="text">
-         <string>Corpus ID:</string>
+         <string>Repository ID:</string>
         </property>
        </widget>
       </item>
@@ -36,7 +36,7 @@
       <item row="1" column="0">
        <widget class="QLabel" name="labelCorpusName">
         <property name="text">
-         <string>Corpus Name:</string>
+         <string>Description:</string>
         </property>
        </widget>
       </item>
@@ -88,7 +88,7 @@
    <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxData">
      <property name="title">
-      <string>Corpus Data Storage</string>
+      <string>Corpus Repository Information</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
@@ -96,7 +96,7 @@
         <item row="0" column="0">
          <widget class="QLabel" name="labelBaseFolder">
           <property name="text">
-           <string>Corpus media files in folder:</string>
+           <string>Media files in folder:</string>
           </property>
          </widget>
         </item>
@@ -117,7 +117,7 @@
         <item row="0" column="0">
          <widget class="QGroupBox" name="groupBoxMetadataDb">
           <property name="title">
-           <string>Corpus Metadata Database Connection</string>
+           <string>Metadata and Annotations Database Connection</string>
           </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
@@ -179,7 +179,7 @@
            <bool>false</bool>
           </property>
           <property name="title">
-           <string>Corpus Annotations Database Connection</string>
+           <string>Annotations Database Connection</string>
           </property>
           <property name="checkable">
            <bool>false</bool>
