@@ -19,10 +19,14 @@ greaterThan(QT_MAJOR_VERSION, 4) {
     macx:QT += macextras
 }
 
-macx {
-    # QMAKE_INFO_PLIST = ../deploy/osx/Info.plist
+# Application icon
+win32 {
+    RC_FILE = praaline.rc
 }
-RC_FILE = praaline.rc
+macx* {
+    # QMAKE_INFO_PLIST = ../deploy/osx/Info.plist
+    ICON = praaline.icns
+}
 
 DEPENDPATH += . ../pncore ../pnlib ../pngui
 INCLUDEPATH += . .. ../.. ../pncore ../pnlib ../pngui
