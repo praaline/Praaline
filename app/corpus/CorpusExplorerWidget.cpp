@@ -31,7 +31,6 @@ using namespace QtilitiesProjectManagement;
 #include "CorpusRepositoriesManager.h"
 
 #include "CorpusModeWidget.h"
-#include "AddNewCorpusItemDialog.h"
 #include "CorpusExplorerOptionsDialog.h"
 #include "CheckMediaFilesDialog.h"
 #include "SplitCommunicationsDialog.h"

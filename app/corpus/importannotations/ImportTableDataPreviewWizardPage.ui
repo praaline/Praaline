@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImportTableDataPreviewWizardPage</class>
+ <widget class="QWizardPage" name="ImportTableDataPreviewWizardPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>752</width>
+    <height>491</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>WizardPage</string>
+  </property>
+  <property name="title">
+   <string>Import tabular data</string>
+  </property>
+  <property name="subTitle">
+   <string>Select the file and options to import tabular data from Excel spreadsheets and CSV, tab-separated or other text files.</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

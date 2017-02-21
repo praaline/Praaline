@@ -7,6 +7,8 @@ namespace Ui {
 class ImportAnnotationsWizard;
 }
 
+struct ImportAnnotationsWizardData;
+
 class ImportAnnotationsWizard : public QWizard
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ public:
 
 private:
     Ui::ImportAnnotationsWizard *ui;
+    ImportAnnotationsWizardData *d;
 };
 
 #endif // IMPORTANNOTATIONSWIZARD_H
