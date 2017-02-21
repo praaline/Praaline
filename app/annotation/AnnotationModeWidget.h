@@ -41,6 +41,7 @@ private slots:
     void dialogAddCalculatedAnnotation();
     void dialogCreateSequenceAnnotation();
     void dialogComposeTranscription();
+    void dialogTidyUpAnnotations();
 };
 
 #endif // ANNOTATIONMODEWIDGET_H

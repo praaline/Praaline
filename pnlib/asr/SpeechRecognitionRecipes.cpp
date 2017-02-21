@@ -142,7 +142,7 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
             IntervalTier *tier_transcription = tiers->getIntervalTierByName(tiernameTranscription);
             if (!tier_transcription) continue;
             IntervalTier *tier_segment = new IntervalTier(tier_transcription, tiernameSegmentation);
-            tier_segment->fillEmptyTextLabelsWith("_");
+            tier_segment->fillEmptyWith("", "_");
             tier_segment->mergeIdenticalAnnotations("_");
             foreach (Interval *intv, tier_segment->intervals()) {
                 QString text = intv->text();
@@ -154,8 +154,8 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
                     intv->setText("");
             }
             tier_segment->mergeContiguousAnnotations(QStringList() << "_" << "<s>" << "</s>", " ");
-            tier_segment->replaceTextLabels("<s>", "_");
-            tier_segment->replaceTextLabels("</s>", "_");
+            tier_segment->replace("", "<s>", "_");
+            tier_segment->replace("", "</s>", "_");
             tier_segment->mergeIdenticalAnnotations("_");
             mutex.lock();
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_segment);

@@ -376,7 +376,7 @@ void tokenise(const QList<QPointer<CorpusCommunication> > &communications)
                     itok = itok + count;
                     if (segment->duration().toDouble() > 1.0) itok = itok + 1;
                 }
-                tier_tok_min->fillEmptyTextLabelsWith("_");
+                tier_tok_min->fillEmptyWith("", "_");
                 tier_tok_min->mergeIdenticalAnnotations("_");
 
                 com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);

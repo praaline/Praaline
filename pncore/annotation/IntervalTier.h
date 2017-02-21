@@ -47,22 +47,19 @@ public:
     virtual ~IntervalTier();
 
     // Implementation of AnnotationTier
-    AnnotationTier::TierType tierType() const
+    AnnotationTier::TierType tierType() const override
         { return AnnotationTier::TierType_Intervals; }
-    int count() const
+    int count() const override
         { return m_intervals.count(); }
-    bool isEmpty() const;
-    void clear();
-    Interval *at(int index) const;
-    Interval *first() const;
-    Interval *last() const;
-    QList<QString> getDistinctTextLabels() const;
-    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
-    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyTextLabelsWith(const QString &filler);
-    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
+    bool isEmpty() const override;
+    void clear() override;
+    Interval *at(int index) const override;
+    Interval *first() const override;
+    Interval *last() const override;
+    QStringList getDistinctLabels() const override;
+    QList<QVariant> getDistinctValues(const QString &attributeID) const override;
+    void replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyWith(const QString &attributeID,const QString &filler) override;
 
     // Accessors for Intervals
     Interval *interval(int index) const;

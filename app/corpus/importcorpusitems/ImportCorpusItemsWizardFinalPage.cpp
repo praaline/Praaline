@@ -119,8 +119,12 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
         if (!com) continue;
         QList<TierCorrespondance> correspondances;
+        // First: level correspondances then attribute correspondances
         foreach (TierCorrespondance c, d->tierCorrespondances.values(annot->filename())) {
-            if (!c.annotationLevelID.isEmpty()) correspondances << c;
+            if (!c.annotationLevelID.isEmpty() && c.annotationAttributeID.isEmpty()) correspondances << c;
+        }
+        foreach (TierCorrespondance c, d->tierCorrespondances.values(annot->filename())) {
+            if (!c.annotationLevelID.isEmpty() && !c.annotationAttributeID.isEmpty()) correspondances << c;
         }
         if (annot->filename().toLower().endsWith("textgrid")) {
             importPraat(com, annot, correspondances);
@@ -341,7 +345,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
 //        }
 //        tierSpeaker->mergeIdenticalAnnotations();
         QStringList speakerNames;
-        QStringList speakerLabels = tierSpeaker->getDistinctTextLabels();
+        QStringList speakerLabels = tierSpeaker->getDistinctLabels();
         speakerLabels.removeOne(""); speakerLabels.removeOne("_");
         foreach (QString speakerLabel, speakerLabels) {
             speakerLabel = speakerLabel.replace(" ", "");

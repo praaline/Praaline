@@ -933,11 +933,11 @@ void CorpusExplorerWidget::removeCorpusItems()
                 }
                 else if (cobj->type() == CorpusObject::Type_Annotation) {
                     CorpusCommunication *com = qobject_cast<CorpusCommunication *>(cobj->parent());
-                    if (com) com->removeAnnotation(cobj->ID());
                     if (alsoDeleteData) {
                         Corpus *corpus = qobject_cast<Corpus *>(com->parent());
                         if (corpus) corpus->repository()->annotations()->deleteAllTiersAllSpeakers(cobj->ID());
                     }
+                    if (com) com->removeAnnotation(cobj->ID());
                 }
             }
         }

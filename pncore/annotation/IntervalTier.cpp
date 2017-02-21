@@ -145,50 +145,45 @@ Interval *IntervalTier::last() const
     return m_intervals.last();
 }
 
-QList<QString> IntervalTier::getDistinctTextLabels() const
+QStringList IntervalTier::getDistinctLabels() const
 {
-    QList<QString> ret;
+    QStringList ret;
     foreach (Interval *intv, m_intervals) {
         if (!ret.contains(intv->text())) ret << intv->text();
     }
     return ret;
 }
 
-QList<QVariant> IntervalTier::getDistinctAttributeValues(const QString &attributeID) const
+QList<QVariant> IntervalTier::getDistinctValues(const QString &attributeID) const
 {
     QList<QVariant> ret;
     foreach (Interval *intv, m_intervals) {
-        if (!ret.contains(intv->attribute(attributeID))) ret.append(intv->attribute(attributeID));
+        QVariant value = (attributeID.isEmpty()) ? intv->text() : intv->attribute(attributeID);
+        if (!ret.contains(value)) ret << value;
     }
     return ret;
 }
 
-void IntervalTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+void IntervalTier::replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
 {
     foreach (Interval *intv, m_intervals) {
-        intv->replaceText(before, after, cs);
+        if (attributeID.isEmpty())
+            intv->replaceText(before, after, cs);
+        else
+            intv->replaceAttributeText(attributeID, before, after, cs);
     }
 }
 
-void IntervalTier::fillEmptyTextLabelsWith(const QString &filler)
+void IntervalTier::fillEmptyWith(const QString &attributeID, const QString &filler)
 {
     foreach (Interval *intv, m_intervals) {
-        if (intv->text().isEmpty()) intv->setText(filler);
-    }
-}
-
-void IntervalTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Interval *intv, m_intervals) {
-        intv->replaceAttributeText(attributeID, before, after, cs);
-    }
-}
-
-void IntervalTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
-{
-    foreach (Interval *intv, m_intervals) {
-        if (intv->attribute(attributeID).toString().isEmpty())
-            intv->setAttribute(attributeID, filler);
+        if (attributeID.isEmpty()) {
+            if (intv->text().isEmpty())
+                intv->setText(filler);
+        } else {
+            if (intv->attribute(attributeID).toString().isEmpty())
+                intv->setAttribute(attributeID, filler);
+        }
     }
 }
 

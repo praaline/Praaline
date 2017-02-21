@@ -36,22 +36,19 @@ public:
     virtual ~RelationTier();
 
     // Implementation of AnnotationTier
-    AnnotationTier::TierType tierType() const
+    AnnotationTier::TierType tierType() const override
         { return AnnotationTier::TierType_Relations; }
-    int count() const
+    int count() const override
         { return m_relations.count(); }
-    bool isEmpty() const;
-    void clear();
-    Relation *at(int index) const;
-    Relation *first() const;
-    Relation *last() const;
-    QList<QString> getDistinctTextLabels() const;
-    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
-    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyTextLabelsWith(const QString &filler);
-    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
+    bool isEmpty() const override;
+    void clear() override;
+    Relation *at(int index) const override;
+    Relation *first() const override;
+    Relation *last() const override;
+    QStringList getDistinctLabels() const override;
+    QList<QVariant> getDistinctValues(const QString &attributeID) const override;
+    void replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyWith(const QString &attributeID,const QString &filler) override;
 
     // Accessors for Relations
     Relation* relation(int index) const;

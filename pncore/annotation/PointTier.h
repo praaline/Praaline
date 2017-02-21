@@ -42,23 +42,19 @@ public:
     virtual ~PointTier();
 
     // Implementation of AnnotationTier
-    AnnotationTier::TierType tierType() const
+    AnnotationTier::TierType tierType() const override
         { return AnnotationTier::TierType_Points; }
-    int count() const
+    int count() const override
         { return m_points.count(); }
-    bool isEmpty() const;
-    void clear();
-    Point *at(int index) const;
-    Point *first() const;
-    Point *last() const;
-    QList<QString> getDistinctTextLabels() const;
-    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const;
-    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyTextLabelsWith(const QString &filler);
-    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                              Qt::CaseSensitivity cs = Qt::CaseSensitive);
-    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler);
-
+    bool isEmpty() const override;
+    void clear() override;
+    Point *at(int index) const override;
+    Point *first() const override;
+    Point *last() const override;
+    QStringList getDistinctLabels() const override;
+    QList<QVariant> getDistinctValues(const QString &attributeID) const override;
+    void replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyWith(const QString &attributeID,const QString &filler) override;
 
     // Accessors for Points
     Point* point(int index) const;

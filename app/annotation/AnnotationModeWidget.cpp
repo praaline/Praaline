@@ -10,6 +10,7 @@
 #include "calculate/AddCalculatedAnnotationDialog.h"
 #include "calculate/CreateSequenceAnnotationDialog.h"
 #include "calculate/ComposeTranscriptionDialog.h"
+#include "calculate/TidyUpAnnotationsDialog.h"
 
 struct AnnotationModeWidgetData {
     AnnotationModeWidgetData()
@@ -24,6 +25,7 @@ struct AnnotationModeWidgetData {
     QAction *actionAddCalculatedAnnotation;
     QAction *actionCreateSequenceAnnotation;
     QAction *actionComposeTranscription;
+    QAction *actionTidyUpAnnotations;
 
     AutomaticAnnotationWidget *widgetAutomaticAnnotation;
     ManualAnnotationWidget *widgetManualAnnotation;
@@ -106,6 +108,12 @@ void AnnotationModeWidget::setupActions()
     d->actionComposeTranscription = new QAction(tr("Compose Transcription..."), this);
     connect(d->actionComposeTranscription, SIGNAL(triggered()), SLOT(dialogComposeTranscription()));
     command = ACTION_MANAGER->registerAction("Annotation.ComposeTranscription", d->actionComposeTranscription, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
+
+    d->actionTidyUpAnnotations = new QAction(tr("Tidy-up annotations..."), this);
+    connect(d->actionTidyUpAnnotations, SIGNAL(triggered()), SLOT(dialogTidyUpAnnotations()));
+    command = ACTION_MANAGER->registerAction("Annotation.TidyUpAnnotations", d->actionTidyUpAnnotations, context);
     command->setCategory(QtilitiesCategory(tr("Annotation")));
     menu_annotation->addAction(command);
 
@@ -192,6 +200,13 @@ void AnnotationModeWidget::dialogCreateSequenceAnnotation()
 void AnnotationModeWidget::dialogComposeTranscription()
 {
     ComposeTranscriptionDialog *dialog = new ComposeTranscriptionDialog(this);
+    dialog->exec();
+    delete dialog;
+}
+
+void AnnotationModeWidget::dialogTidyUpAnnotations()
+{
+    TidyUpAnnotationsDialog *dialog = new TidyUpAnnotationsDialog(this);
     dialog->exec();
     delete dialog;
 }

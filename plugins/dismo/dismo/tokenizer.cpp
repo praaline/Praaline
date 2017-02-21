@@ -76,7 +76,7 @@ void Tokenizer::Tokenize(const IntervalTier *tierInput, const IntervalTier *tier
 
     QPointer<IntervalTier> tierCopy = new IntervalTier(tierInput->name(), tierInput->tMin(), tierInput->tMax());
     tierCopy->copyIntervalsFrom(tierInput);
-    tierCopy->fillEmptyTextLabelsWith("_");
+    tierCopy->fillEmptyWith("", "_");
     tierCopy->mergeIdenticalAnnotations("_");
 
     foreach(Interval *intvInput, tierCopy->intervals()) {

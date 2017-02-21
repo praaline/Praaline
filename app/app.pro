@@ -189,7 +189,8 @@ SOURCES += main.cpp \
     statistics/temporal/PauseLengthDistributionWidget.cpp \
     corpus/CorpusRepositoryPropertiesDialog.cpp \
     corpus/CorpusRepositoryCreateWizard.cpp \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.cpp
+    corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
+    annotation/calculate/TidyUpAnnotationsDialog.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -296,7 +297,8 @@ HEADERS  += \
     statistics/temporal/PauseLengthDistributionWidget.h \
     corpus/CorpusRepositoryPropertiesDialog.h \
     corpus/CorpusRepositoryCreateWizard.h \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.h
+    corpus/importannotations/ImportTableDataPreviewWizardPage.h \
+    annotation/calculate/TidyUpAnnotationsDialog.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -360,7 +362,8 @@ FORMS    += \
     statistics/temporal/PauseLengthDistributionWidget.ui \
     corpus/CorpusRepositoryPropertiesDialog.ui \
     corpus/CorpusRepositoryCreateWizard.ui \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.ui
+    corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
+    annotation/calculate/TidyUpAnnotationsDialog.ui
 
 RESOURCES += \
     praaline.qrc \

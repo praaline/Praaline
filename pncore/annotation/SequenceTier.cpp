@@ -87,51 +87,45 @@ Sequence *SequenceTier::last() const
     return m_sequences.last();
 }
 
-QList<QString> SequenceTier::getDistinctTextLabels() const
+QStringList SequenceTier::getDistinctLabels() const
 {
-    QList<QString> ret;
+    QStringList ret;
     foreach (Sequence *sequence, m_sequences) {
         if (!ret.contains(sequence->text())) ret << sequence->text();
     }
     return ret;
 }
 
-QList<QVariant> SequenceTier::getDistinctAttributeValues(const QString &attributeID) const
+QList<QVariant> SequenceTier::getDistinctValues(const QString &attributeID) const
 {
     QList<QVariant> ret;
     foreach (Sequence *sequence, m_sequences) {
-        if (!ret.contains(sequence->attribute(attributeID))) ret.append(sequence->attribute(attributeID));
+        QVariant value = (attributeID.isEmpty()) ? sequence->text() : sequence->attribute(attributeID);
+        if (!ret.contains(value)) ret << value;
     }
     return ret;
 }
 
-void SequenceTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+void SequenceTier::replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
 {
     foreach (Sequence *sequence, m_sequences) {
-        sequence->replaceText(before, after, cs);
+        if (attributeID.isEmpty())
+            sequence->replaceText(before, after, cs);
+        else
+            sequence->replaceAttributeText(attributeID, before, after, cs);
     }
 }
 
-void SequenceTier::fillEmptyTextLabelsWith(const QString &filler)
+void SequenceTier::fillEmptyWith(const QString &attributeID, const QString &filler)
 {
     foreach (Sequence *sequence, m_sequences) {
-        if (sequence->text().isEmpty()) sequence->setText(filler);
-    }
-}
-
-
-void SequenceTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Sequence *sequence, m_sequences) {
-        sequence->replaceAttributeText(attributeID, before, after, cs);
-    }
-}
-
-void SequenceTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
-{
-    foreach (Sequence *sequence, m_sequences) {
-        if (sequence->attribute(attributeID).toString().isEmpty())
-            sequence->setAttribute(attributeID, filler);
+        if (attributeID.isEmpty()) {
+            if (sequence->text().isEmpty())
+                sequence->setText(filler);
+        } else {
+            if (sequence->attribute(attributeID).toString().isEmpty())
+                sequence->setAttribute(attributeID, filler);
+        }
     }
 }
 
