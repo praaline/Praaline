@@ -295,7 +295,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                     tier_segment = new IntervalTier(d->levelSegmentation, tier_autosyll->tMin(), tier_autosyll->tMax());
                 } else {
                     tier_segment = new IntervalTier(d->levelSegmentation, listLongPauses, tier_autosyll->tMin(), tier_autosyll->tMax());
-                    tier_segment->replaceTextLabels("<sil>", "_");
+                    tier_segment->replace("", "<sil>", "_");
                     tier_segment->mergeIdenticalAnnotations("_");
                 }
                 com->repository()->annotations()->saveTier(annotationID, speakerID, tier_segment);

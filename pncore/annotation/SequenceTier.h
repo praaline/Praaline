@@ -47,13 +47,10 @@ public:
     Sequence *at(int index) const override;
     Sequence *first() const override;
     Sequence *last() const override;
-    QList<QString> getDistinctTextLabels() const override;
-    QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const override;
-    void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
-    void fillEmptyTextLabelsWith(const QString &filler) override;
-    void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                              Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
-    void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler) override;
+    QStringList getDistinctLabels() const override;
+    QList<QVariant> getDistinctValues(const QString &attributeID) const override;
+    void replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) override;
+    void fillEmptyWith(const QString &attributeID,const QString &filler) override;
 
     // Base tier
     AnnotationTier *baseTier() const;

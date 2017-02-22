@@ -160,7 +160,7 @@ void MyExperiments::mergePauses(QPointer<Corpus> corpus, QPointer<CorpusCommunic
             foreach (QString tiername, tiernames) {
                 IntervalTier *tier = tiers->getIntervalTierByName(tiername);
                 if (!tier) continue;
-                tier->fillEmptyTextLabelsWith("_");
+                tier->fillEmptyWith("", "_");
                 tier->mergeIdenticalAnnotations("_");
                 corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier);
             }

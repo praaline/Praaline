@@ -165,7 +165,7 @@ bool LongSoundAligner::recognise(QPointer<CorpusCommunication> com, int recognit
                               .replace("(1)", "").replace("(2)", "").replace("(3)", "").replace("(4)", "")
                               .replace("<s>", "_").replace("</s>", "_"));
             }
-            tier_auto_hypseg->fillEmptyTextLabelsWith("_");
+            tier_auto_hypseg->fillEmptyWith("", "_");
             tier_auto_hypseg->mergeIdenticalAnnotations("_");
             // Save
             mutex.lock();

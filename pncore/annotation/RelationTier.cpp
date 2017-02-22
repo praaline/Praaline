@@ -74,51 +74,45 @@ Relation *RelationTier::last() const
     return m_relations.last();
 }
 
-QList<QString> RelationTier::getDistinctTextLabels() const
+QStringList RelationTier::getDistinctLabels() const
 {
-    QList<QString> ret;
+    QStringList ret;
     foreach (Relation *relation, m_relations) {
         if (!ret.contains(relation->text())) ret << relation->text();
     }
     return ret;
 }
 
-QList<QVariant> RelationTier::getDistinctAttributeValues(const QString &attributeID) const
+QList<QVariant> RelationTier::getDistinctValues(const QString &attributeID) const
 {
     QList<QVariant> ret;
     foreach (Relation *relation, m_relations) {
-        if (!ret.contains(relation->attribute(attributeID))) ret.append(relation->attribute(attributeID));
+        QVariant value = (attributeID.isEmpty()) ? relation->text() : relation->attribute(attributeID);
+        if (!ret.contains(value)) ret << value;
     }
     return ret;
 }
 
-void RelationTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+void RelationTier::replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
 {
     foreach (Relation *relation, m_relations) {
-        relation->replaceText(before, after, cs);
+        if (attributeID.isEmpty())
+            relation->replaceText(before, after, cs);
+        else
+            relation->replaceAttributeText(attributeID, before, after, cs);
     }
 }
 
-void RelationTier::fillEmptyTextLabelsWith(const QString &filler)
+void RelationTier::fillEmptyWith(const QString &attributeID, const QString &filler)
 {
     foreach (Relation *relation, m_relations) {
-        if (relation->text().isEmpty()) relation->setText(filler);
-    }
-}
-
-
-void RelationTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Relation *relation, m_relations) {
-        relation->replaceAttributeText(attributeID, before, after, cs);
-    }
-}
-
-void RelationTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
-{
-    foreach (Relation *relation, m_relations) {
-        if (relation->attribute(attributeID).toString().isEmpty())
-            relation->setAttribute(attributeID, filler);
+        if (attributeID.isEmpty()) {
+            if (relation->text().isEmpty())
+                relation->setText(filler);
+        } else {
+            if (relation->attribute(attributeID).toString().isEmpty())
+                relation->setAttribute(attributeID, filler);
+        }
     }
 }
 

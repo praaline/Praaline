@@ -321,7 +321,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusC
                     if (d->tokenisedOnlyToMinimal) {
                         tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
                         if (!tier_tok_min) continue;
-                        tier_tok_min->fillEmptyTextLabelsWith("_");
+                        tier_tok_min->fillEmptyWith("", "_");
                         tier_tok_mwu = new IntervalTier(d->levelTokMWU, tiers->tMin(), tiers->tMax());
                         DISMO->annotateTokenizedToMinimal(tier_tok_min, tier_tok_mwu);
                     }
@@ -329,8 +329,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusC
                         tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
                         tier_tok_mwu = tiers->getIntervalTierByName(d->levelTokMWU);
                         if (!tier_tok_min || !tier_tok_mwu) continue;
-                        tier_tok_min->fillEmptyTextLabelsWith("_");
-                        tier_tok_mwu->fillEmptyTextLabelsWith("_");
+                        tier_tok_min->fillEmptyWith("", "_");
+                        tier_tok_mwu->fillEmptyWith("", "_");
                         QHash<QString, QString> attr;
                         foreach (QString attrName, d->attributeNames.keys()) {
                             attr.insert(d->attributePrefix + attrName, d->attributeNames.value(attrName));

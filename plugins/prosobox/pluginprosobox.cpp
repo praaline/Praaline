@@ -102,10 +102,10 @@ QString temporalVariables(CorpusCommunication *com, QString annotationID, QStrin
     IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
     IntervalTier *tier_timeline = com->repository()->annotations()->getSpeakerTimeline("", annotationID, "segment");
     if (tier_timeline) {
-        tier_timeline->replaceTextLabels(speakerID, "L1");
-        tier_timeline->replaceTextLabels("L1+L2", "L1");
-        tier_timeline->replaceTextLabels("L2+L1", "L1");
-        tier_timeline->fillEmptyTextLabelsWith("_");
+        tier_timeline->replace("", speakerID, "L1");
+        tier_timeline->replace("", "L1+L2", "L1");
+        tier_timeline->replace("", "L2+L1", "L1");
+        tier_timeline->fillEmptyWith("", "_");
         tier_timeline->mergeIdenticalAnnotations(QString(), QStringList() << "_");
         tier_timeline->setName("speaker");
     }

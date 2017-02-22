@@ -17,9 +17,18 @@ public:
     explicit ImportDataPreviewWidget(QWidget *parent = 0);
     ~ImportDataPreviewWidget();
 
+private slots:
+    void selectFile();
+    void importParametersChangedTextFile();
+    void importParametersChangedExcel();
+
 private:
     Ui::ImportDataPreviewWidget *ui;
     ImportDataPreviewWidgetData *d;
+
+    void readTextFile();
+    void readExcel();
+    void preparePreview();
 };
 
 #endif // IMPORTDATAPREVIEWWIDGET_H

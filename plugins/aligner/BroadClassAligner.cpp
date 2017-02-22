@@ -179,7 +179,7 @@ void BroadClassAligner::prepareTiers(QList<QPointer<CorpusCommunication> > commu
                 if (!tier_token) continue;
                 updateTokenTierWithBroadClasses(tier_phone, "broad_phonetic_class",
                                                 tier_token, "broad_phonetic_class");
-                tier_token->replaceAttributeText("broad_phonetic_lcass", "SIL", "");
+                tier_token->replace("broad_phonetic_lcass", "SIL", "");
                 com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phone);
                 com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_token);
             }

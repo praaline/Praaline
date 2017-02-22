@@ -62,14 +62,10 @@ public:
     virtual AnnotationElement *first() const = 0;
     virtual AnnotationElement *last() const = 0;
 
-    virtual QList<QString> getDistinctTextLabels() const = 0;
-    virtual QList<QVariant> getDistinctAttributeValues(const QString &attributeID) const = 0;
-
-    virtual void replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) = 0;
-    virtual void fillEmptyTextLabelsWith(const QString &filler) = 0;
-    virtual void replaceAttributeText(const QString &attributeID, const QString &before, const QString &after,
-                                      Qt::CaseSensitivity cs = Qt::CaseSensitive) = 0;
-    virtual void fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler) = 0;
+    virtual QStringList getDistinctLabels() const = 0;
+    virtual QList<QVariant> getDistinctValues(const QString &attributeID) const = 0;
+    virtual void replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs = Qt::CaseSensitive) = 0;
+    virtual void fillEmptyWith(const QString &attributeID, const QString &filler) = 0;
 
 signals:
     void nameChanged();

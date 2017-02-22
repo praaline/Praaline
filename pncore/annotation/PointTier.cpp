@@ -83,51 +83,45 @@ Point *PointTier::last() const
     return m_points.last();
 }
 
-QList<QString> PointTier::getDistinctTextLabels() const
+QStringList PointTier::getDistinctLabels() const
 {
-    QList<QString> ret;
+    QStringList ret;
     foreach (Point *point, m_points) {
         if (!ret.contains(point->text())) ret << point->text();
     }
     return ret;
 }
 
-QList<QVariant> PointTier::getDistinctAttributeValues(const QString &attributeID) const
+QList<QVariant> PointTier::getDistinctValues(const QString &attributeID) const
 {
     QList<QVariant> ret;
     foreach (Point *point, m_points) {
-        if (!ret.contains(point->attribute(attributeID))) ret.append(point->attribute(attributeID));
+        QVariant value = (attributeID.isEmpty()) ? point->text() : point->attribute(attributeID);
+        if (!ret.contains(value)) ret << value;
     }
     return ret;
 }
 
-void PointTier::replaceTextLabels(const QString &before, const QString &after, Qt::CaseSensitivity cs)
+void PointTier::replace(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
 {
     foreach (Point *point, m_points) {
-        point->replaceText(before, after, cs);
+        if (attributeID.isEmpty())
+            point->replaceText(before, after, cs);
+        else
+            point->replaceAttributeText(attributeID, before, after, cs);
     }
 }
 
-void PointTier::fillEmptyTextLabelsWith(const QString &filler)
+void PointTier::fillEmptyWith(const QString &attributeID, const QString &filler)
 {
     foreach (Point *point, m_points) {
-        if (point->text().isEmpty()) point->setText(filler);
-    }
-}
-
-
-void PointTier::replaceAttributeText(const QString &attributeID, const QString &before, const QString &after, Qt::CaseSensitivity cs)
-{
-    foreach (Point *point, m_points) {
-        point->replaceAttributeText(attributeID, before, after, cs);
-    }
-}
-
-void PointTier::fillEmptyAttributeTextWith(const QString &attributeID,const QString &filler)
-{
-    foreach (Point *point, m_points) {
-        if (point->attribute(attributeID).toString().isEmpty())
-            point->setAttribute(attributeID, filler);
+        if (attributeID.isEmpty()) {
+            if (point->text().isEmpty())
+                point->setText(filler);
+        } else {
+            if (point->attribute(attributeID).toString().isEmpty())
+                point->setAttribute(attributeID, filler);
+        }
     }
 }
 
