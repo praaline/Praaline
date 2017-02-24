@@ -2,6 +2,8 @@
 #include <QSize>
 #include <QImage>
 #include <QFileInfo>
+#include <QFileDialog>
+#include <QDir>
 #include <QMessageBox>
 
 #include "data/model/Model.h"
@@ -25,6 +27,7 @@ struct ExportVisualisationDialogData
         document(d), paneStack(ps), viewManager(vm)
     {}
 
+    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
     Document    *document;
     PaneStack   *paneStack;
     ViewManager *viewManager;
@@ -37,12 +40,21 @@ ExportVisualisationDialog::ExportVisualisationDialog(Document *document, PaneSta
     d(new ExportVisualisationDialogData(document, paneStack, viewManager))
 {
     ui->setupUi(this);
-    doExport();
+    // Export directory
+    ui->editExportDirectory->setText(QDir::homePath());
+    connect(ui->commandSelectExportDirectory, SIGNAL(clicked(bool)), this, SLOT(selectExportDirectory()));
+    // Export command
+    connect(ui->commandExport, SIGNAL(clicked(bool)), this, SLOT(doExport()));
 }
 
 ExportVisualisationDialog::~ExportVisualisationDialog()
 {
     delete ui;
+}
+
+void ExportVisualisationDialog::selectExportDirectory()
+{
+
 }
 
 void ExportVisualisationDialog::doExport()
@@ -56,7 +68,7 @@ void ExportVisualisationDialog::doExport()
     sv_frame_t end = model->getEndFrame();
 
     int iter = 1;
-    QPdfWriter pdf(QString("export.pdf"));
+    QPdfWriter pdf(ui->editExportDirectory->text() + QString("/praaline_visualisation.pdf"));
     pdf.setResolution(200);
     pdf.setPageOrientation(QPageLayout::Landscape);
     QPainter painterPDF;

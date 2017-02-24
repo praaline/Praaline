@@ -22,6 +22,7 @@ public:
     ~ExportVisualisationDialog();
 
 private slots:
+    void selectExportDirectory();
     void doExport();
 
 private:

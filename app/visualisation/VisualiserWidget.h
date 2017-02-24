@@ -47,10 +47,10 @@ public slots:
     void endFullScreen();
 
 
-    void addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                                    const QList<QPair<QString, QString> > &attributes);
+    void setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
+    void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);
+    void addAnnotationPane();
     void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
-
     void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
 
 protected slots:
@@ -116,7 +116,12 @@ protected slots:
     virtual void manageSavedTemplates();
     virtual void selectDefaultTemplate();
 
+    virtual void updateAnnotationPanes();
+
 protected:
+    QMap<QString, QPointer<AnnotationTierGroup> > m_tiers;
+    QList<QPair<QString, QString> > m_annotationSelection;
+
     bool                     m_mainMenusCreated;
     QMenu                   *m_paneMenu;
     QMenu                   *m_layerMenu;

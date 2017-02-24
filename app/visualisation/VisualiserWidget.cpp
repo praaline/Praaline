@@ -3351,18 +3351,27 @@ void VisualiserWidget::showLayerTree()
 //    }
 //}
 
+void VisualiserWidget::setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
+{
+    m_tiers = tiers;
+    updateAnnotationPanes();
+}
 
+void VisualiserWidget::setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection)
+{
+    m_annotationSelection = annotationSelection;
+    updateAnnotationPanes();
+}
 
-void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                                                  const QList<QPair<QString, QString> > &attributes)
+void VisualiserWidget::addAnnotationPane()
 {
     if (!getMainModel()) return;
 
     QList<QPair<QString, QString> > annotationAttributes;
     QPair<QString, QString> pair;
-    foreach (pair, attributes) if (pair.first != "tapping") annotationAttributes << pair;
+    foreach (pair, m_annotationSelection) if (pair.first != "tapping") annotationAttributes << pair;
 
-    AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), tiers, attributes);
+    AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), m_tiers, annotationAttributes);
     model->excludeSpeakerIDs(QList<QString>() << "Emilie_1" << "Emilie_2");
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add annotations pane", true);
@@ -3379,6 +3388,11 @@ void VisualiserWidget::addAnnotationPaneToSession(QMap<QString, QPointer<Annotat
     updateMenuStates();
 
    // addTappingDataPane(tiers);
+}
+
+void VisualiserWidget::updateAnnotationPanes()
+{
+
 }
 
 void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec)

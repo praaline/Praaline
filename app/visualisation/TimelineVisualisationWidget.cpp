@@ -231,7 +231,10 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
-    d->visualiser->addAnnotationPaneToSession(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
+    d->visualiser->setAnnotationTiers(d->currentTierGroups);
+    d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
+    d->visualiser->addAnnotationPane();
+
     d->visualiser->addProsogramPaneToSession(corpus->communication(d->currentCommunicationID)->recording(d->currentRecordingID));
 //    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
 //                                                        "timeNanoseconds", "rate_syll", "text");
