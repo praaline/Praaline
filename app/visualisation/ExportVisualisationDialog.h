@@ -2,10 +2,14 @@
 #define EXPORTVISUALISATIONDIALOG_H
 
 #include <QDialog>
+#include <QMap>
 
 namespace Ui {
 class ExportVisualisationDialog;
 }
+
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
 
 struct ExportVisualisationDialogData;
 class Document;
@@ -18,6 +22,7 @@ class ExportVisualisationDialog : public QDialog
 
 public:
     explicit ExportVisualisationDialog(Document *document, PaneStack *paneStack, ViewManager *viewManager,
+                                       QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                        QWidget *parent = 0);
     ~ExportVisualisationDialog();
 

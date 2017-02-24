@@ -2399,7 +2399,7 @@ VisualiserWidget::exportLayer()
 void
 VisualiserWidget::exportVisualisation()
 {
-    QPointer<ExportVisualisationDialog> d = new ExportVisualisationDialog(m_document, m_paneStack, m_viewManager);
+    QPointer<ExportVisualisationDialog> d = new ExportVisualisationDialog(m_document, m_paneStack, m_viewManager, m_tiers);
     d->exec();
 }
 

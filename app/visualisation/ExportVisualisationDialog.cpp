@@ -1,10 +1,16 @@
 #include <QString>
+#include <QPointer>
 #include <QSize>
 #include <QImage>
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QDir>
+#include <QMap>
 #include <QMessageBox>
+
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
 
 #include "data/model/Model.h"
 #include "data/model/WaveFileModel.h"
@@ -23,21 +29,22 @@
 
 struct ExportVisualisationDialogData
 {
-    ExportVisualisationDialogData(Document *d, PaneStack *ps, ViewManager *vm) :
-        document(d), paneStack(ps), viewManager(vm)
+    ExportVisualisationDialogData(Document *d, PaneStack *ps, ViewManager *vm, QMap<QString, QPointer<AnnotationTierGroup> > &tiers) :
+        document(d), paneStack(ps), viewManager(vm), tiers(tiers)
     {}
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
     Document    *document;
     PaneStack   *paneStack;
     ViewManager *viewManager;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
 };
 
 ExportVisualisationDialog::ExportVisualisationDialog(Document *document, PaneStack *paneStack, ViewManager *viewManager,
+                                                     QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
                                                      QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ExportVisualisationDialog),
-    d(new ExportVisualisationDialogData(document, paneStack, viewManager))
+    d(new ExportVisualisationDialogData(document, paneStack, viewManager, tiers))
 {
     ui->setupUi(this);
     // Export directory
@@ -70,14 +77,34 @@ void ExportVisualisationDialog::doExport()
     int iter = 1;
     QPdfWriter pdf(ui->editExportDirectory->text() + QString("/praaline_visualisation.pdf"));
     pdf.setResolution(200);
-    pdf.setPageOrientation(QPageLayout::Landscape);
+    pdf.setPageOrientation(QPageLayout::Portrait);
     QPainter painterPDF;
     painterPDF.begin(&pdf);
     int y = 0;
 
-    for (sv_frame_t f0 = start; f0 < end; f0 += width) {
-        sv_frame_t f1 = f0 + width;
-        if (f1 > end) f1 = end;
+    QList<QPair<sv_frame_t, sv_frame_t> > imageSegments;
+    bool imageSegmentationBasedOnTier = true;
+    if (!imageSegmentationBasedOnTier) {
+        for (sv_frame_t f0 = start; f0 < end; f0 += width) {
+            sv_frame_t f1 = f0 + width;
+            if (f1 > end) f1 = end;
+            imageSegments << QPair<sv_frame_t, sv_frame_t>(f0, f1);
+        }
+    } else {
+        IntervalTier *tier = qobject_cast<IntervalTier *>(d->tiers.first()->tier("segment"));
+        if (!tier) return;
+        foreach (Interval *intv, tier->intervals()) {
+            if (intv->isPauseSilent()) continue;
+            sv_frame_t f0 = RealTime::realTime2Frame(intv->tMin(), model->getSampleRate());
+            sv_frame_t f1 = RealTime::realTime2Frame(intv->tMax(), model->getSampleRate());
+            imageSegments << QPair<sv_frame_t, sv_frame_t>(f0, f1);
+        }
+    }
+
+    QPair<sv_frame_t, sv_frame_t> imageSegment;
+    foreach (imageSegment, imageSegments) {
+        sv_frame_t f0 = imageSegment.first;
+        sv_frame_t f1 = imageSegment.second;
 
         QList<QImage *> images;
         for (int paneIndex = 0; paneIndex < d->paneStack->getPaneCount(); ++paneIndex) {
@@ -99,17 +126,16 @@ void ExportVisualisationDialog::doExport()
 
         // QImage composite(compositeWidth, compositeHeight, QImage::Format_RGB32);
 
-        if (iter > 0) pdf.newPage();
         foreach (QImage *img, images) {
             painterPDF.drawImage(compositeWidth - img->width(), y, *img);
             y = y + img->height() + 1;
         }
-        if (iter % 2 == 0) {
+        if (iter % 4 == 0) {
             y = 0;
+            pdf.newPage();
         } else {
-            y += 200;
+            y += 100;
         }
-
 
         // composite.save(QString("composite_%1.png").arg(iter), "PNG");
         ++iter;
