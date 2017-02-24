@@ -35,19 +35,32 @@ using namespace Praaline::Core;
 #include "pngui/widgets/GridViewWidget.h"
 
 #include "CorpusRepositoriesManager.h"
+#include "PraalineUserInterfaceOptions.h"
 
 struct CorpusExplorerTableWidgetData
 {
     CorpusExplorerTableWidgetData() :
-        corpusRepositoryManager(0), corpuObjectType(CorpusObject::Type_Communication), model(0)
+        corpusRepositoryManager(0), repository(0), corpuObjectType(CorpusObject::Type_Communication), model(0)
     {}
 
+    // Main toolbar
+    QToolBar *toolbarCorpusExplorerTable;
+    QAction *actionSave;
+
     CorpusRepositoriesManager *corpusRepositoryManager;
+    QPointer<CorpusRepository> repository;
     CorpusObject::Type corpuObjectType;
+
+    QList<QPointer<CorpusCommunication> > itemsCom;
+    QList<QPointer<CorpusRecording> > itemsRec;
+    QList<QPointer<CorpusAnnotation> > itemsAnnot;
+    QList<QPointer<CorpusSpeaker> > itemsSpk;
+    QList<QPointer<CorpusParticipation> > itemsPart;
+
     QAbstractTableModel *model;
 
     GridViewWidget *tableView;
-//    QToolBar *toolbarCorpusExplorerTable;
+
 };
 
 CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
@@ -72,16 +85,33 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
     ui->comboItemType->setCurrentText(tr("Communications"));
     connect(ui->comboItemType, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusObjectTypeChanged(QString)));
     // Menu and Toolbar actions
-//    d->toolbarCorpusExplorerTable = new QToolBar("Corpus Explorer Tables", this);
-//    d->toolbarCorpusExplorerTable->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-//    d->toolbarCorpusExplorerTable->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
-//    this->addToolBar(d->toolbarCorpusExplorerTable);
+    d->toolbarCorpusExplorerTable = new QToolBar("Corpus Explorer Tables", this);
+    d->toolbarCorpusExplorerTable->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarCorpusExplorerTable->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
+    this->addToolBar(d->toolbarCorpusExplorerTable);
+    setupActions();
 }
 
 CorpusExplorerTableWidget::~CorpusExplorerTableWidget()
 {
     delete ui;
     delete d;
+}
+
+void CorpusExplorerTableWidget::setupActions()
+{
+    QList<int> context;
+    context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+    Command* command;
+
+    // MAIN TOOLBAR
+    // ----------------------------------------------------------------------------------------------------------------
+    d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save"), this);
+    connect(d->actionSave, SIGNAL(triggered()), SLOT(save()));
+    command = ACTION_MANAGER->registerAction("Annotation.AnnotationBrowser.Save", d->actionSave, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarCorpusExplorerTable->addAction(d->actionSave);
+    d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 }
 
 void CorpusExplorerTableWidget::corpusObjectTypeChanged(const QString &text)
@@ -108,32 +138,38 @@ void CorpusExplorerTableWidget::refreshModel()
         d->model = 0;
         return;
     }
+    d->repository = repository;
     // otherwise, another corpus has been selected
     QAbstractTableModel *newModel = 0;
     if (d->corpuObjectType == CorpusObject::Type_Communication) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Communication);
         QList<QPointer<CorpusCommunication> > items = repository->metadata()->getCommunications(MetadataDatastore::Selection("", "", ""));
         newModel = new CorpusCommunicationTableModel(items, attributes, true);
+        d->itemsCom = items;
     }
     else if (d->corpuObjectType == CorpusObject::Type_Speaker) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Speaker);
         QList<QPointer<CorpusSpeaker> > items = repository->metadata()->getSpeakers(MetadataDatastore::Selection("", "", ""));
         newModel = new CorpusSpeakerTableModel(items, attributes, true);
+        d->itemsSpk = items;
     }
     else if (d->corpuObjectType == CorpusObject::Type_Recording) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Recording);
         QList<QPointer<CorpusRecording> > items = repository->metadata()->getRecordings(MetadataDatastore::Selection("", "", ""));
         newModel = new CorpusRecordingTableModel(items, attributes, true);
+        d->itemsRec = items;
     }
     else if (d->corpuObjectType == CorpusObject::Type_Annotation) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Annotation);
         QList<QPointer<CorpusAnnotation> > items = repository->metadata()->getAnnotations(MetadataDatastore::Selection("", "", ""));
         newModel = new CorpusAnnotationTableModel(items, attributes, true);
+        d->itemsAnnot = items;
     }
     else if (d->corpuObjectType == CorpusObject::Type_Participation) {
         QList<QPointer<MetadataStructureAttribute> > attributes = repository->metadataStructure()->attributes(CorpusObject::Type_Participation);
         QList<QPointer<CorpusParticipation> > items = repository->metadata()->getParticipations(MetadataDatastore::Selection("", "", ""));
         newModel = new CorpusParticipationTableModel(items, attributes, true);
+        d->itemsPart = items;
     }
     // try to update model, if not possible show an empty table
     if (newModel) {
@@ -177,4 +213,28 @@ void CorpusExplorerTableWidget::selectionChanged(const QItemSelection & selected
 void CorpusExplorerTableWidget::contextMenuRequested(const QPoint & point)
 {
 
+}
+
+void CorpusExplorerTableWidget::save()
+{
+    if (!d->repository) return;
+    bool result(false);
+    if      (d->corpuObjectType == CorpusObject::Type_Communication)
+        result = d->repository->metadata()->saveCommunications(d->itemsCom);
+    else if (d->corpuObjectType == CorpusObject::Type_Speaker)
+        result = d->repository->metadata()->saveSpeakers(d->itemsSpk);
+    else if (d->corpuObjectType == CorpusObject::Type_Recording)
+        result = d->repository->metadata()->saveRecordings(d->itemsRec);
+    else if (d->corpuObjectType == CorpusObject::Type_Annotation)
+        result = d->repository->metadata()->saveAnnotations(d->itemsAnnot);
+    else if (d->corpuObjectType == CorpusObject::Type_Participation)
+        result = d->repository->metadata()->saveParticipations(d->itemsPart);
+
+    if (result && d->model) {
+        refreshModel(); // d->model->modelSavedInDatabase();
+    } else {
+        QMessageBox::warning(this, tr("Error(s) saving"),
+                             tr("One or more metadata items could not be saved in the database. "
+                                "They are indicated as 'modified' or 'new'."));
+    }
 }
