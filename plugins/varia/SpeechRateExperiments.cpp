@@ -82,6 +82,27 @@ bool correctFile(const QString &filename)
     return true;
 }
 
+bool correctFile2(const QString &filename)
+{
+    QFile file(filename);
+    if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return false;
+    QTextStream stream(&file);
+    QFile fileOut(QString(filename).replace(".txt", ".xml"));
+    if (!fileOut.open( QIODevice::WriteOnly | QIODevice::Text )) return false;
+    QTextStream out(&fileOut);
+
+    do {
+        QString line = stream.readLine();
+        if (line.startsWith("<gamepadannotator")) {
+            out << QString(line).replace(" />", ">") << "\n";
+        }
+        else {
+            out << line << "\n";
+        }
+    } while (!stream.atEnd());
+    return true;
+}
+
 bool readWorkingMemory(QXmlStreamReader &xml)
 {
     return false;
@@ -171,6 +192,7 @@ void readAttributesToCorpusObject(QXmlStreamReader &xml, CorpusObject *obj, QStr
 bool SpeechRateExperiments::readResultsFile(CorpusRepository *repository, const QString &filename)
 {
     // if (!correctFile(filename)) return false;
+    if (!correctFile2(filename)) return false;
 
     QFile file(QString(filename).replace(".txt", ".xml"));
     if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return false;

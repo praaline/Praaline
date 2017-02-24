@@ -162,34 +162,27 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     if (communications.isEmpty()) return;
     SpeechRateExperiments sr;
     QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/";
-    sr.readResultsFile(communications.first()->repository(), path + "results_P4.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P5.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P6.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P7.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P9.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P10.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P11.xml");
-    sr.readResultsFile(communications.first()->repository(), path + "results_P12.xml");
 
-//    sr.readResultsFile(communications.first()->repository(), path + "results_P1.txt");
-//    sr.readResultsFile(communications.first()->repository(), path + "results_P2.txt");
-//    sr.readResultsFile(communications.first()->repository(), path + "results_P3.txt");
+//    for (int i = 13; i <= 40; ++i) {
+//        QString filename = QString("results_P%1.txt").arg(i);
+//        sr.readResultsFile(communications.first()->repository(), path + filename);
+//        printMessage(filename);
+//    }
     return;
 
 //    // DisfluenciesExperiments::analysisCalculateDeltaRT(communications);
 //    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
 //    return;
 
-
-    int countDone = 0;
-    madeProgress(0);
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
-        // MyExperiments::updateTranscriptionMode(corpus, com);
-        countDone++;
-        madeProgress(countDone * 100 / communications.count());
-    }
+//    int countDone = 0;
+//    madeProgress(0);
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
+//        // MyExperiments::updateTranscriptionMode(corpus, com);
+//        countDone++;
+//        madeProgress(countDone * 100 / communications.count());
+//    }
 
 //    ProsodyCourse::syllableTables(corpus);
 //    return;

@@ -17,6 +17,11 @@ public:
     explicit CreateSequenceAnnotationDialog(QWidget *parent = 0);
     ~CreateSequenceAnnotationDialog();
 
+private slots:
+    void corpusRepositoryChanged(const QString &repositoryID);
+    void annotationLevelBaseChanged(int index);
+    void createSequences();
+
 private:
     Ui::CreateSequenceAnnotationDialog *ui;
     CreateSequenceAnnotationDialogData *d;

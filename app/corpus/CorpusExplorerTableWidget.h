@@ -26,10 +26,13 @@ private slots:
     void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected);
     void contextMenuRequested(const QPoint & point);
 
+    void save();
+
 private:
     Ui::CorpusExplorerTableWidget *ui;
     CorpusExplorerTableWidgetData *d;
 
+    void setupActions();
     void refreshModel();
 };
 
