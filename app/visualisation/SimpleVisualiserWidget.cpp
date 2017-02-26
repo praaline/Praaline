@@ -65,6 +65,8 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     // Register this object with the global object pool
     OBJECT_MANAGER->registerObject(this, QtilitiesCategory("Visualiser"));
 
+    menuBar()->setNativeMenuBar(false);
+
     m_visualiserFrame = new QFrame;
 
     m_descriptionLabel = new QLabel;

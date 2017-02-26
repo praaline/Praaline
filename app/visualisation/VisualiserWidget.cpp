@@ -271,14 +271,14 @@ VisualiserWidget::setupMenus()
         m_rightButtonMenu->addSeparator();
     }
 
-//    setupFileMenu();
-//    setupEditMenu();
-//    setupAnnotationMenu();
-//    setupViewMenu();
-//    setupPaneAndLayerMenus();
-//    setupTransformsMenu();
+    setupFileMenu();
+    setupEditMenu();
+    setupAnnotationMenu();
+    setupViewMenu();
+    setupPaneAndLayerMenus();
+    setupTransformsMenu();
 
-    //m_mainMenusCreated = true;
+    m_mainMenusCreated = true;
 }
 
 void VisualiserWidget::goFullScreen()
