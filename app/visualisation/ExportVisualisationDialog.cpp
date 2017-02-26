@@ -19,6 +19,11 @@ using namespace Praaline::Core;
 #include "view/PaneStack.h"
 #include "view/ViewManager.h"
 
+#include "pncore/annotation/AnnotationTierGroup.h"
+using namespace Praaline::Core;
+
+#include <QMap>
+#include <QPointer>
 #include <QPdfWriter>
 #include <QSvgGenerator>
 #include "pngui/epsengine/EpsEngine.h"

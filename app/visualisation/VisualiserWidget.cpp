@@ -270,14 +270,14 @@ VisualiserWidget::setupMenus()
         m_rightButtonMenu->addSeparator();
     }
 
-    setupFileMenu();
-    setupEditMenu();
-    setupAnnotationMenu();
-    setupViewMenu();
-    setupPaneAndLayerMenus();
-    setupTransformsMenu();
+//    setupFileMenu();
+//    setupEditMenu();
+//    setupAnnotationMenu();
+//    setupViewMenu();
+//    setupPaneAndLayerMenus();
+//    setupTransformsMenu();
 
-    m_mainMenusCreated = true;
+    //m_mainMenusCreated = true;
 }
 
 void VisualiserWidget::goFullScreen()
@@ -1341,7 +1341,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     m_keyReference->registerShortcut(raction); // rename after delete, so delete layer goes next to delete pane
     m_keyReference->registerShortcut(eaction); // edit also after delete
 
-    finaliseMenus();
+    // finaliseMenus();
 }
 
 void VisualiserWidget::setupTransformsMenu()
