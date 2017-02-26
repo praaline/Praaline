@@ -62,6 +62,9 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
         if (activityLog) m_activityLog = activityLog;
     }
 
+    // Register this object with the global object pool
+    OBJECT_MANAGER->registerObject(this, QtilitiesCategory("Visualiser"));
+
     m_visualiserFrame = new QFrame;
 
     m_descriptionLabel = new QLabel;

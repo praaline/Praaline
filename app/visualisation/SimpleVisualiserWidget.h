@@ -19,12 +19,22 @@ class CorpusRecording;
 }
 using namespace Praaline::Core;
 
-class SimpleVisualiserWidget : public VisualiserWindowBase
+#include "QtilitiesCore/QtilitiesCore"
+using namespace QtilitiesCore;
+
+class SimpleVisualiserWidget : public VisualiserWindowBase, public IContext
 {
     Q_OBJECT
 public:
     SimpleVisualiserWidget(const QString &contextStringID, bool withAudioOutput = true, bool withOSCSupport = true);
     virtual ~SimpleVisualiserWidget();
+
+    // IObjectBase Implementation
+    QObject* objectBase() { return this; }
+    const QObject* objectBase() const { return this; }
+    // IContext implementation
+    virtual QString contextString() const { return m_contextStringID; }
+    virtual QString contextHelpId() const { return m_contextStringID; }
 
 signals:
     void canChangeSolo(bool);
