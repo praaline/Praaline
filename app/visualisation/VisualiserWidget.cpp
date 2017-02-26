@@ -160,7 +160,8 @@ VisualiserWidget::VisualiserWidget(const QString &contextStringID, bool withAudi
     m_layerTreeDialog(0),
     m_templateWatcher(0),
     m_playControlsSpacer(0),
-    m_playControlsWidth(0)
+    m_playControlsWidth(0),
+    m_deleteSelectedAction(0)
 {
     setCentralWidget(m_visualiserFrame);
 
@@ -1966,15 +1967,17 @@ VisualiserWidget::updateMenuStates()
     emit canSpeedUpPlayback(v < m_playSpeed->maximum());
     emit canSlowDownPlayback(v > m_playSpeed->minimum());
 
-    if (m_viewManager &&
-            (m_viewManager->getToolMode() == ViewManager::MeasureMode)) {
-        emit canDeleteSelection(haveCurrentLayer);
-        m_deleteSelectedAction->setText(tr("&Delete Current Measurement"));
-        m_deleteSelectedAction->setStatusTip(tr("Delete the measurement currently under the mouse pointer"));
-    } else {
-        emit canDeleteSelection(haveSelection && haveCurrentEditableLayer);
-        m_deleteSelectedAction->setText(tr("&Delete Selected Items"));
-        m_deleteSelectedAction->setStatusTip(tr("Delete items in current selection from the current layer"));
+    if (m_deleteSelectedAction) {
+        if (m_viewManager &&
+                (m_viewManager->getToolMode() == ViewManager::MeasureMode)) {
+            emit canDeleteSelection(haveCurrentLayer);
+            m_deleteSelectedAction->setText(tr("&Delete Current Measurement"));
+            m_deleteSelectedAction->setStatusTip(tr("Delete the measurement currently under the mouse pointer"));
+        } else {
+            emit canDeleteSelection(haveSelection && haveCurrentEditableLayer);
+            m_deleteSelectedAction->setText(tr("&Delete Selected Items"));
+            m_deleteSelectedAction->setStatusTip(tr("Delete items in current selection from the current layer"));
+        }
     }
 
     if (m_ffwdAction && m_rwdAction) {
