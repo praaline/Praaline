@@ -36,6 +36,10 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
+    if (!d->corpusRepositoriesManager) return;
+
+    // List of repositories
+    ui->comboBoxCorpusRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
 
     // Find available statistical analysis plugins
     createStatisticsPluginsTree();
@@ -78,7 +82,8 @@ void StatisticsModeWidget::anayserDoubleClicked(const QModelIndex &index)
 {
     if (!index.isValid()) return;
     if (!d->modelStatisticsPlugins) return;
-    CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QString corpusRepositoryID = ui->comboBoxCorpusRepository->currentText();
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(corpusRepositoryID);
     if (!repository) {
         QMessageBox::warning(this, tr("Statistics"), tr("Please open or connect to a Corpus Repository first."),
                              QMessageBox::Ok);
