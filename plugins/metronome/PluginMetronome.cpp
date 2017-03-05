@@ -268,7 +268,7 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
                                 countIsochronies++;
                             }
                         }
-                        indexStart = index;
+                        indexStart = index + 1;
                         countConsecutive = 0;
                     }
                     ++index;
