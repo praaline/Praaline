@@ -29,21 +29,19 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
     QWidget(parent), ui(new Ui::StatisticsModeWidget), d(new StatisticsModeWidgetData)
 {
     ui->setupUi(this);
-
-    // Corpora manager
-    QList<QObject *> list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
+    // Get CorpusRepositoriesManager from global object list
+    QList<QObject *> list;
+    list = OBJECT_MANAGER->registeredInterfaces("CorpusRepositoriesManager");
     foreach (QObject* obj, list) {
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    if (!d->corpusRepositoriesManager) return;
-
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
     // List of repositories
     ui->comboBoxCorpusRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-
     // Find available statistical analysis plugins
     createStatisticsPluginsTree();
-
     // Handle "open analyser" double click
     connect(ui->treeviewStatisticsPlugins, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(anayserDoubleClicked(QModelIndex)));
     connect(ui->tabWidgetDocuments, SIGNAL(tabCloseRequested(int)), this, SLOT(documentTabCloseRequested(int)));
@@ -53,6 +51,25 @@ StatisticsModeWidget::~StatisticsModeWidget()
 {
     delete ui;
     delete d;
+}
+
+void StatisticsModeWidget::corpusRepositoryAdded(const QString &repositoryID)
+{
+    // Called whenever a new corpus repository is opened: adds the repository to the combobox
+    if (!d->corpusRepositoriesManager) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    ui->comboBoxCorpusRepository->addItem(repository->ID(), repositoryID);
+}
+
+void StatisticsModeWidget::corpusRepositoryRemoved(const QString &repositoryID)
+{
+    // Called whenever a new corpus repository is closed: removes the repository from the combobox
+    if (!d->corpusRepositoriesManager) return;
+    int index = ui->comboBoxCorpusRepository->findData(repositoryID);
+    if (index >= 0) {
+        ui->comboBoxCorpusRepository->removeItem(index);
+    }
 }
 
 void StatisticsModeWidget::createStatisticsPluginsTree()

@@ -6,6 +6,8 @@
 #include <QtCharts/QChartView>
 #include <QtCharts/QBoxPlotSeries>
 #include <QtCharts/QBoxSet>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QBarSet>
 #include <QtCharts/QLegend>
 #include <QtCharts/QBarCategoryAxis>
 QT_CHARTS_USE_NAMESPACE
@@ -64,9 +66,12 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     ui->gridLayoutResults->addWidget(d->gridviewResults);
     // Default
     ui->optionCommunications->setChecked(true);
+    ui->optionOrientationVertical->setChecked(true);
     // Change display
     connect(ui->optionCommunications, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
     connect(ui->optionSpeakers, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
+    connect(ui->optionOrientationVertical, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
+    connect(ui->optionOrientationHorizontal, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
     // ================================================================================================================
     // BOXPLOTS TAB
     // ================================================================================================================
@@ -90,7 +95,7 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
         ui->comboBoxGroupBySpk->setCurrentText("");
     }
     // Command Draw Chart
-    connect(ui->commandDrawChart, SIGNAL(clicked(bool)), this, SLOT(drawBoxplot()));
+    connect(ui->commandDrawChart, SIGNAL(clicked(bool)), this, SLOT(drawChart()));
     // Go to results tab
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -143,7 +148,7 @@ void AnalyserTemporalWidget::showAnalysisForCom()
 {
     if (!d->repository) return;
     if (!d->analyser->corpus()) return;
-    if (!d->modelCom) buildModelForCom();
+    buildModelForCom();
     // Update table
     d->gridviewResults->tableView()->setModel(d->modelCom);
 }
@@ -152,31 +157,47 @@ void AnalyserTemporalWidget::showAnalysisForSpk()
 {
     if (!d->repository) return;
     if (!d->analyser->corpus()) return;
-    if (!d->modelSpk) buildModelForSpk();
+    buildModelForSpk();
     // Update table
     d->gridviewResults->tableView()->setModel(d->modelSpk);
 }
 
 void AnalyserTemporalWidget::buildModelForCom()
 {
+    // Select orientation
+    Qt::Orientation orientation = Qt::Vertical;
+    if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
+    // Create new model
     if (d->modelCom) delete d->modelCom;
     d->modelCom = new QStandardItemModel(this);
     if (!d->analyser->corpus()) return;
     // Create model headers
     QStringList labels;
-    labels << "CommunicationID";
+    if (orientation == Qt::Vertical) labels << "CommunicationID";
     foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication))
-        labels << attr->ID();
-    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication()) labels << measureID;
-    d->modelCom->setHorizontalHeaderLabels(labels);
+        if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
+        if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
+    if (orientation == Qt::Vertical)
+        d->modelCom->setHorizontalHeaderLabels(labels);
+    else {
+        QList<QStandardItem *> itemsHeader;
+        foreach (QString label, labels) itemsHeader << new QStandardItem(label);
+        d->modelCom->appendColumn(itemsHeader);
+    }
     // Data
+    QStringList horizontalHeader; horizontalHeader << "Measure";
     foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
         if (!com) continue;
         if (!d->analyser->item(com->ID())) continue;
 
         QList<QStandardItem *> itemsCom;
         QStandardItem *item;
-        item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsCom << item;
+        if (orientation == Qt::Vertical) {
+            item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsCom << item;
+        } else {
+            horizontalHeader << com->ID();
+        }
         // properties
         foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
             item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsCom << item;
@@ -186,26 +207,38 @@ void AnalyserTemporalWidget::buildModelForCom()
             // analyser->measureDefinitionForCommunication(measureID).displayNameUnit()
             item = new QStandardItem(); item->setData(d->analyser->item(com->ID())->measureCom(measureID), Qt::DisplayRole); itemsCom << item;
         }
-        d->modelCom->appendRow(itemsCom);
+        if (orientation == Qt::Vertical)
+            d->modelCom->appendRow(itemsCom);
+        else
+            d->modelCom->appendColumn(itemsCom);
     }
+    if (orientation == Qt::Horizontal) d->modelCom->setHorizontalHeaderLabels(horizontalHeader);
 }
 
 void AnalyserTemporalWidget::buildModelForSpk()
 {
+    // Select orientation
+    Qt::Orientation orientation = Qt::Vertical;
+    if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
+    // Create new model
     if (d->modelSpk) delete d->modelSpk;
     d->modelSpk = new QStandardItemModel(this);
     if (!d->analyser->corpus()) return;
     // Create model headers
     QStringList labels;
     labels << "CommunicationID" << "SpeakerID";
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
-        labels << attr->ID();
+    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker))
+        if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
+        if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
+    if (orientation == Qt::Vertical)
+        d->modelSpk->setHorizontalHeaderLabels(labels);
+    else {
+        QList<QStandardItem *> itemsHeader;
+        foreach (QString label, labels) itemsHeader << new QStandardItem(label);
+        d->modelSpk->appendColumn(itemsHeader);
     }
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
-        labels << attr->ID();
-    }
-    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) labels << measureID;
-    d->modelSpk->setHorizontalHeaderLabels(labels);
+    // Data
     foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
         if (!com) continue;
         if (!d->analyser->item(com->ID())) continue;
@@ -226,12 +259,15 @@ void AnalyserTemporalWidget::buildModelForSpk()
                 // analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
                 item = new QStandardItem(); item->setData(d->analyser->item(com->ID())->measureSpk(speakerID, measureID), Qt::DisplayRole); itemsSpk << item;
             }
-            d->modelSpk->appendRow(itemsSpk);
+            if (orientation == Qt::Vertical)
+                d->modelSpk->appendRow(itemsSpk);
+            else
+                d->modelSpk->appendColumn(itemsSpk);
         }
     }
 }
 
-void AnalyserTemporalWidget::drawBoxplot()
+void AnalyserTemporalWidget::drawChart()
 {
     if (!d->analyser) return;
     if (!d->analyser->corpus()) return;
@@ -253,31 +289,52 @@ void AnalyserTemporalWidget::drawBoxplot()
         groupAttributes = sl.join(", ");
     }
     if (groupAttributes.endsWith(", ")) groupAttributes.chop(2);
-    // Calculate boxplot series
-    QBoxPlotSeries *series = new QBoxPlotSeries();
-    series->setName(measureID);
-    double min(0), max(0);
-    foreach (QString groupID, aggregates.keys()) {
-        QBoxSet *set = new QBoxSet(groupID);
-        StatisticalSummary summary;
-        summary.calculate(aggregates.value(groupID));
-//        set->setValue(QBoxSet::LowerExtreme, summary.firstQuartile() - 1.5 * summary.interQuartileRange());
-//        set->setValue(QBoxSet::UpperExtreme, summary.thirdQuartile() + 1.5 * summary.interQuartileRange());
-        set->setValue(QBoxSet::LowerExtreme, summary.min());
-        set->setValue(QBoxSet::UpperExtreme, summary.max());
-        set->setValue(QBoxSet::Median, summary.median());
-        set->setValue(QBoxSet::LowerQuartile, summary.firstQuartile());
-        set->setValue(QBoxSet::UpperQuartile, summary.thirdQuartile());
-        series->append(set);
-        if (min > summary.min()) min = summary.min();
-        if (max < summary.max()) max = summary.max();
-    }
-    // Create boxplot chart
+    // Create chart series
     QChart *chart = new QChart();
-    chart->addSeries(series);
+    double min(0), max(0);
+    if (true) {
+        QBoxPlotSeries *series = new QBoxPlotSeries();
+        series->setName(measureID);
+        foreach (QString groupID, aggregates.keys()) {
+            QBoxSet *set = new QBoxSet(groupID);
+            StatisticalSummary summary;
+            summary.calculate(aggregates.value(groupID));
+    //        set->setValue(QBoxSet::LowerExtreme, summary.firstQuartile() - 1.5 * summary.interQuartileRange());
+    //        set->setValue(QBoxSet::UpperExtreme, summary.thirdQuartile() + 1.5 * summary.interQuartileRange());
+            set->setValue(QBoxSet::LowerExtreme, summary.min());
+            set->setValue(QBoxSet::UpperExtreme, summary.max());
+            set->setValue(QBoxSet::Median, summary.median());
+            set->setValue(QBoxSet::LowerQuartile, summary.firstQuartile());
+            set->setValue(QBoxSet::UpperQuartile, summary.thirdQuartile());
+            series->append(set);
+            if (min > summary.min()) min = summary.min();
+            if (max < summary.max()) max = summary.max();
+        }
+        chart->addSeries(series);
+        chart->createDefaultAxes();
+    } else {
+        QBarSeries *series = new QBarSeries();
+        series->setName(measureID);
+        foreach (QString groupID, aggregates.keys()) {
+            QBarSet *set = new QBarSet(groupID);
+            StatisticalSummary summary;
+            summary.calculate(aggregates.value(groupID));
+            set->append(summary.mean());
+            series->append(set);
+            if (min > summary.min()) min = summary.min();
+            if (max < summary.max()) max = summary.max();
+        }
+        chart->addSeries(series);
+        chart->createDefaultAxes();
+        // x axis
+//        QBarCategoryAxis *axis = new QBarCategoryAxis();
+//        axis->append(aggregates.keys());
+//        chart->createDefaultAxes();
+//        chart->setAxisX(axis, series);
+    }
+    // Configure chart
     chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText()).arg(groupAttributes));
     chart->setAnimationOptions(QChart::SeriesAnimations);
-    chart->createDefaultAxes();
     chart->axisY()->setMin(qRound(min * 0.9));
     chart->axisY()->setMax(qRound(max * 1.1));
     chart->legend()->setVisible(true);

@@ -28,6 +28,7 @@ public:
 
 private slots:
     void analyse();
+    void updateTable();
 
 private:
     Ui::StatisticsPluginBasicWidget *ui;

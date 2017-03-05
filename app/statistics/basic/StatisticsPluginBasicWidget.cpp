@@ -23,12 +23,17 @@ namespace StatisticsPluginBasic {
 
 struct StatisticsPluginBasicWidgetData {
     StatisticsPluginBasicWidgetData() :
-        repository(0), gridviewResults(0), modelResults(0)
+        repository(0), modelResults(0), gridviewResults(0)
     {}
 
+    // Data
     CorpusRepository *repository;
-    GridViewWidget *gridviewResults;
+    QStringList levelIDs;
+    QStringList attributeIDs;
+    QMap<QString, QHash<QString, long long> > dataCounts;
+    // Presentation
     QStandardItemModel *modelResults;
+    GridViewWidget *gridviewResults;
 };
 
 StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repository, QWidget *parent) :
@@ -46,7 +51,9 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
     // Default
-    ui->optionCommunications->setChecked(true);
+    ui->optionOrientationVertical->setChecked(true);
+    connect(ui->optionOrientationVertical, SIGNAL(clicked(bool)), this, SLOT(updateTable()));
+    connect(ui->optionOrientationHorizontal, SIGNAL(clicked(bool)), this, SLOT(updateTable()));
 }
 
 StatisticsPluginBasicWidget::~StatisticsPluginBasicWidget()
@@ -62,37 +69,56 @@ void StatisticsPluginBasicWidget::analyse()
     QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(corpusID);
     if (!corpus) return;
 
-    QStringList levelIDs = d->repository->annotationStructure()->levelIDs();
-    QStringList attributeIDs; attributeIDs << "annotationID" << "speakerID";
-    QStandardItemModel *model = new QStandardItemModel(this);
-    model->setHorizontalHeaderLabels(QStringList() << "Annotation ID" << "Speaker ID " << levelIDs);
-    model->setColumnCount(levelIDs.count() + 2);
-    QMap<QString, QHash<QString, long long> > table;
-    foreach (QString levelID, levelIDs) {
-        QList<QPair<QList<QVariant>, long long> > counts = d->repository->annotations()->countItems(levelID, attributeIDs);
+    d->levelIDs = d->repository->annotationStructure()->levelIDs();
+    d->attributeIDs.clear(); d->attributeIDs << "annotationID" << "speakerID";
+    foreach (QString levelID, d->levelIDs) {
+        QList<QPair<QList<QVariant>, long long> > counts = d->repository->annotations()->countItems(levelID, d->attributeIDs);
         QPair<QList<QVariant>, long long> count;
         foreach (count, counts) {
             QString id = count.first.at(0).toString() + "\t" + count.first.at(1).toString();
-            table[id].insert(levelID, count.second);
+            d->dataCounts[id].insert(levelID, count.second);
         }
     }
-    // build table model
-    foreach (QString id, table.keys()) {
+    updateTable();
+}
+
+void StatisticsPluginBasicWidget::updateTable()
+{
+    // Select orientation
+    Qt::Orientation orientation = Qt::Vertical;
+    if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
+    // Create new model
+    QStandardItemModel *model = new QStandardItemModel(this);
+    // Build header
+    QStringList header; header << "Annotation ID" << "Speaker ID " << d->levelIDs;
+    if (orientation == Qt::Vertical) {
+        model->setHorizontalHeaderLabels(header);
+        model->setColumnCount(d->levelIDs.count() + 2);
+    } else {
+        QList<QStandardItem *> headerItems;
+        foreach (QString headerField, header) headerItems << new QStandardItem(headerField);
+        model->appendColumn(headerItems);
+        model->setRowCount(d->levelIDs.count() + 2);
+    }
+    // Build table model
+    foreach (QString id, d->dataCounts.keys()) {
         QList<QStandardItem *> items;
-        items << new QStandardItem(id.section("\t", 0, 0));
-        items << new QStandardItem(id.section("\t", 1, 1));
-        foreach (QString levelID, levelIDs) {
+        foreach (QString idpart, id.split("\t"))
+            items << new QStandardItem(idpart);
+        foreach (QString levelID, d->levelIDs) {
             QStandardItem *item = new QStandardItem();
-            item->setData(table.value(id).value(levelID), Qt::DisplayRole);
+            item->setData(d->dataCounts.value(id).value(levelID), Qt::DisplayRole);
             items << item;
         }
-        model->appendRow(items);
+        if (orientation == Qt::Vertical)
+            model->appendRow(items);
+        else
+            model->appendColumn(items);
     }
-    // show table model
+    // Show table model
     d->gridviewResults->tableView()->setModel(model);
     if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
     d->modelResults = model;
-
 }
 
 } // namespace StatisticsPluginBasic

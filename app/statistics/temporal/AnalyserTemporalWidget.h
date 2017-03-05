@@ -34,7 +34,7 @@ private slots:
     void changeDisplayedModel();
     void showAnalysisForCom();
     void showAnalysisForSpk();
-    void drawBoxplot();
+    void drawChart();
 
 private:
     Ui::AnalyserTemporalWidget *ui;

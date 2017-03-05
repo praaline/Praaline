@@ -20,7 +20,9 @@ public:
 signals:
     void activateMode();
 
-private slots:
+protected slots:
+    void corpusRepositoryAdded(const QString &repositoryID);
+    void corpusRepositoryRemoved(const QString &repositoryID);
     void anayserDoubleClicked(const QModelIndex &index);
     void documentTabCloseRequested(int index);
 
