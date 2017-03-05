@@ -31,6 +31,7 @@ public:
 private slots:
     void activeCorpusRepositoryChanged(const QString &repositoryID);
     void browseForFolder();
+    void manualEntryClearTable();
     void extractSoundBites();
 
 private:

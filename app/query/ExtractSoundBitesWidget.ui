@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>936</width>
+    <width>1025</width>
     <height>600</height>
    </rect>
   </property>
@@ -43,7 +43,28 @@
        <attribute name="title">
         <string>Manual Selection</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayoutManualSelection"/>
+       <layout class="QGridLayout" name="gridLayoutManualSelection">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="commandManualEntryClearTable">
+          <property name="text">
+           <string>Clear table</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacerClearTable">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -121,25 +142,64 @@
       <property name="title">
        <string>Sound file extraction parameters</string>
       </property>
-      <layout class="QGridLayout" name="gridLayoutOptions">
-       <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="3" column="5">
+        <widget class="QCheckBox" name="checkNormalise">
+         <property name="text">
+          <string>Normalise sound levels</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" rowspan="2" colspan="2">
         <widget class="QLabel" name="labelOutputFolder">
          <property name="text">
           <string>Output folder:</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="3">
+       <item row="1" column="2" rowspan="2" colspan="3">
         <widget class="QLineEdit" name="editOutputFolder"/>
        </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="commandBrowseForOutputFolder">
-         <property name="text">
-          <string>Browse...</string>
+       <item row="3" column="4">
+        <widget class="QGroupBox" name="groupBoxSamplingRate">
+         <property name="title">
+          <string>Sampling Rate</string>
          </property>
+         <layout class="QGridLayout" name="gridLayoutSamplingRate">
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="optionSamplingRateResample">
+            <property name="text">
+             <string>Resample to</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSpinBox" name="spinBoxSamplingRate">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string> Hz</string>
+            </property>
+            <property name="maximum">
+             <number>256000</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="optionSamplingRateOriginal">
+            <property name="text">
+             <string>Original</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="1" column="0" colspan="2">
+       <item row="3" column="0" colspan="4">
         <widget class="QGroupBox" name="groupBoxPadding">
          <property name="title">
           <string>Padding</string>
@@ -194,51 +254,28 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QGroupBox" name="groupBoxSamplingRate">
-         <property name="title">
-          <string>Sampling Rate</string>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="labelSourceCorpus">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <layout class="QGridLayout" name="gridLayoutSamplingRate">
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="optionSamplingRateResample">
-            <property name="text">
-             <string>Resample to</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSpinBox" name="spinBoxSamplingRate">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="suffix">
-             <string> Hz</string>
-            </property>
-            <property name="maximum">
-             <number>256000</number>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="optionSamplingRateOriginal">
-            <property name="text">
-             <string>Original</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <property name="text">
+          <string>Source corpus:</string>
+         </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QCheckBox" name="checkNormalise">
+       <item row="2" column="5">
+        <widget class="QPushButton" name="commandBrowseForOutputFolder">
          <property name="text">
-          <string>Normalise sound levels</string>
+          <string>Browse...</string>
          </property>
         </widget>
+       </item>
+       <item row="0" column="2" colspan="4">
+        <widget class="QComboBox" name="comboBoxSourceCorpus"/>
        </item>
       </layout>
      </widget>
@@ -255,7 +292,6 @@
  </customwidgets>
  <tabstops>
   <tabstop>editOutputFolder</tabstop>
-  <tabstop>commandBrowseForOutputFolder</tabstop>
   <tabstop>spinBoxPaddingBeforeStart</tabstop>
   <tabstop>spinBoxPaddingAfterEnd</tabstop>
   <tabstop>optionSamplingRateOriginal</tabstop>

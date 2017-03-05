@@ -15,6 +15,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/FileDatastore.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
@@ -26,12 +27,12 @@ using namespace Praaline::Core;
 
 
 struct ExtractSoundBitesWidgetData {
-    ExtractSoundBitesWidgetData() : manualSelectionModel(0), repositoryCopyOver(0) {}
+    ExtractSoundBitesWidgetData() : manualSelectionModel(0), corpusCopyOver(0) {}
 
     GridViewWidget *manualSelectionTable;
     QStandardItemModel *manualSelectionModel;
     CorpusRepositoriesManager *corpusRepositoriesManager;
-    QPointer<CorpusRepository> repositoryCopyOver;
+    QPointer<Corpus> corpusCopyOver;
 };
 
 
@@ -52,15 +53,20 @@ ExtractSoundBitesWidget::ExtractSoundBitesWidget(QWidget *parent) :
         if (manager) d->corpusRepositoriesManager = manager;
     }
     connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
-
+    // Corpora combobox
+    if (d->corpusRepositoriesManager->activeCorpusRepository()) {
+        ui->comboBoxSourceCorpus->addItems(d->corpusRepositoriesManager->activeCorpusRepository()->listCorporaIDs());
+    }
     // Manual selection model - table
     d->manualSelectionTable = new GridViewWidget(this);
-    ui->gridLayoutManualSelection->addWidget(d->manualSelectionTable);
+    ui->gridLayoutManualSelection->addWidget(d->manualSelectionTable, 1, 0, 1, 2);
     d->manualSelectionModel = new QStandardItemModel(200, 5, this);
     d->manualSelectionModel->setHorizontalHeaderLabels(
                 QStringList() << tr("Sound Bite Name") << tr("Communication ID") << tr("Recording ID")
                 << tr("Start Time (s)") << tr("End Time (s)"));
     d->manualSelectionTable->tableView()->setModel(d->manualSelectionModel);
+    // Manual selection - clear table
+    connect(ui->commandManualEntryClearTable, SIGNAL(clicked(bool)), this, SLOT(manualEntryClearTable()));
 }
 
 ExtractSoundBitesWidget::~ExtractSoundBitesWidget()
@@ -80,6 +86,9 @@ void ExtractSoundBitesWidget::activeCorpusRepositoryChanged(const QString &repos
         ui->comboBoxLevelsToCopy->insertItem(i, level->name(), true);
         ++i;
     }
+    // Corpora combobox
+    ui->comboBoxSourceCorpus->clear();
+    ui->comboBoxSourceCorpus->addItems(repository->listCorporaIDs());
 }
 
 void ExtractSoundBitesWidget::browseForFolder()
@@ -90,23 +99,48 @@ void ExtractSoundBitesWidget::browseForFolder()
         ui->editOutputFolder->setText(directory);
 }
 
+void ExtractSoundBitesWidget::manualEntryClearTable()
+{
+    if (!d->manualSelectionModel) return;
+    d->manualSelectionModel->clear();
+    d->manualSelectionModel->setRowCount(200);
+    d->manualSelectionModel->setColumnCount(5);
+    d->manualSelectionModel->setHorizontalHeaderLabels(
+                QStringList() << tr("Sound Bite Name") << tr("Communication ID") << tr("Recording ID")
+                << tr("Start Time (s)") << tr("End Time (s)"));
+}
+
 void ExtractSoundBitesWidget::extractSoundBites()
 {
     if (!d->manualSelectionModel) return;
+    // Get active repository
     QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) return;
+    if (!repository) {
+        QMessageBox::warning(this, "Error", "No corpus repository is currently open.");
+        return;
+    }
 
+    // Get selected source corpus
+    QString corpusID = ui->comboBoxSourceCorpus->currentText();
+    QPointer<Corpus> corpus = repository->metadata()->getCorpus(corpusID);
+    if (!corpus) {
+        QMessageBox::warning(this, "Error", "No source corpus was selected or could be opened.");
+        return;
+    }
+
+    // Decide on output path. If the user has not specified one, use the repository default path for media
     QString outputPath = ui->editOutputFolder->text();
     if (outputPath.isEmpty()) {
         outputPath = repository->files()->basePath();
         ui->editOutputFolder->setText(outputPath);
     }
+
+    // Read parameters for sound extraction
     RealTime paddingLeft = RealTime::fromMilliseconds(ui->spinBoxPaddingBeforeStart->value());
     RealTime paddingRight = RealTime::fromMilliseconds(ui->spinBoxPaddingAfterEnd->value());
     bool normalise = ui->checkNormalise->isChecked();
     int resampleRate = ui->spinBoxSamplingRate->value();
     if (ui->optionSamplingRateOriginal->isChecked()) resampleRate = 0;
-
     // Count how many sound bites we'll produce
     int totalBites = 0;
     for (int row = 0; row < d->manualSelectionModel->rowCount(); ++row) {
@@ -120,92 +154,92 @@ void ExtractSoundBitesWidget::extractSoundBites()
         prepareCopyOverCorpus(repository, outputPath);
     }
 
-//    // Prepare the progress bar
-//    ui->progressBar->setValue(0);
-//    ui->progressBar->setMaximum(totalBites);
-//    int progress = 0;
-//    // Process the table and create sound bites
-//    for (int row = 0; row < d->manualSelectionModel->rowCount(); ++row) {
-//        QString stimulusName = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 0)).toString();
-//        QString communicationID = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 1)).toString();
-//        QString recordingID = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 2)).toString();
-//        if (recordingID.isEmpty()) recordingID = communicationID;
-//        QString timeStartStr = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 3)).toString();
-//        double timeStartSec = timeStartStr.replace(",", ".").toDouble();
-//        QString timeEndStr = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 4)).toString();
-//        double timeEndSec = timeEndStr.replace(",", ".").toDouble();
-//        if (stimulusName.isEmpty())
-//            stimulusName = QString("%1_%2_%3").arg(communicationID).arg(timeStartSec).arg(timeEndSec);
+    // Prepare the progress bar
+    ui->progressBar->setValue(0);
+    ui->progressBar->setMaximum(totalBites);
+    int progress = 0;
+    // Process the table and create sound bites
+    for (int row = 0; row < d->manualSelectionModel->rowCount(); ++row) {
+        QString stimulusName = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 0)).toString();
+        QString communicationID = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 1)).toString();
+        QString recordingID = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 2)).toString();
+        if (recordingID.isEmpty()) recordingID = communicationID;
+        QString timeStartStr = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 3)).toString();
+        double timeStartSec = timeStartStr.replace(",", ".").toDouble();
+        QString timeEndStr = d->manualSelectionModel->data(d->manualSelectionModel->index(row, 4)).toString();
+        double timeEndSec = timeEndStr.replace(",", ".").toDouble();
+        if (stimulusName.isEmpty())
+            stimulusName = QString("%1_%2_%3").arg(communicationID).arg(timeStartSec).arg(timeEndSec);
 
-//        QPointer<CorpusCommunication> com = corpus->communication(communicationID);
-//        if (!com) continue;
-//        QPointer<CorpusRecording> rec = com->recording(recordingID);
-//        if (!rec) continue;
-//        QString originalMediaFile = rec->filePath();
+        QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+        if (!com) continue;
+        QPointer<CorpusRecording> rec = com->recording(recordingID);
+        if (!rec) continue;
+        QString originalMediaFile = rec->filePath();
 
-//        QList<Interval *> intv;
-//        RealTime start = RealTime::fromSeconds(timeStartSec) - paddingLeft;
-//        if (start < RealTime(0, 0)) start = RealTime(0, 0);
-//        RealTime end = RealTime::fromSeconds(timeEndSec) + paddingRight;
-//        intv << new Interval(start, end, stimulusName);
+        QList<Interval *> intv;
+        RealTime start = RealTime::fromSeconds(timeStartSec) - paddingLeft;
+        if (start < RealTime(0, 0)) start = RealTime(0, 0);
+        RealTime end = RealTime::fromSeconds(timeEndSec) + paddingRight;
+        intv << new Interval(start, end, stimulusName);
 
-//        AudioSegmenter::segment(originalMediaFile, outputPath, intv, "", resampleRate, normalise);
+        AudioSegmenter::segment(originalMediaFile, outputPath, intv, "", resampleRate, normalise);
 
-//        // Add to copy-over corpus and add annotations, if needed
-//        if (ui->checkCreateCorpus && d->corpusCopyOver) {
-//            // Create Communication
-//            QPointer<CorpusCommunication> stimCom = d->corpusCopyOver->communication(stimulusName);
-//            if (!stimCom) {
-//                stimCom = new CorpusCommunication(stimulusName);
-//                stimCom->setName(stimulusName);
-//                d->corpusCopyOver->addCommunication(stimCom);
-//            }
-//            // Carry over participations and speakers
-//            foreach (QPointer<CorpusParticipation> participation, corpus->participationsForCommunication(communicationID)) {
-//                if (!d->corpusCopyOver->hasSpeaker(participation->speakerID())) {
-//                    d->corpusCopyOver->addSpeaker(new CorpusSpeaker(participation->speakerID()));
-//                }
-//                d->corpusCopyOver->addParticipation(stimCom->ID(), participation->speakerID(), participation->role());
-//            }
-//            // Update recording
-//            QPointer<CorpusRecording> stimRec = stimCom->recording(stimulusName);
-//            if (!stimRec) {
-//                stimRec = new CorpusRecording(stimulusName);
-//                stimRec->setName(stimulusName);
-//                stimRec->setFilename(QString("%1.wav").arg(stimulusName));
-//                SoundInfo info;
-//                if (SoundInfo::getSoundInfo(d->corpusCopyOver->baseMediaPath() + "/" + stimRec->filename(), info)) {
-//                    stimRec->setFormat("wav");
-//                    stimRec->setChannels(info.channels);
-//                    stimRec->setSampleRate(info.sampleRate);
-//                    stimRec->setPrecisionBits(info.precisionBits);
-//                    stimRec->setDuration(info.duration);
-//                    stimRec->setBitRate(info.bitRate);
-//                    stimRec->setEncoding(info.encoding);
-//                    stimRec->setFileSize(info.filesize);
-//                    stimRec->setChecksumMD5(info.checksumMD5);
-//                }
-//                stimCom->addRecording(stimRec);
-//            }
-//            // Carry over annotations
-//            QPointer<CorpusAnnotation> annotSource = com->annotation(recordingID);
-//            if (annotSource) {
-//                QPointer<CorpusAnnotation> stimAnnot = stimCom->annotation(stimulusName);
-//                if (!stimAnnot) {
-//                    stimAnnot = new CorpusAnnotation(stimulusName);
-//                    stimAnnot->setName(stimulusName);
-//                    stimCom->addAnnotation(stimAnnot);
-//                }
-//                // in any case (replaces annotations already in the destination corpus)
-//                carryOverAnnotations(corpus, annotSource, stimAnnot, start, end);
-//            }
-//        }
+        // Add to copy-over corpus and add annotations, if needed
+        if (ui->checkCreateCorpus && d->corpusCopyOver) {
+            // Create Communication
+            QPointer<CorpusCommunication> stimCom = d->corpusCopyOver->communication(stimulusName);
+            if (!stimCom) {
+                stimCom = new CorpusCommunication(stimulusName);
+                stimCom->setName(stimulusName);
+                d->corpusCopyOver->addCommunication(stimCom);
+            }
+            // Carry over participations and speakers
+            foreach (QPointer<CorpusParticipation> participation, corpus->participationsForCommunication(communicationID)) {
+                if (!d->corpusCopyOver->hasSpeaker(participation->speakerID())) {
+                    d->corpusCopyOver->addSpeaker(new CorpusSpeaker(participation->speakerID()));
+                }
+                d->corpusCopyOver->addParticipation(stimCom->ID(), participation->speakerID(), participation->role());
+            }
+            // Update recording
+            QPointer<CorpusRecording> stimRec = stimCom->recording(stimulusName);
+            if (!stimRec) {
+                stimRec = new CorpusRecording(stimulusName);
+                stimRec->setName(stimulusName);
+                stimRec->setFilename(QString("%1.wav").arg(stimulusName));
+                SoundInfo info;
+                if (SoundInfo::getSoundInfo(stimRec->filePath(), info)) {
+                    stimRec->setFormat("wav");
+                    stimRec->setChannels(info.channels);
+                    stimRec->setSampleRate(info.sampleRate);
+                    stimRec->setPrecisionBits(info.precisionBits);
+                    stimRec->setDuration(info.duration);
+                    stimRec->setBitRate(info.bitRate);
+                    stimRec->setEncoding(info.encoding);
+                    stimRec->setFileSize(info.filesize);
+                    stimRec->setChecksumMD5(info.checksumMD5);
+                }
+                stimCom->addRecording(stimRec);
+            }
+            // Carry over annotations
+            QPointer<CorpusAnnotation> annotSource = com->annotation(recordingID);
+            if (annotSource) {
+                QPointer<CorpusAnnotation> stimAnnot = stimCom->annotation(stimulusName);
+                if (!stimAnnot) {
+                    stimAnnot = new CorpusAnnotation(stimulusName);
+                    stimAnnot->setName(stimulusName);
+                    stimCom->addAnnotation(stimAnnot);
+                }
+                // in any case (replaces annotations already in the destination corpus)
+                // carryOverAnnotations(corpus, annotSource, stimAnnot, start, end);
+            }
+        }
 
-//        progress++;
-//        ui->progressBar->setValue(progress);
-//        QApplication::processEvents();
-//    }
-//    ui->progressBar->setValue(ui->progressBar->maximum());
+        progress++;
+        ui->progressBar->setValue(progress);
+        QApplication::processEvents();
+    }
+    ui->progressBar->setValue(ui->progressBar->maximum());
 }
 
 void ExtractSoundBitesWidget::prepareCopyOverCorpus(QPointer<CorpusRepository> repositorySource, const QString &outputPath)
@@ -245,35 +279,35 @@ void ExtractSoundBitesWidget::carryOverAnnotations(QPointer<CorpusRepository> re
                                                    QPointer<CorpusAnnotation> annotSource, QPointer<CorpusAnnotation> annotDestination,
                                                    RealTime start, RealTime end)
 {
-    if (!d->repositoryCopyOver) return;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
-    foreach (QString speakerID, tiersSourceAll.keys()) {
-        QPointer<AnnotationTierGroup> tiersSource = tiersSourceAll.value(speakerID);
-        if (!tiersSource) continue;
-        QPointer<AnnotationTierGroup> tiersDest = new AnnotationTierGroup();
-        for (int i = 0; i < ui->comboBoxLevelsToCopy->count(); ++i) {
-            if (ui->comboBoxLevelsToCopy->itemData(i).toBool() == true) {
-                AnnotationStructureLevel *level = repositorySource->annotationStructure()->levels().at(i);
-                if (!level) continue;
-                // TODO: ensure all types of levels are copied over!!!
-                if (level->levelType() != AnnotationStructureLevel::IndependentIntervalsLevel &&
-                    level->levelType() != AnnotationStructureLevel::GroupingLevel) continue;
-                IntervalTier *tierIntvSource = tiersSource->getIntervalTierByName(level->ID());
-                if (tierIntvSource) {
-                    IntervalTier *tierIntvDest = tierIntvSource->getIntervalTierSubset(start, end);
-                    if (tierIntvDest->count() == 1 && tierIntvDest->first()->isPauseSilent()) continue;
-                    tiersDest->addTier(tierIntvDest);
-                }
-                PointTier *tierPointSource = tiersSource->getPointTierByName(level->ID());
-                if (tierPointSource) {
+//    if (!d->repositoryCopyOver) return;
+//    QMap<QString, QPointer<AnnotationTierGroup> > tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
+//    foreach (QString speakerID, tiersSourceAll.keys()) {
+//        QPointer<AnnotationTierGroup> tiersSource = tiersSourceAll.value(speakerID);
+//        if (!tiersSource) continue;
+//        QPointer<AnnotationTierGroup> tiersDest = new AnnotationTierGroup();
+//        for (int i = 0; i < ui->comboBoxLevelsToCopy->count(); ++i) {
+//            if (ui->comboBoxLevelsToCopy->itemData(i).toBool() == true) {
+//                AnnotationStructureLevel *level = repositorySource->annotationStructure()->levels().at(i);
+//                if (!level) continue;
+//                // TODO: ensure all types of levels are copied over!!!
+//                if (level->levelType() != AnnotationStructureLevel::IndependentIntervalsLevel &&
+//                    level->levelType() != AnnotationStructureLevel::GroupingLevel) continue;
+//                IntervalTier *tierIntvSource = tiersSource->getIntervalTierByName(level->ID());
+//                if (tierIntvSource) {
+//                    IntervalTier *tierIntvDest = tierIntvSource->getIntervalTierSubset(start, end);
+//                    if (tierIntvDest->count() == 1 && tierIntvDest->first()->isPauseSilent()) continue;
+//                    tiersDest->addTier(tierIntvDest);
+//                }
+//                PointTier *tierPointSource = tiersSource->getPointTierByName(level->ID());
+//                if (tierPointSource) {
 
-                }
-            }
-        }
-        d->repositoryCopyOver->annotations()->saveTiers(annotDestination->ID(), speakerID, tiersDest);
-        delete tiersDest;
-    }
-    qDeleteAll(tiersSourceAll);
+//                }
+//            }
+//        }
+//        d->repositoryCopyOver->annotations()->saveTiers(annotDestination->ID(), speakerID, tiersDest);
+//        delete tiersDest;
+//    }
+//    qDeleteAll(tiersSourceAll);
 }
 
 
