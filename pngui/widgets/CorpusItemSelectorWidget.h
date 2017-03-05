@@ -20,6 +20,12 @@ class CorpusAnnotation;
 }
 using namespace Praaline::Core;
 
+namespace Qtilities {
+namespace Core {
+class Observer;
+}
+}
+
 struct CorpusItemSelectorWidgetData;
 
 
@@ -45,6 +51,7 @@ private:
     Praaline::Core::Corpus *findCorpus(QString corpusID);
 
 private slots:
+    void doubleClickRequest(QObject* object, Qtilities::Core::Observer* parent_observer);
     void selectionChanged(QList<QObject*> selected);
     void openBookmarks();
     void saveBookmarks();

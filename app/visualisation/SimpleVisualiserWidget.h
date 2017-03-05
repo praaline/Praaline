@@ -22,7 +22,7 @@ using namespace Praaline::Core;
 #include "QtilitiesCore/QtilitiesCore"
 using namespace QtilitiesCore;
 
-class SimpleVisualiserWidget : public VisualiserWindowBase, public IContext
+class SimpleVisualiserWidget : public VisualiserWindowBase, public Qtilities::Core::Interfaces::IContext
 {
     Q_OBJECT
 public:

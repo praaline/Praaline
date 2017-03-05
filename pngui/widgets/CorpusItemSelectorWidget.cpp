@@ -61,8 +61,10 @@ CorpusItemSelectorWidget::CorpusItemSelectorWidget(QWidget *parent) :
     d->observerWidgetCorpusItems->setRefreshMode(ObserverWidget::RefreshModeShowTree);
     d->observerWidgetCorpusItems->setGlobalMetaType("Corpus Tree Meta Type");
     d->observerWidgetCorpusItems->setAcceptDrops(false);
-//    connect(d->observerWidgetCorpusItems, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
-//            this, SLOT(selectionChanged(QList<QObject*>)));
+    connect(d->observerWidgetCorpusItems, SIGNAL(doubleClickRequest(QObject*, Observer*)),
+            this, SLOT(doubleClickRequest(QObject*, Observer*)));
+    connect(d->observerWidgetCorpusItems, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
+            this, SLOT(selectionChanged(QList<QObject*>)));
     d->observerWidgetCorpusItems->setObserverContext(d->corporaTopLevelNode);
     d->observerWidgetCorpusItems->layout()->setMargin(0);
     d->observerWidgetCorpusItems->initialize();
@@ -129,17 +131,15 @@ Corpus *CorpusItemSelectorWidget::findCorpus(QString corpusID)
     return 0;
 }
 
-void CorpusItemSelectorWidget::selectionChanged(QList<QObject*> selected)
+void CorpusItemSelectorWidget::doubleClickRequest(QObject* object, Observer* parent_observer)
 {
     QPointer<Corpus> corpus(0);
     QPointer<CorpusCommunication> com(0);
     QPointer<CorpusRecording> rec(0);
     QPointer<CorpusAnnotation> annot(0);
 
-    if (selected.isEmpty()) return;
-
-    QObject *obj = selected.first();
-    CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
+    qDebug() << object;
+    CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(object);
     if (nodeCom && nodeCom->communication) {
         corpus = nodeCom->communication->corpus();
         if (!corpus) return;
@@ -148,7 +148,7 @@ void CorpusItemSelectorWidget::selectionChanged(QList<QObject*> selected)
         emit selectedCorpusCommunication(corpus, com);
         return;
     }
-    CorpusExplorerTreeNodeRecording *nodeRec = qobject_cast<CorpusExplorerTreeNodeRecording *>(obj);
+    CorpusExplorerTreeNodeRecording *nodeRec = qobject_cast<CorpusExplorerTreeNodeRecording *>(object);
     if (nodeRec && nodeRec->recording) {
         corpus = nodeRec->recording->corpus();
         if (!corpus) return;
@@ -159,7 +159,50 @@ void CorpusItemSelectorWidget::selectionChanged(QList<QObject*> selected)
         emit selectedCorpusRecording(corpus, com, rec);
         return;
     }
-    CorpusExplorerTreeNodeAnnotation *nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(obj);
+    CorpusExplorerTreeNodeAnnotation *nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(object);
+    if (nodeAnnot && nodeAnnot->annotation) {
+        corpus = nodeAnnot->annotation->corpus();
+        if (!corpus) return;
+        com = corpus->communication(nodeAnnot->annotation->communicationID());
+        if (!com) return;
+        annot = nodeAnnot->annotation;
+        if (!annot) return;
+        emit selectedCorpusAnnotation(corpus, com, annot);
+    }
+}
+
+
+void CorpusItemSelectorWidget::selectionChanged(QList<QObject*> selected)
+{
+    QPointer<Corpus> corpus(0);
+    QPointer<CorpusCommunication> com(0);
+    QPointer<CorpusRecording> rec(0);
+    QPointer<CorpusAnnotation> annot(0);
+
+    if (selected.isEmpty()) return;
+
+    QObject *object = selected.first();
+    CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(object);
+    if (nodeCom && nodeCom->communication) {
+        corpus = nodeCom->communication->corpus();
+        if (!corpus) return;
+        com = nodeCom->communication;
+        if (!com) return;
+        emit selectedCorpusCommunication(corpus, com);
+        return;
+    }
+    CorpusExplorerTreeNodeRecording *nodeRec = qobject_cast<CorpusExplorerTreeNodeRecording *>(object);
+    if (nodeRec && nodeRec->recording) {
+        corpus = nodeRec->recording->corpus();
+        if (!corpus) return;
+        com = corpus->communication(nodeRec->recording->communicationID());
+        if (!com) return;
+        rec = nodeRec->recording;
+        if (!rec) return;
+        emit selectedCorpusRecording(corpus, com, rec);
+        return;
+    }
+    CorpusExplorerTreeNodeAnnotation *nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(object);
     if (nodeAnnot && nodeAnnot->annotation) {
         corpus = nodeAnnot->annotation->corpus();
         if (!corpus) return;
