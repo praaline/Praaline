@@ -217,8 +217,6 @@ void TimelineVisualisationWidget::visualiserNewSession(QPointer<Corpus> corpus, 
     if ((!corpus) || (!com) || (!d->visualiser)) return;
     d->visualiser->newSessionWithCommunication(com);
     d->currentCommunicationID = com->ID();
-    if (!com->recordingIDs().isEmpty()) d->currentRecordingID = com->recordingIDs().first();
-    if (!com->annotationIDs().isEmpty()) d->currentAnnotationID = com->annotationIDs().first();
 }
 
 void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> corpus, const QString &annotationID)
