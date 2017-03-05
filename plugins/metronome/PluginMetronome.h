@@ -1,7 +1,7 @@
-#ifndef PLUGINPROMISE_H
-#define PLUGINPROMISE_H
+#ifndef PLUGINMETRONOME_H
+#define PLUGINMETRONOME_H
 
-#include "PluginPromise_global.h"
+#include "PluginMetronome_global.h"
 
 #include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>
@@ -9,29 +9,29 @@
 
 namespace Praaline {
     namespace Plugins {
-        namespace Promise {
+        namespace Metronome {
             /*!
-              \struct PluginPromisePrivateData
-              \brief The PluginPromisePrivateData struct stores private data used by the PluginPromise class.
+              \struct PluginMetronomePrivateData
+              \brief The PluginMetronomePrivateData struct stores private data used by the PluginMetronome class.
              */
-            struct PluginPromisePrivateData;
+            struct PluginMetronomePrivateData;
 
             /*!
-              \class PluginPromise
-              \brief The Promise annotator plugin for Praaline.
+              \class PluginMetronome
+              \brief The Metronome annotator plugin for Praaline.
               This class is the entry point into the plugin and is an implementation of the Qtilities::ExtensionSystem::Interfaces::IPlugin interface.
              */
-            class PLUGIN_PROMISE_SHARED_EXPORT PluginPromise : public QObject, public IAnnotationPlugin
+            class PLUGIN_METRONOME_SHARED_EXPORT PluginMetronome : public QObject, public IAnnotationPlugin
             {
                 Q_OBJECT
                 Q_INTERFACES(Qtilities::ExtensionSystem::Interfaces::IPlugin)
                 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                Q_PLUGIN_METADATA(IID "org.praaline.PluginPromise")
+                Q_PLUGIN_METADATA(IID "org.praaline.PluginMetronome")
                 #endif
 
             public:
-                PluginPromise(QObject* parent = 0);
-                virtual ~PluginPromise();
+                PluginMetronome(QObject* parent = 0);
+                ~PluginMetronome();
 
                 // IObjectBase implementation
                 QObject* objectBase() override { return this; }
@@ -61,14 +61,13 @@ namespace Praaline {
                 void madeProgress(int progress);
 
             private:
-                PluginPromisePrivateData* d;
+                PluginMetronomePrivateData* d;
 
-                void runSpeechRateEstimator(const QList<QPointer<CorpusCommunication> > &communications);
-                void runSyllableProminenceAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
-                void runProsodicBoundariesAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
+                void annotateRhythmicPatterns(const QList<QPointer<CorpusCommunication> > &communications);
+                void createMetronomeAnnotationStructure(CorpusRepository *repository);
             };
         }
     }
 }
 
-#endif // PLUGINPROMISE_H
+#endif // PLUGINMETRONOME_H

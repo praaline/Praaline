@@ -61,8 +61,8 @@ CorpusItemSelectorWidget::CorpusItemSelectorWidget(QWidget *parent) :
     d->observerWidgetCorpusItems->setRefreshMode(ObserverWidget::RefreshModeShowTree);
     d->observerWidgetCorpusItems->setGlobalMetaType("Corpus Tree Meta Type");
     d->observerWidgetCorpusItems->setAcceptDrops(false);
-    connect(d->observerWidgetCorpusItems, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
-            this, SLOT(selectionChanged(QList<QObject*>)));
+//    connect(d->observerWidgetCorpusItems, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
+//            this, SLOT(selectionChanged(QList<QObject*>)));
     d->observerWidgetCorpusItems->setObserverContext(d->corporaTopLevelNode);
     d->observerWidgetCorpusItems->layout()->setMargin(0);
     d->observerWidgetCorpusItems->initialize();
@@ -115,15 +115,17 @@ void CorpusItemSelectorWidget::setupActions()
 // private
 Corpus *CorpusItemSelectorWidget::findCorpus(QString corpusID)
 {
-    QList<QObject *> listCorpora;
-//    listCorpora = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
-//    foreach (QObject* obj, listCorpora) {
-//        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
-//        if (obs && obs->corpus()) {
-//            if (obs->corpus()->ID() == corpusID)
-//                return obs->corpus();
-//        }
-//    }
+    QList<QObject *> listCorpusObservers;
+    listCorpusObservers = OBJECT_MANAGER->registeredInterfaces("CorpusObserver");
+    foreach (QObject* obj, listCorpusObservers) {
+        CorpusObserver *obs = qobject_cast<CorpusObserver *>(obj);
+        if (obs && obs->nodeRepository()) {
+            foreach (QObject *child, obs->nodeRepository()->treeChildren()) {
+                CorpusExplorerTreeNodeCorpus *node = qobject_cast<CorpusExplorerTreeNodeCorpus *>(child);
+                if (node && node->corpus() && node->corpus()->ID() == corpusID) return node->corpus();
+            }
+        }
+    }
     return 0;
 }
 

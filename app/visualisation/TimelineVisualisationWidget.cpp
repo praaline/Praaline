@@ -216,6 +216,9 @@ void TimelineVisualisationWidget::visualiserNewSession(QPointer<Corpus> corpus, 
 {
     if ((!corpus) || (!com) || (!d->visualiser)) return;
     d->visualiser->newSessionWithCommunication(com);
+    d->currentCommunicationID = com->ID();
+    if (!com->recordingIDs().isEmpty()) d->currentRecordingID = com->recordingIDs().first();
+    if (!com->annotationIDs().isEmpty()) d->currentAnnotationID = com->annotationIDs().first();
 }
 
 void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> corpus, const QString &annotationID)
@@ -235,7 +238,14 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
     d->visualiser->addAnnotationPane();
 
-    d->visualiser->addProsogramPaneToSession(corpus->communication(d->currentCommunicationID)->recording(d->currentRecordingID));
+    // Add a prosogram pane for each recording
+    if (corpus->communication(d->currentCommunicationID)) {
+        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+            if (!rec) continue;
+            d->visualiser->addProsogramPaneToSession(rec);
+        }
+    }
+
 //    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
 //                                                        "timeNanoseconds", "rate_syll", "text");
 //    if (layer_rate_syll) layer_rate_syll->setDisplayExtents(0.0, 15.0);

@@ -12,5 +12,7 @@ SUBDIRS +=  dismo \
             prosobox \
             syntax \
             dismo2 \
-            mbrola
+            mbrola \
+            metronome
+
 

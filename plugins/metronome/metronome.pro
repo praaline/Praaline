@@ -1,6 +1,6 @@
 # Praaline Plugin
-# Prosodic prominence
-# (c) George Christodoulides 2014-2015
+# Metronome
+# (c) George Christodoulides 2017
 
 ! include( ../../common.pri ) {
     error( Could not find the common.pri file! )
@@ -8,7 +8,7 @@
 
 CONFIG += plugin dll qt thread warn_on stl rtti exceptions c++11
 TEMPLATE = lib
-DEFINES += PLUGIN_PROMISE_LIBRARY
+DEFINES += PLUGIN_METRONOME_LIBRARY
 
 QT += gui sql
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -16,9 +16,9 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 CONFIG(debug, debug|release) {
-    TARGET = Promised
+    TARGET = Metronomed
 } else {
-    TARGET = Promise
+    TARGET = Metronome
 }
 
 # put plugin in the same directory as Praaline, inside the plugins sub-directory
@@ -53,22 +53,9 @@ LIBS +=  \
 PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
-HEADERS += \ 
-    annotationpluginpraatscript.h \
-    pluginprosobox5.h \
-    attributenametranslation.h \
-    ProsodicBoundariesAnnotator.h \
-    SyllableProminenceAnnotator.h \
-    SpeechRateEstimator.h \
-    PluginPromise.h \
-    PluginPromise_global.h
+HEADERS += \  
+    PluginMetronome_global.h \
+    PluginMetronome.h
 	
-SOURCES += \ 
-    annotationpluginpraatscript.cpp \
-    pluginprosobox5.cpp \
-    attributenametranslation.cpp \
-    ProsodicBoundariesAnnotator.cpp \
-    SyllableProminenceAnnotator.cpp \
-    SpeechRateEstimator.cpp \
-    PluginPromise.cpp
-	
+SOURCES += \   
+    PluginMetronome.cpp
