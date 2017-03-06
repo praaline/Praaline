@@ -44,6 +44,17 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
     d->repository = repository;
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
+    // Metadata attributes
+    if (!repository) return;
+    int i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)){
+        ui->comboBoxMetadata->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)){
+        ui->comboBoxMetadata->insertItem(i, attr->name(), false);
+        ++i;
+    }
     // Command Analyse
     connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
     // Results grid view

@@ -44,11 +44,24 @@ bool SQLSerialiserMetadataStructure::initialiseMetadataStructureSchema(QSqlDatab
             << Column("mandatory", SqlType::Boolean)
             << Column("itemOrder", SqlType::Integer);
     initializeMetadataStructure.add(new CreateTable(tableMetadataAttributes));
-
+    // Try creating tables
     bool result = SQLSerialiserBase::applyMigration("initializeMetadataStructure", &initializeMetadataStructure, db);
     if (result) {
         setPraalineSchemaVersion(3, db);
     }
+    // Create default sections
+    QScopedPointer<MetadataStructureSection> section_corpus(new MetadataStructureSection("corpus", "Corpus", "Corpus metadata", 0));
+    QScopedPointer<MetadataStructureSection> section_communication(new MetadataStructureSection("communication", "Communication", "Communication metadata", 0));
+    QScopedPointer<MetadataStructureSection> section_speaker(new MetadataStructureSection("speaker", "Speaker", "Speaker metadata", 0));
+    QScopedPointer<MetadataStructureSection> section_recording(new MetadataStructureSection("recording", "Recording", "Recording metadata", 0));
+    QScopedPointer<MetadataStructureSection> section_annotation(new MetadataStructureSection("annotation", "Annotation", "Annotation metadata", 0));
+    QScopedPointer<MetadataStructureSection> section_participation(new MetadataStructureSection("participation", "Participation ", "Participation metadata", 0));
+    result = result && createMetadataSection(CorpusObject::Type_Corpus, section_corpus.data(), db);
+    result = result && createMetadataSection(CorpusObject::Type_Communication, section_communication.data(), db);
+    result = result && createMetadataSection(CorpusObject::Type_Speaker, section_speaker.data(), db);
+    result = result && createMetadataSection(CorpusObject::Type_Recording, section_recording.data(), db);
+    result = result && createMetadataSection(CorpusObject::Type_Annotation, section_annotation.data(), db);
+    result = result && createMetadataSection(CorpusObject::Type_Participation, section_participation.data(), db);
     return result;
 }
 
@@ -195,6 +208,8 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
     q1.exec();
     if (q1.lastError().isValid()) { qDebug() << q1.lastError(); return false; }
     structure->clearAll();
+    // Read sections
+    QStringList sectionIDsInDatabase;
     while (q1.next()) {
         CorpusObject::Type objectType = SQLSerialiserSystem::corpusObjectTypeFromCode(q1.value("objectType").toString());
         MetadataStructureSection *section(0);
@@ -210,25 +225,56 @@ bool SQLSerialiserMetadataStructure::loadMetadataStructure(QPointer<MetadataStru
                                                    q1.value("description").toString(),
                                                    q1.value("itemOrder").toInt());
         }
-        q2.bindValue(":objectType", q1.value("objectType").toString());
-        q2.bindValue(":sectionID", section->ID());
-        q2.exec();
-        while (q2.next()) {
-            MetadataStructureAttribute *attribute = new MetadataStructureAttribute();
-            readAttribute(q2, attribute);
-            attribute->setParent(section);
-            section->addAttribute(attribute);
-        }
         if (!sectionExists) {
             section->setParent(structure);
             structure->addSection(objectType, section);
         }
+        sectionIDsInDatabase << sectionID;
+
     }
-    // For attributes without a section (move to default section)
+    // Make sure default sections exist in the database
+    MetadataStructureSection *section(0);
+    if (!sectionIDsInDatabase.contains("corpus")) {
+        section = new MetadataStructureSection("corpus", "Corpus", "Corpus metadata", 0);
+        createMetadataSection(CorpusObject::Type_Corpus, section, db); structure->addSection(CorpusObject::Type_Corpus, section);
+    }
+    if (!sectionIDsInDatabase.contains("communication")) {
+        section = new MetadataStructureSection("communication", "Communication", "Communication metadata", 0);
+        createMetadataSection(CorpusObject::Type_Communication, section, db); structure->addSection(CorpusObject::Type_Communication, section);
+    }
+    if (!sectionIDsInDatabase.contains("speaker")) {
+        section = new MetadataStructureSection("speaker", "Speaker", "Speaker metadata", 0);
+        createMetadataSection(CorpusObject::Type_Speaker, section, db); structure->addSection(CorpusObject::Type_Speaker, section);
+    }
+    if (!sectionIDsInDatabase.contains("recording")) {
+        section = new MetadataStructureSection("recording", "Recording", "Recording metadata", 0);
+        createMetadataSection(CorpusObject::Type_Recording, section, db); structure->addSection(CorpusObject::Type_Recording, section);
+    }
+    if (!sectionIDsInDatabase.contains("annotation")) {
+        section = new MetadataStructureSection("annotation", "Annotation", "Annotation metadata", 0);
+        createMetadataSection(CorpusObject::Type_Annotation, section, db); structure->addSection(CorpusObject::Type_Annotation, section);
+    }
+    if (!sectionIDsInDatabase.contains("participation")) {
+        section = new MetadataStructureSection("participation", "Participation ", "Participation metadata", 0);
+        createMetadataSection(CorpusObject::Type_Participation, section, db); structure->addSection(CorpusObject::Type_Participation, section);
+    }
+    // Read attributes to sections
     QList<CorpusObject::Type> objectTypes;
     objectTypes << CorpusObject::Type_Corpus << CorpusObject::Type_Communication << CorpusObject::Type_Speaker
                 << CorpusObject::Type_Recording << CorpusObject::Type_Annotation << CorpusObject::Type_Participation;
     foreach (CorpusObject::Type objectType, objectTypes) {
+        foreach (QPointer<MetadataStructureSection> section, structure->sections(objectType)) {
+            q2.bindValue(":objectType", SQLSerialiserSystem::corpusObjectCodeFromType(objectType));
+            q2.bindValue(":sectionID", section->ID());
+            q2.exec();
+            while (q2.next()) {
+                MetadataStructureAttribute *attribute = new MetadataStructureAttribute();
+                readAttribute(q2, attribute);
+                attribute->setParent(section);
+                section->addAttribute(attribute);
+            }
+        }
+        // For attributes without a section (move to default section)
         QString sectionID = MetadataStructure::defaultSectionID(objectType);
         MetadataStructureSection *section(0);
         section = structure->section(objectType, sectionID);
