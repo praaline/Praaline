@@ -206,7 +206,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
         if (baseFilename.endsWith(filter, Qt::CaseInsensitive)) return false;
     }
     // now process file
-    QString communicationID = communicationNameFromFilename(info);
+    QString communicationID = communicationIDFromFilename(info);
     if (communicationID.isEmpty()) return false;
     if (isRecording) {
         CorpusRecording *rec = new CorpusRecording(baseFilename);
@@ -222,7 +222,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
         // Speaker Policy
         if (ui->optionSpeakerSingle->isChecked()) {
             annot->setProperty("speakerPolicy", SpeakerPolicySingle);
-            annot->setProperty("speakerPolicyData", annot->ID());
+            annot->setProperty("speakerPolicyData", speakerIDFromFilename(info));
         }
         else if (ui->optionSpeakerTiers->isChecked()) {
             annot->setProperty("speakerPolicy", SpeakerPolicyTierNames);
@@ -246,44 +246,85 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
 }
 
 // private
-QString ImportCorpusItemsWizardSelectionPage::communicationNameFromFilename(const QFileInfo &fileInfo)
+QString ImportCorpusItemsWizardSelectionPage::communicationIDFromFilename(const QFileInfo &fileInfo)
 {
-    QString filename = fileInfo.baseName();
-    if (ui->optionSubfolderName->isChecked()) {
+    QString name = fileInfo.baseName();
+    if (ui->optionComIDSubfolderName->isChecked()) {
         QString path = fileInfo.canonicalFilePath();
         QStringList folders = path.split("/");
-        if (folders.isEmpty() || folders.count() == 1) return filename;
         // canoncial file path = /abc/def/xyz/file.ext => we need the second-to-last item
-        return folders.at(folders.count() - 2);
+        if (folders.count() > 1)
+            name = folders.at(folders.count() - 2);
     }
-    else if (ui->optionEntireFilename->isChecked()) {
-        return filename;
+    // Process name
+    // Trim left
+    if (ui->optionComIDTakeLeft->isChecked()) {
+        name = name.mid(0, ui->spinBoxComIDLeftChars->value());
     }
-    else if (ui->optionRemoveFromEnd->isChecked()) {
-        QStringList stringsToRemove = ui->editRemoveFromEnd->text().split(",");
+    else if (ui->optionComIDRemoveLeft->isChecked()) {
+        name = name.mid(ui->spinBoxComIDLeftChars->value(), -1);
+    }
+    // Trim right
+    if (ui->optionComIDTakeRight->isChecked()) {
+        name = name.right(ui->spinBoxComIDRightChars->value());
+    }
+    else if (ui->optionComIDRemoveRight->isChecked()) {
+        if (name.length() > ui->spinBoxComIDRightChars->value())
+            name = name.mid(0, name.length() - ui->spinBoxComIDRightChars->value());
+    }
+    // Remove left and right
+    if (!ui->editComIDRemoveFromBeginning->text().isEmpty()) {
+        QStringList stringsToRemove = ui->editComIDRemoveFromBeginning->text().split(",");
         foreach (QString stringToRemove, stringsToRemove) {
-            QString ret = filename;
-            if (ret.endsWith(stringToRemove.trimmed())) ret.chop(stringToRemove.trimmed().length());
-            return ret;
+            if (name.startsWith(stringToRemove.trimmed()))
+                name = name.mid(stringToRemove.trimmed().length(), -1);
         }
-        return filename;
     }
-    else if (ui->optionTakeLeft->isChecked()) {
-        return filename.mid(0, ui->spinBoxLeftChars->value());
+    if (!ui->editComIDRemoveFromEnd->text().isEmpty()) {
+        QStringList stringsToRemove = ui->editComIDRemoveFromEnd->text().split(",");
+        foreach (QString stringToRemove, stringsToRemove) {
+            if (name.endsWith(stringToRemove.trimmed()))
+                name.chop(stringToRemove.trimmed().length());
+        }
     }
-    else if (ui->optionRemoveLeft->isChecked()) {
-        return filename.mid(ui->spinBoxLeftChars->value(), -1);
-    }
-    else if (ui->optionTakeRight->isChecked()) {
-        return filename.right(ui->spinBoxRightChars->value());
-    }
-    else if (ui->optionRemoveRight->isChecked()) {
-        if (filename.length() > ui->spinBoxRightChars->value())
-            return filename.mid(0, filename.length() - ui->spinBoxRightChars->value());
-        else
-            return filename;
-    }
-    return QString();
+    return name;
 }
 
+// private
+QString ImportCorpusItemsWizardSelectionPage::speakerIDFromFilename(const QFileInfo &fileInfo)
+{
+    QString name = fileInfo.baseName();
+    // Process name
+    // Trim left
+    if (ui->optionSpkIDTakeLeft->isChecked()) {
+        name = name.mid(0, ui->spinBoxSpkIDLeftChars->value());
+    }
+    else if (ui->optionSpkIDRemoveLeft->isChecked()) {
+        name = name.mid(ui->spinBoxSpkIDLeftChars->value(), -1);
+    }
+    // Trim right
+    if (ui->optionSpkIDTakeRight->isChecked()) {
+        name = name.right(ui->spinBoxSpkIDRightChars->value());
+    }
+    else if (ui->optionSpkIDRemoveRight->isChecked()) {
+        if (name.length() > ui->spinBoxSpkIDRightChars->value())
+            name = name.mid(0, name.length() - ui->spinBoxSpkIDRightChars->value());
+    }
+    // Remove left and right
+    if (!ui->editSpkIDRemoveFromBeginning->text().isEmpty()) {
+        QStringList stringsToRemove = ui->editSpkIDRemoveFromBeginning->text().split(",");
+        foreach (QString stringToRemove, stringsToRemove) {
+            if (name.startsWith(stringToRemove.trimmed()))
+                name = name.mid(stringToRemove.trimmed().length(), -1);
+        }
+    }
+    if (!ui->editSpkIDRemoveFromEnd->text().isEmpty()) {
+        QStringList stringsToRemove = ui->editSpkIDRemoveFromEnd->text().split(",");
+        foreach (QString stringToRemove, stringsToRemove) {
+            if (name.endsWith(stringToRemove.trimmed()))
+                name.chop(stringToRemove.trimmed().length());
+        }
+    }
+    return name;
+}
 

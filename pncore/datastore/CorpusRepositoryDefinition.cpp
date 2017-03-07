@@ -130,8 +130,10 @@ bool CorpusRepositoryDefinition::load(const QString &filename)
     // Media path is relative to corpus definition file
     if (this->basePathMedia.isEmpty())
         this->basePathMedia = this->basePath;
-    else
-        this->basePathMedia = this->basePathMedia.replace(QRegularExpression("^./"), this->basePath + "/");
+    else {
+        this->basePathMedia = this->basePathMedia
+                .replace(QRegularExpression("^./"), this->basePath + "/").replace(".", this->basePath + "/");
+    }
     // Adjust to open correctly SQLite databases
     if (this->infoDatastoreMetadata.driver == "QSQLITE")
         this->infoDatastoreMetadata.datasource = this->basePath + "/" + this->infoDatastoreMetadata.datasource;

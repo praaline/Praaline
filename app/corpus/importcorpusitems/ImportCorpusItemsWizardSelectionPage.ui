@@ -6,36 +6,30 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>946</width>
-    <height>594</height>
+    <width>1038</width>
+    <height>616</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>WizardPage</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_4">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout_6">
    <item row="0" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <widget class="QWidget" name="pageSelection">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="0">
         <widget class="QGroupBox" name="groupRecordings">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Recording Files</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
            <widget class="QLabel" name="labelRecordingsFormat">
             <property name="text">
@@ -45,12 +39,6 @@
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
             </property>
            </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="comboRecordingsFilter"/>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="editRecordingsFilter"/>
           </item>
           <item row="0" column="1">
            <widget class="QTreeView" name="treeviewRecordingsFormat"/>
@@ -62,120 +50,23 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QGroupBox" name="groupCommunicationName">
-         <property name="title">
-          <string>Communication ID</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="3" column="1">
-           <layout class="QGridLayout" name="gridLayoutTakeRight">
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="optionTakeRight">
-              <property name="text">
-               <string>Retain only or</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QSpinBox" name="spinBoxRightChars"/>
-            </item>
-            <item row="0" column="0">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="0" column="4">
-             <widget class="QLabel" name="labelTakeRightChars">
-              <property name="text">
-               <string>characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QRadioButton" name="optionRemoveRight">
-              <property name="text">
-               <string>Remove the rightmost</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboRecordingsFilter"/>
           </item>
-          <item row="3" column="0">
-           <layout class="QGridLayout" name="gridLayoutTakeLeft">
-            <item row="0" column="3">
-             <widget class="QLabel" name="labelTakeLeftChars">
-              <property name="text">
-               <string>characters</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QRadioButton" name="optionRemoveLeft">
-              <property name="text">
-               <string>Remove the leftmost</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="optionTakeLeft">
-              <property name="text">
-               <string>Retain only or</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QSpinBox" name="spinBoxLeftChars"/>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="optionEntireFilename">
-            <property name="text">
-             <string>Use entire filename as the new Communication's ID</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <layout class="QGridLayout" name="gridLayoutRemoveFromEnd">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="optionRemoveFromEnd">
-              <property name="text">
-               <string>Remove the following text from the end:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="editRemoveFromEnd"/>
-            </item>
-           </layout>
-          </item>
-          <item row="4" column="0">
-           <widget class="QRadioButton" name="optionSubfolderName">
-            <property name="text">
-             <string>Use sub-folder name as the new Communication's ID</string>
-            </property>
-           </widget>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="editRecordingsFilter"/>
           </item>
          </layout>
         </widget>
        </item>
        <item row="0" column="0" colspan="2">
         <widget class="QGroupBox" name="groupFolder">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Folder to process</string>
          </property>
@@ -202,10 +93,16 @@
        </item>
        <item row="1" column="1">
         <widget class="QGroupBox" name="groupAnnotations">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Annotation Files</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_6">
+         <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
            <widget class="QLabel" name="labelAnnotationsFormat">
             <property name="text">
@@ -219,6 +116,12 @@
           <item row="0" column="1">
            <widget class="QTreeView" name="treeviewAnnotationsFormat"/>
           </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboAnnotationsFilter"/>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="editAnnotationsFilter"/>
+          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="labelAnnotationsFilter">
             <property name="text">
@@ -226,28 +129,72 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="comboAnnotationsFilter"/>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QGroupBox" name="groupCommunicationName">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Communication ID</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_2">
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="optionComIDEntireFilename">
+            <property name="text">
+             <string>Use entire filename as the new Communication ID</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupCommunicationID</string>
+            </attribute>
+           </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QLineEdit" name="editAnnotationsFilter"/>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="optionComIDSubfolderName">
+            <property name="text">
+             <string>Use sub-folder name as the new Communication ID</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupCommunicationID</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>495</width>
+              <height>57</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="4" column="0">
         <widget class="QGroupBox" name="groupSpeakerPolicy">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Speaker ID</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="optionSpeakerIntervals">
-            <property name="text">
-             <string>A special annotation tier indicates the Speaker ID.</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QFormLayout" name="formLayout">
           <item row="0" column="0">
            <widget class="QRadioButton" name="optionSpeakerSingle">
             <property name="text">
@@ -256,6 +203,9 @@
             <property name="checked">
              <bool>true</bool>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupSpeakerID</string>
+            </attribute>
            </widget>
           </item>
           <item row="1" column="0">
@@ -263,14 +213,248 @@
             <property name="text">
              <string>Each tier contains a different speaker. Use tier name as the new Speaker ID.</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupSpeakerID</string>
+            </attribute>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="optionSpeakerIntervals">
+            <property name="text">
+             <string>A special annotation tier indicates the Speaker ID.</string>
+            </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupSpeakerID</string>
+            </attribute>
            </widget>
           </item>
           <item row="3" column="0">
            <widget class="QRadioButton" name="optionSpeakerPrimaryAndSecondary">
             <property name="text">
-             <string>One main speaker per annotation file, and one or more tiers containing secondary speakers.</string>
+             <string>One main speaker per file, and one/more tiers containing secondary speakers.</string>
             </property>
+            <attribute name="buttonGroup">
+             <string notr="true">buttonGroupSpeakerID</string>
+            </attribute>
            </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QGroupBox" name="groupBoxSpkIDFormatting">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Filename to Speaker ID processing</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayoutTakeLeft_3">
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelSpkIDTakeLeftChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="optionSpkIDRemoveLeft">
+              <property name="text">
+               <string>Remove the leftmost:</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupSpkIDLeft</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="optionSpkIDTakeLeft">
+              <property name="text">
+               <string>Keep only or</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupSpkIDLeft</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QSpinBox" name="spinBoxSpkIDLeftChars"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="optionSpkIDTakeRight">
+              <property name="text">
+               <string>Keep only or</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupSpkIDRight</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="optionSpkIDRemoveRight">
+              <property name="text">
+               <string>Remove the rightmost:</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupSpkIDRight</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QSpinBox" name="spinBoxSpkIDRightChars"/>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="labelSpkIDTakeRightChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayoutSpkIDRemoveText">
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="editSpkIDRemoveFromBeginning"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelSpkIDRemoveFromBeginning">
+              <property name="text">
+               <string>Remove the following text from the beginning:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelSpkIDRemoveFromEnd">
+              <property name="text">
+               <string>Remove the following text from the end:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="editSpkIDRemoveFromEnd"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QGroupBox" name="groupBoxComIDFormatting">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Filename to Communication ID processing</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayoutComIDTakeChars">
+            <item row="0" column="3">
+             <widget class="QLabel" name="labelComIDTakeLeftChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="optionComIDRemoveLeft">
+              <property name="text">
+               <string>Remove the leftmost:</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupComIDLeft</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QRadioButton" name="optionComIDTakeLeft">
+              <property name="text">
+               <string>Keep only or</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupComIDLeft</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QSpinBox" name="spinBoxComIDLeftChars"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QRadioButton" name="optionComIDTakeRight">
+              <property name="text">
+               <string>Keep only or</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupComIDRight</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QRadioButton" name="optionComIDRemoveRight">
+              <property name="text">
+               <string>Remove the rightmost:</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroupComIDRight</string>
+              </attribute>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QSpinBox" name="spinBoxComIDRightChars"/>
+            </item>
+            <item row="1" column="3">
+             <widget class="QLabel" name="labelComIDTakeRightChars">
+              <property name="text">
+               <string>characters</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0">
+           <layout class="QGridLayout" name="gridLayoutComIDRemoveText">
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="editComIDRemoveFromBeginning"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelComIDRemoveFromBeginning">
+              <property name="text">
+               <string>Remove the following text from the beginning:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="labelComIDRemoveFromEnd">
+              <property name="text">
+               <string>Remove the following text from the end:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QLineEdit" name="editComIDRemoveFromEnd"/>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -278,7 +462,7 @@
       </layout>
      </widget>
      <widget class="QWidget" name="pageProcess">
-      <layout class="QGridLayout" name="gridLayout_7">
+      <layout class="QGridLayout" name="gridLayoutProcess">
        <item row="0" column="0" colspan="2">
         <widget class="QLabel" name="labelWait">
          <property name="text">
@@ -314,28 +498,44 @@
   <tabstop>commandSelectFolder</tabstop>
   <tabstop>checkBoxRecursive</tabstop>
   <tabstop>treeviewRecordingsFormat</tabstop>
-  <tabstop>treeviewAnnotationsFormat</tabstop>
   <tabstop>comboRecordingsFilter</tabstop>
   <tabstop>editRecordingsFilter</tabstop>
+  <tabstop>treeviewAnnotationsFormat</tabstop>
   <tabstop>comboAnnotationsFilter</tabstop>
   <tabstop>editAnnotationsFilter</tabstop>
-  <tabstop>optionEntireFilename</tabstop>
-  <tabstop>optionRemoveFromEnd</tabstop>
-  <tabstop>editRemoveFromEnd</tabstop>
-  <tabstop>optionTakeLeft</tabstop>
-  <tabstop>optionRemoveLeft</tabstop>
-  <tabstop>spinBoxLeftChars</tabstop>
-  <tabstop>optionTakeRight</tabstop>
-  <tabstop>optionRemoveRight</tabstop>
-  <tabstop>spinBoxRightChars</tabstop>
-  <tabstop>optionSubfolderName</tabstop>
+  <tabstop>optionComIDEntireFilename</tabstop>
+  <tabstop>optionComIDSubfolderName</tabstop>
+  <tabstop>editComIDRemoveFromBeginning</tabstop>
+  <tabstop>editComIDRemoveFromEnd</tabstop>
+  <tabstop>optionComIDTakeLeft</tabstop>
+  <tabstop>optionComIDRemoveLeft</tabstop>
+  <tabstop>spinBoxComIDLeftChars</tabstop>
+  <tabstop>optionComIDTakeRight</tabstop>
+  <tabstop>optionComIDRemoveRight</tabstop>
+  <tabstop>spinBoxComIDRightChars</tabstop>
   <tabstop>optionSpeakerSingle</tabstop>
   <tabstop>optionSpeakerTiers</tabstop>
   <tabstop>optionSpeakerIntervals</tabstop>
   <tabstop>optionSpeakerPrimaryAndSecondary</tabstop>
-  <tabstop>commandAbort</tabstop>
+  <tabstop>editSpkIDRemoveFromBeginning</tabstop>
+  <tabstop>editSpkIDRemoveFromEnd</tabstop>
+  <tabstop>optionSpkIDTakeLeft</tabstop>
+  <tabstop>optionSpkIDRemoveLeft</tabstop>
+  <tabstop>spinBoxSpkIDLeftChars</tabstop>
+  <tabstop>optionSpkIDTakeRight</tabstop>
+  <tabstop>optionSpkIDRemoveRight</tabstop>
+  <tabstop>spinBoxSpkIDRightChars</tabstop>
   <tabstop>texteditMessages</tabstop>
+  <tabstop>commandAbort</tabstop>
  </tabstops>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupComIDRight"/>
+  <buttongroup name="buttonGroupCommunicationID"/>
+  <buttongroup name="buttonGroupSpeakerID"/>
+  <buttongroup name="buttonGroupComIDLeft"/>
+  <buttongroup name="buttonGroupSpkIDRight"/>
+  <buttongroup name="buttonGroupSpkIDLeft"/>
+ </buttongroups>
 </ui>

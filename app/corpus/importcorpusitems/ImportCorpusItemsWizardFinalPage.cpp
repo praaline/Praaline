@@ -241,7 +241,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
     // Step 2: Update attributes for each level and speaker
     foreach (TierCorrespondance c, correspondances) {
         if (c.annotationLevelID.isEmpty() || c.annotationAttributeID.isEmpty()) continue;
-        AnnotationTier *tierA = inputTiers->tier(inputTiers->getTierIndexByName(c.tierName));
+        AnnotationTier *tierA = inputTiers->tier(c.tierName);
         if (!tierA) continue;
         // Speaker ID as defined by the policy
         if (speakerPolicy == SpeakerPolicyTierNames)
@@ -251,7 +251,7 @@ void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *ann
         if (!tiersAll.contains(spkID)) continue;
         AnnotationTierGroup *tiers = tiersAll.value(spkID);
         // corresponding level
-        AnnotationTier *tierL = tiers->tier(tiers->getTierIndexByName(c.annotationLevelID));
+        AnnotationTier *tierL = tiers->tier(c.annotationLevelID);
         if (!tierL) continue;
         // apply correspondance
         if (tierL->tierType() == AnnotationTier::TierType_Intervals && tierA->tierType() == AnnotationTier::TierType_Intervals) {

@@ -101,7 +101,7 @@ QModelIndex MetadataStructureTreeModel::parent(const QModelIndex &index) const
 
     QObject *childItem = getItem(index);
     if (!childItem) return QModelIndex();
-    qDebug() << childItem;
+    // qDebug() << childItem;
 
     QObject *parentItem = childItem->parent();
 

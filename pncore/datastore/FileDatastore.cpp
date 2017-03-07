@@ -19,7 +19,7 @@ QString FileDatastore::getRelativeToBasePath(const QString &absoluteFilePath) co
 {
     if (m_basePath.isEmpty())
         return absoluteFilePath;
-    return QDir(m_basePath).relativeFilePath(absoluteFilePath);
+    return QDir(QDir(m_basePath).canonicalPath()).relativeFilePath(absoluteFilePath);
 }
 
 } // namespace Core

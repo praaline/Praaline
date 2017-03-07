@@ -41,7 +41,8 @@ private:
     Ui::ImportCorpusItemsWizardSelectionPage *ui;
     ImportCorpusItemsWizardSelectionPageData *d;
 
-    QString communicationNameFromFilename(const QFileInfo &filename);
+    QString communicationIDFromFilename(const QFileInfo &filename);
+    QString speakerIDFromFilename(const QFileInfo &filename);
     void addFiles(const QString& directory, const QStringList &filters, bool recursive, bool isRecording);
     bool processFile(const QFileInfo &info, bool isRecording);
 };
