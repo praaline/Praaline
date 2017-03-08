@@ -1,38 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>CorpusRepositoryPropertiesDialog</class>
- <widget name="CorpusRepositoryPropertiesDialog" class="QDialog">
+ <widget class="QDialog" name="CorpusRepositoryPropertiesDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>780</width>
+    <height>540</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget name="buttonBox" class="QDialogButtonBox">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>240</y>
-     <width>341</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBoxFolders">
+     <property name="title">
+      <string>File Paths</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="editBasePathMedia">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelBasePathMedia">
+        <property name="text">
+         <string>Corpus media files in folder:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelBasePath">
+        <property name="text">
+         <string>Corpus database in folder:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="editBasePath">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="commandSelectBasePath">
+        <property name="text">
+         <string>Select folder</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="commandSelectBasePathMedia">
+        <property name="text">
+         <string>Select folder</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBoxBasic">
+     <property name="title">
+      <string>Basic Information</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelCorpusRepositoryID">
+        <property name="text">
+         <string>Repository ID:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="editCorpusRepositoryID"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelCorpusDescription">
+        <property name="text">
+         <string>Description:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="editCorpusRepositoryDescription"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelRepositoryDefinition">
+        <property name="text">
+         <string>Repository File:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="labelRepositoryDefinitionFilename">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBoxRemote">
+     <property name="title">
+      <string>Metadata and Annotation Database Propeties</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayoutConnectionData">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBoxMetadataDb">
+          <property name="title">
+           <string>Metadata and Annotations Database Connection</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelDatabaseTypeMetadata">
+             <property name="text">
+              <string>Database type:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxDatabaseTypeMetadata"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelHostnameMetadata">
+             <property name="text">
+              <string>Hostname (server):</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="editHostnameMetadata"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelUsernameMetadata">
+             <property name="text">
+              <string>Username:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="editUsernameMetadata"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelPasswordMetadata">
+             <property name="text">
+              <string>Password:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="editPasswordMetadata"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelDatabaseNameMetadata">
+             <property name="text">
+              <string>Database name:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="editDatabaseNameMetadata"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QGroupBox" name="groupBoxAnnotationsDb">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="title">
+           <string>Annotations Database Connection</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_11">
+           <item row="0" column="0">
+            <widget class="QLabel" name="labelDatabaseTypeAnnotations">
+             <property name="text">
+              <string>Database type:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QComboBox" name="comboBoxDatabaseTypeAnnotations"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="labelHostnameAnnotations">
+             <property name="text">
+              <string>Hostname (server):</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QLineEdit" name="editHostnameAnnotations"/>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="labelUsernameAnnotations">
+             <property name="text">
+              <string>Username:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="editUsernameAnnotations"/>
+           </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="labelPasswordAnnotations">
+             <property name="text">
+              <string>Password:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="editPasswordAnnotations"/>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="labelDatabaseNameAnnotations">
+             <property name="text">
+              <string>Database name:</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QLineEdit" name="editDatabaseNameAnnotations"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="optionSameDatastore">
+        <property name="text">
+         <string>Save metadata and annotations in the same database (default)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Save</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
- <pixmapfunction/>
+ <tabstops>
+  <tabstop>editCorpusRepositoryID</tabstop>
+  <tabstop>editCorpusRepositoryDescription</tabstop>
+  <tabstop>editBasePath</tabstop>
+  <tabstop>optionSameDatastore</tabstop>
+  <tabstop>comboBoxDatabaseTypeMetadata</tabstop>
+  <tabstop>editHostnameMetadata</tabstop>
+  <tabstop>editUsernameMetadata</tabstop>
+  <tabstop>editPasswordMetadata</tabstop>
+  <tabstop>editDatabaseNameMetadata</tabstop>
+  <tabstop>comboBoxDatabaseTypeAnnotations</tabstop>
+  <tabstop>editHostnameAnnotations</tabstop>
+  <tabstop>editUsernameAnnotations</tabstop>
+  <tabstop>editPasswordAnnotations</tabstop>
+  <tabstop>editDatabaseNameAnnotations</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -42,8 +337,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>224</x>
+     <y>459</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -58,8 +353,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>292</x>
+     <y>465</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

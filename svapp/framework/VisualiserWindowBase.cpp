@@ -80,7 +80,6 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QAction>
-#include <QMenuBar>
 #include <QToolBar>
 #include <QInputDialog>
 #include <QStatusBar>
@@ -131,8 +130,8 @@ static int handle_x11_error(Display *dpy, XErrorEvent *err)
 #undef Window
 #endif
 
-VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput,
-                                           bool withMIDIInput) :
+VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIInput, QWidget *parent) :
+    QMainWindow(parent),
     m_document(0),
     m_paneStack(0),
     m_viewManager(0),
@@ -152,8 +151,7 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput,
     m_lastPlayStatusSec(0),
     m_initialDarkBackground(false),
     m_defaultFfwdRwdStep(2, 0),
-    m_statusLabel(0),
-    m_menuShortcutMapper(0)
+    m_statusLabel(0)
 {
     Profiler profiler("MainWindowBase::MainWindowBase");
 
@@ -274,136 +272,7 @@ VisualiserWindowBase::~VisualiserWindowBase()
     Profiles::getInstance()->dump();
 }
 
-void
-VisualiserWindowBase::finaliseMenus()
-{
-    delete m_menuShortcutMapper;
-    m_menuShortcutMapper = 0;
-
-    foreach (QShortcut *sc, m_appShortcuts) {
-        delete sc;
-    }
-    m_appShortcuts.clear();
-
-    QMenuBar *mb = menuBar();
-
-    // This used to find all children of QMenu type, and call
-    // finaliseMenu on those. But it seems we are getting hold of some
-    // menus that way that are not actually active in the menu bar and
-    // are not returned in their parent menu's actions() list, and if
-    // we finalise those, we end up with duplicate shortcuts in the
-    // app shortcut mapper. So we should do this by descending the
-    // menu tree through only those menus accessible via actions()
-    // from their parents instead.
-
-    QList<QMenu *> menus = mb->findChildren<QMenu *>
-            (QString(), Qt::FindDirectChildrenOnly);
-
-    foreach (QMenu *menu, menus) {
-        if (menu) finaliseMenu(menu);
-    }
-}
-
-void
-VisualiserWindowBase::finaliseMenu(QMenu *
-                                   #ifdef Q_OS_MAC
-                                   menu
-                                   #endif
-                                   )
-{
-#ifdef Q_OS_MAC
-    // See https://bugreports.qt-project.org/browse/QTBUG-38256 and
-    // our issue #890 http://code.soundsoftware.ac.uk/issues/890 --
-    // single-key shortcuts that are associated only with a menu
-    // action (and not with a toolbar button) do not work with Qt 5.x
-    // under OS/X.
-    //
-    // Apparently Cocoa never handled them as a matter of course, but
-    // earlier versions of Qt picked them up as widget shortcuts and
-    // handled them anyway. That behaviour was removed to fix a crash
-    // when invoking a menu while its window was overridden by a modal
-    // dialog (https://bugreports.qt-project.org/browse/QTBUG-30657).
-    //
-    // This workaround restores the single-key shortcut behaviour by
-    // searching in menus for single-key shortcuts that are associated
-    // only with the menu and not with a toolbar button, and
-    // augmenting them with global application shortcuts that invoke
-    // the relevant actions, testing whether the actions are enabled
-    // on invocation.
-    //
-    // (Previously this acted on all single-key shortcuts in menus,
-    // and it removed the shortcut from the action when it created
-    // each new global one, in order to avoid an "ambiguous shortcut"
-    // error in the case where the action was also associated with a
-    // toolbar button. But that has the unwelcome side-effect of
-    // removing the shortcut hint from the menu entry. So now we leave
-    // the shortcut in the menu action as well as creating a global
-    // one, and we only act on shortcuts that have no toolbar button,
-    // i.e. that will not otherwise work. The downside is that if this
-    // bug is fixed in a future Qt release, we will start getting
-    // "ambiguous shortcut" errors from the menu entry actions and
-    // will need to update the code.)
-
-    // Update: The bug was fixed in Qt 5.4 for shortcuts with no
-    // modifier, and I believe it is fixed in Qt 5.5 for shortcuts
-    // with Shift modifiers. The below reflects that
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
-
-    if (!m_menuShortcutMapper) {
-        m_menuShortcutMapper = new QSignalMapper(this);
-        connect(m_menuShortcutMapper, SIGNAL(mapped(QObject *)),
-                this, SLOT(menuActionMapperInvoked(QObject *)));
-    }
-
-    foreach (QAction *a, menu->actions()) {
-
-        if (a->isSeparator()) {
-            continue;
-        } else if (a->menu()) {
-            finaliseMenu(a->menu());
-        } else {
-
-            QWidgetList ww = a->associatedWidgets();
-            bool hasButton = false;
-            foreach (QWidget *w, ww) {
-                if (qobject_cast<QAbstractButton *>(w)) {
-                    hasButton = true;
-                    break;
-                }
-            }
-            if (hasButton) continue;
-            QKeySequence sc = a->shortcut();
-
-            // Note that the set of "single-key shortcuts" that aren't
-            // working and that we need to handle here includes those
-            // with the Shift modifier mask as well as those with no
-            // modifier at all
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 5, 0))
-            // Nothing needed
-            if (false) {
-#elif (QT_VERSION >= QT_VERSION_CHECK(5, 4, 0))
-            if (sc.count() == 1 &&
-                    (sc[0] & Qt::KeyboardModifierMask) == Qt::ShiftModifier) {
-#else
-            if (sc.count() == 1 &&
-                    ((sc[0] & Qt::KeyboardModifierMask) == Qt::NoModifier ||
-                     (sc[0] & Qt::KeyboardModifierMask) == Qt::ShiftModifier)) {
-#endif
-                QShortcut *newSc = new QShortcut(sc, a->parentWidget());
-                QObject::connect(newSc, SIGNAL(activated()),
-                                 m_menuShortcutMapper, SLOT(map()));
-                m_menuShortcutMapper->setMapping(newSc, a);
-                m_appShortcuts.push_back(newSc);
-            }
-        }
-    }
-#endif
-#endif
-}
-
-void
-VisualiserWindowBase::menuActionMapperInvoked(QObject *o)
+void VisualiserWindowBase::menuActionMapperInvoked(QObject *o)
 {
     QAction *a = qobject_cast<QAction *>(o);
     if (a && a->isEnabled()) {
@@ -411,8 +280,7 @@ VisualiserWindowBase::menuActionMapperInvoked(QObject *o)
     }
 }
 
-void
-VisualiserWindowBase::resizeConstrained(QSize size)
+void VisualiserWindowBase::resizeConstrained(QSize size)
 {
     QDesktopWidget *desktop = QApplication::desktop();
     QRect available = desktop->availableGeometry();
@@ -421,16 +289,14 @@ VisualiserWindowBase::resizeConstrained(QSize size)
     resize(actual);
 }
 
-void
-VisualiserWindowBase::startOSCQueue()
+void VisualiserWindowBase::startOSCQueue()
 {
     m_oscQueueStarter = new OSCQueueStarter(this);
     connect(m_oscQueueStarter, SIGNAL(finished()), this, SLOT(oscReady()));
     m_oscQueueStarter->start();
 }
 
-void
-VisualiserWindowBase::oscReady()
+void VisualiserWindowBase::oscReady()
 {
     if (m_oscQueue && m_oscQueue->isOK()) {
         connect(m_oscQueue, SIGNAL(messagesAvailable()), this, SLOT(pollOSC()));
@@ -441,8 +307,7 @@ VisualiserWindowBase::oscReady()
     }
 }
 
-QString
-VisualiserWindowBase::getOpenFileName(FileFinder::FileType type)
+QString VisualiserWindowBase::getOpenFileName(FileFinder::FileType type)
 {
     FileFinder *ff = FileFinder::getInstance();
 
@@ -466,8 +331,7 @@ VisualiserWindowBase::getOpenFileName(FileFinder::FileType type)
     return ff->getOpenFileName(type, lastPath);
 }
 
-QString
-VisualiserWindowBase::getSaveFileName(FileFinder::FileType type)
+QString VisualiserWindowBase::getSaveFileName(FileFinder::FileType type)
 {
     QString lastPath = m_sessionFile;
 
@@ -479,15 +343,13 @@ VisualiserWindowBase::getSaveFileName(FileFinder::FileType type)
     return ff->getSaveFileName(type, lastPath);
 }
 
-void
-VisualiserWindowBase::registerLastOpenedFilePath(FileFinder::FileType type, QString path)
+void VisualiserWindowBase::registerLastOpenedFilePath(FileFinder::FileType type, QString path)
 {
     FileFinder *ff = FileFinder::getInstance();
     ff->registerLastOpenedFilePath(type, path);
 }
 
-QString
-VisualiserWindowBase::getDefaultSessionTemplate() const
+QString VisualiserWindowBase::getDefaultSessionTemplate() const
 {
     QSettings settings;
     settings.beginGroup("MainWindow");
@@ -496,16 +358,14 @@ VisualiserWindowBase::getDefaultSessionTemplate() const
     return templateName;
 }
 
-void
-VisualiserWindowBase::setDefaultSessionTemplate(QString n) 
+void VisualiserWindowBase::setDefaultSessionTemplate(QString n)
 {
     QSettings settings;
     settings.beginGroup("MainWindow");
     settings.setValue("sessiontemplate", n);
 }    
 
-void
-VisualiserWindowBase::updateMenuStates()
+void VisualiserWindowBase::updateMenuStates()
 {
     Pane *currentPane = 0;
     Layer *currentLayer = 0;
@@ -534,38 +394,20 @@ VisualiserWindowBase::updateMenuStates()
         }
     }
 
-    bool haveCurrentPane =
-            (currentPane != 0);
-    bool haveCurrentLayer =
-            (haveCurrentPane &&
-             (currentLayer != 0));
-    bool haveMainModel =
-            (getMainModel() != 0);
-    bool havePlayTarget =
-            (m_playTarget != 0);
-    bool haveSelection =
-            (m_viewManager &&
-             !m_viewManager->getSelections().empty());
-    bool haveCurrentEditableLayer =
-            (haveCurrentLayer &&
-             currentLayer->isLayerEditable());
-    bool haveCurrentTimeInstantsLayer =
-            (haveCurrentLayer &&
-             dynamic_cast<TimeInstantLayer *>(currentLayer));
-    bool haveCurrentDurationLayer =
-            (haveCurrentLayer &&
-             (dynamic_cast<NoteLayer *>(currentLayer) ||
-              dynamic_cast<FlexiNoteLayer *>(currentLayer) ||
-              dynamic_cast<RegionLayer *>(currentLayer)));
-    bool haveCurrentColour3DPlot =
-            (haveCurrentLayer &&
-             dynamic_cast<Colour3DPlotLayer *>(currentLayer));
-    bool haveClipboardContents =
-            (m_viewManager &&
-             !m_viewManager->getClipboard().empty());
-    bool haveTabularLayer =
-            (haveCurrentLayer &&
-             dynamic_cast<TabularModel *>(currentLayer->getModel()));
+    bool haveCurrentPane = (currentPane != 0);
+    bool haveCurrentLayer = (haveCurrentPane && (currentLayer != 0));
+    bool haveMainModel = (getMainModel() != 0);
+    bool havePlayTarget = (m_playTarget != 0);
+    bool haveSelection = (m_viewManager && !m_viewManager->getSelections().empty());
+    bool haveCurrentEditableLayer = (haveCurrentLayer && currentLayer->isLayerEditable());
+    bool haveCurrentTimeInstantsLayer = (haveCurrentLayer && dynamic_cast<TimeInstantLayer *>(currentLayer));
+    bool haveCurrentDurationLayer = (haveCurrentLayer &&
+                                     (dynamic_cast<NoteLayer *>(currentLayer) ||
+                                      dynamic_cast<FlexiNoteLayer *>(currentLayer) ||
+                                      dynamic_cast<RegionLayer *>(currentLayer)));
+    bool haveCurrentColour3DPlot = (haveCurrentLayer && dynamic_cast<Colour3DPlotLayer *>(currentLayer));
+    bool haveClipboardContents = (m_viewManager && !m_viewManager->getClipboard().empty());
+    bool haveTabularLayer = (haveCurrentLayer && dynamic_cast<TabularModel *>(currentLayer->getModel()));
 
     emit canAddPane(haveMainModel);
     emit canDeleteCurrentPane(haveCurrentPane);
@@ -605,8 +447,7 @@ VisualiserWindowBase::updateMenuStates()
     emit canSelectNextLayer(haveNextLayer);
 }
 
-void
-VisualiserWindowBase::documentModified()
+void VisualiserWindowBase::documentModified()
 {
     //    cerr << "MainWindowBase::documentModified" << endl;
 
@@ -619,8 +460,7 @@ VisualiserWindowBase::documentModified()
     updateMenuStates();
 }
 
-void
-VisualiserWindowBase::documentRestored()
+void VisualiserWindowBase::documentRestored()
 {
     //    cerr << "MainWindowBase::documentRestored" << endl;
 
@@ -635,8 +475,7 @@ VisualiserWindowBase::documentRestored()
     updateMenuStates();
 }
 
-void
-VisualiserWindowBase::playLoopToggled()
+void VisualiserWindowBase::playLoopToggled()
 {
     QAction *action = dynamic_cast<QAction *>(sender());
     
@@ -647,8 +486,7 @@ VisualiserWindowBase::playLoopToggled()
     }
 }
 
-void
-VisualiserWindowBase::playSelectionToggled()
+void VisualiserWindowBase::playSelectionToggled()
 {
     QAction *action = dynamic_cast<QAction *>(sender());
     
@@ -659,8 +497,7 @@ VisualiserWindowBase::playSelectionToggled()
     }
 }
 
-void
-VisualiserWindowBase::playSoloToggled()
+void VisualiserWindowBase::playSoloToggled()
 {
     QAction *action = dynamic_cast<QAction *>(sender());
     
@@ -680,8 +517,7 @@ VisualiserWindowBase::playSoloToggled()
     }
 }
 
-void
-VisualiserWindowBase::currentPaneChanged(Pane *p)
+void VisualiserWindowBase::currentPaneChanged(Pane *p)
 {
     updateMenuStates();
     updateVisibleRangeDisplay(p);
@@ -754,39 +590,34 @@ VisualiserWindowBase::currentPaneChanged(Pane *p)
     }
 }
 
-void
-VisualiserWindowBase::currentLayerChanged(Pane *p, Layer *)
+void VisualiserWindowBase::currentLayerChanged(Pane *p, Layer *)
 {
     updateMenuStates();
     updateVisibleRangeDisplay(p);
 }
 
-void
-VisualiserWindowBase::selectAll()
+void VisualiserWindowBase::selectAll()
 {
     if (!getMainModel()) return;
     m_viewManager->setSelection(Selection(getMainModel()->getStartFrame(),
                                           getMainModel()->getEndFrame()));
 }
 
-void
-VisualiserWindowBase::selectToStart()
+void VisualiserWindowBase::selectToStart()
 {
     if (!getMainModel()) return;
     m_viewManager->setSelection(Selection(getMainModel()->getStartFrame(),
                                           m_viewManager->getGlobalCentreFrame()));
 }
 
-void
-VisualiserWindowBase::selectToEnd()
+void VisualiserWindowBase::selectToEnd()
 {
     if (!getMainModel()) return;
     m_viewManager->setSelection(Selection(m_viewManager->getGlobalCentreFrame(),
                                           getMainModel()->getEndFrame()));
 }
 
-void
-VisualiserWindowBase::selectVisible()
+void VisualiserWindowBase::selectVisible()
 {
     Model *model = getMainModel();
     if (!model) return;
@@ -805,14 +636,12 @@ VisualiserWindowBase::selectVisible()
     m_viewManager->setSelection(Selection(startFrame, endFrame));
 }
 
-void
-VisualiserWindowBase::clearSelection()
+void VisualiserWindowBase::clearSelection()
 {
     m_viewManager->clearSelections();
 }
 
-void
-VisualiserWindowBase::cut()
+void VisualiserWindowBase::cut()
 {
     Pane *currentPane = m_paneStack->getCurrentPane();
     if (!currentPane) return;
@@ -836,8 +665,7 @@ VisualiserWindowBase::cut()
     CommandHistory::getInstance()->endCompoundOperation();
 }
 
-void
-VisualiserWindowBase::copy()
+void VisualiserWindowBase::copy()
 {
     Pane *currentPane = m_paneStack->getCurrentPane();
     if (!currentPane) return;
@@ -2545,35 +2373,28 @@ VisualiserWindowBase::getStatusLabel() const
         m_statusLabel = new QLabel();
         statusBar()->addWidget(m_statusLabel, 1);
     }
-
     QList<QFrame *> frames = statusBar()->findChildren<QFrame *>();
     foreach (QFrame *f, frames) {
         f->setFrameStyle(QFrame::NoFrame);
     }
-
     return m_statusLabel;
 }
 
-void
-VisualiserWindowBase::toggleStatusBar()
+void VisualiserWindowBase::toggleStatusBar()
 {
     QSettings settings;
     settings.beginGroup("MainWindow");
     bool sb = settings.value("showstatusbar", true).toBool();
-
     if (sb) {
         statusBar()->hide();
     } else {
         statusBar()->show();
     }
-
     settings.setValue("showstatusbar", !sb);
-
     settings.endGroup();
 }
 
-void
-VisualiserWindowBase::toggleCentreLine()
+void VisualiserWindowBase::toggleCentreLine()
 {
     if (m_viewManager->shouldShowCentreLine()) {
         m_viewManager->setShowCentreLine(false);
@@ -2582,8 +2403,7 @@ VisualiserWindowBase::toggleCentreLine()
     }
 }
 
-void
-VisualiserWindowBase::preferenceChanged(PropertyContainer::PropertyName name)
+void VisualiserWindowBase::preferenceChanged(PropertyContainer::PropertyName name)
 {
     if (name == "Property Box Layout") {
         if (m_paneStack->getLayoutStyle() != PaneStack::NoPropertyStacks) {
@@ -2607,8 +2427,7 @@ VisualiserWindowBase::preferenceChanged(PropertyContainer::PropertyName name)
     }
 }
 
-void
-VisualiserWindowBase::play()
+void VisualiserWindowBase::play()
 {
     if (m_playSource->isPlaying()) {
         stop();
@@ -2618,28 +2437,21 @@ VisualiserWindowBase::play()
     }
 }
 
-void
-VisualiserWindowBase::ffwd()
+void VisualiserWindowBase::ffwd()
 {
     if (!getMainModel()) return;
-
     sv_frame_t frame = m_viewManager->getPlaybackFrame();
     ++frame;
-
     Pane *pane = m_paneStack->getCurrentPane();
     Layer *layer = getSnapLayer();
     sv_samplerate_t sr = getMainModel()->getSampleRate();
-
     if (!layer) {
-
         frame = RealTime::realTime2Frame
                 (RealTime::frame2RealTime(frame, sr) + m_defaultFfwdRwdStep, sr);
         if (frame > getMainModel()->getEndFrame()) {
             frame = getMainModel()->getEndFrame();
         }
-
     } else {
-
         int resolution = 0;
         if (pane) frame = pane->alignFromReference(frame);
         if (layer->snapToFeatureFrame(m_paneStack->getCurrentPane(),
@@ -2649,15 +2461,11 @@ VisualiserWindowBase::ffwd()
             frame = getMainModel()->getEndFrame();
         }
     }
-
     if (frame < 0) frame = 0;
-
     if (m_viewManager->getPlaySelectionMode()) {
         frame = m_viewManager->constrainFrameToSelection(frame);
     }
-    
     m_viewManager->setPlaybackFrame(frame);
-
     if (frame == getMainModel()->getEndFrame() &&
             m_playSource &&
             m_playSource->isPlaying() &&
@@ -2666,23 +2474,16 @@ VisualiserWindowBase::ffwd()
     }
 }
 
-void
-VisualiserWindowBase::ffwdEnd()
+void VisualiserWindowBase::ffwdEnd()
 {
     if (!getMainModel()) return;
-
-    if (m_playSource &&
-            m_playSource->isPlaying() &&
-            !m_viewManager->getPlayLoopMode()) {
+    if (m_playSource && m_playSource->isPlaying() && !m_viewManager->getPlayLoopMode()) {
         stop();
     }
-
     sv_frame_t frame = getMainModel()->getEndFrame();
-
     if (m_viewManager->getPlaySelectionMode()) {
         frame = m_viewManager->constrainFrameToSelection(frame);
     }
-
     m_viewManager->setPlaybackFrame(frame);
 }
 

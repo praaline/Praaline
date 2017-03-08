@@ -47,7 +47,8 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     m_playSelectionAction(0),
     m_playLoopAction(0),
     m_soloModified(false),
-    m_prevSolo(false)
+    m_prevSolo(false),
+    m_toolbarPlayback(0)
 {
     // Get objects from global object pool
     QList<QObject *> list;
@@ -65,7 +66,7 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     // Register this object with the global object pool
     OBJECT_MANAGER->registerObject(this, QtilitiesCategory("Visualiser"));
 
-    menuBar()->setNativeMenuBar(false);
+    // menuBar()->setNativeMenuBar(false);
 
     m_visualiserFrame = new QFrame;
 
@@ -170,16 +171,16 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     m_rightButtonMenu->addSeparator();
     m_rightButtonPlaybackMenu = m_rightButtonMenu->addMenu(tr("Playback"));
 
-    QToolBar *toolbar = addToolBar(tr("Playback Toolbar"));
+    m_toolbarPlayback = new QToolBar(tr("Playback Toolbar"));
 
-    m_rwdStartAction = toolbar->addAction(il.load("rewind-start"), tr("Rewind to Start"));
+    m_rwdStartAction = m_toolbarPlayback->addAction(il.load("rewind-start"), tr("Rewind to Start"));
     m_rwdStartAction->setShortcut(tr("Home"));
     m_rwdStartAction->setStatusTip(tr("Rewind to the start"));
     connect(m_rwdStartAction, SIGNAL(triggered()), this, SLOT(rewindStart()));
     connect(this, SIGNAL(canPlay(bool)), m_rwdStartAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.RewindStart", m_rwdStartAction, context);
 
-    m_rwdAction = toolbar->addAction(il.load("rewind"), tr("Rewind"));
+    m_rwdAction = m_toolbarPlayback->addAction(il.load("rewind"), tr("Rewind"));
     m_rwdAction->setShortcut(tr("PgUp"));
     m_rwdAction->setStatusTip(tr("Rewind to the previous time instant or time ruler notch"));
     connect(m_rwdAction, SIGNAL(triggered()), this, SLOT(rewind()));
@@ -193,7 +194,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(this, SIGNAL(canRewind(bool)), m_rwdSimilarAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.RewindSimilar", m_rwdSimilarAction, context);
 
-    m_playAction = toolbar->addAction(il.load("playpause"), tr("Play / Pause"));
+    m_playAction = m_toolbarPlayback->addAction(il.load("playpause"), tr("Play / Pause"));
     m_playAction->setCheckable(true);
     m_playAction->setShortcut(tr("Space"));
     m_playAction->setStatusTip(tr("Start or stop playback from the current position"));
@@ -205,7 +206,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(this, SIGNAL(canPlay(bool)), m_playAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.PlayPause", m_playAction, context);
 
-    m_ffwdAction = toolbar->addAction(il.load("ffwd"), tr("Fast Forward"));
+    m_ffwdAction = m_toolbarPlayback->addAction(il.load("ffwd"), tr("Fast Forward"));
     m_ffwdAction->setShortcut(tr("PgDown"));
     m_ffwdAction->setStatusTip(tr("Fast-forward to the next time instant or time ruler notch"));
     connect(m_ffwdAction, SIGNAL(triggered()), this, SLOT(ffwd()));
@@ -219,16 +220,16 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(this, SIGNAL(canFfwd(bool)), m_ffwdSimilarAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.FastForwardSimilar", m_ffwdSimilarAction, context);
 
-    m_ffwdEndAction = toolbar->addAction(il.load("ffwd-end"), tr("Fast Forward to End"));
+    m_ffwdEndAction = m_toolbarPlayback->addAction(il.load("ffwd-end"), tr("Fast Forward to End"));
     m_ffwdEndAction->setShortcut(tr("End"));
     m_ffwdEndAction->setStatusTip(tr("Fast-forward to the end"));
     connect(m_ffwdEndAction, SIGNAL(triggered()), this, SLOT(ffwdEnd()));
     connect(this, SIGNAL(canPlay(bool)), m_ffwdEndAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.FastForwardEnd", m_ffwdEndAction, context);
 
-    toolbar = addToolBar(tr("Play Mode Toolbar"));
+    m_toolbarPlayMode = new QToolBar(tr("Play Mode Toolbar"));
 
-    m_playSelectionAction = toolbar->addAction(il.load("playselection"), tr("Constrain Playback to Selection"));
+    m_playSelectionAction = m_toolbarPlayMode->addAction(il.load("playselection"), tr("Constrain Playback to Selection"));
     m_playSelectionAction->setCheckable(true);
     m_playSelectionAction->setChecked(m_viewManager->getPlaySelectionMode());
     m_playSelectionAction->setShortcut(tr("Ctrl+Alt+S"));
@@ -239,7 +240,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(this, SIGNAL(canPlaySelection(bool)), m_playSelectionAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.PlaySelection", m_playSelectionAction, context);
 
-    m_playLoopAction = toolbar->addAction(il.load("playloop"), tr("Loop Playback"));
+    m_playLoopAction = m_toolbarPlayMode->addAction(il.load("playloop"), tr("Loop Playback"));
     m_playLoopAction->setCheckable(true);
     m_playLoopAction->setChecked(m_viewManager->getPlayLoopMode());
     m_playLoopAction->setShortcut(tr("Ctrl+Alt+L"));
@@ -250,7 +251,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(this, SIGNAL(canPlay(bool)), m_playLoopAction, SLOT(setEnabled(bool)));
     ACTION_MANAGER->registerAction("Playback.PlayLoop", m_playLoopAction, context);
 
-    m_soloAction = toolbar->addAction(il.load("solo"), tr("Solo Current Pane"));
+    m_soloAction = m_toolbarPlayMode->addAction(il.load("solo"), tr("Solo Current Pane"));
     m_soloAction->setCheckable(true);
     m_soloAction->setChecked(m_viewManager->getPlaySoloMode());
     m_prevSolo = m_viewManager->getPlaySoloMode();
@@ -264,7 +265,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
 
     QAction *alAction = 0;
     if (Document::canAlign()) {
-        alAction = toolbar->addAction(il.load("align"), tr("Align File Timelines"));
+        alAction = m_toolbarPlayMode->addAction(il.load("align"), tr("Align File Timelines"));
         alAction->setCheckable(true);
         alAction->setChecked(m_viewManager->getAlignMode());
         alAction->setStatusTip(tr("Treat multiple audio files as versions of the same recording, and align their timelines"));
@@ -625,7 +626,7 @@ void SimpleVisualiserWidget::updateVisibleRangeDisplay(Pane *p) const
 
 void SimpleVisualiserWidget::updatePositionStatusDisplays() const
 {
-    if (!statusBar()->isVisible()) return;
+    //if (!statusBar()->isVisible()) return;
     Pane *pane = 0;
     sv_frame_t frame = m_viewManager->getPlaybackFrame();
     if (m_paneStack) pane = m_paneStack->getCurrentPane();

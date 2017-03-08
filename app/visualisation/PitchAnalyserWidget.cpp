@@ -369,8 +369,6 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
 
     statusBar();
 
-    finaliseMenus();
-
     connect(m_viewManager, SIGNAL(activity(QString)),
             m_activityLog, SLOT(activityHappened(QString)));
     connect(m_playSource, SIGNAL(activity(QString)),

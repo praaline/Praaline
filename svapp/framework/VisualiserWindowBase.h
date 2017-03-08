@@ -76,7 +76,7 @@ class VisualiserWindowBase : public QMainWindow, public FrameTimer
     Q_OBJECT
 
 public:
-    VisualiserWindowBase(bool withAudioOutput, bool withMIDIInput);
+    VisualiserWindowBase(bool withAudioOutput, bool withMIDIInput, QWidget *parent = 0);
     virtual ~VisualiserWindowBase();
     
     enum AudioFileOpenMode {
@@ -423,15 +423,6 @@ protected:
     virtual void setupMenus() = 0;
     virtual void updateVisibleRangeDisplay(Pane *p) const = 0;
     virtual void updatePositionStatusDisplays() const = 0;
-
-    // Call this after setting up the menu bar, to fix up single-key
-    // shortcuts on OS/X
-    virtual void finaliseMenus();
-    virtual void finaliseMenu(QMenu *);
-
-    // Only used on OS/X to work around a Qt/Cocoa bug, see finaliseMenus
-    QSignalMapper *m_menuShortcutMapper;
-    QList<QShortcut *> m_appShortcuts;
 
     virtual bool shouldCreateNewSessionForRDFAudio(bool *) { return true; }
 

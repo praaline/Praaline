@@ -197,8 +197,6 @@ VisualiserWidget::VisualiserWidget(const QString &contextStringID, bool withAudi
     m_currentLabel = new QLabel;
     statusBar()->addPermanentWidget(m_currentLabel);
 
-    finaliseMenus();
-
     newSession();
 
     connect(m_midiInput, SIGNAL(eventsAvailable()), this, SLOT(midiEventsAvailable()));

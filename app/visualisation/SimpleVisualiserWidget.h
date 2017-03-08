@@ -162,6 +162,9 @@ protected:
     ActivityLog             *m_activityLog;
     KeyReference            *m_keyReference;
 
+    QToolBar                *m_toolbarPlayback;
+    QToolBar                *m_toolbarPlayMode;
+
     virtual void setupMenus();
     virtual void setupEditMenu();
     virtual void setupViewMenu();

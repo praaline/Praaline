@@ -86,6 +86,8 @@ protected:
     QString speakerID;
 };
 
+typedef QMap<QString, QPointer<AnnotationTierGroup> > AnnotationTierGroupPerSpeakerMap;
+
 } // namespace Core
 } // namespace Praaline
 

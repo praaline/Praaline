@@ -85,7 +85,6 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     statusBar();
     m_currentLabel = new QLabel;
     statusBar()->addPermanentWidget(m_currentLabel);
-    finaliseMenus();
     newSession();
 
     // Create transcription editor

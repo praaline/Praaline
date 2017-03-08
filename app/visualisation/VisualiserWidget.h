@@ -1,6 +1,9 @@
 #ifndef VISUALISERWIDGET_H
 #define VISUALISERWIDGET_H
 
+#include <QString>
+#include <QMap>
+#include <QPair>
 #include <QPointer>
 #include "SimpleVisualiserWidget.h"
 
@@ -45,7 +48,6 @@ public slots:
 
     void goFullScreen();
     void endFullScreen();
-
 
     void setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
     void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);

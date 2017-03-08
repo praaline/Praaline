@@ -308,8 +308,11 @@ void CorpusModeWidget::editCorpusRepository()
 {
     if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    CorpusRepositoryPropertiesDialog *dialog = new CorpusRepositoryPropertiesDialog(repository, this);
-    dialog->exec();
+    CorpusRepositoryPropertiesDialog *dialog = new CorpusRepositoryPropertiesDialog(repository->definition(), this);
+    if (dialog->exec() == QDialog::Accepted) {
+
+    }
+    delete dialog;
 }
 
 void CorpusModeWidget::closeCorpusRepository()
