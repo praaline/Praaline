@@ -26,32 +26,6 @@
       <string>Options</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="0">
-       <widget class="QCommandLinkButton" name="commandAnalyse">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>2</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Perform Analysis</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="1" column="1" colspan="2">
        <widget class="QProgressBar" name="progressBar">
         <property name="sizePolicy">
@@ -62,6 +36,19 @@
         </property>
         <property name="value">
          <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCommandLinkButton" name="commandAnalyse">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Perform Analysis</string>
         </property>
        </widget>
       </item>
@@ -77,6 +64,20 @@
          <string>Analysis Options</string>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelAnalysisObject">
+           <property name="text">
+            <string>Calculate measures for:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QLabel" name="labelOrientation">
+           <property name="text">
+            <string>Show measures in:</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="labelCorpus">
            <property name="sizePolicy">
@@ -90,7 +91,20 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
+         <item row="1" column="1">
+          <widget class="CheckBoxList" name="comboBoxMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBoxCorpus"/>
+         </item>
+         <item row="3" column="1">
           <layout class="QGridLayout" name="gridLayoutAnalysisObject">
            <item row="0" column="0">
             <widget class="QRadioButton" name="optionCommunications">
@@ -117,17 +131,20 @@
            </item>
           </layout>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="labelAnalysisObject">
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Calculate measures for:</string>
+            <string>Include Metadata Com:</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBoxCorpus"/>
-         </item>
-         <item row="3" column="1">
+         <item row="3" column="3">
           <layout class="QGridLayout" name="gridLayoutOrientation">
            <item row="0" column="0">
             <widget class="QRadioButton" name="optionOrientationVertical">
@@ -154,15 +171,76 @@
            </item>
           </layout>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="labelOrientation">
+         <item row="2" column="3">
+          <widget class="QComboBox" name="comboBoxLevelTokens"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="labelLevelSyllables">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
-            <string>Show measures in:</string>
+            <string>Level for syllables:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QComboBox" name="comboBoxLevelSyllables"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="CheckBoxList" name="comboBoxMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="labelLevelTokens">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Level for tokens:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Include Metadata Spk:</string>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -253,7 +331,7 @@
             <x>0</x>
             <y>0</y>
             <width>953</width>
-            <height>334</height>
+            <height>306</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayoutChart">
@@ -279,8 +357,19 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBoxList</class>
+   <extends>QComboBox</extends>
+   <header>pngui/widgets/CheckBoxList.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>comboBoxCorpus</tabstop>
+  <tabstop>comboBoxMetadataCom</tabstop>
+  <tabstop>comboBoxMetadataSpk</tabstop>
+  <tabstop>comboBoxLevelSyllables</tabstop>
+  <tabstop>comboBoxLevelTokens</tabstop>
   <tabstop>optionCommunications</tabstop>
   <tabstop>optionSpeakers</tabstop>
   <tabstop>optionOrientationVertical</tabstop>
@@ -296,7 +385,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupAnalysisObject"/>
   <buttongroup name="buttonGroupOrientation"/>
+  <buttongroup name="buttonGroupAnalysisObject"/>
  </buttongroups>
 </ui>

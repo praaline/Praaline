@@ -15,8 +15,9 @@ QT_CHARTS_USE_NAMESPACE
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusSpeaker.h"
-#include "pncore/structure/MetadataStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
+#include "pncore/structure/MetadataStructure.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
@@ -58,6 +59,22 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     // ================================================================================================================
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
+    // Metadata attributes
+    int i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)){
+        ui->comboBoxMetadataCom->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)){
+        ui->comboBoxMetadataSpk->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    // Levels for syllables and tokens
+    QStringList levelIDs = repository->annotationStructure()->levelIDs();
+    ui->comboBoxLevelSyllables->addItems(levelIDs);
+    ui->comboBoxLevelTokens->addItems(levelIDs);
+    if (levelIDs.contains(d->analyser->levelIDSyllables())) ui->comboBoxLevelSyllables->setCurrentText(d->analyser->levelIDSyllables());
+    if (levelIDs.contains(d->analyser->levelIDTokens())) ui->comboBoxLevelTokens->setCurrentText(d->analyser->levelIDTokens());
     // Command Analyse
     connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
     // Results grid view
@@ -73,7 +90,7 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     connect(ui->optionOrientationVertical, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
     connect(ui->optionOrientationHorizontal, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
     // ================================================================================================================
-    // BOXPLOTS TAB
+    // CHARTS TAB
     // ================================================================================================================
     // Measure combobox (start with measures for Communications by default)
     foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
@@ -123,6 +140,8 @@ void AnalyserTemporalWidget::analyse()
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(corpus->communicationsCount());
     d->analyser->setCorpus(corpus);
+    d->analyser->setLevelIDSyllables(ui->comboBoxLevelSyllables->currentText());
+    d->analyser->setLevelIDTokens(ui->comboBoxLevelTokens->currentText());
     d->analyser->analyse();
     ui->progressBar->setValue(ui->progressBar->maximum());
 
@@ -174,8 +193,11 @@ void AnalyserTemporalWidget::buildModelForCom()
     // Create model headers
     QStringList labels;
     if (orientation == Qt::Vertical) labels << "CommunicationID";
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication))
+    for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+        if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+    }
     foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
         if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
     if (orientation == Qt::Vertical)
@@ -198,8 +220,10 @@ void AnalyserTemporalWidget::buildModelForCom()
         } else {
             horizontalHeader << com->ID();
         }
-        // properties
-        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        // selected metadata attributes
+        for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+            if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
             item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsCom << item;
         }
         // measures
@@ -227,8 +251,16 @@ void AnalyserTemporalWidget::buildModelForSpk()
     // Create model headers
     QStringList labels;
     labels << "CommunicationID" << "SpeakerID";
-    foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker))
+    for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+        if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+    }
+    for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
+        if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+    }
     foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
         if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
     if (orientation == Qt::Vertical)
@@ -243,16 +275,21 @@ void AnalyserTemporalWidget::buildModelForSpk()
         if (!com) continue;
         if (!d->analyser->item(com->ID())) continue;
         foreach (QString speakerID, d->analyser->item(com->ID())->speakerIDs()) {
+            QPointer<CorpusSpeaker> spk = d->analyser->corpus()->speaker(speakerID);
             QList<QStandardItem *> itemsSpk;
             QStandardItem *item;
             item = new QStandardItem(); item->setData(com->ID(), Qt::DisplayRole); itemsSpk << item;
             item = new QStandardItem(); item->setData(speakerID, Qt::DisplayRole); itemsSpk << item;
-            // properties
-            foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+            // selected metadata attributes (Com, then Spk)
+            for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+                if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+                QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
                 item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
             }
-            foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
-                item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
+            for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
+                if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
+                QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+                item = new QStandardItem(); item->setData(spk->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
             }
             // measures
             foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) {

@@ -146,6 +146,26 @@ StatisticalMeasureDefinition AnalyserTemporalItem::measureDefinition(const QStri
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
 
+QString AnalyserTemporalItem::levelIDSyllables() const
+{
+    return d->levelSyllables;
+}
+
+void AnalyserTemporalItem::setLevelIDSyllables(const QString &levelID)
+{
+    d->levelSyllables = levelID;
+}
+
+QString AnalyserTemporalItem::levelIDTokens() const
+{
+    return d->levelTokens;
+}
+
+void AnalyserTemporalItem::setLevelIDTokens(const QString &levelID)
+{
+    d->levelTokens = levelID;
+}
+
 double AnalyserTemporalItem::measureCom(const QString &measureID) const
 {
     return d->measuresCom.value(measureID, qQNaN());

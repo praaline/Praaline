@@ -27,6 +27,11 @@ public:
     Praaline::Core::Corpus *corpus() const;
     void setCorpus(Praaline::Core::Corpus *corpus);
 
+    QString levelIDSyllables() const;
+    void setLevelIDSyllables(const QString &levelID);
+    QString levelIDTokens() const;
+    void setLevelIDTokens(const QString &levelID);
+
     void analyse();
     AnalyserTemporalItem *item(const QString communicationID);
     QMap<QString, QList<double> > aggregateMeasureCom(

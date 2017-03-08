@@ -27,6 +27,11 @@ public:
     static QStringList vectorMeasureIDsForSpeaker();
     static Praaline::Core::StatisticalMeasureDefinition measureDefinition(const QString &measureID);
 
+    QString levelIDSyllables() const;
+    void setLevelIDSyllables(const QString &levelID);
+    QString levelIDTokens() const;
+    void setLevelIDTokens(const QString &levelID);
+
     QStringList speakerIDs() const;
     double measureCom(const QString &measureID) const;
     double measureSpk(const QString &speakerID, const QString &measureID) const;

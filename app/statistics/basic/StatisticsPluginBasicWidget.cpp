@@ -45,7 +45,6 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
     // Metadata attributes
-    if (!repository) return;
     int i = 0;
     foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)){
         ui->comboBoxMetadata->insertItem(i, attr->name(), false);

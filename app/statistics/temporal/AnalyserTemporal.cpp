@@ -16,6 +16,8 @@ struct AnalyserTemporalData {
     {}
 
     QPointer<Corpus> corpus;
+    QString levelSyllables;
+    QString levelTokens;
     QMap<QString, QSharedPointer<AnalyserTemporalItem> > items;
 };
 
@@ -40,12 +42,34 @@ void AnalyserTemporal::setCorpus(Corpus *corpus)
     d->corpus = corpus;
 }
 
+QString AnalyserTemporal::levelIDSyllables() const
+{
+    return d->levelSyllables;
+}
+
+void AnalyserTemporal::setLevelIDSyllables(const QString &levelID)
+{
+    d->levelSyllables = levelID;
+}
+
+QString AnalyserTemporal::levelIDTokens() const
+{
+    return d->levelTokens;
+}
+
+void AnalyserTemporal::setLevelIDTokens(const QString &levelID)
+{
+    d->levelTokens = levelID;
+}
+
 void AnalyserTemporal::analyse()
 {
     if (!d->corpus) return;
     int i = 0;
     foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
         QSharedPointer<AnalyserTemporalItem> item(new AnalyserTemporalItem());
+        item->setLevelIDSyllables(d->levelSyllables);
+        item->setLevelIDTokens(d->levelTokens);
         item->analyse(com);
         d->items.insert(com->ID(), item);
         i++;
