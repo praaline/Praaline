@@ -26,7 +26,7 @@ namespace StatisticsPluginTemporal {
 
 struct PauseLengthDistributionWidgetData {
     PauseLengthDistributionWidgetData() :
-        repository(0), analyser(0), numberOfBins(0), minimumValue(0), maximumValue(0)
+        repository(0), analyser(0), numberOfBins(0), minimumValue(0), maximumValue(0), maximumCount(10)
     {}
 
     CorpusRepository *repository;
@@ -35,6 +35,7 @@ struct PauseLengthDistributionWidgetData {
     int numberOfBins;
     double minimumValue;
     double maximumValue;
+    int maximumCount;
     QStringList groupAttributeIDsCom;
     QStringList groupAttributeIDsSpk;
     QMap<QString, QList<double> > aggregates;
@@ -102,7 +103,10 @@ QChart *PauseLengthDistributionWidget::drawHistogram(const QString &title, QMap<
         hist.setMinimum(d->minimumValue);
         hist.setMaximum(d->maximumValue);
         QBarSet *barset = new QBarSet(aggregateID);
-        foreach (int count, hist.counts(d->numberOfBins)) barset->append(count);
+        foreach (int count, hist.counts(d->numberOfBins)) {
+            barset->append(count);
+            if (count > d->maximumCount) d->maximumCount = count;
+        }
         barsets << barset;
         series->append(barset);
     }
@@ -173,6 +177,7 @@ void PauseLengthDistributionWidget::drawCharts()
     ui->gridLayoutCharts->setSizeConstraint(QLayout::SetNoConstraint);
     int size = ui->scrollAreaWidgetContents->width() / numberOfColumns - 10;
 
+    d->maximumCount = 10; // reset
     foreach (QString groupID, groups.keys()) {
         QChart *chart = drawHistogram(groupID, groups.value(groupID));
         if (chart) d->charts << chart;
@@ -185,8 +190,17 @@ void PauseLengthDistributionWidget::drawCharts()
         ui->gridLayoutCharts->addWidget(chartView, i / numberOfColumns, i % numberOfColumns);
         i++;
     }
+    foreach (QChart *chart, d->charts) {
+        if (ui->checkBoxSetYMax->isChecked())
+            chart->axisY()->setMax(ui->doubleSpinBoxYMax->value());
+        else
+            chart->axisY()->setMax(d->maximumCount);
+    }
+
     chartviews = findChildren<QChartView *>();
-    foreach (QChartView *chartview, chartviews) chartview->resize(size, size);
+    foreach (QChartView *chartview, chartviews) {
+        chartview->resize(size, size);
+    }
 
 }
 

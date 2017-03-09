@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1036</width>
+    <width>1194</width>
     <height>631</height>
    </rect>
   </property>
@@ -24,8 +24,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1016</width>
-        <height>451</height>
+        <width>1168</width>
+        <height>420</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayoutCharts"/>
@@ -171,27 +171,21 @@
       </item>
       <item row="1" column="0">
        <layout class="QGridLayout" name="gridLayoutYMinMax">
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelMeasureYMin">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Y-Axis Min:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
+        <item row="0" column="2">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
           <property name="maximum">
            <double>1000000000000.000000000000000</double>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBoxSetYMax">
+          <property name="text">
+           <string>Set:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
          <widget class="QLabel" name="labelMeasureYMax">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
@@ -205,13 +199,6 @@
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
-          <property name="maximum">
-           <double>1000000000000.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="4">
          <spacer name="horizontalSpacerChartMinMax">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -253,7 +240,6 @@
   <tabstop>doubleSpinBoxMinimum</tabstop>
   <tabstop>doubleSpinBoxMaximum</tabstop>
   <tabstop>spinBoxNumberOfColumns</tabstop>
-  <tabstop>doubleSpinBoxYMin</tabstop>
   <tabstop>doubleSpinBoxYMax</tabstop>
   <tabstop>commandExportChart</tabstop>
   <tabstop>commandDraw</tabstop>
