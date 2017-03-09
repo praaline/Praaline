@@ -25,7 +25,7 @@ using namespace Praaline::Core;
 struct AnalyserTemporalItemData {
     AnalyserTemporalItemData() : levelSyllables("syll"), levelTokens("tok_min")
     {
-        filledPauseTokens << "euh" << "euhm";
+        filledPauseTokens << "euh" << "euhm" << "hum";
     }
 
     QString levelSyllables;

@@ -153,7 +153,7 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIIn
     m_defaultFfwdRwdStep(2, 0),
     m_statusLabel(0)
 {
-    Profiler profiler("MainWindowBase::MainWindowBase");
+    //Profiler profiler("MainWindowBase::MainWindowBase");
 
     qRegisterMetaType<sv_frame_t>("sv_frame_t");
     qRegisterMetaType<sv_samplerate_t>("sv_samplerate_t");

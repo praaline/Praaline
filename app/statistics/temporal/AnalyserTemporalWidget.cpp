@@ -113,6 +113,8 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     }
     // Command Draw Chart
     connect(ui->commandDrawChart, SIGNAL(clicked(bool)), this, SLOT(drawChart()));
+    // Defaults
+    ui->checkBoxSetYMinMax->setChecked(true);
     // Go to results tab
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -313,6 +315,8 @@ void AnalyserTemporalWidget::drawChart()
     QString measureID = ui->comboBoxMeasure->currentData().toString();
     QStringList groupAttributeIDsCom; groupAttributeIDsCom << ui->comboBoxGroupByCom->currentData().toString();
     QStringList groupAttributeIDsSpk; groupAttributeIDsSpk << ui->comboBoxGroupBySpk->currentData().toString();
+    double yMin = ui->doubleSpinBoxYMin->value();
+    double yMax = ui->doubleSpinBoxYMax->value();
     // Aggregate selected measure, over selected metadata attributes
     QMap<QString, QList<double> > aggregates;
     QString groupAttributes;
@@ -372,8 +376,13 @@ void AnalyserTemporalWidget::drawChart()
     // Configure chart
     chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText()).arg(groupAttributes));
     chart->setAnimationOptions(QChart::SeriesAnimations);
-    chart->axisY()->setMin(qRound(min * 0.9));
-    chart->axisY()->setMax(qRound(max * 1.1));
+    if (ui->checkBoxSetYMinMax->isChecked()) {
+        chart->axisY()->setMin(yMin);
+        chart->axisY()->setMax(yMax);
+    } else {
+        chart->axisY()->setMin(qRound(min * 0.9));
+        chart->axisY()->setMax(qRound(max * 1.1));
+    }
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
     // Clear previous chart

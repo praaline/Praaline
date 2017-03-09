@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>929</width>
+    <width>1036</width>
     <height>631</height>
    </rect>
   </property>
@@ -24,7 +24,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>909</width>
+        <width>1016</width>
         <height>451</height>
        </rect>
       </property>
@@ -34,8 +34,14 @@
    </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>2</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
-      <string>Parameters</string>
+      <string>Analysis Parameters</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
@@ -69,7 +75,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Group by Metadata: Communication:</string>
+           <string>Group by Metadata: Com:</string>
           </property>
          </widget>
         </item>
@@ -85,7 +91,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Speaker:</string>
+           <string>Spk:</string>
           </property>
          </widget>
         </item>
@@ -139,31 +145,95 @@
    </item>
    <item row="0" column="1">
     <widget class="QGroupBox" name="groupBoxDisplay">
-     <property name="title">
-      <string>Display</string>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>1</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <widget class="QWidget" name="">
-      <property name="geometry">
-       <rect>
-        <x>12</x>
-        <y>29</y>
-        <width>177</width>
-        <height>25</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayoutNumberOfColumns">
-       <item>
-        <widget class="QLabel" name="labelNumberOfColumns">
-         <property name="text">
-          <string>Number of columns;</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QSpinBox" name="spinBoxNumberOfColumns"/>
-       </item>
-      </layout>
-     </widget>
+     <property name="title">
+      <string>Display and Chart Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayoutNumberOfColumns">
+        <item>
+         <widget class="QLabel" name="labelNumberOfColumns">
+          <property name="text">
+           <string>Number of columns;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxNumberOfColumns"/>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QGridLayout" name="gridLayoutYMinMax">
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelMeasureYMin">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Y-Axis Min:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
+          <property name="maximum">
+           <double>1000000000000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="labelMeasureYMax">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Y-Axis Max:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
+          <property name="maximum">
+           <double>1000000000000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacerChartMinMax">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="commandExportChart">
+        <property name="text">
+         <string>Export...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
@@ -175,6 +245,20 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>comboBoxMeasure</tabstop>
+  <tabstop>comboBoxGroupByCom</tabstop>
+  <tabstop>comboBoxGroupBySpk</tabstop>
+  <tabstop>spinBoxNumberOfBins</tabstop>
+  <tabstop>doubleSpinBoxMinimum</tabstop>
+  <tabstop>doubleSpinBoxMaximum</tabstop>
+  <tabstop>spinBoxNumberOfColumns</tabstop>
+  <tabstop>doubleSpinBoxYMin</tabstop>
+  <tabstop>doubleSpinBoxYMax</tabstop>
+  <tabstop>commandExportChart</tabstop>
+  <tabstop>commandDraw</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
