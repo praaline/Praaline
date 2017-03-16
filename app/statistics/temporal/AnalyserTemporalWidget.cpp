@@ -367,11 +367,6 @@ void AnalyserTemporalWidget::drawChart()
         }
         chart->addSeries(series);
         chart->createDefaultAxes();
-        // x axis
-//        QBarCategoryAxis *axis = new QBarCategoryAxis();
-//        axis->append(aggregates.keys());
-//        chart->createDefaultAxes();
-//        chart->setAxisX(axis, series);
     }
     // Configure chart
     chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText()).arg(groupAttributes));

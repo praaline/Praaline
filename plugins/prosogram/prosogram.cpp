@@ -102,9 +102,6 @@ bool createTierFromAnnotationTable(QString filenameSpreadsheet, QString tMinAttr
 //                            4  "G=0.24-0.32/T^2 (adaptive), DG=30, dmin=0.050" <<
 //                            5  "G=0.16-0.32/T^2 (adaptive), DG=30, dmin=0.050");
 //parameters << PluginParameter("keepIntermediateFiles", "Keep intermediate files", QVariant::Bool, d->keepIntermediateFiles);
-//parameters << PluginParameter("createImageFiles", "Create image files", QVariant::Bool, d->createImageFiles);
-//parameters << PluginParameter("tiersOnImageFiles", "Tiers (level/attribute) to include in image files", QVariant::String, d->tiersOnImageFiles);
-//parameters << PluginParameter("fileFormat", "File format for images", QVariant::String, d->fileFormat);
 
 bool ProsoGram::updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet)
 {
@@ -198,7 +195,11 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     }
 
     // Add parameters
-    QString prosogramMode = "Prosodic profile only (no drawing)"; // "Prosogram and prosodic profile"
+    QString prosogramMode;
+    if (!createImageFiles)
+        prosogramMode = "Prosodic profile only (no drawing)";
+    else
+        prosogramMode = "Prosogram and prosodic profile";
     QString prosogramSegmentationMethod;
     if      (segmentationMethod == 0)   prosogramSegmentationMethod = "Automatic acoustic syllables";
     else if (segmentationMethod == 1)   prosogramSegmentationMethod = "Nuclei in vowels in tier phon or tier 1";
@@ -206,6 +207,20 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     else if (segmentationMethod == 3)   prosogramSegmentationMethod = "Nuclei in syllables in syll and vowels in phon";
     else if (segmentationMethod == 4)   prosogramSegmentationMethod = "Nuclei in syllables in syll and local peak";
     else if (segmentationMethod == 5)   prosogramSegmentationMethod = "Using external segmentation in tier segm";
+
+    QString plottingStyleString;
+    if      (plottingStyle == 0) plottingStyleString = "1: Compact";
+    else if (plottingStyle == 1) plottingStyleString = "2: Compact rich";
+    else if (plottingStyle == 2) plottingStyleString = "3: Wide";
+    else if (plottingStyle == 3) plottingStyleString = "4: Wide rich, with values pitch targets";
+    else if (plottingStyle == 4) plottingStyleString = "4: Wide rich, with pitch range";
+
+    QString plottingFileFormatString;
+    if      (plottingFileFormat == 0) plottingFileFormatString = "EPS (Encapsulated Postscript)";
+    else if (plottingFileFormat == 1) plottingFileFormatString = "EMF (Windows Enhanced Metafile)";
+    else if (plottingFileFormat == 2) plottingFileFormatString = "EPS and EMF";
+    else if (plottingFileFormat == 3) plottingFileFormatString = "PDF";
+
     scriptArguments << prosogramMode << tempDirectory + filenameTempRec <<
                        QString::number(timeRangeFrom) << QString::number(timeRangeTo) <<
                        QString::number(f0DetectionMin) << QString::number(f0DetectionMax) <<
@@ -213,10 +228,11 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
                        prosogramSegmentationMethod <<
                        "G=0.16/T^2, DG=20, dmin=0.035" <<
                        ((keepIntermediateFiles) ? "1" : "0") <<
-                       "4: Wide rich" << "2.0" << "1, 2" << "0" << "100" <<
-                       "One strip per file" <<
-                       "EMF (Windows Enhanced Metafile)" << "<input_directory>/prosogram/<basename>_";
-    //EPS (Encapsulated Postscript)
+                       plottingStyleString << QString::number(plottingIntervalPerStrip) << "1, 2" << "0" << "100" <<
+                       ((plottingMultiStrip) ? "Fill page with strips" : "One strip per file") <<
+                       plottingFileFormatString << plottingOutputDirectory;
+
+    // Run Praat script
     executePraatScript(script, scriptArguments);
 
     // Update global profile on Communication

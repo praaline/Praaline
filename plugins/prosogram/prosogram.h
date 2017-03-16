@@ -18,6 +18,7 @@ public:
     explicit ProsoGram(QObject *parent = 0);
 
     void runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID);
+    static bool updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet);
 
     double timeRangeFrom;
     double timeRangeTo;
@@ -30,11 +31,14 @@ public:
     QString levelSegmentation;
     int glissandoThreshold;
     bool keepIntermediateFiles;
+    // Plotting
     bool createImageFiles;
-    QString tiersOnImageFiles;
-    QString fileFormat;
-
-    static bool updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet);
+    int plottingStyle;
+    double plottingIntervalPerStrip;
+    QString plottingTiersToShow;
+    bool plottingMultiStrip;
+    int plottingFileFormat;
+    QString plottingOutputDirectory;
 
 signals:
 

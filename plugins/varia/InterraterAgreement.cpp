@@ -1,14 +1,14 @@
 #include "InterraterAgreement.h"
 
-InterraterAgreement::InterraterAgreement()
+KappaStatisticsCalculator::KappaStatisticsCalculator()
 {
 }
 
-InterraterAgreement::~InterraterAgreement()
+KappaStatisticsCalculator::~KappaStatisticsCalculator()
 {
 }
 
-void InterraterAgreement::addGroup(QString groupName, QStringList labels, bool includeEmpty)
+void KappaStatisticsCalculator::addGroup(QString groupName, QStringList labels, bool includeEmpty)
 {
     if (m_groups.contains(groupName)) removeGroup(groupName);
     m_groups.insert(groupName, labels);
@@ -19,7 +19,7 @@ void InterraterAgreement::addGroup(QString groupName, QStringList labels, bool i
     m_counts.clear();
 }
 
-void InterraterAgreement::removeGroup(QString groupName)
+void KappaStatisticsCalculator::removeGroup(QString groupName)
 {
     m_groups.remove(groupName);
     foreach (QString label, m_classification.keys()) {
@@ -31,7 +31,7 @@ void InterraterAgreement::removeGroup(QString groupName)
     m_counts.clear();
 }
 
-void InterraterAgreement::reset()
+void KappaStatisticsCalculator::reset()
 {
     m_groups.clear();
     m_classification.clear();
@@ -39,12 +39,12 @@ void InterraterAgreement::reset()
     m_counts.clear();
 }
 
-void InterraterAgreement::resetCounts()
+void KappaStatisticsCalculator::resetCounts()
 {
     m_counts.clear();
 }
 
-QString InterraterAgreement::groupNameForLabel(const QString &label) const
+QString KappaStatisticsCalculator::groupNameForLabel(const QString &label) const
 {
     QString groupName;
     if ((label.isEmpty()) && (!m_groupForEmpty.isEmpty())) {
@@ -56,7 +56,7 @@ QString InterraterAgreement::groupNameForLabel(const QString &label) const
     return groupName;
 }
 
-void InterraterAgreement::categorise(QString annotatorID, const QList<Interval *> &intervals, QString attributeID)
+void KappaStatisticsCalculator::categorise(QString annotatorID, const QList<Interval *> &intervals, QString attributeID)
 {
     QHash<QString, int> count;
     foreach (Interval *intv, intervals) {
@@ -75,12 +75,12 @@ void InterraterAgreement::categorise(QString annotatorID, const QList<Interval *
 }
 
 
-double InterraterAgreement::getFleissKappa() const
+double KappaStatisticsCalculator::getFleissKappa() const
 {
     return -1.0;
 }
 
-QStandardItemModel *InterraterAgreement::createTableModel()
+QStandardItemModel *KappaStatisticsCalculator::createTableModel()
 {
     QStandardItemModel *model = new QStandardItemModel();
     model->setRowCount(m_groups.count());
@@ -108,7 +108,7 @@ QStandardItemModel *InterraterAgreement::createTableModel()
     return model;
 }
 
-double InterraterAgreement::getCohenKappa(const QString &groupName_1, const QString &groupName_2,
+double KappaStatisticsCalculator::getCohenKappa(const QString &groupName_1, const QString &groupName_2,
                                           const QList<Interval *> &intervals, QString attributeID_1, QString attributeID_2) const
 {
     int n00 = 0, n01 = 0, n10 = 0, n11 = 0;

@@ -1,5 +1,5 @@
-#ifndef INTERRATERAGREEMENT_H
-#define INTERRATERAGREEMENT_H
+#ifndef KAPPASTATISTICSCALCULATOR_H
+#define KAPPASTATISTICSCALCULATOR_H
 
 #include <QString>
 #include <QList>
@@ -15,13 +15,13 @@ class Interval;
 }
 using namespace Praaline::Core;
 
-struct InterraterAgreementData;
+struct KappaStatisticsCalculatorData;
 
-class InterraterAgreement
+class KappaStatisticsCalculator
 {
 public:
-    InterraterAgreement();
-    ~InterraterAgreement();
+    KappaStatisticsCalculator();
+    ~KappaStatisticsCalculator();
 
     void addClass(const QString &className, const QStringList &labels, bool includeEmpty = false);
     void removeClass(const QString &className);
@@ -38,7 +38,7 @@ public:
     double getFleissKappa() const;
 
 private:
-    InterraterAgreementData *d;
+    KappaStatisticsCalculatorData *d;
 };
 
-#endif // INTERRATERAGREEMENT_H
+#endif // KAPPASTATISTICSCALCULATOR_H

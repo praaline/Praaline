@@ -11,11 +11,11 @@
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
 
-class InterraterAgreement
+class KappaStatisticsCalculator
 {
 public:
-    InterraterAgreement();
-    ~InterraterAgreement();
+    KappaStatisticsCalculator();
+    ~KappaStatisticsCalculator();
 
     void addGroup(QString groupName, QStringList labels, bool includeEmpty = false);
     void removeGroup(QString groupName);

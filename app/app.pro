@@ -178,7 +178,6 @@ SOURCES += main.cpp \
     statistics/basic/StatisticsPluginBasic.cpp \
     statistics/interrater/StatisticsPluginInterrater.cpp \
     statistics/prosody/StatisticsPluginProsody.cpp \
-    statistics/interrater/InterraterAgreement.cpp \
     statistics/prosody/AnalyserMacroprosodyWidget.cpp \
     statistics/basic/StatisticsPluginBasicWidget.cpp \
     statistics/interrater/KappaStatisticsWidget.cpp \
@@ -194,7 +193,8 @@ SOURCES += main.cpp \
     corpus/CorpusRepositoryPropertiesDialog.cpp \
     corpus/CorpusRepositoryCreateWizard.cpp \
     corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
-    annotation/calculate/TidyUpAnnotationsDialog.cpp
+    annotation/calculate/TidyUpAnnotationsDialog.cpp \
+    statistics/interrater/KappaStatisticsCalculator.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -285,7 +285,6 @@ HEADERS  += \
     statistics/basic/StatisticsPluginBasic.h \
     statistics/interrater/StatisticsPluginInterrater.h \
     statistics/prosody/StatisticsPluginProsody.h \
-    statistics/interrater/InterraterAgreement.h \
     statistics/prosody/AnalyserMacroprosodyWidget.h \
     statistics/basic/StatisticsPluginBasicWidget.h \
     statistics/interrater/KappaStatisticsWidget.h \
@@ -302,7 +301,8 @@ HEADERS  += \
     corpus/CorpusRepositoryPropertiesDialog.h \
     corpus/CorpusRepositoryCreateWizard.h \
     corpus/importannotations/ImportTableDataPreviewWizardPage.h \
-    annotation/calculate/TidyUpAnnotationsDialog.h
+    annotation/calculate/TidyUpAnnotationsDialog.h \
+    statistics/interrater/KappaStatisticsCalculator.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

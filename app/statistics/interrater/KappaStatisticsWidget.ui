@@ -6,14 +6,548 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>846</width>
-    <height>588</height>
+    <width>1062</width>
+    <height>689</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <layout class="QGridLayout" name="gridLayout_3">
+   <item row="1" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabResultsTable">
+      <attribute name="title">
+       <string>Results Table</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutResults"/>
+     </widget>
+     <widget class="QWidget" name="tabConfusionMatrices">
+      <attribute name="title">
+       <string>Confusion Matrix</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="tabCharts">
+      <attribute name="title">
+       <string>Charts</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayoutMeasure">
+         <item>
+          <widget class="QLabel" name="labelMeasure">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Measure:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxMeasure"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupByCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Group by Metadata: Communication:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupByCom"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupBySpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Speaker:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupBySpk"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="commandDrawChart">
+           <property name="text">
+            <string>Draw Chart</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayoutYMinMax">
+         <item row="0" column="1">
+          <widget class="QLabel" name="labelMeasureYMin">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Y-Axis Min:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
+           <property name="maximum">
+            <double>1000000000000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <spacer name="horizontalSpacerChartMinMax">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="6">
+          <widget class="QPushButton" name="commandExportChart">
+           <property name="text">
+            <string>Export...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
+           <property name="maximum">
+            <double>1000000000000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="labelMeasureYMax">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Y-Axis Max:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxSetYMinMax">
+           <property name="text">
+            <string>Set:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>1020</width>
+            <height>297</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayoutChart">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBoxStatisticalAnalysis">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="1">
+       <widget class="QProgressBar" name="progressBar">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCommandLinkButton" name="commandAnalyse">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Perform Analysis</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2" rowspan="3">
+       <widget class="QTabWidget" name="tabWidgetKappaOptions">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>1</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tabOptionsCohen">
+         <attribute name="title">
+          <string>Cohen's kappa</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="3" column="0">
+           <widget class="QLabel" name="labelCohenNameCat1">
+            <property name="text">
+             <string>Category 1 name:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="labelCohenLabelsCat1">
+            <property name="text">
+             <string>Category 1 labels:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLineEdit" name="editCohenSeparator">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="labelCohenSeparator">
+            <property name="text">
+             <string>Labels separator:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1" colspan="2">
+           <widget class="QLineEdit" name="editCohenLabelsCat1"/>
+          </item>
+          <item row="9" column="2">
+           <spacer name="horizontalSpacerCohen">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>124</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="labelCohenNameCat2">
+            <property name="text">
+             <string>Category 2 name:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="labelCohenLabelsCat2">
+            <property name="text">
+             <string>Category 2 labels:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" colspan="2">
+           <widget class="QLineEdit" name="editCohenLabelsCat2"/>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="editCohenNameCat2"/>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="editCohenNameCat1"/>
+          </item>
+          <item row="3" column="2">
+           <widget class="QCheckBox" name="checkBoxCohenCat1Empty">
+            <property name="text">
+             <string>Include Empty</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QCheckBox" name="checkBoxCohenCat2Empty">
+            <property name="text">
+             <string>Include Empty</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="labelCohenLabelsIgnore">
+            <property name="text">
+             <string>Ignore labels:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1">
+           <widget class="QLineEdit" name="editCohenLabelsIgnore"/>
+          </item>
+          <item row="8" column="2">
+           <widget class="QCheckBox" name="checkBoxCohenIgnoreEmpty">
+            <property name="text">
+             <string>Ignore Empty</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabOptionsFleiss">
+         <attribute name="title">
+          <string>Fleiss' kappa</string>
+         </attribute>
+        </widget>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="2" colspan="2">
+       <widget class="QGroupBox" name="groupBoxProperties">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>90</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Analysis Options</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="1" column="1">
+          <widget class="QComboBox" name="comboBoxAnnotationLevel"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelAnnotationLevel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Annotation Level:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBoxCorpus"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="CheckBoxList" name="comboBoxMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QLabel" name="labelMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Group by Metadata Spk:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="labelMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Group by Metadata Com:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelCorpus">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Corpus to analyse:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="labelAnnotationAttributes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Annotation Attributes:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="CheckBoxList" name="comboBoxAnnotationAttributes">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="CheckBoxList" name="comboBoxMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="3">
+          <widget class="QRadioButton" name="radioButtonCalculateCohen">
+           <property name="text">
+            <string>Calculate Cohen's kappa for each annotator pair</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="3">
+          <widget class="QRadioButton" name="radioButtonCalculateFleiss">
+           <property name="text">
+            <string>Calculate Fleiss' kappa for all annotators</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBoxList</class>
+   <extends>QComboBox</extends>
+   <header>pngui/widgets/CheckBoxList.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>comboBoxCorpus</tabstop>
+  <tabstop>comboBoxAnnotationLevel</tabstop>
+  <tabstop>comboBoxAnnotationAttributes</tabstop>
+  <tabstop>comboBoxMetadataCom</tabstop>
+  <tabstop>comboBoxMetadataSpk</tabstop>
+  <tabstop>radioButtonCalculateCohen</tabstop>
+  <tabstop>radioButtonCalculateFleiss</tabstop>
+  <tabstop>tabWidgetKappaOptions</tabstop>
+  <tabstop>editCohenNameCat1</tabstop>
+  <tabstop>checkBoxCohenCat1Empty</tabstop>
+  <tabstop>editCohenLabelsCat1</tabstop>
+  <tabstop>editCohenNameCat2</tabstop>
+  <tabstop>checkBoxCohenCat2Empty</tabstop>
+  <tabstop>editCohenLabelsCat2</tabstop>
+  <tabstop>editCohenLabelsIgnore</tabstop>
+  <tabstop>checkBoxCohenIgnoreEmpty</tabstop>
+  <tabstop>editCohenSeparator</tabstop>
+  <tabstop>commandAnalyse</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboBoxMeasure</tabstop>
+  <tabstop>comboBoxGroupByCom</tabstop>
+  <tabstop>comboBoxGroupBySpk</tabstop>
+  <tabstop>commandDrawChart</tabstop>
+  <tabstop>checkBoxSetYMinMax</tabstop>
+  <tabstop>doubleSpinBoxYMin</tabstop>
+  <tabstop>doubleSpinBoxYMax</tabstop>
+  <tabstop>commandExportChart</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

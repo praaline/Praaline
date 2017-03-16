@@ -1,9 +1,9 @@
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
 
-#include "InterraterAgreement.h"
+#include "KappaStatisticsCalculator.h"
 
-struct InterraterAgreementData {
+struct KappaStatisticsCalculatorData {
     QString classForEmpty;
     QHash<QString, QStringList> classes;
     QHash<QString, QString> classification;
@@ -11,17 +11,17 @@ struct InterraterAgreementData {
     QMap<QString, QHash<QString, int> > counts;
 };
 
-InterraterAgreement::InterraterAgreement() :
-    d(new InterraterAgreementData)
+KappaStatisticsCalculator::KappaStatisticsCalculator() :
+    d(new KappaStatisticsCalculatorData)
 {
 }
 
-InterraterAgreement::~InterraterAgreement()
+KappaStatisticsCalculator::~KappaStatisticsCalculator()
 {
     delete d;
 }
 
-void InterraterAgreement::addClass(const QString &className, const QStringList &labels, bool includeEmpty)
+void KappaStatisticsCalculator::addClass(const QString &className, const QStringList &labels, bool includeEmpty)
 {
     if (d->classes.contains(className)) removeClass(className);
     d->classes.insert(className, labels);
@@ -32,7 +32,7 @@ void InterraterAgreement::addClass(const QString &className, const QStringList &
     d->counts.clear();
 }
 
-void InterraterAgreement::removeClass(const QString &className)
+void KappaStatisticsCalculator::removeClass(const QString &className)
 {
     d->classes.remove(className);
     foreach (QString label, d->classification.keys()) {
@@ -44,7 +44,7 @@ void InterraterAgreement::removeClass(const QString &className)
     d->counts.clear();
 }
 
-void InterraterAgreement::reset()
+void KappaStatisticsCalculator::reset()
 {
     d->classes.clear();
     d->classification.clear();
@@ -52,12 +52,12 @@ void InterraterAgreement::reset()
     d->counts.clear();
 }
 
-void InterraterAgreement::resetCounts()
+void KappaStatisticsCalculator::resetCounts()
 {
     d->counts.clear();
 }
 
-QString InterraterAgreement::classify(const QString &label) const
+QString KappaStatisticsCalculator::classify(const QString &label) const
 {
     QString className;
     if ((label.isEmpty()) && (!d->classForEmpty.isEmpty())) {
@@ -69,7 +69,7 @@ QString InterraterAgreement::classify(const QString &label) const
     return className;
 }
 
-void InterraterAgreement::categorise(const QString &annotatorID, const QList<Interval *> &intervals, const QString &attributeID)
+void KappaStatisticsCalculator::categorise(const QString &annotatorID, const QList<Interval *> &intervals, const QString &attributeID)
 {
     QHash<QString, int> count;
     foreach (Interval *intv, intervals) {
@@ -87,7 +87,7 @@ void InterraterAgreement::categorise(const QString &annotatorID, const QList<Int
     d->counts.insert(annotatorID, count);
 }
 
-double InterraterAgreement::getCohenKappa(const QString &className_1, const QString &className_2,
+double KappaStatisticsCalculator::getCohenKappa(const QString &className_1, const QString &className_2,
                                           const QList<Interval *> &intervals,
                                           const QString &attributeID_1, const QString &attributeID_2) const
 {
@@ -113,12 +113,12 @@ double InterraterAgreement::getCohenKappa(const QString &className_1, const QStr
     return k;
 }
 
-double InterraterAgreement::getFleissKappa() const
+double KappaStatisticsCalculator::getFleissKappa() const
 {
     return -1.0;
 }
 
-QStandardItemModel *InterraterAgreement::createTableModel()
+QStandardItemModel *KappaStatisticsCalculator::createTableModel()
 {
     QStandardItemModel *model = new QStandardItemModel();
     model->setRowCount(d->classes.count());

@@ -24,13 +24,16 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
         createLevels(true), overwrite(true), autosyllablePauseThreshold(0.250),
         timeRangeFrom(0.0), timeRangeTo(0.0),
         f0DetectionMin(60), f0DetectionMax(450), framePeriod(0.015),
-        keepIntermediateFiles(true), createImageFiles(false)
+        keepIntermediateFiles(true), createImageFiles(false),
+        plottingStyle(0), plottingIntervalPerStrip(2.0), plottingMultiStrip(true)
     {
         // Sensible defaults
         segmentationMethod = 3;
         levelPhone = "phone";
         levelSyllable = "syll";
         glissandoThreshold = 0;
+        plottingTiersToShow = "phone, syll";
+        plottingOutputDirectory = QDir::homePath() + "/<basename>_";
     }
 
     int command;
@@ -48,10 +51,15 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
     QString levelSegmentation;
     int glissandoThreshold; // enum
     bool keepIntermediateFiles;
-    bool createImageFiles;
-    QString tiersOnImageFiles;
-    QString fileFormat;
     QString attributePrefix;
+    // Plotting
+    bool createImageFiles;
+    int plottingStyle; // enum
+    double plottingIntervalPerStrip;
+    QString plottingTiersToShow;
+    bool plottingMultiStrip;
+    int plottingFileFormat; // enum
+    QString plottingOutputDirectory;
 };
 
 Praaline::Plugins::Prosogram::PluginProsogram::PluginProsogram(QObject* parent) : QObject(parent)
@@ -70,8 +78,6 @@ bool Praaline::Plugins::Prosogram::PluginProsogram::initialize(const QStringList
     Q_UNUSED(error_strings)
 
     // Register Prosogram layer with the visualiser sub-system.
-
-
     return true;
 }
 
@@ -155,10 +161,22 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
                                   "G=0.32/T^2, DG=30, dmin=0.050" <<
                                   "G=0.24-0.32/T^2 (adaptive), DG=30, dmin=0.050" <<
                                   "G=0.16-0.32/T^2 (adaptive), DG=30, dmin=0.050");
-    parameters << PluginParameter("keepIntermediateFiles", "Keep intermediate files", QVariant::Bool, d->keepIntermediateFiles);
+    // Plotting
     parameters << PluginParameter("createImageFiles", "Create image files", QVariant::Bool, d->createImageFiles);
-    parameters << PluginParameter("tiersOnImageFiles", "Tiers (level/attribute) to include in image files", QVariant::String, d->tiersOnImageFiles);
-    parameters << PluginParameter("fileFormat", "File format for images", QVariant::String, d->fileFormat);
+    parameters << PluginParameter("plottingStyle", "Plotting style", QVariant::Int, d->plottingStyle, QStringList() <<
+                                  "Compact" << "Compact rich" <<
+                                  "Wide" << "Wide rich" <<
+                                  "Wide rich, with pitch targets" <<
+                                  "Wide rich, with pitch range");
+    parameters << PluginParameter("plottingIntervalPerStrip", "Plotting: time interval per strip (seconds)", QVariant::Double, d->plottingIntervalPerStrip);
+    parameters << PluginParameter("plottingTiersToShow", "Plotting: tiers (level/attribute) to show in plots", QVariant::String, d->plottingTiersToShow);
+    parameters << PluginParameter("plottingMultiStrip", "Plotting: multiple strips per page", QVariant::Bool, d->plottingMultiStrip);
+    parameters << PluginParameter("plottingFileFormat", "Plotting: output file format", QVariant::Int, d->plottingFileFormat, QStringList() <<
+                                  "EPS (Encapsulated Postscript)" <<
+                                  "EMF (Windows Enhanced Metafile)" <<
+                                  "EPS and EMF" <<
+                                  "PDF");
+    parameters << PluginParameter("plottingOutputDirectory", "Plotting: output directory", QVariant::String, d->plottingOutputDirectory);
     return parameters;
 }
 
@@ -178,10 +196,15 @@ void Praaline::Plugins::Prosogram::PluginProsogram::setParameters(const QHash<QS
     if (parameters.contains("levelSyllable"))               d->levelSyllable = parameters.value("levelSyllable").toString();
     if (parameters.contains("levelSegmentation"))           d->levelSegmentation = parameters.value("levelSegmentation").toString();
     if (parameters.contains("glissandoThreshold"))          d->glissandoThreshold = parameters.value("glissandoThreshold").toInt();
-    if (parameters.contains("keepIntermediateFiles"))       d->keepIntermediateFiles = parameters.value("keepIntermediateFiles").toBool();
+    // if (parameters.contains("keepIntermediateFiles"))       d->keepIntermediateFiles = parameters.value("keepIntermediateFiles").toBool();
+    // Plotting
     if (parameters.contains("createImageFiles"))            d->createImageFiles = parameters.value("createImageFiles").toBool();
-    if (parameters.contains("tiersOnImageFiles"))           d->tiersOnImageFiles = parameters.value("tiersOnImageFiles").toString();
-    if (parameters.contains("fileFormat"))                  d->fileFormat = parameters.value("fileFormat").toString();
+    if (parameters.contains("plottingStyle"))               d->plottingStyle = parameters.value("plottingStyle").toInt();
+    if (parameters.contains("plottingIntervalPerStrip"))    d->plottingIntervalPerStrip = parameters.value("plottingIntervalPerStrip").toDouble();
+    if (parameters.contains("plottingTiersToShow"))         d->plottingTiersToShow = parameters.value("plottingTiersToShow").toString();
+    if (parameters.contains("plottingMultiStrip"))          d->plottingMultiStrip = parameters.value("plottingMultiStrip").toBool();
+    if (parameters.contains("plottingFileFormat"))          d->plottingFileFormat = parameters.value("plottingFileFormat").toInt();
+    if (parameters.contains("plottingOutputDirectory"))     d->plottingOutputDirectory = parameters.value("plottingOutputDirectory").toString();
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::scriptSentMessage(const QString &message)
@@ -338,9 +361,14 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer
     prosogram->levelSegmentation = d->levelSegmentation;
     prosogram->glissandoThreshold = d->glissandoThreshold;
     prosogram->keepIntermediateFiles = d->keepIntermediateFiles;
+    // Plotting
     prosogram->createImageFiles = d->createImageFiles;
-    prosogram->tiersOnImageFiles = d->tiersOnImageFiles;
-    prosogram->fileFormat = d->fileFormat;
+    prosogram->plottingStyle = d->plottingStyle;
+    prosogram->plottingIntervalPerStrip = d->plottingIntervalPerStrip;
+    prosogram->plottingTiersToShow = d->plottingTiersToShow;
+    prosogram->plottingMultiStrip = d->plottingMultiStrip;
+    prosogram->plottingFileFormat = d->plottingFileFormat;
+    prosogram->plottingOutputDirectory = d->plottingOutputDirectory;
 
     int countDone = 0;
     madeProgress(0);
