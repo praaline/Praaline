@@ -212,8 +212,9 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     if      (plottingStyle == 0) plottingStyleString = "1: Compact";
     else if (plottingStyle == 1) plottingStyleString = "2: Compact rich";
     else if (plottingStyle == 2) plottingStyleString = "3: Wide";
-    else if (plottingStyle == 3) plottingStyleString = "4: Wide rich, with values pitch targets";
-    else if (plottingStyle == 4) plottingStyleString = "4: Wide rich, with pitch range";
+    else if (plottingStyle == 3) plottingStyleString = "4: Wide rich";
+    else if (plottingStyle == 4) plottingStyleString = "4: Wide rich, with values pitch targets";
+    else if (plottingStyle == 5) plottingStyleString = "4: Wide rich, with pitch range";
 
     QString plottingFileFormatString;
     if      (plottingFileFormat == 0) plottingFileFormatString = "EPS (Encapsulated Postscript)";
