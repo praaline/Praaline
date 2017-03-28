@@ -194,7 +194,8 @@ SOURCES += main.cpp \
     corpus/CorpusRepositoryCreateWizard.cpp \
     corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
     annotation/calculate/TidyUpAnnotationsDialog.cpp \
-    statistics/interrater/KappaStatisticsCalculator.cpp
+    statistics/interrater/KappaStatisticsCalculator.cpp \
+    annotation/TranscriptionAnnotationWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -302,7 +303,8 @@ HEADERS  += \
     corpus/CorpusRepositoryCreateWizard.h \
     corpus/importannotations/ImportTableDataPreviewWizardPage.h \
     annotation/calculate/TidyUpAnnotationsDialog.h \
-    statistics/interrater/KappaStatisticsCalculator.h
+    statistics/interrater/KappaStatisticsCalculator.h \
+    annotation/TranscriptionAnnotationWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -367,7 +369,8 @@ FORMS    += \
     corpus/CorpusRepositoryPropertiesDialog.ui \
     corpus/CorpusRepositoryCreateWizard.ui \
     corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
-    annotation/calculate/TidyUpAnnotationsDialog.ui
+    annotation/calculate/TidyUpAnnotationsDialog.ui \
+    annotation/TranscriptionAnnotationWidget.ui
 
 RESOURCES += \
     praaline.qrc \
