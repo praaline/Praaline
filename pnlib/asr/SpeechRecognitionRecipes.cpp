@@ -26,13 +26,25 @@ SpeechRecognitionRecipes::SpeechRecognitionRecipes()
 
 }
 
-bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<CorpusRecording> rec)
+//bool SpeechRecognitionRecipes::downsampleWaveFile(QString filenameInput, QString filenameOutput, QString outputDirectory)
+//{
+//    QList<Interval *> list;
+//    list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
+//    QString dir = (outputDirectory.isEmpty()) ? rec->basePath() : outputDirectory;
+//    bool ret = AudioSegmenter::segment(rec->filePath(), dir, list, QString(), 16000);
+//    qDeleteAll(list);
+//    return ret;
+//}
+
+
+bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<CorpusRecording> rec, QString outputDirectory)
 {
     if (!rec) return false;
     if (!rec->repository()) return false;
     QList<Interval *> list;
     list << new Interval(RealTime(0, 0), rec->duration(), rec->filename().replace(".wav", ".16k"));
-    bool ret = AudioSegmenter::segment(rec->filePath(), rec->basePath(), list, QString(), 16000);
+    QString dir = (outputDirectory.isEmpty()) ? rec->basePath() : outputDirectory;
+    bool ret = AudioSegmenter::segment(rec->filePath(), dir, list, QString(), 16000);
     qDeleteAll(list);
     return ret;
 }

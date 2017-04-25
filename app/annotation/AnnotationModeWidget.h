@@ -33,8 +33,9 @@ private:
 
 private slots:
     void showAutomaticAnnotation();
-    void showTranscriber();
     void showManualAnnotation();
+    void showTranscriber();
+    void showSpeechRecognition();
     void showBatchEditor();
     void showCompareAnnotations();
 

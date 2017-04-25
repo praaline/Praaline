@@ -248,7 +248,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tabResultsTable">
       <attribute name="title">
@@ -424,6 +424,12 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabMeasureDefinitions">
+      <attribute name="title">
+       <string>Measures</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutMeasureDefinitions"/>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -459,7 +465,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroupOrientation"/>
   <buttongroup name="buttonGroupAnalysisObject"/>
+  <buttongroup name="buttonGroupOrientation"/>
  </buttongroups>
 </ui>

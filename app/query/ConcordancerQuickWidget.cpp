@@ -220,7 +220,7 @@ void ConcordancerQuickWidget::activeCorpusRepositoryChanged(const QString &repos
     QPointer<CorpusRepository> repository = d->corpusRepositoryManager->activeCorpusRepository();
     // In any case, clear results
     d->tableviewResults->tableView()->setModel(0);
-    if (d->modelResults) delete d->modelResults;
+    //if (d->modelResults) delete d->modelResults;
     if (repository) {
         AnnotationStructureTreeModel *model = new AnnotationStructureTreeModel(repository->annotationStructure(), true, true, this);
         d->treeviewLevelsAttributes->setModel(model);

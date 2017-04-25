@@ -33,6 +33,8 @@ private slots:
 private:
     Ui::AnalyserMacroprosodyWidget *ui;
     AnalyserMacroprosodyWidgetData *d;
+
+    void createMeasureDefinitionsTableModels();
 };
 
 

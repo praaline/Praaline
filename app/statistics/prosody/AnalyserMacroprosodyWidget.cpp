@@ -16,6 +16,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/statistics/StatisticalMeasureDefinition.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"
@@ -36,6 +37,8 @@ struct AnalyserMacroprosodyWidgetData {
     CorpusRepository *repository;
     GridViewWidget *gridviewResults;
     QStandardItemModel *modelResults;
+    GridViewWidget *gridviewMeasureDefinitions;
+    QStandardItemModel *modelMeasureDefinitions;
 };
 
 AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *repository, QWidget *parent) :
@@ -56,14 +59,42 @@ AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *reposit
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
+    // Measure definitions grid view
+    d->gridviewMeasureDefinitions = new GridViewWidget(this);
+    d->gridviewMeasureDefinitions->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    d->gridviewMeasureDefinitions->tableView()->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    ui->gridLayoutMeasureDefinitions->addWidget(d->gridviewMeasureDefinitions);
+    // Create measure definitions table models
+    createMeasureDefinitionsTableModels();
     // Default options
     ui->optionMULIstFromTier->setChecked(true);
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 AnalyserMacroprosodyWidget::~AnalyserMacroprosodyWidget()
 {
     delete ui;
     delete d;
+}
+
+void AnalyserMacroprosodyWidget::createMeasureDefinitionsTableModels()
+{
+    // Measures for communications
+    d->modelMeasureDefinitions = new QStandardItemModel(this);
+    d->modelMeasureDefinitions->setHorizontalHeaderLabels(QStringList() <<
+                                                          "Measure ID" << "Measure" << "Units" << "Description");
+    foreach (QString measureID, AnalyserMacroprosody::measureIDs("")) {
+        QList<QStandardItem *> items;
+        StatisticalMeasureDefinition def = AnalyserMacroprosody::measureDefinition("", measureID);
+        items << new QStandardItem(measureID);
+        items << new QStandardItem(def.displayName());
+        items << new QStandardItem(def.units());
+        items << new QStandardItem(def.description());
+        d->modelMeasureDefinitions->appendRow(items);
+    }
+    // Update table
+    d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitions);
+    d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
 }
 
 void AnalyserMacroprosodyWidget::openFileMUList()

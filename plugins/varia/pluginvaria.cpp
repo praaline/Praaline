@@ -156,12 +156,46 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
 //corpus->save();
 //return;
 
+#include "pncore/interfaces/phon/PhonTranscription.h"
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
-{    
-    if (communications.isEmpty()) return;
-    SpeechRateExperiments sr;
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/";
+{
+    QString path = "/home/george/Dropbox/RECHERCHES BEGAIEMENT/CORPUS_IVANA/";
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        PhonTranscription tr;
+        tr.load(path + com->ID() + ".xml");
+        QString annotationID = com->ID();
+
+
+        QString speakerID = com->ID().left(5);
+        Corpus *corpus = com->corpus();
+        if (corpus) {
+            if (!corpus->hasSpeaker(speakerID)) {
+                CorpusSpeaker *spk = new CorpusSpeaker(speakerID);
+                spk->setName(tr.sessionID());
+                corpus->addSpeaker(spk);
+                corpus->save();
+            }
+        }
+        QList<Interval *> intervals_transcription;
+        foreach (PhonTranscription::Segment segment, tr.segments()) {
+            QString transcription_model = segment.orthography.join(" ");
+            QString transcription = segment.groupTiers.value("Orthography Actual").join(" ");
+            RealTime tMin = segment.startTime;
+            RealTime tMax = segment.startTime + segment.duration;
+            Interval *intv = new Interval(tMin, tMax, transcription);
+            intv->setAttribute("transcription_model", transcription_model);
+            intervals_transcription << intv;
+        }
+        IntervalTier *tier_transcription = new IntervalTier("transcription", intervals_transcription);
+        corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
+
+        qDebug() << "test";
+    }
+
+//    if (communications.isEmpty()) return;
+//    SpeechRateExperiments sr;
+//    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/";
 
 //    for (int i = 13; i <= 40; ++i) {
 //        QString filename = QString("results_P%1.txt").arg(i);

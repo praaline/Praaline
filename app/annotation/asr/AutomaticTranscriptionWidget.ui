@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AutomaticTranscriptionWidget</class>
+ <widget class="QMainWindow" name="AutomaticTranscriptionWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="1" column="0" colspan="3">
+     <widget class="QProgressBar" name="progressBar">
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="commandStart">
+      <property name="text">
+       <string>Start</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>607</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="commandStop">
+      <property name="text">
+       <string>Stop</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="3">
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QListView" name="listViewResults"/>
+      <widget class="QPlainTextEdit" name="textMessages"/>
+     </widget>
+    </item>
+    <item row="0" column="0" colspan="3">
+     <layout class="QGridLayout" name="gridLayoutLevelAttributes">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelAnnotationLevel">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>ASR Transcription Level:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBoxAnnotationLevel"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="labelAnnotationAttributeASR">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Attribute:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QComboBox" name="comboBoxAnnotationAttributeASR"/>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="labelAnnotationAttributeCompare">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Compare Attribute:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QComboBox" name="comboBoxAnnotationAttributeCompare"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>comboBoxAnnotationLevel</tabstop>
+  <tabstop>comboBoxAnnotationAttributeASR</tabstop>
+  <tabstop>comboBoxAnnotationAttributeCompare</tabstop>
+  <tabstop>commandStart</tabstop>
+  <tabstop>commandStop</tabstop>
+  <tabstop>listViewResults</tabstop>
+  <tabstop>textMessages</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

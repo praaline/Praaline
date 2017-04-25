@@ -25,7 +25,7 @@ public:
     };
 
     SpeechRecognitionRecipes();
-    static bool downsampleWaveFile(QPointer<Praaline::Core::CorpusRecording> rec);
+    static bool downsampleWaveFile(QPointer<Praaline::Core::CorpusRecording> rec, QString outputDirectory = QString());
     static bool batchCreateSphinxFeatureFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
                                               Configuration config);
     static bool createSphinxFeatureFile(QPointer<Praaline::Core::CorpusRecording> rec, Configuration config);

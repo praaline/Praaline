@@ -146,6 +146,12 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayoutCharts"/>
      </widget>
+     <widget class="QWidget" name="tabMeasureDefinitions">
+      <attribute name="title">
+       <string>Measures</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutMeasureDefinitions"/>
+     </widget>
     </widget>
    </item>
   </layout>

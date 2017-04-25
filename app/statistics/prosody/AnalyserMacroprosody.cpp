@@ -76,8 +76,44 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
 StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QString &groupingLevel, const QString &measureID)
 {
     Q_UNUSED(groupingLevel)
-    if (measureID == "TimeTotalSample")          return StatisticalMeasureDefinition("TimeTotalSample", "Total sample time", "s");
-    if (measureID == "TimeSingleSpeaker")        return StatisticalMeasureDefinition("TimeSingleSpeaker", "Single-speaker time", "s");
+    if (measureID == "StartTime")           return StatisticalMeasureDefinition("StartTime", "Start time of unit", "s");
+    if (measureID == "EndTime")             return StatisticalMeasureDefinition("EndTime", "End time of unit", "s");
+    if (measureID == "Duration")            return StatisticalMeasureDefinition("Duration", "Duration of unit", "s");
+    if (measureID == "StartSyll")           return StatisticalMeasureDefinition("StartSyll", "Syllable index at start of unit", "");
+    if (measureID == "EndSyll")             return StatisticalMeasureDefinition("EndSyll", "Syllable index at end of unit", "");
+    if (measureID == "TextTokens")          return StatisticalMeasureDefinition("TextTokens", "Text of tokens", "");
+    if (measureID == "TextSyllables")       return StatisticalMeasureDefinition("TextSyllables", "Text of syllables", "");
+    if (measureID == "TimeArticulation")    return StatisticalMeasureDefinition("TimeArticulation", "Articulation time", "s");
+    if (measureID == "TimeFilledPause")     return StatisticalMeasureDefinition("TimeFilledPause", "Filled pause time", "s");
+    if (measureID == "TimeSilentPause")     return StatisticalMeasureDefinition("TimeSilentPause", "Sillent pausetime", "s");
+    if (measureID == "NumSyllArticulated")  return StatisticalMeasureDefinition("NumSyllArticulated", "Number of articulated syllables (excluding filled pauses)", "");
+    if (measureID == "NumFilledPauses")     return StatisticalMeasureDefinition("NumFilledPauses", "Number of filled pauses", "");
+    if (measureID == "NumSilentPauses")     return StatisticalMeasureDefinition("NumSilentPauses", "Number of silent pauses", "");
+    if (measureID == "SpeechRate")          return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
+    if (measureID == "ArticulationRate")    return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Articulation time");
+    if (measureID == "RateFILandSyll")      return StatisticalMeasureDefinition("RateFILandSyll", "Articulation (incl FIL) rate", "syll/s", "All articulated syllables (including filled pauses) / Articulation + filled pause time");
+    if (measureID == "MeanPitch")           return StatisticalMeasureDefinition("MeanPitch", "Mean of the mean pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchLow")            return StatisticalMeasureDefinition("PitchLow", "Minimum of the low pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchHigh")           return StatisticalMeasureDefinition("PitchHigh", "Maximum of the high pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchRange")          return StatisticalMeasureDefinition("PitchRange", "Pitch range: pitch high - pitch low", "ST");
+    if (measureID == "MeanPitchFirstSyll")  return StatisticalMeasureDefinition("MeanPitchFirstSyll", "Mean pitch of the unit's first syllable", "ST");
+    if (measureID == "PitchLowFirstSyll")   return StatisticalMeasureDefinition("PitchLowFirstSyll", "Low pitch of the unit's first syllable", "ST");
+    if (measureID == "PitchHighFirstSyll")  return StatisticalMeasureDefinition("PitchHighFirstSyll", "High pitch of the unit's first syllable", "ST");
+    if (measureID == "MeanPitchLastSyll")   return StatisticalMeasureDefinition("MeanPitchLastSyll", "Mean pitch of the unit's last syllable", "ST");
+    if (measureID == "PitchLowLastSyll")    return StatisticalMeasureDefinition("PitchLowLastSyll", "Low pitch of the unit's last syllable", "ST");
+    if (measureID == "PitchHighLastSyll")   return StatisticalMeasureDefinition("PitchHighLastSyll", "High pitch of the unit's last syllable", "ST");
+    if (measureID == "NumRisingSyll")       return StatisticalMeasureDefinition("NumRisingSyll", "Number of rising syllables", "");
+    if (measureID == "NumFallingSyll")      return StatisticalMeasureDefinition("NumFallingSyll", "Number of falling syllables", "");
+    if (measureID == "NumProminentSyll")    return StatisticalMeasureDefinition("NumProminentSyll", "Number of prominent syllables", "");
+    if (measureID == "RatioRisingSyll")     return StatisticalMeasureDefinition("RatioRisingSyll", "Percentage of rising syllables over articulated syllables", "%");
+    if (measureID == "RatioFallingSyll")    return StatisticalMeasureDefinition("RatioFallingSyll", "Percentage of falling syllables over articulated syllables", "%");
+    if (measureID == "RatioProminentSyll")  return StatisticalMeasureDefinition("RatioProminentSyll", "Percentage of prominent syllables over articulated syllables", "%");
+    if (measureID == "MelodicPath")         return StatisticalMeasureDefinition("MelodicPath", "Melodic path", "ST/s", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up) / Sum of stylised nucleus time");
+    if (measureID == "NumDisfluencyLEN")    return StatisticalMeasureDefinition("NumDisfluencyLEN", "Number of disfluencies: lengthening", "");
+    if (measureID == "NumDisfluencyFST")    return StatisticalMeasureDefinition("NumDisfluencyFST", "Number of disfluencies: false starts", "");
+    if (measureID == "NumDisfluencyREP")    return StatisticalMeasureDefinition("NumDisfluencyREP", "Number of disfluencies: repetitions", "");
+    if (measureID == "NumDisfluencyStruct") return StatisticalMeasureDefinition("NumDisfluencyStruct", "Number of disfluencies: structured", "");
+    if (measureID == "DisfluencyText")      return StatisticalMeasureDefinition("DisfluencyText", "Disfluency text", "");
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
 

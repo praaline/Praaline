@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SpeechRecognitionWidget</class>
+ <widget class="QMainWindow" name="SpeechRecognitionWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QSplitter" name="splitterLR">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QSplitter" name="splitterTB">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QDockWidget" name="dockModuleSelection">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="features">
+         <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+        </property>
+        <property name="windowTitle">
+         <string>Speech Recognition / Aligner Module</string>
+        </property>
+        <widget class="QWidget" name="dockWidgetModuleSelection">
+         <layout class="QGridLayout" name="gridLayoutEditorSelection">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="2" column="1">
+           <widget class="QPushButton" name="commandOpenModule">
+            <property name="text">
+             <string>Open Module in New Tab</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QComboBox" name="comboBoxModuleSelection"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="checkBoxFollowSelection">
+            <property name="text">
+             <string>Follow selection</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QDockWidget" name="dockCorpusExplorer">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>1</horstretch>
+          <verstretch>3</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="features">
+         <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+        </property>
+        <property name="windowTitle">
+         <string>Corpus Item Selection</string>
+        </property>
+        <widget class="QWidget" name="dockWidgetCorpusExplorer">
+         <layout class="QGridLayout" name="gridLayoutCorpusExplorer">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+      <widget class="QTabWidget" name="tabWidgetModules">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>6</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="currentIndex">
+        <number>-1</number>
+       </property>
+       <property name="documentMode">
+        <bool>true</bool>
+       </property>
+       <property name="tabsClosable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,13 +1,13 @@
 #ifndef LANGUAGEMODELBUILDERWIDGET_H
 #define LANGUAGEMODELBUILDERWIDGET_H
 
-#include <QWidget>
+#include "ASRModuleWidgetBase.h"
 
 namespace Ui {
 class LanguageModelBuilderWidget;
 }
 
-class LanguageModelBuilderWidget : public QWidget
+class LanguageModelBuilderWidget : public ASRModuleWidgetBase
 {
     Q_OBJECT
 

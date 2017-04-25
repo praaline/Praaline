@@ -43,6 +43,9 @@ struct AnalyserTemporalWidgetData {
     GridViewWidget *gridviewResults;
     QStandardItemModel *modelCom;
     QStandardItemModel *modelSpk;
+    GridViewWidget *gridviewMeasureDefinitions;
+    QStandardItemModel *modelMeasureDefinitionsCom;
+    QStandardItemModel *modelMeasureDefinitionsSpk;
 };
 
 AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
@@ -81,6 +84,13 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
+    // Measure definitions grid view
+    d->gridviewMeasureDefinitions = new GridViewWidget(this);
+    d->gridviewMeasureDefinitions->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    d->gridviewMeasureDefinitions->tableView()->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    ui->gridLayoutMeasureDefinitions->addWidget(d->gridviewMeasureDefinitions);
+    // Create measure definitions table models
+    createMeasureDefinitionsTableModels();
     // Default
     ui->optionCommunications->setChecked(true);
     ui->optionOrientationVertical->setChecked(true);
@@ -125,6 +135,39 @@ AnalyserTemporalWidget::~AnalyserTemporalWidget()
     delete d;
 }
 
+void AnalyserTemporalWidget::createMeasureDefinitionsTableModels()
+{
+    // Measures for communications
+    d->modelMeasureDefinitionsCom = new QStandardItemModel(this);
+    d->modelMeasureDefinitionsCom->setHorizontalHeaderLabels(QStringList() <<
+                                                             "Measure ID" << "Measure" << "Units" << "Description");
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication()) {
+        QList<QStandardItem *> items;
+        StatisticalMeasureDefinition def = AnalyserTemporalItem::measureDefinition(measureID);
+        items << new QStandardItem(measureID);
+        items << new QStandardItem(def.displayName());
+        items << new QStandardItem(def.units());
+        items << new QStandardItem(def.description());
+        d->modelMeasureDefinitionsCom->appendRow(items);
+    }
+    // Measures for speakers
+    d->modelMeasureDefinitionsSpk = new QStandardItemModel(this);
+    d->modelMeasureDefinitionsSpk->setHorizontalHeaderLabels(QStringList() <<
+                                                             "Measure ID" << "Measure" << "Units" << "Description");
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) {
+        QList<QStandardItem *> items;
+        StatisticalMeasureDefinition def = AnalyserTemporalItem::measureDefinition(measureID);
+        items << new QStandardItem(measureID);
+        items << new QStandardItem(def.displayName());
+        items << new QStandardItem(def.units());
+        items << new QStandardItem(def.description());
+        d->modelMeasureDefinitionsSpk->appendRow(items);
+    }
+    // Start by showing model for com
+    d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitionsCom);
+    d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
+}
+
 void AnalyserTemporalWidget::madeProgress(int value)
 {
     ui->progressBar->setValue(value);
@@ -153,11 +196,15 @@ void AnalyserTemporalWidget::analyse()
 void AnalyserTemporalWidget::changeDisplayedModel()
 {
     if (ui->optionCommunications->isChecked()) {
+        d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitionsCom);
+        d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
         ui->comboBoxMeasure->clear();
         foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
             ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
         showAnalysisForCom();
     }  else {
+        d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitionsSpk);
+        d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
         ui->comboBoxMeasure->clear();
         foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
             ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);

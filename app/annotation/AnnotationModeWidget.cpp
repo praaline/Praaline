@@ -6,6 +6,7 @@
 #include "BatchEditorWidget.h"
 #include "CompareAnnotationsWidget.h"
 #include "TranscriberWidget.h"
+#include "SpeechRecognitionWidget.h"
 
 #include "calculate/AddCalculatedAnnotationDialog.h"
 #include "calculate/CreateSequenceAnnotationDialog.h"
@@ -19,6 +20,7 @@ struct AnnotationModeWidgetData {
     QAction *actionShowAutomaticAnnotation;
     QAction *actionShowManualAnnotation;
     QAction *actionShowTranscriber;
+    QAction *actionShowSpeechRecognition;
     QAction *actionShowBatchEditor;
     QAction *actionShowCompareAnnotations;
 
@@ -30,8 +32,16 @@ struct AnnotationModeWidgetData {
     AutomaticAnnotationWidget *widgetAutomaticAnnotation;
     ManualAnnotationWidget *widgetManualAnnotation;
     TranscriberWidget *widgetTranscriber;
+    SpeechRecognitionWidget *widgetSpeechRecognition;
     BatchEditorWidget *widgetBatchEditor;
     CompareAnnotationsWidget *widgetCompareAnnotations;
+
+    const int indexAutomaticAnnotation = 0;
+    const int indexManualAnnotation = 1;
+    const int indexTranscriber = 2;
+    const int indexSpeechRecognition = 3;
+    const int indexBatchEditor = 4;
+    const int indexCompareAnnotations = 5;
 };
 
 
@@ -44,32 +54,36 @@ AnnotationModeWidget::AnnotationModeWidget(QWidget *parent) :
     d->widgetAutomaticAnnotation = new AutomaticAnnotationWidget(this);
     d->widgetManualAnnotation = new ManualAnnotationWidget(this);
     d->widgetTranscriber = new TranscriberWidget(this);
+    d->widgetSpeechRecognition = new SpeechRecognitionWidget(this);
     d->widgetBatchEditor = new BatchEditorWidget(this);
     d->widgetCompareAnnotations = new CompareAnnotationsWidget(this);
 
     ui->gridLayoutAutomaticAnnotation->addWidget(d->widgetAutomaticAnnotation);
     ui->gridLayoutManualAnnotation->addWidget(d->widgetManualAnnotation);
     ui->gridLayoutTranscriber->addWidget(d->widgetTranscriber);
+    ui->gridLayoutSpeechRecognition->addWidget(d->widgetSpeechRecognition);
     ui->gridLayoutBatchEditor->addWidget(d->widgetBatchEditor);
     ui->gridLayoutCompareAnnotations->addWidget(d->widgetCompareAnnotations);
 
     setupActions();
 
-    connect(ui->commandAutomatic, SIGNAL(clicked()), this, SLOT(showAutomaticAnnotation()));
+    connect(ui->commandAutomaticAnnotation, SIGNAL(clicked()), this, SLOT(showAutomaticAnnotation()));
+    connect(ui->commandManualAnnotation, SIGNAL(clicked()), this, SLOT(showManualAnnotation()));
     connect(ui->commandTranscriber, SIGNAL(clicked()), this, SLOT(showTranscriber()));
-    connect(ui->commandTimelineEditor, SIGNAL(clicked()), this, SLOT(showManualAnnotation()));
+    connect(ui->commandSpeechRecognition, SIGNAL(clicked()), this, SLOT(showSpeechRecognition()));
     connect(ui->commandBatchEditor, SIGNAL(clicked()), this, SLOT(showBatchEditor()));
     connect(ui->commandCompareAnnotations, SIGNAL(clicked()), this, SLOT(showCompareAnnotations()));
 
-    ui->stackedWidget->setCurrentIndex(1);
+    ui->stackedWidget->setCurrentIndex(0);
 }
 
 AnnotationModeWidget::~AnnotationModeWidget()
 {
     delete ui;
     if (d->widgetAutomaticAnnotation) delete d->widgetAutomaticAnnotation;
-    if (d->widgetTranscriber) delete d->widgetTranscriber;
     if (d->widgetManualAnnotation) delete d->widgetManualAnnotation;
+    if (d->widgetTranscriber) delete d->widgetTranscriber;
+    if (d->widgetSpeechRecognition) delete d->widgetSpeechRecognition;
     if (d->widgetBatchEditor) delete d->widgetBatchEditor;
     if (d->widgetCompareAnnotations) delete d->widgetCompareAnnotations;
     delete d;
@@ -126,15 +140,21 @@ void AnnotationModeWidget::setupActions()
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
+    d->actionShowManualAnnotation = new QAction(tr("Manual Annotation"), this);
+    connect(d->actionShowManualAnnotation, SIGNAL(triggered()), SLOT(showManualAnnotation()));
+    command = ACTION_MANAGER->registerAction("Annotation.ShowManual", d->actionShowManualAnnotation, context);
+    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
+    menu_window->addAction(command);
+
     d->actionShowTranscriber = new QAction(tr("Transcriber"), this);
     connect(d->actionShowTranscriber, SIGNAL(triggered()), SLOT(showTranscriber()));
     command = ACTION_MANAGER->registerAction("Annotation.ShowTranscriber", d->actionShowTranscriber, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowManualAnnotation = new QAction(tr("Timeline Editor"), this);
-    connect(d->actionShowManualAnnotation, SIGNAL(triggered()), SLOT(showManualAnnotation()));
-    command = ACTION_MANAGER->registerAction("Annotation.ShowManual", d->actionShowManualAnnotation, context);
+    d->actionShowSpeechRecognition = new QAction(tr("Speech Recognition && Alignment"), this);
+    connect(d->actionShowSpeechRecognition, SIGNAL(triggered()), SLOT(showSpeechRecognition()));
+    command = ACTION_MANAGER->registerAction("Annotation.ShowSpeechRecognition", d->actionShowSpeechRecognition, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
@@ -155,31 +175,37 @@ void AnnotationModeWidget::setupActions()
 
 void AnnotationModeWidget::showAutomaticAnnotation()
 {
-    ui->stackedWidget->setCurrentIndex(0);
-    emit activateMode();
-}
-
-void AnnotationModeWidget::showTranscriber()
-{
-    ui->stackedWidget->setCurrentIndex(1);
+    ui->stackedWidget->setCurrentIndex(d->indexAutomaticAnnotation);
     emit activateMode();
 }
 
 void AnnotationModeWidget::showManualAnnotation()
 {
-    ui->stackedWidget->setCurrentIndex(2);
+    ui->stackedWidget->setCurrentIndex(d->indexManualAnnotation);
+    emit activateMode();
+}
+
+void AnnotationModeWidget::showTranscriber()
+{
+    ui->stackedWidget->setCurrentIndex(d->indexTranscriber);
+    emit activateMode();
+}
+
+void AnnotationModeWidget::showSpeechRecognition()
+{
+    ui->stackedWidget->setCurrentIndex(d->indexSpeechRecognition);
     emit activateMode();
 }
 
 void AnnotationModeWidget::showBatchEditor()
 {
-    ui->stackedWidget->setCurrentIndex(3);
+    ui->stackedWidget->setCurrentIndex(d->indexBatchEditor);
     emit activateMode();
 }
 
 void AnnotationModeWidget::showCompareAnnotations()
 {
-    ui->stackedWidget->setCurrentIndex(4);
+    ui->stackedWidget->setCurrentIndex(d->indexCompareAnnotations);
     emit activateMode();
 }
 

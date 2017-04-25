@@ -42,6 +42,7 @@ private:
 
     void buildModelForCom();
     void buildModelForSpk();
+    void createMeasureDefinitionsTableModels();
 };
 
 } // namespace StatisticalPluginTemporal

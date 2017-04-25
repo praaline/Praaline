@@ -83,8 +83,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
       <property name="bottomMargin">
        <number>3</number>
       </property>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="commandTranscriber">
+      <item row="0" column="0">
+       <widget class="QPushButton" name="commandAutomaticAnnotation">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -92,11 +92,37 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Transcriber</string>
+         <string>Automatic annotation</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="6">
+      <item row="0" column="5">
+       <widget class="QPushButton" name="commandBatchEditor">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Batch Editor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="commandSpeechRecognition">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>ASR &amp;&amp; Alignment</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="8">
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -109,8 +135,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </spacer>
       </item>
-      <item row="0" column="3">
-       <widget class="QPushButton" name="commandTimelineEditor">
+      <item row="0" column="1">
+       <widget class="QPushButton" name="commandManualAnnotation">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -118,37 +144,11 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Timeline editor</string>
+         <string>Manual Annotation</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="commandAutomatic">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Automatic annotation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QPushButton" name="commandBatchEditor">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Batch editor</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
+      <item row="0" column="6">
        <widget class="QPushButton" name="commandCompareAnnotations">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -161,16 +161,45 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </widget>
       </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="commandTranscriber">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Transcriber</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pageAutomaticAnnotation">
       <layout class="QGridLayout" name="gridLayoutAutomaticAnnotation">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageManualAnnotation">
+      <layout class="QGridLayout" name="gridLayoutManualAnnotation">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -201,8 +230,8 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
        </property>
       </layout>
      </widget>
-     <widget class="QWidget" name="pageManualAnnotation">
-      <layout class="QGridLayout" name="gridLayoutManualAnnotation">
+     <widget class="QWidget" name="pageSpeechRecognition">
+      <layout class="QGridLayout" name="gridLayoutSpeechRecognition">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -253,6 +282,14 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>commandAutomaticAnnotation</tabstop>
+  <tabstop>commandManualAnnotation</tabstop>
+  <tabstop>commandTranscriber</tabstop>
+  <tabstop>commandSpeechRecognition</tabstop>
+  <tabstop>commandBatchEditor</tabstop>
+  <tabstop>commandCompareAnnotations</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

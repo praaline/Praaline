@@ -71,6 +71,21 @@ DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 # Node editor
 DEFINES += NODE_EDITOR_STATIC
 
+# Linking dynamically with PocketSphinx ====== this should go into a plugin
+win32 {
+    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+}
+unix {
+    POCKETSPHINX_BASE_PATH = /usr/local
+}
+win32 {
+    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
+}
+unix {
+    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
+}
+
+
 # Application components
 LIBS +=  \
         -L../pngui/$${COMPONENTSPATH} -lpngui \
@@ -113,7 +128,6 @@ SOURCES += main.cpp \
     query/QueryMode.cpp \
     query/QueryModeWidget.cpp \
     scripting/ScriptingMode.cpp \
-    annotation/AnnotateCorpusItemsWindowBase.cpp \
     annotation/AnnotationMode.cpp \
     annotation/AnnotationModeWidget.cpp \
     annotation/AutomaticAnnotationWidget.cpp \
@@ -195,7 +209,13 @@ SOURCES += main.cpp \
     corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
     annotation/calculate/TidyUpAnnotationsDialog.cpp \
     statistics/interrater/KappaStatisticsCalculator.cpp \
-    annotation/TranscriptionAnnotationWidget.cpp
+    annotation/editors/AnnotationEditorBase.cpp \
+    annotation/editors/TimelineAnnotationEditor.cpp \
+    annotation/editors/TranscriptAnnotationEditor.cpp \
+    annotation/editors/LaTexTranscriptionBuilder.cpp \
+    annotation/SpeechRecognitionWidget.cpp \
+    annotation/asr/AutomaticTranscriptionWidget.cpp \
+    annotation/asr/ASRModuleWidgetBase.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -217,7 +237,6 @@ HEADERS  += \
     query/QueryModeWidget.h \
     annotation/dis/AnnotationControlsDisfluencies.h \
     annotation/dis/DisfluencyAnalyser.h \
-    annotation/AnnotateCorpusItemsWindowBase.h \
     annotation/AnnotationMode.h \
     annotation/AnnotationModeWidget.h \
     annotation/AutomaticAnnotationWidget.h \
@@ -304,7 +323,13 @@ HEADERS  += \
     corpus/importannotations/ImportTableDataPreviewWizardPage.h \
     annotation/calculate/TidyUpAnnotationsDialog.h \
     statistics/interrater/KappaStatisticsCalculator.h \
-    annotation/TranscriptionAnnotationWidget.h
+    annotation/editors/AnnotationEditorBase.h \
+    annotation/editors/TimelineAnnotationEditor.h \
+    annotation/editors/TranscriptAnnotationEditor.h \
+    annotation/editors/LaTexTranscriptionBuilder.h \
+    annotation/SpeechRecognitionWidget.h \
+    annotation/asr/AutomaticTranscriptionWidget.h \
+    annotation/asr/ASRModuleWidgetBase.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -370,7 +395,8 @@ FORMS    += \
     corpus/CorpusRepositoryCreateWizard.ui \
     corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
     annotation/calculate/TidyUpAnnotationsDialog.ui \
-    annotation/TranscriptionAnnotationWidget.ui
+    annotation/SpeechRecognitionWidget.ui \
+    annotation/asr/AutomaticTranscriptionWidget.ui
 
 RESOURCES += \
     praaline.qrc \

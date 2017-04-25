@@ -36,6 +36,8 @@ private slots:
 private:
     Ui::GlobalProsodicProfileWidget *ui;
     GlobalProsodicProfileWidgetData *d;
+
+    void createMeasureDefinitionsTableModels();
 };
 
 

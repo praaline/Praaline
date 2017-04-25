@@ -30,6 +30,8 @@ struct GlobalProsodicProfileWidgetData {
     CorpusRepository *repository;
     GridViewWidget *gridviewResults;
     QStandardItemModel *modelResults;
+    GridViewWidget *gridviewMeasureDefinitions;
+    QStandardItemModel *modelMeasureDefinitions;
 };
 
 GlobalProsodicProfileWidget::GlobalProsodicProfileWidget(CorpusRepository *repository, QWidget *parent) :
@@ -46,6 +48,15 @@ GlobalProsodicProfileWidget::GlobalProsodicProfileWidget(CorpusRepository *repos
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
+    // Measure definitions grid view
+    d->gridviewMeasureDefinitions = new GridViewWidget(this);
+    d->gridviewMeasureDefinitions->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    d->gridviewMeasureDefinitions->tableView()->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    ui->gridLayoutMeasureDefinitions->addWidget(d->gridviewMeasureDefinitions);
+    // Create measure definitions table models
+    createMeasureDefinitionsTableModels();
+    // First tab is active
+    ui->tabWidget->setCurrentIndex(0);
 }
 
 GlobalProsodicProfileWidget::~GlobalProsodicProfileWidget()
@@ -102,6 +113,26 @@ StatisticalMeasureDefinition GlobalProsodicProfileWidget::measureDefinition(cons
     if (measureID == "TrajInterZ")      return StatisticalMeasureDefinition("TrajInterZ", "Trajectory Inter Z-score", "sd/s", "As TrajInter, but for pitch trajectory in standard deviation units on ST scale (z-score) (in sd/s)");
     if (measureID == "TrajPhonZ")       return StatisticalMeasureDefinition("TrajPhonZ", "Trajectory Phonation Z-score", "sd/s", "As TrajPhon, but for pitch trajectory in standard deviation units on ST scale (z-score) (in sd/s)");
     return StatisticalMeasureDefinition(measureID, measureID, "");
+}
+
+void GlobalProsodicProfileWidget::createMeasureDefinitionsTableModels()
+{
+    // Measures for communications
+    d->modelMeasureDefinitions = new QStandardItemModel(this);
+    d->modelMeasureDefinitions->setHorizontalHeaderLabels(QStringList() <<
+                                                          "Measure ID" << "Measure" << "Units" << "Description");
+    foreach (QString measureID, measureIDs()) {
+        QList<QStandardItem *> items;
+        StatisticalMeasureDefinition def = measureDefinition(measureID);
+        items << new QStandardItem(measureID);
+        items << new QStandardItem(def.displayName());
+        items << new QStandardItem(def.units());
+        items << new QStandardItem(def.description());
+        d->modelMeasureDefinitions->appendRow(items);
+    }
+    // Update table
+    d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitions);
+    d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
 }
 
 void GlobalProsodicProfileWidget::analyse()

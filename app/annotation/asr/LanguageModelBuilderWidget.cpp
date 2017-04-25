@@ -2,8 +2,7 @@
 #include "ui_LanguageModelBuilderWidget.h"
 
 LanguageModelBuilderWidget::LanguageModelBuilderWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::LanguageModelBuilderWidget)
+    ASRModuleWidgetBase(parent), ui(new Ui::LanguageModelBuilderWidget)
 {
     ui->setupUi(this);
 }
