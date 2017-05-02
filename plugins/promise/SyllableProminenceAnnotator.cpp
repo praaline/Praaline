@@ -167,8 +167,8 @@ void SyllableProminenceAnnotator::prepareFeatures(QHash<QString, RealValueList> 
         features["f0_mean_st_rel33"] << Measures::relative(tier_syll, "f0_mean", isyll, 3, 3, true, "f0_min", true);
         features["f0_mean_st_rel44"] << Measures::relative(tier_syll, "f0_mean", isyll, 4, 4, true, "f0_min", true);
         features["f0_mean_st_rel55"] << Measures::relative(tier_syll, "f0_mean", isyll, 5, 5, true, "f0_min", true);
-        double up = tier_syll->interval(isyll)->attribute("up").toDouble();
-        double down = tier_syll->interval(isyll)->attribute("down").toDouble();
+        double up = tier_syll->interval(isyll)->attribute("intrasyllabup").toDouble();
+        double down = tier_syll->interval(isyll)->attribute("intrasyllabdown").toDouble();
         features["f0_up"] << up;
         features["f0_down"] << down;
         features["f0_mvt"] << (up + down);
@@ -406,14 +406,6 @@ void SyllableProminenceAnnotator::outputSVM(IntervalTier *tier_syll, IntervalTie
     }
 }
 
-int quantize(double x, int factor, int max)
-{
-    int r = (int) (x * factor);
-    if (r < -max) r = -max;
-    if (r > max) r = max;
-    return r;
-}
-
 int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
                                            QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
                                            bool createSequences)
@@ -433,7 +425,7 @@ int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         QString delivery = syll->attribute("delivery").toString();
         QString prom = syll->attribute("prom").toString();
 
-        QString sylltext = syll->text().replace(" ", "_").trimmed();
+        QString sylltext = syll->text().replace(" ", "_").replace("\t", "").trimmed();
 
         QList<Interval *> tokens = tier_token->getIntervalsOverlappingWith(syll, RealTime(0, 5000));
 
@@ -461,11 +453,11 @@ int SyllableProminenceAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         foreach (QString featureName, featureSelection) {
             if (featureName.endsWith("_z")) {
                 featureName.chop(2);
-                int x = quantize(features[featureName].zscore(isyll), 10, 200);
+                int x = Measures::quantize(features[featureName].zscore(isyll), 10, 200);
                 if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
             }
             else {
-                int x = quantize(features[featureName].at(isyll), 10, 200);
+                int x = Measures::quantize(features[featureName].at(isyll), 10, 200);
                 if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
             }
         }
@@ -668,7 +660,7 @@ IntervalTier *SyllableProminenceAnnotator::annotate(const QString &annotationID,
     }
 
     if (d->streamCRFData) {
-        outputCRF(tier_syll, tier_token, features, withPOS, (*d->streamCRFData), false);
+        outputCRF(tier_syll, tier_token, features, withPOS, (*d->streamCRFData), true);
     }
 
     return promise;

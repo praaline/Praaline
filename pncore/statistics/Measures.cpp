@@ -20,11 +20,11 @@ QPair<int, int> Measures::window(IntervalTier *tier, int i, int windowLeft, int 
     // Calculation
     while ((ret.first > 0) &&
            (i - (ret.first - 1) <= windowLeft) &&
-           ((tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+           ((!tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
         ret.first = ret.first - 1;
     while ((ret.second < tier->count() - 1) &&
            ((ret.second + 1) - i <= windowRight) &&
-           ((tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+           ((!tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
         ret.second = ret.second + 1;
     return ret;
 }
@@ -42,11 +42,11 @@ QPair<int, int> Measures::window(IntervalTier *tier, RealTime centre, RealTime w
     // Calculation
     while ((ret.first > 0) &&
            (centre - tier->interval(ret.first - 1)->tMax() <= windowLeft) &&
-           ((tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+           ((!tier->interval(ret.first - 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
         ret.first = ret.first - 1;
     while ((ret.second < tier->count() - 1) &&
            (tier->interval(ret.second + 1)->tMin() - centre <= windowRight) &&
-           ((tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
+           ((!tier->interval(ret.second + 1)->isPauseSilent() && pauseBlocksWindow) || (!pauseBlocksWindow)))
         ret.second = ret.second + 1;
     return ret;
 }
@@ -110,6 +110,14 @@ double Measures::relative(IntervalTier *tier, QString attributeName, int i, int 
     return value / windowMean;
 }
 
+// static
+int Measures::quantize(double x, int factor, int max)
+{
+    int r = (int) (x * factor);
+    if (r < -max) r = -max;
+    if (r > max) r = max;
+    return r;
+}
 
 } // namespace Core
 } // namespace Praaline

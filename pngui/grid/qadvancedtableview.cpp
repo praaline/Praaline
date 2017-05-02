@@ -963,9 +963,9 @@ void QAdvancedTableView::splitView(bool split)
     ui->splittedDataTableView->setVerticalScrollBarPolicy(ui->dataTableView->verticalScrollBarPolicy());
 }
 
-void QAdvancedTableView::sortByColumn(int column, Qt::SortOrder order)
+void QAdvancedTableView::sortByColumn(int logicalIndex, Qt::SortOrder order)
 {
-    ui->headerTableView->sortByColumn(column, order);
+    ui->headerTableView->sortByColumn(logicalIndex, order);
 }
 
 Qt::TextElideMode QAdvancedTableView::textElideMode() const

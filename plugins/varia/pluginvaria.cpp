@@ -158,41 +158,154 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
 
 #include "pncore/interfaces/phon/PhonTranscription.h"
 
-void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
+void importPhonTranscriptionsIvana(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    QString path = "/home/george/Dropbox/RECHERCHES BEGAIEMENT/CORPUS_IVANA/";
+    QString path = "/home/george/Dropbox/RECHERCHES_BEGAIEMENT/CORPUS_IVANA/";
     foreach (QPointer<CorpusCommunication> com, communications) {
+        Corpus *corpus = com->corpus();
+        if (!corpus) continue;
         PhonTranscription tr;
         tr.load(path + com->ID() + ".xml");
         QString annotationID = com->ID();
-
-
-        QString speakerID = com->ID().left(5);
-        Corpus *corpus = com->corpus();
-        if (corpus) {
+        QStringList participantIDs = tr.participantIDs();
+        if (participantIDs.isEmpty()) participantIDs << "";
+        QStringList speakerIDs;
+        foreach (QString participantID, participantIDs) {
+            QString speakerID = com->ID().left(5);
+            if (!participantID.isEmpty()) speakerID = speakerID + "_" + participantID;
+            speakerIDs << speakerID;
+        }
+        for (int i = 0; i < speakerIDs.count(); ++i) {
+            QString speakerID = speakerIDs.at(i);
+            QString participantID = participantIDs.at(i);
+            // If speaker does not exist, add it
             if (!corpus->hasSpeaker(speakerID)) {
                 CorpusSpeaker *spk = new CorpusSpeaker(speakerID);
                 spk->setName(tr.sessionID());
                 corpus->addSpeaker(spk);
                 corpus->save();
             }
+            QList<Interval *> intervals_transcription;
+            for (int j = 0; j < tr.segments().count(); ++j) {
+                PhonTranscription::Segment segment = tr.segments().at(j);
+                if (segment.speakerID != participantID) continue;
+                QString transcription_model = segment.orthography.join(" ");
+                QString transcription = segment.groupTiers.value("Orthography Actual").join(" ");
+                if (transcription.isEmpty()) transcription = transcription_model;
+                QString ortho = transcription;
+                ortho = ortho.remove(QRegularExpression("\\((.*)\\)"));
+                ortho = ortho.remove("/").remove(".").remove("<").remove(">").remove("*");
+                ortho = ortho.replace("  ", " ").replace("  ", " ");
+                // Start and end times. Check sanity, Phon allows for small overlaps.
+                RealTime tMin = segment.startTime;
+                RealTime tMax = segment.startTime + segment.duration;
+                if (j < tr.segments().count() - 1) {
+                    if (tMax > tr.segments().at(j+1).startTime) {
+                        tMax = tr.segments().at(j+1).startTime;
+                    }
+                }
+                Interval *intv = new Interval(tMin, tMax, transcription);
+                intv->setAttribute("transcription_model", transcription_model);
+                intv->setAttribute("ortho", ortho);
+                intervals_transcription << intv;
+            }
+            IntervalTier *tier_transcription = new IntervalTier("transcription", intervals_transcription);
+            corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
         }
-        QList<Interval *> intervals_transcription;
-        foreach (PhonTranscription::Segment segment, tr.segments()) {
-            QString transcription_model = segment.orthography.join(" ");
-            QString transcription = segment.groupTiers.value("Orthography Actual").join(" ");
-            RealTime tMin = segment.startTime;
-            RealTime tMax = segment.startTime + segment.duration;
-            Interval *intv = new Interval(tMin, tMax, transcription);
-            intv->setAttribute("transcription_model", transcription_model);
-            intervals_transcription << intv;
-        }
-        IntervalTier *tier_transcription = new IntervalTier("transcription", intervals_transcription);
-        corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
-
-        qDebug() << "test";
     }
+}
 
+void prepareClassifierFiles(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QString path = "/home/george/Dropbox/RECHERCHES_BEGAIEMENT/CORPUS_DOUBLE_TACHE/";
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        QString filenameIn = path + "/features/" + com->ID() + ".arff";
+        QString filenameOut = path + "/features2/" + com->ID() + ".arff";
+        QFile fileIn(filenameIn);
+        if (!fileIn.open( QIODevice::ReadOnly | QIODevice::Text )) continue;
+        QTextStream stream(&fileIn);
+        QFile fileOut(filenameOut);
+        if (!fileOut.open( QIODevice::WriteOnly | QIODevice::Text )) continue;
+        QTextStream out(&fileOut);
+
+        QString speakerID = com->ID().section("_", 0, 0);
+        AnnotationTier *tier = com->corpus()->repository()->annotations()->getTier(com->ID(), speakerID, "disfluences_begues");
+        IntervalTier *tier_disf = qobject_cast<IntervalTier *>(tier);
+        if (!tier_disf) continue;
+
+        do {
+            QString line = stream.readLine();
+            if (line.startsWith("@attribute class {")) {
+                out << "@attribute class { garbage, block, lengthening }\n";
+            }
+            else if (line.startsWith("'file'")) {
+                int frame = line.section(",", 1, 1).toInt();
+                RealTime t = RealTime::fromMilliseconds(frame * 10);
+                Interval *intv = tier_disf->intervalAtTime(t);
+                if (intv && intv->text() == "pr") {
+                    out << line.replace(",garbage", ",lengthening") << "\n";
+                }
+                else if (intv && intv->text() == "bl") {
+                    out << line.replace(",garbage", ",block") << "\n";
+                }
+                else {
+                    out << line << "\n";
+                }
+            }
+            else {
+                out << line << "\n";
+            }
+        } while (!stream.atEnd());
+
+        fileIn.close();
+        fileOut.close();
+    }
+}
+
+QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QString ret;
+    // Creates a transcription
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            QString transcription;
+            QList<Interval *> tokens = com->repository()->annotations()->getIntervals(AnnotationDatastore::Selection(annotationID, "", "tok_min"));
+            if (tokens.isEmpty()) continue;
+            QString currentSpeakerID = tokens.first()->attribute("speakerID").toString();
+            transcription.append(currentSpeakerID).append("\t");
+            for (int i = 0; i < tokens.count(); ++i) {
+                Interval *token = tokens.at(i);
+                if (token->isPauseSilent() && i == 0) continue;
+                QString speakerID = token->attribute("speakerID").toString();
+                if (currentSpeakerID != speakerID) {
+                    QString nextSpeakerID = (i < tokens.count() - 1) ? tokens.at(i+1)->attribute("speakerID").toString() : "";
+                    if (nextSpeakerID == currentSpeakerID && token->isPauseSilent()) continue;
+                    transcription.append("\n").append(speakerID).append("\t");
+                    currentSpeakerID = speakerID;
+                }
+                if (token->isPauseSilent() && token->duration().toDouble() >= 0.250)
+                    transcription.append("// ");
+                else if (token->isPauseSilent() && token->duration().toDouble() < 0.250)
+                    transcription.append("/ ");
+                else
+                    transcription.append(token->text().trimmed()).append(" ");
+            }
+            ret.append(com->ID()).append("\n");
+            ret.append(transcription).append("\n\n");
+        }
+    }
+    return ret;
+}
+
+void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
+{
+
+    printMessage(valibelTranscription(communications));
+    // prepareClassifierFiles(communications);
+//    importPhonTranscriptionsIvana(communications);
 //    if (communications.isEmpty()) return;
 //    SpeechRateExperiments sr;
 //    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Results raw files/";
@@ -220,37 +333,6 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
 //    ProsodyCourse::syllableTables(corpus);
 //    return;
-
-//    int countDone = 0;
-//    madeProgress(0);
-//    foreach (QPointer<CorpusCommunication> com, communications) {
-//        if (!com) continue;
-//        TemporalAnalyser analyser;
-//        analyser.calculate(corpus, com);
-//        foreach (QString measureID, analyser.measureIDsForCommunication()) {
-//            l
-//        }
-//        QString header("\t");
-//        foreach (QString speakerID, analyser.speakerIDs()) {
-//            header.append(speakerID).append("\t");
-//        }
-//        header.chop(1);
-//        printMessage(header);
-//        foreach(QString measureID, analyser.measureIDsForSpeaker()) {
-//            QString line;
-//            line.append(analyser.measureDefinitionForSpeaker(measureID).displayNameUnit()).append("\t");
-//            foreach (QString speakerID, analyser.speakerIDs()) {
-//                line.append(QString("%1").arg(analyser.measureSpk(speakerID, measureID))).append("\t");
-//            }
-//            line.chop(1);
-//            printMessage(line);
-//        }
-//        printMessage("");
-//        countDone++;
-//        madeProgress(countDone * 100 / communications.count());
-//    }
-//    return;
-
 
 //    int countDone = 0;
 //    madeProgress(0);

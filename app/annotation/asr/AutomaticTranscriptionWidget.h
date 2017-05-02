@@ -29,6 +29,8 @@ protected slots:
     void futureProgressValueChanged(int);
     void futureFinished();
 
+    void transcribe();
+
 private:
     Ui::AutomaticTranscriptionWidget *ui;
     AutomaticTranscriptionWidgetData *d;

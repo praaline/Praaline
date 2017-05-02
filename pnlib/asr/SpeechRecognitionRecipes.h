@@ -22,13 +22,16 @@ public:
     struct Configuration {
         QString sphinxHMModelPath;
         QString sphinxPronunciationDictionary;
+        QString sphinxLanguageModelPath;
     };
 
     SpeechRecognitionRecipes();
     static bool downsampleWaveFile(QPointer<Praaline::Core::CorpusRecording> rec, QString outputDirectory = QString());
-    static bool batchCreateSphinxFeatureFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
-                                              Configuration config);
+
+    static bool createSphinxFeatureFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications, Configuration config);
+    static bool createSphinxFeatureFiles(QStringList filenames, SpeechRecognitionRecipes::Configuration config);
     static bool createSphinxFeatureFile(QPointer<Praaline::Core::CorpusRecording> rec, Configuration config);
+
     static bool transcribeUtterancesWithSphinx(QPointer<Praaline::Core::CorpusCommunication> com,
                                                QPointer<Praaline::Core::CorpusRecording> rec, const QString &annotationID,
                                                const QString &tiernameSegmentation, const QString &tiernameTranscription,

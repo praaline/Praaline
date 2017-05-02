@@ -49,8 +49,8 @@ bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<CorpusRecording> rec,
     return ret;
 }
 
-bool SpeechRecognitionRecipes::batchCreateSphinxFeatureFiles(QList<QPointer<CorpusCommunication> > &communications,
-                                                             SpeechRecognitionRecipes::Configuration config)
+bool SpeechRecognitionRecipes::createSphinxFeatureFiles(QList<QPointer<CorpusCommunication> > &communications,
+                                                        SpeechRecognitionRecipes::Configuration config)
 {
     QStringList filenames;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -71,21 +71,30 @@ bool SpeechRecognitionRecipes::batchCreateSphinxFeatureFiles(QList<QPointer<Corp
     return true;
 }
 
+bool SpeechRecognitionRecipes::createSphinxFeatureFiles(QStringList filenames,
+                                                        SpeechRecognitionRecipes::Configuration config)
+{
+    QPointer<SphinxFeatureExtractor> FE = new SphinxFeatureExtractor();
+    FE->setFeatureParametersFile(config.sphinxHMModelPath + "/feat.params");
+    FE->batchCreateSphinxMFC(filenames);
+    return true;
+}
+
 bool SpeechRecognitionRecipes::createSphinxFeatureFile(QPointer<CorpusRecording> rec,
                                                        SpeechRecognitionRecipes::Configuration config)
 {
     if (!rec) return false;
     QStringList filenames;
     filenames << QString(rec->filePath()).replace(".wav", ".16k.wav");
-    QPointer<SphinxFeatureExtractor> FE = new SphinxFeatureExtractor();
-    FE->setFeatureParametersFile(config.sphinxHMModelPath + "/feat.params");
-    FE->batchCreateSphinxMFC(filenames);
-    foreach (QString filename, filenames) {
-        QString filenameFEOut = QString(filename).replace(".wav", ".mfc");
-        QString filenameSimple = QString(filenameFEOut).replace(".16k.mfc", ".mfc");
-        QFile::rename(filenameFEOut, filenameSimple);
+    bool ret = createSphinxFeatureFiles(filenames, config);
+    if (ret) {
+        foreach (QString filename, filenames) {
+            QString filenameFEOut = QString(filename).replace(".wav", ".mfc");
+            QString filenameSimple = QString(filenameFEOut).replace(".16k.mfc", ".mfc");
+            QFile::rename(filenameFEOut, filenameSimple);
+        }
     }
-    return true;
+    return ret;
 }
 
 bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<CorpusCommunication> com,

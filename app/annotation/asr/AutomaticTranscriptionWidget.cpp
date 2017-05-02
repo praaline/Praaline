@@ -32,6 +32,9 @@ struct AutomaticTranscriptionWidgetData {
     QPointer<CorpusRecording> recording;
     QPointer<CorpusAnnotation> annotation;
 
+    QString filepathDownsampled;
+    QString filepathFeaturesMFC;
+
     QFuture<QString> future;
     QFutureWatcher<QString> watcher;
 
@@ -53,6 +56,11 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
 
     d->recogniser = new SphinxOfflineRecogniser(this);
 
+    // Sphinx configuration
+    QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
+    d->config.sphinxHMModelPath = sphinxPath + "model/hmm/french_f0";
+    d->config.sphinxPronunciationDictionary = sphinxPath + "model/lm/french_f0/frenchWords62K.dic";
+    d->config.sphinxLanguageModelPath = sphinxPath + "model/lm/french_f0/french3g62K.lm.bin";
 }
 
 AutomaticTranscriptionWidget::~AutomaticTranscriptionWidget()
@@ -165,16 +173,27 @@ void AutomaticTranscriptionWidget::prepareFile()
         ui->textMessages->appendHtml(QString("File <i>%1</i> does not exist.").append(d->recording->filePath()));
         return;
     }
-    QString filepathDownsampled = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".16k");
-    QString filepathFeaturesMFC = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".mfc");
+    QString filepathDownsampled = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".16k.wav");
+    QString filepathFeaturesMFC = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".16k.mfc");
     if (!QFile::exists(filepathFeaturesMFC)) {
         ui->textMessages->appendHtml(QString("Preparing recording for automatic speech recognition."));
         if (!QDir(d->recording->basePath() + "/asr").exists()) {
             QDir(d->recording->basePath()).mkdir("asr");
         }
-        SpeechRecognitionRecipes::downsampleWaveFile(d->recording, d->recording->basePath() + "/asr");
+        if (!QFile::exists(filepathDownsampled)) {
+            SpeechRecognitionRecipes::downsampleWaveFile(d->recording, d->recording->basePath() + "/asr");
+            ui->textMessages->appendHtml(QString("Created downsampled file."));
+            QApplication::processEvents();
+        }
+        SpeechRecognitionRecipes::createSphinxFeatureFiles(QStringList() << filepathDownsampled, d->config);
+        ui->textMessages->appendHtml(QString("Created MFCC feature file for Sphinx."));
     }
+    d->filepathDownsampled = filepathDownsampled;
+    d->filepathFeaturesMFC = filepathFeaturesMFC;
+    ui->textMessages->appendHtml(QString("Loaded recording %1.").arg(d->recording->ID()));
+}
 
+void AutomaticTranscriptionWidget::transcribe()
+{
 
-    // SpeechRecognitionRecipes::createSphinxFeatureFile(d->recording, d->config);
 }

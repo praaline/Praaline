@@ -39,6 +39,8 @@ public:
     static double relative(IntervalTier *tier, QString attributeName, int i, int windowLeft, int windowRight,
                            bool pauseBlocksWindow = true, QString checkAttribute = QString(), bool logarithmic = false);
 
+    static int quantize(double x, int factor, int max);
+
 private:
     Measures() {}
 };

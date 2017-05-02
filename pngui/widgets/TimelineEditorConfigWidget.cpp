@@ -1,5 +1,5 @@
 #include "TimelineEditorConfigWidget.h"
-#include "ui_timelineeditorconfigwidget.h"
+#include "ui_TimelineEditorConfigWidget.h"
 
 #include <QString>
 #include <QList>
@@ -54,8 +54,8 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     d->modelLevelsAttributes = new QStandardItemModel;
     d->modelLevelsAttributes->setColumnCount(4);
     d->modelLevelsAttributes->setHorizontalHeaderLabels(QStringList() << "Level" << "Attribute" << "Function" << "Parameters");
-    addLevelAttribute("syll", "boundary");
-    addLevelAttribute("syll", "contour");
+    //addLevelAttribute("syll", "boundary");
+    //addLevelAttribute("syll", "contour");
 
     addLevelAttribute("tok_min", "");
     addLevelAttribute("tok_min", "pos_min");
@@ -81,6 +81,7 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     d->tableviewLevelsAttributes->verticalHeader()->setDefaultSectionSize(20);
     d->tableviewLevelsAttributes->setAlternatingRowColors(true);
     d->innerwindowLevelsAttributes->setCentralWidget(d->tableviewLevelsAttributes);
+    ui->gridLayoutLevelsAttributes->setMargin(0);
     ui->gridLayoutLevelsAttributes->addWidget(d->innerwindowLevelsAttributes);
 
     d->tableviewLevelsAttributes->setModel(d->modelLevelsAttributes);

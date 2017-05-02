@@ -43,8 +43,6 @@ private:
             QHash<QString, RealValueList> &features, bool withPOS,
             const QString &filenameModel, const QString &tier_name = "boundary_auto");
 
-    static int quantize(double x, int factor, int max);
-
     ProsodicBoundariesAnnotatorData *d;
 };
 

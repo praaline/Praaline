@@ -88,6 +88,7 @@ void AnnotationTimelineEditor::annotationsMerge()
 void AnnotationTimelineEditor::removeSorting()
 {
     if (!d->model) return;
+    d->view->tableView()->sortByColumn(1, Qt::AscendingOrder);
     d->view->tableView()->sortByColumn(-1, Qt::AscendingOrder);
 }
 

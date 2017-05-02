@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayoutAll">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -27,20 +27,20 @@
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <widget class="QTabWidget" name="tabWidgetLevelsAttributes">
-     <property name="currentIndex">
-      <number>0</number>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
      </property>
-     <widget class="QWidget" name="tabSpeaker">
-      <attribute name="title">
+     <widget class="QGroupBox" name="groupBoxSpeakers">
+      <property name="title">
        <string>Speakers</string>
-      </attribute>
+      </property>
       <layout class="QGridLayout" name="gridLayoutSpeakers"/>
      </widget>
-     <widget class="QWidget" name="tabLevelsAttributes">
-      <attribute name="title">
+     <widget class="QGroupBox" name="groupBoxLevelsAttributes">
+      <property name="title">
        <string>Levels and Attributes</string>
-      </attribute>
+      </property>
       <layout class="QGridLayout" name="gridLayoutLevelsAttributes"/>
      </widget>
     </widget>

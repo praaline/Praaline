@@ -51,8 +51,10 @@ struct TimelineAnnotationEditorData {
     QAction *actionEditorIntervalJoin;
     QAction *actionToggleOrientation;
     QAction *actionRemoveSorting;
+    QAction *actionToggleTimelineConfig;
     // Configuration: levels/attributes + speakers
-    TimelineEditorConfigWidget *timelineConfig;
+    QDockWidget *dockTimelineConfig;
+    TimelineEditorConfigWidget *widgetTimelineConfig;
     // Waiting spinner
     WaitingSpinnerWidget* waitingSpinner;
     // Media player
@@ -88,13 +90,17 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     // Editor grid
     d->editor = new AnnotationTimelineEditor(this);
     // Timeline configuration
-    d->timelineConfig = new TimelineEditorConfigWidget(this);
-    connect(d->timelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
+    d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
+    connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
             this, SLOT(selectedLevelsAttributesChanged()));
-    connect(d->timelineConfig, SIGNAL(speakerAdded(QString)),
+    connect(d->widgetTimelineConfig, SIGNAL(speakerAdded(QString)),
             this, SLOT(speakerAdded(QString)));
-    connect(d->timelineConfig, SIGNAL(speakerRemoved(QString)),
+    connect(d->widgetTimelineConfig, SIGNAL(speakerRemoved(QString)),
             this, SLOT(speakerRemoved(QString)));
+    d->dockTimelineConfig = new QDockWidget(tr("Timeline Configuration"), this);
+    d->dockTimelineConfig->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    d->dockTimelineConfig->setWidget(d->widgetTimelineConfig);
+    addDockWidget(Qt::RightDockWidgetArea, d->dockTimelineConfig);
     // Annotation controls
     d->annotationControls = new AnnotationControlsDisfluencies(this);
     connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
@@ -122,9 +128,8 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     QWidget *contents = new QWidget(this);
     QGridLayout *layout = new QGridLayout(this);
     layout->setMargin(0);
-    layout->addWidget(d->editor);
-    layout->addWidget(d->timelineConfig);
     layout->addWidget(d->annotationControls);
+    layout->addWidget(d->editor);
     contents->setLayout(layout);
     this->setCentralWidget(contents);
     // Actions
@@ -188,7 +193,7 @@ void TimelineAnnotationEditor::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionEditorIntervalSplit);
 
-    d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), tr("Change orientation"), this);
+    d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), tr("Change Orientation"), this);
     connect(d->actionToggleOrientation, SIGNAL(triggered()), this, SLOT(toggleOrientation()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleOrientation", d->actionToggleOrientation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -199,6 +204,12 @@ void TimelineAnnotationEditor::setupActions()
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.RemoveSorting", d->actionRemoveSorting, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionRemoveSorting);
+
+    d->actionToggleTimelineConfig = new QAction(QIcon(":/icons/actions/toggle_config.png"), tr("Editor Options"), this);
+    connect(d->actionToggleTimelineConfig, SIGNAL(triggered()), this, SLOT(toggleTimelineConfig()));
+    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleTimelineConfig", d->actionToggleTimelineConfig, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarEditor->addAction(d->actionToggleTimelineConfig);
 
     // SYNC ACTIONS
     // ----------------------------------------------------------------------------------------------------------------
@@ -286,9 +297,9 @@ void TimelineAnnotationEditor::speakerRemoved(const QString &speakerID)
     updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::selectedLevelsAttributesChanged(const QList<QPair<QString, QString> > &selection)
+void TimelineAnnotationEditor::selectedLevelsAttributesChanged()
 {
-    d->editor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
+    d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
     updateAnnotationControls();
 }
 
@@ -311,8 +322,8 @@ void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &ann
     QApplication::processEvents();
 
     d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
-    d->editor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
-    d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
+    d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
+    d->widgetTimelineConfig->updateSpeakerList(d->currentTierGroups.keys());
     updateAnnotationControls();
 
     d->waitingSpinner->stop();
@@ -329,6 +340,11 @@ void TimelineAnnotationEditor::updateAnnotationControls()
 void TimelineAnnotationEditor::toggleOrientation()
 {
     d->editor->toggleOrientation();
+}
+
+void TimelineAnnotationEditor::toggleTimelineConfig()
+{
+    d->dockTimelineConfig->toggleViewAction()->activate(QAction::Trigger);
 }
 
 void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> rows)

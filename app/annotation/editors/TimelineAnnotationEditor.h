@@ -25,11 +25,12 @@ protected slots:
     void saveAnnotations();
     void speakerAdded(const QString &speakerID);
     void speakerRemoved(const QString &speakerID);
-    void selectedLevelsAttributesChanged(const QList<QPair<QString, QString> > &selection);
+    void selectedLevelsAttributesChanged();
 
     void verticalTimelineSelectedRowsChanged(QList<int> rows);
     void verticalTimelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous);
     void toggleOrientation();
+    void toggleTimelineConfig();
 
     void mediaPositionChanged(qint64 position);
     void mediaPlay();

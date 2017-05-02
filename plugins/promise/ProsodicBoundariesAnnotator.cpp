@@ -159,26 +159,19 @@ void ProsodicBoundariesAnnotator::prepareFeatures(QHash<QString, RealValueList> 
         features["f0_mean_st_rel30"] << Measures::relative(tier_syll, "f0_mean", isyll, 3, 0, true, "f0_min", true);
         features["f0_mean_st_rel40"] << Measures::relative(tier_syll, "f0_mean", isyll, 4, 0, true, "f0_min", true);
         features["f0_mean_st_rel50"] << Measures::relative(tier_syll, "f0_mean", isyll, 5, 0, true, "f0_min", true);
-        double up = tier_syll->interval(isyll)->attribute("up").toDouble();
-        double down = tier_syll->interval(isyll)->attribute("down").toDouble();
+        double up = tier_syll->interval(isyll)->attribute("intrasyllabup").toDouble();
+        double down = tier_syll->interval(isyll)->attribute("intrasyllabdown").toDouble();
         features["f0_up"] << up;
         features["f0_down"] << down;
         features["f0_traj"] << tier_syll->interval(isyll)->attribute("trajectory").toDouble();
     }
 }
 
-int ProsodicBoundariesAnnotator::quantize(double x, int factor, int max)
-{
-    int r = (int) (x * factor);
-    if (r < -max) r = -max;
-    if (r > max) r = max;
-    return r;
-}
-
 int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
                                            QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
                                            bool createSequences)
 {
+    bool quantize(true);
     int noSequences = 0;
     QStringList featureSelection;
     featureSelection << "following_pause_dur" << "following_pause_dur_log" <<
@@ -190,7 +183,7 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
     for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         // Get attributes: syllable text
         Interval *syll = tier_syll->interval(isyll);
-        QString sylltext = syll->text().replace(" ", "_").trimmed();
+        QString sylltext = syll->text().replace(" ", "_").replace("\t", "").trimmed();
         if (sylltext.length() == 0) sylltext = "_";
         // Target attribute
         QString boundary = syll->attribute("boundary").toString();
@@ -220,12 +213,20 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         foreach (QString featureName, featureSelection) {
             if (featureName.endsWith("_z")) {
                 featureName.chop(2);
-                int x = quantize(features[featureName].zscore(isyll), 10, 200);
-                if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
+                if (quantize) {
+                    int x = Measures::quantize(features[featureName].zscore(isyll), 10, 200);
+                    if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
+                } else {
+                    out << features[featureName].zscore(isyll) << "\t";
+                }
             }
             else {
-                int x = quantize(features[featureName].at(isyll), 10, 200);
-                if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
+                if (quantize) {
+                    int x = Measures::quantize(features[featureName].at(isyll), 10, 200);
+                    if (x == 200 || x == -200) out << "NA\t"; else out << x << "\t";
+                } else {
+                    out << features[featureName].at(isyll) << "\t";
+                }
             }
         }
         // Following pause (silent or filled) presence
@@ -332,8 +333,8 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
             isyll++;
         //
         QStringList fields = line.split("\t");
-        QString response = fields.at(fields.count() - 3).section("/", 0, 0);
-        double score = fields.at(fields.count() - 3).section("/", 1, 1).toDouble();
+        QString response = fields.at(fields.count() - 4).section("/", 0, 0);
+        double score = fields.at(fields.count() - 4).section("/", 1, 1).toDouble();
         // qDebug() << line << response;
         if (promise->interval(isyll)->text() == "x") {
             if (response == "B3" || response == "B2")
@@ -386,7 +387,7 @@ IntervalTier *ProsodicBoundariesAnnotator::annotate(const QString &annotationID,
         }
     }
     if (d->streamCRFData) {
-        outputCRF(tier_syll, tier_token, features, true, (*d->streamCRFData), false);
+        outputCRF(tier_syll, tier_token, features, true, (*d->streamCRFData), true);
     }
     return promise;
 }
