@@ -186,6 +186,7 @@ void TimelineEditorConfigWidget::updateSpeakerList(QStringList speakerIDs) {
         delete d->modelSpeakers;
     }
     d->modelSpeakers = new QStandardItemModel;
+    d->modelSpeakers->setHorizontalHeaderLabels(QStringList() << "Speaker ID");
     int i = 0;
     foreach (QString speakerID, speakerIDs) {
         QStandardItem *item = new QStandardItem(speakerID);

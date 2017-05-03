@@ -359,7 +359,7 @@ void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> ro
             const QSignalBlocker blocker(d->mediaPlayer);
             // no signals here
             d->mediaPlayer->setPosition(d->tMin_msec_selected);
-            // qDebug() << "verticalTimelineSelectedRowsChanged : mediaplayer->set position" << d->tMin_msec_selected;
+            qDebug() << "verticalTimelineSelectedRowsChanged : mediaplayer->set position" << d->tMin_msec_selected;
         }
         d->tPauseAt_msec = 0;
     } else {
@@ -371,6 +371,7 @@ void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> ro
 
 void TimelineAnnotationEditor::verticalTimelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    Q_UNUSED(previous)
     if (d->editor->model()) {
         d->currentRow = current.row();
         d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble() * 1000;
@@ -379,7 +380,7 @@ void TimelineAnnotationEditor::verticalTimelineCurrentIndexChanged(const QModelI
             const QSignalBlocker blocker(d->mediaPlayer);
             // no signals here
             d->mediaPlayer->setPosition(d->tMin_msec_selected);
-            // qDebug() << "verticalTimelineCurrentIndexChanged : mediaplayer->set position" << d->tMin_msec_selected;
+            qDebug() << "verticalTimelineCurrentIndexChanged : mediaplayer->set position" << d->tMin_msec_selected;
         }
         d->tPauseAt_msec = 0;
     } else {
@@ -393,17 +394,26 @@ void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
 {
     if (!d->loopInsideInterval) {
         if (!(d->editor->model())) return;
-        RealTime t = RealTime::fromMilliseconds(position);
-        d->editor->moveToTime(t);
-        // qDebug() << "mediaPositionChanged, move to time" << t.toDouble();
+        if (d->mediaPlayer->state() != QMediaPlayer::PausedState) {
+            d->editor->moveToTime(RealTime::fromMilliseconds(position));
+            // qDebug() << "mediaPositionChanged, move to time" << RealTime::fromMilliseconds(position).toDouble();
+        }
     } else {
         if (position > d->tMax_msec_selected) {
             mediaPause();
-            if (d->tMin_msec_selected > 0) d->mediaPlayer->setPosition(d->tMin_msec_selected);
+            if (d->tMin_msec_selected > 0) {
+                const QSignalBlocker blocker(d->mediaPlayer);
+                // no signals here
+                d->mediaPlayer->setPosition(d->tMin_msec_selected);
+            }
         }
         else if (d->tPauseAt_msec > 0 && position > d->tPauseAt_msec) {
             mediaPause();
-            if (d->tMin_msec_selected > 0) d->mediaPlayer->setPosition(d->tMin_msec_selected);
+            if (d->tMin_msec_selected > 0) {
+                const QSignalBlocker blocker(d->mediaPlayer);
+                // no signals here
+                d->mediaPlayer->setPosition(d->tMin_msec_selected);
+            }
             d->tPauseAt_msec = 0;
         }
     }

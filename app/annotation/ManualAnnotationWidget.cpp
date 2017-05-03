@@ -31,6 +31,11 @@ struct ManualAnnotationWidgetData {
 
     // Corpus
     CorpusItemSelectorWidget *corpusItemSelector;
+    // Current selection
+    QPointer<Corpus> corpus;
+    QPointer<CorpusCommunication> com;
+    QPointer<CorpusRecording> rec;
+    QPointer<CorpusAnnotation> annot;
     // Open editors
     QList<AnnotationEditorBase *> openEditors;
 };
@@ -122,8 +127,9 @@ void ManualAnnotationWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<
                                               QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
 {
     int index = ui->tabWidgetEditors->currentIndex();
-    if (index < 0 || index >= d->openEditors.count()) return;
     if (ui->checkBoxFollowSelection->isChecked()) {
+        d->corpus = corpus; d->com = com; d->rec = rec; d->annot = annot;
+        if (index < 0 || index >= d->openEditors.count()) return;
         d->openEditors.at(index)->open(corpus, com, rec, annot);
     }
 }
@@ -150,6 +156,7 @@ void ManualAnnotationWidget::editorTabNew()
     d->openEditors.append(editor);
     ui->tabWidgetEditors->addTab(editor, ui->comboBoxEditorSelection->currentText());
     ui->tabWidgetEditors->setCurrentWidget(editor);
+    editor->open(d->corpus, d->com, d->rec, d->annot);
 }
 
 void ManualAnnotationWidget::editorTabCloseRequested(int index)

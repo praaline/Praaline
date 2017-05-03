@@ -184,6 +184,8 @@ void CorpusExplorerTreeNodeCorpus::buildTree()
 {
     clear();
     if (!m_corpus) return;
+
+    startProcessingCycle();
     m_nodeCommunications = new TreeNode(tr("Communications"), this);
     m_nodeCommunications->enableCategorizedDisplay();
     m_nodeCommunications->setIcon(QIcon(qti_icon_FOLDER_16X16));
@@ -218,6 +220,7 @@ void CorpusExplorerTreeNodeCorpus::buildTree()
     m_nodeSpeakers->endProcessingCycle();
     this->addNode(m_nodeCommunications);
     this->addNode(m_nodeSpeakers);
+    endProcessingCycle();
 }
 
 QString CorpusExplorerTreeNodeCorpus::categoryString(CorpusObject *obj, QStringList groupAttributeIDs)
