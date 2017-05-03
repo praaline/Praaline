@@ -30,11 +30,12 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
 #ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
     praatCommand = appPath + "/tools/praatcon.exe";
-#endif
+#else
 #ifdef Q_OS_MAC
     praatCommand = "/Applications/Praat.app/Contents/MacOS/Praat";
-#else
+#else Q_OS_WIN
     praatCommand = "/usr/bin/praat";
+#endif
 #endif
     emit logOutput("Praat script: " + script + " "+ scriptArguments.join(" "));
     // QStringList args;

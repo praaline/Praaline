@@ -394,7 +394,7 @@ void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
 {
     if (!d->loopInsideInterval) {
         if (!(d->editor->model())) return;
-        if (d->mediaPlayer->state() != QMediaPlayer::PausedState) {
+        if (d->mediaPlayer->state() == QMediaPlayer::PlayingState) {
             d->editor->moveToTime(RealTime::fromMilliseconds(position));
             // qDebug() << "mediaPositionChanged, move to time" << RealTime::fromMilliseconds(position).toDouble();
         }
