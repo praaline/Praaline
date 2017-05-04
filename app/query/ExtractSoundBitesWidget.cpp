@@ -12,7 +12,9 @@
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusRecording.h"
 #include "pncore/structure/AnnotationStructure.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/CorpusRepositoryDefinition.h"
 #include "pncore/datastore/FileDatastore.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/datastore/MetadataDatastore.h"
@@ -27,12 +29,14 @@ using namespace Praaline::Core;
 
 
 struct ExtractSoundBitesWidgetData {
-    ExtractSoundBitesWidgetData() : manualSelectionModel(0), corpusCopyOver(0) {}
+    ExtractSoundBitesWidgetData() : manualSelectionModel(0) {}
 
     GridViewWidget *manualSelectionTable;
     QStandardItemModel *manualSelectionModel;
     CorpusRepositoriesManager *corpusRepositoriesManager;
-    QPointer<Corpus> corpusCopyOver;
+
+    QScopedPointer<CorpusRepository> repositoryDestination;
+    QScopedPointer<Corpus> corpusDestination;
 };
 
 
@@ -186,20 +190,20 @@ void ExtractSoundBitesWidget::extractSoundBites()
         AudioSegmenter::segment(originalMediaFile, outputPath, intv, "", resampleRate, normalise);
 
         // Add to copy-over corpus and add annotations, if needed
-        if (ui->checkCreateCorpus && d->corpusCopyOver) {
+        if (ui->checkCreateCorpus && d->corpusDestination) {
             // Create Communication
-            QPointer<CorpusCommunication> stimCom = d->corpusCopyOver->communication(stimulusName);
+            QPointer<CorpusCommunication> stimCom = d->corpusDestination->communication(stimulusName);
             if (!stimCom) {
                 stimCom = new CorpusCommunication(stimulusName);
                 stimCom->setName(stimulusName);
-                d->corpusCopyOver->addCommunication(stimCom);
+                d->corpusDestination->addCommunication(stimCom);
             }
             // Carry over participations and speakers
             foreach (QPointer<CorpusParticipation> participation, corpus->participationsForCommunication(communicationID)) {
-                if (!d->corpusCopyOver->hasSpeaker(participation->speakerID())) {
-                    d->corpusCopyOver->addSpeaker(new CorpusSpeaker(participation->speakerID()));
+                if (!d->corpusDestination->hasSpeaker(participation->speakerID())) {
+                    d->corpusDestination->addSpeaker(new CorpusSpeaker(participation->speakerID()));
                 }
-                d->corpusCopyOver->addParticipation(stimCom->ID(), participation->speakerID(), participation->role());
+                d->corpusDestination->addParticipation(stimCom->ID(), participation->speakerID(), participation->role());
             }
             // Update recording
             QPointer<CorpusRecording> stimRec = stimCom->recording(stimulusName);
@@ -231,7 +235,7 @@ void ExtractSoundBitesWidget::extractSoundBites()
                     stimCom->addAnnotation(stimAnnot);
                 }
                 // in any case (replaces annotations already in the destination corpus)
-                // carryOverAnnotations(corpus, annotSource, stimAnnot, start, end);
+                carryOverAnnotations(repository, annotSource, stimAnnot, start, end);
             }
         }
 
@@ -239,75 +243,81 @@ void ExtractSoundBitesWidget::extractSoundBites()
         ui->progressBar->setValue(progress);
         QApplication::processEvents();
     }
+    if (ui->checkCreateCorpus && d->corpusDestination) {
+        d->corpusDestination->save();
+    }
     ui->progressBar->setValue(ui->progressBar->maximum());
 }
 
 void ExtractSoundBitesWidget::prepareCopyOverCorpus(QPointer<CorpusRepository> repositorySource, const QString &outputPath)
-{
-//    // Local DB corpus, using ID = name = metadata = annotation database name, stored in outputPath
-//    QString errorMessages;
-//    QString corpusName = ui->editNewCorpusName->text();
-//    QDir dir(outputPath);
-//    QString baseFolder = dir.absolutePath() + "/";
+{    
+    // Local DB corpus, using ID = name = metadata = annotation database name, stored in outputPath
+    QString errorMessages;
+    QString corpusName = ui->editNewCorpusName->text();
+    QDir dir(outputPath);
+    QString baseFolder = dir.absolutePath() + "/";
+    QString definitionFilename = baseFolder + corpusName + ".PraalineRepository";
 
-//    CorpusDefinition destCorpusDef;
-//    if (destCorpusDef.load(baseFolder + corpusName + ".corpus")) {
-//        d->corpusCopyOver = Corpus::open(destCorpusDef, errorMessages);
-//        if (!d->corpusCopyOver) return;
-//    }
-//    else {
-
-//        destCorpusDef.corpusID = corpusName;
-//        destCorpusDef.corpusName = corpusName;
-//        destCorpusDef.datastoreMetadata = DatastoreInfo(DatastoreInfo::SQL, "QSQLITE", "",
-//                                                       baseFolder + corpusName + ".db", "", "");
-//        destCorpusDef.datastoreAnnotations = DatastoreInfo(DatastoreInfo::SQL, "QSQLITE", "",
-//                                                          baseFolder  + corpusName + ".db", "", "");
-//        destCorpusDef.baseMediaPath = baseFolder;
-
-//        d->corpusCopyOver = Corpus::create(destCorpusDef, errorMessages);
-//        if (!d->corpusCopyOver) return;
-//        destCorpusDef.save(baseFolder + corpusName + ".corpus");
-//    }
-//    // Copy over the metadata and annotation structure
-//    d->corpusCopyOver->importMetadataStructure(corpusSource->metadataStructure());
-//    d->corpusCopyOver->importAnnotationStructure(corpusSource->annotationStructure());
-//    d->corpusCopyOver->save();
+    CorpusRepositoryDefinition repositoryDestinationDef;
+    if (repositoryDestinationDef.load(definitionFilename)) {
+        d->repositoryDestination.reset(CorpusRepository::open(repositoryDestinationDef, errorMessages));
+        if (!d->repositoryDestination) return;
+    }
+    else {
+        repositoryDestinationDef.repositoryID = corpusName;
+        repositoryDestinationDef.repositoryName = corpusName;
+        repositoryDestinationDef.infoDatastoreMetadata = DatastoreInfo(DatastoreInfo::SQL, "QSQLITE", "",
+                                                                       baseFolder + corpusName + ".db", "", "");
+        repositoryDestinationDef.infoDatastoreAnnotations = DatastoreInfo(DatastoreInfo::SQL, "QSQLITE", "",
+                                                                          baseFolder  + corpusName + ".db", "", "");
+        repositoryDestinationDef.basePath = baseFolder;
+        repositoryDestinationDef.basePathMedia = baseFolder;
+        d->repositoryDestination.reset(CorpusRepository::create(repositoryDestinationDef, errorMessages));
+        if (!d->repositoryDestination) return;
+        repositoryDestinationDef.save(definitionFilename);
+    }
+    // Copy over the metadata and annotation structure
+    d->repositoryDestination->importMetadataStructure(repositorySource->metadataStructure());
+    d->repositoryDestination->importAnnotationStructure(repositorySource->annotationStructure());
+    d->repositoryDestination->metadata()->saveMetadataStructure();
+    d->repositoryDestination->annotations()->saveAnnotationStructure();
+    // Create and save the destination corpus
+    d->corpusDestination.reset(new Corpus(corpusName, d->repositoryDestination.data()));
+    d->corpusDestination->save();
 }
 
 void ExtractSoundBitesWidget::carryOverAnnotations(QPointer<CorpusRepository> repositorySource,
                                                    QPointer<CorpusAnnotation> annotSource, QPointer<CorpusAnnotation> annotDestination,
                                                    RealTime start, RealTime end)
 {
-//    if (!d->repositoryCopyOver) return;
-//    QMap<QString, QPointer<AnnotationTierGroup> > tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
-//    foreach (QString speakerID, tiersSourceAll.keys()) {
-//        QPointer<AnnotationTierGroup> tiersSource = tiersSourceAll.value(speakerID);
-//        if (!tiersSource) continue;
-//        QPointer<AnnotationTierGroup> tiersDest = new AnnotationTierGroup();
-//        for (int i = 0; i < ui->comboBoxLevelsToCopy->count(); ++i) {
-//            if (ui->comboBoxLevelsToCopy->itemData(i).toBool() == true) {
-//                AnnotationStructureLevel *level = repositorySource->annotationStructure()->levels().at(i);
-//                if (!level) continue;
-//                // TODO: ensure all types of levels are copied over!!!
-//                if (level->levelType() != AnnotationStructureLevel::IndependentIntervalsLevel &&
-//                    level->levelType() != AnnotationStructureLevel::GroupingLevel) continue;
-//                IntervalTier *tierIntvSource = tiersSource->getIntervalTierByName(level->ID());
-//                if (tierIntvSource) {
-//                    IntervalTier *tierIntvDest = tierIntvSource->getIntervalTierSubset(start, end);
-//                    if (tierIntvDest->count() == 1 && tierIntvDest->first()->isPauseSilent()) continue;
-//                    tiersDest->addTier(tierIntvDest);
-//                }
-//                PointTier *tierPointSource = tiersSource->getPointTierByName(level->ID());
-//                if (tierPointSource) {
-
-//                }
-//            }
-//        }
-//        d->repositoryCopyOver->annotations()->saveTiers(annotDestination->ID(), speakerID, tiersDest);
-//        delete tiersDest;
-//    }
-//    qDeleteAll(tiersSourceAll);
+    if (!d->repositoryDestination) return;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
+    foreach (QString speakerID, tiersSourceAll.keys()) {
+        QPointer<AnnotationTierGroup> tiersSource = tiersSourceAll.value(speakerID);
+        if (!tiersSource) continue;
+        QPointer<AnnotationTierGroup> tiersDest = new AnnotationTierGroup();
+        for (int i = 0; i < ui->comboBoxLevelsToCopy->count(); ++i) {
+            if (ui->comboBoxLevelsToCopy->itemData(i).toBool() == true) {
+                AnnotationStructureLevel *level = repositorySource->annotationStructure()->levels().at(i);
+                if (!level) continue;
+                // TODO: ensure all types of levels are copied over!!!
+                if (level->levelType() != AnnotationStructureLevel::IndependentIntervalsLevel &&
+                    level->levelType() != AnnotationStructureLevel::GroupingLevel) continue;
+                IntervalTier *tierIntvSource = tiersSource->getIntervalTierByName(level->ID());
+                if (tierIntvSource) {
+                    IntervalTier *tierIntvDest = tierIntvSource->getIntervalTierSubset(start, end);
+                    if (tierIntvDest->count() == 1 && tierIntvDest->first()->isPauseSilent()) continue;
+                    tiersDest->addTier(tierIntvDest);
+                }
+                PointTier *tierPointSource = tiersSource->getPointTierByName(level->ID());
+                if (tierPointSource) {
+                    // TODO
+                }
+            }
+        }
+        d->repositoryDestination->annotations()->saveTiers(annotDestination->ID(), speakerID, tiersDest);
+        delete tiersDest;
+    }
+    qDeleteAll(tiersSourceAll);
 }
-
 

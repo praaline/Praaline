@@ -78,9 +78,11 @@ signals:
 
 public slots:
 
+public:
+    ~CorpusRepository();
+
 private:
     CorpusRepository(const CorpusRepositoryDefinition &definition, QObject *parent = 0);
-    ~CorpusRepository();
 
     CorpusRepositoryData *d;
 };
