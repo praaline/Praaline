@@ -139,6 +139,15 @@ CorpusRepositoryDefinition CorpusRepository::definition() const
     return d->definition;
 }
 
+void CorpusRepository::setBasePathMedia(const QString &path)
+{
+    if (d->datastoreFiles) {
+        d->definition.basePath = path;
+        d->definition.basePathMedia = path;
+        d->datastoreFiles->setBasePath(path);
+    }
+}
+
 // ==============================================================================================================================
 // Datastores
 // ==============================================================================================================================

@@ -15,6 +15,7 @@ using namespace QtilitiesCoreGui;
 
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/CorpusRepositoryDefinition.h"
+#include "pncore/datastore/FileDatastore.h"
 using namespace Praaline::Core;
 
 #include "svcore/base/RecentFiles.h"
@@ -310,7 +311,12 @@ void CorpusModeWidget::editCorpusRepository()
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
     CorpusRepositoryPropertiesDialog *dialog = new CorpusRepositoryPropertiesDialog(repository->definition(), this);
     if (dialog->exec() == QDialog::Accepted) {
-
+        repository->setID(dialog->repositoryDef().repositoryID);
+        repository->setDescription(dialog->repositoryDef().repositoryName);
+        repository->setBasePathMedia(dialog->repositoryDef().basePathMedia);
+        if (!repository->definition().filenameDefinition.isEmpty()) {
+            repository->definition().save(repository->definition().filenameDefinition);
+        }
     }
     delete dialog;
 }
@@ -345,6 +351,7 @@ void CorpusModeWidget::saveCorpusRepositoryAs()
                                                     tr("Praaline Corpus File (*.PraalineRepository);;All Files (*)"), &selectedFilter, options);
     if (filename.isEmpty()) return;
     repository->definition().save(filename);
+    d->recentFiles->addFile(repository->definition().filenameDefinition);
     // else show error message
     // m_mainStatusBar->showMessage("Saved corpus \"" + fileName, 5000);
 }

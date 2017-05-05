@@ -47,6 +47,7 @@ public:
     void setID(const QString &ID);
     QString description() const;
     void setDescription(const QString &description);
+    void setBasePathMedia(const QString &path);
 
     CorpusRepositoryDefinition definition() const;
 

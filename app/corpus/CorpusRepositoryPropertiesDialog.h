@@ -23,6 +23,7 @@ public:
 
 private slots:
     void accept();
+    void selectBasePathMedia();
 
 private:
     Ui::CorpusRepositoryPropertiesDialog *ui;
