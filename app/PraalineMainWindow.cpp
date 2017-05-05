@@ -198,6 +198,9 @@ void PraalineMainWindow::initialise()
     EXTENSION_SYSTEM->enablePluginActivityControl();
     EXTENSION_SYSTEM->loadPluginConfiguration(QDir::homePath() + "/Praaline/plugins/default" + qti_def_SUFFIX_PLUGIN_CONFIG);
     EXTENSION_SYSTEM->setCorePlugins(QStringList("Session Log Plugin"));
+    QString applicationDirPath = QApplication::applicationDirPath();
+    applicationDirPath = applicationDirPath.replace("/praaline.app/Contents/MacOS", "");
+    EXTENSION_SYSTEM->addPluginPath(applicationDirPath + "/plugins/");
     EXTENSION_SYSTEM->addPluginPath(QDir::homePath() + "/Praaline/plugins/");
     EXTENSION_SYSTEM->initialize();
     Log->toggleQtMsgEngine(false);

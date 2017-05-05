@@ -231,7 +231,7 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
                 if (!tiers) continue;
 
                 QPointer<IntervalTier> tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
-                if (!tier_syll) { printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
+                if (!tier_syll)  { printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
                 QPointer<IntervalTier> tier_token = tiers->getIntervalTierByName(d->levelToken);
                 if (!tier_token) { printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
 
