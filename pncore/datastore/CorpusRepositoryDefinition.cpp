@@ -131,8 +131,9 @@ bool CorpusRepositoryDefinition::load(const QString &filename)
     if (this->basePathMedia.isEmpty())
         this->basePathMedia = this->basePath;
     else {
-        this->basePathMedia = this->basePathMedia
-                .replace(QRegularExpression("^./"), this->basePath + "/").replace(".", this->basePath + "/");
+        // Convert to absolute path
+        QDir path(this->basePath + "/" + this->basePathMedia);
+        this->basePathMedia = path.absolutePath();
     }
     // Adjust to open correctly SQLite databases
     if (this->infoDatastoreMetadata.driver == "QSQLITE")
