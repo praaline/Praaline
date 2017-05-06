@@ -135,13 +135,13 @@ Interval *IntervalTier::at(int index) const
 
 Interval *IntervalTier::first() const
 {
-    if (isEmpty()) return Q_NULLPTR;
+    if (m_intervals.isEmpty()) return Q_NULLPTR;
     return m_intervals.first();
 }
 
 Interval *IntervalTier::last() const
 {
-    if (isEmpty()) return Q_NULLPTR;
+    if (m_intervals.isEmpty()) return Q_NULLPTR;
     return m_intervals.last();
 }
 
@@ -550,7 +550,11 @@ IntervalTier *IntervalTier::getIntervalTierSubset(const RealTime &timeStart, con
         intervals << new Interval(intv); // deep copy
     }
     IntervalTier *ret = new IntervalTier(name(), intervals, timeStart, timeEnd);
-    if (ret->count() > 0) {
+    if (ret->count() == 1) {
+        ret->first()->m_tMin = RealTime(0, 0);
+        ret->first()->m_tMax = (timeEnd - timeStart);
+    }
+    else if (ret->count() > 1) {
         ret->timeShift(-timeStart);
         if (ret->first()->tMin() < RealTime(0, 0) && ret->first()->tMax() > RealTime(0, 0))
             ret->first()->m_tMin = RealTime(0, 0);
