@@ -287,7 +287,6 @@ HEADERS  += \
     corpus/exportannotations/ExportAnnotationsWizard.h \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.h \
     corpus/exportmetadata/ExportMetadataWizard.h \
-    corpus/importcorpusitems/ImportAnnotations.h \
     corpus/importcorpusitems/ImportCorpusItemsWizard.h \
     corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.h \
     corpus/importcorpusitems/ImportCorpusItemsWizardCorrespondancesPage.h \

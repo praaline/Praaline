@@ -6,9 +6,12 @@
 #include <QSet>
 #include <QMultiHash>
 #include <QStandardItemModel>
+
 #include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/ImportAnnotations.h"
+using namespace Praaline::Core;
+
 #include "ImportCorpusItemsWizardAnalysePage.h"
-#include "ImportAnnotations.h"
 
 namespace Ui {
 class ImportCorpusItemsWizardCorrespondancesPage;

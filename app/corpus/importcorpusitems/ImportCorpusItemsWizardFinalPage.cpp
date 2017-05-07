@@ -204,92 +204,6 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(QPointer<Corpus
     d->corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, tierTranscription);
 }
 
-void importBasic(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *annot, int speakerPolicy, QString speakerID,
-                 AnnotationTierGroup *inputTiers, QList<TierCorrespondance> &correspondances)
-{
-    if (!corpus) return;
-    if (!corpus->repository()) return;
-    if (!corpus->repository()->annotations()) return;
-
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    QString spkID;
-
-    // Step 0: Get tiers for current speaker if they already exist
-    tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annot->ID());
-    // Step 1a: Add a tier for each level and speaker
-    foreach (TierCorrespondance c, correspondances) {
-        if (c.annotationLevelID.isEmpty() || !c.annotationAttributeID.isEmpty()) continue;
-        AnnotationTier *tierL = inputTiers->tier(inputTiers->getTierIndexByName(c.tierName));
-        if (!tierL) continue;
-        tierL->setName(c.annotationLevelID);
-        tierL->setProperty("inputTierName", c.tierName);
-        if (speakerPolicy == SpeakerPolicyTierNames)
-            spkID = c.tierName;
-        else
-            spkID = speakerID;
-        if (!tiersAll.contains(spkID)) tiersAll.insert(spkID, new AnnotationTierGroup());
-        tiersAll[spkID]->addTierReplacing(tierL);
-        if (!corpus->hasSpeaker(spkID))
-            corpus->addSpeaker(new CorpusSpeaker(spkID));
-    }
-    // Step 1b: Add participations of speakers
-    foreach (QString spkID, tiersAll.keys()) {
-        if (!corpus->hasParticipation(com->ID(), spkID)) {
-            corpus->addParticipation(com->ID(), spkID, QObject::tr("Participant"));
-        }
-    }
-    // Step 2: Update attributes for each level and speaker
-    foreach (TierCorrespondance c, correspondances) {
-        if (c.annotationLevelID.isEmpty() || c.annotationAttributeID.isEmpty()) continue;
-        AnnotationTier *tierA = inputTiers->tier(c.tierName);
-        if (!tierA) continue;
-        // Speaker ID as defined by the policy
-        if (speakerPolicy == SpeakerPolicyTierNames)
-            spkID = c.tierName;
-        else
-            spkID = speakerID;
-        if (!tiersAll.contains(spkID)) continue;
-        AnnotationTierGroup *tiers = tiersAll.value(spkID);
-        // corresponding level
-        AnnotationTier *tierL = tiers->tier(c.annotationLevelID);
-        if (!tierL) continue;
-        // apply correspondance
-        if (tierL->tierType() == AnnotationTier::TierType_Intervals && tierA->tierType() == AnnotationTier::TierType_Intervals) {
-            IntervalTier *tierLI = qobject_cast<IntervalTier *>(tierL);
-            IntervalTier *tierAI = qobject_cast<IntervalTier *>(tierA);
-            for (int i = 0; i < tierLI->count(); ++i) {
-                Interval *intv = tierAI->intervalAtTime(tierLI->interval(i)->tCenter());
-                if (intv) tierLI->interval(i)->setAttribute(c.annotationAttributeID, intv->text());
-            }
-        }
-        else if (tierL->tierType() == AnnotationTier::TierType_Intervals && tierA->tierType() == AnnotationTier::TierType_Points) {
-            IntervalTier *tierLI = qobject_cast<IntervalTier *>(tierL);
-            PointTier *tierAP = qobject_cast<PointTier *>(tierA);
-            for (int i = 0; i < tierLI->count(); ++i) {
-                Point *pnt = tierAP->pointAtTime(tierLI->interval(i)->tCenter());
-                if (pnt) tierLI->interval(i)->setAttribute(c.annotationAttributeID, pnt->text());
-            }
-        }
-        else if (tierL->tierType() == AnnotationTier::TierType_Points && tierA->tierType() == AnnotationTier::TierType_Intervals) {
-            PointTier *tierLP = qobject_cast<PointTier *>(tierL);
-            IntervalTier *tierAI = qobject_cast<IntervalTier *>(tierA);
-            for (int i = 0; i < tierLP->count(); ++i) {
-                Interval *intv = tierAI->intervalAtTime(tierLP->point(i)->time());
-                if (intv) tierLP->point(i)->setAttribute(c.annotationAttributeID, intv->text());
-            }
-        }
-        else if (tierL->tierType() == AnnotationTier::TierType_Points && tierA->tierType() == AnnotationTier::TierType_Points) {
-            PointTier *tierLP = qobject_cast<PointTier *>(tierL);
-            PointTier *tierAP = qobject_cast<PointTier *>(tierA);
-            for (int i = 0; i < tierLP->count(); ++i) {
-                Point *pnt = tierAP->pointAtTime(tierLP->point(i)->time());
-                if (pnt) tierLP->point(i)->setAttribute(c.annotationAttributeID, pnt->text());
-            }
-        }
-    }
-    corpus->repository()->annotations()->saveTiersAllSpeakers(annot->ID(), tiersAll);
-    qDeleteAll(tiersAll);
-}
 
 void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,
                                                    QList<TierCorrespondance> &correspondances)
@@ -299,25 +213,25 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
 
     PraatTextGrid::load(annot->filename(), inputTiers);
 
-    int policy = annot->property("speakerPolicy").toInt();
+    ImportAnnotations::SpeakerPolicy policy = ImportAnnotations::speakerPolicyFromInt(annot->property("speakerPolicy").toInt());
     QString annotSpeakerID = annot->property("speakerPolicyData").toString();
-    if (policy == SpeakerPolicySingle) {
+    if (policy == ImportAnnotations::SpeakerPolicySingle) {
         if (annotSpeakerID.isEmpty()) {
             // no speaker ID given, use the filename
-            importBasic(d->corpus, com, annot, policy, QFile(annot->filename()).fileName().remove(".textgrid"),
-                        inputTiers, correspondances);
+            ImportAnnotations::importBasic(d->corpus, com, annot, policy, QFile(annot->filename()).fileName().remove(".textgrid"),
+                                           inputTiers, correspondances);
         }
         else {
-            importBasic(d->corpus, com, annot, policy, annotSpeakerID, inputTiers, correspondances);
+            ImportAnnotations::importBasic(d->corpus, com, annot, policy, annotSpeakerID, inputTiers, correspondances);
         }
     }
-    else if (policy == SpeakerPolicyTierNames) {
-        importBasic(d->corpus, com, annot, policy, "", inputTiers, correspondances);
+    else if (policy == ImportAnnotations::SpeakerPolicyTierNames) {
+        ImportAnnotations::importBasic(d->corpus, com, annot, policy, "", inputTiers, correspondances);
     }
-    else if ((policy == SpeakerPolicyPrimaryAndSecondary) || (policy == SpeakerPolicyIntervals)) {
+    else if ((policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) || (policy == ImportAnnotations::SpeakerPolicyIntervals)) {
         IntervalTier *tierSpeaker = 0;
         bool shouldDeleteSpeakerTier = false;
-        if (policy == SpeakerPolicyPrimaryAndSecondary) {
+        if (policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) {
             QString tiernameSpeaker1 = annot->property("speakerPolicyData").toString().section(";", 0, 0);
             QString tiernameSpeaker2 = annot->property("speakerPolicyData").toString().section(";", 1, 1);
             IntervalTier *tierSpeaker1 = inputTiers->getIntervalTierByName(tiernameSpeaker1);
@@ -327,7 +241,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                 shouldDeleteSpeakerTier = true;
             }
         }
-        else if (policy == SpeakerPolicyIntervals) {
+        else if (policy == ImportAnnotations::SpeakerPolicyIntervals) {
             // There is a speaker ID tier
             QString speakerTierName = annot->property("speakerPolicyData").toString();
             tierSpeaker = inputTiers->getIntervalTierByName(speakerTierName);
@@ -335,7 +249,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
             // tierSpeaker->replaceText("gap", "");
         }
         if (!tierSpeaker) {
-            importBasic(d->corpus, com, annot, SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
+            ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
             return;
         }
 //      // Rhapsodie hack
@@ -383,7 +297,8 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                     tiersSpk->addTier(tierSpk);
                 }
             }
-            importBasic(d->corpus, com, annot, SpeakerPolicySingle, QString("%1_%2").arg(annot->ID()).arg(speakerID), tiersSpk, correspondances);
+            ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle,
+                                           QString("%1_%2").arg(annot->ID()).arg(speakerID), tiersSpk, correspondances);
             delete tiersSpk;
         }
         if (shouldDeleteSpeakerTier && tierSpeaker) {

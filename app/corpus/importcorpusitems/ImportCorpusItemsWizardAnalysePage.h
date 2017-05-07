@@ -9,9 +9,8 @@
 #include <QStyledItemDelegate>
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/ImportAnnotations.h"
 using namespace Praaline::Core;
-
-#include "ImportAnnotations.h"
 
 namespace Ui {
 class ImportCorpusItemsWizardAnalysePage;

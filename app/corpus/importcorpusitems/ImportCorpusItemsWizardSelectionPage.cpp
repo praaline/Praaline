@@ -221,19 +221,19 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
         annot->setFilename(info.canonicalFilePath());
         // Speaker Policy
         if (ui->optionSpeakerSingle->isChecked()) {
-            annot->setProperty("speakerPolicy", SpeakerPolicySingle);
+            annot->setProperty("speakerPolicy", ImportAnnotations::SpeakerPolicySingle);
             annot->setProperty("speakerPolicyData", speakerIDFromFilename(info));
         }
         else if (ui->optionSpeakerTiers->isChecked()) {
-            annot->setProperty("speakerPolicy", SpeakerPolicyTierNames);
+            annot->setProperty("speakerPolicy", ImportAnnotations::SpeakerPolicyTierNames);
             annot->setProperty("speakerPolicyData", "");
         }
         else if (ui->optionSpeakerIntervals->isChecked()) {
-            annot->setProperty("speakerPolicy", SpeakerPolicyIntervals);
+            annot->setProperty("speakerPolicy", ImportAnnotations::SpeakerPolicyIntervals);
             annot->setProperty("speakerPolicyData", "speaker");
         }
         else if (ui->optionSpeakerPrimaryAndSecondary->isChecked()) {
-            annot->setProperty("speakerPolicy", SpeakerPolicyPrimaryAndSecondary);
+            annot->setProperty("speakerPolicy", ImportAnnotations::SpeakerPolicyPrimaryAndSecondary);
             annot->setProperty("speakerPolicyData", "ortho;loc2");
         }
 

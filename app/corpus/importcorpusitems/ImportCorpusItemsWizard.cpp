@@ -6,7 +6,10 @@
 #include "ImportCorpusItemsWizardAnalysePage.h"
 #include "ImportCorpusItemsWizardCorrespondancesPage.h"
 #include "ImportCorpusItemsWizardFinalPage.h"
-#include "ImportAnnotations.h"
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/ImportAnnotations.h"
+using namespace Praaline::Core;
 
 #include "ImportCorpusItemsWizard.h"
 #include "ui_ImportCorpusItemsWizard.h"

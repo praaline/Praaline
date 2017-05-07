@@ -10,18 +10,18 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 QString speakerPolicyToString(int policy) {
-    if      (policy == SpeakerPolicySingle)              return QObject::tr("Single Speaker");
-    else if (policy == SpeakerPolicyTierNames)           return QObject::tr("Each tier is a Speaker");
-    else if (policy == SpeakerPolicyIntervals)           return QObject::tr("Get Speaker ID from tier");
-    else if (policy == SpeakerPolicyPrimaryAndSecondary) return QObject::tr("Primary and Secondary");
+    if      (policy == ImportAnnotations::SpeakerPolicySingle)              return QObject::tr("Single Speaker");
+    else if (policy == ImportAnnotations::SpeakerPolicyTierNames)           return QObject::tr("Each tier is a Speaker");
+    else if (policy == ImportAnnotations::SpeakerPolicyIntervals)           return QObject::tr("Get Speaker ID from tier");
+    else if (policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) return QObject::tr("Primary and Secondary");
     return QObject::tr("Unknown");
 }
 
 int speakerPolicyToInt(QString policy) {
-    if      (policy == QObject::tr("Single Speaker"))           return SpeakerPolicySingle;
-    else if (policy == QObject::tr("Each tier is a Speaker"))   return SpeakerPolicyTierNames;
-    else if (policy == QObject::tr("Get Speaker ID from tier")) return SpeakerPolicyIntervals;
-    else if (policy == QObject::tr("Primary and Secondary"))    return SpeakerPolicyPrimaryAndSecondary;
+    if      (policy == QObject::tr("Single Speaker"))           return ImportAnnotations::SpeakerPolicySingle;
+    else if (policy == QObject::tr("Each tier is a Speaker"))   return ImportAnnotations::SpeakerPolicyTierNames;
+    else if (policy == QObject::tr("Get Speaker ID from tier")) return ImportAnnotations::SpeakerPolicyIntervals;
+    else if (policy == QObject::tr("Primary and Secondary"))    return ImportAnnotations::SpeakerPolicyPrimaryAndSecondary;
     return 0;
 }
 
@@ -40,10 +40,10 @@ void ImportCorpusItemsDelegateSpeakerPolicy::setEditorData(QWidget *editor, cons
 {
     if (QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
         int policy = index.data(Qt::EditRole).toInt();
-        if      (policy == SpeakerPolicySingle)              cb->setCurrentIndex(0);
-        else if (policy == SpeakerPolicyTierNames)           cb->setCurrentIndex(1);
-        else if (policy == SpeakerPolicyIntervals)           cb->setCurrentIndex(2);
-        else if (policy == SpeakerPolicyPrimaryAndSecondary) cb->setCurrentIndex(3);
+        if      (policy == ImportAnnotations::SpeakerPolicySingle)              cb->setCurrentIndex(0);
+        else if (policy == ImportAnnotations::SpeakerPolicyTierNames)           cb->setCurrentIndex(1);
+        else if (policy == ImportAnnotations::SpeakerPolicyIntervals)           cb->setCurrentIndex(2);
+        else if (policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) cb->setCurrentIndex(3);
     } else {
         QStyledItemDelegate::setEditorData(editor, index);
     }

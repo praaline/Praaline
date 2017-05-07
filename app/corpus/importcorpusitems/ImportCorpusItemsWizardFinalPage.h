@@ -7,9 +7,9 @@
 #include <QSet>
 #include <QPair>
 #include <QMultiHash>
-#include "ImportAnnotations.h"
 
 #include "pncore/corpus/Corpus.h"
+#include "pncore/interfaces/ImportAnnotations.h"
 using namespace Praaline::Core;
 
 namespace Ui {

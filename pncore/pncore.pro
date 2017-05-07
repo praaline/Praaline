@@ -206,7 +206,8 @@ HEADERS += \
     serialisers/xml/XMLSerialiserMetadata.h \
     interfaces/praat/AnnotationInterfacePraat.h \
     statistics/Measures.h \
-    interfaces/phon/PhonTranscription.h
+    interfaces/phon/PhonTranscription.h \
+    interfaces/ImportAnnotations.h
 
 SOURCES += \
     base/RealTime.cpp \
@@ -374,7 +375,8 @@ SOURCES += \
     serialisers/xml/XMLSerialiserMetadata.cpp \
     interfaces/praat/AnnotationInterfacePraat.cpp \
     statistics/Measures.cpp \
-    interfaces/phon/PhonTranscription.cpp
+    interfaces/phon/PhonTranscription.cpp \
+    interfaces/ImportAnnotations.cpp
 
 DISTFILES += \
     pncore.qmodel
