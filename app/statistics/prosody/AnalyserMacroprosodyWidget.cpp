@@ -120,6 +120,8 @@ void AnalyserMacroprosodyWidget::analyse()
 
     QStandardItemModel *model = new QStandardItemModel(this);
     if (ui->optionMULIstFromTier->isChecked()) {
+        ui->progressBar->setMaximum(corpus->communicationsCount());
+        int progressCount(0);
         foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
             if (!com) continue;
             foreach (QString annotationID, com->annotationIDs()) {
@@ -136,12 +138,14 @@ void AnalyserMacroprosodyWidget::analyse()
                     }
                     // Run analyser for each macro-unit (excluding pauses) and take each row of results into the model
                     analyser->calculate(corpus, com->ID(), annotationID, speakerID, macroUnitIntervals);
-                    for (int i = 0; i < analyser->model()->rowCount(); ++i) {
-                        model->appendRow(analyser->model()->takeRow(i));
+                    while (analyser->model()->rowCount() > 0) {
+                        model->appendRow(analyser->model()->takeRow(0));
                     }
                 }
                 qDeleteAll(tiersAll);
             }
+            progressCount++;
+            ui->progressBar->setValue(progressCount);
         }
     } else {
         QFile file(ui->editFilenameMUList->text());
@@ -209,6 +213,7 @@ void AnalyserMacroprosodyWidget::analyse()
     d->gridviewResults->tableView()->setModel(model);
     if (d->modelResults) { d->modelResults->clear(); delete d->modelResults; }
     d->modelResults = model;
+    ui->progressBar->setValue(ui->progressBar->maximum());
 }
 
 } // namespace StatisticsPluginProsody

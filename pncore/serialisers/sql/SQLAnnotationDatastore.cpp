@@ -339,9 +339,10 @@ bool SQLAnnotationDatastore::batchUpdate(const QString &levelID, const QString &
 // Statistics
 // ==========================================================================================================================
 
-QList<QPair<QList<QVariant>, long long> > SQLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs)
+QList<QPair<QList<QVariant>, long long> > SQLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs,
+                                                                             bool excludeNULL, QStringList excludeValues)
 {
-    return SQLSerialiserAnnotation::countItems(levelID, groupByAttributeIDs, d->structure, d->database);
+    return SQLSerialiserAnnotation::countItems(levelID, groupByAttributeIDs, excludeNULL, excludeValues, d->structure, d->database);
 }
 
 } // namespace Core

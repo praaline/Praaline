@@ -81,8 +81,12 @@ void StatisticsPluginBasicWidget::analyse()
 
     d->levelIDs = d->repository->annotationStructure()->levelIDs();
     d->attributeIDs.clear(); d->attributeIDs << "annotationID" << "speakerID";
+    // Exclude pauses from counts
+    QStringList valuesForSilentPause;
+    valuesForSilentPause << "" << "_" << "#";
+
     foreach (QString levelID, d->levelIDs) {
-        QList<QPair<QList<QVariant>, long long> > counts = d->repository->annotations()->countItems(levelID, d->attributeIDs);
+        QList<QPair<QList<QVariant>, long long> > counts = d->repository->annotations()->countItems(levelID, d->attributeIDs, true, valuesForSilentPause);
         QPair<QList<QVariant>, long long> count;
         foreach (count, counts) {
             QString id = count.first.at(0).toString() + "\t" + count.first.at(1).toString();

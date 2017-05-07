@@ -343,7 +343,8 @@ bool XMLAnnotationDatastore::batchUpdate(const QString &levelID, const QString &
 // ==========================================================================================================================
 // Statistics
 // ==========================================================================================================================
-QList<QPair<QList<QVariant>, long long> > XMLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs)
+QList<QPair<QList<QVariant>, long long> > XMLAnnotationDatastore::countItems(const QString &levelID, const QStringList &groupByAttributeIDs,
+                                                                             bool excludeNULL, QStringList excludeValues)
 {
     Q_UNUSED(levelID)
     Q_UNUSED(groupByAttributeIDs)

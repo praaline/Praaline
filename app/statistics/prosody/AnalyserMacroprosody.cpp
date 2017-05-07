@@ -232,8 +232,6 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
                     if      (dynamic < 0) numFallingSyll++;
                     else if (dynamic > 0) numRisingSyll++;
                     sumTrajectory = sumTrajectory + syll->attribute("trajectory").toDouble();
-                    QString prom = syll->attribute(d->attributeProminence).toString();
-                    if (d->prominentLabels.contains(prom)) numProminentSyll++;
                     // First and last syllable
                     if (i == syllIndices.first) {
                         f0_mean_first = syll->attribute("f0_mean").toDouble();
@@ -246,6 +244,9 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
                         f0_max_last = HzToSTre1Hz(syll->attribute("f0_max").toDouble());
                     }
                 }
+                // Prominence attributes
+                QString prom = syll->attribute(d->attributeProminence).toString();
+                if (d->prominentLabels.contains(prom)) numProminentSyll++;
             } // end foreach syll
             // Calculate measures for this unit
             RealTime timeSpeech = timeArticulation + timeFilledPause + timeSilentPause;
@@ -265,15 +266,15 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             item = new QStandardItem(); item->setData(speakerID, Qt::DisplayRole); items << item;
             // unit data
             item = new QStandardItem(); item->setData(unitNo, Qt::DisplayRole); items << item;
-            item = new QStandardItem(); item->setData(unit->text(), Qt::DisplayRole); items << item;
+            item = new QStandardItem(); item->setData(unit->text().replace("\t", " ").replace("\n", " "), Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(unit->tMin().toDouble(), Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(unit->tMax().toDouble(), Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(unit->duration().toDouble(), Qt::DisplayRole); items << item;
             // unit contents in tokens and syllables
             item = new QStandardItem(); item->setData(syllIndices.first, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(syllIndices.second, Qt::DisplayRole); items << item;
-            item = new QStandardItem(); item->setData(textTokens, Qt::DisplayRole); items << item;
-            item = new QStandardItem(); item->setData(textSylls, Qt::DisplayRole); items << item;
+            item = new QStandardItem(); item->setData(textTokens.replace("\t", " ").replace("\n", " "), Qt::DisplayRole); items << item;
+            item = new QStandardItem(); item->setData(textSylls.replace("\t", " ").replace("\n", " "), Qt::DisplayRole); items << item;
             // times
             item = new QStandardItem(); item->setData(timeArticulation.toDouble(), Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(timeFilledPause.toDouble(), Qt::DisplayRole); items << item;

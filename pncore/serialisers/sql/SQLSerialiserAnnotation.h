@@ -83,7 +83,8 @@ public:
     // Statistics
     // ==========================================================================================================================
     static QList<QPair<QList<QVariant>, long long> > countItems(
-            const QString &levelID, const QStringList &groupByAttributeIDs, AnnotationStructure *structure, QSqlDatabase &db);
+            const QString &levelID, const QStringList &groupByAttributeIDs, bool excludeNULL, QStringList excludeValues,
+            AnnotationStructure *structure, QSqlDatabase &db);
 
 private:
     SQLSerialiserAnnotation();

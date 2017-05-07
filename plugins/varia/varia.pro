@@ -66,7 +66,8 @@ HEADERS += \
     ProsodyCourse.h \
     MyExperiments.h \
     DisfluenciesExperiments.h \
-    SpeechRateExperiments.h
+    SpeechRateExperiments.h \
+    TappingAnnotatorExperiment.h
 
 
 SOURCES += \ 
@@ -80,4 +81,5 @@ SOURCES += \
     ProsodyCourse.cpp \
     MyExperiments.cpp \
     DisfluenciesExperiments.cpp \
-    SpeechRateExperiments.cpp
+    SpeechRateExperiments.cpp \
+    TappingAnnotatorExperiment.cpp

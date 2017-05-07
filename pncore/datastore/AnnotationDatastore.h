@@ -173,7 +173,8 @@ public:
     // ==========================================================================================================================
     // Statistics
     // ==========================================================================================================================
-    virtual QList<QPair<QList<QVariant>, long long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs) = 0;
+    virtual QList<QPair<QList<QVariant>, long long> > countItems(const QString &levelID, const QStringList &groupByAttributeIDs,
+                                                                 bool excludeNULL, QStringList excludeValues) = 0;
 
 };
 

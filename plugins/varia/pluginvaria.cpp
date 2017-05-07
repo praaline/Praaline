@@ -25,6 +25,7 @@
 #include "ProsodyCourse.h"
 #include "DisfluenciesExperiments.h"
 #include "SpeechRateExperiments.h"
+#include "TappingAnnotatorExperiment.h"
 
 #include "pluginvaria.h"
 
@@ -302,43 +303,23 @@ QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &commun
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    printMessage(valibelTranscription(communications));
+    if (communications.isEmpty()) return;
+    QPointer<CorpusRepository> repository = communications.first()->repository();
+    QString corpusID = communications.first()->corpusID();
+
+    TappingAnnotatorExperiment texp;
+    QString path = "/home/george/Dropbox/2017_Perception_of_hesitation_expe/result_raw_files";
+    QDirIterator iterator(path, QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
+    while (iterator.hasNext()) {
+        QString filename = iterator.next();
+        texp.readResultsFile(repository, corpusID, filename);
+        printMessage(filename);
+    }
+
+
+    // printMessage(valibelTranscription(communications));
     // prepareClassifierFiles(communications);
 //    importPhonTranscriptionsIvana(communications);
-//    // Creates a transcription
-//    foreach (QPointer<CorpusCommunication> com, communications) {
-//        if (!com) continue;
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-//            if (!annot) continue;
-//            QString annotationID = annot->ID();
-//            QString transcription;
-//            QList<Interval *> tokens = com->repository()->annotations()->getIntervals(AnnotationDatastore::Selection(annotationID, "", "tok_min"));
-//            if (tokens.isEmpty()) continue;
-//            QString currentSpeakerID = tokens.first()->attribute("speakerID").toString();
-//            transcription.append(currentSpeakerID).append("\t");
-//            for (int i = 0; i < tokens.count(); ++i) {
-//                Interval *token = tokens.at(i);
-//                if (token->isPauseSilent() && i == 0) continue;
-//                QString speakerID = token->attribute("speakerID").toString();
-//                if (currentSpeakerID != speakerID) {
-//                    QString nextSpeakerID = (i < tokens.count() - 1) ? tokens.at(i+1)->attribute("speakerID").toString() : "";
-//                    if (nextSpeakerID == currentSpeakerID && token->isPauseSilent()) continue;
-//                    transcription.append("\n").append(speakerID).append("\t");
-//                    currentSpeakerID = speakerID;
-//                }
-//                if (token->isPauseSilent() && token->duration().toDouble() >= 0.250)
-//                    transcription.append("// ");
-//                else if (token->isPauseSilent() && token->duration().toDouble() < 0.250)
-//                    transcription.append("/ ");
-//                else
-//                    transcription.append(token->text().trimmed()).append(" ");
-//            }
-//            printMessage(com->ID());
-//            printMessage(transcription);
-//            printMessage("");
-//        }
-//    }
-//    return;
 
 //    if (communications.isEmpty()) return;
 //    SpeechRateExperiments sr;
@@ -364,9 +345,6 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        countDone++;
 //        madeProgress(countDone * 100 / communications.count());
 //    }
-
-//    ProsodyCourse::syllableTables(corpus);
-//    return;
 
 //    int countDone = 0;
 //    madeProgress(0);
