@@ -37,6 +37,10 @@ public:
     explicit CorpusItemSelectorWidget(QWidget *parent = 0);
     ~CorpusItemSelectorWidget();
 
+public slots:
+    void addBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+                     const RealTime &timeStart, const RealTime &timeEnd, const QString &name);
+
 signals:
     void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);

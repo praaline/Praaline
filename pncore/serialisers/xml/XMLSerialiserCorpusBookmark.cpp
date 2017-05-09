@@ -33,6 +33,8 @@ CorpusBookmark *XMLSerialiserCorpusBookmark::readBookmark(QXmlStreamReader &xml)
     if (xmlAttributes.hasAttribute("communicationID"))  bookmark->setCommunicationID(xmlAttributes.value("communicationID").toString());
     if (xmlAttributes.hasAttribute("annotationID"))     bookmark->setAnnotationID(xmlAttributes.value("annotationID").toString());
     if (xmlAttributes.hasAttribute("time"))             bookmark->setTime(RealTime::fromNanoseconds((xmlAttributes.value("time").toLongLong())));
+    if (xmlAttributes.hasAttribute("timeStart"))        bookmark->setTimeStart(RealTime::fromNanoseconds((xmlAttributes.value("timeStart").toLongLong())));
+    if (xmlAttributes.hasAttribute("timeEnd"))          bookmark->setTimeEnd(RealTime::fromNanoseconds((xmlAttributes.value("timeEnd").toLongLong())));
     if (xmlAttributes.hasAttribute("name"))             bookmark->setName(xmlAttributes.value("name").toString());
     if (xmlAttributes.hasAttribute("notes"))            bookmark->setNotes(xmlAttributes.value("notes").toString());
     return bookmark;
@@ -45,7 +47,12 @@ bool XMLSerialiserCorpusBookmark::writeBookmark(CorpusBookmark *bookmark, QXmlSt
     xml.writeAttribute("corpusID", bookmark->corpusID());
     xml.writeAttribute("communicationID", bookmark->communicationID());
     xml.writeAttribute("annotationID", bookmark->annotationID());
-    xml.writeAttribute("time", QString::number(bookmark->time().toNanoseconds()));
+    if (bookmark->duration() == RealTime::zeroTime) {
+        xml.writeAttribute("time", QString::number(bookmark->time().toNanoseconds()));
+    } else {
+        xml.writeAttribute("timeStart", QString::number(bookmark->timeStart().toNanoseconds()));
+        xml.writeAttribute("timeEnd", QString::number(bookmark->timeEnd().toNanoseconds()));
+    }
     xml.writeAttribute("name", bookmark->name());
     xml.writeAttribute("notes", bookmark->notes());
 //    foreach (MetadataStructureAttribute *attribute, mstructure->attributes(CorpusObject::Type_Recording)) {

@@ -1,4 +1,4 @@
-#include <QPointer>
+//#include <QPointer>
 #include <QString>
 #include <QList>
 #include <QMessageBox>
@@ -276,5 +276,10 @@ void CorpusItemSelectorWidget::bookmarkSelected(QModelIndex index)
     emit moveToAnnotationTime(corpus, com, annot, time);
 }
 
+// public slot
+void CorpusItemSelectorWidget::addBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+                                           const RealTime &timeStart, const RealTime &timeEnd, const QString &name)
+{
 
+}
 

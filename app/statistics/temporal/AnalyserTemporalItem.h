@@ -11,6 +11,7 @@ struct AnalyserTemporalItemData;
 namespace Praaline {
 namespace Core {
 class CorpusCommunication;
+class IntervalTier;
 }
 }
 
@@ -37,6 +38,9 @@ public:
     double measureSpk(const QString &speakerID, const QString &measureID) const;
     QList<double> vectorMeasureCom(const QString &measureID) const;
     QList<double> vectorMeasureSpk(const QString &speakerID, const QString &measureID) const;
+
+    QPointer<Praaline::Core::IntervalTier> timelineSyll() const;
+    QPointer<Praaline::Core::IntervalTier> timelineSpeaker() const;
 
     void analyse(QPointer<Praaline::Core::CorpusCommunication> com);
 

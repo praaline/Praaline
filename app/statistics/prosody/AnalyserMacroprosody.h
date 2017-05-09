@@ -6,6 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QStandardItemModel>
+#include "pncore/base/RealTime.h"
 
 namespace Praaline {
 namespace Core {
@@ -23,6 +24,7 @@ class AnalyserMacroprosody : public QObject
 {
     Q_OBJECT
 public:
+
     explicit AnalyserMacroprosody(QObject *parent = 0);
     virtual ~AnalyserMacroprosody();
 

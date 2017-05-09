@@ -13,8 +13,10 @@ namespace StatisticsPluginTemporal {
 struct AnalyserTemporalData {
     AnalyserTemporalData() :
         corpus(0)
-    {}
-
+    {
+        levelSyllables = "syll";
+        levelTokens = "tok_min";
+    }
     QPointer<Corpus> corpus;
     QString levelSyllables;
     QString levelTokens;

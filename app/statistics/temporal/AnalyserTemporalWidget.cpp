@@ -20,6 +20,7 @@ QT_CHARTS_USE_NAMESPACE
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/statistics/StatisticalSummary.h"
+#include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"
@@ -35,7 +36,9 @@ namespace StatisticsPluginTemporal {
 
 struct AnalyserTemporalWidgetData {
     AnalyserTemporalWidgetData() :
-        repository(0), analyser(0), gridviewResults(0), modelCom(0), modelSpk(0)
+        repository(0), analyser(0), gridviewResults(0), modelCom(0), modelSpk(0),
+        gridviewMeasureDefinitions(0), modelMeasureDefinitionsCom(0), modelMeasureDefinitionsSpk(0),
+        gridviewTimeline(0), modelTimeline(0)
     {}
 
     CorpusRepository *repository;
@@ -46,6 +49,8 @@ struct AnalyserTemporalWidgetData {
     GridViewWidget *gridviewMeasureDefinitions;
     QStandardItemModel *modelMeasureDefinitionsCom;
     QStandardItemModel *modelMeasureDefinitionsSpk;
+    GridViewWidget *gridviewTimeline;
+    QStandardItemModel *modelTimeline;
 };
 
 AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
@@ -84,6 +89,10 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
+    // Timeline grid view
+    d->gridviewTimeline = new GridViewWidget(this);
+    d->gridviewTimeline->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    ui->gridLayoutTimeline->addWidget(d->gridviewTimeline);
     // Measure definitions grid view
     d->gridviewMeasureDefinitions = new GridViewWidget(this);
     d->gridviewMeasureDefinitions->tableView()->verticalHeader()->setDefaultSectionSize(20);
@@ -219,6 +228,7 @@ void AnalyserTemporalWidget::showAnalysisForCom()
     buildModelForCom();
     // Update table
     d->gridviewResults->tableView()->setModel(d->modelCom);
+    d->gridviewTimeline->tableView()->setModel(d->modelTimeline);
 }
 
 void AnalyserTemporalWidget::showAnalysisForSpk()
@@ -238,17 +248,24 @@ void AnalyserTemporalWidget::buildModelForCom()
     // Create new model
     if (d->modelCom) delete d->modelCom;
     d->modelCom = new QStandardItemModel(this);
+    // Timeline model
+    if (d->modelTimeline) delete d->modelTimeline;
+    d->modelTimeline = new QStandardItemModel(this);
+    // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers
-    QStringList labels;
+    QStringList labels, labelsTimeline;
     if (orientation == Qt::Vertical) labels << "CommunicationID";
+    labelsTimeline << "CommunicationID";
     for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
         if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
         QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
+        labelsTimeline << attr->ID();
     }
     foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
         if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
+    // Headers for Com model
     if (orientation == Qt::Vertical)
         d->modelCom->setHorizontalHeaderLabels(labels);
     else {
@@ -256,6 +273,10 @@ void AnalyserTemporalWidget::buildModelForCom()
         foreach (QString label, labels) itemsHeader << new QStandardItem(label);
         d->modelCom->appendColumn(itemsHeader);
     }
+    // Timeline labels
+    labelsTimeline << "Speaker" << "Timecode" << "IntervalType" << "Duration";
+    // Headers for timeline model
+    d->modelTimeline->setHorizontalHeaderLabels(labelsTimeline);
     // Data
     QStringList horizontalHeader; horizontalHeader << "Measure";
     foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
@@ -284,7 +305,35 @@ void AnalyserTemporalWidget::buildModelForCom()
             d->modelCom->appendRow(itemsCom);
         else
             d->modelCom->appendColumn(itemsCom);
+        // Timeline
+        QPointer<IntervalTier> timeline = d->analyser->item(com->ID())->timelineSpeaker();
+        if (timeline) {
+            foreach (Interval *intv, timeline->intervals()) {
+                QString intervalType = intv->attribute("temporal").toString();
+                if      (intervalType == "X")   intervalType = "X    Exclude";
+                else if (intervalType == "S")   intervalType = "S    Speech";
+                else if (intervalType == "P")   intervalType = "P    Pause";
+                else if (intervalType == "G")   intervalType = "G    Gap";
+                else if (intervalType == "OVT") intervalType = "OVT  Overlap with turn change";
+                else if (intervalType == "OVC") intervalType = "OVT  Overlap keeping floor";
+
+                QStandardItem *itemTimeline; QList<QStandardItem *> itemsTimeline;
+                itemTimeline = new QStandardItem(); itemTimeline->setData(com->ID(), Qt::DisplayRole); itemsTimeline << itemTimeline;
+                // selected metadata attributes
+                for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+                    if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+                    QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+                    itemTimeline = new QStandardItem(); itemTimeline->setData(com->property(attr->ID()), Qt::DisplayRole); itemsTimeline << itemTimeline;
+                }
+                itemTimeline = new QStandardItem(); itemTimeline->setData(intv->text(), Qt::DisplayRole); itemsTimeline << itemTimeline; // speakers
+                itemTimeline = new QStandardItem(); itemTimeline->setData(intv->tMin().toDouble(), Qt::DisplayRole); itemsTimeline << itemTimeline;
+                itemTimeline = new QStandardItem(); itemTimeline->setData(intervalType, Qt::DisplayRole); itemsTimeline << itemTimeline;
+                itemTimeline = new QStandardItem(); itemTimeline->setData(intv->duration().toDouble(), Qt::DisplayRole); itemsTimeline << itemTimeline;
+                d->modelTimeline->appendRow(itemsTimeline);
+            }
+        }
     }
+    // In horizontal orientation, column labels are the Communication IDs
     if (orientation == Qt::Horizontal) d->modelCom->setHorizontalHeaderLabels(horizontalHeader);
 }
 
@@ -296,6 +345,7 @@ void AnalyserTemporalWidget::buildModelForSpk()
     // Create new model
     if (d->modelSpk) delete d->modelSpk;
     d->modelSpk = new QStandardItemModel(this);
+    // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers
     QStringList labels;
@@ -310,10 +360,13 @@ void AnalyserTemporalWidget::buildModelForSpk()
         QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
     }
-    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
+    foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) {
         if (orientation == Qt::Vertical) labels << measureID; else labels << AnalyserTemporalItem::measureDefinition(measureID).displayName();
-    if (orientation == Qt::Vertical)
+    }
+    // Headers for speaker model
+    if (orientation == Qt::Vertical) {
         d->modelSpk->setHorizontalHeaderLabels(labels);
+    }
     else {
         QList<QStandardItem *> itemsHeader;
         foreach (QString label, labels) itemsHeader << new QStandardItem(label);
@@ -342,7 +395,6 @@ void AnalyserTemporalWidget::buildModelForSpk()
             }
             // measures
             foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker()) {
-                // analyser->measureDefinitionForSpeaker(measureID).displayNameUnit();
                 item = new QStandardItem(); item->setData(d->analyser->item(com->ID())->measureSpk(speakerID, measureID), Qt::DisplayRole); itemsSpk << item;
             }
             if (orientation == Qt::Vertical)

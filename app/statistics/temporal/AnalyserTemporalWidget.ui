@@ -248,7 +248,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="tabResultsTable">
       <attribute name="title">
@@ -429,6 +429,12 @@
        <string>Measures</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayoutMeasureDefinitions"/>
+     </widget>
+     <widget class="QWidget" name="tabTimeline">
+      <attribute name="title">
+       <string>Timeline</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutTimeline"/>
      </widget>
     </widget>
    </item>

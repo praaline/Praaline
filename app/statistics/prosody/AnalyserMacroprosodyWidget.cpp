@@ -41,6 +41,17 @@ struct AnalyserMacroprosodyWidgetData {
     QStandardItemModel *modelMeasureDefinitions;
 };
 
+class AnalyserMacroprosodyUnit {
+public:
+    QString communicationID;
+    QString annotationID;
+    QString speakerID;
+    RealTime tMin;
+    RealTime tMax;
+    QString label;
+    QString key() { return QString("%1\t%2\t%3").arg(communicationID).arg(annotationID).arg(speakerID); }
+};
+
 AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *repository, QWidget *parent) :
     QWidget(parent), ui(new Ui::AnalyserMacroprosodyWidget), d(new AnalyserMacroprosodyWidgetData)
 {
@@ -116,93 +127,89 @@ void AnalyserMacroprosodyWidget::analyse()
     QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(corpusID);
     if (!corpus) return;
 
+    // New analyser and model
     QScopedPointer<AnalyserMacroprosody> analyser(new AnalyserMacroprosody);
-
     QStandardItemModel *model = new QStandardItemModel(this);
+
+    // Collect units
+    QMap<QString, QList<AnalyserMacroprosodyUnit> > unitGroups;
     if (ui->optionMULIstFromTier->isChecked()) {
-        ui->progressBar->setMaximum(corpus->communicationsCount());
-        int progressCount(0);
+        QString tierNameMacroUnits = ui->comboBoxMUTier->currentText();
         foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
             if (!com) continue;
             foreach (QString annotationID, com->annotationIDs()) {
-                QString tierNameMacroUnits = ui->comboBoxMUTier->currentText();
                 QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
                         d->repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << tierNameMacroUnits);
                 foreach (QString speakerID, tiersAll.keys()) {
                     QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                     if (!tiers) continue;
                     IntervalTier *tier_macroUnit = tiers->getIntervalTierByName(tierNameMacroUnits);
-                    QList<Interval *> macroUnitIntervals;
+                    QList<AnalyserMacroprosodyUnit> units;
                     foreach (Interval *intv, tier_macroUnit->intervals()) {
-                        if (!intv->isPauseSilent()) macroUnitIntervals << intv;
+                        if (intv->isPauseSilent() && ui->checkBoxExcludePauses->isChecked()) continue;
+                        AnalyserMacroprosodyUnit unit;
+                        unit.communicationID = com->ID();
+                        unit.annotationID = annotationID;
+                        unit.speakerID = speakerID;
+                        unit.tMin = intv->tMin();
+                        unit.tMax = intv->tMax();
+                        unit.label = intv->text();
+                        units << unit;
                     }
-                    // Run analyser for each macro-unit (excluding pauses) and take each row of results into the model
-                    analyser->calculate(corpus, com->ID(), annotationID, speakerID, macroUnitIntervals);
-                    while (analyser->model()->rowCount() > 0) {
-                        model->appendRow(analyser->model()->takeRow(0));
+                    if (!units.empty()) {
+                        unitGroups.insert(units.first().key(), units);
                     }
                 }
                 qDeleteAll(tiersAll);
             }
-            progressCount++;
-            ui->progressBar->setValue(progressCount);
         }
     } else {
+        // File format to use:
+        // CommunicationID | AnnotationID | SpeakerID | tMin | tMax | Label
+        // =============================================================================
         QFile file(ui->editFilenameMUList->text());
         if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return;
         QTextStream stream(&file);
-        QList<Interval *> intervals;
-        QString currentCommunicationID, currentAnnotationID, currentSpeakerID;
-        QStringList fileLines;
         do {
             QString line = stream.readLine().trimmed();
-            fileLines << line;
+            if (line.startsWith("#")) continue; // # for comments
+            AnalyserMacroprosodyUnit unit;
+            unit.communicationID = line.section("\t", 0, 0).trimmed();
+            unit.annotationID = line.section("\t", 1, 1).trimmed();
+            unit.speakerID = line.section("\t", 2, 2).trimmed();
+            unit.tMin = RealTime::fromSeconds(line.section("\t", 3, 3).toDouble());
+            unit.tMax = RealTime::fromSeconds(line.section("\t", 4, 4).toDouble());
+            unit.label = line.section("\t", 5).trimmed();
+            if (unitGroups.contains(unit.key())) {
+                unitGroups[unit.key()].append(unit);
+            } else {
+                QList<AnalyserMacroprosodyUnit> list; list << unit;
+                unitGroups.insert(unit.key(), list);
+            }
         } while (!stream.atEnd());
         file.close();
-        ui->progressBar->setMaximum(fileLines.count());
-        int lineNo(0);
-        foreach (QString line, fileLines) {
-            // Format to use:
-            // CommunicationID | AnnotationID | SpeakerID | Occurrence | Part | tMin | tMax
-            // =============================================================================
-            QString communicationID = line.section("\t", 0, 0);
-            QString annotationID = line.section("\t", 1, 1);
-            QString speakerID = line.section("\t", 2, 2);
-            QString label = line.section("\t", 3, 4);
-            RealTime tMin = RealTime::fromSeconds(line.section("\t", 5, 5).toDouble());
-            RealTime tMax = RealTime::fromSeconds(line.section("\t", 6, 6).toDouble());
-            if ((communicationID == currentCommunicationID) && (annotationID == currentAnnotationID) && (speakerID == currentSpeakerID)) {
-                intervals << new Interval(tMin, tMax, label);
-                // qDebug() << currentCommunicationID << currentAnnotationID << currentSpeakerID << label;
-            }
-            else {
-                if (!intervals.isEmpty()) {
-                    analyser->calculate(corpus, currentCommunicationID, currentAnnotationID, currentSpeakerID, intervals);
-                    while (analyser->model()->rowCount() > 0) {
-                        model->appendRow(analyser->model()->takeRow(0));
-                    }
-                    qDeleteAll(intervals);
-                    intervals.clear();
-                }
-                currentCommunicationID = communicationID;
-                currentAnnotationID = annotationID;
-                currentSpeakerID = speakerID;
-                intervals << new Interval(tMin, tMax, label);
-                // qDebug() << currentCommunicationID << currentAnnotationID << currentSpeakerID << label;
-            }
-            lineNo++;
-            ui->progressBar->setValue(lineNo);
-            QApplication::processEvents();
+    }
+    // Analyse units
+    ui->progressBar->setMaximum(unitGroups.count());
+    int progressCount(0);
+    foreach (QString groupKey, unitGroups.keys()) {
+        QList<AnalyserMacroprosodyUnit> units = unitGroups.value(groupKey);
+        QList<Interval *> intervals;
+        foreach (AnalyserMacroprosodyUnit unit, units) {
+            intervals << new Interval(unit.tMin, unit.tMax, unit.label);
         }
-        // Any intervals left?
         if (!intervals.isEmpty()) {
-            analyser->calculate(corpus, currentCommunicationID, currentAnnotationID, currentSpeakerID, intervals);
+            // Run analyser for each macro-unit and take each row of results into the model
+            analyser->calculate(corpus, units.first().communicationID, units.first().annotationID, units.first().speakerID, intervals);
             while (analyser->model()->rowCount() > 0) {
                 model->appendRow(analyser->model()->takeRow(0));
             }
             qDeleteAll(intervals);
             intervals.clear();
         }
+        progressCount++;
+        ui->progressBar->setValue(progressCount);
+        QApplication::processEvents();
     }
     // Update table headers
     if (analyser && analyser->model()) {

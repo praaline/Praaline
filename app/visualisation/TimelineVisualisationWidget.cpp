@@ -73,6 +73,7 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
 
     // Visualiser
     d->visualiser = new VisualiserWidget("Context.VisualisationMode");
+    ui->gridLayoutVisualisationEditor->setMargin(0);
     ui->gridLayoutVisualisationEditor->addWidget(d->visualiser);
 
     // Annotation Timeline Editor

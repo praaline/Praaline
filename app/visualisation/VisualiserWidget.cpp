@@ -1742,6 +1742,7 @@ void VisualiserWidget::setupToolbars()
 
     // Playback toolbar
     setupPlaybackMenusAndToolbar();
+    addToolBar(m_toolbarPlayback);
 
     // Edit toolbar
     QToolBar *toolbar = addToolBar(tr("Edit Toolbar"));
