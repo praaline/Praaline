@@ -126,7 +126,7 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     this->addToolBar(d->toolbarMain);
     this->addToolBar(d->toolbarEditor);
     QWidget *contents = new QWidget(this);
-    QGridLayout *layout = new QGridLayout(this);
+    QGridLayout *layout = new QGridLayout(contents);
     layout->setMargin(0);
     layout->addWidget(d->annotationControls);
     layout->addWidget(d->editor);
