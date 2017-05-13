@@ -22,6 +22,7 @@ struct AnalyserMacroprosodyData {
     {
         filledPauseTokens << "euh" << "euhm";
         prominentLabels << "P";
+        getFirstLastSyllableValues = true;
     }
 
     QString levelPhones;
@@ -31,6 +32,7 @@ struct AnalyserMacroprosodyData {
     QStringList filledPauseTokens;
     QString attributeProminence;
     QStringList prominentLabels;
+    bool getFirstLastSyllableValues;
 
     QStandardItemModel *model;
 };
@@ -62,7 +64,7 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
                             << "NumSyllArticulated" << "NumFilledPauses" << "NumSilentPauses"
                             << "RatioArticulation"
                             << "SpeechRate" << "ArticulationRate" << "RateFILandSyll"
-                            << "MeanPitch" << "PitchLow" << "PitchHigh" << "PitchRange"
+                            << "MeanPitch" << "MeanPitchStDev" << "PitchLow" << "PitchHigh" << "PitchRange"
                             << "MeanPitchFirstSyll" << "PitchLowFirstSyll" << "PitchHighFirstSyll"
                             << "MeanPitchLastSyll" << "PitchLowLastSyll" << "PitchHighLastSyll"
                             << "NumRisingSyll" << "NumFallingSyll" << "NumProminentSyll"
@@ -93,6 +95,7 @@ StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QStri
     if (measureID == "ArticulationRate")    return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Articulation time");
     if (measureID == "RateFILandSyll")      return StatisticalMeasureDefinition("RateFILandSyll", "Articulation (incl FIL) rate", "syll/s", "All articulated syllables (including filled pauses) / Articulation + filled pause time");
     if (measureID == "MeanPitch")           return StatisticalMeasureDefinition("MeanPitch", "Mean of the mean pitch of all stylised syllables in unit", "ST");
+    if (measureID == "MeanPitchStDev")      return StatisticalMeasureDefinition("MeanPitchStDev", "Standard deviation of the mean pitch of all stylised syllables in unit", "ST");
     if (measureID == "PitchLow")            return StatisticalMeasureDefinition("PitchLow", "Minimum of the low pitch of all stylised syllables in unit", "ST");
     if (measureID == "PitchHigh")           return StatisticalMeasureDefinition("PitchHigh", "Maximum of the high pitch of all stylised syllables in unit", "ST");
     if (measureID == "PitchRange")          return StatisticalMeasureDefinition("PitchRange", "Pitch range: pitch high - pitch low", "ST");
@@ -295,6 +298,7 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             StatisticalSummary summary_f0_means(f0_means), summary_f0_minima(f0_minima), summary_f0_maxima(f0_maxima);
             if (numNuclei > 0) {
                 item = new QStandardItem(); item->setData(summary_f0_means.mean(), Qt::DisplayRole); items << item;
+                item = new QStandardItem(); item->setData(summary_f0_means.stDev(), Qt::DisplayRole); items << item;
                 item = new QStandardItem(); item->setData(summary_f0_minima.min(), Qt::DisplayRole); items << item;
                 item = new QStandardItem(); item->setData(summary_f0_maxima.max(), Qt::DisplayRole); items << item;
                 item = new QStandardItem(); item->setData(summary_f0_maxima.max() - summary_f0_minima.min(), Qt::DisplayRole); items << item;
@@ -302,13 +306,15 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             else {
                 items << new QStandardItem("NA") << new QStandardItem("NA") << new QStandardItem("NA") << new QStandardItem("NA");
             }
-            // pitch of first and last syllable
-            item = new QStandardItem(); if (f0_mean_first >= 0) item->setData(f0_mean_first, Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
-            item = new QStandardItem(); if (f0_min_first  >= 0) item->setData(f0_min_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
-            item = new QStandardItem(); if (f0_max_first  >= 0) item->setData(f0_max_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
-            item = new QStandardItem(); if (f0_mean_last  >= 0) item->setData(f0_mean_last,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
-            item = new QStandardItem(); if (f0_min_last   >= 0) item->setData(f0_min_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
-            item = new QStandardItem(); if (f0_max_last   >= 0) item->setData(f0_max_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            if (d->getFirstLastSyllableValues) {
+                // pitch of first and last syllable
+                item = new QStandardItem(); if (f0_mean_first >= 0) item->setData(f0_mean_first, Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+                item = new QStandardItem(); if (f0_min_first  >= 0) item->setData(f0_min_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+                item = new QStandardItem(); if (f0_max_first  >= 0) item->setData(f0_max_first,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+                item = new QStandardItem(); if (f0_mean_last  >= 0) item->setData(f0_mean_last,  Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+                item = new QStandardItem(); if (f0_min_last   >= 0) item->setData(f0_min_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+                item = new QStandardItem(); if (f0_max_last   >= 0) item->setData(f0_max_last,   Qt::DisplayRole); else item->setData("NA", Qt::DisplayRole); items << item;
+            }
             // rises, falls, prominences
             item = new QStandardItem(); item->setData(numRisingSyll, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(numFallingSyll, Qt::DisplayRole); items << item;

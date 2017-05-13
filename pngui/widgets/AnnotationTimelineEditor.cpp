@@ -164,7 +164,7 @@ void AnnotationTimelineEditor::initAdvancedTableView()
     p->setSourceModel(d->model);
     d->view->tableView()->setModel(p);
     d->view->tableView()->horizontalHeader()->setSectionsClickable(true);
-    d->view->tableView()->setDefaultFilterType(0, QTextFilter::Type);    
+    d->view->tableView()->setDefaultFilterType(0, QTextFilter::Type);
     updateGeometry();
 }
 
@@ -334,3 +334,7 @@ void AnnotationTimelineEditor::moveToColumn(int column)
     }
 }
 
+void AnnotationTimelineEditor::resizeColumnsToContents()
+{
+    if (d->view && d->view->tableView()) d->view->tableView()->resizeColumnsToContents();
+}

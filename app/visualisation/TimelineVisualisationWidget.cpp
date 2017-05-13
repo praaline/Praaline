@@ -245,22 +245,34 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
         }
     }
 
-//    Layer *layer_rate_syll = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
-//                                                        "timeNanoseconds", "rate_syll", "text");
-//    if (layer_rate_syll) layer_rate_syll->setDisplayExtents(0.0, 15.0);
+    Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_speechrate", "");
+    if (layer_regions_speechrate) {
+        layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
+        layer_regions_speechrate->setPresentationName("Score Debit");
+    }
+    Layer *layer_regions_registre = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_registre", "");
+    if (layer_regions_registre) {
+        layer_regions_registre->setDisplayExtents(0.0, 10.0);
+        layer_regions_registre->setPresentationName("Score Registre");
+    }
+
 //    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
 //                                                        "timeNanoseconds", "rate_phone", "text");
 //    if (layer_rate_phone) layer_rate_phone->setDisplayExtents(0.0, 30.0);
-    foreach (QString participantID, d->currentTierGroups.keys()) {
-        if (!participantID.startsWith("P")) continue;
-        AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);
-        Layer *layer_joystick_sprate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiers->tier("joystick_speechrate"), "timeNanoseconds", "axis1", "text");
-        if (layer_joystick_sprate) layer_joystick_sprate->setDisplayExtents(-32768.0, 32768.0);
+
+
+//    foreach (QString participantID, d->currentTierGroups.keys()) {
+//        if (!participantID.startsWith("P")) continue;
+//        AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);
+//        Layer *layer_joystick_sprate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiers->tier("joystick_speechrate"), "timeNanoseconds", "axis1", "text");
+//        if (layer_joystick_sprate) layer_joystick_sprate->setDisplayExtents(-32768.0, 32768.0);
 //        Layer *layer_joystick_pitch = d->visualiser->addLayerTimeValuesFromAnnotationTier(
 //                    tiers->tier("joystick_pitchmovement"), "timeNanoseconds", "axis1", "text");
 //        if (layer_joystick_pitch) layer_joystick_pitch->setDisplayExtents(-32768.0, 32768.0);
-    }
+//    }
 
 
 

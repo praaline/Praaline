@@ -323,6 +323,7 @@ void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &ann
 
     d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
     d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
+    d->editor->resizeColumnsToContents();
     d->widgetTimelineConfig->updateSpeakerList(d->currentTierGroups.keys());
     updateAnnotationControls();
 

@@ -301,7 +301,7 @@ QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &commun
     return ret;
 }
 
-void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
+void expeHesitation(const QList<QPointer<CorpusCommunication> > &communications)
 {
     if (communications.isEmpty()) return;
     QPointer<CorpusRepository> repository = communications.first()->repository();
@@ -313,8 +313,13 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     while (iterator.hasNext()) {
         QString filename = iterator.next();
         texp.readResultsFile(repository, corpusID, filename);
-        printMessage(filename);
+        // printMessage(filename);
     }
+}
+
+void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
+{
+
 
 
     // printMessage(valibelTranscription(communications));

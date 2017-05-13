@@ -44,6 +44,8 @@ public:
 
     bool exportToTabSeparated(const QString &filename);
 
+    void resizeColumnsToContents();
+
 public slots:
     void annotationsSplit();
     void annotationsMerge();

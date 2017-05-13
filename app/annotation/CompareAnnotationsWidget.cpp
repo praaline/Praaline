@@ -1,3 +1,5 @@
+#include <QList>
+#include <QSet>
 #include <QString>
 #include <QAction>
 #include <QMessageBox>
@@ -10,6 +12,7 @@
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
@@ -17,6 +20,8 @@ using namespace Praaline::Core;
 #include "pngui/model/diff/DiffSESForIntervalsTableModel.h"
 #include "pngui/widgets/CheckBoxList.h"
 #include "pngui/widgets/GridViewWidget.h"
+
+#include "pngui/xlsx/xlsxdocument.h"
 
 #include "PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
@@ -51,7 +56,7 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
 
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
-    this->setCentralWidget(d->gridviewResults);
+    ui->gridLayoutResults->addWidget(d->gridviewResults);
 
     setupActions();
 
@@ -62,14 +67,22 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
-
-    connect(ui->comboBoxLeftLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelLeftChanged(QString)));
-    connect(ui->comboBoxRightLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelRightChanged(QString)));
-    connect(ui->comboBoxLeftAnnotation, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationLeftChanged(QString)));
-    connect(ui->comboBoxRightAnnotation, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationRightChanged(QString)));
-
-    connect(ui->commandCompare, SIGNAL(clicked()), this, SLOT(compare()));
+    // Repository
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
+    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
+    // Compare Corpora
+    connect(ui->comboBoxCCRepositoryLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(ccRepositoryLeftChanged(QString)));
+    connect(ui->comboBoxCCRepositoryRight, SIGNAL(currentTextChanged(QString)), this, SLOT(ccRepositoryRightChanged(QString)));
+    // Compare Annotations
+    connect(ui->comboBoxCARepositoryLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caRepositoryLeftChanged(QString)));
+    connect(ui->comboBoxCARepositoryRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caRepositoryRightChanged(QString)));
+    connect(ui->comboBoxLevelLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caLevelLeftChanged(QString)));
+    connect(ui->comboBoxLevelRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caLevelRightChanged(QString)));
+    connect(ui->comboBoxAnnotationLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caAnnotationLeftChanged(QString)));
+    connect(ui->comboBoxAnnotationRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caAnnotationRightChanged(QString)));
+    // Compare commands
+    connect(ui->commandCompareCorpora, SIGNAL(clicked()), this, SLOT(compareCorpora()));
+    connect(ui->commandCompareAnnotations, SIGNAL(clicked()), this, SLOT(compareAnnotations()));
 }
 
 CompareAnnotationsWidget::~CompareAnnotationsWidget()
@@ -92,103 +105,185 @@ void CompareAnnotationsWidget::setupActions()
 
 }
 
-void CompareAnnotationsWidget::activeCorpusRepositoryChanged(const QString &corpusID)
+void CompareAnnotationsWidget::corpusRepositoryAdded(const QString &repositoryID)
 {
-    Q_UNUSED(corpusID)
-    ui->comboBoxLeftAnnotation->clear();    ui->comboBoxRightAnnotation->clear();
-    ui->comboBoxLeftSpeaker->clear();       ui->comboBoxRightSpeaker->clear();
-    ui->comboBoxLeftLevel->clear();         ui->comboBoxRightLevel->clear();
-    ui->comboBoxLeftAttribute->clear();     ui->comboBoxRightAttribute->clear();
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    if (!d->corpusRepositoriesManager) return;
+    CorpusRepository *repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
     if (!repository) return;
-//    QPair<QString, QString> pair;
-//    foreach (pair, corpus->getCommunicationsAnnotationsIDs()) {
-//        ui->comboBoxLeftAnnotation->addItem(pair.first + " :: " + pair.second, pair.second);
-//        ui->comboBoxRightAnnotation->addItem(pair.first + " :: " + pair.second, pair.second);
-//    }
-    foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
-        ui->comboBoxLeftLevel->addItem(level->name(), level->ID());
-        ui->comboBoxRightLevel->addItem(level->name(), level->ID());
-    }
-    annotationLeftChanged("");
-    annotationRightChanged("");
-    levelLeftChanged("");
-    levelRightChanged("");
+    ui->comboBoxCCRepositoryLeft->addItem(repository->ID(), repositoryID);
+    ui->comboBoxCCRepositoryRight->addItem(repository->ID(), repositoryID);
+    ui->comboBoxCARepositoryLeft->addItem(repository->ID(), repositoryID);
+    ui->comboBoxCARepositoryRight->addItem(repository->ID(), repositoryID);
 }
 
-void CompareAnnotationsWidget::levelLeftChanged(QString text)
+void CompareAnnotationsWidget::corpusRepositoryRemoved(const QString &repositoryID)
+{
+    if (!d->corpusRepositoriesManager) return;
+    int index = ui->comboBoxCCRepositoryLeft->findData(repositoryID);
+    if (index >= 0) {
+        if (index == ui->comboBoxCCRepositoryLeft->currentIndex()) ui->comboBoxCCCorpusLeft->clear();
+        ui->comboBoxCCRepositoryLeft->removeItem(index);
+    }
+    index = ui->comboBoxCCRepositoryRight->findData(repositoryID);
+    if (index >= 0) {
+        if (index == ui->comboBoxCCRepositoryRight->currentIndex()) ui->comboBoxCCCorpusRight->clear();
+        ui->comboBoxCCRepositoryRight->removeItem(index);
+    }
+    index = ui->comboBoxCARepositoryLeft->findData(repositoryID);
+    if (index >= 0) {
+        if (index == ui->comboBoxCARepositoryLeft->currentIndex()) ui->comboBoxCACorpusLeft->clear();
+        ui->comboBoxCARepositoryLeft->removeItem(index);
+    }
+    index = ui->comboBoxCARepositoryRight->findData(repositoryID);
+    if (index >= 0) {
+        if (index == ui->comboBoxCARepositoryRight->currentIndex()) ui->comboBoxCACorpusRight->clear();
+        ui->comboBoxCARepositoryRight->removeItem(index);
+    }
+}
+
+void CompareAnnotationsWidget::ccRepositoryLeftChanged(const QString &repositoryID)
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    ui->comboBoxCCCorpusLeft->clear();
+    ui->comboBoxCCCorpusLeft->addItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID));
+}
+
+void CompareAnnotationsWidget::ccRepositoryRightChanged(const QString &repositoryID)
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    ui->comboBoxCCCorpusRight->clear();
+    ui->comboBoxCCCorpusRight->addItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID));
+}
+
+void CompareAnnotationsWidget::caRepositoryLeftChanged(const QString &repositoryID)
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    ui->comboBoxCACorpusLeft->clear();
+    ui->comboBoxCACorpusLeft->addItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID));
+    ui->comboBoxLevelLeft->clear();
+    ui->comboBoxAttributeLeft->clear();
+    foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
+        ui->comboBoxLevelLeft->addItem(level->name(), level->ID());
+    }
+    caCorpusLeftChanged(ui->comboBoxCACorpusLeft->currentText());
+}
+
+void CompareAnnotationsWidget::caRepositoryRightChanged(const QString &repositoryID)
+{
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID);
+    if (!repository) return;
+    ui->comboBoxCACorpusRight->clear();
+    ui->comboBoxCACorpusRight->addItems(d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID));
+    ui->comboBoxLevelRight->clear();
+    ui->comboBoxAttributeRight->clear();
+    foreach (AnnotationStructureLevel *level, repository->annotationStructure()->levels()) {
+        ui->comboBoxLevelRight->addItem(level->name(), level->ID());
+    }
+    caCorpusRightChanged(ui->comboBoxCACorpusRight->currentText());
+}
+
+void CompareAnnotationsWidget::caCorpusLeftChanged(const QString &corpusID)
+{
+    ui->comboBoxAnnotationLeft->clear();
+    ui->comboBoxSpeakerLeft->clear();
+    QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(corpusID, ui->comboBoxCARepositoryLeft->currentText());
+    if (!corpus) return;
+    QPair<QString, QString> pair;
+    foreach (pair, corpus->getCommunicationsAnnotationsIDs()) {
+        ui->comboBoxAnnotationLeft->addItem(pair.first + " :: " + pair.second, pair.second);
+    }
+}
+
+void CompareAnnotationsWidget::caCorpusRightChanged(const QString &corpusID)
+{
+    ui->comboBoxAnnotationRight->clear();
+    ui->comboBoxSpeakerRight->clear();
+    QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(corpusID, ui->comboBoxCARepositoryRight->currentText());
+    if (!corpus) return;
+    QPair<QString, QString> pair;
+    foreach (pair, corpus->getCommunicationsAnnotationsIDs()) {
+        ui->comboBoxAnnotationRight->addItem(pair.first + " :: " + pair.second, pair.second);
+    }
+}
+
+void CompareAnnotationsWidget::caLevelLeftChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryLeft->currentText());
     if (!repository) return;
-    QString levelID = ui->comboBoxLeftLevel->currentData().toString();
+    QString levelID = ui->comboBoxLevelLeft->currentData().toString();
     AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
-    ui->comboBoxLeftAttribute->clear();
-    ui->comboBoxLeftAttribute->addItem("", "");
+    ui->comboBoxAttributeLeft->clear();
+    ui->comboBoxAttributeLeft->addItem("", "");
     int i = 0;
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
-        ui->comboBoxLeftAttribute->addItem(attribute->name(), attribute->ID());
+        ui->comboBoxAttributeLeft->addItem(attribute->name(), attribute->ID());
         ui->comboBoxExtraAttributesLeft->insertItem(i, attribute->name(), false);
         i++;
     }
 }
 
-void CompareAnnotationsWidget::levelRightChanged(QString text)
+void CompareAnnotationsWidget::caLevelRightChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryRight->currentText());
     if (!repository) return;
-    QString levelID = ui->comboBoxRightLevel->currentData().toString();
+    QString levelID = ui->comboBoxLevelRight->currentData().toString();
     AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID);
     if (!level) return;
-    ui->comboBoxRightAttribute->clear();
-    ui->comboBoxRightAttribute->addItem("", "");
+    ui->comboBoxAttributeRight->clear();
+    ui->comboBoxAttributeRight->addItem("", "");
     int i = 0;
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
-        ui->comboBoxLeftAttribute->addItem(attribute->name(), attribute->ID());
+        ui->comboBoxAttributeRight->addItem(attribute->name(), attribute->ID());
         ui->comboBoxExtraAttributesRight->insertItem(i, attribute->name(), false);
         i++;
     }
 }
 
-void CompareAnnotationsWidget::annotationLeftChanged(QString text)
+void CompareAnnotationsWidget::caAnnotationLeftChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryLeft->currentText());
     if (!repository) return;
-    QString annotationID = ui->comboBoxLeftAnnotation->currentData().toString();
-    ui->comboBoxLeftSpeaker->clear();
-    ui->comboBoxLeftSpeaker->addItems(repository->annotations()->getSpeakersInAnnotation(annotationID));
+    QString annotationID = ui->comboBoxAnnotationLeft->currentData().toString();
+    ui->comboBoxSpeakerLeft->clear();
+    ui->comboBoxSpeakerLeft->addItems(repository->annotations()->getSpeakersInAnnotation(annotationID));
 }
 
-void CompareAnnotationsWidget::annotationRightChanged(QString text)
+void CompareAnnotationsWidget::caAnnotationRightChanged(const QString &text)
 {
     Q_UNUSED(text)
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
+    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryRight->currentText());
     if (!repository) return;
-    QString annotationID = ui->comboBoxRightAnnotation->currentData().toString();
-    ui->comboBoxRightSpeaker->clear();
-    ui->comboBoxRightSpeaker->addItems(repository->annotations()->getSpeakersInAnnotation(annotationID));
+    QString annotationID = ui->comboBoxAnnotationRight->currentData().toString();
+    ui->comboBoxSpeakerRight->clear();
+    ui->comboBoxSpeakerRight->addItems(repository->annotations()->getSpeakersInAnnotation(annotationID));
 }
 
-void CompareAnnotationsWidget::compare()
+void CompareAnnotationsWidget::compareAnnotations()
 {
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) return;
+    QPointer<CorpusRepository> repository_left = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryLeft->currentText());
+    if (!repository_left) return;
+    QPointer<CorpusRepository> repository_right = d->corpusRepositoriesManager->corpusRepositoryByID(ui->comboBoxCARepositoryRight->currentText());
+    if (!repository_right) return;
 
     QString annotationID_left, speakerID_left, levelID_left, attributeID_left;
     QString annotationID_right, speakerID_right, levelID_right, attributeID_right;
-    annotationID_left = ui->comboBoxLeftAnnotation->currentData().toString();
-    speakerID_left = ui->comboBoxLeftSpeaker->currentText();
-    levelID_left = ui->comboBoxLeftLevel->currentData().toString();
-    attributeID_left = ui->comboBoxLeftAttribute->currentData().toString();
-    annotationID_right = ui->comboBoxRightAnnotation->currentData().toString();
-    speakerID_right = ui->comboBoxRightSpeaker->currentText();
-    levelID_right = ui->comboBoxRightLevel->currentData().toString();
-    attributeID_right = ui->comboBoxRightAttribute->currentData().toString();
+    annotationID_left = ui->comboBoxAnnotationLeft->currentData().toString();
+    speakerID_left = ui->comboBoxSpeakerLeft->currentText();
+    levelID_left = ui->comboBoxLevelLeft->currentData().toString();
+    attributeID_left = ui->comboBoxAttributeLeft->currentData().toString();
+    annotationID_right = ui->comboBoxAnnotationRight->currentData().toString();
+    speakerID_right = ui->comboBoxSpeakerRight->currentText();
+    levelID_right = ui->comboBoxLevelRight->currentData().toString();
+    attributeID_right = ui->comboBoxAttributeRight->currentData().toString();
 
-    AnnotationTierGroup *group_left = repository->annotations()->getTiers(
+    AnnotationTierGroup *group_left = repository_left->annotations()->getTiers(
                 annotationID_left, speakerID_left, QStringList() << levelID_left);
     IntervalTier *tier_left = group_left->getIntervalTierByName(levelID_left);
     if (!tier_left) {
@@ -197,7 +292,7 @@ void CompareAnnotationsWidget::compare()
                              .arg(annotationID_left).arg(speakerID_left).arg(levelID_left), QMessageBox::Ok);
         return;
     }
-    AnnotationTierGroup *group_right = repository->annotations()->getTiers(
+    AnnotationTierGroup *group_right = repository_right->annotations()->getTiers(
                 annotationID_right, speakerID_right, QStringList() << levelID_right);
     IntervalTier *tier_right = group_right->getIntervalTierByName(levelID_right);
     if (!tier_right) {
@@ -211,13 +306,13 @@ void CompareAnnotationsWidget::compare()
     QStringList extraAttributes_left, extraAttributes_right;
     for (int i = 0; i < ui->comboBoxExtraAttributesLeft->count(); ++i) {
         if (ui->comboBoxExtraAttributesLeft->itemData(i).toBool() == true) {
-            AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID_left);
+            AnnotationStructureLevel *level = repository_left->annotationStructure()->level(levelID_left);
             if (level && i < level->attributesCount()) extraAttributes_left << level->attributes().at(i)->ID();
         }
     }
     for (int i = 0; i < ui->comboBoxExtraAttributesRight->count(); ++i) {
         if (ui->comboBoxExtraAttributesRight->itemData(i).toBool() == true) {
-            AnnotationStructureLevel *level = repository->annotationStructure()->level(levelID_right);
+            AnnotationStructureLevel *level = repository_right->annotationStructure()->level(levelID_right);
             if (level && i < level->attributesCount()) extraAttributes_right << level->attributes().at(i)->ID();
         }
     }
@@ -249,4 +344,190 @@ void CompareAnnotationsWidget::saveChanges()
 {
 
 }
+
+void CompareAnnotationsWidget::compareCorpora()
+{
+    // Open repositories
+    QString repositoryID_left = ui->comboBoxCCRepositoryLeft->currentText();
+    QString repositoryID_right = ui->comboBoxCCRepositoryRight->currentText();
+    QPointer<CorpusRepository> repository_left = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID_left);
+    if (!repository_left) return;
+    QPointer<CorpusRepository> repository_right = d->corpusRepositoriesManager->corpusRepositoryByID(repositoryID_right);
+    if (!repository_right) return;
+    // Open corpora
+    QString corpusID_left = ui->comboBoxCCCorpusLeft->currentText();
+    QString corpusID_right = ui->comboBoxCCCorpusRight->currentText();
+    QPointer<Corpus> corpus_left = repository_left->metadata()->getCorpus(corpusID_left);
+    if (!corpus_left) return;
+    QPointer<Corpus> corpus_right = repository_right->metadata()->getCorpus(corpusID_right);
+    if (!corpus_right) return;
+
+    // Find common levels
+    QList<QString> levelIDs_common;
+    levelIDs_common << QSet<QString>::fromList(repository_left->annotationStructure()->levelIDs())
+                       .intersect(QSet<QString>::fromList(repository_right->annotationStructure()->levelIDs())).toList();
+    qSort(levelIDs_common);
+
+    // Labels header
+//    QString header = "CommunicationID\tAnnotationID\tSpeakerID\t";
+//    foreach (QString levelID, levelIDs_common) header = header.append(levelID).append("\t");
+//    if (!header.isEmpty()) header.chop(1);
+//    ui->editCompareCorporaMessages->appendPlainText(header);
+
+    // Loop through communicationIDs existing in both corpora
+    QList<QString> communicationIDs_common = QSet<QString>::fromList(corpus_left->communicationIDs()).intersect(
+                QSet<QString>::fromList(corpus_right->communicationIDs())).toList();
+    qSort(communicationIDs_common);
+    foreach (QString communicationID, communicationIDs_common) {
+        QPointer<CorpusCommunication> com_left = corpus_left->communication(communicationID);
+        if (!com_left) continue;
+        QPointer<CorpusCommunication> com_right = corpus_right->communication(communicationID);
+        if (!com_right) continue;
+        // Loop through annotationIDs existing in both communications
+        QList<QString> annotationIDs_common = QSet<QString>::fromList(com_left->annotationIDs()).intersect(
+                    QSet<QString>::fromList(com_right->annotationIDs())).toList();
+        qSort(annotationIDs_common);
+        foreach (QString annotationID, annotationIDs_common) {
+            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll_left, tiersAll_right;
+            tiersAll_left = repository_left->annotations()->getTiersAllSpeakers(annotationID);
+            tiersAll_right = repository_right->annotations()->getTiersAllSpeakers(annotationID);
+            // Find common speakerIDs
+            QList<QString> speakerIDs_common = QSet<QString>::fromList(tiersAll_left.keys()).intersect(
+                        QSet<QString>::fromList(tiersAll_right.keys())).toList();
+            qSort(speakerIDs_common);
+            foreach (QString speakerID, speakerIDs_common) {
+                QMap<QString, QPointer<DiffSESforIntervalsTableModel> > models;
+                QMap<QString, dtl::Ses<Interval *>::sesElemVec> sesSequences;
+                foreach (QString levelID, levelIDs_common) {
+                    // Load annotations
+                    IntervalTier *tier_left = tiersAll_left.value(speakerID)->getIntervalTierByName(levelID);
+                    if (!tier_left) continue;
+                    IntervalTier *tier_right = tiersAll_right.value(speakerID)->getIntervalTierByName(levelID);
+                    if (!tier_right) continue;
+                    // Apply diff
+                    sesSequences.insert(levelID, DiffIntervals::intervalDiff(tier_left->intervals(), tier_right->intervals(), false).getSes().getSequence());
+                    // Get model of diff sequence and add it
+                    models.insert(levelID, new DiffSESforIntervalsTableModel(
+                                      sesSequences[levelID], tier_left->intervals(), tier_right->intervals(),
+                                      "", "", QStringList(), QStringList(), this));
+                }
+                // Export diff tables
+                exportDiffTableCombinedExcel(communicationID, annotationID, speakerID, models);
+                qDeleteAll(models);
+                sesSequences.clear();
+            } // speaker ID
+            qDeleteAll(tiersAll_left);
+            qDeleteAll(tiersAll_right);
+        } // annotationID
+    } // communicationID
+
+}
+
+void CompareAnnotationsWidget::exportDiffTableByLevelExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
+                                                           QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models)
+{
+    // Create an Excel document
+    QXlsx::Document xlsx;
+    // Note: rows and columns start from 1 for QXlsx
+    int row(1), col(1);
+    // Format for the headers
+    QXlsx::Format format_header;
+    format_header.setFontBold(true);
+    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+    // Format: OP tMinA tMaxA tMinB tMaxB A B
+
+    foreach (QString levelID, models.keys()) {
+        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
+        if (!model) continue;
+        int countAdditions(0), countDeletions(0);
+        // Header
+        for (int j = 0; j < model->columnCount(); ++j) {
+            xlsx.write(1, col + j, levelID, format_header);
+            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
+        }
+        row = 3;
+        for (int i = 0; i < model->rowCount(); ++i) {
+            QString opcode = model->data(model->index(i, 0), Qt::DisplayRole).toString();
+            if (opcode == "+") countAdditions++;
+            if (opcode == "-") countDeletions++;
+            for (int j = 0; j < model->columnCount(); ++j) {
+                if (j == 0)
+                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole).toString().replace("=", ""));
+                else
+                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole));
+            }
+        }
+        col = col + model->columnCount();
+        // Counts
+        QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+        message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID).arg(model->rowCount()).arg(countAdditions).arg(countDeletions));
+        ui->editCompareCorporaMessages->appendPlainText(message);
+        QApplication::processEvents();
+
+    }
+    QString path = "/home/george/comparator/";
+    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
+    xlsx.saveAs(path + filename);
+}
+
+struct CombinedTimelineData {
+    QString levelID;
+    int rowIndex;
+};
+
+void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
+                                                           QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models)
+{
+    // Create an Excel document
+    QXlsx::Document xlsx;
+    // Note: rows and columns start from 1 for QXlsx
+    int row(1), col(1);
+    // Format for the headers
+    QXlsx::Format format_header;
+    format_header.setFontBold(true);
+    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+    // Format: OP tMinA tMaxA tMinB tMaxB A B
+    QHash<QString, int> levelColumn;
+    QMultiMap<RealTime, CombinedTimelineData> timeline;
+    foreach (QString levelID, models.keys()) {
+        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
+        if (!model) continue;
+        levelColumn.insert(levelID, col);
+        // Header
+        for (int j = 0; j < model->columnCount(); ++j) {
+            xlsx.write(1, col + j, levelID, format_header);
+            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
+        }
+        for (int i = 0; i < model->rowCount(); ++i) {
+            RealTime t = RealTime::fromSeconds(model->data(model->index(i, 1), Qt::DisplayRole).toDouble());
+            CombinedTimelineData td;
+            td.levelID = levelID;
+            td.rowIndex = i;
+            timeline.insert(t, td);
+        }
+        col++;
+    }
+    row = 3;
+    foreach (CombinedTimelineData td, timeline.values()) {
+        QPointer<DiffSESforIntervalsTableModel> model = models.value(td.levelID);
+        for (int j = 0; j < model->columnCount(); ++j) {
+            int colOffset = (levelColumn.value(td.levelID) - 1) * model->columnCount();
+            if (j == 0)
+                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole).toString().replace("=", ""));
+            else
+                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole));
+        }
+        row++;
+    }
+
+    QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+    ui->editCompareCorporaMessages->appendPlainText(message);
+    QApplication::processEvents();
+
+    QString path = "/home/george/comparator/";
+    QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID).arg(speakerID);
+    xlsx.saveAs(path + filename);
+}
+
+
 

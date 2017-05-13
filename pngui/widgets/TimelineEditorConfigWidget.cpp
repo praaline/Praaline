@@ -57,11 +57,11 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     //addLevelAttribute("syll", "boundary");
     //addLevelAttribute("syll", "contour");
 
-    addLevelAttribute("tok_min", "");
-    addLevelAttribute("tok_min", "pos_min");
-    addLevelAttribute("tok_min", "disfluency");
+//    addLevelAttribute("tok_min", "");
+//    addLevelAttribute("tok_min", "pos_min");
+//    addLevelAttribute("tok_min", "disfluency");
 //    addLevelAttribute("tok_mwu", "");
-    addLevelAttribute("tok_mwu", "pos_mwu");
+//    addLevelAttribute("tok_mwu", "pos_mwu");
 //    addLevelAttribute("tok_mwu", "discourse");
 //    addLevelAttribute("tok_mwu", "DM_discourse");
 //    addLevelAttribute("tok_mwu", "DM_optionality");
@@ -74,7 +74,9 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
 //    addLevelAttribute("tok_min", "liaison_consonant");
 //    addLevelAttribute("tok_min", "liaison_context");
 //    addLevelAttribute("tok_min", "liaison_forbidden");
-    addLevelAttribute("tok_min", "", "context", "");
+//    addLevelAttribute("tok_min", "", "context", "");
+    addLevelAttribute("transcription", "");
+
     d->innerwindowLevelsAttributes = new QMainWindow(this);
     d->innerwindowLevelsAttributes->addToolBar(d->toolbarLevelsAttributes);
     d->tableviewLevelsAttributes = new QTableView(this);
