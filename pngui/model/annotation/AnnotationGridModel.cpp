@@ -211,8 +211,33 @@ QVariant AnnotationGridModel::data(const QString &speakerID, const QString &leve
     return QVariant();
 }
 
-bool AnnotationGridModel::setData(const QString &speakerID, const QString &levelID, const QString &attributeID, const int index, const QVariant &value)
+bool AnnotationGridModel::setData(const QString &speakerID, const QString &levelID, const QString &attributeID,
+                                  const int index, const QVariant &value)
 {
-
+    if (!d->tiers.contains(speakerID)) return false;
+    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(speakerID);
+    if (!tiers_spk) return false;
+    IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(levelID);
+    if (tier_intv) {
+        if (index > 0 && index < tier_intv->count()) {
+            if (attributeID.isEmpty())
+                tier_intv->interval(index)->setText(value.toString());
+            else
+                tier_intv->interval(index)->setAttribute(attributeID, value);
+            return true;
+        } else return false;
+    }
+    PointTier *tier_point = tiers_spk->getPointTierByName(levelID);
+    if (tier_point) {
+        if (index > 0 && index < tier_point->count()) {
+            if (attributeID.isEmpty())
+                tier_point->point(index)->setText(value.toString());
+            else
+                tier_point->point(index)->setAttribute(attributeID, value);
+            return true;
+        } else return false;
+    }
+    return false;
 }
+
 

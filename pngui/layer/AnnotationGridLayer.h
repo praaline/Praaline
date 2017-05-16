@@ -6,6 +6,7 @@
 
 #include <QObject>
 #include <QColor>
+#include <QLineEdit>
 
 class View;
 class QPainter;
@@ -22,6 +23,7 @@ public:
     };
 
     AnnotationGridLayer();
+    virtual ~AnnotationGridLayer();
 
     std::string getType() const { return "AnnotationGrid"; }
 
@@ -101,6 +103,16 @@ protected:
 
     bool m_editing;
     QPoint m_editOrigin;
+
+    bool m_textEditing;
+    QLineEdit *m_textEditor;
+    AnnotationGridPointModel::Point m_textEditorPoint;
+    int m_textEditorTierIndex;
+    QString m_textEditorSpeakerID, m_textEditorLevelID, m_textEditorAttributeID;
+
+protected slots:
+    void textEditorReposition(View *v) const;
+    void textEditingFinished();
 
 //    AnnotationGridModel::Point m_originalPoint;
 //    AnnotationGridModel::Point m_editingPoint;

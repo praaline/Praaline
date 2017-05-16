@@ -20,22 +20,35 @@
 AnnotationGridLayer::AnnotationGridLayer() :
     SingleColourLayer(),
     m_model(0),
+    m_plotStyle(PlotSpeakersThenLevelAttributes),
     m_editing(false),
-    m_plotStyle(PlotSpeakersThenLevelAttributes)
+    m_textEditing(false),
+    m_textEditor(new QLineEdit()),
+    m_textEditorPoint(AnnotationGridPointModel::Point(0))
 {
+    m_textEditor->setVisible(false);
+    m_textEditor->setFrame(false);
+    m_textEditor->setAlignment(Qt::AlignHCenter);
+    connect(m_textEditor, SIGNAL(editingFinished()), this, SLOT(textEditingFinished()));
+}
+
+AnnotationGridLayer::~AnnotationGridLayer()
+{
+    textEditingFinished();
 }
 
 bool AnnotationGridLayer::trySetModel(Model *model)
 {
+    textEditingFinished();
     if (trySetModelHelper<AnnotationGridLayer, AnnotationGridModel>(this, model))
         return true;
     return false;
 }
 
-void
-AnnotationGridLayer::setModel(AnnotationGridModel *model)
+void AnnotationGridLayer::setModel(AnnotationGridModel *model)
 {
     if (m_model == model) return;
+    textEditingFinished();
     m_model = model;
     connectSignals(m_model);
     if (m_plotStyle == PlotBlendedSpeakers || m_plotStyle == PlotLevelAttributesThenSpeakers)
@@ -50,31 +63,26 @@ AnnotationGridLayer::setModel(AnnotationGridModel *model)
 // Properties
 // ==============================================================================================================================
 
-Layer::PropertyList
-AnnotationGridLayer::getProperties() const
+Layer::PropertyList AnnotationGridLayer::getProperties() const
 {
     PropertyList list = SingleColourLayer::getProperties();
     list.push_back("Structure");
     return list;
 }
 
-QString
-AnnotationGridLayer::getPropertyLabel(const PropertyName &name) const
+QString AnnotationGridLayer::getPropertyLabel(const PropertyName &name) const
 {
     if (name == "Structure") return tr("Structure");
     return SingleColourLayer::getPropertyLabel(name);
 }
 
-Layer::PropertyType
-AnnotationGridLayer::getPropertyType(const PropertyName &name) const
+Layer::PropertyType AnnotationGridLayer::getPropertyType(const PropertyName &name) const
 {
     if (name == "Structure") return ValueProperty;
     return SingleColourLayer::getPropertyType(name);
 }
 
-int
-AnnotationGridLayer::getPropertyRangeAndValue(const PropertyName &name,
-                                              int *min, int *max, int *deflt) const
+int AnnotationGridLayer::getPropertyRangeAndValue(const PropertyName &name, int *min, int *max, int *deflt) const
 {
     int val = 0;
     if (name == "Structure") {
@@ -88,9 +96,7 @@ AnnotationGridLayer::getPropertyRangeAndValue(const PropertyName &name,
     return val;
 }
 
-QString
-AnnotationGridLayer::getPropertyValueLabel(const PropertyName &name,
-                                           int value) const
+QString AnnotationGridLayer::getPropertyValueLabel(const PropertyName &name, int value) const
 {
     if (name == "Structure") {
         switch (value) {
@@ -103,8 +109,7 @@ AnnotationGridLayer::getPropertyValueLabel(const PropertyName &name,
     return SingleColourLayer::getPropertyValueLabel(name, value);
 }
 
-void
-AnnotationGridLayer::setProperty(const PropertyName &name, int value)
+void AnnotationGridLayer::setProperty(const PropertyName &name, int value)
 {
     if (name == "Structure") {
         setPlotStyle(PlotStyle(value));
@@ -113,8 +118,7 @@ AnnotationGridLayer::setProperty(const PropertyName &name, int value)
     }
 }
 
-bool
-AnnotationGridLayer::getValueExtents(double &, double &, bool &, QString &) const
+bool AnnotationGridLayer::getValueExtents(double &, double &, bool &, QString &) const
 {
     return false;
 }
@@ -125,12 +129,14 @@ bool
 AnnotationGridLayer::isLayerScrollable(const View *v) const
 {
     QPoint discard;
-    return !v->shouldIlluminateLocalFeatures(this, discard);
+    bool illuminate = v->shouldIlluminateLocalFeatures(this, discard);
+    return ((!m_textEditing) && (!illuminate));
 }
 
 void AnnotationGridLayer::setPlotStyle(PlotStyle style)
 {
     if (m_plotStyle == style) return;
+    textEditingFinished();
     m_plotStyle = style;
     if (m_plotStyle == PlotLevelAttributesThenSpeakers)
         m_tierTuples = m_model->tierTuples(AnnotationGridModel::LayoutLevelAttributesThenSpeakers);
@@ -441,10 +447,14 @@ void AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
         }
     }
 
+    // Text editor
+    if (m_textEditing) textEditorReposition(v);
 }
 
-void
-AnnotationGridLayer::drawStart(View *v, QMouseEvent *e)
+// Draw: add boundaries on tiers
+// ====================================================================================================================
+
+void AnnotationGridLayer::drawStart(View *v, QMouseEvent *e)
 {
     //    cerr << "AnnotationGridLayer::drawStart(" << e->x() << "," << e->y() << ")" << endl;
 
@@ -469,8 +479,7 @@ AnnotationGridLayer::drawStart(View *v, QMouseEvent *e)
 //    m_editing = true;
 }
 
-void
-AnnotationGridLayer::drawDrag(View *v, QMouseEvent *e)
+void AnnotationGridLayer::drawDrag(View *v, QMouseEvent *e)
 {
     //    cerr << "AnnotationGridLayer::drawDrag(" << e->x() << "," << e->y() << ")" << endl;
 
@@ -512,8 +521,10 @@ AnnotationGridLayer::drawEnd(View *v, QMouseEvent *)
     m_editing = false;
 }
 
-void
-AnnotationGridLayer::eraseStart(View *v, QMouseEvent *e)
+// Erase: remove boundaries from tiers
+// ====================================================================================================================
+
+void AnnotationGridLayer::eraseStart(View *v, QMouseEvent *e)
 {
     if (!m_model) return;
 
@@ -527,13 +538,11 @@ AnnotationGridLayer::eraseStart(View *v, QMouseEvent *e)
     m_editing = true;
 }
 
-void
-AnnotationGridLayer::eraseDrag(View *, QMouseEvent *)
+void AnnotationGridLayer::eraseDrag(View *, QMouseEvent *)
 {
 }
 
-void
-AnnotationGridLayer::eraseEnd(View *v, QMouseEvent *e)
+void AnnotationGridLayer::eraseEnd(View *v, QMouseEvent *e)
 {
     if (!m_model || !m_editing) return;
 
@@ -553,8 +562,10 @@ AnnotationGridLayer::eraseEnd(View *v, QMouseEvent *e)
     m_editing = false;
 }
 
-void
-AnnotationGridLayer::editStart(View *v, QMouseEvent *e)
+// Edit: move boundary position on tiers
+// ====================================================================================================================
+
+void AnnotationGridLayer::editStart(View *v, QMouseEvent *e)
 {
     //    cerr << "AnnotationGridLayer::editStart(" << e->x() << "," << e->y() << ")" << endl;
 
@@ -571,6 +582,7 @@ AnnotationGridLayer::editStart(View *v, QMouseEvent *e)
 //        finish(m_editingCommand);
 //        m_editingCommand = 0;
 //    }
+
 
     m_editing = true;
 }
@@ -602,8 +614,7 @@ AnnotationGridLayer::editDrag(View *v, QMouseEvent *e)
 //    m_editingCommand->addPoint(m_editingPoint);
 }
 
-void
-AnnotationGridLayer::editEnd(View *, QMouseEvent *)
+void AnnotationGridLayer::editEnd(View *, QMouseEvent *)
 {
     //    cerr << "AnnotationGridLayer::editEnd(" << e->x() << "," << e->y() << ")" << endl;
     if (!m_model || !m_editing) return;
@@ -627,11 +638,13 @@ AnnotationGridLayer::editEnd(View *, QMouseEvent *)
 //    }
 
 //    m_editingCommand = 0;
-    m_editing = false;
+
 }
 
-bool
-AnnotationGridLayer::editOpen(View *v, QMouseEvent *e)
+// Edit open: edit the label of an interval
+// ====================================================================================================================
+
+bool AnnotationGridLayer::editOpen(View *v, QMouseEvent *e)
 {
     if (!m_model) return false;
 
@@ -649,19 +662,18 @@ AnnotationGridLayer::editOpen(View *v, QMouseEvent *e)
     AnnotationGridPointModel::PointList prevPoints = boundaryModel->getPreviousPoints(frame);
 
     if (!prevPoints.empty()) {
-        QString label = m_model->data(speakerID, levelID, attributeID, prevPoints.begin()->itemNo).toString();
+        m_textEditorPoint = *(prevPoints.begin());
+        m_textEditorTierIndex = tierIndex;
 
-        QLineEdit *edit = new QLineEdit(v);
-
-
-        edit->move(v->getXForFrame(prevPoints.begin()->frame), getYForTierIndex(v, tierIndex));
-        edit->show();
-
-//        QMessageBox::information(v, "test", QString("speakerID: %1\nlevelID: %2\nattributeID: %3\nframe: %4\nlabel: %5\nitemNo: %6")
-//                                 .arg(speakerID).arg(levelID).arg(attributeID).arg(frame)
-//                                 .arg(label).arg(prevPoints.begin()->itemNo));
+        QString editText = m_model->data(speakerID, levelID, attributeID, prevPoints.begin()->itemNo).toString();
+        m_textEditor->setText(editText);
+        textEditorReposition(v);
+        m_textEditor->show();
+        m_textEditing = true;
+        m_textEditorSpeakerID = speakerID;
+        m_textEditorLevelID = levelID;
+        m_textEditorAttributeID = attributeID;
     }
-
 
 //    AnnotationGridModel::Point text(0);
 //    if (!getPointToDrag(v, e->x(), e->y(), text)) return false;
@@ -681,8 +693,31 @@ AnnotationGridLayer::editOpen(View *v, QMouseEvent *e)
     return true;
 }
 
-void
-AnnotationGridLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
+void AnnotationGridLayer::textEditorReposition(View *v) const
+{
+    int x_left = v->getXForFrame(m_textEditorPoint.frame);
+    int y_top = getYForTierIndex(v, m_textEditorTierIndex);
+    int width = v->getXForFrame(m_textEditorPoint.frame + m_textEditorPoint.duration) - x_left;
+    if (width < 50) width = 50;
+    int height(50); if (m_tierTuples.count() > 0) height = v->height() / m_tierTuples.count();
+    m_textEditor->setParent(v);
+    m_textEditor->move(x_left + 3, y_top + 2);
+    m_textEditor->resize(width - 4, height - 2);
+    qDebug() << "Text editor move to" << x_left << y_top;
+}
+
+void AnnotationGridLayer::textEditingFinished()
+{
+    m_textEditor->hide();
+    if (m_textEditing) {
+        m_model->setData(m_textEditorSpeakerID, m_textEditorLevelID, m_textEditorAttributeID, m_textEditorPoint.itemNo,
+                         m_textEditor->text());
+    }
+    m_textEditorSpeakerID.clear(); m_textEditorLevelID.clear(); m_textEditorAttributeID.clear();
+    m_textEditing = false;
+}
+
+void AnnotationGridLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
 {
     if (!m_model) return;
 
@@ -706,8 +741,7 @@ AnnotationGridLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
 //    finish(command);
 }
 
-void
-AnnotationGridLayer::resizeSelection(Selection s, Selection newSize)
+void AnnotationGridLayer::resizeSelection(Selection s, Selection newSize)
 {
     if (!m_model) return;
 
@@ -740,8 +774,7 @@ AnnotationGridLayer::resizeSelection(Selection s, Selection newSize)
 //    finish(command);
 }
 
-void
-AnnotationGridLayer::deleteSelection(Selection s)
+void AnnotationGridLayer::deleteSelection(Selection s)
 {
     if (!m_model) return;
 
@@ -759,8 +792,7 @@ AnnotationGridLayer::deleteSelection(Selection s)
 //    finish(command);
 }
 
-void
-AnnotationGridLayer::copy(View *v, Selection s, Clipboard &to)
+void AnnotationGridLayer::copy(View *v, Selection s, Clipboard &to)
 {
     if (!m_model) return;
 
@@ -777,8 +809,7 @@ AnnotationGridLayer::copy(View *v, Selection s, Clipboard &to)
 //    }
 }
 
-bool
-AnnotationGridLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOffset */, bool /* interactive */)
+bool AnnotationGridLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOffset */, bool /* interactive */)
 {
 //    if (!m_model) return false;
 
@@ -857,25 +888,23 @@ AnnotationGridLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOf
 
 //    finish(command);
 //    return true;
+    return false;
 }
 
-int
-AnnotationGridLayer::getDefaultColourHint(bool darkbg, bool &impose)
+int AnnotationGridLayer::getDefaultColourHint(bool darkbg, bool &impose)
 {
     impose = false;
     return ColourDatabase::getInstance()->getColourIndex
             (QString(darkbg ? "Bright Orange" : "Orange"));
 }
 
-void
-AnnotationGridLayer::toXml(QTextStream &stream,
+void AnnotationGridLayer::toXml(QTextStream &stream,
                            QString indent, QString extraAttributes) const
 {
     SingleColourLayer::toXml(stream, indent, extraAttributes);
 }
 
-void
-AnnotationGridLayer::setProperties(const QXmlAttributes &attributes)
+void AnnotationGridLayer::setProperties(const QXmlAttributes &attributes)
 {
     SingleColourLayer::setProperties(attributes);
 }
