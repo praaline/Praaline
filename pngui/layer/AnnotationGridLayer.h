@@ -95,15 +95,18 @@ protected:
 
     AnnotationGridPointModel::PointList getLocalPoints(View *v, int x, int y) const;
 
-    // bool getPointToDrag(View *v, int x, int y, AnnotationGridModel::Point &) const;
+    bool getPointToDrag(View *v, int x, int y, AnnotationGridPointModel::Point &) const;
 
     AnnotationGridModel *m_model;
     PlotStyle m_plotStyle;
     QList<AnnotationGridModel::TierTuple> m_tierTuples;
 
-    bool m_editing;
-    QPoint m_editOrigin;
+    // Boundary editing
+    bool m_boundaryEditing;
+    AnnotationGridPointModel::Point m_boundaryEditingPoint;
+    AnnotationGridModel::EditBoundaryCommand *m_boundaryEditingCommand;
 
+    // Text editing
     bool m_textEditing;
     QLineEdit *m_textEditor;
     AnnotationGridPointModel::Point m_textEditorPoint;
@@ -114,14 +117,10 @@ protected slots:
     void textEditorReposition(View *v) const;
     void textEditingFinished();
 
-//    AnnotationGridModel::Point m_originalPoint;
-//    AnnotationGridModel::Point m_editingPoint;
-//    AnnotationGridModel::EditCommand *m_editingCommand;
-
-//    void finish(AnnotationGridModel::EditCommand *command) {
-//        SVCommand *c = command->finish();
-//        if (c) CommandHistory::getInstance()->addCommand(c, false);
-//    }
+    void finish(AnnotationGridModel::EditBoundaryCommand *command) {
+        UndoableCommand *c = command->finish();
+        if (c) CommandHistory::getInstance()->addCommand(c, false);
+    }
 };
 
 #endif // ANNOTATIONGRIDLAYER_H

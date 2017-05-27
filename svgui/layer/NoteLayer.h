@@ -168,7 +168,7 @@ protected:
     bool shouldAutoAlign() const;
 
     void finish(NoteModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

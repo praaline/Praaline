@@ -19,7 +19,7 @@
 #include <QVariant>
 #include <QString>
 
-class SVCommand;
+class UndoableCommand;
 
 /**
  * TabularModel is an abstract base class for models that support
@@ -52,9 +52,9 @@ public:
     virtual int getRowForFrame(sv_frame_t frame) const = 0;
 
     virtual bool isEditable() const { return false; }
-    virtual SVCommand *getSetDataCommand(int /* row */, int /* column */, const QVariant &, int /* role */) { return 0; }
-    virtual SVCommand *getInsertRowCommand(int /* beforeRow */) { return 0; }
-    virtual SVCommand *getRemoveRowCommand(int /* row */) { return 0; }
+    virtual UndoableCommand *getSetDataCommand(int /* row */, int /* column */, const QVariant &, int /* role */) { return 0; }
+    virtual UndoableCommand *getInsertRowCommand(int /* beforeRow */) { return 0; }
+    virtual UndoableCommand *getRemoveRowCommand(int /* row */) { return 0; }
 };
 
 #endif

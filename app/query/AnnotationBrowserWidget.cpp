@@ -9,7 +9,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"
-#include "pngui/model/annotation/AnnotationTableModel.h"
+#include "pngui/model/annotation/AnnotationElementTableModel.h"
 #include "CorpusRepositoriesManager.h"
 #include "AnnotationBrowserWidget.h"
 
@@ -33,7 +33,7 @@ struct AnnotationBrowserWidgetData {
     QString levelID;
     QStringList attributeIDs;
     QList<AnnotationElement *> elements;
-    QPointer<AnnotationTableModel> model;
+    QPointer<AnnotationElementTableModel> model;
 };
 
 AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
@@ -145,7 +145,7 @@ void AnnotationBrowserWidget::loadAnnotationData()
     QList<AnnotationElement *> elements = repository->annotations()->getAnnotationElements(
                 AnnotationDatastore::Selection("", "", level->ID()));
     // Set data model
-    AnnotationTableModel *model = new AnnotationTableModel(AnnotationElement::Type_Interval, elements, level->attributeIDs(), this);
+    AnnotationElementTableModel *model = new AnnotationElementTableModel(AnnotationElement::Type_Interval, elements, level->attributeIDs(), this);
     d->gridview->tableView()->setModel(model);
     // Update internal state
     if (d->model) delete d->model;

@@ -215,7 +215,8 @@ SOURCES += main.cpp \
     annotation/editors/LaTexTranscriptionBuilder.cpp \
     annotation/SpeechRecognitionWidget.cpp \
     annotation/asr/AutomaticTranscriptionWidget.cpp \
-    annotation/asr/ASRModuleWidgetBase.cpp
+    annotation/asr/ASRModuleWidgetBase.cpp \
+    annotation/editors/GroupingAnnotationEditor.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -328,7 +329,8 @@ HEADERS  += \
     annotation/editors/LaTexTranscriptionBuilder.h \
     annotation/SpeechRecognitionWidget.h \
     annotation/asr/AutomaticTranscriptionWidget.h \
-    annotation/asr/ASRModuleWidgetBase.h
+    annotation/asr/ASRModuleWidgetBase.h \
+    annotation/editors/GroupingAnnotationEditor.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

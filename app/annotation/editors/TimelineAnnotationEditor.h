@@ -27,8 +27,8 @@ protected slots:
     void speakerRemoved(const QString &speakerID);
     void selectedLevelsAttributesChanged();
 
-    void verticalTimelineSelectedRowsChanged(QList<int> rows);
-    void verticalTimelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous);
+    void timelineSelectedRowsChanged(QList<int> rows);
+    void timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous);
     void toggleOrientation();
     void toggleTimelineConfig();
 

@@ -2,7 +2,7 @@
 #include <QList>
 #include <QMessageBox>
 
-#include "pngui/model/annotation/AnnotationTierModel.h"
+#include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
 
 #include "AnnotationControlsDisfluencies.h"
 #include "ui_AnnotationControlsDisfluencies.h"
@@ -23,7 +23,7 @@ AnnotationControlsDisfluencies::~AnnotationControlsDisfluencies()
     delete ui;
 }
 
-void AnnotationControlsDisfluencies::setModel(AnnotationTierModel *model,
+void AnnotationControlsDisfluencies::setModel(AnnotationMultiTierTableModel *model,
                                               int columnToken, int columnDisfluency, int columnDiscourse)
 {
     m_model = model;

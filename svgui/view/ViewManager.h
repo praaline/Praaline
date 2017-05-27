@@ -339,7 +339,7 @@ protected:
     void setSelections(const MultiSelection &ms, bool quietly = false);
     void signalSelectionChange();
 
-    class SetSelectionCommand : public SVCommand
+    class SetSelectionCommand : public UndoableCommand
     {
     public:
         SetSelectionCommand(ViewManager *vm, const MultiSelection &ms);

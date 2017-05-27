@@ -153,7 +153,6 @@ HEADERS += \
     model/corpus/MetadataStructureTreeModel.h \
     model/query/QueryOccurrenceTableModel.h \
     widgets/MetadataEditorWidget.h \
-    widgets/AnnotationTimelineEditor.h \
     widgets/CheckBoxList.h \
     widgets/CorpusItemSelectorWidget.h \
     widgets/CorpusLevelsAttributesSelector.h \
@@ -174,8 +173,6 @@ HEADERS += \
     widgets/MediaPlayerControls.h \
     widgets/MediaPlayerVideoWidget.h \
     widgets/MiniTranscriptionWidget.h \
-    model/annotation/AnnotationTierModel.h \
-    model/annotation/AnnotationTableModel.h \
     model/NameValueListTableModel.h \
     nodeeditor/Compiler.h \
     nodeeditor/Connection.h \
@@ -209,7 +206,16 @@ HEADERS += \
     nodeeditor/StyleCollection.h \
     model/corpus/CorpusTableModel.h \
     FlowLayout.h \
-    widgets/ImportDataPreviewWidget.h
+    widgets/ImportDataPreviewWidget.h \
+    layer/AnnotationDiffLayer.h \
+    delegate/IntervalSequenceDelegate.h \
+    delegate/IntervalSequenceEditor.h \
+    model/annotation/AnnotationMultiTierTableModel.h \
+    model/annotation/AnnotationElementTableModel.h \
+    model/annotation/TimelineTableModelBase.h \
+    model/annotation/AnnotationGroupingTierTableModel.h \
+    widgets/AnnotationMultiTierEditorWidget.h \
+    widgets/TimelineEditorWidgetBase.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -297,7 +303,6 @@ SOURCES += \
     model/corpus/MetadataStructureTreeModel.cpp \
     model/query/QueryOccurrenceTableModel.cpp \
     widgets/MetadataEditorWidget.cpp \
-    widgets/AnnotationTimelineEditor.cpp \
     widgets/CheckBoxList.cpp \
     widgets/CorpusItemSelectorWidget.cpp \
     widgets/CorpusLevelsAttributesSelector.cpp \
@@ -318,8 +323,6 @@ SOURCES += \
     widgets/MediaPlayerControls.cpp \
     widgets/MediaPlayerVideoWidget.cpp \
     widgets/MiniTranscriptionWidget.cpp \
-    model/annotation/AnnotationTierModel.cpp \
-    model/annotation/AnnotationTableModel.cpp \
     model/NameValueListTableModel.cpp \
     nodeeditor/Connection.cpp \
     nodeeditor/ConnectionBlurEffect.cpp \
@@ -344,7 +347,16 @@ SOURCES += \
     nodeeditor/StyleCollection.cpp \
     model/corpus/CorpusTableModel.cpp \
     FlowLayout.cpp \
-    widgets/ImportDataPreviewWidget.cpp
+    widgets/ImportDataPreviewWidget.cpp \
+    layer/AnnotationDiffLayer.cpp \
+    delegate/IntervalSequenceDelegate.cpp \
+    delegate/IntervalSequenceEditor.cpp \
+    model/annotation/AnnotationMultiTierTableModel.cpp \
+    model/annotation/AnnotationElementTableModel.cpp \
+    model/annotation/TimelineTableModelBase.cpp \
+    model/annotation/AnnotationGroupingTierTableModel.cpp \
+    widgets/AnnotationMultiTierEditorWidget.cpp \
+    widgets/TimelineEditorWidgetBase.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

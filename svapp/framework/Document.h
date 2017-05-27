@@ -360,7 +360,7 @@ protected:
      */
     void addAdditionalModel(Model *);
 
-    class AddLayerCommand : public SVCommand
+    class AddLayerCommand : public UndoableCommand
     {
     public:
 	AddLayerCommand(Document *d, View *view, Layer *layer);
@@ -378,7 +378,7 @@ protected:
 	bool m_added;
     };
 
-    class RemoveLayerCommand : public SVCommand
+    class RemoveLayerCommand : public UndoableCommand
     {
     public:
 	RemoveLayerCommand(Document *d, View *view, Layer *layer);

@@ -185,7 +185,7 @@ protected:
     mutable double m_scaleMaximum;
 
     void finish(SparseTimeValueModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

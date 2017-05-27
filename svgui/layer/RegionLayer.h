@@ -170,7 +170,7 @@ protected:
     double yToSpacingIndex(View *v, int y) const;
 
     void finish(RegionModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

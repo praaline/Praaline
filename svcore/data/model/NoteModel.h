@@ -188,7 +188,7 @@ public:
         }
     }
 
-    virtual SVCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
+    virtual UndoableCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
     {
         if (column < 4) {
             return IntervalModel<Note>::getSetDataCommand

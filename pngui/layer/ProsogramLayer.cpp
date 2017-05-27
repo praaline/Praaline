@@ -416,6 +416,12 @@ void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t fr
     AnnotationGridPointModel::PointList intervals = model->getPoints(frame0, frame1);
     for (AnnotationGridPointModel::PointList::const_iterator i = intervals.begin(); i != intervals.end(); ++i) {
         const AnnotationGridPointModel::Point &p(*i);
+        // Find end frame
+        sv_frame_t nextFrame;
+        AnnotationGridPointModel::PointList::const_iterator next(i);
+        next++;
+        if (next != intervals.end()) nextFrame = (*next).frame; else nextFrame = model->getEndFrame();
+        // Find x-coordinate for point
         int x = v->getXForFrame(p.frame);
         paint.setRenderHint(QPainter::Antialiasing, false);
         // Boundary line inside tier
@@ -429,7 +435,7 @@ void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t fr
         // Label (convert SAMPA to IPA)
         if (p.label.isEmpty()) continue;
         QString label = convertSAMPAtoIPAUnicode(p.label);
-        int boxMaxWidth = v->getXForFrame(p.frame + p.duration) - x - 2;
+        int boxMaxWidth = v->getXForFrame(nextFrame) - x - 2;
         int boxMaxHeight = tier_y1 - tier_y0 - 2;
         QRect textRect = QRect(x + 1, tier_y0 + 1, boxMaxWidth, boxMaxHeight);
         QRect boundingRect = paint.fontMetrics().boundingRect(QRect(0, 0, boxMaxWidth, boxMaxHeight),
@@ -525,8 +531,12 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     AnnotationGridPointModel::PointList vuvRegions = vuvRegionsModel->getPoints(frame0, frame1);
     for (AnnotationGridPointModel::PointList::const_iterator i = vuvRegions.begin(); i != vuvRegions.end(); ++i) {
         const AnnotationGridPointModel::Point &p(*i);
+        sv_frame_t nextFrame;
+        AnnotationGridPointModel::PointList::const_iterator next(i);
+        next++;
+        if (next != vuvRegions.end()) nextFrame = (*next).frame; else nextFrame = vuvRegionsModel->getEndFrame();
         int x = v->getXForFrame(p.frame);
-        int w = v->getXForFrame(p.frame + p.duration) - x;
+        int w = v->getXForFrame(nextFrame) - x;
         if (p.label != "V") continue;
         paint.setRenderHint(QPainter::Antialiasing, false);
         paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));

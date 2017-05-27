@@ -43,7 +43,7 @@ public:
 
     void clear();
 
-    class EditCommand : public SVCommand
+    class EditCommand : public UndoableCommand
     {
     public:
         EditCommand(PlayParameters *params);

@@ -226,9 +226,9 @@ void ExtractSoundBitesWidget::extractSoundBites()
                 stimCom->addRecording(stimRec);
             }
             // Carry over annotations
-            QPointer<CorpusAnnotation> annotSource = com->annotation(recordingID);
-            if (annotSource) {
-                QPointer<CorpusAnnotation> stimAnnot = stimCom->annotation(stimulusName);
+            foreach (QPointer<CorpusAnnotation> annotSource, com->annotations()) {
+                if (!annotSource) continue;
+                QPointer<CorpusAnnotation> stimAnnot = stimCom->annotation(annotSource->ID());
                 if (!stimAnnot) {
                     stimAnnot = new CorpusAnnotation(stimulusName);
                     stimAnnot->setName(stimulusName);

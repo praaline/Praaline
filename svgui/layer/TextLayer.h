@@ -110,7 +110,7 @@ protected:
     TextModel::EditCommand *m_editingCommand;
 
     void finish(TextModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

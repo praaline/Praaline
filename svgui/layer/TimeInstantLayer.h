@@ -127,7 +127,7 @@ protected:
     PlotStyle m_plotStyle;
 
     void finish(SparseOneDimensionalModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

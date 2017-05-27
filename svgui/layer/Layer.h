@@ -577,7 +577,7 @@ protected:
         void toXml(QTextStream &stream, QString indent) const;
     };
 
-    class AddMeasurementRectCommand : public SVCommand
+    class AddMeasurementRectCommand : public UndoableCommand
     {
     public:
         AddMeasurementRectCommand(Layer *layer, MeasureRect rect) :
@@ -592,7 +592,7 @@ protected:
         MeasureRect m_rect;
     };
 
-    class DeleteMeasurementRectCommand : public SVCommand
+    class DeleteMeasurementRectCommand : public UndoableCommand
     {
     public:
         DeleteMeasurementRectCommand(Layer *layer, MeasureRect rect) :

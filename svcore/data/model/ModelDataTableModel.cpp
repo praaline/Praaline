@@ -55,7 +55,7 @@ ModelDataTableModel::setData(const QModelIndex &index, const QVariant &value, in
 {
     if (!m_model) return false;
     if (!index.isValid()) return false;
-    SVCommand *command = m_model->getSetDataCommand(getUnsorted(index.row()),
+    UndoableCommand *command = m_model->getSetDataCommand(getUnsorted(index.row()),
                                                   index.column(),
                                                   value, role);
     if (command) {
@@ -74,7 +74,7 @@ ModelDataTableModel::insertRow(int row, const QModelIndex &parent)
 
     emit beginInsertRows(parent, row, row);
 
-    SVCommand *command = m_model->getInsertRowCommand(getUnsorted(row));
+    UndoableCommand *command = m_model->getInsertRowCommand(getUnsorted(row));
 
     if (command) {
         emit addCommand(command);
@@ -93,7 +93,7 @@ ModelDataTableModel::removeRow(int row, const QModelIndex &parent)
 
     emit beginRemoveRows(parent, row, row);
 
-    SVCommand *command = m_model->getRemoveRowCommand(getUnsorted(row));
+    UndoableCommand *command = m_model->getRemoveRowCommand(getUnsorted(row));
 
     if (command) {
         emit addCommand(command);

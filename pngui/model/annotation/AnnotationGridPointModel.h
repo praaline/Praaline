@@ -17,34 +17,29 @@ struct AnnotationGridPoint : public XmlExportable
 public:
     AnnotationGridPoint(sv_frame_t _frame) :
         frame(_frame) { }
-    AnnotationGridPoint(sv_frame_t _frame, sv_frame_t _duration, const QString &_speakerID, const QString &_levelID, int _itemNo,
-                        const QString &_label = QString()) :
-        frame(_frame), duration(_duration), speakerID(_speakerID), levelID(_levelID), itemNo(_itemNo), label(_label) { }
+    AnnotationGridPoint(sv_frame_t _frame, const QString &_speakerID, const QString &_levelID, const QString &_label = QString()) :
+        frame(_frame), speakerID(_speakerID), levelID(_levelID), label(_label) { }
 
-    int getDimensions() const { return 5; }
+    int getDimensions() const { return 2; }
 
     sv_frame_t frame;
-    sv_frame_t duration;
     QString speakerID;
     QString levelID;
-    int itemNo;
     QString label;
 
-    QString getLabel() const { return (label.isEmpty()) ? QString("%1 %2 %3").arg(speakerID).arg(levelID).arg(itemNo) : label; }
+    QString getLabel() const { return (label.isEmpty()) ? QString("%1 %2 %3").arg(speakerID).arg(levelID).arg(frame) : label; }
 
-    void toXml(QTextStream &stream, QString indent = "",
-               QString extraAttributes = "") const
+    void toXml(QTextStream &stream, QString indent = "", QString extraAttributes = "") const
     {
-        stream << QString("%1<point frame=\"%2\" duration=\"%3\" speakerID=\"%4\" levelID=\"%5\" itemNo=\"%6\" %7 />\n")
-                  .arg(indent).arg(frame).arg(duration).arg(speakerID).arg(levelID).arg(itemNo).arg(extraAttributes);
+        stream << QString("%1<point frame=\"%2\" speakerID=\"%3\" levelID=\"%4\" label=\"%5\" %6 />\n")
+                  .arg(indent).arg(frame).arg(speakerID).arg(levelID).arg(label).arg(extraAttributes);
     }
 
     QString toDelimitedDataString(QString delimiter, DataExportOptions, sv_samplerate_t sampleRate) const
     {
         QStringList list;
         list << RealTime::frame2RealTime(frame, sampleRate).toString().c_str();
-        list << RealTime::frame2RealTime(duration, sampleRate).toString().c_str();
-        list << speakerID << levelID << QString("%1").arg(itemNo);
+        list << speakerID << levelID << label;
         return list.join(delimiter);
     }
 
@@ -52,8 +47,7 @@ public:
         bool operator()(const AnnotationGridPoint &p1, const AnnotationGridPoint &p2) const {
             if (p1.frame != p2.frame) return p1.frame < p2.frame;
             if (p1.speakerID != p2.speakerID) return p1.speakerID < p2.speakerID;
-            if (p1.levelID != p2.levelID) return p1.levelID < p2.levelID;
-            return p1.itemNo < p2.itemNo;
+            return p1.levelID < p2.levelID;
         }
     };
 
@@ -92,7 +86,7 @@ public:
 
     virtual int getColumnCount() const
     {
-        return 6;
+        return 4;
     }
 
     virtual QString getHeading(int column) const
@@ -100,10 +94,8 @@ public:
         switch (column) {
         case 0: return tr("Time");
         case 1: return tr("Frame");
-        case 2: return tr("Duration");
-        case 3: return tr("Speaker ID");
-        case 4: return tr("Level ID");
-        case 5: return tr("Item No");
+        case 2: return tr("Speaker ID");
+        case 3: return tr("Level ID");
         default: return tr("Unknown");
         }
     }
@@ -117,18 +109,14 @@ public:
         if (i == m_points.end()) return QVariant();
 
         if (column == 2) {
-            return int(i->duration);
-        } else if (column == 3) {
             return i->speakerID;
-        } else if (column == 4) {
+        } else if (column == 3) {
             return i->levelID;
-        } else if (column == 5) {
-            return i->itemNo;
         }
         return QVariant();
     }
 
-    virtual SVCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
+    virtual UndoableCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
     {
         if (column < 2) {
             return SparseModel<AnnotationGridPoint>::getSetDataCommand(row, column, value, role);
@@ -144,7 +132,7 @@ public:
 
     virtual SortType getSortType(int column) const
     {
-        if (column == 3 || column == 4) return SortAlphabetical;
+        if (column == 2 || column == 3) return SortAlphabetical;
         return SortNumeric;
     }
 

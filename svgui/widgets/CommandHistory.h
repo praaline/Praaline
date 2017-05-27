@@ -32,8 +32,8 @@
 #include <set>
 #include <map>
 
-class SVCommand;
-class MacroCommand;
+class UndoableCommand;
+class UndoableMacroCommand;
 class QAction;
 class QMenu;
 class QToolBar;
@@ -71,7 +71,7 @@ public:
      * below), the execute status of the compound operation will
      * determine whether the command is executed or not.
      */
-    void addCommand(SVCommand *command);
+    void addCommand(UndoableCommand *command);
     
     /**
      * Add a command to the command history.
@@ -95,7 +95,7 @@ public:
      * not known in advance.  The bundle parameter will be ignored if
      * a compound operation is already in use.
      */
-    void addCommand(SVCommand *command, bool execute, bool bundle = false);
+    void addCommand(UndoableCommand *command, bool execute, bool bundle = false);
     
     /// Return the maximum number of items in the undo history.
     int getUndoLimit() const { return m_undoLimit; }
@@ -140,13 +140,13 @@ public slots:
      * Add a command to the history that has already been executed,
      * without executing it again.  Equivalent to addCommand(command, false).
      */
-    void addExecutedCommand(SVCommand *);
+    void addExecutedCommand(UndoableCommand *);
 
     /**
      * Add a command to the history and also execute it.  Equivalent
      * to addCommand(command, true).
      */
-    void addCommandAndExecute(SVCommand *);
+    void addCommandAndExecute(UndoableCommand *);
 
     void undo();
     void redo();
@@ -167,13 +167,13 @@ signals:
      * Emitted whenever a command has just been executed, whether by
      * addCommand or redo.
      */
-    void commandExecuted(SVCommand *);
+    void commandExecuted(UndoableCommand *);
 
     /**
      * Emitted whenever a command has just been unexecuted, whether by
      * addCommand or undo.
      */
-    void commandUnexecuted(SVCommand *);
+    void commandUnexecuted(UndoableCommand *);
 
     /**
      * Emitted when the undo/redo stack has reached the same state at
@@ -199,7 +199,7 @@ protected:
 
     std::map<QAction *, int> m_actionCounts;
 
-    typedef std::stack<SVCommand *> CommandStack;
+    typedef std::stack<UndoableCommand *> CommandStack;
     CommandStack m_undoStack;
     CommandStack m_redoStack;
 
@@ -208,16 +208,16 @@ protected:
     int m_menuLimit;
     int m_savedAt;
 
-    MacroCommand *m_currentCompound;
+    UndoableMacroCommand *m_currentCompound;
     bool m_executeCompound;
-    void addToCompound(SVCommand *command, bool execute);
+    void addToCompound(UndoableCommand *command, bool execute);
 
-    MacroCommand *m_currentBundle;
+    UndoableMacroCommand *m_currentBundle;
     bool m_bundling;
     QString m_currentBundleName;
     QTimer *m_bundleTimer;
     int m_bundleTimeout;
-    void addToBundle(SVCommand *command, bool execute);
+    void addToBundle(UndoableCommand *command, bool execute);
     void closeBundle();
     
     void updateActions();

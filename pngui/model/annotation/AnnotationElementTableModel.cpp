@@ -1,5 +1,5 @@
 #include <QDebug>
-#include "AnnotationTableModel.h"
+#include "AnnotationElementTableModel.h"
 #include "pncore/annotation/AnnotationElement.h"
 using namespace Praaline::Core;
 
@@ -9,7 +9,7 @@ struct AnnotationTableModelData {
     QStringList attributeIDs;
 };
 
-AnnotationTableModel::AnnotationTableModel(AnnotationElement::ElementType elementType,
+AnnotationElementTableModel::AnnotationElementTableModel(AnnotationElement::ElementType elementType,
                                            QList<AnnotationElement *> elements,
                                            QStringList attributeIDs, QObject *parent)
     : QAbstractTableModel(parent), d(new AnnotationTableModelData)
@@ -20,12 +20,12 @@ AnnotationTableModel::AnnotationTableModel(AnnotationElement::ElementType elemen
     qDebug() << d->elements.count() << d->attributeIDs.count();
 }
 
-AnnotationTableModel::~AnnotationTableModel()
+AnnotationElementTableModel::~AnnotationElementTableModel()
 {
     delete d;
 }
 
-QVariant AnnotationTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant AnnotationElementTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole) return QVariant();
     if (orientation == Qt::Horizontal) {
@@ -75,13 +75,13 @@ QVariant AnnotationTableModel::headerData(int section, Qt::Orientation orientati
     return QVariant();
 }
 
-int AnnotationTableModel::rowCount(const QModelIndex &parent) const
+int AnnotationElementTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     return d->elements.count();
 }
 
-int AnnotationTableModel::columnCount(const QModelIndex &parent) const
+int AnnotationElementTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
     switch (d->elementType) {
@@ -94,7 +94,7 @@ int AnnotationTableModel::columnCount(const QModelIndex &parent) const
     return d->attributeIDs.count() + 3;
 }
 
-QVariant AnnotationTableModel::data(const QModelIndex &index, int role) const
+QVariant AnnotationElementTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) return QVariant();
     if ((index.row() < 0 ) || (index.row() >= d->elements.count())) return QVariant();
@@ -135,7 +135,7 @@ QVariant AnnotationTableModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-bool AnnotationTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool AnnotationElementTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid()) return false;
     if (index.row() < 0 || index.row() >= d->elements.count()) return false;
@@ -179,7 +179,7 @@ bool AnnotationTableModel::setData(const QModelIndex &index, const QVariant &val
     return false;
 }
 
-Qt::ItemFlags AnnotationTableModel::flags(const QModelIndex &index) const
+Qt::ItemFlags AnnotationElementTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) return Qt::NoItemFlags;
     switch (d->elementType) {
@@ -199,7 +199,7 @@ Qt::ItemFlags AnnotationTableModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index);
 }
 
-void AnnotationTableModel::modelSavedInDatabase()
+void AnnotationElementTableModel::modelSavedInDatabase()
 {
     emit headerDataChanged(Qt::Vertical, 0, d->elements.count());
 }

@@ -16,12 +16,12 @@
 #include "Command.h"
 #include <QCoreApplication>
 
-MacroCommand::MacroCommand(QString name) :
+UndoableMacroCommand::UndoableMacroCommand(QString name) :
     m_name(name)
 {
 }
 
-MacroCommand::~MacroCommand()
+UndoableMacroCommand::~UndoableMacroCommand()
 {
     for (size_t i = 0; i < m_commands.size(); ++i) {
 	delete m_commands[i];
@@ -29,15 +29,15 @@ MacroCommand::~MacroCommand()
 }
 
 void
-MacroCommand::addCommand(SVCommand *command)
+UndoableMacroCommand::addCommand(UndoableCommand *command)
 {
     m_commands.push_back(command);
 }
 
 void
-MacroCommand::deleteCommand(SVCommand *command)
+UndoableMacroCommand::deleteCommand(UndoableCommand *command)
 {
-    for (std::vector<SVCommand *>::iterator i = m_commands.begin();
+    for (std::vector<UndoableCommand *>::iterator i = m_commands.begin();
 	 i != m_commands.end(); ++i) {
 
 	if (*i == command) {
@@ -49,13 +49,13 @@ MacroCommand::deleteCommand(SVCommand *command)
 }
 
 bool
-MacroCommand::haveCommands() const
+UndoableMacroCommand::haveCommands() const
 {
     return !m_commands.empty();
 }
 
 void
-MacroCommand::execute()
+UndoableMacroCommand::execute()
 {
     for (size_t i = 0; i < m_commands.size(); ++i) {
 	m_commands[i]->execute();
@@ -63,7 +63,7 @@ MacroCommand::execute()
 }
 
 void
-MacroCommand::unexecute()
+UndoableMacroCommand::unexecute()
 {
     for (size_t i = 0; i < m_commands.size(); ++i) {
 	m_commands[m_commands.size() - i - 1]->unexecute();
@@ -71,19 +71,19 @@ MacroCommand::unexecute()
 }
 
 QString
-MacroCommand::getName() const
+UndoableMacroCommand::getName() const
 {
     return m_name;
 }
 
 void
-MacroCommand::setName(QString name)
+UndoableMacroCommand::setName(QString name)
 {
     m_name = name;
 }
 
 BundleCommand::BundleCommand(QString name) :
-    MacroCommand(name)
+    UndoableMacroCommand(name)
 {
 }
 

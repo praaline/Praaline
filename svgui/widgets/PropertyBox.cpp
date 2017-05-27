@@ -616,7 +616,7 @@ PropertyBox::propertyControllerChanged(int value)
     
     PropertyContainer::PropertyType type = m_container->getPropertyType(name);
 
-    SVCommand *c = 0;
+    UndoableCommand *c = 0;
 
     if (type == PropertyContainer::UnitsProperty) {
 

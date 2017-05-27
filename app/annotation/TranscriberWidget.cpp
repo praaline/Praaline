@@ -23,7 +23,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
-#include "pngui/widgets/AnnotationTimelineEditor.h"
+#include "pngui/widgets/AnnotationMultiTierEditorWidget.h"
 
 #include "../visualisation/SimpleVisualiserWidget.h"
 
@@ -35,7 +35,7 @@ struct TranscriberWidgetData {
         corpusItemSelector(0), annotationEditor(0), currentCorpus(0) {}
 
     CorpusItemSelectorWidget *corpusItemSelector;   // Corpus items selector
-    AnnotationTimelineEditor *annotationEditor;     // Annotation timeline editor
+    AnnotationMultiTierEditorWidget *annotationEditor;     // Annotation timeline editor
 
     // State (currently open corpus, communication, recording and annotation)
     QPointer<Corpus> currentCorpus;
@@ -88,7 +88,7 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     newSession();
 
     // Create transcription editor
-    d->annotationEditor = new AnnotationTimelineEditor(this);
+    d->annotationEditor = new AnnotationMultiTierEditorWidget(this);
     // d->annotationEditor->setOrientation(Qt::Horizontal);
     ui->gridLayoutEditor->addWidget(d->annotationEditor);
 

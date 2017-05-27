@@ -22,7 +22,7 @@ using namespace Praaline::Core;
 
 #include "PraalineUserInterfaceOptions.h"
 
-#include "pngui/widgets/AnnotationTimelineEditor.h"
+#include "pngui/widgets/AnnotationMultiTierEditorWidget.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"
 #include "pngui/widgets/TimelineEditorConfigWidget.h"
 #include "../dis/AnnotationControlsDisfluencies.h"
@@ -45,7 +45,7 @@ struct TimelineAnnotationEditorData {
     QAction *actionPause;
     QAction *actionStop;
     // Editor
-    AnnotationTimelineEditor *editor;
+    AnnotationMultiTierEditorWidget *editor;
     QToolBar *toolbarEditor;
     QAction *actionEditorIntervalSplit;
     QAction *actionEditorIntervalJoin;
@@ -88,7 +88,7 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     d->toolbarEditor->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarEditor->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     // Editor grid
-    d->editor = new AnnotationTimelineEditor(this);
+    d->editor = new AnnotationMultiTierEditorWidget(this);
     // Timeline configuration
     d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
     connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
@@ -104,9 +104,9 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     // Annotation controls
     d->annotationControls = new AnnotationControlsDisfluencies(this);
     connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
-            this, SLOT(verticalTimelineSelectedRowsChanged(QList<int>)));
+            this, SLOT(timelineSelectedRowsChanged(QList<int>)));
     connect(d->editor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
-            this, SLOT(verticalTimelineCurrentIndexChanged(QModelIndex,QModelIndex)));
+            this, SLOT(timelineCurrentIndexChanged(QModelIndex,QModelIndex)));
     // Media player
     d->mediaPlayer = new QMediaPlayer(this);
     d->mediaPlayer->setNotifyInterval(20);
@@ -348,7 +348,7 @@ void TimelineAnnotationEditor::toggleTimelineConfig()
     d->dockTimelineConfig->toggleViewAction()->activate(QAction::Trigger);
 }
 
-void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> rows)
+void TimelineAnnotationEditor::timelineSelectedRowsChanged(QList<int> rows)
 {
     if (d->annotationControls)
         d->annotationControls->setSelection(rows);
@@ -370,7 +370,7 @@ void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> ro
     }
 }
 
-void TimelineAnnotationEditor::verticalTimelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
+void TimelineAnnotationEditor::timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous)
     if (d->editor->model()) {

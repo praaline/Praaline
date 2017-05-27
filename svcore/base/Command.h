@@ -22,24 +22,24 @@
 
 #include "Debug.h"
 
-class SVCommand
+class UndoableCommand
 {
 public:
-    virtual ~SVCommand() { }
+    virtual ~UndoableCommand() { }
 
     virtual void execute() = 0;
     virtual void unexecute() = 0;
     virtual QString getName() const = 0;
 };
 
-class MacroCommand : public SVCommand
+class UndoableMacroCommand : public UndoableCommand
 {
 public:
-    MacroCommand(QString name);
-    virtual ~MacroCommand();
+    UndoableMacroCommand(QString name);
+    virtual ~UndoableMacroCommand();
 
-    virtual void addCommand(SVCommand *command);
-    virtual void deleteCommand(SVCommand *command);
+    virtual void addCommand(UndoableCommand *command);
+    virtual void deleteCommand(UndoableCommand *command);
     virtual bool haveCommands() const;
 
     virtual void execute();
@@ -50,7 +50,7 @@ public:
 
 protected:
     QString m_name;
-    std::vector<SVCommand *> m_commands;
+    std::vector<UndoableCommand *> m_commands;
 };
 
 /**
@@ -58,7 +58,7 @@ protected:
  * many commands it contains.  It is a QObject with Q_OBJECT macro so
  * that it can do plural-sensitive translations.
  */
-class BundleCommand : public QObject, public MacroCommand
+class BundleCommand : public QObject, public UndoableMacroCommand
 {
     Q_OBJECT
 
