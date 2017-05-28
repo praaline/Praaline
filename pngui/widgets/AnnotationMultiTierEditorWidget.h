@@ -20,7 +20,7 @@ class AnnotationMultiTierEditorWidget : public TimelineEditorWidgetBase
     Q_OBJECT
 
 public:
-    AnnotationMultiTierEditorWidget(QWidget *parent = 0);
+    explicit AnnotationMultiTierEditorWidget(QWidget *parent = 0);
     ~AnnotationMultiTierEditorWidget();
 
     Qt::Orientation orientation() const;

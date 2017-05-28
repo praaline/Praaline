@@ -165,6 +165,7 @@ void AnnotationMultiTierEditorWidget::resultChanged(int filterRows, int unfilter
 
 RealTime AnnotationMultiTierEditorWidget::currentTime() const
 {
+    if (!d->model) return RealTime();
     int index = -1;
     if (d->model->orientation() == Qt::Vertical) {
         index = m_view->tableView()->currentIndex().row();
@@ -176,6 +177,7 @@ RealTime AnnotationMultiTierEditorWidget::currentTime() const
 
 void AnnotationMultiTierEditorWidget::moveToTime(const RealTime &time)
 {
+    if (!d->model) return;
     int index = d->model->timelineIndexAtTime(time);
     if (d->model->orientation() == Qt::Vertical)
         moveToRow(d->model, index);
@@ -185,6 +187,7 @@ void AnnotationMultiTierEditorWidget::moveToTime(const RealTime &time)
 
 void AnnotationMultiTierEditorWidget::moveToTime(const RealTime &time, double &tMin_msec, double &tMax_msec)
 {
+    if (!d->model) return;
     int index = d->model->timelineIndexAtTime(time, tMin_msec, tMax_msec);
     if (d->model->orientation() == Qt::Vertical)
         moveToRow(d->model, index);

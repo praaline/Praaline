@@ -19,7 +19,8 @@
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
 
 #include "editors/AnnotationEditorBase.h"
-#include "editors/TimelineAnnotationEditor.h"
+#include "editors/AnnotationMultiTierEditor.h"
+#include "editors/GroupingAnnotationEditor.h"
 #include "editors/TranscriptAnnotationEditor.h"
 
 #include "PraalineUserInterfaceOptions.h"
@@ -48,7 +49,8 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     ui->setupUi(this);
 
     // Annotation Editor Selector
-    ui->comboBoxEditorSelection->addItem("Timeline Editor", "TimelineAnnotationEditor");
+    ui->comboBoxEditorSelection->addItem("Timeline Editor", "AnnotationMultiTierEditor");
+    ui->comboBoxEditorSelection->addItem("Grouping Annotation Editor", "GroupingAnnotationEditor");
     ui->comboBoxEditorSelection->addItem("Transcrtipt Editor", "TranscriptAnnotationEditor");
     ui->comboBoxEditorSelection->setCurrentIndex(0);
     connect(ui->commandOpenEditor, SIGNAL(clicked(bool)), this, SLOT(editorTabNew()));
@@ -146,8 +148,11 @@ void ManualAnnotationWidget::editorTabNew()
 {
     AnnotationEditorBase *editor(0);
     QString editorType = ui->comboBoxEditorSelection->currentData().toString();
-    if      (editorType == "TimelineAnnotationEditor") {
-        editor = new TimelineAnnotationEditor(this);
+    if      (editorType == "AnnotationMultiTierEditor") {
+        editor = new AnnotationMultiTierEditor(this);
+    }
+    else if (editorType == "GroupingAnnotationEditor") {
+        editor = new GroupingAnnotationEditor(this);
     }
     else if (editorType == "TranscriptAnnotationEditor") {
         editor = new TranscriptAnnotationEditor(this);

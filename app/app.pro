@@ -210,13 +210,13 @@ SOURCES += main.cpp \
     annotation/calculate/TidyUpAnnotationsDialog.cpp \
     statistics/interrater/KappaStatisticsCalculator.cpp \
     annotation/editors/AnnotationEditorBase.cpp \
-    annotation/editors/TimelineAnnotationEditor.cpp \
     annotation/editors/TranscriptAnnotationEditor.cpp \
     annotation/editors/LaTexTranscriptionBuilder.cpp \
     annotation/SpeechRecognitionWidget.cpp \
     annotation/asr/AutomaticTranscriptionWidget.cpp \
     annotation/asr/ASRModuleWidgetBase.cpp \
-    annotation/editors/GroupingAnnotationEditor.cpp
+    annotation/editors/GroupingAnnotationEditor.cpp \
+    annotation/editors/AnnotationMultiTierEditor.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -324,13 +324,13 @@ HEADERS  += \
     annotation/calculate/TidyUpAnnotationsDialog.h \
     statistics/interrater/KappaStatisticsCalculator.h \
     annotation/editors/AnnotationEditorBase.h \
-    annotation/editors/TimelineAnnotationEditor.h \
     annotation/editors/TranscriptAnnotationEditor.h \
     annotation/editors/LaTexTranscriptionBuilder.h \
     annotation/SpeechRecognitionWidget.h \
     annotation/asr/AutomaticTranscriptionWidget.h \
     annotation/asr/ASRModuleWidgetBase.h \
-    annotation/editors/GroupingAnnotationEditor.h
+    annotation/editors/GroupingAnnotationEditor.h \
+    annotation/editors/AnnotationMultiTierEditor.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

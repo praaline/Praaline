@@ -215,7 +215,8 @@ HEADERS += \
     model/annotation/TimelineTableModelBase.h \
     model/annotation/AnnotationGroupingTierTableModel.h \
     widgets/AnnotationMultiTierEditorWidget.h \
-    widgets/TimelineEditorWidgetBase.h
+    widgets/TimelineEditorWidgetBase.h \
+    widgets/GroupingAnnotationEditorWidget.h
 
 SOURCES += \
     grid/qabstractfilter.cpp \
@@ -356,7 +357,8 @@ SOURCES += \
     model/annotation/TimelineTableModelBase.cpp \
     model/annotation/AnnotationGroupingTierTableModel.cpp \
     widgets/AnnotationMultiTierEditorWidget.cpp \
-    widgets/TimelineEditorWidgetBase.cpp
+    widgets/TimelineEditorWidgetBase.cpp \
+    widgets/GroupingAnnotationEditorWidget.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

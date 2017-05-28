@@ -1,19 +1,19 @@
-#ifndef TIMELINEANNOTATIONEDITOR_H
-#define TIMELINEANNOTATIONEDITOR_H
+#ifndef ANNOTATIONMULTITIEREDITOR_H
+#define ANNOTATIONMULTITIEREDITOR_H
 
 #include <QObject>
 #include <QWidget>
 #include "AnnotationEditorBase.h"
 
-struct TimelineAnnotationEditorData;
+struct AnnotationMultiTierEditorData;
 
-class TimelineAnnotationEditor : public AnnotationEditorBase
+class AnnotationMultiTierEditor : public AnnotationEditorBase
 {
     Q_OBJECT
 
 public:
-    TimelineAnnotationEditor(QWidget *parent = 0);
-    virtual ~TimelineAnnotationEditor();
+    AnnotationMultiTierEditor(QWidget *parent = 0);
+    virtual ~AnnotationMultiTierEditor();
 
 public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,
@@ -43,11 +43,11 @@ protected slots:
     void intervalSplit();
 
 private:
-    TimelineAnnotationEditorData *d;
+    AnnotationMultiTierEditorData *d;
 
     void setupActions();
     void updateAnnotationControls();
     void openForEditing(Praaline::Core::Corpus *corpus, const QString &annotationID);
 };
 
-#endif // TIMELINEANNOTATIONEDITOR_H
+#endif // ANNOTATIONMULTITIEREDITOR_H

@@ -27,11 +27,11 @@ using namespace Praaline::Core;
 #include "pngui/widgets/TimelineEditorConfigWidget.h"
 #include "../dis/AnnotationControlsDisfluencies.h"
 
-#include "TimelineAnnotationEditor.h"
+#include "AnnotationMultiTierEditor.h"
 
 
-struct TimelineAnnotationEditorData {
-    TimelineAnnotationEditorData() :
+struct AnnotationMultiTierEditorData {
+    AnnotationMultiTierEditorData() :
         annotationControls(0), editor(0),
         loopInsideInterval(false), tPauseAt_msec(0),
         autoSave(false)
@@ -77,8 +77,8 @@ struct TimelineAnnotationEditorData {
     QString currentAnnotationID;
 };
 
-TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
-    AnnotationEditorBase(parent), d(new TimelineAnnotationEditorData())
+AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
+    AnnotationEditorBase(parent), d(new AnnotationMultiTierEditorData())
 {
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
@@ -140,13 +140,13 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     d->actionEditorIntervalSplit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
 }
 
-TimelineAnnotationEditor::~TimelineAnnotationEditor()
+AnnotationMultiTierEditor::~AnnotationMultiTierEditor()
 {
     qDeleteAll(d->currentTierGroups);
     delete d;
 }
 
-void TimelineAnnotationEditor::setupActions()
+void AnnotationMultiTierEditor::setupActions()
 {
     QList<int> context;
     context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
@@ -233,7 +233,7 @@ void TimelineAnnotationEditor::setupActions()
 // Implementation of AnnotationEditorBase
 // ============================================================================================================================================================
 
-void TimelineAnnotationEditor::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
+void AnnotationMultiTierEditor::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
 {
     if (d->autoSave) {
         saveAnnotations();
@@ -262,7 +262,7 @@ void TimelineAnnotationEditor::open(Corpus *corpus, CorpusCommunication *com, Co
     }
 }
 
-void TimelineAnnotationEditor::jumpToTime(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *annot, const RealTime &time)
+void AnnotationMultiTierEditor::jumpToTime(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *annot, const RealTime &time)
 {
     if (!corpus) return;
     if (!com) return;
@@ -284,32 +284,32 @@ void TimelineAnnotationEditor::jumpToTime(Corpus *corpus, CorpusCommunication *c
 
 // ============================================================================================================================================================
 
-void TimelineAnnotationEditor::speakerAdded(const QString &speakerID)
+void AnnotationMultiTierEditor::speakerAdded(const QString &speakerID)
 {
     if (!d->currentTierGroups.contains(speakerID)) return;
     d->editor->addTierGroup(speakerID, d->currentTierGroups.value(speakerID));
     updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::speakerRemoved(const QString &speakerID)
+void AnnotationMultiTierEditor::speakerRemoved(const QString &speakerID)
 {
     d->editor->removeTierGroup(speakerID);
     updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::selectedLevelsAttributesChanged()
+void AnnotationMultiTierEditor::selectedLevelsAttributesChanged()
 {
     d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
     updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::saveAnnotations()
+void AnnotationMultiTierEditor::saveAnnotations()
 {
     foreach (QString speakerID, d->currentTierGroups.keys())
         d->currentCorpus->repository()->annotations()->saveTiers(d->currentAnnotationID, speakerID, d->currentTierGroups.value(speakerID));
 }
 
-void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &annotationID)
+void AnnotationMultiTierEditor::openForEditing(Corpus *corpus, const QString &annotationID)
 {
     if (!corpus) return;
     if (!corpus->repository()) return;
@@ -330,7 +330,7 @@ void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &ann
     d->waitingSpinner->stop();
 }
 
-void TimelineAnnotationEditor::updateAnnotationControls()
+void AnnotationMultiTierEditor::updateAnnotationControls()
 {
     // Annotation controls
     if (d->editor->model()) {
@@ -338,17 +338,17 @@ void TimelineAnnotationEditor::updateAnnotationControls()
     }
 }
 
-void TimelineAnnotationEditor::toggleOrientation()
+void AnnotationMultiTierEditor::toggleOrientation()
 {
     d->editor->toggleOrientation();
 }
 
-void TimelineAnnotationEditor::toggleTimelineConfig()
+void AnnotationMultiTierEditor::toggleTimelineConfig()
 {
     d->dockTimelineConfig->toggleViewAction()->activate(QAction::Trigger);
 }
 
-void TimelineAnnotationEditor::timelineSelectedRowsChanged(QList<int> rows)
+void AnnotationMultiTierEditor::timelineSelectedRowsChanged(QList<int> rows)
 {
     if (d->annotationControls)
         d->annotationControls->setSelection(rows);
@@ -370,7 +370,7 @@ void TimelineAnnotationEditor::timelineSelectedRowsChanged(QList<int> rows)
     }
 }
 
-void TimelineAnnotationEditor::timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
+void AnnotationMultiTierEditor::timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous)
     if (d->editor->model()) {
@@ -391,7 +391,7 @@ void TimelineAnnotationEditor::timelineCurrentIndexChanged(const QModelIndex &cu
     }
 }
 
-void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
+void AnnotationMultiTierEditor::mediaPositionChanged(qint64 position)
 {
     if (!d->loopInsideInterval) {
         if (!(d->editor->model())) return;
@@ -420,7 +420,7 @@ void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
     }
 }
 
-void TimelineAnnotationEditor::mediaPlay()
+void AnnotationMultiTierEditor::mediaPlay()
 {
     if ((d->tMin_msec_selected > 0) && (d->tPauseAt_msec == 0)) {
         {
@@ -435,7 +435,7 @@ void TimelineAnnotationEditor::mediaPlay()
     d->mediaPlayer->play();
 }
 
-void TimelineAnnotationEditor::mediaPause()
+void AnnotationMultiTierEditor::mediaPause()
 {
     d->mediaPlayer->pause();
     d->tPauseAt_msec = 0;
@@ -443,7 +443,7 @@ void TimelineAnnotationEditor::mediaPause()
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 }
 
-void TimelineAnnotationEditor::mediaStop()
+void AnnotationMultiTierEditor::mediaStop()
 {
     d->mediaPlayer->stop();
     d->tPauseAt_msec = 0;
@@ -451,7 +451,7 @@ void TimelineAnnotationEditor::mediaStop()
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 }
 
-void TimelineAnnotationEditor::intervalJoin()
+void AnnotationMultiTierEditor::intervalJoin()
 {
     d->editor->annotationsMerge();
     d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble() * 1000;
@@ -460,7 +460,7 @@ void TimelineAnnotationEditor::intervalJoin()
     d->tPauseAt_msec = 0;
 }
 
-void TimelineAnnotationEditor::intervalSplit()
+void AnnotationMultiTierEditor::intervalSplit()
 {
     if ((d->mediaPlayer->state() == QMediaPlayer::PlayingState) ||
             (d->mediaPlayer->state() == QMediaPlayer::PausedState)) {
@@ -475,7 +475,7 @@ void TimelineAnnotationEditor::intervalSplit()
     d->tPauseAt_msec = 0;
 }
 
-void TimelineAnnotationEditor::moveMinBoundaryLeft()
+void AnnotationMultiTierEditor::moveMinBoundaryLeft()
 {
     if (d->editor->model() && (d->currentRow != 0)) {
         double tMin = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble();
@@ -488,7 +488,7 @@ void TimelineAnnotationEditor::moveMinBoundaryLeft()
     }
 }
 
-void TimelineAnnotationEditor::moveMaxBoundaryRight()
+void AnnotationMultiTierEditor::moveMaxBoundaryRight()
 {
     if (d->editor->model() && (d->currentRow != 0)) {
         double tMax = d->editor->model()->data(d->editor->model()->index(d->currentRow, 2), Qt::DisplayRole).toDouble();
