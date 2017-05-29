@@ -317,6 +317,18 @@ void expeHesitation(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
+void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    if (communications.isEmpty()) return;
+    QPointer<CorpusRepository> repository = communications.first()->repository();
+    foreach (QPointer<CorpusCommunication> com, communications) {
+
+
+    }
+
+}
+
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 

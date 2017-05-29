@@ -253,7 +253,7 @@ void GroupingAnnotationEditor::speakerRemoved(const QString &speakerID)
 
 void GroupingAnnotationEditor::selectedLevelsAttributesChanged()
 {
-    d->editor->setData(d->currentTierGroups, "transcription", "tok_min");
+    d->editor->setData(d->currentTierGroups, "sequence", "tok_min");
 }
 
 void GroupingAnnotationEditor::saveAnnotations()
@@ -275,7 +275,7 @@ void GroupingAnnotationEditor::openForEditing(Corpus *corpus, const QString &ann
     QApplication::processEvents();
 
     d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
-    d->editor->setData(d->currentTierGroups, "", "");
+    d->editor->setData(d->currentTierGroups, "sequence", "tok_min");
     d->editor->resizeColumnsToContents();
     d->widgetTimelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
