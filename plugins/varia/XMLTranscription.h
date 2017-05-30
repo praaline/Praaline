@@ -12,6 +12,7 @@ public:
     class TurnInfo {
     public:
         QString speakerID;
+        QString transcription;
         QStringList tokens;
     };
 
@@ -30,6 +31,8 @@ public:
     XMLTranscription();
 
     bool load(const QString &filename);
+
+    QStringList speakerIDs();
 
 private:
     bool readText(QXmlStreamReader &xml);

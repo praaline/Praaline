@@ -233,6 +233,7 @@ QList<QPointer<CorpusCommunication> > AutomaticAnnotationWidget::selectedCommuni
         ObserverTreeItem *treeItem = d->observerWidgetCorpusItems->treeModel()->getItem(index);
         addNodeToListRecursive(nodesSelected, treeItem);
     }
+
     foreach (QObject *obj, nodesSelected) {
         CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
         if (nodeCom && nodeCom->communication) listCom << nodeCom->communication;
