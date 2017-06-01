@@ -22,6 +22,7 @@ using namespace Praaline::Core;
 #include "pngui/widgets/GridViewWidget.h"
 
 #include "pngui/xlsx/xlsxdocument.h"
+#include "pngui/xlsx/xlsxformat.h"
 
 #include "PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
@@ -426,48 +427,48 @@ void CompareAnnotationsWidget::compareCorpora()
 void CompareAnnotationsWidget::exportDiffTableByLevelExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
                                                            QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models)
 {
-    // Create an Excel document
-    QXlsx::Document xlsx;
-    // Note: rows and columns start from 1 for QXlsx
-    int row(1), col(1);
-    // Format for the headers
-    QXlsx::Format format_header;
-    format_header.setFontBold(true);
-    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
-    // Format: OP tMinA tMaxA tMinB tMaxB A B
+//    // Create an Excel document
+//    QXlsx::Document xlsx;
+//    // Note: rows and columns start from 1 for QXlsx
+//    int row(1), col(1);
+//    // Format for the headers
+//    QXlsx::Format format_header;
+//    format_header.setFontBold(true);
+//    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+//    // Format: OP tMinA tMaxA tMinB tMaxB A B
 
-    foreach (QString levelID, models.keys()) {
-        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
-        if (!model) continue;
-        int countAdditions(0), countDeletions(0);
-        // Header
-        for (int j = 0; j < model->columnCount(); ++j) {
-            xlsx.write(1, col + j, levelID, format_header);
-            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
-        }
-        row = 3;
-        for (int i = 0; i < model->rowCount(); ++i) {
-            QString opcode = model->data(model->index(i, 0), Qt::DisplayRole).toString();
-            if (opcode == "+") countAdditions++;
-            if (opcode == "-") countDeletions++;
-            for (int j = 0; j < model->columnCount(); ++j) {
-                if (j == 0)
-                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole).toString().replace("=", ""));
-                else
-                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole));
-            }
-        }
-        col = col + model->columnCount();
-        // Counts
-        QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
-        message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID).arg(model->rowCount()).arg(countAdditions).arg(countDeletions));
-        ui->editCompareCorporaMessages->appendPlainText(message);
-        QApplication::processEvents();
+//    foreach (QString levelID, models.keys()) {
+//        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
+//        if (!model) continue;
+//        int countAdditions(0), countDeletions(0);
+//        // Header
+//        for (int j = 0; j < model->columnCount(); ++j) {
+//            xlsx.write(1, col + j, levelID, format_header);
+//            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
+//        }
+//        row = 3;
+//        for (int i = 0; i < model->rowCount(); ++i) {
+//            QString opcode = model->data(model->index(i, 0), Qt::DisplayRole).toString();
+//            if (opcode == "+") countAdditions++;
+//            if (opcode == "-") countDeletions++;
+//            for (int j = 0; j < model->columnCount(); ++j) {
+//                if (j == 0)
+//                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole).toString().replace("=", ""));
+//                else
+//                    xlsx.write(row + i, col + j, model->data(model->index(i, j), Qt::DisplayRole));
+//            }
+//        }
+//        col = col + model->columnCount();
+//        // Counts
+//        QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+//        message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID).arg(model->rowCount()).arg(countAdditions).arg(countDeletions));
+//        ui->editCompareCorporaMessages->appendPlainText(message);
+//        QApplication::processEvents();
 
-    }
-    QString path = "/home/george/comparator/";
-    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
-    xlsx.saveAs(path + filename);
+//    }
+//    QString path = "/home/george/comparator/";
+//    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
+//    xlsx.saveAs(path + filename);
 }
 
 struct CombinedTimelineData {
@@ -478,55 +479,55 @@ struct CombinedTimelineData {
 void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
                                                            QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models)
 {
-    // Create an Excel document
-    QXlsx::Document xlsx;
-    // Note: rows and columns start from 1 for QXlsx
-    int row(1), col(1);
-    // Format for the headers
-    QXlsx::Format format_header;
-    format_header.setFontBold(true);
-    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
-    // Format: OP tMinA tMaxA tMinB tMaxB A B
-    QHash<QString, int> levelColumn;
-    QMultiMap<RealTime, CombinedTimelineData> timeline;
-    foreach (QString levelID, models.keys()) {
-        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
-        if (!model) continue;
-        levelColumn.insert(levelID, col);
-        // Header
-        for (int j = 0; j < model->columnCount(); ++j) {
-            xlsx.write(1, col + j, levelID, format_header);
-            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
-        }
-        for (int i = 0; i < model->rowCount(); ++i) {
-            RealTime t = RealTime::fromSeconds(model->data(model->index(i, 1), Qt::DisplayRole).toDouble());
-            CombinedTimelineData td;
-            td.levelID = levelID;
-            td.rowIndex = i;
-            timeline.insert(t, td);
-        }
-        col++;
-    }
-    row = 3;
-    foreach (CombinedTimelineData td, timeline.values()) {
-        QPointer<DiffSESforIntervalsTableModel> model = models.value(td.levelID);
-        for (int j = 0; j < model->columnCount(); ++j) {
-            int colOffset = (levelColumn.value(td.levelID) - 1) * model->columnCount();
-            if (j == 0)
-                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole).toString().replace("=", ""));
-            else
-                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole));
-        }
-        row++;
-    }
+//    // Create an Excel document
+//    QXlsx::Document xlsx;
+//    // Note: rows and columns start from 1 for QXlsx
+//    int row(1), col(1);
+//    // Format for the headers
+//    QXlsx::Format format_header;
+//    format_header.setFontBold(true);
+//    format_header.setHorizontalAlignment(QXlsx::Format::AlignHCenter);
+//    // Format: OP tMinA tMaxA tMinB tMaxB A B
+//    QHash<QString, int> levelColumn;
+//    QMultiMap<RealTime, CombinedTimelineData> timeline;
+//    foreach (QString levelID, models.keys()) {
+//        QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
+//        if (!model) continue;
+//        levelColumn.insert(levelID, col);
+//        // Header
+//        for (int j = 0; j < model->columnCount(); ++j) {
+//            xlsx.write(1, col + j, levelID, format_header);
+//            xlsx.write(2, col + j, model->headerData(j, Qt::Horizontal, Qt::DisplayRole), format_header);
+//        }
+//        for (int i = 0; i < model->rowCount(); ++i) {
+//            RealTime t = RealTime::fromSeconds(model->data(model->index(i, 1), Qt::DisplayRole).toDouble());
+//            CombinedTimelineData td;
+//            td.levelID = levelID;
+//            td.rowIndex = i;
+//            timeline.insert(t, td);
+//        }
+//        col++;
+//    }
+//    row = 3;
+//    foreach (CombinedTimelineData td, timeline.values()) {
+//        QPointer<DiffSESforIntervalsTableModel> model = models.value(td.levelID);
+//        for (int j = 0; j < model->columnCount(); ++j) {
+//            int colOffset = (levelColumn.value(td.levelID) - 1) * model->columnCount();
+//            if (j == 0)
+//                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole).toString().replace("=", ""));
+//            else
+//                xlsx.write(row, colOffset + j + 1, model->data(model->index(td.rowIndex, j), Qt::DisplayRole));
+//        }
+//        row++;
+//    }
 
-    QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
-    ui->editCompareCorporaMessages->appendPlainText(message);
-    QApplication::processEvents();
+//    QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+//    ui->editCompareCorporaMessages->appendPlainText(message);
+//    QApplication::processEvents();
 
-    QString path = "/home/george/comparator/";
-    QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID).arg(speakerID);
-    xlsx.saveAs(path + filename);
+//    QString path = "/home/george/comparator/";
+//    QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID).arg(speakerID);
+//    xlsx.saveAs(path + filename);
 }
 
 

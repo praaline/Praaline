@@ -71,6 +71,10 @@ DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 # Node editor
 DEFINES += NODE_EDITOR_STATIC
 
+# For QXlsx
+QT += core gui gui-private
+DEFINES += XLSX_NO_LIB
+
 # Linking dynamically with PocketSphinx ====== this should go into a plugin
 win32 {
     POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32

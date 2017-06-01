@@ -553,11 +553,12 @@ IntervalTier *SyllableProminenceAnnotator::annotateWithCRF(IntervalTier *tier_sy
 #ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
     decoderCommand = appPath + "/tools/crf/crf_test";
-#endif
+#elif
 #ifdef Q_OS_MAC
     decoderCommand = "/usr/local/bin/crf_test";
 #else
     decoderCommand = "/usr/local/bin/crf_test";
+#endif
 #endif
     decoder.start(decoderCommand, QStringList() <<
                   "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
