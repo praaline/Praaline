@@ -14,7 +14,7 @@ using namespace Praaline::Core;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
 #include "pngui/widgets/TimelineEditorConfigWidget.h"
-#include "pngui/widgets/AnnotationTimelineEditor.h"
+#include "pngui/widgets/AnnotationMultiTierEditorWidget.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"
 
 #include "svgui/layer/Layer.h"
@@ -31,7 +31,7 @@ struct TimelineVisualisationWidgetData
     CorpusItemSelectorWidget *corpusItemSelector;   // Corpus items selector
     TimelineEditorConfigWidget *timelineConfig;     // Configuration: levels/attributes + speakers
     VisualiserWidget *visualiser;                   // Visualiser
-    AnnotationTimelineEditor *annotationEditor;     // Annotation timeline editor
+    AnnotationMultiTierEditorWidget *annotationEditor;     // Annotation timeline editor
 
     // State / Data
     QPointer<Corpus> currentCorpus;
@@ -77,7 +77,7 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     ui->gridLayoutVisualisationEditor->addWidget(d->visualiser);
 
     // Annotation Timeline Editor
-    d->annotationEditor = new AnnotationTimelineEditor(this);
+    d->annotationEditor = new AnnotationMultiTierEditorWidget(this);
     // d->annotationEditor->setOrientation(Qt::Horizontal);
     ui->gridLayoutAnnotationEditor->addWidget(d->annotationEditor);
 

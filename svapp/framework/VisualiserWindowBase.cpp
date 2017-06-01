@@ -890,7 +890,7 @@ VisualiserWindowBase::insertInstantAt(sv_frame_t frame)
                                    sodm->getSampleRate())
                                   .toText(false).c_str()));
 
-            SVCommand *c = command->finish();
+            UndoableCommand *c = command->finish();
             if (c) CommandHistory::getInstance()->addCommand(c, false);
         }
     }
@@ -925,7 +925,7 @@ VisualiserWindowBase::insertItemAt(sv_frame_t frame, sv_frame_t duration)
     if (alignedStart >= alignedEnd) return;
     sv_frame_t alignedDuration = alignedEnd - alignedStart;
 
-    SVCommand *c = 0;
+    UndoableCommand *c = 0;
 
     QString name = tr("Add Item at %1 s")
             .arg(RealTime::frame2RealTime

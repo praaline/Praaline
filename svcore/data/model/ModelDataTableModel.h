@@ -23,7 +23,7 @@
 #include "base/BaseTypes.h"
 
 class TabularModel;
-class SVCommand;
+class UndoableCommand;
 
 class ModelDataTableModel : public QAbstractItemModel
 {
@@ -65,7 +65,7 @@ public:
 
 signals:
     void frameSelected(int);
-    void addCommand(SVCommand *);
+    void addCommand(UndoableCommand *);
     void currentChanged(const QModelIndex &);
     void modelRemoved();
 

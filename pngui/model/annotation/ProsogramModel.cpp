@@ -101,9 +101,8 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     if (tier_phone) {
         for (int i = 0; i < tier_phone->count(); ++i) {
             Interval *intv = tier_phone->interval(i);
-            d->phones->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
-                                                    RealTime::realTime2Frame(intv->duration(), sampleRate),
-                                                    speakerID, "phone", i, intv->text()));
+            d->phones->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate), speakerID,
+                                                    "phone", intv->text()));
         }
     }
     // Syllables
@@ -111,9 +110,8 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     if (tier_syll) {
         for (int i = 0; i < tier_syll->count(); ++i) {
             Interval *intv = tier_syll->interval(i);
-            d->sylls->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
-                                                   RealTime::realTime2Frame(intv->duration(), sampleRate),
-                                                   speakerID, "syll", i, intv->text()));
+            d->sylls->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate), speakerID,
+                                                   "syll", intv->text()));
         }
     }
     // Voiced-Unvoiced regions
@@ -121,9 +119,8 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     if (tier_vuv) {
         for (int i = 0; i < tier_vuv->count(); ++i) {
             Interval *intv = tier_vuv->interval(i);
-            d->vuvregions->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate),
-                                                        RealTime::realTime2Frame(intv->duration(), sampleRate),
-                                                        speakerID, "vuv", i, intv->text()));
+            d->vuvregions->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate), speakerID,
+                                                        "vuv", intv->text()));
         }
     }
     // Pitch

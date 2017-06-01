@@ -212,7 +212,7 @@ protected:
     bool shouldAutoAlign() const;
 
     void finish(FlexiNoteModel::EditCommand *command) {
-        SVCommand *c = command->finish();
+        UndoableCommand *c = command->finish();
         if (c) CommandHistory::getInstance()->addCommand(c, false);
     }
 };

@@ -20,6 +20,8 @@ public:
     static QList<QStringList> script(const QString &filenameIn, const QString &pathOut,
                                      QList<Praaline::Core::Interval *> segments, const QString &attribute = QString(),
                                      uint newSamplingRate = 0, bool normalise = false, int channels = 1);
+    static bool bookmarkCutting(const QString &filenameIn, const QString &pathOut, QList<Praaline::Core::Interval *> intervalsToRemove);
+
 private:
     AudioSegmenter() {}
     ~AudioSegmenter() {}

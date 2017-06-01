@@ -9,14 +9,7 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "AnnotationTierModel.h"
-
-struct TimelineData {
-    QString speakerID;
-    int intervalNo;
-    RealTime tMin;
-    RealTime tCenter;
-};
+#include "AnnotationMultiTierTableModel.h"
 
 struct AnnotationTierModelData {
     AnnotationTierModelData() : orientation(Qt::Vertical) {}
@@ -25,87 +18,50 @@ struct AnnotationTierModelData {
     QMap<QString, QPointer<AnnotationTierGroup> > tiers;  // Speaker ID, corresponding tiers
     QString tiernameMinimal;
     QList<QPair<QString, QString> > attributes;           // Level ID, Attribute ID
-    QList<TimelineData> timeline;
-    QHash<QString, QColor> speakerBackgroundColors;
 };
 
-AnnotationTierModel::AnnotationTierModel(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                                         const QString &tiernameMinimal, const QList<QPair<QString, QString> > &attributes,
-                                         Qt::Orientation orientation, QObject *parent) :
-    QAbstractTableModel(parent), d(new AnnotationTierModelData)
+AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                                             const QString &tiernameMinimal, const QList<QPair<QString, QString> > &attributes,
+                                                             Qt::Orientation orientation, QObject *parent) :
+    TimelineTableModelBase(parent), d(new AnnotationTierModelData)
 {
     d->orientation = orientation;
     d->tiers = tiers;
     d->tiernameMinimal = tiernameMinimal;
     d->attributes = attributes;
-
-    QMultiMap<RealTime, TimelineData> timeline;
-    // Calculate timeline for given tiers
-    int i = 0;
-    foreach (QString speakerID, d->tiers.keys()) {
-        IntervalTier *tier = d->tiers.value(speakerID)->getIntervalTierByName(d->tiernameMinimal);
-        if (!tier) continue;
-        for (int intervalNo = 0; intervalNo < tier->count(); ++intervalNo) {
-            TimelineData td;
-            td.speakerID = speakerID;
-            td.intervalNo = intervalNo;
-            td.tMin = tier->interval(intervalNo)->tMin();
-            td.tCenter = tier->interval(intervalNo)->tCenter();
-            timeline.insert(td.tMin, td);
-        }
-        d->speakerBackgroundColors.insert(speakerID, QColor(QColor::colorNames().at(i)));
-        ++i;
-    }
-    d->timeline = timeline.values();
+    calculateTimeline(d->tiers, d->tiernameMinimal);
 }
 
-AnnotationTierModel::~AnnotationTierModel()
+AnnotationMultiTierTableModel::~AnnotationMultiTierTableModel()
 {
+    delete d;
 }
 
-QModelIndex AnnotationTierModel::parent(const QModelIndex &index) const
+QModelIndex AnnotationMultiTierTableModel::parent(const QModelIndex &index) const
 {
     Q_UNUSED(index);
     return QModelIndex();
 }
 
-int AnnotationTierModel::rowCount(const QModelIndex &parent) const
+int AnnotationMultiTierTableModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     if (d->orientation == Qt::Vertical)
-        return d->timeline.count();
+        return m_timeline.count();
     // else
     return d->attributes.count() + 3;
 }
 
-int AnnotationTierModel::columnCount(const QModelIndex &parent) const
+int AnnotationMultiTierTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     if (d->orientation == Qt::Vertical)
         return d->attributes.count() + 3;
     // else
-    return d->timeline.count();
+    return m_timeline.count();
 }
 
-RealTime AnnotationTierModel::getStartTime() const
-{
-    if (d->timeline.count() == 0) return RealTime();
-    return d->timeline.first().tMin;
-}
-
-RealTime AnnotationTierModel::getEndTime() const
-{
-    if (d->timeline.count() == 0) return RealTime();
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(d->timeline.last().speakerID, 0);
-    if (!spk_tiers) return RealTime();
-    IntervalTier *tier_min = spk_tiers->getIntervalTierByName(d->tiernameMinimal);
-    if (!tier_min) return RealTime();
-    int i = d->timeline.last().intervalNo;
-    if (i >= tier_min->count()) return RealTime();
-    return tier_min->interval(i)->tMax();
-}
-
-QList<int> AnnotationTierModel::attributeIndicesExceptContext() const
+QList<int> AnnotationMultiTierTableModel::attributeIndicesExceptContext() const
 {
     QList<int> ret;
     for (int attributeIndex = 0; attributeIndex < d->attributes.count(); ++attributeIndex) {
@@ -115,7 +71,7 @@ QList<int> AnnotationTierModel::attributeIndicesExceptContext() const
     return ret;
 }
 
-QVariant AnnotationTierModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant AnnotationMultiTierTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role != Qt::DisplayRole)
         return QVariant();
@@ -148,8 +104,9 @@ QVariant AnnotationTierModel::headerData(int section, Qt::Orientation orientatio
     return QVariant();
 }
 
-// This is a file-scoped helper function
-QVariant dataCell(QPointer<AnnotationTierGroup> spk_tiers, TimelineData &td, QString levelID, QString attributeID)
+// Private
+QVariant AnnotationMultiTierTableModel::dataCell(QPointer<AnnotationTierGroup> spk_tiers, TimelineData &td,
+                                                 const QString &levelID, const QString &attributeID) const
 {
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
     if (!tier) return QVariant();
@@ -184,7 +141,7 @@ QVariant dataCell(QPointer<AnnotationTierGroup> spk_tiers, TimelineData &td, QSt
     return QVariant();
 }
 
-QVariant AnnotationTierModel::data(const QModelIndex &index, int role) const
+QVariant AnnotationMultiTierTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid()) return QVariant();
     if (index.row() < 0 || index.row() >= rowCount()) return QVariant();
@@ -194,11 +151,11 @@ QVariant AnnotationTierModel::data(const QModelIndex &index, int role) const
     TimelineData td;
     int dataCellIndex;
     if (d->orientation == Qt::Vertical) {
-        td = d->timeline.at(index.row());
+        td = m_timeline.at(index.row());
         dataCellIndex = index.column();
     }
     else {
-        td = d->timeline.at(index.column());
+        td = m_timeline.at(index.column());
         dataCellIndex = index.row();
     }
     int attributeIndex = dataCellIndex - 3;
@@ -213,12 +170,12 @@ QVariant AnnotationTierModel::data(const QModelIndex &index, int role) const
             return td.speakerID;
         }
         if (dataCellIndex == 1) {
-            Interval *intv_min = tier_min->interval(td.intervalNo);
+            Interval *intv_min = tier_min->interval(td.index);
             if (intv_min) return intv_min->tMin().toDouble(); // QString::number(intv_min->tMin().toDouble(), 'f', 6);
             else return QVariant();
         }
         else if (dataCellIndex == 2) {
-            Interval *intv_min = tier_min->interval(td.intervalNo);
+            Interval *intv_min = tier_min->interval(td.index);
             if (intv_min) return intv_min->tMax().toDouble(); // QString::number(intv_min->tMax().toDouble(), 'f', 6);
             else return QVariant();
         }
@@ -229,26 +186,26 @@ QVariant AnnotationTierModel::data(const QModelIndex &index, int role) const
         }
     }
     else if (role == Qt::BackgroundColorRole) {
-        return d->speakerBackgroundColors.value(td.speakerID, QColor("White"));
+        return m_speakerBackgroundColors.value(td.speakerID, QColor("White"));
     }
     return QVariant();
 }
 
-QList<AnnotationTierModel::AnnotationTierCell>
-AnnotationTierModel::dataBlock(const RealTime &from, const RealTime &to, const QList<int> &attributeIndices)
+QList<AnnotationMultiTierTableModel::AnnotationTierCell>
+AnnotationMultiTierTableModel::dataBlock(const RealTime &from, const RealTime &to, const QList<int> &attributeIndices)
 {
-    QList<AnnotationTierModel::AnnotationTierCell> ret;
+    QList<AnnotationMultiTierTableModel::AnnotationTierCell> ret;
     int timelineIndexFrom = timelineIndexAtTime(from);
     int timelineIndexTo = timelineIndexAtTime(to);
     for (int timelineIndex = timelineIndexFrom; timelineIndex <= timelineIndexTo; ++timelineIndex) {
-        TimelineData td = d->timeline.at(timelineIndex);
+        TimelineData td = m_timeline.at(timelineIndex);
         QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
         if (!spk_tiers) continue;
         foreach (int attributeIndex, attributeIndices) {
             QString levelID = d->attributes.at(attributeIndex).first;
             QString attributeID = d->attributes.at(attributeIndex).second;
             QVariant value = dataCell(spk_tiers, td, levelID, attributeID);
-            AnnotationTierModel::AnnotationTierCell cell;
+            AnnotationMultiTierTableModel::AnnotationTierCell cell;
             cell.tMin = td.tMin;
             cell.attributeIndex = attributeIndex;
             cell.speakerID = td.speakerID;
@@ -259,7 +216,7 @@ AnnotationTierModel::dataBlock(const RealTime &from, const RealTime &to, const Q
     return ret;
 }
 
-Qt::ItemFlags AnnotationTierModel::flags(const QModelIndex &index) const
+Qt::ItemFlags AnnotationMultiTierTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
@@ -269,7 +226,7 @@ Qt::ItemFlags AnnotationTierModel::flags(const QModelIndex &index) const
     return QAbstractTableModel::flags(index);
 }
 
-bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool AnnotationMultiTierTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid()) return false;
     if (role != Qt::EditRole) return false;
@@ -281,12 +238,12 @@ bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &valu
     if (d->orientation == Qt::Vertical) {
         timelineIndex = index.row();
         dataCellIndex = index.column();
-        td = d->timeline.at(timelineIndex);
+        td = m_timeline.at(timelineIndex);
     }
     else {
         timelineIndex = index.column();
         dataCellIndex = index.row();
-        td = d->timeline.at(timelineIndex);
+        td = m_timeline.at(timelineIndex);
     }
     int attributeIndex = dataCellIndex - 3;
 
@@ -299,18 +256,20 @@ bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &valu
         int intervalIndex = tier_minimal->intervalIndexAtTime(td.tCenter);
         bool result = tier_minimal->moveBoundary(intervalIndex, RealTime::fromSeconds(value.toDouble()));
         if (!result) return false;
-        // update timeline (previous interval's center, our min and center)
-        if ((timelineIndex > 0) && (intervalIndex > 0))
-            d->timeline[timelineIndex - 1].tCenter = tier_minimal->interval(intervalIndex - 1)->tCenter();
-        d->timeline[timelineIndex].tMin = tier_minimal->interval(intervalIndex)->tMin();
-        d->timeline[timelineIndex].tCenter = tier_minimal->interval(intervalIndex)->tCenter();
+        // update timeline (previous interval's center and max, our min and center)
+        if ((timelineIndex > 0) && (intervalIndex > 0)) {
+            m_timeline[timelineIndex - 1].tCenter = tier_minimal->interval(intervalIndex - 1)->tCenter();
+            m_timeline[timelineIndex - 1].tMax = tier_minimal->interval(intervalIndex - 1)->tMax();
+        }
+        m_timeline[timelineIndex].tMin = tier_minimal->interval(intervalIndex)->tMin();
+        m_timeline[timelineIndex].tCenter = tier_minimal->interval(intervalIndex)->tCenter();
         // refresh grid
         if (d->orientation == Qt::Vertical) {
             int refreshFrom = index.row() - 1; if (refreshFrom < 0) refreshFrom = 0;
-            emit dataChanged(AnnotationTierModel::index(refreshFrom, 0), AnnotationTierModel::index(index.row(), columnCount() - 1));
+            emit dataChanged(AnnotationMultiTierTableModel::index(refreshFrom, 0), AnnotationMultiTierTableModel::index(index.row(), columnCount() - 1));
         } else {
             int refreshFrom = index.column() - 1; if (refreshFrom < 0) refreshFrom = 0;
-            emit dataChanged(AnnotationTierModel::index(0, refreshFrom), AnnotationTierModel::index(rowCount() - 1, index.column()));
+            emit dataChanged(AnnotationMultiTierTableModel::index(0, refreshFrom), AnnotationMultiTierTableModel::index(rowCount() - 1, index.column()));
         }
         return true;
     }
@@ -320,19 +279,20 @@ bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &valu
         int intervalIndex = tier_minimal->intervalIndexAtTime(td.tCenter);
         bool result = tier_minimal->moveBoundary(intervalIndex + 1, RealTime::fromSeconds(value.toDouble()));
         if (!result) return false;
-        // update timeline (our center, next interval's min and center)
-        d->timeline[timelineIndex].tCenter = tier_minimal->interval(intervalIndex)->tCenter();
-        if ((timelineIndex < d->timeline.count() - 1) && (intervalIndex < tier_minimal->count() -1)) {
-            d->timeline[timelineIndex + 1].tMin = tier_minimal->interval(intervalIndex + 1)->tMin();
-            d->timeline[timelineIndex + 1].tCenter = tier_minimal->interval(intervalIndex + 1)->tCenter();
+        // update timeline (our center and max, next interval's min and center)
+        m_timeline[timelineIndex].tCenter = tier_minimal->interval(intervalIndex)->tCenter();
+        m_timeline[timelineIndex].tMax = tier_minimal->interval(intervalIndex)->tMax();
+        if ((timelineIndex < m_timeline.count() - 1) && (intervalIndex < tier_minimal->count() -1)) {
+            m_timeline[timelineIndex + 1].tMin = tier_minimal->interval(intervalIndex + 1)->tMin();
+            m_timeline[timelineIndex + 1].tCenter = tier_minimal->interval(intervalIndex + 1)->tCenter();
         }
         // refresh grid
         if (d->orientation == Qt::Vertical) {
             int refreshTo = index.row() + 1; if (refreshTo == rowCount()) refreshTo = rowCount() - 1;
-            emit dataChanged(AnnotationTierModel::index(index.row(), 0), AnnotationTierModel::index(refreshTo, columnCount() - 1));
+            emit dataChanged(AnnotationMultiTierTableModel::index(index.row(), 0), AnnotationMultiTierTableModel::index(refreshTo, columnCount() - 1));
         } else {
             int refreshTo = index.column() + 1; if (refreshTo == columnCount()) refreshTo = columnCount() - 1;
-            emit dataChanged(AnnotationTierModel::index(0, index.column()), AnnotationTierModel::index(rowCount() - 1, refreshTo));
+            emit dataChanged(AnnotationMultiTierTableModel::index(0, index.column()), AnnotationMultiTierTableModel::index(rowCount() - 1, refreshTo));
         }
         return true;
     }
@@ -355,12 +315,12 @@ bool AnnotationTierModel::setData(const QModelIndex &index, const QVariant &valu
     return false;
 }
 
-Qt::Orientation AnnotationTierModel::orientation() const
+Qt::Orientation AnnotationMultiTierTableModel::orientation() const
 {
     return d->orientation;
 }
 
-void AnnotationTierModel::setOrientation(Qt::Orientation orientation)
+void AnnotationMultiTierTableModel::setOrientation(Qt::Orientation orientation)
 {
     if (d->orientation == orientation) return;
     beginResetModel();
@@ -368,48 +328,18 @@ void AnnotationTierModel::setOrientation(Qt::Orientation orientation)
     endResetModel();
 }
 
-// A timeline index corresponds to a row in a vertically oriented model
-// and to a column in a horizontally oriented model.
-int AnnotationTierModel::timelineIndexAtTime(const RealTime &time) const
-{
-    int timelineIndex = 0;
-    for (timelineIndex = 0; timelineIndex < d->timeline.count(); ++timelineIndex) {
-        if (d->timeline.at(timelineIndex).tMin >= time) break;
-    }
-    // We found the first time index AFTER the time we should be moving to => subtract 1.
-    if (timelineIndex > 0) timelineIndex--;
-    return timelineIndex;
-}
-
-int AnnotationTierModel::timelineIndexAtTime(const RealTime &time, double &tMin_msec, double &tMax_msec) const
-{
-    int timelineIndex = 0;
-    for (timelineIndex = 0; timelineIndex < d->timeline.count(); ++timelineIndex) {
-        if (d->timeline.at(timelineIndex).tMin >= time) break;
-    }
-    tMin_msec = d->timeline.at(timelineIndex).tMin.toDouble() * 1000.0;
-    double tCenter_msec = d->timeline.at(timelineIndex).tCenter.toDouble() * 1000.0;
-    tMax_msec = 2.0 * tCenter_msec - tMin_msec;
-    return timelineIndex;
-}
-
-RealTime AnnotationTierModel::timeAtTimelineIndex(int timelineIndex) const
-{
-    if ((timelineIndex < 0) || (timelineIndex > d->timeline.count() - 1)) return RealTime(-1, 0);
-    return d->timeline.at(timelineIndex).tMin;
-}
-
-QModelIndex AnnotationTierModel::modelIndexAtTime(const RealTime &time) const
+// A timeline index corresponds to a row in a vertically-oriented model nd to a column in a horizontally-oriented model.
+// Override default implementation.
+QModelIndex AnnotationMultiTierTableModel::modelIndexAtTime(const RealTime &time) const
 {
     int timelineIndex = timelineIndexAtTime(time);
     if (d->orientation == Qt::Vertical)
-        return AnnotationTierModel::index(timelineIndex, 0);
+        return TimelineTableModelBase::index(timelineIndex, 0);
     // else
-    return AnnotationTierModel::index(0, timelineIndex);
+    return TimelineTableModelBase::index(0, timelineIndex);
 }
 
-
-bool AnnotationTierModel::splitAnnotations(const QModelIndex &index, RealTime splitMinimalAt)
+bool AnnotationMultiTierTableModel::splitAnnotations(const QModelIndex &index, RealTime splitMinimalAt)
 {
     if (!index.isValid()) return false;
     if (d->orientation == Qt::Vertical)
@@ -418,7 +348,7 @@ bool AnnotationTierModel::splitAnnotations(const QModelIndex &index, RealTime sp
     return splitAnnotations(index.column(), index.row(), splitMinimalAt);
 }
 
-bool AnnotationTierModel::splitAnnotations(int timelineIndex, int dataIndex, RealTime splitMinimalAt)
+bool AnnotationMultiTierTableModel::splitAnnotations(int timelineIndex, int dataIndex, RealTime splitMinimalAt)
 {
     QString levelID;
     if (dataIndex < 3)
@@ -426,8 +356,8 @@ bool AnnotationTierModel::splitAnnotations(int timelineIndex, int dataIndex, Rea
     else if ((dataIndex - 3) >= 0 && (dataIndex - 3) < d->attributes.count())
         levelID = d->attributes.at(dataIndex - 3).first;
 
-    if (timelineIndex < 0 || timelineIndex >= d->timeline.size()) return false;
-    TimelineData td = d->timeline.at(timelineIndex);
+    if (timelineIndex < 0 || timelineIndex >= m_timeline.size()) return false;
+    TimelineData td = m_timeline.at(timelineIndex);
     QString speakerID = td.speakerID;
     QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return false;
@@ -450,17 +380,19 @@ bool AnnotationTierModel::splitAnnotations(int timelineIndex, int dataIndex, Rea
         tdNew.speakerID = speakerID;
         tdNew.tMin = newInterval->tMin();
         tdNew.tCenter = newInterval->tCenter();
-        tdNew.intervalNo = td.intervalNo + 1;
+        tdNew.tMax = newInterval->tMax();
+        tdNew.index = td.index + 1;
         // Refresh model
         if (d->orientation == Qt::Vertical)
             beginInsertRows(QModelIndex(), timelineIndex + 1, timelineIndex + 1);
         else
             beginInsertColumns(QModelIndex(), timelineIndex + 1, timelineIndex + 1);
-        d->timeline[timelineIndex].tCenter = tier->interval(td.intervalNo)->tCenter();
-        d->timeline.insert(timelineIndex + 1, tdNew);
-        for (int iter = timelineIndex + 2; iter < d->timeline.count(); ++iter) {
-            if (d->timeline.at(iter).speakerID != speakerID) continue;
-            d->timeline[iter].intervalNo = d->timeline.at(iter).intervalNo + 1;
+        m_timeline[timelineIndex].tCenter = tier->interval(td.index)->tCenter();
+        m_timeline[timelineIndex].tMax = tier->interval(td.index)->tMax();
+        m_timeline.insert(timelineIndex + 1, tdNew);
+        for (int iter = timelineIndex + 2; iter < m_timeline.count(); ++iter) {
+            if (m_timeline.at(iter).speakerID != speakerID) continue;
+            m_timeline[iter].index = m_timeline.at(iter).index + 1;
         }
         int refreshFrom = timelineIndex - 1; if (refreshFrom < 0) refreshFrom = 0;
         if (d->orientation == Qt::Vertical) {
@@ -474,7 +406,7 @@ bool AnnotationTierModel::splitAnnotations(int timelineIndex, int dataIndex, Rea
     else {
         IntervalTier *tier_min = spk_tiers->getIntervalTierByName(d->tiernameMinimal);
         if (!tier_min) return false;
-        RealTime tSplit = tier_min->interval(td.intervalNo)->tMax();
+        RealTime tSplit = tier_min->interval(td.index)->tMax();
         tier->split(tSplit);
         int refreshFrom = timelineIndex - 1; if (refreshFrom < 0) refreshFrom = 0;
         if (d->orientation == Qt::Vertical)
@@ -485,7 +417,7 @@ bool AnnotationTierModel::splitAnnotations(int timelineIndex, int dataIndex, Rea
     return true;
 }
 
-bool AnnotationTierModel::mergeAnnotations(const QModelIndexList &indices)
+bool AnnotationMultiTierTableModel::mergeAnnotations(const QModelIndexList &indices)
 {
     if (indices.isEmpty()) return false;
     int dataIndex;
@@ -505,7 +437,7 @@ bool AnnotationTierModel::mergeAnnotations(const QModelIndexList &indices)
 }
 
 
-bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &timelineIndices)
+bool AnnotationMultiTierTableModel::mergeAnnotations(int dataIndex, const QList<int> &timelineIndices)
 {
     QString levelID;
     if (dataIndex < 3)
@@ -520,13 +452,13 @@ bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &time
         if (timelineIndices.at(i) > timelineIndices.at(i+1)) return false;
     }
     // Check that the intervals we are asked to merge all belong to the same speaker
-    TimelineData tdFirst = d->timeline.at(timelineIndices.first());
+    TimelineData tdFirst = m_timeline.at(timelineIndices.first());
     QString speakerID = tdFirst.speakerID;
     foreach (int timelineIndex, timelineIndices) {
-        if (d->timeline.at(timelineIndex).speakerID != speakerID)
+        if (m_timeline.at(timelineIndex).speakerID != speakerID)
             return false; // cannot merge intervals from various speakers
     }
-    TimelineData tdLast = d->timeline.at(timelineIndices.last());
+    TimelineData tdLast = m_timeline.at(timelineIndices.last());
     // Get the set of tiers for this speaker
     QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(speakerID, 0);
     if (!spk_tiers) return false;
@@ -551,14 +483,14 @@ bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &time
             return false;
         }
         int numberOfIntervalsMerged = indexLast - indexFirst;
-        d->timeline[timelineIndices.first()].tCenter = merged->tCenter();
+        m_timeline[timelineIndices.first()].tCenter = merged->tCenter();
         for (int timelineIndex = timelineIndices.last(); timelineIndex >= timelineIndices.first() + 1; --timelineIndex) {
             // qDebug() << d->timeline.at(timelineIndices.first() + 1).speakerID << d->timeline.at(timelineIndices.first() + 1).intervalNo << d->timeline.at(timelineIndices.first() + 1).tMin.toDouble();
-            d->timeline.removeAt(timelineIndices.first() + 1);
+            m_timeline.removeAt(timelineIndices.first() + 1);
         }
-        for (int timelineIndex = timelineIndices.first() + 1; timelineIndex < d->timeline.count(); ++ timelineIndex) {
-            if (d->timeline.at(timelineIndex).speakerID != speakerID) continue;
-            d->timeline[timelineIndex].intervalNo = d->timeline.at(timelineIndex).intervalNo - numberOfIntervalsMerged;
+        for (int timelineIndex = timelineIndices.first() + 1; timelineIndex < m_timeline.count(); ++ timelineIndex) {
+            if (m_timeline.at(timelineIndex).speakerID != speakerID) continue;
+            m_timeline[timelineIndex].index = m_timeline.at(timelineIndex).index - numberOfIntervalsMerged;
         }
         int refreshFrom = timelineIndices.first() - 1; if (refreshFrom < 0) refreshFrom = 0;
         if (d->orientation == Qt::Vertical) {
@@ -572,8 +504,8 @@ bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &time
     else {
         IntervalTier *tier_min = spk_tiers->getIntervalTierByName(d->tiernameMinimal);
         if (!tier_min) return false;
-        RealTime tMinMerged = tier_min->interval(tdFirst.intervalNo)->tMin();
-        RealTime tMaxMerged = tier_min->interval(tdLast.intervalNo)->tMax();
+        RealTime tMinMerged = tier_min->interval(tdFirst.index)->tMin();
+        RealTime tMaxMerged = tier_min->interval(tdLast.index)->tMax();
         int indexFirst = tier->intervalIndexAtTime(tdFirst.tCenter);
         int indexLast = tier->intervalIndexAtTime(tdLast.tCenter);
         if (tier->interval(indexFirst)->tMin() != tMinMerged)
@@ -591,7 +523,4 @@ bool AnnotationTierModel::mergeAnnotations(int dataIndex, const QList<int> &time
     }
     return true;
 }
-
-
-
 

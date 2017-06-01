@@ -67,7 +67,8 @@ HEADERS += \
     MyExperiments.h \
     DisfluenciesExperiments.h \
     SpeechRateExperiments.h \
-    TappingAnnotatorExperiment.h
+    TappingAnnotatorExperiment.h \
+    XMLTranscription.h
 
 
 SOURCES += \ 
@@ -82,4 +83,5 @@ SOURCES += \
     MyExperiments.cpp \
     DisfluenciesExperiments.cpp \
     SpeechRateExperiments.cpp \
-    TappingAnnotatorExperiment.cpp
+    TappingAnnotatorExperiment.cpp \
+    XMLTranscription.cpp

@@ -52,9 +52,11 @@ private slots:
 
     // Export
     void exportDiffTableByLevelExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
-                                     QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models);
+                                     QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models,
+                                     QStringList levelIDs = QStringList());
     void exportDiffTableCombinedExcel(const QString &communicationID, const QString &annotationID, const QString &speakerID,
-                                      QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models);
+                                      QMap<QString, QPointer<DiffSESforIntervalsTableModel> > &models,
+                                      QStringList levelIDs = QStringList());
 
 };
 

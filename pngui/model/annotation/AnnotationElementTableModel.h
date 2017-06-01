@@ -6,15 +6,15 @@
 
 struct AnnotationTableModelData;
 
-class AnnotationTableModel : public QAbstractTableModel
+class AnnotationElementTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 
 public:
-    explicit AnnotationTableModel(Praaline::Core::AnnotationElement::ElementType elementType,
-                                  QList<Praaline::Core::AnnotationElement *> elements,
-                                  QStringList attributeIDs, QObject *parent = 0);
-    ~AnnotationTableModel();
+    explicit AnnotationElementTableModel(Praaline::Core::AnnotationElement::ElementType elementType,
+                                         QList<Praaline::Core::AnnotationElement *> elements,
+                                         QStringList attributeIDs, QObject *parent = 0);
+    ~AnnotationElementTableModel();
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

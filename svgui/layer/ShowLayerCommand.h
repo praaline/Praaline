@@ -18,7 +18,7 @@
 
 #include "base/Command.h"
 
-class ShowLayerCommand : public SVCommand
+class ShowLayerCommand : public UndoableCommand
 {
 public:
     ShowLayerCommand(View *view, Layer *layer, bool show, QString commandName) :

@@ -2,7 +2,7 @@
 #define ANNOTATIONCONTROLSDISFLUENCIES_H
 
 #include <QWidget>
-#include "pngui/model/annotation/AnnotationTierModel.h"
+#include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
 
 namespace Ui {
 class AnnotationControlsDisfluencies;
@@ -21,7 +21,7 @@ public:
     explicit AnnotationControlsDisfluencies(QWidget *parent = 0);
     ~AnnotationControlsDisfluencies();
 
-    void setModel(AnnotationTierModel *model, int columnToken, int columnDisfluency, int columnDiscourse);
+    void setModel(AnnotationMultiTierTableModel *model, int columnToken, int columnDisfluency, int columnDiscourse);
     void setSelection(QList<int> rowsSelected);
 
 private slots:
@@ -43,7 +43,7 @@ private slots:
 private:
     Ui::AnnotationControlsDisfluencies *ui;
 
-    AnnotationTierModel *m_model;
+    AnnotationMultiTierTableModel *m_model;
     int m_columnToken, m_columnDisfluency, m_columnDiscourse;
     QList<int> m_rowsSelected;
 

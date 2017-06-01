@@ -22,22 +22,20 @@ using namespace Praaline::Core;
 
 #include "PraalineUserInterfaceOptions.h"
 
-#include "pngui/widgets/AnnotationTimelineEditor.h"
+#include "pngui/widgets/GroupingAnnotationEditorWidget.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"
 #include "pngui/widgets/TimelineEditorConfigWidget.h"
-#include "../dis/AnnotationControlsDisfluencies.h"
 
-#include "TimelineAnnotationEditor.h"
+#include "GroupingAnnotationEditor.h"
 
 
-struct TimelineAnnotationEditorData {
-    TimelineAnnotationEditorData() :
-        annotationControls(0), editor(0),
+struct GroupingAnnotationEditorData {
+    GroupingAnnotationEditorData() :
+        editor(0),
         loopInsideInterval(false), tPauseAt_msec(0),
         autoSave(false)
     {}
 
-    AnnotationControlsDisfluencies *annotationControls;
     // Main toolbar
     QToolBar *toolbarMain;
     QAction *actionSave;
@@ -45,11 +43,8 @@ struct TimelineAnnotationEditorData {
     QAction *actionPause;
     QAction *actionStop;
     // Editor
-    AnnotationTimelineEditor *editor;
+    GroupingAnnotationEditorWidget *editor;
     QToolBar *toolbarEditor;
-    QAction *actionEditorIntervalSplit;
-    QAction *actionEditorIntervalJoin;
-    QAction *actionToggleOrientation;
     QAction *actionRemoveSorting;
     QAction *actionToggleTimelineConfig;
     // Configuration: levels/attributes + speakers
@@ -64,8 +59,6 @@ struct TimelineAnnotationEditorData {
     bool loopInsideInterval;
     // Sync
     int currentRow;
-    QAction *actionMoveMinBoundaryLeft;
-    QAction *actionMoveMaxBoundaryRight;
     qint64 tPauseAt_msec;
     // Options
     bool autoSave;
@@ -77,8 +70,8 @@ struct TimelineAnnotationEditorData {
     QString currentAnnotationID;
 };
 
-TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
-    AnnotationEditorBase(parent), d(new TimelineAnnotationEditorData())
+GroupingAnnotationEditor::GroupingAnnotationEditor(QWidget *parent) :
+    AnnotationEditorBase(parent), d(new GroupingAnnotationEditorData())
 {
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);
@@ -88,7 +81,7 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     d->toolbarEditor->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarEditor->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     // Editor grid
-    d->editor = new AnnotationTimelineEditor(this);
+    d->editor = new GroupingAnnotationEditorWidget(this);
     // Timeline configuration
     d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
     connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
@@ -101,12 +94,11 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     d->dockTimelineConfig->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     d->dockTimelineConfig->setWidget(d->widgetTimelineConfig);
     addDockWidget(Qt::RightDockWidgetArea, d->dockTimelineConfig);
-    // Annotation controls
-    d->annotationControls = new AnnotationControlsDisfluencies(this);
+    // Changes to editor state
     connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
-            this, SLOT(verticalTimelineSelectedRowsChanged(QList<int>)));
+            this, SLOT(timelineSelectedRowsChanged(QList<int>)));
     connect(d->editor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
-            this, SLOT(verticalTimelineCurrentIndexChanged(QModelIndex,QModelIndex)));
+            this, SLOT(timelineCurrentIndexChanged(QModelIndex,QModelIndex)));
     // Media player
     d->mediaPlayer = new QMediaPlayer(this);
     d->mediaPlayer->setNotifyInterval(20);
@@ -128,7 +120,6 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     QWidget *contents = new QWidget(this);
     QGridLayout *layout = new QGridLayout(contents);
     layout->setMargin(0);
-    layout->addWidget(d->annotationControls);
     layout->addWidget(d->editor);
     contents->setLayout(layout);
     this->setCentralWidget(contents);
@@ -136,17 +127,15 @@ TimelineAnnotationEditor::TimelineAnnotationEditor(QWidget *parent) :
     setupActions();
     // Shortcuts
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-    d->actionEditorIntervalJoin->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_J));
-    d->actionEditorIntervalSplit->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
 }
 
-TimelineAnnotationEditor::~TimelineAnnotationEditor()
+GroupingAnnotationEditor::~GroupingAnnotationEditor()
 {
     qDeleteAll(d->currentTierGroups);
     delete d;
 }
 
-void TimelineAnnotationEditor::setupActions()
+void GroupingAnnotationEditor::setupActions()
 {
     QList<int> context;
     context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
@@ -181,23 +170,6 @@ void TimelineAnnotationEditor::setupActions()
 
     // EDITOR
     // ----------------------------------------------------------------------------------------------------------------
-    d->actionEditorIntervalJoin = new QAction(QIcon(":/icons/actions/interval_join.png"), tr("Join Intervals"), this);
-    connect(d->actionEditorIntervalJoin, SIGNAL(triggered()), this, SLOT(intervalJoin()));
-    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalJoin", d->actionEditorIntervalJoin, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    d->toolbarEditor->addAction(d->actionEditorIntervalJoin);
-
-    d->actionEditorIntervalSplit = new QAction(QIcon(":/icons/actions/interval_split.png"), tr("Split Intervals"), this);
-    connect(d->actionEditorIntervalSplit, SIGNAL(triggered()), this, SLOT(intervalSplit()));
-    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalSplit", d->actionEditorIntervalSplit, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    d->toolbarEditor->addAction(d->actionEditorIntervalSplit);
-
-    d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), tr("Change Orientation"), this);
-    connect(d->actionToggleOrientation, SIGNAL(triggered()), this, SLOT(toggleOrientation()));
-    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleOrientation", d->actionToggleOrientation, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    d->toolbarEditor->addAction(d->actionToggleOrientation);
 
     d->actionRemoveSorting = new QAction(QIcon(":/icons/actions/sort_remove.png"), tr("Remove Sort"), this);
     connect(d->actionRemoveSorting, SIGNAL(triggered()), d->editor, SLOT(removeSorting()));
@@ -211,29 +183,13 @@ void TimelineAnnotationEditor::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleTimelineConfig);
 
-    // SYNC ACTIONS
-    // ----------------------------------------------------------------------------------------------------------------
-    d->actionMoveMinBoundaryLeft = new QAction(tr("Move min boundary left"), this);
-    connect(d->actionMoveMinBoundaryLeft, SIGNAL(triggered()), this, SLOT(moveMinBoundaryLeft()));
-    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMinBoundaryLeft", d->actionMoveMinBoundaryLeft, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    d->editor->addAction(d->actionMoveMinBoundaryLeft);
-    d->actionMoveMinBoundaryLeft->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
-
-    d->actionMoveMaxBoundaryRight = new QAction(tr("Move max boundary right"), this);
-    connect(d->actionMoveMaxBoundaryRight, SIGNAL(triggered()), this, SLOT(moveMaxBoundaryRight()));
-    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMaxBoundaryRight", d->actionMoveMaxBoundaryRight, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    d->editor->addAction(d->actionMoveMaxBoundaryRight);
-    d->actionMoveMaxBoundaryRight->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Plus));
-
 }
 
 // ============================================================================================================================================================
 // Implementation of AnnotationEditorBase
 // ============================================================================================================================================================
 
-void TimelineAnnotationEditor::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
+void GroupingAnnotationEditor::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
 {
     if (d->autoSave) {
         saveAnnotations();
@@ -262,7 +218,7 @@ void TimelineAnnotationEditor::open(Corpus *corpus, CorpusCommunication *com, Co
     }
 }
 
-void TimelineAnnotationEditor::jumpToTime(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *annot, const RealTime &time)
+void GroupingAnnotationEditor::jumpToTime(Corpus *corpus, CorpusCommunication *com, CorpusAnnotation *annot, const RealTime &time)
 {
     if (!corpus) return;
     if (!com) return;
@@ -284,32 +240,29 @@ void TimelineAnnotationEditor::jumpToTime(Corpus *corpus, CorpusCommunication *c
 
 // ============================================================================================================================================================
 
-void TimelineAnnotationEditor::speakerAdded(const QString &speakerID)
+void GroupingAnnotationEditor::speakerAdded(const QString &speakerID)
 {
     if (!d->currentTierGroups.contains(speakerID)) return;
     d->editor->addTierGroup(speakerID, d->currentTierGroups.value(speakerID));
-    updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::speakerRemoved(const QString &speakerID)
+void GroupingAnnotationEditor::speakerRemoved(const QString &speakerID)
 {
     d->editor->removeTierGroup(speakerID);
-    updateAnnotationControls();
 }
 
-void TimelineAnnotationEditor::selectedLevelsAttributesChanged()
+void GroupingAnnotationEditor::selectedLevelsAttributesChanged()
 {
-    d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
-    updateAnnotationControls();
+    d->editor->setData(d->currentTierGroups, "sequence", "tok_min");
 }
 
-void TimelineAnnotationEditor::saveAnnotations()
+void GroupingAnnotationEditor::saveAnnotations()
 {
     foreach (QString speakerID, d->currentTierGroups.keys())
         d->currentCorpus->repository()->annotations()->saveTiers(d->currentAnnotationID, speakerID, d->currentTierGroups.value(speakerID));
 }
 
-void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &annotationID)
+void GroupingAnnotationEditor::openForEditing(Corpus *corpus, const QString &annotationID)
 {
     if (!corpus) return;
     if (!corpus->repository()) return;
@@ -322,36 +275,20 @@ void TimelineAnnotationEditor::openForEditing(Corpus *corpus, const QString &ann
     QApplication::processEvents();
 
     d->currentTierGroups = corpus->repository()->annotations()->getTiersAllSpeakers(d->currentAnnotationID);
-    d->editor->setData(d->currentTierGroups, d->widgetTimelineConfig->selectedLevelsAttributes());
+    d->editor->setData(d->currentTierGroups, "sequence", "tok_min");
     d->editor->resizeColumnsToContents();
     d->widgetTimelineConfig->updateSpeakerList(d->currentTierGroups.keys());
-    updateAnnotationControls();
 
     d->waitingSpinner->stop();
 }
 
-void TimelineAnnotationEditor::updateAnnotationControls()
-{
-    // Annotation controls
-    if (d->editor->model()) {
-        d->annotationControls->setModel(d->editor->model(), 3, 5, 8);
-    }
-}
-
-void TimelineAnnotationEditor::toggleOrientation()
-{
-    d->editor->toggleOrientation();
-}
-
-void TimelineAnnotationEditor::toggleTimelineConfig()
+void GroupingAnnotationEditor::toggleTimelineConfig()
 {
     d->dockTimelineConfig->toggleViewAction()->activate(QAction::Trigger);
 }
 
-void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> rows)
+void GroupingAnnotationEditor::timelineSelectedRowsChanged(QList<int> rows)
 {
-    if (d->annotationControls)
-        d->annotationControls->setSelection(rows);
     if (d->editor->model() && !rows.isEmpty()) {
         d->currentRow = rows.first();
         d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(rows.first(), 1), Qt::DisplayRole).toDouble() * 1000;
@@ -370,7 +307,7 @@ void TimelineAnnotationEditor::verticalTimelineSelectedRowsChanged(QList<int> ro
     }
 }
 
-void TimelineAnnotationEditor::verticalTimelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
+void GroupingAnnotationEditor::timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous)
     if (d->editor->model()) {
@@ -391,7 +328,7 @@ void TimelineAnnotationEditor::verticalTimelineCurrentIndexChanged(const QModelI
     }
 }
 
-void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
+void GroupingAnnotationEditor::mediaPositionChanged(qint64 position)
 {
     if (!d->loopInsideInterval) {
         if (!(d->editor->model())) return;
@@ -420,7 +357,7 @@ void TimelineAnnotationEditor::mediaPositionChanged(qint64 position)
     }
 }
 
-void TimelineAnnotationEditor::mediaPlay()
+void GroupingAnnotationEditor::mediaPlay()
 {
     if ((d->tMin_msec_selected > 0) && (d->tPauseAt_msec == 0)) {
         {
@@ -435,7 +372,7 @@ void TimelineAnnotationEditor::mediaPlay()
     d->mediaPlayer->play();
 }
 
-void TimelineAnnotationEditor::mediaPause()
+void GroupingAnnotationEditor::mediaPause()
 {
     d->mediaPlayer->pause();
     d->tPauseAt_msec = 0;
@@ -443,63 +380,10 @@ void TimelineAnnotationEditor::mediaPause()
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 }
 
-void TimelineAnnotationEditor::mediaStop()
+void GroupingAnnotationEditor::mediaStop()
 {
     d->mediaPlayer->stop();
     d->tPauseAt_msec = 0;
     d->actionPause->setShortcut(QKeySequence());
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-}
-
-void TimelineAnnotationEditor::intervalJoin()
-{
-    d->editor->annotationsMerge();
-    d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble() * 1000;
-    d->tMax_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 2), Qt::DisplayRole).toDouble() * 1000;
-    d->mediaPlayer->setPosition(d->tMin_msec_selected);
-    d->tPauseAt_msec = 0;
-}
-
-void TimelineAnnotationEditor::intervalSplit()
-{
-    if ((d->mediaPlayer->state() == QMediaPlayer::PlayingState) ||
-            (d->mediaPlayer->state() == QMediaPlayer::PausedState)) {
-        qint64 position = d->mediaPlayer->position();
-        d->editor->annotationsSplit(RealTime::fromMilliseconds(position));
-    } else {
-        d->editor->annotationsSplit();
-    }
-    d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble() * 1000;
-    d->tMax_msec_selected = d->editor->model()->data(d->editor->model()->index(d->currentRow, 2), Qt::DisplayRole).toDouble() * 1000;
-    d->mediaPlayer->setPosition(d->tMin_msec_selected);
-    d->tPauseAt_msec = 0;
-}
-
-void TimelineAnnotationEditor::moveMinBoundaryLeft()
-{
-    if (d->editor->model() && (d->currentRow != 0)) {
-        double tMin = d->editor->model()->data(d->editor->model()->index(d->currentRow, 1), Qt::DisplayRole).toDouble();
-        tMin = tMin - 0.050;
-        d->editor->model()->setData(d->editor->model()->index(d->currentRow, 1), tMin);
-        d->tMin_msec_selected = tMin * 1000;
-        d->mediaPlayer->setPosition(tMin * 1000);
-        d->tPauseAt_msec = tMin * 1000 + 500;
-        mediaPlay();
-    }
-}
-
-void TimelineAnnotationEditor::moveMaxBoundaryRight()
-{
-    if (d->editor->model() && (d->currentRow != 0)) {
-        double tMax = d->editor->model()->data(d->editor->model()->index(d->currentRow, 2), Qt::DisplayRole).toDouble();
-        tMax = tMax + 0.050;
-        d->editor->model()->setData(d->editor->model()->index(d->currentRow, 2), tMax);
-        d->tMax_msec_selected = tMax * 1000;
-        qint64 startFrom = tMax * 1000 - 500;
-        if (startFrom < 0) startFrom = 0;
-        if (startFrom < d->tMin_msec_selected) startFrom = d->tMin_msec_selected;
-        d->tPauseAt_msec = tMax * 1000;
-        d->mediaPlayer->setPosition(startFrom);
-        mediaPlay();
-    }
 }

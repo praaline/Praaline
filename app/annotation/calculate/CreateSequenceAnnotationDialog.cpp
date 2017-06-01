@@ -98,8 +98,12 @@ void CreateSequenceAnnotationDialog::createSequences()
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             AnnotationTier *tier_base = tiers->tier(baseLevelID);
+            if (!tier_base) continue;
             SequenceTier *tier_sequences = qobject_cast<SequenceTier *>(tiers->tier(derivedLevelID));
-            if ((!tier_base) || (!tier_sequences)) continue;
+            if (!tier_sequences) {
+                tier_sequences = new SequenceTier(derivedLevelID, tier_base, tiers);
+                tiers->addTier(tier_sequences);
+            }
             int indexFrom(-1), indexTo(-1);
             bool seenStart(false), seenEnd(false);
             for (int index = 0; index < tier_base->count(); ++index) {
@@ -119,7 +123,7 @@ void CreateSequenceAnnotationDialog::createSequences()
                 }
                 else if (seenEnd && !matchEnd.hasMatch()) {
                     if ((indexFrom > 0) && (indexTo > 0) && (indexFrom < indexTo))
-                        tier_sequences->addSequence(new Sequence(indexFrom, indexTo, ""));
+                        tier_sequences->addSequence(new Sequence(indexFrom + 1, indexTo + 1, ""));
                     seenStart = false;
                     seenEnd = false;
                     indexFrom = indexTo = -1;

@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QString>
 #include <QStringList>
 #include <QProcess>
@@ -70,3 +71,51 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
     }
     return true;
 }
+
+bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &filenameOut, QList<Interval *> intervalsToRemove)
+{
+    QProcess sox;
+    // DIRECTORY:
+    QString soxPath;
+#ifdef Q_OS_WIN
+    QString appPath = QCoreApplication::applicationDirPath();
+    soxPath = appPath + "/tools/sox/";
+    sox.setWorkingDirectory(soxPath);
+#else
+    soxPath = "/usr/bin/";
+#endif
+    int i = 1;
+    QMap<RealTime, Interval *> mapRemoveSorted;
+    foreach (Interval *intv, intervalsToRemove)
+        mapRemoveSorted.insert(intv->tMin(), intv);
+    QMapIterator<RealTime, Interval *> iter(mapRemoveSorted);
+    iter.toBack();
+    while (iter.hasPrevious()) {
+        iter.previous();
+        QStringList arguments;
+        // input file
+        if (i == 1)
+            arguments << filenameIn;
+        else
+            arguments << QString("temp%1.wav").arg(i);
+        // output file
+        if (i == intervalsToRemove.count())
+            arguments << filenameOut;
+        else
+            arguments << QString("temp%1.wav").arg(i + 1);
+        // trim command
+        arguments << "trim 0 "
+                  << QString("=%1").arg(QString::number(iter.value()->tMin().toDouble(), 'g', 6))
+                  << QString("=%1").arg(QString::number(iter.value()->tMax().toDouble(), 'g', 6));
+        // run sox for this interval
+        qDebug() << soxPath + "sox" << arguments;
+//        sox.start(soxPath + "sox", arguments);
+//        if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+//            return false;
+        // next
+        i++;
+    }
+    return true;
+}
+
+

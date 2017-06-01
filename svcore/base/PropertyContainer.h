@@ -122,7 +122,7 @@ public slots:
      * added to the command history for undo/redo.  Returns NULL
      * if the property is already set to the given value.
      */
-    virtual SVCommand *getSetPropertyCommand(const PropertyName &, int value);
+    virtual UndoableCommand *getSetPropertyCommand(const PropertyName &, int value);
 
     /**
      * Set a property using a fuzzy match.  Compare nameString with
@@ -144,11 +144,11 @@ public slots:
     /**
      * As above, but returning a command.
      */
-    virtual SVCommand *getSetPropertyCommand(QString nameString, QString valueString);
+    virtual UndoableCommand *getSetPropertyCommand(QString nameString, QString valueString);
 
 protected:
 
-    class SetPropertyCommand : public SVCommand
+    class SetPropertyCommand : public UndoableCommand
     {
     public:
 	SetPropertyCommand(PropertyContainer *pc, const PropertyName &pn, int);

@@ -12,10 +12,11 @@
 #include <QMultiMap>
 #include "pncore/base/RealTime.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
+#include "TimelineTableModelBase.h"
 
 struct AnnotationTierModelData;
 
-class AnnotationTierModel : public QAbstractTableModel
+class AnnotationMultiTierTableModel : public TimelineTableModelBase
 {
     Q_OBJECT
 public:
@@ -26,12 +27,12 @@ public:
         QVariant value;
     };
 
-    explicit AnnotationTierModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
-                                 const QString &tiernameMinimal,
-                                 const QList<QPair<QString, QString> > &attributes,
-                                 Qt::Orientation orientation,
-                                 QObject *parent = 0);
-    ~AnnotationTierModel();
+    explicit AnnotationMultiTierTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+                                           const QString &tiernameMinimal,
+                                           const QList<QPair<QString, QString> > &attributes,
+                                           Qt::Orientation orientation,
+                                           QObject *parent = 0);
+    ~AnnotationMultiTierTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -43,19 +44,13 @@ public:
 
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
-
-    int timelineIndexAtTime(const RealTime &time) const;
-    int timelineIndexAtTime(const RealTime &time, double &tMin_msec, double &tMax_msec) const;
-    QModelIndex modelIndexAtTime(const RealTime &time) const;
-    RealTime timeAtTimelineIndex(int timelineIndex) const;
+    QModelIndex modelIndexAtTime(const RealTime &time) const override;
 
     bool splitAnnotations(const QModelIndex &index, RealTime splitMinimalAt = RealTime());
     bool splitAnnotations(int timelineIndex, int dataIndex, RealTime splitMinimalAt = RealTime());
     bool mergeAnnotations(const QModelIndexList &indices);
     bool mergeAnnotations(int dataIndex, const QList<int> &timelineIndices);
 
-    RealTime getStartTime() const;
-    RealTime getEndTime() const;
     QList<int> attributeIndicesExceptContext() const;
     QList<AnnotationTierCell> dataBlock(const RealTime &from, const RealTime &to, const QList<int> &attributeIndices);
 
@@ -65,6 +60,9 @@ public slots:
 
 private:
     AnnotationTierModelData *d;
+
+    QVariant dataCell(QPointer<Praaline::Core::AnnotationTierGroup> spk_tiers, TimelineData &td,
+                      const QString &levelID, const QString &attributeID) const;
 };
 
 #endif // ANNOTATIONTIERMODEL_H

@@ -24,7 +24,7 @@ class AnnotationTierGroup;
 }
 using namespace Praaline::Core;
 
-class AnnotationTierModel;
+class AnnotationMultiTierTableModel;
 
 class VisualiserWidget : public SimpleVisualiserWidget
 {

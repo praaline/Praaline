@@ -24,7 +24,7 @@ class TabularModel;
 class ModelDataTableModel;
 class QTableView;
 class QModelIndex;
-class SVCommand;
+class UndoableCommand;
 class QToolBar;
 class QLineEdit;
 
@@ -45,7 +45,7 @@ signals:
 public slots:
     void userScrolledToFrame(sv_frame_t frame);
     void playbackScrolledToFrame(sv_frame_t frame);
-    void addCommand(SVCommand *);
+    void addCommand(UndoableCommand *);
 
 protected slots:
     void viewClicked(const QModelIndex &);

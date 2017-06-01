@@ -71,7 +71,7 @@ PropertyContainer::setProperty(const PropertyName &name, int)
     cerr << "WARNING: PropertyContainer[" << getPropertyContainerName() << "]::setProperty(" << name << "): no implementation in subclass!" << endl;
 }
 
-SVCommand *
+UndoableCommand *
 PropertyContainer::getSetPropertyCommand(const PropertyName &name, int value)
 {
     int currentValue = getPropertyRangeAndValue(name, 0, 0, 0);
@@ -94,7 +94,7 @@ PropertyContainer::setPropertyFuzzy(QString nameString, QString valueString)
     setProperty(name, value);
 }
  
-SVCommand *
+UndoableCommand *
 PropertyContainer::getSetPropertyCommand(QString nameString, QString valueString)
 {
     PropertyName name;

@@ -184,7 +184,7 @@ public:
     /**
      * Command to add a point, with undo.
      */
-    class AddPointCommand : public SVCommand
+    class AddPointCommand : public UndoableCommand
     {
     public:
         AddPointCommand(SparseModel<PointType> *model,
@@ -211,7 +211,7 @@ public:
     /**
      * Command to remove a point, with undo.
      */
-    class DeletePointCommand : public SVCommand
+    class DeletePointCommand : public UndoableCommand
     {
     public:
         DeletePointCommand(SparseModel<PointType> *model,
@@ -235,7 +235,7 @@ public:
      * Command to add or remove a series of points, with undo.
      * Consecutive add/remove pairs for the same point are collapsed.
      */
-    class EditCommand : public MacroCommand
+    class EditCommand : public UndoableMacroCommand
     {
     public:
         EditCommand(SparseModel<PointType> *model, QString commandName);
@@ -246,7 +246,7 @@ public:
         /**
      * Stack an arbitrary other command in the same sequence.
      */
-        virtual void addCommand(SVCommand *command) { addCommand(command, true); }
+        virtual void addCommand(UndoableCommand *command) { addCommand(command, true); }
 
         /**
      * If any points have been added or deleted, return this
@@ -256,7 +256,7 @@ public:
         virtual EditCommand *finish();
 
     protected:
-        virtual void addCommand(SVCommand *command, bool executeFirst);
+        virtual void addCommand(UndoableCommand *command, bool executeFirst);
 
         SparseModel<PointType> *m_model;
     };
@@ -265,7 +265,7 @@ public:
     /**
      * Command to relabel a point.
      */
-    class RelabelCommand : public SVCommand
+    class RelabelCommand : public UndoableCommand
     {
     public:
         RelabelCommand(SparseModel<PointType> *model,
@@ -338,7 +338,7 @@ public:
         return QVariant();
     }
 
-    virtual SVCommand *getSetDataCommand(int row, int column,
+    virtual UndoableCommand *getSetDataCommand(int row, int column,
                                          const QVariant &value, int role)
     {
         if (role != Qt::EditRole) return 0;
@@ -358,7 +358,7 @@ public:
         return command->finish();
     }
 
-    virtual SVCommand *getInsertRowCommand(int row)
+    virtual UndoableCommand *getInsertRowCommand(int row)
     {
         EditCommand *command = new EditCommand(this, tr("Insert Data Point"));
         Point point(0);
@@ -369,7 +369,7 @@ public:
         return command->finish();
     }
 
-    virtual SVCommand *getRemoveRowCommand(int row)
+    virtual UndoableCommand *getRemoveRowCommand(int row)
     {
         PointListIterator i = getPointListIteratorForRow(row);
         if (i == m_points.end()) return 0;
@@ -868,9 +868,8 @@ SparseModel<PointType>::toXml(QTextStream &out,
 }
 
 template <typename PointType>
-SparseModel<PointType>::EditCommand::EditCommand(SparseModel *model,
-                                                 QString commandName) :
-    MacroCommand(commandName),
+SparseModel<PointType>::EditCommand::EditCommand(SparseModel *model, QString commandName) :
+    UndoableMacroCommand(commandName),
     m_model(model)
 {
 }
@@ -903,7 +902,7 @@ SparseModel<PointType>::EditCommand::finish()
 
 template <typename PointType>
 void
-SparseModel<PointType>::EditCommand::addCommand(SVCommand *command,
+SparseModel<PointType>::EditCommand::addCommand(UndoableCommand *command,
                                                 bool executeFirst)
 {
     if (executeFirst) command->execute();
@@ -924,7 +923,7 @@ SparseModel<PointType>::EditCommand::addCommand(SVCommand *command,
         }
     }
 
-    MacroCommand::addCommand(command);
+    UndoableMacroCommand::addCommand(command);
 }
 
 

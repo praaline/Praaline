@@ -125,7 +125,7 @@ CommandHistory::registerToolbar(QToolBar *toolbar)
 }
 
 void
-CommandHistory::addCommand(SVCommand *command)
+CommandHistory::addCommand(UndoableCommand *command)
 {
     if (!command) return;
 
@@ -138,7 +138,7 @@ CommandHistory::addCommand(SVCommand *command)
 }
 
 void
-CommandHistory::addCommand(SVCommand *command, bool execute, bool bundle)
+CommandHistory::addCommand(UndoableCommand *command, bool execute, bool bundle)
 {
     if (!command) return;
 
@@ -187,7 +187,7 @@ CommandHistory::addCommand(SVCommand *command, bool execute, bool bundle)
 }
 
 void
-CommandHistory::addToBundle(SVCommand *command, bool execute)
+CommandHistory::addToBundle(UndoableCommand *command, bool execute)
 {
     if (m_currentBundle) {
 	if (!command || (command->getName() != m_currentBundleName)) {
@@ -210,7 +210,7 @@ CommandHistory::addToBundle(SVCommand *command, bool execute)
 
 	// need to addCommand before setting m_currentBundle, as addCommand
 	// with bundle false will reset m_currentBundle to 0
-	MacroCommand *mc = new BundleCommand(command->getName());
+	UndoableMacroCommand *mc = new BundleCommand(command->getName());
         m_bundling = true;
 	addCommand(mc, false);
         m_bundling = false;
@@ -263,7 +263,7 @@ CommandHistory::bundleTimerTimeout()
 }
 
 void
-CommandHistory::addToCompound(SVCommand *command, bool execute)
+CommandHistory::addToCompound(UndoableCommand *command, bool execute)
 {
     if (!m_currentCompound) {
 	cerr << "CommandHistory::addToCompound: ERROR: no compound operation in progress!" << endl;
@@ -293,7 +293,7 @@ CommandHistory::startCompoundOperation(QString name, bool execute)
    
     closeBundle();
 
-    m_currentCompound = new MacroCommand(name);
+    m_currentCompound = new UndoableMacroCommand(name);
     m_executeCompound = execute;
 }
 
@@ -309,7 +309,7 @@ CommandHistory::endCompoundOperation()
     cerr << "CommandHistory::endCompoundOperation: " << m_currentCompound->getName() << endl;
 #endif
 
-    MacroCommand *toAdd = m_currentCompound;
+    UndoableMacroCommand *toAdd = m_currentCompound;
     m_currentCompound = 0;
 
     if (toAdd->haveCommands()) {
@@ -322,13 +322,13 @@ CommandHistory::endCompoundOperation()
 }    
 
 void
-CommandHistory::addExecutedCommand(SVCommand *command)
+CommandHistory::addExecutedCommand(UndoableCommand *command)
 {
     addCommand(command, false);
 }
 
 void
-CommandHistory::addCommandAndExecute(SVCommand *command)
+CommandHistory::addCommandAndExecute(UndoableCommand *command)
 {
     addCommand(command, true);
 }
@@ -344,7 +344,7 @@ CommandHistory::undo()
 
     closeBundle();
 
-    SVCommand *command = m_undoStack.top();
+    UndoableCommand *command = m_undoStack.top();
     command->unexecute();
     emit commandExecuted();
     emit commandUnexecuted(command);
@@ -370,7 +370,7 @@ CommandHistory::redo()
 
     closeBundle();
 
-    SVCommand *command = m_redoStack.top();
+    UndoableCommand *command = m_redoStack.top();
     command->execute();
     emit commandExecuted();
     emit commandExecuted(command);
@@ -465,7 +465,7 @@ void
 CommandHistory::clearStack(CommandStack &stack)
 {
     while (!stack.empty()) {
-    SVCommand *command = stack.top();
+    UndoableCommand *command = stack.top();
 	// Not safe to call getName() on a command about to be deleted
 #ifdef DEBUG_COMMAND_HISTORY
 	cerr << "CommandHistory::clearStack: About to delete command " << command << endl;
@@ -536,7 +536,7 @@ CommandHistory::updateActions()
 	int j = 0;
 
 	while (j < m_menuLimit && !stack.empty()) {
-        SVCommand *command = stack.top();
+        UndoableCommand *command = stack.top();
 	    tempStack.push(command);
 	    stack.pop();
 

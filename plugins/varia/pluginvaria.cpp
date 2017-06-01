@@ -317,10 +317,49 @@ void expeHesitation(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
+#include "XMLTranscription.h"
+void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QString path = "/home/george/Dropbox/Annotation allemand/";
+    if (communications.isEmpty()) return;
+    QPointer<CorpusRepository> repository = communications.first()->repository();
+    QPointer<Corpus> corpus = communications.first()->corpus();
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        XMLTranscription xml;
+        xml.load(path + com->ID() + ".xml");
+        QHash<QString, QList<Interval *> > allIntervals;
+        foreach (QString speakerID, xml.speakerIDs()) {
+            if (!corpus->hasSpeaker(speakerID)) {
+                CorpusSpeaker *spk = new CorpusSpeaker(speakerID);
+                spk->setName(speakerID);
+                corpus->addSpeaker(spk);
+                corpus->save();
+            }
+            allIntervals.insert(speakerID, QList<Interval *>());
+        }
+        int i = 0;
+        foreach (XMLTranscription::ParagraphInfo para, xml.paragraphs) {
+            foreach (XMLTranscription::TurnInfo turn, para.turns) {
+                allIntervals[turn.speakerID] << new Interval(RealTime::fromSeconds(i), RealTime::fromSeconds(i + 1),
+                                                             turn.transcription);
+                i++;
+            }
+        }
+        foreach (QString speakerID, xml.speakerIDs()) {
+            IntervalTier *tier_transcription = new IntervalTier("transcription", allIntervals[speakerID]);
+            repository->annotations()->saveTier(com->ID(), speakerID, tier_transcription);
+
+        }
+    }
+
+}
+
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
-
+    //importJohannaFiles(communications);
+    return;
 
     // printMessage(valibelTranscription(communications));
     // prepareClassifierFiles(communications);

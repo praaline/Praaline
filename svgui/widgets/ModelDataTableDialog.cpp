@@ -287,7 +287,7 @@ ModelDataTableDialog::editRow()
 }
 
 void
-ModelDataTableDialog::addCommand(SVCommand *command)
+ModelDataTableDialog::addCommand(UndoableCommand *command)
 {
     CommandHistory::getInstance()->addCommand(command, false, true);
 }

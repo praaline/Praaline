@@ -110,7 +110,7 @@ public:
     /**
      * Command to change the image for a point.
      */
-    class ChangeImageCommand : public SVCommand
+    class ChangeImageCommand : public UndoableCommand
     {
     public:
         ChangeImageCommand(ImageModel *model,
@@ -175,7 +175,7 @@ public:
         }
     }
 
-    virtual SVCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
+    virtual UndoableCommand *getSetDataCommand(int row, int column, const QVariant &value, int role)
     {
         if (column < 2) {
             return SparseModel<ImagePoint>::getSetDataCommand

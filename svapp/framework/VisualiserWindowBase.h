@@ -372,7 +372,7 @@ protected:
         VisualiserWindowBase *m_mw;
     };
 
-    class AddPaneCommand : public SVCommand
+    class AddPaneCommand : public UndoableCommand
     {
     public:
         AddPaneCommand(VisualiserWindowBase *mw);
@@ -391,7 +391,7 @@ protected:
         bool m_added;
     };
 
-    class RemovePaneCommand : public SVCommand
+    class RemovePaneCommand : public UndoableCommand
     {
     public:
         RemovePaneCommand(VisualiserWindowBase *mw, Pane *pane);
