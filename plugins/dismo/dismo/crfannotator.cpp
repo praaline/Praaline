@@ -77,7 +77,7 @@ void CRFAnnotator::tagFromCRF(const QString &filenameModel, bool isTokenUnitLeve
 #ifdef Q_OS_WIN
     QString appPath = QCoreApplication::applicationDirPath();
     decoderCommand = appPath + "/tools/crf/crf_test";
-#elif
+#else
 #ifdef Q_OS_MAC
     decoderCommand = "/usr/local/bin/crf_test";
 #else
