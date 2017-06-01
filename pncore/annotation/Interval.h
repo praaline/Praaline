@@ -72,5 +72,6 @@ protected:
 } // namespace Praaline
 
 Q_DECLARE_METATYPE(Praaline::Core::Interval)
+Q_DECLARE_METATYPE(Praaline::Core::Interval *)
 
 #endif // INTERVAL_H

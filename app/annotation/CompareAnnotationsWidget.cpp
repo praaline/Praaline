@@ -27,7 +27,9 @@ using namespace Praaline::Core;
 #include "CorpusRepositoriesManager.h"
 
 struct CompareAnnotationsWidgetData {
-    CompareAnnotationsWidgetData() : modelResults(0) {}
+    CompareAnnotationsWidgetData()
+        : modelResults(0), outputPath("/home/george/comparator/")
+    {}
 
     QToolBar *toolbarMain;
     QAction *actionCompare;
@@ -40,6 +42,8 @@ struct CompareAnnotationsWidgetData {
 
     // Corpus Manager
     CorpusRepositoriesManager *corpusRepositoriesManager;
+    // Path for output files
+    QString outputPath;
 };
 
 CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
@@ -368,13 +372,14 @@ void CompareAnnotationsWidget::compareCorpora()
                        .intersect(QSet<QString>::fromList(repository_right->annotationStructure()->levelIDs())).toList();
     qSort(levelIDs_common);
 
-    // Labels header
-//    QString header = "CommunicationID\tAnnotationID\tSpeakerID\t";
-//    foreach (QString levelID, levelIDs_common) header = header.append(levelID).append("\t");
-//    if (!header.isEmpty()) header.chop(1);
-//    ui->editCompareCorporaMessages->appendPlainText(header);
-
+    // Selected levels
     QStringList levelIDs; levelIDs << "phone" << "syll" << "tok_min" << "tok_mwu" << "sequence" << "rection" << "bdu" << "boundary";
+
+    // Labels header
+    QString header = "CommunicationID\tAnnotationID\tSpeakerID\t";
+    foreach (QString levelID, levelIDs) header = header.append(levelID).append("\t");
+    if (!header.isEmpty()) header.chop(1);
+    ui->editCompareCorporaMessages->appendPlainText(header);
 
     // Loop through communicationIDs existing in both corpora
     QList<QString> communicationIDs_common = QSet<QString>::fromList(corpus_left->communicationIDs()).intersect(
@@ -498,10 +503,14 @@ void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &commu
     // Format: OP tMinA tMaxA tMinB tMaxB A B
     QHash<QString, int> levelColumn;
     QMultiMap<RealTime, CombinedTimelineData> timeline;
+    QHash<QString, int> countDifferences;
+    bool insideDifferences(false);
     foreach (QString levelID, levelIDs) {
+        // Get SES sequence table model for this level
         QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
         if (!model) continue;
         levelColumn.insert(levelID, col);
+        countDifferences.insert(levelID, 0);
         // Header
         for (int j = 0; j < model->columnCount(); ++j) {
             xlsx.write(1, (col - 1) * model->columnCount() + j + 1, levelID, format_header);
@@ -516,6 +525,21 @@ void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &commu
             td.levelID = levelID;
             td.rowIndex = i;
             timeline.insert(t, td);
+            // Count
+            bool currentIsDifference(false);
+            if (model->data(model->index(td.rowIndex, 0), Qt::DisplayRole).toString() == "+") currentIsDifference = true;
+            if (model->data(model->index(td.rowIndex, 0), Qt::DisplayRole).toString() == "-") currentIsDifference = true;
+            if ((!insideDifferences) && (currentIsDifference)) {
+               insideDifferences = true;
+            }
+            else if ((insideDifferences) && (!currentIsDifference)) {
+                insideDifferences = false;
+                countDifferences[levelID] = countDifferences[levelID] + 1;
+            }
+        }
+        if (insideDifferences) {
+            insideDifferences = false;
+            countDifferences[levelID] = countDifferences[levelID] + 1;
         }
         col++;
     }
@@ -542,13 +566,15 @@ void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &commu
         row = row  + longest;
     }
 
+    // Print counts
     QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+    foreach (QString levelID, levelIDs) message = message.append(QString::number(countDifferences[levelID])).append("\t");
+    if (!message.isEmpty()) message.chop(1);
     ui->editCompareCorporaMessages->appendPlainText(message);
     QApplication::processEvents();
 
-    QString path = "/home/george/comparator/";
     QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID).arg(speakerID);
-    xlsx.saveAs(path + filename);
+    xlsx.saveAs(d->outputPath + filename);
 }
 
 

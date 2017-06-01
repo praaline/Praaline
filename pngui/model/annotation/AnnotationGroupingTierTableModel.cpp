@@ -31,6 +31,13 @@ AnnotationGroupingTierTableModel::AnnotationGroupingTierTableModel(QMap<QString,
     d->tiernameItems = tiernameItems;
     d->attributesGrouping = attributesGrouping;
     d->attributesItems = attributesItems;
+    foreach (QString speakerID, tiers.keys()) {
+        IntervalTier *tier_grouping = tiers.value(speakerID)->getIntervalTierByName(tiernameGrouping);
+        IntervalTier *tier_items = tiers.value(speakerID)->getIntervalTierByName(tiernameItems);
+        if ((!tier_grouping) && tier_items) {
+            tiers[speakerID]->addTier(new IntervalTier(tiernameGrouping, tier_items->tMin(), tier_items->tMax()));
+        }
+    }
     calculateTimeline(d->tiers, d->tiernameGrouping);
 }
 
@@ -120,9 +127,7 @@ QVariant AnnotationGroupingTierTableModel::data(const QModelIndex &index, int ro
             IntervalTier *tier_items = spk_tiers->getIntervalTierByName(d->tiernameItems);
             if (!tier_items) return QVariant();
             QList<Interval *> intervals = tier_items->getIntervalsContainedIn(intv_group);
-            QString text;
-            foreach (Interval *intv_item, intervals) text.append(intv_item->text()).append(" ");
-            return text;
+            return QVariant::fromValue(intervals);
         }
         else if (dataCellIndex == 4) {
             return intv_group->text();

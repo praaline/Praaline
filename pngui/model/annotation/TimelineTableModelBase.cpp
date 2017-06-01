@@ -37,7 +37,7 @@ void TimelineTableModelBase::calculateTimeline(QMap<QString, QPointer<Annotation
             td.tCenter = tier->interval(index)->tCenter();
             td.tMax = tier->interval(index)->tMax();
             timeline.insert(td.tMin, td);
-        }
+        }       
         m_speakerBackgroundColors.insert(speakerID, QColor(QColor::colorNames().at(i)));
         ++i;
     }

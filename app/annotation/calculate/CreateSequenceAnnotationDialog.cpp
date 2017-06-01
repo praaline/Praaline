@@ -123,7 +123,7 @@ void CreateSequenceAnnotationDialog::createSequences()
                 }
                 else if (seenEnd && !matchEnd.hasMatch()) {
                     if ((indexFrom > 0) && (indexTo > 0) && (indexFrom < indexTo))
-                        tier_sequences->addSequence(new Sequence(indexFrom, indexTo, ""));
+                        tier_sequences->addSequence(new Sequence(indexFrom + 1, indexTo + 1, ""));
                     seenStart = false;
                     seenEnd = false;
                     indexFrom = indexTo = -1;

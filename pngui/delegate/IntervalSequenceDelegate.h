@@ -6,8 +6,12 @@
 
 class IntervalSequenceDelegate : public QStyledItemDelegate
 {
+    Q_OBJECT
+
 public:
-    IntervalSequenceDelegate(QWidget *parent = 0) : QStyledItemDelegate(parent) {}
+    explicit IntervalSequenceDelegate(QWidget *parent = 0) :
+        QStyledItemDelegate(parent)
+    {}
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;

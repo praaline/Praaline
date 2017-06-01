@@ -21,7 +21,9 @@
 #include "grid/qvaluefilter.h"
 #include "GridViewWidget.h"
 
-#include "model/annotation/AnnotationGroupingTierTableModel.h"
+#include "pngui/model/annotation/AnnotationGroupingTierTableModel.h"
+#include "pngui/delegate/IntervalSequenceDelegate.h"
+
 #include "GroupingAnnotationEditorWidget.h"
 
 using namespace Praaline::Core;
@@ -29,7 +31,7 @@ using namespace Praaline::Core;
 
 struct GroupingAnnotationEditorWidgetData {
     GroupingAnnotationEditorWidgetData() :
-        model(0)
+        model(0), intervalSequenceDelegate(0)
     {}
 
     AnnotationGroupingTierTableModel *model;
@@ -37,11 +39,15 @@ struct GroupingAnnotationEditorWidgetData {
     QString tiernameItems;
     QStringList attributesGrouping;
     QStringList attributesItems;
+
+    IntervalSequenceDelegate *intervalSequenceDelegate;
 };
 
 GroupingAnnotationEditorWidget::GroupingAnnotationEditorWidget(QWidget *parent) :
     TimelineEditorWidgetBase(parent), d(new GroupingAnnotationEditorWidgetData)
 {
+    d->intervalSequenceDelegate = new IntervalSequenceDelegate(this);
+    m_view->tableView()->setItemDelegate(d->intervalSequenceDelegate);
 }
 
 GroupingAnnotationEditorWidget::~GroupingAnnotationEditorWidget()

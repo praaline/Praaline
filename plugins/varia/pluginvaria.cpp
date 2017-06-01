@@ -358,7 +358,7 @@ void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communicati
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
-    importJohannaFiles(communications);
+    //importJohannaFiles(communications);
     return;
 
     // printMessage(valibelTranscription(communications));
