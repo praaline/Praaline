@@ -1,6 +1,8 @@
-#include <QList>
-#include <QSet>
 #include <QString>
+#include <QList>
+#include <QPointer>
+#include <QSet>
+#include <QMap>
 #include <QAction>
 #include <QMessageBox>
 
@@ -472,11 +474,9 @@ void CompareAnnotationsWidget::exportDiffTableByLevelExcel(const QString &commun
         message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID).arg(model->rowCount()).arg(countAdditions).arg(countDeletions));
         ui->editCompareCorporaMessages->appendPlainText(message);
         QApplication::processEvents();
-
-//    }
-//    QString path = "/home/george/comparator/";
-//    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
-//    xlsx.saveAs(path + filename);
+    }
+    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
+    xlsx.saveAs(d->outputPath + filename);
 }
 
 struct CombinedTimelineData {
