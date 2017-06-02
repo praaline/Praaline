@@ -50,6 +50,11 @@ protected:
     void clearModel() override;
     void initModel() override;
 
+protected slots:
+    void groupingSplit(int itemIndex);
+    void groupingMergeWithPrevious();
+    void groupingMergeWithNext();
+
 private:
     GroupingAnnotationEditorWidgetData *d;
 };

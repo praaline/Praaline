@@ -2,6 +2,9 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QTextDocument>
+#include <QColor>
+#include <QStyle>
 
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
@@ -17,7 +20,7 @@ IntervalSequenceEditor::IntervalSequenceEditor(QWidget *parent) :
     QWidget(parent), d(new IntervalSequenceEditorData)
 {
     setMouseTracking(true);
-    setAutoFillBackground(true);
+    setAutoFillBackground(false);
 }
 
 IntervalSequenceEditor::~IntervalSequenceEditor()
@@ -70,9 +73,33 @@ void IntervalSequenceEditor::paint(QList<Interval *> intervals, QPainter *painte
         painter->setBrush(palette.foreground());
     }
 
-    foreach (Interval *intv, intervals) {
+    QTextDocument doc;
 
+    // Since the QTextDocument will do all the rendering, the color,
+    // and the font have to be put back inside the doc
+//    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
+//                              ? QPalette::Normal : QPalette::Disabled;
+//    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+//        cg = QPalette::Inactive;
+    QColor textColor = palette.color(QPalette::Normal, QPalette::Text);
+    doc.setDefaultStyleSheet(QString("body { color: %1}")
+                             .arg(textColor.name()));
+
+    QString html;
+    foreach (Interval *intv, intervals) {
+        html.append(intv->text()).append(" ");
     }
+    doc.setHtml(html);
+    doc.setDocumentMargin(1); // the default is 4 which is too much
+
+    //painter->save();
+    painter->translate(rect.topLeft());
+    doc.drawContents(painter);
+    // painter->restore();
+
+
+
+
 
     painter->restore();
 }

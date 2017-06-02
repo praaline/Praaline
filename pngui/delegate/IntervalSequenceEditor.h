@@ -29,6 +29,9 @@ public:
     static QSize sizeHint(QList<Praaline::Core::Interval *> intervals);
 
 signals:
+    void editingSplitSequence(int itemIndex);
+    void editingMergeSequenceWithPrevious();
+    void editingMergeSequenceWithNext();
     void editingFinished();
 
 protected:

@@ -20,8 +20,16 @@ public:
     void setEditorData(QWidget *editor, const QModelIndex &index) const override;
     void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const override;
 
+signals:
+    void splitSequence(int itemIndex);
+    void mergeSequenceWithPrevious();
+    void mergeSequenceWithNext();
+
 private slots:
     void commitAndCloseEditor();
+    void editingSplitSequence(int itemIndex);
+    void editingMergeSequenceWithPrevious();
+    void editingMergeSequenceWithNext();
 };
 
 #endif // INTERVALSEQUENCEDELEGATE_H

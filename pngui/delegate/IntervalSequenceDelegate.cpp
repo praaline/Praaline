@@ -39,6 +39,9 @@ QWidget *IntervalSequenceDelegate::createEditor(QWidget *parent, const QStyleOpt
     if (index.data().canConvert<QList<Interval *> >()) {
         IntervalSequenceEditor *editor = new IntervalSequenceEditor(parent);
         connect(editor, &IntervalSequenceEditor::editingFinished, this, &IntervalSequenceDelegate::commitAndCloseEditor);
+        connect(editor, &IntervalSequenceEditor::editingSplitSequence, this, &IntervalSequenceDelegate::splitSequence);
+        connect(editor, &IntervalSequenceEditor::editingMergeSequenceWithPrevious, this, &IntervalSequenceDelegate::mergeSequenceWithPrevious);
+        connect(editor, &IntervalSequenceEditor::editingMergeSequenceWithNext, this, &IntervalSequenceDelegate::mergeSequenceWithNext);
         return editor;
     } else {
         return QStyledItemDelegate::createEditor(parent, option, index);
@@ -73,5 +76,18 @@ void IntervalSequenceDelegate::commitAndCloseEditor()
     emit closeEditor(intervalsEditor);
 }
 
+void IntervalSequenceDelegate::editingSplitSequence(int itemIndex)
+{
+    emit splitSequence(itemIndex);
+}
 
+void IntervalSequenceDelegate::editingMergeSequenceWithPrevious()
+{
+    emit mergeSequenceWithPrevious();
+}
+
+void IntervalSequenceDelegate::editingMergeSequenceWithNext()
+{
+    emit mergeSequenceWithNext();
+}
 

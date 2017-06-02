@@ -173,3 +173,22 @@ void GroupingAnnotationEditorWidget::moveToTime(const RealTime &time, double &tM
 }
 
 
+void GroupingAnnotationEditorWidget::groupingSplit(int itemIndex)
+{
+    if (!d->model) return;
+    d->model->splitGroup(0, itemIndex);
+}
+
+void GroupingAnnotationEditorWidget::groupingMergeWithPrevious()
+{
+    if (!d->model) return;
+    //d->model->mergeGroups(int groupIndexStart, int groupIndexEnd);
+}
+
+void GroupingAnnotationEditorWidget::groupingMergeWithNext()
+{
+    if (!d->model) return;
+    //d->model->mergeGroups(int groupIndexStart, int groupIndexEnd);
+}
+
+

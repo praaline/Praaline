@@ -355,10 +355,23 @@ void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communicati
 }
 
 
+void cuttingStimuli(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QString path = "/home/george/Dropbox/Annotation allemand/";
+    if (communications.isEmpty()) return;
+    QPointer<CorpusRepository> repository = communications.first()->repository();
+    QPointer<Corpus> corpus = communications.first()->corpus();
+    foreach (QPointer<CorpusCommunication> com, communications) {
+
+    }
+
+}
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
-    //importJohannaFiles(communications);
+    // cuttingStimuli(communications);
+    // importJohannaFiles(communications);
     return;
 
     // printMessage(valibelTranscription(communications));
