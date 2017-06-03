@@ -65,6 +65,9 @@ void ExportAnnotationsWizardPraatPage::setRepository(CorpusRepository *repositor
     // Move items in the textgrid structure up or down
     connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveUp()));
     connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveDown()));
+    // Propose different filename templates based on whether different speakers will be included in the same TextGrid or not.
+    connect(ui->optionAllSpeakers, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
+    connect(ui->optionOneSpeakerPerFile, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
 }
 
 void ExportAnnotationsWizardPraatPage::annotationLevelAttributeSelectionChanged(
@@ -145,4 +148,14 @@ void ExportAnnotationsWizardPraatPage::textgridStructureMoveDown()
     ui->tableviewTextgridStructure->selectRow(row + 1);
 }
 
-
+void ExportAnnotationsWizardPraatPage::changedSpeakerPolicy()
+{
+    if (ui->optionAllSpeakers->isChecked()) {
+        if (ui->editFilenameTemplate->text() == "$AnnotationID_$SpeakerID.TextGrid")
+            ui->editFilenameTemplate->setText("$AnnotationID.TextGrid");
+    }
+    else if (ui->optionOneSpeakerPerFile->isChecked()) {
+        if (ui->editFilenameTemplate->text() == "$AnnotationID.TextGrid")
+            ui->editFilenameTemplate->setText("$AnnotationID_$SpeakerID.TextGrid");
+    }
+}

@@ -30,6 +30,7 @@ private slots:
     void annotationLevelAttributeSelectionChanged(const QString &levelID, const QString &attributeID, bool selected);
     void textgridStructureMoveUp();
     void textgridStructureMoveDown();
+    void changedSpeakerPolicy();
 
 private:
     Ui::ExportAnnotationsWizardPraatPage *ui;
