@@ -21,6 +21,7 @@ public:
     explicit SyllableProminenceAnnotator(QObject *parent = 0);
     ~SyllableProminenceAnnotator();
 
+    // Statistical models
     QString modelsPath() const;
     void setModelsPath(const QString &modelsPath);
     QString modelFilenameWithoutPOS() const;
@@ -28,6 +29,13 @@ public:
     QString modelFilenameWithPOS() const;
     void setModelFilenameWithPOS(const QString &filename);
 
+    // Parameters
+    QString attributeDelivery() const;
+    void setAttributeDelivery(const QString &attributeID);
+    QString attributeProminenceTrain() const;
+    void setAttributeProminenceTrain(const QString &attributeID);
+
+    // Methods to control the creation of feature tables and training files
     bool openFeaturesTableFile(const QString &filename);
     bool openCRFDataFile(const QString &filename);
     void closeFeaturesTableFile();

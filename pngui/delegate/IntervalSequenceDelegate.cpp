@@ -18,7 +18,7 @@ void IntervalSequenceDelegate::paint(QPainter *painter, const QStyleOptionViewIt
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
 
-        IntervalSequenceEditor::paint(intervals, painter, option.rect, option.palette, IntervalSequenceEditor::ReadOnly);
+        // IntervalSequenceEditor::paint(intervals, painter, option.rect, option.palette, IntervalSequenceEditor::ReadOnly);
     } else {
         QStyledItemDelegate::paint(painter, option, index);
     }

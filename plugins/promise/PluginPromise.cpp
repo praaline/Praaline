@@ -11,6 +11,7 @@
 #include "pncore/corpus/CorpusBookmark.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
@@ -27,26 +28,44 @@ struct Praaline::Plugins::Promise::PluginPromisePrivateData {
     PluginPromisePrivateData() :
         command(0), createLevels(true), overwrite(true),
         levelPhone("phone"), levelSyllable("syll"), levelToken("tok_min"), attributePOS("pos_min"),
-        usePOS(true), createFeatureTable(false), createCRFData(false),
-        modelProminence_POS("cross_pos.model"), modelProminence_NoPOS("cross_nopos.model"),  modelBoundaries("boundaries.model"),
-        speechrateWindowLeft(250), speechrateWindowRight(250)
+        attributeProminence_POS("promise_pos"), attributeProminence_NoPOS("promise_nopos"),
+        attributeBoundaries("promise_boundary"), attributeContour("promise_contour"),
+        modelProminence_POS("cross_pos.model"), modelProminence_NoPOS("cross_nopos.model"),
+        modelBoundary("promise_boundary.model"), modelBoundaryContours("promise_contour.model"),
+        createFeatureTable(false), createCRFData(false),
+        speechrateWindowLeft(250), speechrateWindowRight(250),
+        createEvaluationCRFData(false), evaluationNumberOfFolds(5)
     {}
 
     int command;
     bool createLevels;
     bool overwrite;
+    // Input attributes
     QString levelPhone;
     QString levelSyllable;
     QString levelToken;
     QString attributePOS;
+    // Output attributes
+    QString attributeProminence_POS;
+    QString attributeProminence_NoPOS;
+    QString attributeBoundaries;
+    QString attributeContour;
+    // Statistical models
+    QString modelPath;
+    QString modelProminence_POS;
+    QString modelProminence_NoPOS;
+    QString modelBoundary;
+    QString modelBoundaryContours;
+    // Options
     bool usePOS;
     bool createFeatureTable;
     bool createCRFData;
-    QString modelProminence_POS;
-    QString modelProminence_NoPOS;
-    QString modelBoundaries;
+    // Speech rate
     int speechrateWindowLeft;
     int speechrateWindowRight;
+    // Evaluation
+    bool createEvaluationCRFData;
+    int evaluationNumberOfFolds;
 };
 
 Praaline::Plugins::Promise::PluginPromise::PluginPromise(QObject* parent) : QObject(parent)
@@ -107,7 +126,7 @@ QString Praaline::Plugins::Promise::PluginPromise::pluginDescription() const {
 }
 
 QString Praaline::Plugins::Promise::PluginPromise::pluginCopyright() const {
-    return QString(tr("Copyright") + " 2012-2014, George Christodoulides");
+    return QString(tr("Copyright") + " 2014-2017, George Christodoulides");
 }
 
 QString Praaline::Plugins::Promise::PluginPromise::pluginLicense() const {
@@ -123,15 +142,26 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Promise::PluginProm
                                   "Speech rate estimator");
     parameters << PluginParameter("createLevels", "Create annotation attributes when they do not exist?", QVariant::Bool, d->createLevels);
     parameters << PluginParameter("overwrite", "Overwrite existing annotations/values?", QVariant::Bool, d->overwrite);
-    parameters << PluginParameter("levelPhone", "Annotation level: Phones", QVariant::String, d->levelPhone);
-    parameters << PluginParameter("levelSyllable", "Annotation level: Syllables", QVariant::String, d->levelSyllable);
-    parameters << PluginParameter("levelToken", "Annotation level: Tokens (minimal)", QVariant::String, d->levelToken);
-    parameters << PluginParameter("attributePOS", "Annotation attribute: Part-of-Speech of tokens", QVariant::String, d->attributePOS);
+    // Input attributes
+    parameters << PluginParameter("levelPhone",     "Input annotation level: Phones", QVariant::String, d->levelPhone);
+    parameters << PluginParameter("levelSyllable",  "Input annotation level: Syllables", QVariant::String, d->levelSyllable);
+    parameters << PluginParameter("levelToken",     "Input annotation level: Tokens (minimal)", QVariant::String, d->levelToken);
+    parameters << PluginParameter("attributePOS",   "Input annotation attribute: Part-of-Speech of tokens", QVariant::String, d->attributePOS);
+    // Output attributes
+    parameters << PluginParameter("attributeProminence_POS",    "Output annotation attribute: Syllabic prominence (using POS)", QVariant::String, d->attributeProminence_POS);
+    parameters << PluginParameter("attributeProminence_NoPOS",  "Output annotation attribute: Syllabic prominence (without POS)", QVariant::String, d->attributeProminence_NoPOS);
+    parameters << PluginParameter("attributeBoundaries",        "Output annotation attribute: Prosodic boundaries", QVariant::String, d->attributeBoundaries);
+    parameters << PluginParameter("attributeContour",           "Output annotation attribute: Prosodic boundary contours", QVariant::String, d->attributeContour);
+    // Statistical models
+    parameters << PluginParameter("modelProminence_POS",    "Model for prominence using POS", QVariant::String, d->modelProminence_POS);
+    parameters << PluginParameter("modelProminence_NoPOS",  "Model for prominence without POS", QVariant::String, d->modelProminence_NoPOS);
+    parameters << PluginParameter("modelBoundaries",        "Model for boundaries", QVariant::String, d->modelBoundary);
+    parameters << PluginParameter("modelBoundaryContours",  "Model for boundary contours", QVariant::String, d->modelBoundaryContours);
+    // Options
     parameters << PluginParameter("createFeatureTable", "Create feature table? (for statistical analysis)", QVariant::Bool, d->createFeatureTable);
     parameters << PluginParameter("createCRFData", "Create CRF data file? (for training/analysis)", QVariant::Bool, d->createCRFData);
-    parameters << PluginParameter("modelProminence_NoPOS", "Model for prominence without POS", QVariant::String, d->modelProminence_NoPOS);
-    parameters << PluginParameter("modelProminence_POS", "Model for prominence with POS", QVariant::String, d->modelProminence_POS);
-    parameters << PluginParameter("modelBoundaries", "Model for boundaries", QVariant::String, d->modelBoundaries);
+
+    // Speech rate estimator
     parameters << PluginParameter("speechrateWindowLeft", "Speech rate: window left (ms)", QVariant::Int, d->speechrateWindowLeft);
     parameters << PluginParameter("speechrateWindowRight", "Speech rate: window right (ms)", QVariant::Int, d->speechrateWindowRight);
     return parameters;
@@ -142,14 +172,25 @@ void Praaline::Plugins::Promise::PluginPromise::setParameters(const QHash<QStrin
     if (parameters.contains("command"))                 d->command = parameters.value("command").toInt();
     if (parameters.contains("createLevels"))            d->createLevels = parameters.value("createLevels").toBool();
     if (parameters.contains("overwrite"))               d->overwrite = parameters.value("overwrite").toBool();
+    // Input attributes
+    if (parameters.contains("levelPhone"))              d->levelPhone = parameters.value("levelPhone").toString();
     if (parameters.contains("levelSyllable"))           d->levelSyllable = parameters.value("levelSyllable").toString();
     if (parameters.contains("levelToken"))              d->levelToken = parameters.value("levelToken").toString();
     if (parameters.contains("attributePOS"))            d->attributePOS = parameters.value("attributePOS").toString();
+    // Output attributes
+    if (parameters.contains("attributeProminence_POS"))     d->attributeProminence_POS = parameters.value("attributeProminence_POS").toString();
+    if (parameters.contains("attributeProminence_NoPOS"))   d->attributeProminence_NoPOS = parameters.value("attributeProminence_NoPOS").toString();
+    if (parameters.contains("attributeBoundaries"))         d->attributeBoundaries = parameters.value("attributeBoundaries").toString();
+    if (parameters.contains("attributeContour"))            d->attributeContour = parameters.value("attributeContour").toString();
+    // Statistical models
+    if (parameters.contains("modelProminence_POS"))     d->modelProminence_POS = parameters.value("modelProminence_POS").toString();
+    if (parameters.contains("modelProminence_NoPOS"))   d->modelProminence_NoPOS = parameters.value("modelProminence_NoPOS").toString();
+    if (parameters.contains("modelBoundaries"))         d->modelBoundary = parameters.value("modelBoundaries").toString();
+    if (parameters.contains("modelBoundaryContours"))   d->modelBoundaryContours = parameters.value("modelBoundaryContours").toString();
+    // Options
     if (parameters.contains("createFeatureTable"))      d->createFeatureTable = parameters.value("createFeatureTable").toBool();
     if (parameters.contains("createCRFData"))           d->createCRFData = parameters.value("createCRFData").toBool();
-    if (parameters.contains("modelProminence_NoPOS"))   d->modelProminence_NoPOS = parameters.value("modelProminence_NoPOS").toString();
-    if (parameters.contains("modelProminence_POS"))     d->modelProminence_POS = parameters.value("modelProminence_POS").toString();
-    if (parameters.contains("modelBoundaries"))         d->modelBoundaries = parameters.value("modelBoundaries").toString();
+
 }
 
 
@@ -206,6 +247,8 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
     promise->setModelFilenameWithoutPOS(d->modelProminence_NoPOS);
     promise->setModelFilenameWithPOS(d->modelProminence_POS);
+    promise->setAttributeProminenceTrain("prom");
+    promise->setAttributeDelivery("delivery");
 
     if (d->createFeatureTable) {
         QString filenameFeaturesTable = QDir::homePath() + "/promise_prominence_features.txt";
@@ -221,6 +264,28 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
+        // Check that the attribute the syllable level and the attribute to store results exists
+        if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
+            printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
+                         .arg(com->ID()).arg(d->levelSyllable));
+            continue;
+        } else if (com->repository()->annotationStructure()->level(d->levelSyllable)) {
+            if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeProminence_NoPOS)) &&
+                (!d->attributeProminence_NoPOS.isEmpty())) {
+                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                                     "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
+                             .arg(com->ID()).arg(d->attributeProminence_NoPOS));
+                continue;
+            }
+            if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeProminence_POS)) &&
+                (!d->attributeProminence_POS.isEmpty())) {
+                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                                     "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
+                             .arg(com->ID()).arg(d->attributeProminence_POS));
+                continue;
+            }
+        }
+        // Start annotation
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
@@ -235,21 +300,31 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
                 QPointer<IntervalTier> tier_token = tiers->getIntervalTierByName(d->levelToken);
                 if (!tier_token) { printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
 
-                IntervalTier *tier_promise_nopos = promise->annotate(annot->ID(), speakerID, "promise_nopos", tier_syll, tier_token, false);
-                IntervalTier *tier_promise_pos = promise->annotate(annot->ID(), speakerID, "promise_pos", tier_syll, tier_token, true);
-                for (int i = 0; i < tier_syll->count(); ++i) {
-                    if (tier_promise_nopos && i < tier_promise_nopos->count()) {
-                        tier_syll->interval(i)->setAttribute("promise", tier_promise_nopos->interval(i)->text());
+                IntervalTier *tier_promise_nopos(0), *tier_promise_pos(0);
+                if (!d->attributeProminence_NoPOS.isEmpty())
+                    tier_promise_nopos = promise->annotate(annot->ID(), speakerID, d->attributeProminence_NoPOS, tier_syll, tier_token, false);
+                if (!d->attributeProminence_POS.isEmpty())
+                    tier_promise_pos = promise->annotate(annot->ID(), speakerID, d->attributeProminence_POS, tier_syll, tier_token, true);
+
+                // Save automatic annotation if asked to do so
+                if (d->overwrite) {
+                    for (int i = 0; i < tier_syll->count(); ++i) {
+                        if (tier_promise_nopos && (i < tier_promise_nopos->count()) && (!d->attributeProminence_NoPOS.isEmpty())) {
+                            tier_syll->interval(i)->setAttribute(d->attributeProminence_NoPOS, tier_promise_nopos->interval(i)->text());
+                        }
+                        if (tier_promise_pos && (i < tier_promise_pos->count()) && (!d->attributeProminence_POS.isEmpty())) {
+                            tier_syll->interval(i)->setAttribute(d->attributeProminence_POS, tier_promise_pos->interval(i)->text());
+                        }
                     }
-                    if (tier_promise_pos && i < tier_promise_pos->count()) {
-                        tier_syll->interval(i)->setAttribute("promise_pos", tier_promise_pos->interval(i)->text());
+                    // Save tier
+                    if (com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll)) {
+                        qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
                     }
                 }
 
-                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll);
-                qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
-                delete tier_promise_nopos;
-                delete tier_promise_pos;
+                // Clean up
+                if (tier_promise_nopos) delete tier_promise_nopos;
+                if (tier_promise_pos) delete tier_promise_pos;
             }
             qDeleteAll(tiersAll);
             QApplication::processEvents();
@@ -270,7 +345,10 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
 
     ProsodicBoundariesAnnotator *promise = new ProsodicBoundariesAnnotator();
     promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
-    promise->setModelFilename(d->modelBoundaries);
+    promise->setModelFilenameBoundary(d->modelBoundary);
+    promise->setModelFilenameBoundaryCountours(d->modelBoundaryContours);
+    promise->setAttributeBoundaryTrain(d->attributeBoundaries);
+    promise->setAttributeBoundaryContourTrain(d->attributeContour);
 
     if (d->createFeatureTable) {
         QString filenameFeaturesTable = QDir::homePath() + "/promise_boundary_features.txt";
@@ -290,6 +368,28 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
+        // Check that the attribute the syllable level and the attribute to store results exists
+        if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
+            printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
+                         .arg(com->ID()).arg(d->levelSyllable));
+            continue;
+        } else if (com->repository()->annotationStructure()->level(d->levelSyllable)) {
+            if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeBoundaries)) &&
+                (!d->attributeBoundaries.isEmpty())) {
+                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                                     "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
+                             .arg(com->ID()).arg(d->attributeBoundaries));
+                continue;
+            }
+            if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeContour)) &&
+                (!d->attributeContour.isEmpty())) {
+                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                                     "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
+                             .arg(com->ID()).arg(d->attributeContour));
+                continue;
+            }
+        }
+        // Start annotation
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
@@ -304,17 +404,31 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
                 QPointer<IntervalTier> tier_token = tiers->getIntervalTierByName(d->levelToken);
                 if (!tier_token) { printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
 
-                IntervalTier *tier_promise_boundary = promise->annotate(annot->ID(), speakerID, "promise_boundary", tier_syll, tier_token);
+                IntervalTier *tier_promise_boundary(0), *tier_promise_contour(0);
+                if (!d->attributeBoundaries.isEmpty())
+                    tier_promise_boundary = promise->annotate(annot->ID(), speakerID, d->attributeBoundaries, tier_syll, tier_token, false);
+                if (!d->attributeContour.isEmpty())
+                    tier_promise_contour = promise->annotate(annot->ID(), speakerID, d->attributeContour, tier_syll, tier_token, true);
 
-                for (int i = 0; i < tier_syll->count(); ++i) {
-                    if (tier_promise_boundary && i < tier_promise_boundary->count()) {
-                        tier_syll->interval(i)->setAttribute("promise_boundary", tier_promise_boundary->interval(i)->text());
+                // Save automatic annotation if asked to do so
+                if (d->overwrite) {
+                    for (int i = 0; i < tier_syll->count(); ++i) {
+                        if (tier_promise_boundary && (i < tier_promise_boundary->count()) && (!d->attributeBoundaries.isEmpty())) {
+                            tier_syll->interval(i)->setAttribute(d->attributeBoundaries, tier_promise_boundary->interval(i)->text());
+                        }
+                        if (tier_promise_contour && (i < tier_promise_contour->count()) && (!d->attributeContour.isEmpty())) {
+                            tier_syll->interval(i)->setAttribute(d->attributeContour, tier_promise_contour->interval(i)->text());
+                        }
+                    }
+                    // Save tier
+                    if (com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll)) {
+                        qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
                     }
                 }
 
-                com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll);
-                qDebug() << QString("Annotated %1, speaker %2").arg(annot->ID()).arg(speakerID);
-                delete tier_promise_boundary;
+                // Clean up
+                if (tier_promise_boundary) delete tier_promise_boundary;
+                if (tier_promise_contour) delete tier_promise_contour;
             }
             qDeleteAll(tiersAll);
             QApplication::processEvents();

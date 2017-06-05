@@ -21,11 +21,16 @@ public:
     IntervalSequenceEditor(QWidget *parent = 0);
     ~IntervalSequenceEditor();
 
-    QSize sizeHint() const override;
     void setIntervals(const QList<Praaline::Core::Interval *> intervals);
     QList<Praaline::Core::Interval *> intervals();
 
-    static void paint(QList<Praaline::Core::Interval *> intervals, QPainter *painter, const QRect &rect, const QPalette &palette,  EditMode mode);
+    void setIntervalAttributeIDs(const QStringList &attributeIDs);
+    QStringList intervalAttributeIDs() const;
+
+    QSize sizeHint() const override;
+
+    static void paint(QList<Praaline::Core::Interval *> intervals, QList<QRect> boundingRects,
+                      QPainter *painter, const QRect &rect, const QPalette &palette,  EditMode mode);
     static QSize sizeHint(QList<Praaline::Core::Interval *> intervals);
 
 signals:
@@ -40,6 +45,7 @@ protected:
 
 private:
     int boundaryAtPosition(int x);
+    void recalculateRectangles();
 
     IntervalSequenceEditorData *d;
 };

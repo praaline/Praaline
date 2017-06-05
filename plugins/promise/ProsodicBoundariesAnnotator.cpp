@@ -19,12 +19,19 @@ using namespace Praaline::Core;
 
 struct ProsodicBoundariesAnnotatorData {
     ProsodicBoundariesAnnotatorData() :
+        attributeBoundaryTrain("promise_boundary"), attributeBoundaryContourTrain("promise_contour"),
         fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0)
     {}
 
     QString currentAnnotationID;
+    // Statistical models
     QString modelsPath;
-    QString modelFilename;
+    QString modelFilenameBoundary;
+    QString modelFilenameBoundaryContours;
+    // Attribute names
+    QString attributeBoundaryTrain;
+    QString attributeBoundaryContourTrain;
+    // Feature tables
     QFile *fileFeaturesTable;
     QTextStream *streamFeaturesTable;
     QFile *fileCRFData;
@@ -45,6 +52,10 @@ ProsodicBoundariesAnnotator::~ProsodicBoundariesAnnotator()
     delete d;
 }
 
+// ========================================================================================================================================
+// Parameters: statistical models
+// ========================================================================================================================================
+
 QString ProsodicBoundariesAnnotator::modelsPath() const
 {
     return d->modelsPath;
@@ -55,15 +66,53 @@ void ProsodicBoundariesAnnotator::setModelsPath(const QString &modelsPath)
     d->modelsPath = modelsPath;
 }
 
-QString ProsodicBoundariesAnnotator::modelFilename() const
+QString ProsodicBoundariesAnnotator::modelFilenameBoundary() const
 {
-    return d->modelFilename;
+    return d->modelFilenameBoundary;
 }
 
-void ProsodicBoundariesAnnotator::setModelFilename(const QString &filename)
+void ProsodicBoundariesAnnotator::setModelFilenameBoundary(const QString &filename)
 {
-    d->modelFilename = filename;
+    d->modelFilenameBoundary = filename;
 }
+
+QString ProsodicBoundariesAnnotator::modelFilenameBoundaryCountours() const
+{
+    return d->modelFilenameBoundaryContours;
+}
+
+void ProsodicBoundariesAnnotator::setModelFilenameBoundaryCountours(const QString &filename)
+{
+    d->modelFilenameBoundaryContours = filename;
+}
+
+// ========================================================================================================================================
+// Parameters: attribute names
+// ========================================================================================================================================
+
+QString ProsodicBoundariesAnnotator::attributeBoundaryTrain() const
+{
+    return d->attributeBoundaryTrain;
+}
+
+void ProsodicBoundariesAnnotator::setAttributeBoundaryTrain(const QString &attributeID)
+{
+    d->attributeBoundaryTrain = attributeID;
+}
+
+QString ProsodicBoundariesAnnotator::attributeBoundaryContourTrain() const
+{
+    return d->attributeBoundaryContourTrain;
+}
+
+void ProsodicBoundariesAnnotator::setAttributeBoundaryContourTrain(const QString &attributeID)
+{
+    d->attributeBoundaryContourTrain = attributeID;
+}
+
+// ========================================================================================================================================
+// Methods to control the creation of feature tables and training files
+// ========================================================================================================================================
 
 bool ProsodicBoundariesAnnotator::openFeaturesTableFile(const QString &filename)
 {
@@ -112,6 +161,10 @@ void ProsodicBoundariesAnnotator::closeCRFDataFile()
         d->fileCRFData = Q_NULLPTR;
     }
 }
+
+// ========================================================================================================================================
+// PREPARE FEATURES
+// ========================================================================================================================================
 
 // static
 void ProsodicBoundariesAnnotator::prepareFeatures(QHash<QString, RealValueList> &features, IntervalTier *tier_syll)
@@ -167,9 +220,13 @@ void ProsodicBoundariesAnnotator::prepareFeatures(QHash<QString, RealValueList> 
     }
 }
 
+// ========================================================================================================================================
+// Output for external statistical modelling tools
+// ========================================================================================================================================
+
 int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                           QHash<QString, RealValueList> &features, bool withPOS, QTextStream &out,
-                                           bool createSequences)
+                                           QHash<QString, RealValueList> &features, bool withPOS, bool annotateContours,
+                                           QTextStream &out, bool createSequences)
 {
     bool quantize(true);
     int noSequences = 0;
@@ -186,10 +243,20 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         QString sylltext = syll->text().replace(" ", "_").replace("\t", "").trimmed();
         if (sylltext.length() == 0) sylltext = "_";
         // Target attribute
-        QString boundary = syll->attribute("boundary").toString();
-        if      (boundary.contains("///"))  boundary = "B3";
-        else if (boundary.contains("//"))   boundary = "B2";
-        else                                boundary = "0";
+        QString target;
+        if (!annotateContours) {
+            target = syll->attribute(d->attributeBoundaryTrain).toString();
+            if      (target.contains("///"))  target = "B3";
+            else if (target.contains("//"))   target = "B2";
+            else                              target = "0";
+        } else {
+            target = syll->attribute(d->attributeBoundaryContourTrain).toString();
+            if      (target.contains("C"))  target = "C";
+            else if (target.contains("S"))  target = "S";
+            else if (target.contains("T"))  target = "T";
+            else if (target.contains("F"))  target = "F";
+            else                            target = "0";
+        }
         // Tokens
         QList<Interval *> tokens = tier_token->getIntervalsOverlappingWith(syll, RealTime(0, 5000));
 
@@ -268,18 +335,15 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
             if (withPOS) { out << "_\t_\t_\t"; }
         }
 
-        // CLASS
-        if (boundary == "B3" || boundary == "B2")
-            out << boundary;
-        else
-            out << "0";
+        // TARGET CLASS (see above)
+        out << target;
         out << "\n";
     }
     return noSequences;
 }
 
 IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_syll, IntervalTier *tier_token,
-                                                           QHash<QString, RealValueList> &features, bool withPOS,
+                                                           QHash<QString, RealValueList> &features, bool withPOS, bool annotateContours,
                                                            const QString &filenameModel, const QString &tier_name)
 {
     IntervalTier *promise = new IntervalTier(tier_syll, tier_name);
@@ -294,7 +358,7 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
     QTextStream streamIn(&fileIn);
     streamIn.setCodec("UTF-8");
     streamIn.setGenerateByteOrderMark(true);
-    outputCRF(tier_syll, tier_token, features, withPOS, streamIn);
+    outputCRF(tier_syll, tier_token, features, withPOS, annotateContours, streamIn);
     fileIn.close();
     // Touch the output file, and get its filename
     if (!fileOut.open()) return promise;
@@ -318,7 +382,15 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
                   "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
     if (!decoder.waitForStarted(-1)) return promise;
     if (!decoder.waitForFinished(-1)) return promise;
-    // Read responses into token list
+
+    // These responses will be carried over as automatic annotations. Other responses will be ignored.
+    QStringList possibleResponseClasses;
+    if (annotateContours)
+        possibleResponseClasses << "C" << "S" << "T" << "F";
+    else
+        possibleResponseClasses << "B2" << "B3";
+
+    // Read responses into list
     if (!fileOut.open()) return promise;
     QTextStream streamOut(&fileOut);
     streamOut.setCodec("UTF-8");
@@ -334,11 +406,11 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
             isyll++;
         //
         QStringList fields = line.split("\t");
-        QString response = fields.at(fields.count() - 4).section("/", 0, 0);
-        double score = fields.at(fields.count() - 4).section("/", 1, 1).toDouble();
+        QString response = fields.at(fields.count() - (possibleResponseClasses.count() + 2)).section("/", 0, 0);
+        double score = fields.at(fields.count() - (possibleResponseClasses.count() + 2)).section("/", 1, 1).toDouble();
         // qDebug() << line << response;
         if (promise->interval(isyll)->text() == "x") {
-            if (response == "B3" || response == "B2")
+            if (possibleResponseClasses.contains(response))
                 promise->interval(isyll)->setText(response);
             else
                 promise->interval(isyll)->setText("");
@@ -351,14 +423,20 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
 }
 
 IntervalTier *ProsodicBoundariesAnnotator::annotate(const QString &annotationID, const QString &speakerID, const QString &tierName,
-                                                    Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token)
+                                                    Praaline::Core::IntervalTier *tier_syll, Praaline::Core::IntervalTier *tier_token,
+                                                    bool annotateContours)
 {
     d->currentAnnotationID = annotationID;
     QHash<QString, RealValueList> features;
     prepareFeatures(features, tier_syll);
-    QString filenameModel = d->modelsPath + d->modelFilename;
 
-    IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, true, filenameModel, tierName);
+    QString filenameModel;
+    if (annotateContours)
+        filenameModel = d->modelsPath + d->modelFilenameBoundaryContours;
+    else
+        filenameModel = d->modelsPath + d->modelFilenameBoundary;
+
+    IntervalTier *promise = annotateWithCRF(tier_syll, tier_token, features, true, annotateContours, filenameModel, tierName);
 
     if (d->streamFeaturesTable) {
         QTextStream &out = (*d->streamFeaturesTable);
@@ -384,11 +462,11 @@ IntervalTier *ProsodicBoundariesAnnotator::annotate(const QString &annotationID,
                     out << features[featureName].at(isyll) << "\t";
                 }
             }
-            out << syll->attribute("promise_boundary").toString() << "\n";
+            out << syll->attribute(d->attributeBoundaryTrain).toString() << "\n";
         }
     }
     if (d->streamCRFData) {
-        outputCRF(tier_syll, tier_token, features, true, (*d->streamCRFData), true);
+        outputCRF(tier_syll, tier_token, features, true, annotateContours, (*d->streamCRFData), true);
     }
     return promise;
 }

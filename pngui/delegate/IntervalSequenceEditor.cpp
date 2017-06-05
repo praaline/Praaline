@@ -5,6 +5,9 @@
 #include <QTextDocument>
 #include <QColor>
 #include <QStyle>
+#include <QApplication>
+#include <QFont>
+#include <QFontMetrics>
 
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
@@ -14,6 +17,8 @@ using namespace Praaline::Core;
 struct IntervalSequenceEditorData
 {
     QList<Interval *> intervals;
+    QStringList attributeIDs;
+    QList<QRect> boundingRects;
 };
 
 IntervalSequenceEditor::IntervalSequenceEditor(QWidget *parent) :
@@ -36,17 +41,53 @@ QSize IntervalSequenceEditor::sizeHint() const
 void IntervalSequenceEditor::setIntervals(const QList<Praaline::Core::Interval *> intervals)
 {
     d->intervals = intervals;
+    recalculateRectangles();
+    update();
 }
+
+void IntervalSequenceEditor::setIntervalAttributeIDs(const QStringList &attributeIDs)
+{
+    d->attributeIDs = attributeIDs;
+    recalculateRectangles();
+    update();
+}
+
+QStringList IntervalSequenceEditor::intervalAttributeIDs() const
+{
+    return d->attributeIDs;
+}
+
 
 QList<Praaline::Core::Interval *> IntervalSequenceEditor::intervals()
 {
     return d->intervals;
 }
 
+void IntervalSequenceEditor::recalculateRectangles()
+{
+    // Recalculate bounding rectangles
+    d->boundingRects.clear();
+
+    QFont intervalsFont = QApplication::font();
+    QFontMetrics intervalsFm(intervalsFont);
+
+    foreach (Interval *intv, d->intervals) {
+        // Text
+        QRect rect = intervalsFm.boundingRect(0, 0, 0, 0, Qt::AlignCenter|Qt::AlignVCenter,
+                                              intv->text());
+        foreach (QString attributeID, d->attributeIDs) {
+            QRect rectAttr = intervalsFm.boundingRect(0, 0, 0, 0, Qt::AlignCenter|Qt::AlignVCenter,
+                                                  intv->attribute(attributeID).toString());
+            if (rectAttr.width() > rect.width()) rect = rectAttr;
+        }
+        d->boundingRects << rect;
+    }
+}
+
 void IntervalSequenceEditor::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    paint(d->intervals, &painter, rect(), this->palette(), IntervalSequenceEditor::Editable);
+    paint(d->intervals, d->boundingRects, &painter, rect(), this->palette(), IntervalSequenceEditor::Editable);
 }
 
 void IntervalSequenceEditor::mouseReleaseEvent(QMouseEvent *event)
@@ -59,52 +100,82 @@ int IntervalSequenceEditor::boundaryAtPosition(int x)
 
 }
 
-void IntervalSequenceEditor::paint(QList<Interval *> intervals, QPainter *painter, const QRect &rect, const QPalette &palette,
+void IntervalSequenceEditor::paint(QList<Interval *> intervals, QList<QRect> boundingRects,
+                                   QPainter *painter, const QRect &rect, const QPalette &palette,
                                    IntervalSequenceEditor::EditMode mode)
 {
     painter->save();
 
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    painter->setPen(Qt::NoPen);
+//    if (option.state & QStyle::State_Selected)
+//        painter->fillRect(option.rect, option.palette.highlight());
 
-    if (mode == Editable) {
-        painter->setBrush(palette.highlight());
-    } else {
-        painter->setBrush(palette.foreground());
-    }
+//    QString headerText = index.data(HeaderRole).toString();
+//    QString subheaderText = index.data(SubheaderRole).toString();
 
-    QTextDocument doc;
+//    QFont headerFont = QApplication::font();
+//    headerFont.setBold(true);
+//    QFont subheaderFont = QApplication::font();
+//    QFontMetrics headerFm(headerFont);
+//    QFontMetrics subheaderFm(subheaderFont);
 
-    // Since the QTextDocument will do all the rendering, the color,
-    // and the font have to be put back inside the doc
-//    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
-//                              ? QPalette::Normal : QPalette::Disabled;
-//    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
-//        cg = QPalette::Inactive;
-    QColor textColor = palette.color(QPalette::Normal, QPalette::Text);
-    doc.setDefaultStyleSheet(QString("body { color: %1}")
-                             .arg(textColor.name()));
+//    /*
+//     * The x,y coords are not (0,0) but values given by 'option'. So, calculate the
+//     * rects again given the x,y,w.
+//     * Note that the given height is 0. That is because boundingRect() will return
+//     * the suitable height if the given geometry does not fit. And this is exactly
+//     * what we want.
+//     */
+//    QRect headerRect =
+//            headerFm.boundingRect(option.rect.left() + iconSize.width(), option.rect.top() + padding,
+//                                  option.rect.width() - iconSize.width(), 0,
+//                                  Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap,
+//                                  headerText);
+//    QRect subheaderRect =
+//            subheaderFm.boundingRect(headerRect.left(), headerRect.bottom()+padding,
+//                                     option.rect.width() - iconSize.width(), 0,
+//                                     Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap,
+//                                     subheaderText);
 
-    QString html;
-    foreach (Interval *intv, intervals) {
-        html.append(intv->text()).append(" ");
-    }
-    doc.setHtml(html);
-    doc.setDocumentMargin(1); // the default is 4 which is too much
+//    painter->setPen(Qt::black);
 
-    //painter->save();
-    painter->translate(rect.topLeft());
-    doc.drawContents(painter);
-    // painter->restore();
+//    painter->setFont(headerFont);
+//    painter->drawText(headerRect, Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap, headerText);
 
-
-
-
+//    painter->setFont(subheaderFont);
+//    painter->drawText(subheaderRect, Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap, subheaderText);
 
     painter->restore();
 }
 
 QSize IntervalSequenceEditor::sizeHint(QList<Interval *> intervals)
 {
+//    QString intervalsText = index.data(HeaderRole).toString();
+
+
+
+//    /* No need for x,y here. we only need to calculate the height given the width.
+//     * Note that the given height is 0. That is because boundingRect() will return
+//     * the suitable height if the given geometry does not fit. And this is exactly
+//     * what we want.
+//     */
+//    QRect headerRect = headerFm.boundingRect(0, 0,
+//                                             option.rect.width() - iconSize.width(), 0,
+//                                             Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap,
+//                                             headerText);
+//    QRect subheaderRect = subheaderFm.boundingRect(0, 0,
+//                                                   option.rect.width() - iconSize.width(), 0,
+//                                                   Qt::AlignLeft|Qt::AlignTop|Qt::TextWordWrap,
+//                                                   subheaderText);
+
+//    QSize size(option.rect.width(), headerRect.height() + subheaderRect.height() +  3*padding);
+
+//    /* Keep the minimum height needed in mind. */
+//    if(size.height()<iconSize.height())
+//        size.setHeight(iconSize.height());
+
+    QSize size;
+
+    return size;
+
 
 }
