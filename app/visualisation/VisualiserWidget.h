@@ -53,7 +53,10 @@ public slots:
     void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);
     void addAnnotationPane();
     void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
-    void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
+    void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                            const QString &tappingTierName = "tappingAdj",
+                            const QString &smoothTierName = "smooth",
+                            const QString &boundaryAttributePrefix = "boundary");
 
 protected slots:
     virtual void importAudio();

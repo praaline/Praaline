@@ -3374,7 +3374,15 @@ void VisualiserWidget::addAnnotationPane()
     foreach (pair, m_annotationSelection) if (pair.first != "tapping") annotationAttributes << pair;
 
     AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), m_tiers, annotationAttributes);
-    model->excludeSpeakerIDs(QList<QString>() << "Emilie_1" << "Emilie_2");
+    // Excluded speakers
+    QList<QString> excluded;
+    excluded << "Emilie_1" << "Emilie_2";
+    for (int i = 1; i <=9; ++i) excluded << QString("S0%1").arg(i);
+    for (int i = 10; i <=300; ++i) excluded << QString("S%1").arg(i);
+    excluded << "DEL" << "CAM" << "AVM" << "GJP" << "KAS" << "DUC" << "MET" << "LAB" << "SCS" << "POC" << "AUA" << "LYC"
+             << "BIU" << "SMC" << "PIC" << "NIG" << "GRA" << "LDA" << "FEG" << "JOE" << "PEJ" << "SIC" << "GOR" << "TRV"
+             << "GRI" << "HES" << "MAP" << "MIM" << "PRT" << "smooth";
+    model->excludeSpeakerIDs(excluded);
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add annotations pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
@@ -3389,7 +3397,9 @@ void VisualiserWidget::addAnnotationPane()
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
 
-    addTappingDataPane(m_tiers);
+    // addTappingDataPane(m_tiers); // for Emilie
+    addTappingDataPane(m_tiers, "tappingAdj_naive", "smooth_naive", "boundary");
+    addTappingDataPane(m_tiers, "tappingAdj_expert", "smooth_expert", "boundaryExpert");
 }
 
 void VisualiserWidget::updateAnnotationPanes()
@@ -3456,7 +3466,10 @@ Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
     return newLayer;
 }
 
-void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
+void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                          const QString &tappingTierName,
+                                          const QString &smoothTierName,
+                                          const QString &boundaryAttributePrefix)
 {
     if (!getMainModel()) return;
     CommandHistory::getInstance()->startCompoundOperation("Add Tapping Pane", true);
@@ -3464,14 +3477,14 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     CommandHistory::getInstance()->addCommand(command);
     Pane *pane = command->getPane();
     // add instants layer
-    Layer *newInstantsLayer = m_document->createEmptyLayer(LayerFactory::Type("TimeInstants"));
-    m_document->addLayerToView(pane, newInstantsLayer);
-    // newInstantsLayer->setLayerDormant(pane, true);
+    Layer *layerTapping = m_document->createEmptyLayer(LayerFactory::Type("TimeInstants"));
+    m_document->addLayerToView(pane, layerTapping);
+    layerTapping->setLayerDormant(pane, true);
     // add smoothed values layer
     Layer *newValuesLayer = m_document->createEmptyLayer(LayerFactory::Type("TimeValues"));
     TimeValueLayer *layerSmooth = qobject_cast<TimeValueLayer *>(newValuesLayer);
     if (layerSmooth) {
-        layerSmooth->setPlotStyle(TimeValueLayer::PlotSegmentation);
+        layerSmooth->setPlotStyle(TimeValueLayer::PlotCurve);
         layerSmooth->setDrawSegmentDivisions(false);
         layerSmooth->setDisplayExtents(0.0, 100.0);
     }
@@ -3493,7 +3506,7 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
 
-    SparseOneDimensionalModel *modelInstants = qobject_cast<SparseOneDimensionalModel *>(newInstantsLayer->getModel());
+    SparseOneDimensionalModel *modelInstants = qobject_cast<SparseOneDimensionalModel *>(layerTapping->getModel());
     SparseOneDimensionalModel *modelInstantsLocalMax = qobject_cast<SparseOneDimensionalModel *>(newInstantsLayerLocalMax->getModel());
     SparseTimeValueModel *modelSmooth = qobject_cast<SparseTimeValueModel *>(newValuesLayer->getModel());
     RegionModel *modelRegions = qobject_cast<RegionModel *>(newRegionsLayer->getModel());
@@ -3502,7 +3515,7 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     foreach (QString subjectID, tiers.keys()) {
         QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
         // Instants model
-        IntervalTier *tier_tapping = tiersSubj->getIntervalTierByName("tappingAdj");
+        IntervalTier *tier_tapping = tiersSubj->getIntervalTierByName(tappingTierName);
         if (tier_tapping) {
             foreach(Interval *intv, tier_tapping->intervals()) {
                 if (intv->text() != "x") continue;
@@ -3512,7 +3525,7 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
             }
         }
         // Smooth model
-        PointTier *tier_smooth = tiersSubj->getPointTierByName("smooth");
+        PointTier *tier_smooth = tiersSubj->getPointTierByName(smoothTierName);
         if (tier_smooth) {
             foreach (Point *sp, tier_smooth->points()) {
                 SparseTimeValueModel::Point smoothedPoint(RealTime::realTime2Frame(sp->time(), sampleRate),
@@ -3529,16 +3542,16 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
         IntervalTier *tier_syll = tiersSubj->getIntervalTierByName("syll");
         if (tier_syll) {
             foreach (Interval *syll, tier_syll->intervals()) {
-                double force = syll->attribute("boundaryForce").toDouble() * 100.0;
+                double force = syll->attribute(boundaryAttributePrefix + "Force").toDouble() * 100.0;
                 if (force < 5.0) continue;
-                RealTime tFirst = RealTime::fromSeconds(syll->attribute("boundaryFirstPPB").toDouble());
-                RealTime tLast = RealTime::fromSeconds(syll->attribute("boundaryLastPPB").toDouble());
+                RealTime tFirst = RealTime::fromSeconds(syll->attribute(boundaryAttributePrefix + "FirstPPB").toDouble());
+                RealTime tLast = RealTime::fromSeconds(syll->attribute(boundaryAttributePrefix + "LastPPB").toDouble());
                 // frame, value, duration, label
                 QString label = QString("%1 F:%2% D:%3 R:%4")
                         .arg((syll->text().isEmpty()) ? "(.)" : syll->text())
                         .arg(QString::number(force, 'f', 1))
-                        .arg(QString::number(syll->attribute("boundaryDispersion").toDouble(), 'f', 2))
-                        .arg(QString::number(syll->attribute("boundaryDelay").toDouble(), 'f', 2));
+                        .arg(QString::number(syll->attribute(boundaryAttributePrefix + "Dispersion").toDouble(), 'f', 2))
+                        .arg(QString::number(syll->attribute(boundaryAttributePrefix + "Delay").toDouble(), 'f', 2));
 
                 RegionModel::Point regionPPB(RealTime::realTime2Frame(tFirst, sampleRate), force,
                                              RealTime::realTime2Frame(tLast - tFirst, sampleRate),
