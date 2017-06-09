@@ -3389,7 +3389,7 @@ void VisualiserWidget::addAnnotationPane()
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
 
-   // addTappingDataPane(tiers);
+    addTappingDataPane(m_tiers);
 }
 
 void VisualiserWidget::updateAnnotationPanes()

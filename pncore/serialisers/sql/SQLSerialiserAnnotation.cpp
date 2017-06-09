@@ -369,8 +369,18 @@ AnnotationTierGroup *SQLSerialiserAnnotation::getTiers(
         const QString &annotationID, const QString &speakerID, const QStringList &levelIDs,
         AnnotationStructure *structure, QSqlDatabase &db)
 {
+    // Check which levels exist in the database (out of those requested)
+    QStringList effectiveLevelIDs;
+    if (levelIDs.isEmpty())
+        effectiveLevelIDs = structure->levelIDs();
+    else {
+        foreach (QString levelID, levelIDs) {
+            if (structure->hasLevel(levelID)) effectiveLevelIDs << levelID;
+        }
+    }
+    // Collect data
     AnnotationTierGroup *tiers = new AnnotationTierGroup();
-    foreach (QString levelID, levelIDs) {
+    foreach (QString levelID, effectiveLevelIDs) {
         AnnotationTier *tier = getTier(annotationID, speakerID, levelID, QStringList(), structure, db);
         if (tier) tiers->addTier(tier);
     }

@@ -29,6 +29,7 @@ struct TimelineEditorConfigWidgetData {
     QAction *actionAddLevelAttribute;
     QAction *actionRemoveLevelAttribute;
     QAction *actionUpdateEditor;
+    QAction *actionSaveConfiguration;
     QTableView *tableviewLevelsAttributes;
 
     // Controls for speaker selection
@@ -75,7 +76,23 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
 //    addLevelAttribute("tok_min", "liaison_context");
 //    addLevelAttribute("tok_min", "liaison_forbidden");
 //    addLevelAttribute("tok_min", "", "context", "");
-    addLevelAttribute("transcription", "");
+
+    QString configFilename = QCoreApplication::applicationDirPath() + "/timelineConfig.txt";
+    QFile fileConfig(configFilename);
+    if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
+        QTextStream stream(&fileConfig);
+        do {
+            QString line = stream.readLine().trimmed();
+            if (line.startsWith("#")) continue;
+            QStringList fields = line.split("\t");
+            QString levelID = (fields.count() >= 1) ? fields.at(0) : "";
+            QString attributeID = (fields.count() >= 2) ? fields.at(1) : "";
+            QString function = (fields.count() >= 3) ? fields.at(2) : "";
+            QString parameters = (fields.count() >= 4) ? fields.at(3) : "";
+            if (!levelID.isEmpty()) addLevelAttribute(levelID, attributeID, function, parameters);
+        } while (!stream.atEnd());
+        fileConfig.close();
+    }
 
     d->innerwindowLevelsAttributes = new QMainWindow(this);
     d->innerwindowLevelsAttributes->addToolBar(d->toolbarLevelsAttributes);
@@ -130,6 +147,12 @@ void TimelineEditorConfigWidget::setupActions()
     command = ACTION_MANAGER->registerAction("Annotation.VerticalTimelineEditor.UpdateEditor", d->actionUpdateEditor, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionUpdateEditor);
+
+    d->actionSaveConfiguration = new QAction(QIcon(":/icons/actions/action_save.png"), "Save config", this);
+    connect(d->actionSaveConfiguration, SIGNAL(triggered()), this, SLOT(saveConfiguration()));
+    command = ACTION_MANAGER->registerAction("Annotation.VerticalTimelineEditor.SaveConfig", d->actionSaveConfiguration, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarLevelsAttributes->addAction(d->actionSaveConfiguration);
 }
 
 void TimelineEditorConfigWidget::addLevelAttribute(QString levelID, QString attributeID, QString function, QString parameters)
@@ -179,6 +202,23 @@ QList<QPair<QString, QString> > TimelineEditorConfigWidget::selectedLevelsAttrib
 void TimelineEditorConfigWidget::updateEditor()
 {
     emit selectedLevelsAttributesChanged();
+}
+
+void TimelineEditorConfigWidget::saveConfiguration()
+{
+    QString configFilename = QCoreApplication::applicationDirPath() + "/timelineConfig.txt";
+    QFile fileConfig(configFilename);
+    if ( !fileConfig.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&fileConfig);
+    out.setCodec("UTF-8");
+    out << "# Praaline timeline configuration\n";
+    for (int i = 0; i < d->modelLevelsAttributes->rowCount(); ++i) {
+        QString levelID = d->modelLevelsAttributes->item(i, 0)->data(Qt::DisplayRole).toString();
+        QString attributeID = d->modelLevelsAttributes->item(i, 1)->data(Qt::DisplayRole).toString();
+        QString function = d->modelLevelsAttributes->item(i, 2)->data(Qt::DisplayRole).toString();
+        QString parameters = d->modelLevelsAttributes->item(i, 3)->data(Qt::DisplayRole).toString();
+        out << levelID << "\t" << attributeID << "\t" << function << "\t" << parameters << "\n";
+    }
 }
 
 void TimelineEditorConfigWidget::updateSpeakerList(QStringList speakerIDs) {

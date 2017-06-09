@@ -61,14 +61,17 @@ HEADERS += \
     chunkannotator.h \
     svbridge.h \
     prosodicboundaries.h \
-    prosodicboundariesexperiment.h \
     InterraterAgreement.h \
     ProsodyCourse.h \
     MyExperiments.h \
     DisfluenciesExperiments.h \
     SpeechRateExperiments.h \
     TappingAnnotatorExperiment.h \
-    XMLTranscription.h
+    XMLTranscription.h \
+    ProsodicBoundariesExperimentPreparation.h \
+    ProsodicBoundariesExperimentAnalysis.h \
+    StutteredSpeechAlignmentExperiments.h \
+    MelissaExperiment.h
 
 
 SOURCES += \ 
@@ -77,11 +80,14 @@ SOURCES += \
     chunkannotator.cpp \
     svbridge.cpp \
     prosodicboundaries.cpp \
-    prosodicboundariesexperiment.cpp \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
     MyExperiments.cpp \
     DisfluenciesExperiments.cpp \
     SpeechRateExperiments.cpp \
     TappingAnnotatorExperiment.cpp \
-    XMLTranscription.cpp
+    XMLTranscription.cpp \
+    ProsodicBoundariesExperimentPreparation.cpp \
+    ProsodicBoundariesExperimentAnalysis.cpp \
+    StutteredSpeechAlignmentExperiments.cpp \
+    MelissaExperiment.cpp

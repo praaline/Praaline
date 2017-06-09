@@ -245,18 +245,18 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
         }
     }
 
-    Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_speechrate", "");
-    if (layer_regions_speechrate) {
-        layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
-        layer_regions_speechrate->setPresentationName("Score Debit");
-    }
-    Layer *layer_regions_registre = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_registre", "");
-    if (layer_regions_registre) {
-        layer_regions_registre->setDisplayExtents(0.0, 10.0);
-        layer_regions_registre->setPresentationName("Score Registre");
-    }
+//    Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_speechrate", "");
+//    if (layer_regions_speechrate) {
+//        layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
+//        layer_regions_speechrate->setPresentationName("Score Debit");
+//    }
+//    Layer *layer_regions_registre = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                d->currentTierGroups.first()->tier("tok_min"), "tCenterNanoseconds", "score_registre", "");
+//    if (layer_regions_registre) {
+//        layer_regions_registre->setDisplayExtents(0.0, 10.0);
+//        layer_regions_registre->setPresentationName("Score Registre");
+//    }
 
 //    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
 //                                                        "timeNanoseconds", "rate_phone", "text");

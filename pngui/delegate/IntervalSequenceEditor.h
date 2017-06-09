@@ -2,6 +2,7 @@
 #define INTERVALSEQUENCEEDITOR_H
 
 #include <QWidget>
+#include <QStyleOptionViewItem>
 
 namespace Praaline {
 namespace Core {
@@ -29,8 +30,7 @@ public:
 
     QSize sizeHint() const override;
 
-    static void paint(QList<Praaline::Core::Interval *> intervals, QList<QRect> boundingRects,
-                      QPainter *painter, const QRect &rect, const QPalette &palette,  EditMode mode);
+    static void paint(QList<Praaline::Core::Interval *> intervals, QPainter *painter, QStyleOptionViewItem &option, EditMode mode);
     static QSize sizeHint(QList<Praaline::Core::Interval *> intervals);
 
 signals:

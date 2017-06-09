@@ -87,7 +87,7 @@ void IntervalSequenceEditor::recalculateRectangles()
 void IntervalSequenceEditor::paintEvent(QPaintEvent *)
 {
     QPainter painter(this);
-    paint(d->intervals, d->boundingRects, &painter, rect(), this->palette(), IntervalSequenceEditor::Editable);
+    // paint(d->intervals, d->boundingRects, &painter, rect(), this->palette(), IntervalSequenceEditor::Editable);
 }
 
 void IntervalSequenceEditor::mouseReleaseEvent(QMouseEvent *event)
@@ -100,8 +100,7 @@ int IntervalSequenceEditor::boundaryAtPosition(int x)
 
 }
 
-void IntervalSequenceEditor::paint(QList<Interval *> intervals, QList<QRect> boundingRects,
-                                   QPainter *painter, const QRect &rect, const QPalette &palette,
+void IntervalSequenceEditor::paint(QList<Interval *> intervals, QPainter *painter, QStyleOptionViewItem &option,
                                    IntervalSequenceEditor::EditMode mode)
 {
     painter->save();

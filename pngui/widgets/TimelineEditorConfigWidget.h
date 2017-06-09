@@ -34,6 +34,7 @@ protected slots:
     void addLevelAttribute();
     void removeLevelAttribute();
     void updateEditor();
+    void saveConfiguration();
     void speakerSelectionChanged(QStandardItem *item);
 
 private:

@@ -10,15 +10,31 @@ using namespace Praaline::Core;
 #include "IntervalSequenceEditor.h"
 #include "IntervalSequenceDelegate.h"
 
+struct IntervalSequenceDelegateData {
+    IntervalSequenceDelegateData() :
+        editor(0)
+    {}
+
+    IntervalSequenceEditor *editor;
+};
+
+
+IntervalSequenceDelegate::IntervalSequenceDelegate(QWidget *parent)  :
+    QStyledItemDelegate(parent), d(new IntervalSequenceDelegateData())
+{
+}
+
+IntervalSequenceDelegate::~IntervalSequenceDelegate()
+{
+}
+
 void IntervalSequenceDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (index.data().canConvert<QList<Interval *> >()) {
+    if (d->editor && (index.data().canConvert<QList<Interval *> >())) {
         QList<Interval *> intervals = qvariant_cast<QList<Interval *> >(index.data());
-
         if (option.state & QStyle::State_Selected)
             painter->fillRect(option.rect, option.palette.highlight());
-
-        // IntervalSequenceEditor::paint(intervals, painter, option.rect, option.palette, IntervalSequenceEditor::ReadOnly);
+        // IntervalSequenceEditor::paint(intervals, painter, option, IntervalSequenceEditor::ReadOnly);
     } else {
         QStyledItemDelegate::paint(painter, option, index);
     }
@@ -37,12 +53,12 @@ QSize IntervalSequenceDelegate::sizeHint(const QStyleOptionViewItem &option, con
 QWidget *IntervalSequenceDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.data().canConvert<QList<Interval *> >()) {
-        IntervalSequenceEditor *editor = new IntervalSequenceEditor(parent);
-        connect(editor, &IntervalSequenceEditor::editingFinished, this, &IntervalSequenceDelegate::commitAndCloseEditor);
-        connect(editor, &IntervalSequenceEditor::editingSplitSequence, this, &IntervalSequenceDelegate::splitSequence);
-        connect(editor, &IntervalSequenceEditor::editingMergeSequenceWithPrevious, this, &IntervalSequenceDelegate::mergeSequenceWithPrevious);
-        connect(editor, &IntervalSequenceEditor::editingMergeSequenceWithNext, this, &IntervalSequenceDelegate::mergeSequenceWithNext);
-        return editor;
+        d->editor = new IntervalSequenceEditor(parent);
+        connect(d->editor, &IntervalSequenceEditor::editingFinished, this, &IntervalSequenceDelegate::commitAndCloseEditor);
+        connect(d->editor, &IntervalSequenceEditor::editingSplitSequence, this, &IntervalSequenceDelegate::splitSequence);
+        connect(d->editor, &IntervalSequenceEditor::editingMergeSequenceWithPrevious, this, &IntervalSequenceDelegate::mergeSequenceWithPrevious);
+        connect(d->editor, &IntervalSequenceEditor::editingMergeSequenceWithNext, this, &IntervalSequenceDelegate::mergeSequenceWithNext);
+        return d->editor;
     } else {
         return QStyledItemDelegate::createEditor(parent, option, index);
     }

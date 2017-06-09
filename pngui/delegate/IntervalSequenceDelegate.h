@@ -4,14 +4,15 @@
 #include <QObject>
 #include <QStyledItemDelegate>
 
+struct IntervalSequenceDelegateData;
+
 class IntervalSequenceDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    explicit IntervalSequenceDelegate(QWidget *parent = 0) :
-        QStyledItemDelegate(parent)
-    {}
+    explicit IntervalSequenceDelegate(QWidget *parent = 0);
+    virtual ~IntervalSequenceDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -30,6 +31,9 @@ private slots:
     void editingSplitSequence(int itemIndex);
     void editingMergeSequenceWithPrevious();
     void editingMergeSequenceWithNext();
+
+private:
+    IntervalSequenceDelegateData *d;
 };
 
 #endif // INTERVALSEQUENCEDELEGATE_H

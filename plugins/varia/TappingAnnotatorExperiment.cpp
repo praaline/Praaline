@@ -43,14 +43,15 @@ IntervalTier *TappingAnnotatorExperiment::readTappingWithHold(QXmlStreamReader &
             if (xmlAttributes.hasAttribute("isAutoRepeat")) {
                 isAutoRepeat = (xmlAttributes.value("isAutoRepeat").toInt() == 0) ? false : true;
             }
+            bool keyOK = (keycode == 57) || (keycode == 0) || (keycode == 1);
             RealTime t = RealTime::fromMilliseconds(mediaPos);
-            if      (!isAutoRepeat && eventType == "KEYPRS") {
+            if      (!isAutoRepeat && eventType == "KEYPRS" && (keyOK)) {
                 if (!pressed) {
                     pressed = true;
                     start = t;
                 }
             }
-            else if (!isAutoRepeat && eventType == "KEYREL") {
+            else if (!isAutoRepeat && eventType == "KEYREL" && (keyOK)) {
                 if (pressed) {
                     pressed = false;
                     end = t;
@@ -166,8 +167,14 @@ bool TappingAnnotatorExperiment::readResultsFile(Praaline::Core::CorpusRepositor
         }
         else if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "identification" && state == InExperiment) {
             QStringList attributes;
-            attributes << "age" << "sex" << "email" << "L1" << "hearingprob" << "musicaltraining" << "annotexperience";
+            // EXPE Hesitation: attributes << "age" << "sex" << "email" << "L1" << "hearingprob" << "musicaltraining" << "annotexperience";
+            attributes << "age" << "sex" << "email" << "L1" << "hearingprob" << "musicaltraining" << "annotexperience" <<
+                          "annot_accentuation" << "annot_prominence" << "annot_intonation" << "annot_prosodicunits" <<
+                          "annot_background";
             readAttributesToCorpusObject(xml, participant.data(), attributes);
+        }
+        else if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "intonation" && state == InExperiment) {
+
         }
         else if (xml.tokenType() == QXmlStreamReader::StartElement && xml.name() == "workingmemory" && state == InExperiment) {
             // readWorkingMemory(xml);

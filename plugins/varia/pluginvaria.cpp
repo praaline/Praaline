@@ -20,7 +20,7 @@
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
 
 #include "InterraterAgreement.h"
-#include "prosodicboundariesexperiment.h"
+#include "ProsodicBoundariesExperimentAnalysis.h"
 #include "MyExperiments.h"
 #include "ProsodyCourse.h"
 #include "DisfluenciesExperiments.h"
@@ -142,127 +142,6 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
     }
 }
 
-//QString path = "/home/george/Dropbox/2016 Experiences perceptives disfluences/01_GAMEANNOTATOR_ANALYSIS/Annotation2";
-//QDir dirinfo(path);
-//QFileInfoList list;
-//list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
-//dirinfo.setNameFilters(QStringList() << "*.txt");
-//list << dirinfo.entryInfoList();
-//foreach (QFileInfo info, list) {
-//    if (!info.isDir()) {
-//        DisfluenciesExperiments::resultsReadTapping("2", info.canonicalFilePath(), corpus);
-//        printMessage(QString("Read data from %1").arg(info.baseName()));
-//    }
-//}
-//corpus->save();
-//return;
-
-#include "pncore/interfaces/phon/PhonTranscription.h"
-
-void importPhonTranscriptionsIvana(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QString path = "/home/george/Dropbox/RECHERCHES_BEGAIEMENT/CORPUS_IVANA/";
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        Corpus *corpus = com->corpus();
-        if (!corpus) continue;
-        PhonTranscription tr;
-        tr.load(path + com->ID() + ".xml");
-        QString annotationID = com->ID();
-        QStringList participantIDs = tr.participantIDs();
-        if (participantIDs.isEmpty()) participantIDs << "";
-        QStringList speakerIDs;
-        foreach (QString participantID, participantIDs) {
-            QString speakerID = com->ID().left(5);
-            if (!participantID.isEmpty()) speakerID = speakerID + "_" + participantID;
-            speakerIDs << speakerID;
-        }
-        for (int i = 0; i < speakerIDs.count(); ++i) {
-            QString speakerID = speakerIDs.at(i);
-            QString participantID = participantIDs.at(i);
-            // If speaker does not exist, add it
-            if (!corpus->hasSpeaker(speakerID)) {
-                CorpusSpeaker *spk = new CorpusSpeaker(speakerID);
-                spk->setName(tr.sessionID());
-                corpus->addSpeaker(spk);
-                corpus->save();
-            }
-            QList<Interval *> intervals_transcription;
-            for (int j = 0; j < tr.segments().count(); ++j) {
-                PhonTranscription::Segment segment = tr.segments().at(j);
-                if (segment.speakerID != participantID) continue;
-                QString transcription_model = segment.orthography.join(" ");
-                QString transcription = segment.groupTiers.value("Orthography Actual").join(" ");
-                if (transcription.isEmpty()) transcription = transcription_model;
-                QString ortho = transcription;
-                ortho = ortho.remove(QRegularExpression("\\((.*)\\)"));
-                ortho = ortho.remove("/").remove(".").remove("<").remove(">").remove("*");
-                ortho = ortho.replace("  ", " ").replace("  ", " ");
-                // Start and end times. Check sanity, Phon allows for small overlaps.
-                RealTime tMin = segment.startTime;
-                RealTime tMax = segment.startTime + segment.duration;
-                if (j < tr.segments().count() - 1) {
-                    if (tMax > tr.segments().at(j+1).startTime) {
-                        tMax = tr.segments().at(j+1).startTime;
-                    }
-                }
-                Interval *intv = new Interval(tMin, tMax, transcription);
-                intv->setAttribute("transcription_model", transcription_model);
-                intv->setAttribute("ortho", ortho);
-                intervals_transcription << intv;
-            }
-            IntervalTier *tier_transcription = new IntervalTier("transcription", intervals_transcription);
-            corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
-        }
-    }
-}
-
-void prepareClassifierFiles(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QString path = "/home/george/Dropbox/RECHERCHES_BEGAIEMENT/CORPUS_DOUBLE_TACHE/";
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        QString filenameIn = path + "/features/" + com->ID() + ".arff";
-        QString filenameOut = path + "/features2/" + com->ID() + ".arff";
-        QFile fileIn(filenameIn);
-        if (!fileIn.open( QIODevice::ReadOnly | QIODevice::Text )) continue;
-        QTextStream stream(&fileIn);
-        QFile fileOut(filenameOut);
-        if (!fileOut.open( QIODevice::WriteOnly | QIODevice::Text )) continue;
-        QTextStream out(&fileOut);
-
-        QString speakerID = com->ID().section("_", 0, 0);
-        AnnotationTier *tier = com->corpus()->repository()->annotations()->getTier(com->ID(), speakerID, "disfluences_begues");
-        IntervalTier *tier_disf = qobject_cast<IntervalTier *>(tier);
-        if (!tier_disf) continue;
-
-        do {
-            QString line = stream.readLine();
-            if (line.startsWith("@attribute class {")) {
-                out << "@attribute class { garbage, block, lengthening }\n";
-            }
-            else if (line.startsWith("'file'")) {
-                int frame = line.section(",", 1, 1).toInt();
-                RealTime t = RealTime::fromMilliseconds(frame * 10);
-                Interval *intv = tier_disf->intervalAtTime(t);
-                if (intv && intv->text() == "pr") {
-                    out << line.replace(",garbage", ",lengthening") << "\n";
-                }
-                else if (intv && intv->text() == "bl") {
-                    out << line.replace(",garbage", ",block") << "\n";
-                }
-                else {
-                    out << line << "\n";
-                }
-            }
-            else {
-                out << line << "\n";
-            }
-        } while (!stream.atEnd());
-
-        fileIn.close();
-        fileOut.close();
-    }
-}
-
 QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString ret;
@@ -354,7 +233,6 @@ void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communicati
 
 }
 
-
 void cuttingStimuli(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString path = "/home/george/Dropbox/Annotation allemand/";
@@ -367,12 +245,79 @@ void cuttingStimuli(const QList<QPointer<CorpusCommunication> > &communications)
 
 }
 
+void expeProsodicBoundariesExperts(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    if (communications.isEmpty()) return;
+    QPointer<CorpusRepository> repository = communications.first()->repository();
+    QString corpusID = communications.first()->corpusID();
+
+    TappingAnnotatorExperiment texp;
+    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/RESULTS_EXPERTS";
+    QDirIterator iterator(path, QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
+    while (iterator.hasNext()) {
+        QString filename = iterator.next();
+        texp.readResultsFile(repository, corpusID, filename);
+        // printMessage(filename);
+    }
+}
+
+void expeEmilie(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    if (communications.isEmpty()) return;
+    QPointer<Corpus> corpus = communications.first()->corpus();
+
+    QString path = "/home/george/Dropbox/2017 Experience perceptive disfluence Emilie/Annotation2";
+    QDir dirinfo(path);
+    QFileInfoList list;
+    list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+    dirinfo.setNameFilters(QStringList() << "conv-*.txt");
+    list << dirinfo.entryInfoList();
+
+    foreach (QFileInfo info, list) {
+        if (!info.isDir()) {
+            DisfluenciesExperiments::resultsReadTapping("2", info.canonicalFilePath(), corpus);
+            qDebug() << info.baseName();
+            // printMessage(QString("Read data from %1").arg(info.baseName()));
+        }
+    }
+    corpus->save();
+}
+
+#include "MelissaExperiment.h"
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
+//    expeEmilie(communications);
+//    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
+//    return;
+
+//    if (communications.isEmpty()) return;
+//    QPointer<Corpus> corpus = communications.first()->corpus();
+//    if (!corpus) return;
+//    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/01b_perception_FP_experts/ANALYSES";
+//    // read files
+//    expeProsodicBoundariesExperts(communications);
+//    // calculate delta RT and adjust taps
+//    ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(corpus);
+//    ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(corpus);
+//    // calculate smoothed curve
+//    ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(corpus);
+//    // Attribute tapping peaks to syllables
+//    ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundaryExpert");
+//    ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "boundaryExpert");
+//    ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "/experts_features.txt", corpus, "boundaryExpert", false);
+
     // cuttingStimuli(communications);
     // importJohannaFiles(communications);
-    return;
+
+//    for (int i = 1; i <= 54; ++i) {
+//        printMessage(MelissaExperiment::multiplex(i));
+//        printMessage("");
+//    }
+//    return;
+
+
 
     // printMessage(valibelTranscription(communications));
     // prepareClassifierFiles(communications);
@@ -473,7 +418,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
 //    PBExpe::analysisCalculateSmoothedTappingModel(corpus);
 
-//   PBExpe::createProsodicUnits(corpus);
+//    PBExpe::createProsodicUnits(corpus);
 //    QStringList transcripts = PBExpe::printTranscriptionInProsodicUnits(corpus);
 //    foreach (QString t, transcripts) printMessage(t);
 
