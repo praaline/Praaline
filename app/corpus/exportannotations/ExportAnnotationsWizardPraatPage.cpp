@@ -1,9 +1,6 @@
 #include <QMessageBox>
 #include <QStandardItemModel>
 
-#include "ExportAnnotationsWizardPraatPage.h"
-#include "ui_ExportAnnotationsWizardPraatPage.h"
-
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/interfaces/praat/AnnotationInterfacePraat.h"
@@ -11,6 +8,9 @@ using namespace Praaline::Core;
 
 #include "pngui/model/CheckableProxyModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
+
+#include "ExportAnnotationsWizardPraatPage.h"
+#include "ui_ExportAnnotationsWizardPraatPage.h"
 
 
 struct ExportAnnotationsWizardPraatPageData {
@@ -30,6 +30,12 @@ ExportAnnotationsWizardPraatPage::ExportAnnotationsWizardPraatPage(QWidget *pare
 {
     ui->setupUi(this);
     ui->editFilenameTemplate->setText("$AnnotationID_$SpeakerID.TextGrid");
+    // Move items in the textgrid structure up or down
+    connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveUp()));
+    connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveDown()));
+    // Propose different filename templates based on whether different speakers will be included in the same TextGrid or not.
+    connect(ui->optionAllSpeakers, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
+    connect(ui->optionOneSpeakerPerFile, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
 }
 
 ExportAnnotationsWizardPraatPage::~ExportAnnotationsWizardPraatPage()
@@ -62,12 +68,6 @@ void ExportAnnotationsWizardPraatPage::setRepository(CorpusRepository *repositor
     d->modelTextgridStructure->setHorizontalHeaderLabels(QStringList() << tr("Level") << tr("Attribute") << tr("TextGrid Tier"));
     ui->tableviewTextgridStructure->setModel(d->modelTextgridStructure.data());
     ui->tableviewTextgridStructure->verticalHeader()->setDefaultSectionSize(20);
-    // Move items in the textgrid structure up or down
-    connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveUp()));
-    connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveDown()));
-    // Propose different filename templates based on whether different speakers will be included in the same TextGrid or not.
-    connect(ui->optionAllSpeakers, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
-    connect(ui->optionOneSpeakerPerFile, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
 }
 
 void ExportAnnotationsWizardPraatPage::annotationLevelAttributeSelectionChanged(

@@ -285,9 +285,9 @@ void expeEmilie(const QList<QPointer<CorpusCommunication> > &communications)
 
 #include "MelissaExperiment.h"
 
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
-
 //    expeEmilie(communications);
 //    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
 //    return;

@@ -18,6 +18,7 @@ using namespace Praaline::Core;
 #include "ui_ExportAnnotationsWizard.h"
 
 #include "ExportAnnotationsWizardPraatPage.h"
+#include "ExportAnnotationsWizardTimelinePage.h"
 
 struct ExportAnnotationsWizardData {
     ExportAnnotationsWizardData()
@@ -27,8 +28,8 @@ struct ExportAnnotationsWizardData {
     QString repositoryID;
     QSharedPointer<QStandardItemModel> modelAnnotations;
     QSharedPointer<ExportAnnotationsWizardPraatPage> pagePraat;
+    QSharedPointer<ExportAnnotationsWizardTimelinePage> pageTimelines;
 };
-
 
 ExportAnnotationsWizard::ExportAnnotationsWizard(QWidget *parent) :
     QWizard(parent), ui(new Ui::ExportAnnotationsWizard), d(new ExportAnnotationsWizardData)
@@ -46,7 +47,8 @@ ExportAnnotationsWizard::ExportAnnotationsWizard(QWidget *parent) :
     connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     // Export formats
-    ui->comboBoxExportFormat->addItems(QStringList() << tr("Praat TextGrids"));
+    ui->comboBoxExportFormat->addItem(tr("Praat TextGrids"), Page_Praat);
+    ui->comboBoxExportFormat->addItem(tr("Multi-tier timeline to Excel spreadsheet(s)"), Page_Timelines);
     ui->comboBoxExportFormat->setCurrentIndex(0);
     connect(ui->comboBoxExportFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(exportFormatChanged(int)));
     // Select file or folder button
@@ -55,8 +57,10 @@ ExportAnnotationsWizard::ExportAnnotationsWizard(QWidget *parent) :
     // Presentation
     ui->treeViewAnnotations->setHeaderHidden(false);
     // Pages for export formats
-    d->pagePraat = QSharedPointer<ExportAnnotationsWizardPraatPage>(new ExportAnnotationsWizardPraatPage(this));
-    addPage(d->pagePraat.data());
+    d->pagePraat = QSharedPointer<ExportAnnotationsWizardPraatPage>(new ExportAnnotationsWizardPraatPage());
+    d->pageTimelines = QSharedPointer<ExportAnnotationsWizardTimelinePage>(new ExportAnnotationsWizardTimelinePage());
+    setPage(Page_Praat, d->pagePraat.data());
+    setPage(Page_Timelines, d->pageTimelines.data());
 }
 
 ExportAnnotationsWizard::~ExportAnnotationsWizard()
@@ -109,15 +113,27 @@ void ExportAnnotationsWizard::corpusRepositoryChanged(const QString &repositoryI
     ui->treeViewAnnotations->setModel(d->modelAnnotations.data());
 }
 
+int ExportAnnotationsWizard::nextId() const
+{
+    if (currentId() == 0) {
+        if      (ui->comboBoxExportFormat->currentData() == QVariant(Page_Praat))       return Page_Praat;
+        else if (ui->comboBoxExportFormat->currentData() == QVariant(Page_Timelines))   return Page_Timelines;
+    }
+    return -1;
+}
+
 bool ExportAnnotationsWizard::validateCurrentPage()
 {
     if (currentId() == 0) {
         QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID);
         if (!repository) return false;
         // Update annotation structure on next page, depending on the export format
-        if (ui->comboBoxExportFormat->currentIndex() == 0) d->pagePraat->setRepository(repository);
+        if      (ui->comboBoxExportFormat->currentData() == QVariant(Page_Praat))
+            d->pagePraat->setRepository(repository);
+        else if (ui->comboBoxExportFormat->currentData() == QVariant(Page_Timelines))
+            d->pageTimelines->setRepository(repository);
     }
-    else if (currentId() == 1)
+    else if (currentId() >= 1)
         doExport();
     return true;
 }
@@ -132,8 +148,12 @@ void ExportAnnotationsWizard::doExport()
         CorpusObjectInfo info = data.value<CorpusObjectInfo>();
         annotations << info;
     }
-    if (ui->comboBoxExportFormat->currentIndex() == 0) {
+    if (currentId() == Page_Praat) {
         d->pagePraat->setExportPath(ui->editFileFolder->text());
         d->pagePraat->doExport(annotations);
+    }
+    else if (currentId() == Page_Timelines) {
+        d->pageTimelines->setExportPath(ui->editFileFolder->text());
+        d->pageTimelines->doExport(annotations);
     }
 }

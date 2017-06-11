@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ExportAnnotationsWizardTimelinePage</class>
+ <widget class="QWizardPage" name="ExportAnnotationsWizardTimelinePage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>784</width>
+    <height>591</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>WizardPage</string>
+  </property>
+  <property name="title">
+   <string>Export Annotations to Multi-tier Timelines</string>
+  </property>
+  <property name="subTitle">
+   <string>In this step you can define the structure of the exported Excel spreadsheet(s).</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupboxLevelsAttributes">
+     <property name="title">
+      <string>Annotation Levels and Attributes to export</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QTreeView" name="treeviewLevelsAttributes"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QGroupBox" name="groupboxTimelineStructure">
+     <property name="title">
+      <string>Structure of exported timelines</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="2" column="2">
+       <widget class="QToolButton" name="buttonMoveUp">
+        <property name="text">
+         <string>Move Up</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QToolButton" name="buttonMoveDown">
+        <property name="text">
+         <string>Move Down</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="0" colspan="5">
+       <widget class="QTableView" name="tableviewTimelineStructure"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QToolButton" name="buttonAdd">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QToolButton" name="buttonDelete">
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupboxAnnotationStrategy">
+     <property name="title">
+      <string>Files and filenames template</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="editFilenameTemplateAll"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="optionExportAll">
+        <property name="text">
+         <string>Include all Annotations in the same file:</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="optionExportEach">
+        <property name="text">
+         <string>Create a separate file for each Annotation:</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="editFilenameTemplateEach"/>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QLabel" name="labelFilenameTemplate">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>You may use the following fields for the filenames: $CorpusID, $CommunicationID, $SpeakerID, $AnnotationID and $RecordingID.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxFilenameTemplate">
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="optionColourCodeSpeakers">
+        <property name="text">
+         <string>Use colour-coding for speakers</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>optionExportAll</tabstop>
+  <tabstop>editFilenameTemplateAll</tabstop>
+  <tabstop>optionExportEach</tabstop>
+  <tabstop>editFilenameTemplateEach</tabstop>
+  <tabstop>optionColourCodeSpeakers</tabstop>
+  <tabstop>treeviewLevelsAttributes</tabstop>
+  <tabstop>tableviewTimelineStructure</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

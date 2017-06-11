@@ -34,6 +34,7 @@ QList<QString> DisfluencyAnalyser::prepareInput(QList<Token> &input)
 QList<QString> DisfluencyAnalyser::mergeResults(const QList<Token> &input, const QList<QString> &tags)
 {
     QList<QString> ret;
+    if (tags.isEmpty()) return ret;
     QString baseCode = tags.first().left(3);
     foreach (Token tok, input) {
         if (tok.i >= 0) {

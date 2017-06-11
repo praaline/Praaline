@@ -220,7 +220,8 @@ SOURCES += main.cpp \
     annotation/asr/AutomaticTranscriptionWidget.cpp \
     annotation/asr/ASRModuleWidgetBase.cpp \
     annotation/editors/GroupingAnnotationEditor.cpp \
-    annotation/editors/AnnotationMultiTierEditor.cpp
+    annotation/editors/AnnotationMultiTierEditor.cpp \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -334,7 +335,8 @@ HEADERS  += \
     annotation/asr/AutomaticTranscriptionWidget.h \
     annotation/asr/ASRModuleWidgetBase.h \
     annotation/editors/GroupingAnnotationEditor.h \
-    annotation/editors/AnnotationMultiTierEditor.h
+    annotation/editors/AnnotationMultiTierEditor.h \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -401,7 +403,8 @@ FORMS    += \
     corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
     annotation/calculate/TidyUpAnnotationsDialog.ui \
     annotation/SpeechRecognitionWidget.ui \
-    annotation/asr/AutomaticTranscriptionWidget.ui
+    annotation/asr/AutomaticTranscriptionWidget.ui \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui
 
 RESOURCES += \
     praaline.qrc \

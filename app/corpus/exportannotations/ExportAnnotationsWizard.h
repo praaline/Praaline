@@ -20,6 +20,14 @@ public:
     explicit ExportAnnotationsWizard(QWidget *parent = 0);
     ~ExportAnnotationsWizard();
 
+    int nextId() const override;
+
+    enum {
+        Page_Intro,
+        Page_Praat,
+        Page_Timelines
+    };
+
 private slots:
     void selectFileFolder();
     void exportFormatChanged(int);
