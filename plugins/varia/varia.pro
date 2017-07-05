@@ -71,7 +71,9 @@ HEADERS += \
     ProsodicBoundariesExperimentPreparation.h \
     ProsodicBoundariesExperimentAnalysis.h \
     StutteredSpeechAlignmentExperiments.h \
-    MelissaExperiment.h
+    MelissaExperiment.h \
+    ForcedAligner.h \
+    MacroprosodyExperiment.h
 
 
 SOURCES += \ 
@@ -90,4 +92,6 @@ SOURCES += \
     ProsodicBoundariesExperimentPreparation.cpp \
     ProsodicBoundariesExperimentAnalysis.cpp \
     StutteredSpeechAlignmentExperiments.cpp \
-    MelissaExperiment.cpp
+    MelissaExperiment.cpp \
+    ForcedAligner.cpp \
+    MacroprosodyExperiment.cpp

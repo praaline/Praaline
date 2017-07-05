@@ -117,6 +117,7 @@
 #include <QDesktopServices>
 #include <QDialogButtonBox>
 #include <QFileSystemWatcher>
+#include <QVariantHash>
 
 #include <iostream>
 #include <cstdio>
@@ -3365,7 +3366,7 @@ void VisualiserWidget::setAnnotationLevelAttributeSelection(const QList<QPair<QS
     updateAnnotationPanes();
 }
 
-void VisualiserWidget::addAnnotationPane()
+void VisualiserWidget::addAnnotationPane(QVariantHash parameters)
 {
     if (!getMainModel()) return;
 
@@ -3375,13 +3376,8 @@ void VisualiserWidget::addAnnotationPane()
 
     AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), m_tiers, annotationAttributes);
     // Excluded speakers
-    QList<QString> excluded;
-    excluded << "Emilie_1" << "Emilie_2";
-    for (int i = 1; i <=9; ++i) excluded << QString("S0%1").arg(i);
-    for (int i = 10; i <=300; ++i) excluded << QString("S%1").arg(i);
-    excluded << "DEL" << "CAM" << "AVM" << "GJP" << "KAS" << "DUC" << "MET" << "LAB" << "SCS" << "POC" << "AUA" << "LYC"
-             << "BIU" << "SMC" << "PIC" << "NIG" << "GRA" << "LDA" << "FEG" << "JOE" << "PEJ" << "SIC" << "GOR" << "TRV"
-             << "GRI" << "HES" << "MAP" << "MIM" << "PRT" << "smooth";
+    QStringList excluded;
+    if (parameters.contains("excludeSpeakers")) excluded = parameters.value("excludeSpeakers").toStringList();
     model->excludeSpeakerIDs(excluded);
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add annotations pane", true);
@@ -3396,10 +3392,6 @@ void VisualiserWidget::addAnnotationPane()
     m_paneStack->setCurrentLayer(pane, newLayer);
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
-
-    // addTappingDataPane(m_tiers); // for Emilie
-    addTappingDataPane(m_tiers, "tappingAdj_naive", "smooth_naive", "boundary");
-    addTappingDataPane(m_tiers, "tappingAdj_expert", "smooth_expert", "boundaryExpert");
 }
 
 void VisualiserWidget::updateAnnotationPanes()
@@ -3439,14 +3431,20 @@ void VisualiserWidget::addLayerTimeInstantsFromIntevalTier(IntervalTier *tier)
 }
 
 Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
-        AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID)
+        AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID,
+        bool createNewPane, const QString &speakerID)
 {
     if (!tier) return 0;
     if (!getMainModel()) return 0;
-    CommandHistory::getInstance()->startCompoundOperation("Add Pane", true);
-    AddPaneCommand *command = new AddPaneCommand(this);
-    CommandHistory::getInstance()->addCommand(command);
-    Pane *pane = command->getPane();
+    Pane *pane(0);
+    if (createNewPane) {
+        CommandHistory::getInstance()->startCompoundOperation("Add Pane", true);
+        AddPaneCommand *command = new AddPaneCommand(this);
+        CommandHistory::getInstance()->addCommand(command);
+        pane = command->getPane();
+    } else {
+        pane = m_paneStack->getCurrentPane();
+    }
     LayerFactory::LayerType type = LayerFactory::Type("TimeValues");
     Layer *newLayer = m_document->createEmptyLayer(type);
     newLayer->setPresentationName(tier->name());
@@ -3456,18 +3454,18 @@ Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
         RealTime t = RealTime::fromNanoseconds(tier->at(i)->attribute(timeAttributeID).toLongLong());
         SparseTimeValueModel::Point point(RealTime::realTime2Frame(t , model->getSampleRate()),
                                           tier->at(i)->attribute(valueAttributeID).toDouble(),
-                                          tier->at(i)->attribute(labelAttributeID).toString());
+                                          (!speakerID.isEmpty()) ? speakerID :
+                                                                   tier->at(i)->attribute(labelAttributeID).toString());
         model->addPoint(point);
     }
     m_document->addLayerToView(pane, newLayer);
     m_paneStack->setCurrentLayer(pane, newLayer);
-    CommandHistory::getInstance()->endCompoundOperation();
+    if (createNewPane) CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();
     return newLayer;
 }
 
-void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                                          const QString &tappingTierName,
+void VisualiserWidget::addTappingDataPane(const QString &tappingTierName,
                                           const QString &smoothTierName,
                                           const QString &boundaryAttributePrefix)
 {
@@ -3512,8 +3510,8 @@ void VisualiserWidget::addTappingDataPane(QMap<QString, QPointer<AnnotationTierG
     RegionModel *modelRegions = qobject_cast<RegionModel *>(newRegionsLayer->getModel());
     sv_samplerate_t sampleRate = modelInstants->getSampleRate();
 
-    foreach (QString subjectID, tiers.keys()) {
-        QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
+    foreach (QString subjectID, m_tiers.keys()) {
+        QPointer<AnnotationTierGroup> tiersSubj = m_tiers.value(subjectID);
         // Instants model
         IntervalTier *tier_tapping = tiersSubj->getIntervalTierByName(tappingTierName);
         if (tier_tapping) {

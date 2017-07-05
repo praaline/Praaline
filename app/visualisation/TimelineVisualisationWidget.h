@@ -58,6 +58,9 @@ private:
                                     QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
     void visualiserNewSession(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void annotationTimelineEditorOpen(QPointer<Corpus>, const QString &);
+
+    void loadVisualisationNassima1(QPointer<Corpus> corpus, const QString &annotationID);
+    void loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID);
 };
 
 #endif // TIMELINEVISUALISATIONWIDGET_H

@@ -36,8 +36,9 @@ public:
     virtual ~VisualiserWidget();
 
     void addLayerTimeInstantsFromIntevalTier(IntervalTier *tier);
-    Layer * addLayerTimeValuesFromAnnotationTier(AnnotationTier *tier,
-                                              const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID);
+    Layer * addLayerTimeValuesFromAnnotationTier(
+            AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID,
+            bool createNewPane = false, const QString &speakerID = "");
 
 signals:
     void canChangeSolo(bool);
@@ -51,10 +52,9 @@ public slots:
 
     void setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
     void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);
-    void addAnnotationPane();
+    void addAnnotationPane(QVariantHash parameters);
     void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
-    void addTappingDataPane(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                            const QString &tappingTierName = "tappingAdj",
+    void addTappingDataPane(const QString &tappingTierName = "tappingAdj",
                             const QString &smoothTierName = "smooth",
                             const QString &boundaryAttributePrefix = "boundary");
 

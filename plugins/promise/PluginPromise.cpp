@@ -213,7 +213,7 @@ void Praaline::Plugins::Promise::PluginPromise::runSpeechRateEstimator(const QLi
                 IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
                 if (!tier_syll) { printMessage("   Tier not found: syll (syllables). Aborting."); continue; }
                 QList<Point *> points;
-                for (RealTime centre = tier_syll->tMin(); centre <= tier_syll->tMax(); centre = centre + RealTime::fromMilliseconds(10)) {
+                for (RealTime centre = tier_syll->tMin(); centre <= tier_syll->tMax(); centre = centre + RealTime::fromMilliseconds(100)) {
                     points << new Point(centre, "");
                 }
                 PointTier *tier_speechrate = new PointTier("speech_rate", points);

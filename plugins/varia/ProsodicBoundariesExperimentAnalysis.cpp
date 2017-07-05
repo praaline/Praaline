@@ -142,7 +142,9 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(Corpus *corp
             << RealTime::fromSeconds(32.0);
     beeps << beeps01 << beeps02;
     foreach (CorpusSpeaker *spk, corpus->speakers()) {
-        if (!spk->property("isExperimentSubject").toBool()) continue;
+        if (spk->property("isExperimentSubject").toInt() == 0) continue;
+        if (spk->property("exclude").toInt() > 0) continue;
+
         QList<RealValueList > dRTs;
         RealValueList dRTsAll;
         dRTs << RealValueList() << RealValueList();
@@ -150,7 +152,11 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(Corpus *corp
             QString annotationID = QString("beeps0%1").arg(k);
             AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(annotationID, spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << annotationID << spk->ID(); continue; }
-            IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
+            QString tierName = "tapping";
+            // The next two lines only for the Nassima experiment
+            if (k == 1) tierName = "tapping_boundaries";
+            else if (k == 2) tierName = "tapping_pauses";
+            IntervalTier *tier_tap = tiers->getIntervalTierByName(tierName);
             if (!tier_tap) { qDebug() << "no tier tapping"; continue; }
             QList<RealTime> tap_down;
             foreach (Interval *intv, tier_tap->intervals()) {
@@ -164,8 +170,10 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(Corpus *corp
                     if ((!found) && (t > beep) && (t < nextBeep)) {
                         RealTime dRT = t - beep;
                         qDebug() << spk->ID() << " " << beep.toDouble() << " "  << t.toDouble();
-                        dRTs[k-1].append(dRT.toDouble());
-                        dRTsAll.append(dRT.toDouble());
+                        if (dRT < RealTime::fromMilliseconds(600)) {
+                            dRTs[k-1].append(dRT.toDouble());
+                            dRTsAll.append(dRT.toDouble());
+                        }
                         found = true;
                     }
                 }
@@ -182,7 +190,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(Corpus *corp
     corpus->save();
 }
 
-void ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(Corpus *corpus)
+void ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(Corpus *corpus, const QString &tierName)
 {
     if (!corpus) return;
     foreach (CorpusCommunication *com, corpus->communications()) {
@@ -190,9 +198,9 @@ void ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(Cor
             if (!spk->property("isExperimentSubject").toBool()) continue;
             AnnotationTierGroup *tiers = corpus->repository()->annotations()->getTiers(com->ID(), spk->ID());
             if (!tiers) { qDebug() << "no beeps annotation" << com->ID() << spk->ID(); continue; }
-            IntervalTier *tier_tap = tiers->getIntervalTierByName("tapping");
+            IntervalTier *tier_tap = tiers->getIntervalTierByName(tierName);
             if (!tier_tap) { qDebug() << "no tier tapping"; continue; }
-            IntervalTier *tier_tapAdj = new IntervalTier(tier_tap, "tappingAdj");
+            IntervalTier *tier_tapAdj = new IntervalTier(tier_tap, tierName + "Adj");
             RealTime delta = RealTime::fromSeconds(spk->property("drt_avg").toDouble());
             tier_tapAdj->timeShift(-delta);
             corpus->repository()->annotations()->saveTier(com->ID(), spk->ID(), tier_tapAdj);
@@ -200,7 +208,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(Cor
     }
 }
 
-void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects)
+void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects, const QString &tierName)
 {
     if (!corpus) return;
     QTime time = QTime::currentTime();
@@ -218,7 +226,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel
         foreach (QString subjectID, tiers.keys()) {
             if (subjectID.isEmpty()) continue;
             QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
-            if (!tiersSubj->tierNames().contains("tappingAdj")) continue;
+            if (!tiersSubj->tierNames().contains(tierName + "Adj")) continue;
             subjectIDs << subjectID;
         }
         if (maxNumberOfSubjects > 0)  {
@@ -230,7 +238,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel
 
         foreach (QString subjectID, subjectIDs) {
             QPointer<AnnotationTierGroup> tiersSubj = tiers.value(subjectID);
-            QPointer<IntervalTier> tier_tapping = tiersSubj->getIntervalTierByName("tappingAdj");
+            QPointer<IntervalTier> tier_tapping = tiersSubj->getIntervalTierByName(tierName + "Adj");
             if (!tier_tapping) continue;
             if (subjectID.isEmpty()) continue;
             totalAnnotators++; // Count the subject as a potential annotator even if they did not tap
@@ -247,7 +255,8 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel
         // Smoothed time-value model, calculated using a sliding window / also saved as a point-tier
         QList<Point *> smoothPoints;
 
-        RealTime step = RealTime::fromMilliseconds(25);
+        RealTime step = RealTime::fromMilliseconds(25);// calculate smoothed curve
+        //    ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(corpus);
         RealTime slidingWindowLeft = RealTime::fromMilliseconds(250);
         RealTime slidingWindowRight = RealTime::fromMilliseconds(250);
         RealTime groupingWindowLeft = RealTime::fromMilliseconds(500);
@@ -334,7 +343,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel
             }
 
             // 3. Update values
-            com->setProperty("totalAnnotators", totalAnnotators);
+            com->setProperty(tierName + "totalAnnotators", totalAnnotators);
             double force = ((double)slidingCount) / ((double)totalAnnotators);
             Point *sp = new Point(RealTime::frame2RealTime(frame, sampleRate), groupSubjectsHavingAnnotated.join(","));
             sp->setAttribute("force", force);
@@ -345,7 +354,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel
             sp->setAttribute("timesAdj", groupTimesAdj.join("|"));
             smoothPoints << sp;
         }
-        QScopedPointer<PointTier> tier_smooth(new PointTier("smooth", smoothPoints, RealTime(0,0), tMax));
+        QScopedPointer<PointTier> tier_smooth(new PointTier(tierName + "_smooth", smoothPoints, RealTime(0,0), tMax));
 
         // Calculate local maxima
         QList<Point *> maxima;
@@ -417,14 +426,15 @@ QList<PerceivedBoundary> groupFromSyll(Interval *syll, QString prefix)
     return groupFromLists(subjects, timesAdj, timesOrig);
 }
 
-void ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString levelForUnits, QString prefix)
+void ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, const QString &levelForUnits,
+                                                                                          const QString &prefix, const QString &tierName)
 {
     if (!corpus) return;
     foreach (CorpusCommunication *com, corpus->communications()) {
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
-        QPointer<AnnotationTierGroup> tiersSmooth = tiers.value("smooth");
+        QPointer<AnnotationTierGroup> tiersSmooth = tiers.value("smooth"); // smooth is the fake speakerID
         if (!tiersSmooth) continue;
-        QPointer<PointTier> tier_smooth = tiersSmooth->getPointTierByName("smooth");
+        QPointer<PointTier> tier_smooth = tiersSmooth->getPointTierByName(tierName + "_smooth");
         if (!tier_smooth) continue;
         foreach (QString speakerID, tiers.keys()) {
             QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
@@ -568,7 +578,7 @@ void ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLo
                         qDebug() << "Error subject included twice " << com->ID() << " syll index " << syllIndex << " subject " << PPB.subject;
                     }
                 }
-                int totalAnnotators = com->property("totalAnnotators").toInt();
+                int totalAnnotators = com->property(tierName + "totalAnnotators").toInt();
                 double force = ((double)(merged.count())) / ((double)totalAnnotators);
                 Interval *syll = tier_syll->interval(syllIndex);
 
@@ -833,8 +843,8 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(const
     }
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
-        if (!id.startsWith("A") && !id.startsWith("B")) continue;
-        if (id == "B19S" || id == "B19N") continue;
+//        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+//        if (id == "B19S" || id == "B19N") continue;
 
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {

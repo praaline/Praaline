@@ -18,9 +18,10 @@ public:
                                            const QString &filename, Corpus *corpus);
     // Analyse
     static void analysisCalculateDeltaRT(Corpus *corpus);
-    static void analysisCreateAdjustedTappingTier(Corpus *corpus);
-    static void analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects = 0);
-    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, QString levelForUnits, QString prefix);
+    static void analysisCreateAdjustedTappingTier(Corpus *corpus, const QString &tierName = "tapping");
+    static void analysisCalculateSmoothedTappingModel(Corpus *corpus, int maxNumberOfSubjects = 0,  const QString &tierName = "tapping");
+    static void analysisAttributeTappingToSyllablesLocalMaxima(Corpus *corpus, const QString &levelForUnits,
+                                                               const QString &prefix, const QString &tierName = "tapping");
     static void calculateDelayAndDispersion(Corpus *corpus, QString prefix);
     static void analysisCalculateCoverage(Corpus *corpus, QString prefix);
     static void analysisStabilisation(Corpus *corpus, int maxNumberOfSubjects, int iterations, QString prefix);    

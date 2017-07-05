@@ -714,12 +714,12 @@ void CorpusExplorerWidget::addRecording()
     QFileDialog::Options options;
     QString selectedFilter;
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Add Media Recordings to Corpus"),
-                            corpus->repository()->files()->basePath(), tr("Wave Files (*.wav);;All Files (*)"),
+                            corpus->repository()->files()->basePath(), tr("Wave Files (*.wav);;MP3 Files (*.mp3);;All Files (*)"),
                             &selectedFilter, options);
     if (fileNames.count() == 0) return;
     foreach(QString fileName, fileNames) {
         QFileInfo info(fileName);
-        if (info.suffix() == "wav") {
+        if (info.suffix() == "wav" || info.suffix() == "mp3") {
             CorpusRecording *rec = new CorpusRecording(info.baseName(), corpus->repository(), nodeCom->communication);
             rec->setFilename(corpus->repository()->files()->getRelativeToBasePath(fileName));
             nodeCom->communication->addRecording(rec);

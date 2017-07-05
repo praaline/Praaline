@@ -1,6 +1,14 @@
+#include <QPointer>
 #include <QString>
 #include <QList>
 #include <QStringList>
+
+#include "pncore/corpus/Corpus.h"
+#include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
+using namespace Praaline::Core;
+
 #include "MelissaExperiment.h"
 
 MelissaExperiment::MelissaExperiment()
@@ -124,3 +132,51 @@ QString MelissaExperiment::multiplex(int participantNo)
 
     return QString("%1\n%2\n%3").arg(chocolat).arg(tabouret).arg(plantation);
 }
+
+// Prepare for the alignment of stimuli
+void MelissaExperiment::prepareStimuliCorpus(QPointer<CorpusCommunication> com)
+{
+    Q_UNUSED(com)
+    QString path = "/home/george/Dropbox/Corpus_Melissa_Lesseur";
+    QFile file(path + "/soundbite_export_table_for_alignment.txt");
+    if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return;
+    QTextStream stream(&file);
+
+    QString previousStimulusID;
+    RealTime offset = RealTime::fromMilliseconds(150);
+    QList<Interval *> intervals_transcription;
+    QList<Interval *> intervals_phonetisation;
+    do {
+        QString line = stream.readLine().trimmed();
+        if (line.startsWith("#")) continue;
+        QStringList fields = line.split("\t");
+        QString stimulusID = fields.at(0);
+        if ((!previousStimulusID.isEmpty()) && (previousStimulusID != stimulusID)) {
+            intervals_transcription << new Interval(offset, offset + RealTime::fromMilliseconds(150), "");
+            intervals_phonetisation << new Interval(offset, offset + RealTime::fromMilliseconds(150), "");
+            IntervalTier *ortho = new IntervalTier("ortho", intervals_transcription);
+            IntervalTier *phono = new IntervalTier("phono", intervals_phonetisation);
+            AnnotationTierGroup *txg = new AnnotationTierGroup();
+            txg->addTier(phono);
+            txg->addTier(ortho);
+            PraatTextGrid::save("/home/george/AA/" + previousStimulusID + ".TextGrid", txg);
+            delete txg;
+            intervals_phonetisation.clear();
+            intervals_transcription.clear();
+            offset = RealTime::fromMilliseconds(150);
+        }
+        RealTime pause_after = RealTime::fromMilliseconds(fields.at(2).toInt());
+        RealTime duration = RealTime::fromNanoseconds(fields.at(9).toLongLong());
+        QString transcription = fields.at(11);
+        QString phonetisation = fields.at(12);
+        intervals_transcription << new Interval(offset, offset + duration, transcription);
+        intervals_phonetisation << new Interval(offset, offset + duration, phonetisation);
+        offset = offset + duration + pause_after;
+        previousStimulusID = stimulusID;
+    } while (!stream.atEnd());
+    file.close();
+
+}
+
+
+

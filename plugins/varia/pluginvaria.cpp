@@ -26,6 +26,8 @@
 #include "DisfluenciesExperiments.h"
 #include "SpeechRateExperiments.h"
 #include "TappingAnnotatorExperiment.h"
+#include "MelissaExperiment.h"
+#include "MacroprosodyExperiment.h"
 
 #include "pluginvaria.h"
 
@@ -283,11 +285,88 @@ void expeEmilie(const QList<QPointer<CorpusCommunication> > &communications)
     corpus->save();
 }
 
-#include "MelissaExperiment.h"
 
+
+void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
+                foreach (Interval *intv, tier_transcription->intervals()) {
+                    if (intv->text().trimmed() == "-") intv->setText("_");
+                }
+                int i = tier_transcription->count() - 1;
+                while (i >= 2) {
+                    if (tier_transcription->interval(i - 2)->text().trimmed().endsWith("/") && tier_transcription->interval(i)->text().trimmed().startsWith("+") &&
+                        tier_transcription->interval(i - 1)->isPauseSilent() && tier_transcription->interval(i - 1)->duration().toDouble() < 0.400)
+                    {
+                        QString s = tier_transcription->interval(i - 2)->text().trimmed();
+                        s.chop(1);
+                        tier_transcription->interval(i - 2)->setText(s);
+                        tier_transcription->interval(i - 1)->setText("");
+                        tier_transcription->interval(i)->setText(tier_transcription->interval(i)->text().remove(0, 1));
+                        tier_transcription->merge(i - 2, i, "");
+                    }
+                    else if (tier_transcription->interval(i - 1)->isPauseSilent() && tier_transcription->interval(i - 1)->duration().toDouble() < 0.180) {
+                        tier_transcription->interval(i-1)->setText("");
+                        tier_transcription->merge(i - 2, i, " ");
+                    }
+                    --i;
+                }
+                tier_transcription->replace("", "  ", " ");
+                tier_transcription->replace("", "_", "");
+                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
+            }
+            qDeleteAll(tiersAll);
+            // printMessage(com->ID());
+        }
+    }
+}
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
+
+    // NASSIMA EXPERIMENT - boundaries and pauses
+    // if (communications.isEmpty()) return;
+    // QPointer<Corpus> corpus = communications.first()->corpus();
+    // if (!corpus) return;
+    // calculate delta RT and adjust taps
+    // ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(corpus);
+    // calculate adjusted tapping tiers
+    // ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(corpus, "tapping_boundaries");
+    // ProsodicBoundariesExperimentAnalysis::analysisCreateAdjustedTappingTier(corpus, "tapping_pauses");
+    // Calculate moving average (smoothed curve) and Attribute tapping peaks to syllables
+    // ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(corpus, 0, "tapping_boundaries");
+    // ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundary", "tapping_boundaries");
+    // ProsodicBoundariesExperimentAnalysis::analysisCalculateSmoothedTappingModel(corpus, 0, "tapping_pauses");
+    // ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "pause", "tapping_pauses");
+    // Calculate delay and dispersion after attribution
+    // ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "boundary");
+    // ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "pause");
+    // Extract tables for statistics
+    // QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/02_perception-macroprosodie/Analyses";
+    // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "/boundary_features.txt", corpus, "boundary", false);
+    // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "/pause_features.txt", corpus, "pause", false);
+
+    // z-score normalisation
+    MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_speechrate");
+    MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_pitchmovement");
+    MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_speechrate");
+    MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_pitchmovement");
+
+    return;
+
+    //MelissaExperiment::prepareStimuliCorpus(communications.first());
+    //return;
+
 //    expeEmilie(communications);
 //    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
 //    return;
@@ -488,7 +567,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        if (!annot) continue;
 //        QString annotationID = annot->ID();
 //        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
-//        foreach (QString speakerID, tiersAll.keys()) {
+//        foreach (QStringprepareStimuliCorpus speakerID, tiersAll.keys()) {
 //            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 //            if (!tiers) continue;
 

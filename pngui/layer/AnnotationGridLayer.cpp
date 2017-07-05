@@ -153,10 +153,10 @@ int AnnotationGridLayer::getYForTierIndex(View *v, int tierIndex) const
     if ((m_plotStyle == PlotBlendedSpeakers) && m_model) {
         int i = m_tierTuples.at(tierIndex).indexLevelAttributePair;
         int c = m_model->countLevelsAttributes();
-        int y = i * h / c;
-        // qDebug() << "Tier index " << tierIndex << " height " << y;
-        return y;
+        // qDebug() << "Tier index " << tierIndex << " i " << i << " c " << c <<  " height " << int(i * h / c);
+        return int(i * h / c);
     }
+    // qDebug() << "Tier index " << tierIndex << " c " << m_tierTuples.count() <<  " height " << int(tierIndex * h / m_tierTuples.count());
     return int(tierIndex * h / m_tierTuples.count());
 }
 
@@ -362,7 +362,7 @@ void AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
         int y1; // bottom boundary, calculate as follows
         if (m_plotStyle == PlotBlendedSpeakers) {
             // attention, in the Blended Speakers plot mode, the tiers wrap around
-            y1 = (tierIndex + 1 < m_model->countLevelsAttributes()) ? getYForTierIndex(v, tierIndex + 1) : rect.bottom();
+            y1 = ((tierIndex + 1) % m_model->countLevelsAttributes()) ? getYForTierIndex(v, tierIndex + 1) : rect.bottom();
         } else {
             y1 = (tierIndex + 1 < tierCount) ? getYForTierIndex(v, tierIndex + 1) : rect.bottom();
         }
@@ -446,6 +446,7 @@ void AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
             else
                 paint.drawText(textRect, Qt::AlignHCenter | Qt::AlignVCenter | Qt::TextWordWrap, label);
             paint.setRenderHint(QPainter::Antialiasing, false);
+            // qDebug() << y0 << y1 << label;
             // cerr << tierIndex << " " << speakerID << " " << levelID << " " << attributeID << " " << y0 << " " << y1 << " " << label << endl;
         }
     }
@@ -646,7 +647,7 @@ void AnnotationGridLayer::textEditorReposition(View *v) const
     m_textEditor->setParent(v);
     m_textEditor->move(x_left + 3, y_top + 2);
     m_textEditor->resize(width - 4, height - 2);
-    qDebug() << "Text editor move to" << x_left << y_top;
+    // qDebug() << "Text editor move to" << x_left << y_top;
 }
 
 void AnnotationGridLayer::textEditingFinished()
