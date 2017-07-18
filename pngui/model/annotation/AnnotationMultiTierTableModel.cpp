@@ -126,14 +126,28 @@ QVariant AnnotationMultiTierTableModel::dataCell(QPointer<AnnotationTierGroup> s
         if (s.endsWith(" ")) s.chop(1);
         return s;
     }
-    else if (attributeID.startsWith("_group:")) {
+    else if (attributeID.startsWith("_group:") || attributeID.startsWith("_group_contains:")) {
         QString levelIDgrouped = attributeID.section(":", 1, 1);
         IntervalTier *tier_groupped = spk_tiers->getIntervalTierByName(levelIDgrouped);
         if (!tier_groupped) return QVariant();
-        QList<Interval *> intervals = tier_groupped->getIntervalsContainedIn(tier->interval(intvID));
+        QList<Interval *> intervals;
+        if      (attributeID.startsWith("_group:"))          intervals = tier_groupped->getIntervalsOverlappingWith(tier->interval(intvID));
+        else if (attributeID.startsWith("_group_contains:")) intervals = tier_groupped->getIntervalsContainedIn(tier->interval(intvID));
         QString s;
         foreach (Interval *intv, intervals) s.append(intv->text()).append(" ");
         return QString("(%1)%2").arg(s.trimmed()).arg(tier->interval(intvID)->text());
+    }
+    else if (attributeID.startsWith("_concat:") || attributeID.startsWith("_concat_contains:")) {
+        QString levelIDgrouped = attributeID.section(":", 1, 1);
+        IntervalTier *tier_groupped = spk_tiers->getIntervalTierByName(levelIDgrouped);
+        if (!tier_groupped) return QVariant();
+        QList<Interval *> intervals;
+        if      (attributeID.startsWith("_concat:"))          intervals = tier_groupped->getIntervalsOverlappingWith(tier->interval(intvID));
+        else if (attributeID.startsWith("_concat_contains:")) intervals = tier_groupped->getIntervalsContainedIn(tier->interval(intvID));
+        QString s;
+        foreach (Interval *intv, intervals) s.append(intv->text()).append(".");
+        if (s.endsWith(".")) s.chop(1);
+        return s.trimmed();
     }
     else {
         return tier->interval(intvID)->attribute(attributeID);

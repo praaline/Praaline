@@ -334,6 +334,16 @@ void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        // MelissaExperiment::exportForEA(com);
+        MelissaExperiment::importPhonetisation(com);
+        // printMessage(MelissaExperiment::exportSyntacticAnnotation(com));
+    }
+
+
+    return;
+
     // NASSIMA EXPERIMENT - boundaries and pauses
     // if (communications.isEmpty()) return;
     // QPointer<Corpus> corpus = communications.first()->corpus();
@@ -357,15 +367,13 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "/pause_features.txt", corpus, "pause", false);
 
     // z-score normalisation
-    MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_speechrate");
-    MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_pitchmovement");
-    MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_speechrate");
-    MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_pitchmovement");
+    // MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_speechrate");
+    // MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_pitchmovement");
+    // MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_speechrate");
+    // MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_pitchmovement");
 
-    return;
-
-    //MelissaExperiment::prepareStimuliCorpus(communications.first());
-    //return;
+    // MelissaExperiment::prepareStimuliCorpus(communications.first());
+    // return;
 
 //    expeEmilie(communications);
 //    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
