@@ -73,7 +73,13 @@ HEADERS += \
     StutteredSpeechAlignmentExperiments.h \
     MelissaExperiment.h \
     ForcedAligner.h \
-    MacroprosodyExperiment.h
+    MacroprosodyExperiment.h \
+    BratAnnotationExporter.h \
+    PhonetiserExternal.h \
+    SequencerSyntax.h \
+    SequencerDisfluencies.h \
+    BratSyntaxAndDisfluencies.h \
+    SyllabifierEasy.h
 
 
 SOURCES += \ 
@@ -94,4 +100,10 @@ SOURCES += \
     StutteredSpeechAlignmentExperiments.cpp \
     MelissaExperiment.cpp \
     ForcedAligner.cpp \
-    MacroprosodyExperiment.cpp
+    MacroprosodyExperiment.cpp \
+    BratAnnotationExporter.cpp \
+    PhonetiserExternal.cpp \
+    SequencerSyntax.cpp \
+    SequencerDisfluencies.cpp \
+    BratSyntaxAndDisfluencies.cpp \
+    SyllabifierEasy.cpp

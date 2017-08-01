@@ -292,9 +292,7 @@ void MelissaExperiment::importPhonetisation(QPointer<CorpusCommunication> com)
 
             QList<Interval *> utterance;
             foreach (Interval *intv, tier_tokens->intervals()) {
-                if (intv->text().startsWith("(") || intv->text().endsWith(")")) continue;
-                if (intv->text().trimmed() == "/" || intv->text().trimmed() == "?" || intv->text().trimmed().isEmpty()) continue;
-                if (intv->text() == "_") {
+                if (intv->text().startsWith("(") || intv->text().endsWith(")") || intv->isPauseSilent()) {
                     if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
                 } else {
                     utterance << intv;
@@ -304,39 +302,67 @@ void MelissaExperiment::importPhonetisation(QPointer<CorpusCommunication> com)
                 // intv->setText(intv->text().remove("/").remove("?"));
             }
             if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+
+//            QList<Interval *> utterance;
+//            foreach (Interval *intv, tier_tokens->intervals()) {
+//                if (intv->text().startsWith("(") || intv->text().endsWith(")")) continue;
+//                if (intv->text().trimmed() == "/" || intv->text().trimmed() == "?" || intv->text().trimmed().isEmpty()) continue;
+//                if (intv->text() == "_") {
+//                    if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+//                } else {
+//                    utterance << intv;
+//                }
+//                intv->setAttribute("phonetisation", "");
+//                if (intv->isPauseSilent()) intv->setAttribute("phonetisation", "_");
+//                // intv->setText(intv->text().remove("/").remove("?"));
+//            }
+//            if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
             // open textgrid
-            AnnotationTierGroup *txg = new AnnotationTierGroup();
-            if (!PraatTextGrid::load("/home/george/AA/phonetisation/" + annotationID + ".TextGrid", txg)) {
-                qDebug() << "error with" << annotationID;
-                continue;
-            }
-            IntervalTier *tier_ortho = txg->getIntervalTierByName("ortho");
-            IntervalTier *tier_phono = txg->getIntervalTierByName("phono");
+//            AnnotationTierGroup *txg = new AnnotationTierGroup();
+//            if (!PraatTextGrid::load("/home/george/AA/phonetisation/" + annotationID + ".TextGrid", txg)) {
+//                qDebug() << "error with" << annotationID;
+//                continue;
+//            }
+//            IntervalTier *tier_ortho = txg->getIntervalTierByName("ortho");
+//            IntervalTier *tier_phono = txg->getIntervalTierByName("phono");
+//            if (!tier_ortho || !tier_phono) continue;
+
+            IntervalTier *tier_ortho = tiers->getIntervalTierByName("transcription");
+            IntervalTier *tier_phono = new IntervalTier(tier_ortho);
             if (!tier_ortho || !tier_phono) continue;
+            foreach (Interval *intv, tier_phono->intervals()) intv->setText(intv->attribute("phonetisation").toString());
 
             // Check phonetisation
 //            for (int i = 0; i < tier_ortho->count() && i < tier_phono->count(); ++i) {
-//                if (tier_ortho->at(i)->text().replace("' ", "'").replace("jusqu'", "jusqu' ").replace("lorsqu'", "lorsqu' ").split(" ").count() != tier_phono->at(i)->text().split(" ").count()) {
+//                if (tier_ortho->at(i)->text().replace("' ", "'").replace("jusqu'", "jusqu' ").replace("lorsqu'", "lorsqu' ").split(" ").count()
+//                        != tier_phono->at(i)->text().split(" ").count()) {
 //                    qDebug() << annotationID << i
 //                             << tier_ortho->at(i)->text() << " <> " << tier_phono->at(i)->text();
 //                }
 //            }
+
+
+
             // Check phonetisation relative to tok_min
 //            int i(0);
 //            foreach (Interval *phono, tier_phono->intervals()) {
 //                if (phono->isPauseSilent()) continue;
+//                if (i >= utterances.count()) {
+//                    qDebug() << annotationID << "Count mismatch";
+//                    break;
+//                }
 //                utterance = utterances.at(i);
 //                QString s;
 //                foreach (Interval *intv, utterance) {
 //                    s.append(intv->text().trimmed());
-//                    if (!intv->text().endsWith("'") || intv->text() == "jusqu'" || intv->text() == "lorsqu'") s.append(" ");
+//                    if (!intv->text().endsWith("'") || intv->text() == "jusqu'" || intv->text() == "lorsqu'" || intv->text() == "puisqu'") s.append(" ");
 //                }
 //                s = s.trimmed();
 //                if (s.split(" ").count() != phono->text().split(" ").count())
 //                    qDebug() << annotationID << i << s << "<>" << phono->text();
 //                i++;
 //            }
-//            // Update phonetisaton from textgrids
+            // Update phonetisaton
 //            int i(0);
 //            foreach (Interval *phono, tier_phono->intervals()) {
 //                if (phono->isPauseSilent()) continue;
@@ -344,7 +370,7 @@ void MelissaExperiment::importPhonetisation(QPointer<CorpusCommunication> com)
 //                QStringList phonetisations = phono->text().split(" ");
 //                int j(0);
 //                foreach (Interval *intv, utterance) {
-//                    if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "parce qu'") continue;
+//                    if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "puisqu'" && intv->text() != "parce qu'") continue;
 //                    intv->setAttribute("phonetisation", phonetisations.at(j));
 //                    j++;
 //                }
@@ -425,3 +451,153 @@ void MelissaExperiment::importPhonetisation(QPointer<CorpusCommunication> com)
         qDeleteAll(tiersAll);
     }
 }
+
+QString MelissaExperiment::splitResponses(QPointer<CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return ret;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_response = tiers->getIntervalTierByName("response");
+            IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+            IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
+            IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
+            if (!tier_response || !tier_tok_min || !tier_tok_mwu || !tier_transcription) {
+                ret.append(QString("Not all tiers present in %1").arg(annotationID));
+                continue;
+            }
+
+            for (int i = 0; i < tier_response->count() - 1; ++i) {
+                RealTime t = tier_response->interval(i)->tMax();
+                Interval *tok_min = tier_tok_min->intervalAtTime(t);
+                Interval *tok_mwu = tier_tok_mwu->intervalAtTime(t);
+                Interval *transcription = tier_transcription->intervalAtTime(t);
+
+
+//                QString tok_min_t = tok_min->text();
+//                QString tok_mwu_t = tok_mwu->text();
+//                QString transcr_t = transcription->text();
+//                if ((tok_min_t != tok_mwu_t) || (transcr_t.right(tok_min_t.length()) != tok_min_t))
+//                    ret.append(QString("%1\t Error on interval \t%2 time \t%3 %4 %5\n")
+//                               .arg(annotationID).arg(i).arg(t.toDouble()).arg(tok_min_t).arg(transcr_t));
+
+            }
+            // if (ret.isEmpty()) ret.append(QString("OK %1\n").arg(annotationID));
+        }
+        qDeleteAll(tiersAll);
+    }
+    if (ret.endsWith("\n")) ret.chop(1);
+    return ret;
+}
+
+//QString MelissaExperiment::readBoundariesFromTG(QPointer<CorpusCommunication> com)
+//{
+//    QString ret;
+//    if (!com) return ret;
+//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+//    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        if (!annot) continue;
+//        QString annotationID = annot->ID();
+//        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+//        foreach (QString speakerID, tiersAll.keys()) {
+//            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//            if (!tiers) continue;
+
+//            QStringList tiernamesToCorrect;
+//            tiernamesToCorrect << "phone" << "syll" << "tok_min" << "tok_mwu" << "transcription";
+
+//            AnnotationTierGroup *txg = new AnnotationTierGroup();
+//            PraatTextGrid::load("/home/george/AA/align/" + annotationID + "_" + speakerID + ".TextGrid", txg);
+
+
+
+//            // if (ret.isEmpty()) ret.append(QString("OK %1\n").arg(annotationID));
+//        }
+//        qDeleteAll(tiersAll);
+//    }
+//    if (ret.endsWith("\n")) ret.chop(1);
+//    return ret;
+//}
+
+
+QString MelissaExperiment::exportForAlignment(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return ret;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_tokens = new IntervalTier(tiers->getIntervalTierByName("tok_min"));
+            if (!tier_tokens) continue;
+            IntervalTier *tier_tokmin = tiers->getIntervalTierByName("tok_min");
+            IntervalTier *tier_tokmwu = tiers->getIntervalTierByName("tok_mwu");
+            IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
+            IntervalTier *tier_response = tiers->getIntervalTierByName("response");
+
+            QList<QList<Interval *> > utterances;
+
+            QList<Interval *> utterance;
+            foreach (Interval *intv, tier_tokens->intervals()) {
+                if (intv->isPauseSilent()) {
+                    if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+                } else if (intv->text().startsWith("(") || intv->text().endsWith(")")) {
+                    if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+                    intv->setText("%");
+                    intv->setAttribute("phonetisation", "%");
+                    utterance << intv;
+                    if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+                } else {
+                    utterance << intv;
+                }
+            }
+            if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
+
+            QList<Interval *> utt_o, utt_p;
+            foreach (utterance, utterances) {
+                QString o, p;
+                foreach (Interval *intv, utterance) {
+                    o.append(intv->text()).append(" ");
+                    p.append(intv->attribute("phonetisation").toString()).append(" ");
+                }
+                utt_o << new Interval(utterance.first()->tMin(), utterance.last()->tMax(), o);
+                utt_p << new Interval(utterance.first()->tMin(), utterance.last()->tMax(), p);
+            }
+            IntervalTier *tier_ortho = new IntervalTier("ortho", utt_o);
+            tier_ortho->fillEmptyWith("", "_");
+            IntervalTier *tier_phono = new IntervalTier("phono", utt_p);
+            tier_phono->fillEmptyWith("", "_");
+
+            AnnotationTierGroup *txg = new AnnotationTierGroup();
+            txg->addTier(tier_phono);
+            txg->addTier(tier_ortho);
+            txg->addTier(tier_tokmin);
+            txg->addTier(tier_tokmwu);
+            txg->addTier(tier_transcription);
+            txg->addTier(tier_response);
+
+            PraatTextGrid::save("/home/george/AA/align/" + annotationID + "_" + speakerID + ".TextGrid", txg);
+            ret.append(QString("OK %1").arg(annotationID));
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret;
+}
+
+
+
+
+
+
+
+

@@ -89,7 +89,9 @@ void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::Cor
     QList<Interval *> intervals = annot->repository()->annotations()->getIntervals(
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
     mutex.unlock();
+    if (intervals.isEmpty()) return;
     foreach (Interval *intv, intervals) {
+        if (!intv) continue;
         if (d->skipPauses && intv->isPauseSilent()) continue;
         QStringList fields;
         fields << QString::fromStdString(intv->tMin().toText())

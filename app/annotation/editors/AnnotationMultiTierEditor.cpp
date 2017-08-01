@@ -334,7 +334,7 @@ void AnnotationMultiTierEditor::updateAnnotationControls()
 {
     // Annotation controls
     if (d->editor->model()) {
-        d->annotationControls->setModel(d->editor->model(), 3, 5, 8);
+        d->annotationControls->setModel(d->editor->model(), 3, 5, 9);
     }
 }
 

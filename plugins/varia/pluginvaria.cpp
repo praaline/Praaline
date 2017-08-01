@@ -28,6 +28,9 @@
 #include "TappingAnnotatorExperiment.h"
 #include "MelissaExperiment.h"
 #include "MacroprosodyExperiment.h"
+#include "SequencerSyntax.h"
+#include "SequencerDisfluencies.h"
+#include "BratAnnotationExporter.h"
 
 #include "pluginvaria.h"
 
@@ -334,10 +337,23 @@ void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
+//    BratAnnotationExporter b;
+//    QString m = b.test();
+//    if (!m.isEmpty()) printMessage(m);
+
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        // QString m = SequencerSyntax::checkGroupingAnnotation(com);
+        // QString m = SequencerSyntax::createSequencesFromGroupingAnnotation(com);
+        // QString m = SequencerDisfluencies::getAllDistinctSequences(com);
+        SequencerDisfluencies s;
+        QString m = s.checkAnnotation(com);
+        // QString m = MelissaExperiment::splitResponses(com);
+        // QString m = MelissaExperiment::exportForAlignment(com);
+        if (!m.isEmpty()) printMessage(m);
+
         // MelissaExperiment::exportForEA(com);
-        MelissaExperiment::importPhonetisation(com);
+        // MelissaExperiment::importPhonetisation(com);
         // printMessage(MelissaExperiment::exportSyntacticAnnotation(com));
     }
 
