@@ -79,7 +79,10 @@ HEADERS += \
     SequencerSyntax.h \
     SequencerDisfluencies.h \
     BratSyntaxAndDisfluencies.h \
-    SyllabifierEasy.h
+    SyllabifierEasy.h \
+    ForcedAlignerDummy.h \
+    SequencerProsodicUnits.h \
+    SequencerCombineUnits.h
 
 
 SOURCES += \ 
@@ -106,4 +109,7 @@ SOURCES += \
     SequencerSyntax.cpp \
     SequencerDisfluencies.cpp \
     BratSyntaxAndDisfluencies.cpp \
-    SyllabifierEasy.cpp
+    SyllabifierEasy.cpp \
+    ForcedAlignerDummy.cpp \
+    SequencerProsodicUnits.cpp \
+    SequencerCombineUnits.cpp

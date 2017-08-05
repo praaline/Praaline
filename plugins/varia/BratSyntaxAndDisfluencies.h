@@ -16,7 +16,7 @@ class BratSyntaxAndDisfluencies
 public:
     BratSyntaxAndDisfluencies();
 
-    QString getHTML(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString getHTML(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // BRATSYNTAXANDDISFLUENCIES_H

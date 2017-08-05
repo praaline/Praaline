@@ -77,7 +77,7 @@ QString BratAnnotationExporter::scriptEventTypes(const QList<BratEventType> &eve
 QString BratAnnotationExporter::scriptCollData(const BratCollData &collData)
 {
     QString ret;
-    ret.append("var collData = {};\n\n");
+    ret.append("collData = {};\n\n");
     ret.append(scriptEntityTypes(collData.entityTypes)).append("\n");
     ret.append(scriptRelationTypes(collData.relationTypes)).append("\n");
     ret.append(scriptEventTypes(collData.eventTypes)).append("\n");
@@ -87,7 +87,7 @@ QString BratAnnotationExporter::scriptCollData(const BratCollData &collData)
 QString BratAnnotationExporter::scriptDocData(const BratDocData &docData)
 {
     QString ret;
-    ret.append("var docData = {};\n\n");
+    ret.append("docData = {};\n\n");
     ret.append(QString("docData['text'] = \"%1\"\n").arg(docData.text));
     // Entities
     if (!docData.entities.isEmpty()) {

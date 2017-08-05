@@ -129,6 +129,7 @@ public:
 
     class BratDocData {
     public:
+        QString divID;
         QString text;
         QList<BratEntity> entities;
         QList<BratRelation> relations;

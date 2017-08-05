@@ -6,8 +6,13 @@
 #include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>
 #include <QObject>
+#include "pncore/base/DataType.h"
 
 namespace Praaline {
+    namespace Core {
+        class AnnotationStructureLevel;
+    }
+
     namespace Plugins {
         namespace Prosogram {
             /*!
@@ -69,6 +74,10 @@ namespace Praaline {
 
                 void createProsogramSyllableInfoStructure(CorpusRepository *repository);
                 void createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications);
+                static void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
+                                            const QString &ID, const QString &name = QString(), const QString &description = QString(),
+                                            const DataType &datatype = DataType(DataType::VarChar, 256), int order = 0,
+                                            bool indexed = false, const QString &nameValueList = QString());
             };
         }
     }

@@ -30,6 +30,8 @@
 #include "MacroprosodyExperiment.h"
 #include "SequencerSyntax.h"
 #include "SequencerDisfluencies.h"
+#include "SequencerProsodicUnits.h"
+#include "SequencerCombineUnits.h"
 #include "BratAnnotationExporter.h"
 
 #include "pluginvaria.h"
@@ -334,6 +336,8 @@ void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> 
     }
 }
 
+#include "BratSyntaxAndDisfluencies.h"
+
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
 
@@ -343,13 +347,27 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        // QString m = SequencerSyntax::checkGroupingAnnotation(com);
-        // QString m = SequencerSyntax::createSequencesFromGroupingAnnotation(com);
-        // QString m = SequencerDisfluencies::getAllDistinctSequences(com);
-        SequencerDisfluencies s;
-        QString m = s.checkAnnotation(com);
-        // QString m = MelissaExperiment::splitResponses(com);
-        // QString m = MelissaExperiment::exportForAlignment(com);
+        QString m;
+        // m = SequencerSyntax::checkGroupingAnnotation(com);
+        // m = SequencerSyntax::createSequencesFromGroupingAnnotation(com);
+        // if (!m.isEmpty()) printMessage(m);
+        // m = SequencerDisfluencies::getAllDistinctSequences(com);
+        // SequencerDisfluencies s;
+        // m = s.checkAnnotation(com);
+        // m = MelissaExperiment::splitResponses(com);
+        // m = MelissaExperiment::exportForAlignment(com);
+        // m = MelissaExperiment::preprocessAlignment(com);
+        // m = MelissaExperiment::processPausesInsertedByAligner(com);
+        // m = MelissaExperiment::reimportAlignment(com);
+        // SequencerProsodicUnits p;
+        // p.setAttributeBoundary("promise_boundary");
+        // m = p.createSequencesFromProsodicBoundaries(com, "B3");
+        // SequencerCombineUnits c;
+        // c.setSequencesLevelA("prosodic_units");
+        // c.setSequencesLevelB("syntactic_units");
+        // c.setSequencesLevelCombined("bdu");
+        // m = c.createSequences(com);
+        m = BratSyntaxAndDisfluencies::getHTML(com);
         if (!m.isEmpty()) printMessage(m);
 
         // MelissaExperiment::exportForEA(com);

@@ -15,8 +15,12 @@ class SyllabifierEasy
 public:
     SyllabifierEasy();
 
+    static Praaline::Core::IntervalTier *syllabify(Praaline::Core::IntervalTier *tier_phone);
+
+private:
     static int getCategory(Praaline::Core::IntervalTier *tier_syll, int index, int offset);
     static int phoneCategory(const QString &phone);
+    static void delcurrent(Praaline::Core::IntervalTier *tier_syll, int index, const QString &ruleName);
 };
 
 #endif // SYLLABIFIEREASY_H

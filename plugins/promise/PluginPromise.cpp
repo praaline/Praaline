@@ -193,6 +193,36 @@ void Praaline::Plugins::Promise::PluginPromise::setParameters(const QHash<QStrin
 
 }
 
+void Praaline::Plugins::Promise::PluginPromise::createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
+                                                                const QString &ID, const QString &name /*= QString()*/, const QString &description /*= QString()*/,
+                                                                const DataType &datatype /*= DataType(DataType::VarChar, 256)*/, int order /*= 0*/,
+                                                                bool indexed /*= false*/, const QString &nameValueList /*= QString()*/)
+{
+    if (level->hasAttribute(ID)) return;
+    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
+                                                                          order, indexed, nameValueList);
+    if (repository->annotations()->createAnnotationAttribute(level->ID(), attr))
+        level->addAttribute(attr);
+}
+
+void Praaline::Plugins::Promise::PluginPromise::createPromiseSyllableInfoStructure(CorpusRepository *repository)
+{
+    if (!repository) return;
+    // If need be, create syllables level
+    AnnotationStructureLevel *level_syll = repository->annotationStructure()->level(d->levelSyllable);
+    if (!level_syll) {
+        level_syll = new AnnotationStructureLevel(d->levelSyllable, AnnotationStructureLevel::IndependentIntervalsLevel, "Syllables", "");
+        if (!repository->annotations()->createAnnotationLevel(level_syll)) return;
+        repository->annotationStructure()->addLevel(level_syll);
+    }
+    // Create syllable attributes where necessary
+    // ...syllabic prosodic prominence
+    createAttribute(repository, level_syll, "", d->attributeProminence_NoPOS, "Prominence (Promise, No POS)", "Syllabic prominence based on acoustic data only (no POS)");
+    createAttribute(repository, level_syll, "", d->attributeProminence_POS, "Prominence (Promise)", "Syllabic prominence based on acoustic data and part-of-speech annotation");
+    // ... prosodic boundaries
+    createAttribute(repository, level_syll, "", d->attributeBoundaries, "Prosodic Boundary (Promise)", "Prosodic boundary strength");
+    createAttribute(repository, level_syll, "", d->attributeContour, "Prosodic Boundary Contour (Promise)", "Prosodic boundary contour");
+}
 
 void Praaline::Plugins::Promise::PluginPromise::runSpeechRateEstimator(const QList<QPointer<CorpusCommunication> > &communications)
 {
@@ -243,6 +273,8 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     madeProgress(0);
     printMessage("Promise Prosodic Prominence Annotator ver. 1.0 running");
 
+    QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
+
     SyllableProminenceAnnotator *promise = new SyllableProminenceAnnotator();
     promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
     promise->setModelFilenameWithoutPOS(d->modelProminence_NoPOS);
@@ -264,6 +296,13 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
+        // Create annotation levels and attributes if requested to do so
+        if (d->createLevels && !repositoriesWithAnnotationStructure.contains(com->repository())) {
+            // Create and/or add attributes to syllable level
+            createPromiseSyllableInfoStructure(com->repository());
+            // This repository has been processed
+            repositoriesWithAnnotationStructure << com->repository();
+        }
         // Check that the attribute the syllable level and the attribute to store results exists
         if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
             printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
@@ -343,6 +382,8 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     madeProgress(0);
     printMessage("Promise Prosodic Boundaries Annotator ver. 1.0 running");
 
+    QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
+
     ProsodicBoundariesAnnotator *promise = new ProsodicBoundariesAnnotator();
     promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
     promise->setModelFilenameBoundary(d->modelBoundary);
@@ -368,6 +409,13 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
+        // Create annotation levels and attributes if requested to do so
+        if (d->createLevels && !repositoriesWithAnnotationStructure.contains(com->repository())) {
+            // Create and/or add attributes to syllable level
+            createPromiseSyllableInfoStructure(com->repository());
+            // This repository has been processed
+            repositoriesWithAnnotationStructure << com->repository();
+        }
         // Check that the attribute the syllable level and the attribute to store results exists
         if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
             printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")

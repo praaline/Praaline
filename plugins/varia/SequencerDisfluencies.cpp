@@ -54,9 +54,19 @@ QStringList SequencerDisfluencies::codesSkipped() const
     return d->codesSkipped;
 }
 
+void SequencerDisfluencies::setCodesSkipped(const QStringList &codes)
+{
+    d->codesSkipped = codes;
+}
+
 QStringList SequencerDisfluencies::codesSingleToken() const
 {
     return d->codesSingleToken;
+}
+
+void SequencerDisfluencies::setCodesSingleToken(const QStringList &codes)
+{
+    d->codesSingleToken = codes;
 }
 
 QStringList SequencerDisfluencies::codesRepetitions() const
@@ -64,14 +74,59 @@ QStringList SequencerDisfluencies::codesRepetitions() const
     return d->codesRepetition;
 }
 
+void SequencerDisfluencies::setCodesRepetitions(const QStringList &codes)
+{
+    d->codesRepetition = codes;
+}
+
 QStringList SequencerDisfluencies::codesStructured() const
 {
     return d->codesStructured;
 }
 
+void SequencerDisfluencies::setCodesStructured(const QStringList &codes)
+{
+    d->codesStructured = codes;
+}
+
 QStringList SequencerDisfluencies::codesComplex() const
 {
     return d->codesComplex;
+}
+
+void SequencerDisfluencies::setCodesComplex(const QStringList &codes)
+{
+    d->codesComplex = codes;
+}
+
+QString SequencerDisfluencies::annotationLevel() const
+{
+    return d->annotationLevel;
+}
+
+void SequencerDisfluencies::setAnnotationLevel(const QString &levelID)
+{
+    d->annotationLevel = levelID;
+}
+
+QString SequencerDisfluencies::annotationAttribute() const
+{
+    return d->annotationAttribute;
+}
+
+void SequencerDisfluencies::setAnnotationAttribute(const QString &annotationID)
+{
+    d->annotationAttribute = annotationID;
+}
+
+QString SequencerDisfluencies::sequencesLevel() const
+{
+    return d->sequencesLevel;
+}
+
+void SequencerDisfluencies::setSequencesLevel(const QString &levelID)
+{
+    d->sequencesLevel = levelID;
 }
 
 QString SequencerDisfluencies::getAllDistinctSequences(QPointer<Praaline::Core::CorpusCommunication> com)
@@ -117,8 +172,6 @@ QString SequencerDisfluencies::getAllDistinctSequences(QPointer<Praaline::Core::
     return ret.trimmed();
 }
 
-
-
 QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     bool createSequences(true);
@@ -132,7 +185,7 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
-            IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_min");
+            IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
             if (!tier_tokens) continue;
 
             StructuredDisfluencyState repetitionState = Outside; QString repetitionCode;
@@ -148,7 +201,7 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
             for (int i = 0; i < tier_tokens->count(); ++i) {
                 bool hasError(false);
                 QString errorMessage;
-                QString disAll = tier_tokens->at(i)->attribute("disfluency").toString().trimmed();
+                QString disAll = tier_tokens->at(i)->attribute(d->annotationAttribute).toString().trimmed();
                 disAll = disAll.replace("+SIL:b", "").replace("+SIL:l", "").replace("+SIL", "")
                                .replace("SIL:b", "").replace("SIL:l", "").replace("SIL", "");
                 if ((repetitionState == Reparans) && !(disAll.split("+").contains(repetitionCode + "_"))) {
@@ -283,7 +336,7 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
 
 void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences, QPointer<AnnotationTierGroup> tiers)
 {
-    IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_min");
+    IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
     if (!tier_tokens) return;
     IntervalTier *tier_response = tiers->getIntervalTierByName("response");
     if (!tier_response) return;
@@ -298,7 +351,8 @@ void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences,
         // Sequence text
         for (int i = startSequence; i <= endSequence; ++i) {
             token_text.append(tier_tokens->at(i)->text()).append(" ");
-            annotated_text.append(tier_tokens->at(i)->text()).append("/").append(tier_tokens->at(i)->attribute("disfluency").toString()).append(" ");
+            annotated_text.append(tier_tokens->at(i)->text()).append("/")
+                          .append(tier_tokens->at(i)->attribute(d->annotationAttribute).toString()).append(" ");
         }
         if (token_text.length() > 1) token_text.chop(1);
         if (annotated_text.length() > 1) annotated_text.chop(1);

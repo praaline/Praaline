@@ -61,11 +61,18 @@ public:
     void removeTierByName(const QString &name);
     void renameTier(const QString &nameBefore, const QString &nameAfter);
 
-    // Tier accessors
+    // Typed tier accessors
     IntervalTier *getIntervalTierByName(const QString &name) const;
     IntervalTier *getIntervalTierByIndex(int index) const;
     PointTier *getPointTierByName(const QString &name) const;
     PointTier *getPointTierByIndex(int index) const;
+    SequenceTier *getSequenceTierByName(const QString &name) const;
+    SequenceTier *getSequenceTierByIndex(int index) const;
+    TreeTier *getTreeTierByName(const QString &name) const;
+    TreeTier *getTreeTierByIndex(int index) const;
+    RelationTier *getRelationTierByName(const QString &name) const;
+    RelationTier *getRelationTierByIndex(int index) const;
+
     int getTierIndexByName(const QString &name) const;
     QStringList tierNames() const;
 

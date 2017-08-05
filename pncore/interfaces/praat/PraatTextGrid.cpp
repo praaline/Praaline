@@ -235,17 +235,25 @@ bool PraatTextGrid::save(const QString &filename, AnnotationTierGroup *group)
            .arg(QString::number(group->tMin().toDouble(), 'f', 16))
            .arg(QString::number(group->tMax().toDouble(), 'f', 16));
 
-    //    int countNonEmptyTiers = 0;
-    //    foreach (tier, group->tiers())
-    //        if (!tier->isEmpty())
-    //            countNonEmptyTiers++;
-    out << QString("tiers? <exists>\nsize = %1\nitem []:\n").arg(group->tiersCount());
+    int countTiers = 0;
+    foreach (tier, group->tiers()) {
+        if ((tier->tierType() == AnnotationTier::TierType_Intervals) || (tier->tierType() == AnnotationTier::TierType_Grouping) ||
+            (tier->tierType() == AnnotationTier::TierType_Points))
+            countTiers++;
+    }
+    out << QString("tiers? <exists>\nsize = %1\nitem []:\n").arg(countTiers);
 
     int n = 0;
     foreach (tier, group->tiers()) {
         // Save empty tiers as well! if (tier->isEmpty()) continue;
 
-        QString tierType = (tier->tierType() == AnnotationTier::TierType_Intervals) ? "IntervalTier": "TextTier";
+        QString tierType;
+        if ((tier->tierType() == AnnotationTier::TierType_Intervals) || (tier->tierType() == AnnotationTier::TierType_Grouping))
+            tierType = "IntervalTier";
+        else if (tier->tierType() == AnnotationTier::TierType_Points)
+            tierType = "TextTier";
+        else
+            continue; // unsupporterd tier type for textgrids
 
         // write tier header
         out << QString("\titem [%1]:\n").arg(++n);
@@ -255,7 +263,7 @@ bool PraatTextGrid::save(const QString &filename, AnnotationTierGroup *group)
                .arg(QString::number(tier->tMin().toDouble(), 'f', 16))
                .arg(QString::number(tier->tMax().toDouble(), 'f', 16));
 
-        if (tier->tierType() == AnnotationTier::TierType_Intervals) {
+        if ((tier->tierType() == AnnotationTier::TierType_Intervals) || (tier->tierType() == AnnotationTier::TierType_Grouping)) {
             out << QString("\t\tintervals: size = %1\n").arg(tier->count());
             iTier = qobject_cast<IntervalTier *>(tier);
             int i = 0;
@@ -268,7 +276,7 @@ bool PraatTextGrid::save(const QString &filename, AnnotationTierGroup *group)
                 out << QString("\t\t\ttext = \"%1\"\n").arg(interval->text().replace("\"", "\"\""));
             }
         }
-        else {
+        else if (tier->tierType() == AnnotationTier::TierType_Points) {
             out << QString("\t\tpoints: size = %1\n").arg(tier->count());
             pTier = qobject_cast<PointTier *>(tier);
             int i = 0;

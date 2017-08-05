@@ -25,14 +25,32 @@ public:
         Reparans
     };
 
-    QStringList codesSkipped() const;
-    QStringList codesSingleToken() const;
-    QStringList codesRepetitions() const;
-    QStringList codesStructured() const;
-    QStringList codesComplex() const;
-
     SequencerDisfluencies();
     ~SequencerDisfluencies();
+
+    QStringList codesSkipped() const;
+    void setCodesSkipped(const QStringList &codes);
+
+    QStringList codesSingleToken() const;
+    void setCodesSingleToken(const QStringList &codes);
+
+    QStringList codesRepetitions() const;
+    void setCodesRepetitions(const QStringList &codes);
+
+    QStringList codesStructured() const;
+    void setCodesStructured(const QStringList &codes);
+
+    QStringList codesComplex() const;
+    void setCodesComplex(const QStringList &codes);
+
+    QString annotationLevel() const;
+    void setAnnotationLevel(const QString &levelID);
+
+    QString annotationAttribute() const;
+    void setAnnotationAttribute(const QString &annotationID);
+
+    QString sequencesLevel() const;
+    void setSequencesLevel(const QString &levelID);
 
     QString getAllDistinctSequences(QPointer<Praaline::Core::CorpusCommunication> com);
     QString checkAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);

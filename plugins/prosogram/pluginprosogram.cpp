@@ -220,10 +220,10 @@ void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
         printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
 }
 
-void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
-                     const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                     const DataType &datatype = DataType(DataType::VarChar, 256), int order = 0,
-                     bool indexed = false, const QString &nameValueList = QString())
+void Praaline::Plugins::Prosogram::PluginProsogram::createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
+                                                                    const QString &ID, const QString &name /*= QString()*/, const QString &description /*= QString()*/,
+                                                                    const DataType &datatype /*= DataType(DataType::VarChar, 256)*/, int order /*= 0*/,
+                                                                    bool indexed /*= false*/, const QString &nameValueList /*= QString()*/)
 {
     if (level->hasAttribute(ID)) return;
     AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,

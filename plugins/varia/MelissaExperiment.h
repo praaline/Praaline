@@ -23,6 +23,10 @@ public:
     static QString splitResponses(QPointer<Praaline::Core::CorpusCommunication> com);
 
     static QString exportForAlignment(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString reimportAlignment(QPointer<Praaline::Core::CorpusCommunication> com);
+
+    static QString preprocessAlignment(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString processPausesInsertedByAligner(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // MELISSAEXPERIMENT_H

@@ -82,6 +82,7 @@ QString SequencerSyntax::createSequencesFromGroupingAnnotation(QPointer<CorpusCo
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_mwu");
             if (!tier_tokens) continue;
+            IntervalTier *tier_response = tiers->getIntervalTierByName("response");
 
             QList<Sequence *> sequences;
             QStack<int> stack;
@@ -106,12 +107,29 @@ QString SequencerSyntax::createSequencesFromGroupingAnnotation(QPointer<CorpusCo
                         int pos = syntax.indexOf(")");
                         syntax = syntax.remove(pos, 1);
                         QString text = syntax.mid(pos, syntax.indexOf(")")).trimmed();
-                        sequences << new Sequence(start, i, text);
+                        Sequence *seq = new Sequence(start, i, text);
+                        int depth = stack.size() + 1;
+                        seq->setAttribute("depth", depth);
+                        sequences << seq;
                     }
                 }
             }
             if (stack.isEmpty() && !hasErrors) {
-                SequenceTier *tier_seq = new SequenceTier("syntax", sequences, tier_tokens);
+                // Add extra data
+                foreach (Sequence *seq, sequences) {
+                    // Sequence text
+                    QString token_text;
+                    for (int i = seq->indexFrom(); i <= seq->indexTo(); ++i) {
+                        token_text.append(tier_tokens->at(i)->text()).append(" ");
+                    }
+                    if (token_text.length() > 1) token_text.chop(1);
+                    seq->setAttribute("textSequence", token_text);
+                    // Response
+                    Interval *response = tier_response->intervalAtTime(tier_tokens->at(seq->indexFrom())->tCenter());
+                    if (response) seq->setAttribute("response", response->text());
+                }
+                // Save sequences
+                SequenceTier *tier_seq = new SequenceTier("syntactic_units", sequences, tier_tokens);
                 com->repository()->annotations()->saveTier(annotationID, speakerID, tier_seq);
                 ret.append(QString("OK    %1 %2 Created %3 sequences\n").arg(annotationID).arg(speakerID).arg(sequences.count()));
                 delete tier_seq;
