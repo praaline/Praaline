@@ -16,9 +16,29 @@ using namespace Praaline::Core;
 #include "BratAnnotationExporter.h"
 #include "BratSyntaxAndDisfluencies.h"
 
-BratSyntaxAndDisfluencies::BratSyntaxAndDisfluencies()
+struct BratSyntaxAndDisfluenciesData
 {
+    QString sentenceTier;
+};
 
+BratSyntaxAndDisfluencies::BratSyntaxAndDisfluencies() :
+    d(new BratSyntaxAndDisfluenciesData())
+{
+}
+
+BratSyntaxAndDisfluencies::~BratSyntaxAndDisfluencies()
+{
+    delete d;
+}
+
+QString BratSyntaxAndDisfluencies::sentenceTier() const
+{
+    return d->sentenceTier;
+}
+
+void BratSyntaxAndDisfluencies::setSentenceTier(const QString &tiername)
+{
+    d->sentenceTier = tiername;
 }
 
 QString htmlHead(const QString &pageTitle)
@@ -91,12 +111,8 @@ QString scriptHeadReadyFunction(const BratAnnotationExporter::BratCollData &coll
     return s;
 }
 
-QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommunication> com)
+void addBratEntitiesForDisfluencies(BratAnnotationExporter::BratCollData &collData)
 {
-    QString ret;
-    QString html;
-    BratAnnotationExporter::BratCollData collData;
-
     collData.entityTypes << BratAnnotationExporter::BratEntityType("FIL", "Filled Pause",       "FIL", "#7fa2ff", "darken");
     collData.entityTypes << BratAnnotationExporter::BratEntityType("FST", "False Start",        "FST", "#7fa2ff", "darken");
     collData.entityTypes << BratAnnotationExporter::BratEntityType("LEN", "Lengthening",        "LEN", "#7fa2ff", "darken");
@@ -110,6 +126,14 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
     collData.entityTypes << BratAnnotationExporter::BratEntityType("SUB", "Substitution",       "SUB", "#48a2af", "darken");
     collData.entityTypes << BratAnnotationExporter::BratEntityType("INS", "Insertion",          "INS", "#48a2af", "darken");
     collData.entityTypes << BratAnnotationExporter::BratEntityType("COM", "Complex disfluency", "COM", "#48a2af", "darken");
+}
+
+QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    QString html;
+    BratAnnotationExporter::BratCollData collData;
+    addBratEntitiesForDisfluencies(collData);
 
     if (!com) return ret;
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
@@ -130,8 +154,8 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
             html.append("<body>\n");
 
             // Major grouping tier
-            IntervalTier *tier_response = tiers->getIntervalTierByName("response");
-            if (!tier_response) continue;
+            IntervalTier *tier_sentence = tiers->getIntervalTierByName(d->sentenceTier);
+            if (!tier_sentence) continue;
             IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
             if (!tier_tok_mwu) continue;
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -181,13 +205,13 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
                     tok_mwu_textClosing.insert(seq->indexTo(), "| ");
             }
 
-            foreach (Interval *response, tier_response->intervals()) {
+            foreach (Interval *sentence, tier_sentence->intervals()) {
                 // Structures to keep track of character positions
                 QMap<int, int> tok_min_charStart;
                 QMap<int, int> tok_min_charEnd;
 
                 BratAnnotationExporter::BratDocData docData;
-                QString divID = response->text();
+                QString divID = sentence->text();
                 html.append(QString("<div><b>%1</b><br />\n").arg(divID));
                 html.append(QString("<div id=\"%1\"></div>\n").arg(divID));
                 html.append("<br /></div>\n");
@@ -195,7 +219,7 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
                 QString text;
                 int cursor(0);
 
-                QPair<int, int> indices_mwu = tier_tok_mwu->getIntervalIndexesContainedIn(response);
+                QPair<int, int> indices_mwu = tier_tok_mwu->getIntervalIndexesContainedIn(sentence);
                 for (int i_mwu = indices_mwu.first; i_mwu <= indices_mwu.second; ++i_mwu) {
                     // Opening (grouping text)
                     if (tok_mwu_textOpening.contains(i_mwu)) {
@@ -230,8 +254,7 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
                 }
 
                 docDataList << docData;
-                if (!text.isEmpty()) text.chop(1);
-                ret.append(QString("%1\t%2\t%3\n").arg(annotationID).arg(divID).arg(text));
+                ret.append(QString("Exporting %1\t%2\n").arg(annotationID).arg(divID));
             }
             html.append("</body>\n\n");
             html.append(htmlStyle()).append("\n");
@@ -252,26 +275,3 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
     }
     return ret.trimmed();
 }
-
-//For each interval in response
-//text of the interval --> name, condition
-
-//get syntactic sequences >> create list of opening parentheses and closing parentheses
-
-//get intvFrom, intvTo for tok_mwu
-//get tok_mwus in a list
-//foreach tok_mwu
-//if in opening-paretheses :: add it
-//type tok_mwu text
-//if in closing parentheses :: add it
-
-void test()
-{
-
-    QList<Sequence *> sequencesSyntax;
-
-
-
-}
-
-

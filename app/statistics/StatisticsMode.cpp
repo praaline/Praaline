@@ -9,6 +9,7 @@
 #include "interrater/StatisticsPluginInterrater.h"
 #include "temporal/StatisticsPluginTemporal.h"
 #include "prosody/StatisticsPluginProsody.h"
+#include "disfluencies/StatisticsPluginDisfluencies.h"
 
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
@@ -41,6 +42,7 @@ StatisticsMode::StatisticsMode(QObject *parent) :
     OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginInterrater::StatisticsPluginInterrater(), QtilitiesCategory("Statistics"));
     OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginTemporal::StatisticsPluginTemporal(), QtilitiesCategory("Statistics"));
     OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginProsody::StatisticsPluginProsody(), QtilitiesCategory("Statistics"));
+    OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginDisfluencies::StatisticsPluginDisfluencies(), QtilitiesCategory("Statistics"));
 
     if (!d->widget) d->widget = new StatisticsModeWidget();
     connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));

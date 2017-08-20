@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Praaline::Plugins::StatisticsPluginDisfluencies::AnalyserDisfluenciesWidget</class>
+ <widget class="QWidget" name="Praaline::Plugins::StatisticsPluginDisfluencies::AnalyserDisfluenciesWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>995</width>
+    <height>643</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Disfluency Measures</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBoxStatisticalAnalysis">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Options</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="1" colspan="2">
+       <widget class="QProgressBar" name="progressBar">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="value">
+         <number>0</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCommandLinkButton" name="commandAnalyse">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>2</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Perform Analysis</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBoxProperties">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>1</horstretch>
+          <verstretch>1</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Analysis Options</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="3" column="0">
+          <widget class="QLabel" name="labelAnalysisObject">
+           <property name="text">
+            <string>Calculate measures for:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QLabel" name="labelOrientation">
+           <property name="text">
+            <string>Show measures in:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="labelCorpus">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Corpus to analyse:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="CheckBoxList" name="comboBoxMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBoxCorpus"/>
+         </item>
+         <item row="3" column="1">
+          <layout class="QGridLayout" name="gridLayoutAnalysisObject">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="optionCommunications">
+             <property name="text">
+              <string>Communications</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupAnalysisObject</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QRadioButton" name="optionSpeakers">
+             <property name="text">
+              <string>Speakers</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupAnalysisObject</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="3">
+          <widget class="QComboBox" name="comboBoxLevelTokens"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="labelMetadataCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Include Metadata Com:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <layout class="QGridLayout" name="gridLayoutOrientation">
+           <item row="0" column="0">
+            <widget class="QRadioButton" name="optionOrientationVertical">
+             <property name="text">
+              <string>Rows</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupOrientation</string>
+             </attribute>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QRadioButton" name="optionOrientationHorizontal">
+             <property name="text">
+              <string>Columns</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">buttonGroupOrientation</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="2">
+          <widget class="QLabel" name="labelLevelSyllables">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Level for syllables:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QComboBox" name="comboBoxLevelSyllables"/>
+         </item>
+         <item row="2" column="1">
+          <widget class="CheckBoxList" name="comboBoxMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLabel" name="labelLevelTokens">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Level for tokens:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="labelMetadataSpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Include Metadata Spk:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>3</number>
+     </property>
+     <widget class="QWidget" name="tabResultsTable">
+      <attribute name="title">
+       <string>Results Table</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutResults"/>
+     </widget>
+     <widget class="QWidget" name="tabCharts">
+      <attribute name="title">
+       <string>Charts</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayoutMeasure">
+         <item>
+          <widget class="QLabel" name="labelMeasure">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Measure:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxMeasure"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupByCom">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Group by Metadata: Communication:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupByCom"/>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelGroupBySpk">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Speaker:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="comboBoxGroupBySpk"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="commandDrawChart">
+           <property name="text">
+            <string>Draw Chart</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayoutYMinMax">
+         <item row="0" column="1">
+          <widget class="QLabel" name="labelMeasureYMin">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Y-Axis Min:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
+           <property name="maximum">
+            <double>1000000000000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <spacer name="horizontalSpacerChartMinMax">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="6">
+          <widget class="QPushButton" name="commandExportChart">
+           <property name="text">
+            <string>Export...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
+           <property name="maximum">
+            <double>1000000000000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="labelMeasureYMax">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Y-Axis Max:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxSetYMinMax">
+           <property name="text">
+            <string>Set:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>953</width>
+            <height>275</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayoutChart">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabMeasureDefinitions">
+      <attribute name="title">
+       <string>Measures</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutMeasureDefinitions"/>
+     </widget>
+     <widget class="QWidget" name="tabTimeline">
+      <attribute name="title">
+       <string>Timeline</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayoutTimeline"/>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CheckBoxList</class>
+   <extends>QComboBox</extends>
+   <header>pngui/widgets/CheckBoxList.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>comboBoxCorpus</tabstop>
+  <tabstop>comboBoxMetadataCom</tabstop>
+  <tabstop>comboBoxMetadataSpk</tabstop>
+  <tabstop>comboBoxLevelSyllables</tabstop>
+  <tabstop>comboBoxLevelTokens</tabstop>
+  <tabstop>optionCommunications</tabstop>
+  <tabstop>optionSpeakers</tabstop>
+  <tabstop>optionOrientationVertical</tabstop>
+  <tabstop>optionOrientationHorizontal</tabstop>
+  <tabstop>commandAnalyse</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>comboBoxMeasure</tabstop>
+  <tabstop>comboBoxGroupByCom</tabstop>
+  <tabstop>comboBoxGroupBySpk</tabstop>
+  <tabstop>commandDrawChart</tabstop>
+  <tabstop>doubleSpinBoxYMin</tabstop>
+  <tabstop>doubleSpinBoxYMax</tabstop>
+  <tabstop>commandExportChart</tabstop>
+  <tabstop>scrollArea</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroupAnalysisObject"/>
+  <buttongroup name="buttonGroupOrientation"/>
+ </buttongroups>
+</ui>

@@ -303,6 +303,8 @@ void MelissaExperiment::importPhonetisation(QPointer<CorpusCommunication> com)
             }
             if (!utterance.isEmpty()) { utterances << utterance; utterance.clear(); }
 
+                
+            
 //            QList<Interval *> utterance;
 //            foreach (Interval *intv, tier_tokens->intervals()) {
 //                if (intv->text().startsWith("(") || intv->text().endsWith(")")) continue;
@@ -843,8 +845,42 @@ QString MelissaExperiment::processPausesInsertedByAligner(QPointer<Praaline::Cor
     return ret;
 }
 
+QString MelissaExperiment::reactionTimes(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return ret;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
 
+            IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
+            IntervalTier *tier_response = tiers->getIntervalTierByName("response");
 
-
-
-
+            foreach (Interval *response, tier_response->intervals()) {
+                QPair<int, int> indices_mwu = tier_tok_mwu->getIntervalIndexesContainedIn(response);
+                int firstArticulatedInterval(-1);
+                for (int i_mwu = indices_mwu.first; i_mwu <= indices_mwu.second; ++i_mwu) {
+                    QString t = tier_tok_mwu->interval(i_mwu)->text();
+                    if (t == "_" || t.isEmpty()) continue;
+                    if (t.startsWith("(") || t.endsWith(")")) continue;
+                    if (t == "ts" || t == "ps" || t == "tl") continue;
+                    firstArticulatedInterval = i_mwu; break;
+                }
+                if (firstArticulatedInterval < 0)
+                    ret.append(QString("%1\t%2\t%3\n").arg(annotationID).arg(response->text()).arg(""));
+                else {
+                    RealTime rt = tier_tok_mwu->at(firstArticulatedInterval)->tMin() - response->tMin();
+                    ret.append(QString("%1\t%2\t%3\n").arg(annotationID).arg(response->text()).arg(rt.toDouble() * 1000));
+                }
+            }
+        }
+        qDeleteAll(tiersAll);
+    }
+    if (ret.endsWith("\n")) ret.chop(1);
+    return ret;
+}

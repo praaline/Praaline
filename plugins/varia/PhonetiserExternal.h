@@ -10,13 +10,25 @@ class CorpusCommunication;
 }
 }
 
+struct PhonetiserExternalData;
+
 class PhonetiserExternal
 {
 public:
     PhonetiserExternal();
+    ~PhonetiserExternal();
 
-    static QString exportToPhonetiser(QPointer<CorpusCommunication> com);
-    static QString importFromPhonetiser(QPointer<CorpusCommunication> com);
+    QString outputFilesPath() const;
+    void setOutputFilesPath(const QString &path);
+
+    QString attributePhonetisationOfTokens() const;
+    void setAttributePhonetisationOfTokens(const QString &attributeID);
+
+    QString exportToPhonetiser(QPointer<CorpusCommunication> com);
+    QString importFromPhonetiser(QPointer<CorpusCommunication> com, bool fromTranscriptionTier = false);
+
+private:
+    PhonetiserExternalData *d;
 };
 
 #endif // PHONETISEREXTERNAL_H

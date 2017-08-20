@@ -39,6 +39,11 @@ SequencerDisfluencies::SequencerDisfluencies() :
     d->codesRepetition << "REP" << "RED";
     d->codesStructured << "DEL" << "SUB" << "INS";
     d->codesComplex << "COM";
+    // For stuttered speech
+    d->codesSingleToken << "BLOC" << "BLEN";
+    d->codesRepetition << "BREP" << "BRED";
+    d->codesComplex << "BCOM";
+    // Levels and attributes
     d->annotationLevel = "tok_min";
     d->annotationAttribute = "disfluency";
     d->sequencesLevel = "disfluencies";
@@ -297,10 +302,12 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
                         // qDebug() << code << structuredState;
                     }
                     else if (d->codesComplex.contains(code)) {
-                        insideComplexDisfluency = true; complexCode = code; complexStart = i;
+                        if (!insideComplexDisfluency) {
+                            insideComplexDisfluency = true; complexCode = code; complexStart = i;
+                        }
                     }
                     else {
-                        hasError = true; errorMessage = QString("Invalid disfluency code: %1").arg(disAll);
+                        hasError = true; errorMessage = QString("Invalid disfluency code: %1 (code is %2)").arg(disAll).arg(code);
                     }
                     // Manage errors
                     if (hasError) {
@@ -319,17 +326,18 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
                     addExtraDataToSequences(sequences, tiers);
                     SequenceTier *tier_seq = new SequenceTier(d->sequencesLevel, sequences, tier_tokens);
                     com->repository()->annotations()->saveTier(annotationID, speakerID, tier_seq);
-                    ret.append(QString("%1\t%2\tOK. Created %3 sequences.").arg(annotationID).arg(speakerID).arg(sequences.count()));
+                    ret.append(QString("%1\t%2\tOK. Created %3 sequences.\n").arg(annotationID).arg(speakerID).arg(sequences.count()));
                     delete tier_seq;
                 } else {
-                    ret.append(QString("%1\t%2\tOK").arg(annotationID).arg(speakerID));
+                    ret.append(QString("%1\t%2\tOK\n").arg(annotationID).arg(speakerID));
                 }
             } else {
-                ret.append(errors.join("\n"));
+                ret.append(errors.join("\n")).append("\n");
             }
         }
         qDeleteAll(tiersAll);
     }
+    if (ret.endsWith("\n")) ret.chop(1);
     return ret.trimmed();
 }
 
@@ -339,7 +347,6 @@ void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences,
     IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
     if (!tier_tokens) return;
     IntervalTier *tier_response = tiers->getIntervalTierByName("response");
-    if (!tier_response) return;
 
     foreach (Sequence *seq, sequences) {
         int startSequence = seq->indexFrom();
@@ -387,7 +394,9 @@ void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences,
             seq->setAttribute("textReparans", token_text);
         }
         // Response
-        Interval *response = tier_response->intervalAtTime(tier_tokens->at(startSequence)->tCenter());
-        if (response) seq->setAttribute("response", response->text());
+        if (tier_response) {
+            Interval *response = tier_response->intervalAtTime(tier_tokens->at(startSequence)->tCenter());
+            if (response) seq->setAttribute("response", response->text());
+        }
     }
 }

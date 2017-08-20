@@ -336,6 +336,42 @@ void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> 
     }
 }
 
+void merge_pauses(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
+                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+                IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
+
+                tier_transcription->fillEmptyWith("", "_");
+                tier_transcription->mergeIdenticalAnnotations("_");
+
+                tier_tok_min->fillEmptyWith("", "_");
+                tier_tok_min->mergeIdenticalAnnotations("_");
+
+                tier_tok_mwu->fillEmptyWith("", "_");
+                tier_tok_mwu->mergeIdenticalAnnotations("_");
+
+                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
+                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_mwu);
+                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_min);
+            }
+            qDeleteAll(tiersAll);
+            // printMessage(com->ID());
+        }
+    }
+}
+
+#include "PhonetiserExternal.h"
 #include "BratSyntaxAndDisfluencies.h"
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
@@ -345,6 +381,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    QString m = b.test();
 //    if (!m.isEmpty()) printMessage(m);
 
+    //merge_pauses(communications);
+
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         QString m;
@@ -352,8 +390,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // m = SequencerSyntax::createSequencesFromGroupingAnnotation(com);
         // if (!m.isEmpty()) printMessage(m);
         // m = SequencerDisfluencies::getAllDistinctSequences(com);
-        // SequencerDisfluencies s;
-        // m = s.checkAnnotation(com);
+        SequencerDisfluencies s;
+        m = s.checkAnnotation(com);
         // m = MelissaExperiment::splitResponses(com);
         // m = MelissaExperiment::exportForAlignment(com);
         // m = MelissaExperiment::preprocessAlignment(com);
@@ -367,7 +405,12 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // c.setSequencesLevelB("syntactic_units");
         // c.setSequencesLevelCombined("bdu");
         // m = c.createSequences(com);
-        m = BratSyntaxAndDisfluencies::getHTML(com);
+        // BratSyntaxAndDisfluencies exporter;
+        // exporter.setSentenceTier("response");
+        // m = exporter.getHTML(com);
+        // m = MelissaExperiment::reactionTimes(com);
+        // PhonetiserExternal p;
+        // m = p.importFromPhonetiser(com, true);
         if (!m.isEmpty()) printMessage(m);
 
         // MelissaExperiment::exportForEA(com);

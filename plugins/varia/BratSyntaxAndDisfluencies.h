@@ -11,12 +11,21 @@ class CorpusCommunication;
 }
 }
 
+struct BratSyntaxAndDisfluenciesData;
+
 class BratSyntaxAndDisfluencies
 {
 public:
     BratSyntaxAndDisfluencies();
+    ~BratSyntaxAndDisfluencies();
 
-    static QString getHTML(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString sentenceTier() const;
+    void setSentenceTier(const QString &tiername);
+
+    QString getHTML(QPointer<Praaline::Core::CorpusCommunication> com);
+
+private:
+    BratSyntaxAndDisfluenciesData *d;
 };
 
 #endif // BRATSYNTAXANDDISFLUENCIES_H

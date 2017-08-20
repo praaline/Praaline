@@ -87,6 +87,7 @@ Corpus *MergeCorporaDialog::openCorpusFile(const QString &filename)
 //        return 0;
 //    }
 //    return corpus;
+    return 0;
 }
 
 

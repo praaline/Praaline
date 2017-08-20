@@ -27,6 +27,8 @@ public:
 
     static QString preprocessAlignment(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString processPausesInsertedByAligner(QPointer<Praaline::Core::CorpusCommunication> com);
+
+    static QString reactionTimes(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // MELISSAEXPERIMENT_H

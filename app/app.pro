@@ -221,7 +221,12 @@ SOURCES += main.cpp \
     annotation/asr/ASRModuleWidgetBase.cpp \
     annotation/editors/GroupingAnnotationEditor.cpp \
     annotation/editors/AnnotationMultiTierEditor.cpp \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
+    statistics/disfluencies/StatisticsPluginDisfluencies.cpp \
+    statistics/StatisticalMeasureAggregator.cpp \
+    statistics/disfluencies/AnalyserDisfluencies.cpp \
+    statistics/disfluencies/AnalyserDisfluenciesItem.cpp \
+    statistics/disfluencies/AnalyserDisfluenciesWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -336,7 +341,13 @@ HEADERS  += \
     annotation/asr/ASRModuleWidgetBase.h \
     annotation/editors/GroupingAnnotationEditor.h \
     annotation/editors/AnnotationMultiTierEditor.h \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h \
+    statistics/disfluencies/StatisticsPluginDisfluencies.h \
+    statistics/StatisticalMeasureAggregator.h \
+    statistics/disfluencies/AnalyserDisfluencies.h \
+    statistics/disfluencies/AnalyserDisfluenciesItem.h \
+    statistics/AnalyserItemBase.h \
+    statistics/disfluencies/AnalyserDisfluenciesWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -404,7 +415,8 @@ FORMS    += \
     annotation/calculate/TidyUpAnnotationsDialog.ui \
     annotation/SpeechRecognitionWidget.ui \
     annotation/asr/AutomaticTranscriptionWidget.ui \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
+    statistics/disfluencies/AnalyserDisfluenciesWidget.ui
 
 RESOURCES += \
     praaline.qrc \
