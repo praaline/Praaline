@@ -11,7 +11,7 @@
 #include <QProgressDialog>
 
 #include "GridViewFindDialog.h"
-#include "grid/qabstractfilterproxymodel.h"
+#include "grid/QAbstractFilterProxyModel.h"
 #include "GridViewWidget.h"
 #include "ui_gridviewwidget.h"
 

@@ -9,9 +9,9 @@
 #include <QWidget>
 #include "pncore/base/RealTime.h"
 
-#include "grid/qtextfilter.h"
-#include "grid/qfiltermodel.h"
-#include "grid/qfiltermodelproxy.h"
+#include "grid/QTextFilter.h"
+#include "grid/QFilterModel.h"
+#include "grid/QFilterModelProxy.h"
 
 #include "TimelineEditorWidgetBase.h"
 

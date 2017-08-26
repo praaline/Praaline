@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QAbstractItemModel>
-#include "grid/qadvancedtableview.h"
+#include "grid/QAdvancedTableView.h"
 
 namespace Ui {
 class GridViewWidget;

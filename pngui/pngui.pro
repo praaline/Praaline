@@ -42,53 +42,6 @@ FORMS += \
     widgets/ImportDataPreviewWidget.ui
 
 HEADERS += \
-    grid/qabstractfilter.h \
-    grid/qabstractfiltermodel.h \
-    grid/qabstractfilterproxymodel.h \
-    grid/qabstractmodelitemdecoration.h \
-    grid/qadvancedheaderview.h \
-    grid/qadvancedtableview.h \
-    grid/qadvancedtableview_p.h \
-    grid/qaiv.h \
-    grid/qaivlib_global.h \
-    grid/qautofilter.h \
-    grid/qautofilter_p.h \
-    grid/qcheckstateproxymodel.h \
-    grid/qclickablelabel.h \
-    grid/qconditionaldecoration.h \
-    grid/qconditionaldecorationdialog.h \
-    grid/qconditionaldecorationdialog_p.h \
-    grid/qconditionaldecorationproxymodel.h \
-    grid/qfiltereditorpopupwidget.h \
-    grid/qfiltereditorwidget.h \
-    grid/qfiltergroup.h \
-    grid/qfiltermodel.h \
-    grid/qfiltermodelproxy.h \
-    grid/qfilterview.h \
-    grid/qfilterviewconnector.h \
-    grid/qfilterviewitemdelegate.h \
-    grid/qfixedrowsheaderview.h \
-    grid/qfixedrowstableview.h \
-    grid/qgroupingproxymodel.h \
-    grid/qgroupingproxymodel_p.h \
-    grid/qheaderviewconnector.h \
-    grid/qmimedatautil.h \
-    grid/qrangefilter.h \
-    grid/qrangefilter_p.h \
-    grid/qregexpfilter.h \
-    grid/qregexpfilter_p.h \
-    grid/qselectionlistfilter.h \
-    grid/qselectionlistfilter_p.h \
-    grid/qshareditemselectionmodel.h \
-    grid/qsinglecolumnproxymodel.h \
-    grid/qspecialfilter.h \
-    grid/qspecialfilter_p.h \
-    grid/qtextfilter.h \
-    grid/qtextfilter_p.h \
-    grid/quniquevaluesproxymodel.h \
-    grid/qvaluefilter.h \
-    grid/qvaluefilter_p.h \
-    grid/spinboxitemdelegate.h \
     model/annotation/AnnotationGridPointModel.h \
     model/annotation/AnnotationGridModel.h \
     layer/AnnotationGridLayer.h \
@@ -216,45 +169,56 @@ HEADERS += \
     model/annotation/AnnotationGroupingTierTableModel.h \
     widgets/AnnotationMultiTierEditorWidget.h \
     widgets/TimelineEditorWidgetBase.h \
-    widgets/GroupingAnnotationEditorWidget.h
+    widgets/GroupingAnnotationEditorWidget.h \
+    grid/QAbstractFilter.h \
+    grid/QAbstractFilterModel.h \
+    grid/QAbstractFilterProxyModel.h \
+    grid/QAbstractModelItemDecoration.h \
+    grid/QAdvancedHeaderView.h \
+    grid/QAdvancedTableView.h \
+    grid/QAdvancedTableView_p.h \
+    grid/QAIV.h \
+    grid/QAIVlib_global.h \
+    grid/QAutoFilter.h \
+    grid/QAutoFilter_p.h \
+    grid/QCheckStateProxyModel.h \
+    grid/QClickableLabel.h \
+    grid/QConditionalDecoration.h \
+    grid/QConditionalDecorationDialog.h \
+    grid/QConditionalDecorationDialog_p.h \
+    grid/QConditionalDecorationProxyModel.h \
+    grid/QFilterEditorPopupWidget.h \
+    grid/QFilterEditorWidget.h \
+    grid/QFilterGroup.h \
+    grid/QFilterModel.h \
+    grid/QFilterModelProxy.h \
+    grid/QFilterView.h \
+    grid/QFilterViewConnector.h \
+    grid/QFilterViewItemDelegate.h \
+    grid/QFixedRowsHeaderView.h \
+    grid/QFixedRowsTableView.h \
+    grid/QGroupingProxyModel.h \
+    grid/QGroupingProxyModel_p.h \
+    grid/QHeaderViewConnector.h \
+    grid/QMimeDataUtil.h \
+    grid/QRangeFilter.h \
+    grid/QRangeFilter_p.h \
+    grid/QRegExpFilter.h \
+    grid/QRegExpFilter_p.h \
+    grid/QSelectionListFilter.h \
+    grid/QSelectionListFilter_p.h \
+    grid/QSharedItemSelectionModel.h \
+    grid/QSingleColumnProxyModel.h \
+    grid/QSpecialFilter.h \
+    grid/QSpecialFilter_p.h \
+    grid/QTextFilter.h \
+    grid/QTextFilter_p.h \
+    grid/QUniqueValuesProxyModel.h \
+    grid/QValueFilter.h \
+    grid/QValueFilter_p.h \
+    grid/SpinboxItemDelegate.h
 
 SOURCES += \
-    grid/qabstractfilter.cpp \
-    grid/qabstractfiltermodel.cpp \
-    grid/qabstractfilterproxymodel.cpp \
-    grid/qabstractmodelitemdecoration.cpp \
-    grid/qadvancedheaderview.cpp \
-    grid/qadvancedtableview.cpp \
-    grid/qaiv.cpp \
-    grid/qautofilter.cpp \
-    grid/qcheckstateproxymodel.cpp \
-    grid/qclickablelabel.cpp \
-    grid/qconditionaldecoration.cpp \
-    grid/qconditionaldecorationdialog.cpp \
-    grid/qconditionaldecorationproxymodel.cpp \
-    grid/qfiltereditorpopupwidget.cpp \
-    grid/qfiltereditorwidget.cpp \
-    grid/qfiltergroup.cpp \
-    grid/qfiltermodel.cpp \
-    grid/qfiltermodelproxy.cpp \
-    grid/qfilterview.cpp \
-    grid/qfilterviewconnector.cpp \
-    grid/qfilterviewitemdelegate.cpp \
-    grid/qfixedrowsheaderview.cpp \
-    grid/qfixedrowstableview.cpp \
-    grid/qgroupingproxymodel.cpp \
-    grid/qheaderviewconnector.cpp \
-    grid/qmimedatautil.cpp \
-    grid/qrangefilter.cpp \
-    grid/qregexpfilter.cpp \
-    grid/qselectionlistfilter.cpp \
-    grid/qshareditemselectionmodel.cpp \
-    grid/qsinglecolumnproxymodel.cpp \
-    grid/qspecialfilter.cpp \
-    grid/qtextfilter.cpp \
-    grid/quniquevaluesproxymodel.cpp \
-    grid/qvaluefilter.cpp \
-    grid/spinboxitemdelegate.cpp \
     model/annotation/AnnotationGridModel.cpp \
     layer/AnnotationGridLayer.cpp \
     layer/PraalineLayersInitialiser.cpp \
@@ -358,7 +322,43 @@ SOURCES += \
     model/annotation/AnnotationGroupingTierTableModel.cpp \
     widgets/AnnotationMultiTierEditorWidget.cpp \
     widgets/TimelineEditorWidgetBase.cpp \
-    widgets/GroupingAnnotationEditorWidget.cpp
+    widgets/GroupingAnnotationEditorWidget.cpp \
+    grid/QAbstractFilter.cpp \
+    grid/QAbstractFilterModel.cpp \
+    grid/QAbstractFilterProxyModel.cpp \
+    grid/QAbstractModelItemDecoration.cpp \
+    grid/QAdvancedHeaderView.cpp \
+    grid/QAdvancedTableView.cpp \
+    grid/QAIV.cpp \
+    grid/QAutoFilter.cpp \
+    grid/QCheckStateProxyModel.cpp \
+    grid/QClickableLabel.cpp \
+    grid/QConditionalDecoration.cpp \
+    grid/QConditionalDecorationDialog.cpp \
+    grid/QConditionalDecorationProxyModel.cpp \
+    grid/QFilterEditorPopupWidget.cpp \
+    grid/QFilterEditorWidget.cpp \
+    grid/QFilterGroup.cpp \
+    grid/QFilterModel.cpp \
+    grid/QFilterModelProxy.cpp \
+    grid/QFilterView.cpp \
+    grid/QFilterViewConnector.cpp \
+    grid/QFilterViewItemDelegate.cpp \
+    grid/QFixedRowsHeaderView.cpp \
+    grid/QFixedRowsTableView.cpp \
+    grid/QGroupingProxyModel.cpp \
+    grid/QHeaderViewConnector.cpp \
+    grid/QMimeDataUtil.cpp \
+    grid/QRangeFilter.cpp \
+    grid/QRegExpFilter.cpp \
+    grid/QSelectionListFilter.cpp \
+    grid/QSharedItemSelectionModel.cpp \
+    grid/QSingleColumnProxyModel.cpp \
+    grid/QSpecialFilter.cpp \
+    grid/QTextFilter.cpp \
+    grid/QUniqueValuesProxyModel.cpp \
+    grid/QValueFilter.cpp \
+    grid/SpinboxItemDelegate.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc
