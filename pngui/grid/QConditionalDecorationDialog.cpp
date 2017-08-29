@@ -23,7 +23,7 @@
 #include <QLineEdit>
 
 #include "QConditionalDecorationDialog.h"
-#include "ui_qconditionaldecorationdialog.h"
+#include "ui_QConditionalDecorationDialog.h"
 
 #include "QConditionalDecorationProxyModel.h"
 #include "QConditionalDecoration.h"

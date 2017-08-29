@@ -321,7 +321,7 @@ void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> cor
             layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
         }
     }
-    else if (tierName.endsWith("pitchmovement")) {
+    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
         Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
                     tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
         if (layer_regions_pitchmovement) {

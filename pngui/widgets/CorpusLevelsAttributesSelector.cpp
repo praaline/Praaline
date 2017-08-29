@@ -2,7 +2,6 @@
 #include <QTreeView>
 
 #include "CorpusLevelsAttributesSelector.h"
-#include "ui_corpuslevelsattributesselector.h"
 
 struct CorpusLevelsAttributesSelectorData {
     QGridLayout *gridLayout;

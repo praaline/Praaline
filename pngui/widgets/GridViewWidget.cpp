@@ -13,7 +13,7 @@
 #include "GridViewFindDialog.h"
 #include "grid/QAbstractFilterProxyModel.h"
 #include "GridViewWidget.h"
-#include "ui_gridviewwidget.h"
+#include "ui_GridViewWidget.h"
 
 #include "xlsx/xlsxdocument.h"
 

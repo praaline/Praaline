@@ -202,7 +202,7 @@
   <customwidget>
    <class>QAdvancedTableView</class>
    <extends>QWidget</extends>
-   <header>grid/qadvancedtableview.h</header>
+   <header>grid/QAdvancedTableView.h</header>
   </customwidget>
  </customwidgets>
  <resources>

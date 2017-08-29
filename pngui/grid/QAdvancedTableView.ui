@@ -190,17 +190,17 @@
   <customwidget>
    <class>QFilterView</class>
    <extends>QTableView</extends>
-   <header>grid/qfilterview.h</header>
+   <header>grid/QFilterView.h</header>
   </customwidget>
   <customwidget>
    <class>QFixedRowsTableView</class>
    <extends>QTableView</extends>
-   <header>grid/qfixedrowstableview.h</header>
+   <header>grid/QFixedRowsTableView.h</header>
   </customwidget>
   <customwidget>
    <class>QAdvancedTableViewProxy</class>
    <extends>QTableView</extends>
-   <header>grid/qadvancedtableview_p.h</header>
+   <header>grid/QAdvancedTableView_p.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

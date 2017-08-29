@@ -1,5 +1,5 @@
 #include "GridViewFindDialog.h"
-#include "ui_gridviewfinddialog.h"
+#include "ui_GridViewFindDialog.h"
 
 GridViewFindDialog::GridViewFindDialog(QWidget *parent) :
     QDialog(parent),

@@ -9,7 +9,7 @@
 #include <QModelIndex>
 
 #include "CorpusItemSelectorWidget.h"
-#include "ui_corpusitemselectorwidget.h"
+#include "ui_CorpusItemSelectorWidget.h"
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
