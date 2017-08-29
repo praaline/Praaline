@@ -4,7 +4,8 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS += pncore pnlib pngui \
+SUBDIRS += pncore \
+           # pnlib pngui \
            sub_dataquay svcore svgui svapp \
            # libpraat \
            libs/qt-solutions/qtpropertybrowser \

@@ -58,3 +58,4 @@ script:
 
 notifications:
   email: false
+
