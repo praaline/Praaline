@@ -263,6 +263,8 @@ void TimelineVisualisationWidget::loadVisualisationNassima1(QPointer<Corpus> cor
 
 void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID)
 {
+    QString measure = "speechrate";
+
     // Create annotation pane
     d->visualiser->setAnnotationTiers(d->currentTierGroups);
     d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
@@ -286,7 +288,7 @@ void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> cor
 
 
     bool first(true);
-    QString tierName = "joystick_pitchmovement";
+    QString tierName = "joystick_" + measure;
     foreach (QString participantID, d->currentTierGroups.keys()) {
         if (!participantID.startsWith("P")) continue;
         AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);

@@ -82,7 +82,8 @@ HEADERS += \
     SyllabifierEasy.h \
     ForcedAlignerDummy.h \
     SequencerProsodicUnits.h \
-    SequencerCombineUnits.h
+    SequencerCombineUnits.h \
+    CPROMDISS.h
 
 
 SOURCES += \ 
@@ -112,4 +113,5 @@ SOURCES += \
     SyllabifierEasy.cpp \
     ForcedAlignerDummy.cpp \
     SequencerProsodicUnits.cpp \
-    SequencerCombineUnits.cpp
+    SequencerCombineUnits.cpp \
+    CPROMDISS.cpp

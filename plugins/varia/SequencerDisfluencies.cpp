@@ -13,6 +13,7 @@
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "SequencerDisfluencies.h"
@@ -177,6 +178,38 @@ QString SequencerDisfluencies::getAllDistinctSequences(QPointer<Praaline::Core::
     return ret.trimmed();
 }
 
+void SequencerDisfluencies::createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
+                                            const QString &ID, const QString &name /*= QString()*/, const QString &description /*= QString()*/,
+                                            const DataType &datatype /*= DataType(DataType::VarChar, 256)*/, int order /*= 0*/,
+                                            bool indexed /*= false*/, const QString &nameValueList /*= QString()*/)
+{
+    if (level->hasAttribute(ID)) return;
+    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
+                                                                          order, indexed, nameValueList);
+    if (repository->annotations()->createAnnotationAttribute(level->ID(), attr))
+        level->addAttribute(attr);
+}
+
+void SequencerDisfluencies::createDisfluencySequenceAnnotationLevel(CorpusRepository *repository)
+{
+    if (!repository) return;
+    // If need be, create the annotation level for disfluency sequences
+    AnnotationStructureLevel *level_seq = repository->annotationStructure()->level(d->sequencesLevel);
+    if (!level_seq) {
+        level_seq = new AnnotationStructureLevel(d->sequencesLevel, AnnotationStructureLevel::SequencesLevel, "Disfluency Sequences", "Automatically generated from token annotation");
+        if (!repository->annotations()->createAnnotationLevel(level_seq)) return;
+        repository->annotationStructure()->addLevel(level_seq);
+    }
+    // Create disfluency sequence attributes where necessary
+    createAttribute(repository, level_seq, "", "textSequence", "Disfluency Sequence Text", "");
+    createAttribute(repository, level_seq, "", "textReparandum", "Reparandum Text", "");
+    createAttribute(repository, level_seq, "", "textInterregnum", "Interregnum Text", "");
+    createAttribute(repository, level_seq, "", "textReparans", "Reparans Text", "");
+    createAttribute(repository, level_seq, "", "textSequenceAnnotated", "Disfluency sequence with annotation tags", "");
+    createAttribute(repository, level_seq, "", "indexInterruptionPoint", "Index of Interruption Point start", "", DataType::Integer);
+    createAttribute(repository, level_seq, "", "indexReparans", "Index of Reparans start", "", DataType::Integer);
+}
+
 QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     bool createSequences(true);
@@ -324,6 +357,7 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
             if (errors.isEmpty()) {
                 if (createSequences) {
                     addExtraDataToSequences(sequences, tiers);
+                    createDisfluencySequenceAnnotationLevel(com->repository());
                     SequenceTier *tier_seq = new SequenceTier(d->sequencesLevel, sequences, tier_tokens);
                     com->repository()->annotations()->saveTier(annotationID, speakerID, tier_seq);
                     ret.append(QString("%1\t%2\tOK. Created %3 sequences.\n").arg(annotationID).arg(speakerID).arg(sequences.count()));

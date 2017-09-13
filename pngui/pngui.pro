@@ -216,7 +216,8 @@ HEADERS += \
     grid/QUniqueValuesProxyModel.h \
     grid/QValueFilter.h \
     grid/QValueFilter_p.h \
-    grid/SpinboxItemDelegate.h
+    grid/SpinboxItemDelegate.h \
+    layer/SpeechRateLayer.h
 
 SOURCES += \
     model/annotation/AnnotationGridModel.cpp \
@@ -358,7 +359,8 @@ SOURCES += \
     grid/QTextFilter.cpp \
     grid/QUniqueValuesProxyModel.cpp \
     grid/QValueFilter.cpp \
-    grid/SpinboxItemDelegate.cpp
+    grid/SpinboxItemDelegate.cpp \
+    layer/SpeechRateLayer.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

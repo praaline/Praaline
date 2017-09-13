@@ -90,6 +90,7 @@ void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::Cor
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
     mutex.unlock();
     if (intervals.isEmpty()) return;
+    QList<QTreeWidgetItem *> lines;
     foreach (Interval *intv, intervals) {
         if (!intv) continue;
         if (d->skipPauses && intv->isPauseSilent()) continue;
@@ -97,8 +98,11 @@ void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::Cor
         fields << QString::fromStdString(intv->tMin().toText())
                << intv->attribute("speakerID").toString()
                << intv->text();
-        d->lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
+        lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
     }
+    mutex.lock();
+    if (d) d->lines.append(lines);
+    mutex.unlock();
 }
 
 void MiniTranscriptionWidget::clear()

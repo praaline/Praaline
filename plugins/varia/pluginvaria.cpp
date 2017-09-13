@@ -33,6 +33,7 @@
 #include "SequencerProsodicUnits.h"
 #include "SequencerCombineUnits.h"
 #include "BratAnnotationExporter.h"
+#include "CPROMDISS.h"
 
 #include "pluginvaria.h"
 
@@ -411,6 +412,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // m = MelissaExperiment::reactionTimes(com);
         // PhonetiserExternal p;
         // m = p.importFromPhonetiser(com, true);
+        // m = CPROMDISS::movePointAnnotationToInterval(com);
         if (!m.isEmpty()) printMessage(m);
 
         // MelissaExperiment::exportForEA(com);
