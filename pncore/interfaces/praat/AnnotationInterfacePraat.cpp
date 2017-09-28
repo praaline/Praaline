@@ -2,11 +2,11 @@
 #include <QList>
 #include <QScopedPointer>
 
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "corpus/CorpusAnnotation.h"
+#include "datastore/AnnotationDatastore.h"
+#include "datastore/CorpusRepository.h"
+#include "structure/AnnotationStructure.h"
+#include "interfaces/praat/PraatTextGrid.h"
 
 #include "AnnotationInterfacePraat.h"
 

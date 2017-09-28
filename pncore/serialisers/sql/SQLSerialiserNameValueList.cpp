@@ -6,7 +6,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
-#include "pncore/structure/NameValueList.h"
+#include "structure/NameValueList.h"
 #include "SQLSerialiserNameValueList.h"
 
 #include "QSqlMigrator/QSqlMigrator.h"

@@ -2,14 +2,14 @@
 #include <QList>
 #include <QMap>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/PointTier.h"
+#include "corpus/Corpus.h"
+#include "corpus/CorpusCommunication.h"
+#include "corpus/CorpusAnnotation.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/AnnotationDatastore.h"
+#include "annotation/AnnotationTierGroup.h"
+#include "annotation/IntervalTier.h"
+#include "annotation/PointTier.h"
 
 #include "ImportAnnotations.h"
 

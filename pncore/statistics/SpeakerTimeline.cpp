@@ -2,14 +2,14 @@
 #include <QPointer>
 #include <QScopedPointer>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/Interval.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "corpus/CorpusCommunication.h"
+#include "datastore/CorpusRepository.h"
+#include "datastore/AnnotationDatastore.h"
+#include "datastore/FileDatastore.h"
+#include "annotation/IntervalTier.h"
+#include "annotation/Interval.h"
+#include "annotation/AnnotationTierGroup.h"
+#include "interfaces/praat/PraatTextGrid.h"
 
 #include "SpeakerTimeline.h"
 

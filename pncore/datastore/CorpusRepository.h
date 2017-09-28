@@ -19,7 +19,7 @@
 #include <QObject>
 #include <QString>
 #include <QPointer>
-#include "pncore/corpus/CorpusObjectInfo.h"
+#include "corpus/CorpusObjectInfo.h"
 
 namespace Praaline {
 namespace Core {

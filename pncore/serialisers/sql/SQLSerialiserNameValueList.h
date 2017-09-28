@@ -7,7 +7,7 @@
 #include <QSqlDatabase>
 #include "SQLSerialiserBase.h"
 #include "SQLSchemaProxyBase.h"
-#include "pncore/structure/NameValueList.h"
+#include "structure/NameValueList.h"
 
 namespace Praaline {
 namespace Core {

@@ -2,7 +2,7 @@
 #include <QXmlStreamReader>
 #include "AnvilMetadataTranscript.h"
 
-#include "pncore/corpus/Corpus.h"
+#include "corpus/Corpus.h"
 
 namespace Praaline {
 namespace Core {

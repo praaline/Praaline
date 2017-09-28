@@ -57,8 +57,6 @@ PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \
-    plugindismo.h \
-    plugindismo_global.h \
     crfpp/common.h \
     crfpp/config.h \
     crfpp/crfpp.h \
@@ -78,27 +76,29 @@ HEADERS += \
     crfpp/thread.h \
     crfpp/timer.h \
     crfpp/winmain.h \
-    dismo/boundarydetector.h \
-    dismo/crfannotator.h \
-    dismo/dictionaryentry.h \
-    dismo/dictionaryfst.h \
-    dismo/dictionaryquery.h \
-    dismo/dictionarysql.h \
-    dismo/discoursetagger.h \
-    dismo/disfluencydetector.h \
-    dismo/dismoannotator.h \
-    dismo/dismoevaluator.h \
-    dismo/dismotrainer.h \
-    dismo/postagger.h \
-    dismo/postprocessor.h \
-    dismo/preprocessor.h \
-    dismo/token.h \
-    dismo/tokenizer.h \
-    dismo/tokenlist.h \
-    dismo/tokenunit.h \
-    serialisers/dismoserialisersql.h \
-    serialisers/dismoserialisertiers.h \
-    dismo/CRFFeatureSet.h
+    dismo/CRFFeatureSet.h \
+    dismo/BoundaryDetector.h \
+    dismo/CRFAnnotator.h \
+    dismo/DictionaryEntry.h \
+    dismo/DictionaryFST.h \
+    dismo/DictionaryQuery.h \
+    dismo/DictionarySQL.h \
+    dismo/DiscourseTagger.h \
+    dismo/DisfluencyDetector.h \
+    dismo/DisMoAnnotator.h \
+    dismo/DisMoEvaluator.h \
+    dismo/DisMoTrainer.h \
+    dismo/POSTagger.h \
+    dismo/PostProcessor.h \
+    dismo/PreProcessor.h \
+    dismo/Token.h \
+    dismo/Tokenizer.h \
+    dismo/TokenList.h \
+    dismo/TokenUnit.h \
+    serialisers/DisMoSerialiserSQL.h \
+    serialisers/DisMoSerialiserTiers.h \
+    PluginDisMo.h \
+    PluginDisMo_global.h
 
 SOURCES += \
     plugindismo.cpp \
@@ -112,22 +112,22 @@ SOURCES += \
     crfpp/param.cpp \
     crfpp/path.cpp \
     crfpp/tagger.cpp \
-    dismo/boundarydetector.cpp \
-    dismo/crfannotator.cpp \
-    dismo/dictionaryfst.cpp \
-    dismo/dictionarysql.cpp \
-    dismo/discoursetagger.cpp \
-    dismo/disfluencydetector.cpp \
-    dismo/dismoannotator.cpp \
-    dismo/dismoevaluator.cpp \
-    dismo/dismotrainer.cpp \
-    dismo/postagger.cpp \
-    dismo/postprocessor.cpp \
-    dismo/preprocessor.cpp \
-    dismo/token.cpp \
-    dismo/tokenizer.cpp \
-    dismo/tokenlist.cpp \
-    dismo/tokenunit.cpp \
-    serialisers/dismoserialisersql.cpp \
-    serialisers/dismoserialisertiers.cpp \
-    dismo/CRFFeatureSet.cpp
+    dismo/CRFFeatureSet.cpp \
+    dismo/BoundaryDetector.cpp \
+    dismo/CRFAnnotator.cpp \
+    dismo/DictionaryFST.cpp \
+    dismo/DictionarySQL.cpp \
+    dismo/DiscourseTagger.cpp \
+    dismo/DisfluencyDetector.cpp \
+    dismo/DisMoAnnotator.cpp \
+    dismo/DisMoEvaluator.cpp \
+    dismo/DisMoTrainer.cpp \
+    dismo/POSTagger.cpp \
+    dismo/PostProcessor.cpp \
+    dismo/PreProcessor.cpp \
+    dismo/Token.cpp \
+    dismo/Tokenizer.cpp \
+    dismo/TokenList.cpp \
+    dismo/TokenUnit.cpp \
+    serialisers/DisMoSerialiserSQL.cpp \
+    serialisers/DisMoSerialiserTiers.cpp

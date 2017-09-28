@@ -7,10 +7,10 @@
 #include <QSqlQuery>
 #include <QSqlRecord>
 
-#include "plugindismo.h"
-#include "dismo/dismoannotator.h"
-#include "dismo/dismotrainer.h"
-#include "serialisers/dismoserialisersql.h"
+#include "PluginDisMo.h"
+#include "dismo/DisMoAnnotator.h"
+#include "dismo/DisMoTrainer.h"
+#include "serialisers/DisMoSerialiserSQL.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"

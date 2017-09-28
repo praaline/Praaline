@@ -19,7 +19,7 @@
 #include <QObject>
 #include <QString>
 #include <QMap>
-#include "pncore/annotation/Interval.h"
+#include "annotation/Interval.h"
 
 namespace Praaline {
 namespace Core {
