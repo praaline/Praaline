@@ -79,6 +79,10 @@ public:
     void replaceAllIntervals(QList<Interval *> &newIntervals);
     bool moveBoundary(int index, RealTime time);
     bool realignIntervals(int indexFrom, QList<RealTime> &newBoundaries);
+    // Mutators that affect the total length of the tier
+    bool modifyIntervalDuration(int index, RealTime delta);
+    bool insertInterval(int index, Interval *interval);
+    bool removeInterval(int index);
 
     // Methods
     QList<RealTime> times() const;

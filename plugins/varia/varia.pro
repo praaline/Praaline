@@ -83,7 +83,8 @@ HEADERS += \
     ForcedAlignerDummy.h \
     SequencerProsodicUnits.h \
     SequencerCombineUnits.h \
-    CPROMDISS.h
+    CPROMDISS.h \
+    SilentPauseManipulator.h
 
 
 SOURCES += \ 
@@ -114,4 +115,5 @@ SOURCES += \
     ForcedAlignerDummy.cpp \
     SequencerProsodicUnits.cpp \
     SequencerCombineUnits.cpp \
-    CPROMDISS.cpp
+    CPROMDISS.cpp \
+    SilentPauseManipulator.cpp

@@ -746,5 +746,69 @@ bool IntervalTier::realignIntervals(int indexFrom, QList<RealTime> &newBoundarie
     return true;
 }
 
+bool IntervalTier::modifyIntervalDuration(int index, RealTime delta)
+{
+    if (index < 0) return false;
+    if (index >= m_intervals.count()) return false;
+    // Check whether the change would lead to a zero or negative duration
+    if (m_intervals.at(index)->tMax() + delta <= m_intervals.at(index)->tMin()) return false;
+    // Change duration of the indexed interval
+    m_intervals[index]->m_tMax = m_intervals[index]->m_tMax + delta;
+    // Adjust the timecodes of all subsequent intervals
+    for (int i = index + 1; i < m_intervals.count(); ++i) {
+        m_intervals[i]->m_tMin = m_intervals[i]->m_tMin + delta;
+        m_intervals[i]->m_tMax = m_intervals[i]->m_tMax + delta;
+    }
+    // Adjust the timeline length of the tier
+    m_tMax = m_tMax + delta;
+    return true;
+}
+
+bool IntervalTier::insertInterval(int index, Interval *interval)
+{
+    if (index < 0) return false;
+    if (index >= m_intervals.count()) return false;
+    if (!interval) return false;
+    RealTime duration = interval->duration();
+    // Check that the duration of the inserted interval is a positive real number
+    if (duration <= RealTime()) return false;
+    // Get tMin at point of insertion
+    RealTime tMin = m_intervals[index]->tMin();
+    // Insert interval at position index of the list
+    m_intervals.insert(index, interval);
+    // Adjust timecodes of the inserted interval
+    m_intervals[index]->m_tMin = tMin;
+    m_intervals[index]->m_tMax = tMin + duration;
+    // Adjust timecodes of all subsequent intervals
+    for (int i = index + 1; i < m_intervals.count(); ++i) {
+        m_intervals[i]->m_tMin = m_intervals[i]->m_tMin + duration;
+        m_intervals[i]->m_tMax = m_intervals[i]->m_tMax + duration;
+    }
+    // Adjust the timeline length of the tier
+    m_tMax = m_tMax + duration;
+    return true;
+}
+
+bool IntervalTier::removeInterval(int index)
+{
+    if (index < 0) return false;
+    if (index >= m_intervals.count()) return false;
+    // Get the interval pointer
+    Interval *interval = m_intervals.at(index);
+    // Get the duration of the interval to remove
+    RealTime duration = m_intervals.at(index)->duration();
+    // Remove interval and delete it
+    m_intervals.removeAt(index);
+    delete interval;
+    // Adjust timecodes of all subsequent intervals
+    for (int i = index + 1; i < m_intervals.count(); ++i) {
+        m_intervals[i]->m_tMin = m_intervals[i]->m_tMin - duration;
+        m_intervals[i]->m_tMax = m_intervals[i]->m_tMax - duration;
+    }
+    // Adjust the timeline length of the tier
+    m_tMax = m_tMax - duration;
+    return true;
+}
+
 } // namespace Core
 } // namespace Praaline

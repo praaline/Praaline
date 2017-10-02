@@ -34,6 +34,7 @@
 #include "SequencerCombineUnits.h"
 #include "BratAnnotationExporter.h"
 #include "CPROMDISS.h"
+#include "SilentPauseManipulator.h"
 
 #include "pluginvaria.h"
 
@@ -387,12 +388,14 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         QString m;
-        // m = SequencerSyntax::checkGroupingAnnotation(com);
-        // m = SequencerSyntax::createSequencesFromGroupingAnnotation(com);
+
+//         SequencerSyntax s;
+//         m = s.checkGroupingAnnotation(com);
+//         m = s.createSequencesFromGroupingAnnotation(com);
         // if (!m.isEmpty()) printMessage(m);
         // m = SequencerDisfluencies::getAllDistinctSequences(com);
-        SequencerDisfluencies s;
-        m = s.checkAnnotation(com);
+        // SequencerDisfluencies s;
+        // m = s.checkAnnotation(com);
         // m = MelissaExperiment::splitResponses(com);
         // m = MelissaExperiment::exportForAlignment(com);
         // m = MelissaExperiment::preprocessAlignment(com);
@@ -413,6 +416,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // PhonetiserExternal p;
         // m = p.importFromPhonetiser(com, true);
         // m = CPROMDISS::movePointAnnotationToInterval(com);
+        SilentPauseManipulator s;
+        m = s.process(com);
         if (!m.isEmpty()) printMessage(m);
 
         // MelissaExperiment::exportForEA(com);

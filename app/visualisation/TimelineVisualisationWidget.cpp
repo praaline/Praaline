@@ -229,8 +229,8 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
-    // loadVisualisationNassima1(corpus, annotationID);
-    loadVisualisationNassima2(corpus, annotationID);
+    loadVisualisationNassima1(corpus, annotationID);
+    // loadVisualisationNassima2(corpus, annotationID);
 
 
 

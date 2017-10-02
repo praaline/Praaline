@@ -10,13 +10,19 @@ class CorpusCommunication;
 }
 }
 
+struct SequencerSyntaxData;
+
 class SequencerSyntax
 {
 public:
     SequencerSyntax();
+    ~SequencerSyntax();
 
-    static QString checkGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString createSequencesFromGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString checkGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString createSequencesFromGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
+
+private:
+    SequencerSyntaxData *d;
 };
 
 #endif // SEQUENCERSYNTAX_H
