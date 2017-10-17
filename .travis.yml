@@ -40,15 +40,9 @@ addons:
       - swig
 
 before_install:
-  - if [ ! -e Qt/5.9.1 ] ; then
-        rm -rf Qt ;
-        wget http://download.qt.io/official_releases/qt/5.9/5.9.1/qt-opensource-linux-x64-5.9.1.run ;
-        chmod +x ./qt-opensource-linux-x64-5.9.1.run ;
-        ./qt-opensource-linux-x64-5.9.1.run --platform minimal --script qt-installer-noninteractive.qs --no-force-installations ;
+  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
+      sudo add-apt-repository ppa:beineri/opt-qt591-trusty -y;
     fi
-#  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
-#      sudo add-apt-repository ppa:beineri/opt-qt591-trusty -y;
-#    fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo apt-get update -qq;
     else
