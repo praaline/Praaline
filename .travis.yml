@@ -37,6 +37,7 @@ addons:
       - raptor-utils
       - librubberband-dev
       - mlton
+      - swig
 
 before_install:
   - if [ ! -e Qt/5.9.1 ] ; then
@@ -46,7 +47,7 @@ before_install:
         ./qt-opensource-linux-x64-5.9.1.run --platform minimal --script qt-installer-noninteractive.qs --no-force-installations ;
     fi
 #  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
-#      sudo add-apt-repository ppa:beineri/opt-qt59-trusty -y;
+#      sudo add-apt-repository ppa:beineri/opt-qt591-trusty -y;
 #    fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo apt-get update -qq;
