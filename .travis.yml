@@ -35,6 +35,7 @@ addons:
       - raptor-utils
       - librubberband-dev
       - mlton
+      - vamp-plugin-sdk
       - swig
 
 before_install:
