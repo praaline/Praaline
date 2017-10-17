@@ -31,8 +31,11 @@ public:
 
     // Statistics
     static void statExtractFeaturesForModelling(const QString &filename, Corpus *corpus, QString prefix, bool multilevel);
-    static void statInterAnnotatorAgreement(Corpus *corpus, QString prefix);
-    static void statCorrespondanceNSandMS(Corpus *corpus, QString prefix);
+    static void statInterAnnotatorAgreement(const QString &filenameCohen, const QString &filenameFleiss, Corpus *corpus,
+                                            const QString &prefix, const QString &tapping_level);
+    static void statCorrespondanceNSandMS(const QString &filenameTable, const QString &filenameBookmarks, Corpus *corpus, QString prefix);
+    static void statCorrespondanceInternal(const QString &filenameTable, const QString &filenameBookmarks, Corpus *corpus,
+                                           const QString &prefixLeft, const QString &prefixRight);
 
 private:
     ProsodicBoundariesExperimentAnalysis() {}

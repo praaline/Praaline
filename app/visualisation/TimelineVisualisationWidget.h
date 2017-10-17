@@ -61,6 +61,7 @@ private:
 
     void loadVisualisationNassima1(QPointer<Corpus> corpus, const QString &annotationID);
     void loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID);
+    void loadVisualisationNassima3(QPointer<Corpus> corpus, const QString &annotationID);
 };
 
 #endif // TIMELINEVISUALISATIONWIDGET_H

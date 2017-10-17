@@ -29,14 +29,17 @@
 struct TimeValuePoint
 {
 public:
-    TimeValuePoint(long _frame) : frame(_frame), value(0.0f) { }
+    TimeValuePoint(long _frame) : frame(_frame), value(0.0f), confidenceInterval(0.0f) { }
     TimeValuePoint(long _frame, float _value, QString _label) :
-        frame(_frame), value(_value), label(_label) { }
+        frame(_frame), value(_value), confidenceInterval(0.0f), label(_label) { }
+    TimeValuePoint(long _frame, float _value, float _ci, QString _label) :
+        frame(_frame), value(_value), confidenceInterval(_ci), label(_label) { }
 
     int getDimensions() const { return 2; }
     
     long frame;
     float value;
+    float confidenceInterval;
     QString label;
 
     QString getLabel() const { return label; }
@@ -186,6 +189,4 @@ public:
 
 
 #endif
-
-
 

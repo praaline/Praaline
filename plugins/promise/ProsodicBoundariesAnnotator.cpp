@@ -20,8 +20,16 @@ using namespace Praaline::Core;
 struct ProsodicBoundariesAnnotatorData {
     ProsodicBoundariesAnnotatorData() :
         attributeBoundaryTrain("promise_boundary"), attributeBoundaryContourTrain("promise_contour"),
-        fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0)
-    {}
+        fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0),
+        headerLineInFeaturesTable(true)
+    {
+        featureSelection << "following_pause_dur" << "following_pause_dur_log" <<
+                            "syll_dur_rel20" << "syll_dur_rel30" << "syll_dur_rel40" <<
+                            "syll_dur_log_rel20" << "syll_dur_log_rel30" << "syll_dur_log_rel40" <<
+                            "f0_mean_st_rel20" << "f0_mean_st_rel30" << "f0_mean_st_rel40" << "f0_mean_st_rel50" <<
+                            "f0_up" << "f0_down"<< "f0_traj";
+        extraFeatures << "boundaryForce" << "boundary2Force" << "boundaryExpertForce";
+    }
 
     QString currentAnnotationID;
     // Statistical models
@@ -36,6 +44,9 @@ struct ProsodicBoundariesAnnotatorData {
     QTextStream *streamFeaturesTable;
     QFile *fileCRFData;
     QTextStream *streamCRFData;
+    bool headerLineInFeaturesTable;
+    QStringList featureSelection;
+    QStringList extraFeatures;
 };
 
 ProsodicBoundariesAnnotator::ProsodicBoundariesAnnotator(QObject *parent) :
@@ -121,6 +132,16 @@ bool ProsodicBoundariesAnnotator::openFeaturesTableFile(const QString &filename)
     d->streamFeaturesTable = new QTextStream(d->fileFeaturesTable);
     d->streamFeaturesTable->setCodec("UTF-8");
     d->streamFeaturesTable->generateByteOrderMark();
+    if (d->headerLineInFeaturesTable) {
+        QTextStream &out = (*d->streamFeaturesTable);
+        // Write features table
+        out << "annotationID\tspeakerID\tindexSyll\tsyllText\ttMin\ttMax";
+        foreach (QString featureID, d->featureSelection)
+            out << "\t" << featureID;
+        foreach (QString featureID, d->extraFeatures)
+            out << "\t" << featureID;
+        out << "\n";
+    }
     return true;
 }
 
@@ -244,18 +265,23 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         if (sylltext.length() == 0) sylltext = "_";
         // Target attribute
         QString target;
+        bool translateTarget(false);
         if (!annotateContours) {
             target = syll->attribute(d->attributeBoundaryTrain).toString();
-            if      (target.contains("///"))  target = "B3";
-            else if (target.contains("//"))   target = "B2";
-            else                              target = "0";
+            if (translateTarget) {
+                if      (target.contains("///"))  target = "B3";
+                else if (target.contains("//"))   target = "B2";
+                else                              target = "0";
+            }
         } else {
             target = syll->attribute(d->attributeBoundaryContourTrain).toString();
-            if      (target.contains("C"))  target = "C";
-            else if (target.contains("S"))  target = "S";
-            else if (target.contains("T"))  target = "T";
-            else if (target.contains("F"))  target = "F";
-            else                            target = "0";
+            if (translateTarget) {
+                if      (target.contains("C"))  target = "C";
+                else if (target.contains("S"))  target = "S";
+                else if (target.contains("T"))  target = "T";
+                else if (target.contains("F"))  target = "F";
+                else                            target = "0";
+            }
         }
         // Tokens
         QList<Interval *> tokens = tier_token->getIntervalsOverlappingWith(syll, RealTime(0, 5000));
@@ -333,6 +359,10 @@ int ProsodicBoundariesAnnotator::outputCRF(IntervalTier *tier_syll, IntervalTier
         else {
             out << "_\t";
             if (withPOS) { out << "_\t_\t_\t"; }
+        }
+        // Extra feautres
+        foreach (QString featureID, d->extraFeatures) {
+            out << syll->attribute(featureID).toString() << "\t";
         }
 
         // TARGET CLASS (see above)
@@ -453,16 +483,19 @@ IntervalTier *ProsodicBoundariesAnnotator::annotate(const QString &annotationID,
             out << syll->text() << "\t";
             out << syll->tMin().toDouble() << "\t";
             out << syll->tMax().toDouble() << "\t";
-            foreach (QString featureName, featureSelection) {
-                if (featureName.endsWith("_z")) {
-                    featureName.chop(2);
-                    out << features[featureName].zscore(isyll) << "\t";
+            foreach (QString featureID, featureSelection) {
+                if (featureID.endsWith("_z")) {
+                    featureID.chop(2);
+                    out << features[featureID].zscore(isyll) << "\t";
                 }
                 else {
-                    out << features[featureName].at(isyll) << "\t";
+                    out << features[featureID].at(isyll) << "\t";
                 }
             }
-            out << syll->attribute(d->attributeBoundaryTrain).toString() << "\n";
+            out << syll->attribute(d->attributeBoundaryTrain).toString();
+            foreach (QString featureID, d->extraFeatures)
+                out << "\t" << syll->attribute(featureID).toString();
+            out << "\n";
         }
     }
     if (d->streamCRFData) {

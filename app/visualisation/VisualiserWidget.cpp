@@ -3432,7 +3432,7 @@ void VisualiserWidget::addLayerTimeInstantsFromIntevalTier(IntervalTier *tier)
 
 Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
         AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID,
-        bool createNewPane, const QString &speakerID)
+        bool createNewPane, const QString &speakerID, const QString &confidenceIntervalAttributeID)
 {
     if (!tier) return 0;
     if (!getMainModel()) return 0;
@@ -3454,6 +3454,9 @@ Layer * VisualiserWidget::addLayerTimeValuesFromAnnotationTier(
         RealTime t = RealTime::fromNanoseconds(tier->at(i)->attribute(timeAttributeID).toLongLong());
         SparseTimeValueModel::Point point(RealTime::realTime2Frame(t , model->getSampleRate()),
                                           tier->at(i)->attribute(valueAttributeID).toDouble(),
+                                          (!confidenceIntervalAttributeID.isEmpty()) ?
+                                              tier->at(i)->attribute(confidenceIntervalAttributeID).toDouble() :
+                                              0.0,
                                           (!speakerID.isEmpty()) ? speakerID :
                                                                    tier->at(i)->attribute(labelAttributeID).toString());
         model->addPoint(point);
@@ -3498,6 +3501,7 @@ void VisualiserWidget::addTappingDataPane(const QString &tappingTierName,
         layerPPB->setDisplayExtents(0.0, 100.0);
     }
     m_document->addLayerToView(pane, newRegionsLayer);
+    newRegionsLayer->setLayerDormant(pane, true);
     // ---
     m_paneStack->setCurrentPane(pane);
     m_paneStack->setCurrentLayer(pane, newRegionsLayer);

@@ -828,7 +828,7 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(const
     QTextStream out(&file);
     out.setCodec("UTF-8");
     out << "stimulusID\tstimulusType\tspeaker\tsyll_ID\tsyll_tmin\tsyll\t"
-           "expertBoundaryType\texpertContour\texpertBoundary\t"
+           "offlineBoundaryType\tofflineContour\tofflineBoundary\t"
            "durNextPause\tlogdurNextPause\tlogdurNextPauseZ\t"
            "durSyllRel20\tdurSyllRel30\tdurSyllRel40\tdurSyllRel50\t"
            "logdurSyllRel20\tlogdurSyllRel30\tlogdurSyllRel40\tlogdurSyllRel50\t"
@@ -911,10 +911,11 @@ double getCohenKappa(const QList<bool> &annotations1, const QList<bool> &annotat
     return k;
 }
 
-void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(Corpus *corpus, QString prefix)
+void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(const QString &filenameCohen, const QString &filenameFleiss, Corpus *corpus,
+                                                                       const QString &prefix, const QString &tapping_level)
 {
-    QFile fileCohen("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/kappaScoresCohen.txt");
-    QFile fileFleiss("/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/kappaScoresFleiss.txt");
+    QFile fileCohen(filenameCohen);
+    QFile fileFleiss(filenameFleiss);
     if ( !fileCohen.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     if ( !fileFleiss.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream outCohen(&fileCohen);
@@ -930,7 +931,7 @@ void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(Corpus *c
         if (id == "B19S" || id == "B19N") continue;
 
         // Get list of subjects who tapped during this sample
-        QList<QString> annotatorsForSample = corpus->repository()->annotations()->getSpeakersActiveInLevel(com->ID(), "tapping");
+        QList<QString> annotatorsForSample = corpus->repository()->annotations()->getSpeakersActiveInLevel(com->ID(), tapping_level);
         qDebug() << com->ID() << " " << annotatorsForSample.count();
         // To calculate Cohen's kappa we need all the annotations by Subject ID -> (Syllable ID, Perceived as boundary?)
         QHash<QString, QList<bool> > boundaryAnnotations;
@@ -1026,7 +1027,8 @@ void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(Corpus *c
     fileFleiss.close();
 }
 
-void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(Corpus *corpus, QString prefix)
+void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QString &filenameTable, const QString &filenameBookmarks,
+                                                                     Corpus *corpus, QString prefix)
 {
     if (!corpus) return;
     QStringList ppbAttributeIDs;
@@ -1035,8 +1037,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(Corpus *cor
                        prefix + "FirstPPB" << prefix + "LastPPB";
     // prefix + "Subjects" << prefix + "TimesAdj" << prefix + "TimesOrig"
 
-    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/analyses/";
-    QFile file(path + "expeall_correspondance.txt");
+    QFile file(filenameTable);
     if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream out(&file);
     out.setCodec("UTF-8");
@@ -1044,7 +1045,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(Corpus *cor
     // Print header row
     QStringList fieldLabels;
     fieldLabels << "stimulusID" << "stimulusType" << "speaker" << "syll_ID" << "syll_tmin" << "syll";
-    fieldLabels << "expertBoundaryType" << "expertContour" << "expertBoundary";
+    fieldLabels << "offlineBoundaryType" << "offlineContour" << "offlineBoundary";
     fieldLabels << "durNextPause" << "logdurNextPause" << "logdurNextPauseZ";
     fieldLabels << "durSyllRel20" << "durSyllRel30" << "durSyllRel40" << "durSyllRel50";
     fieldLabels << "logdurSyllRel20" << "logdurSyllRel30" << "logdurSyllRel40" << "logdurSyllRel50";
@@ -1111,10 +1112,109 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(Corpus *cor
     }
     file.close();
 
-    XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, path + "bookmarks_divergences.xml");
+    if (!filenameBookmarks.isEmpty())
+        XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, filenameBookmarks);
     qDeleteAll(bookmarks);
-
 }
+
+void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QString &filenameTable, const QString &filenameBookmarks,
+                                                                      Corpus *corpus,
+                                                                      const QString &prefixLeft, const QString &prefixRight)
+{
+    if (!corpus) return;
+    QStringList ppbAttributeIDs;
+    ppbAttributeIDs << "promise_pos" <<
+                       prefixLeft + "Delay" << prefixRight + "Delay" <<
+                       prefixLeft + "Dispersion" << prefixRight + "Dispersion" <<
+                       prefixLeft + "Force" << prefixRight + "Force" <<
+                       prefixLeft + "FirstPPB" << prefixRight + "FirstPPB" <<
+                       prefixLeft + "LastPPB" << prefixRight + "LastPPB";
+    // prefix + "Subjects" << prefix + "TimesAdj" << prefix + "TimesOrig"
+
+    QFile file(filenameTable);
+    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+
+    // Print header row
+    QStringList fieldLabels;
+    fieldLabels << "stimulusID" << "stimulusType" << "speaker" << "syll_ID" << "syll_tmin" << "syll";
+    fieldLabels << "offlineBoundaryType" << "offlineContour" << "offlineBoundary";
+    fieldLabels << "durNextPause" << "logdurNextPause" << "logdurNextPauseZ";
+    fieldLabels << "durSyllRel20" << "durSyllRel30" << "durSyllRel40" << "durSyllRel50";
+    fieldLabels << "logdurSyllRel20" << "logdurSyllRel30" << "logdurSyllRel40" << "logdurSyllRel50";
+    fieldLabels << "f0meanSyllRel20" << "f0meanSyllRel30" << "f0meanSyllRel40" << "f0meanSyllRel50";
+    fieldLabels << "intrasyllab_up" << "intrasyllab_down" << "trajectory";
+    fieldLabels << "tok_mwu" << "sequence" << "rection" << "syntacticBoundaryType";
+    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex";
+    fieldLabels << ppbAttributeIDs;
+
+    int indexTimecode(0), indexForceLeft(0), indexForceRight(0);
+    QString headerRow;
+    for (int i = 0; i < fieldLabels.count(); ++i) {
+        QString fieldLabel = fieldLabels.at(i);
+        headerRow = headerRow.append(QString("%1\t").arg(fieldLabel));
+        if      (fieldLabel == "syll_tmin") indexTimecode = i;
+        else if (fieldLabel == prefixLeft + "Force") indexForceLeft = i;
+        else if (fieldLabel == prefixRight + "Force") indexForceRight = i;
+    }
+    headerRow.chop(1);
+    out << headerRow << "\n";
+
+    QList<QPointer<CorpusBookmark> > bookmarks;
+
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        QString id = com->ID();
+        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        if (id.startsWith("B19")) continue;
+
+        QList<QString> features;
+
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+            if (!tier_syll) continue;
+            QList<int> ppbSyllables;
+            for (int i = 0; i < tier_syll->count(); ++i) {
+                Interval *syll = tier_syll->interval(i);
+                if (!syll->attribute(prefixLeft + "PotentialSite").toBool() && !syll->attribute(prefixRight + "PotentialSite").toBool())
+                    continue;
+                ppbSyllables << i;
+            }
+            features = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, id, ppbSyllables, ppbAttributeIDs);
+            for (int i = 0; i < features.count(); ++i) {
+                QStringList fields = features.at(i).split("\t");
+                QString line;
+                for (int j = 0; j < fields.count(); ++j) {
+                    line = line.append(QString("%1\t").arg(fields.at(j)));
+                }
+                line.chop(1);
+                out << line << "\n";
+                // if intersting case, add it to bookmarks
+                double forceLeft = QString(fields.at(indexForceLeft)).replace(",", ".").toDouble();
+                double forceRight = QString(fields.at(indexForceRight)).replace(",", ".").toDouble();
+                RealTime t = RealTime::fromSeconds(QString(fields.at(indexTimecode)).replace(",", ".").toDouble());
+                if ((forceLeft - forceRight > 0.50) || (forceRight - forceLeft > 0.50)) {
+                    QString name = QString("%1: %2 %3: %4")
+                            .arg(prefixLeft)
+                            .arg(QString::number(forceLeft * 100.0, 'f', 0))
+                            .arg(prefixRight)
+                            .arg(QString::number(forceRight * 100.0, 'f', 0));
+                    bookmarks << new CorpusBookmark(corpus->ID(), id, id, t, name);
+                }
+            }
+        }
+        qDeleteAll(tiers);
+        qDebug() << id;
+    }
+    file.close();
+
+    if (!filenameBookmarks.isEmpty())
+        XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, filenameBookmarks);
+    qDeleteAll(bookmarks);
+}
+
 
 void ProsodicBoundariesExperimentAnalysis::analysisCheckBoundaryRightAfterPause(Corpus *corpus)
 {

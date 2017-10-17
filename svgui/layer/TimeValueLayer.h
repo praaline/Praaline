@@ -122,6 +122,9 @@ public:
     void setShowDerivative(bool);
     bool getShowDerivative() const { return m_derivative; }
 
+    void setShowConfidenceInterval(bool);
+    bool getShowConfidenceInterval() const { return m_confidenceInterval; }
+
     virtual bool isLayerScrollable(const View *v) const;
 
     virtual bool isLayerEditable() const { return true; }
@@ -180,6 +183,7 @@ protected:
     VerticalScale m_verticalScale;
     bool m_drawSegmentDivisions;
     bool m_derivative;
+    bool m_confidenceInterval;
 
     mutable double m_scaleMinimum;
     mutable double m_scaleMaximum;

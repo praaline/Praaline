@@ -38,7 +38,7 @@ public:
     void addLayerTimeInstantsFromIntevalTier(IntervalTier *tier);
     Layer * addLayerTimeValuesFromAnnotationTier(
             AnnotationTier *tier, const QString &timeAttributeID, const QString &valueAttributeID, const QString &labelAttributeID,
-            bool createNewPane = false, const QString &speakerID = "");
+            bool createNewPane = false, const QString &speakerID = "", const QString &confidenceIntervalAttributeID = "");
 
 signals:
     void canChangeSolo(bool);

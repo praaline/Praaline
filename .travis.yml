@@ -8,28 +8,27 @@ matrix:
     compiler: gcc
     env:
      - QT_BASE=59
-#  - os: linux
-#    dist: trusty
-#    sudo: required
-#    compiler: gcc
-#    env:
-#     - QT_BASE=59 USE_CMAKE=true
   - os: osx
     compiler: clang
     env:
      - QT_BASE=59
-#  - os: osx
-#    compiler: clang
-#    env:
-#     - QT_BASE=59 USE_CMAKE=true
 
 before_install:
-  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then sudo add-apt-repository ppa:beineri/opt-qt59-trusty -y; fi
+  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
+      sudo add-apt-repository ppa:beineri/opt-qt59-trusty -y;
+    fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo apt-get update -qq;
     else
       brew update;
-    fi
+  # Install PocketSphinx
+  - wget https://sourceforge.net/projects/cmusphinx/files/sphinxbase/5prealpha/sphinxbase-5prealpha.tar.gz
+  - tar -xzvf sphinxbase-5prealpha.tar.gz && mv sphinxbase-5prealpha sphinxbase
+  - cd sphinxbase && ./configure && make && sudo make install && cd ..
+  - wget https://sourceforge.net/projects/cmusphinx/files/pocketsphinx/5prealpha/pocketsphinx-5prealpha.tar.gz
+  - tar -xzvf pocketsphinx-5prealpha.tar.gz && mv pocketsphinx-5prealpha pocketsphinx
+  - cd pocketsphinx && ./configure && make clean all && sudo make install
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 install:
   - if [ "$QT_BASE" = "59" ]; then
@@ -44,17 +43,11 @@ install:
     fi
 
 script:
-  # build library and tests, install library
+  # Build Praaline
   - mkdir ./build && cd ./build
-  - if [ "$USE_CMAKE" = "true" ]; then
-      cmake --version;
-      cmake -DCMAKE_BUILD_TYPE=Release ..;
-      make;
-    else
-      qmake -v;
-      qmake ../Praaline.pro CONFIG+=release;
-      make;
-    fi
+  - qmake -v;
+  - qmake ../Praaline.pro CONFIG+=release;
+  - make;
 
 notifications:
   email: false

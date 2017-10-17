@@ -63,6 +63,7 @@ TimeValueLayer::TimeValueLayer() :
     m_verticalScale(AutoAlignScale),
     m_drawSegmentDivisions(true),
     m_derivative(false),
+    m_confidenceInterval(false),
     m_scaleMinimum(0),
     m_scaleMaximum(0)
 {
@@ -115,6 +116,7 @@ TimeValueLayer::getProperties() const
     list.push_back("Scale Units");
     list.push_back("Draw Segment Division Lines");
     list.push_back("Show Derivative");
+    list.push_back("Show Confidence Interval");
     return list;
 }
 
@@ -126,6 +128,7 @@ TimeValueLayer::getPropertyLabel(const PropertyName &name) const
     if (name == "Scale Units") return tr("Scale Units");
     if (name == "Draw Segment Division Lines") return tr("Draw Segment Division Lines");
     if (name == "Show Derivative") return tr("Show Derivative");
+    if (name == "Show Confidence Interval") return tr("Show CI");
     return SingleColourLayer::getPropertyLabel(name);
 }
 
@@ -134,6 +137,7 @@ TimeValueLayer::getPropertyIconName(const PropertyName &name) const
 {
     if (name == "Draw Segment Division Lines") return "lines";
     if (name == "Show Derivative") return "derivative";
+    if (name == "Show Confidence Interval") return "confidenceinterval";
     return "";
 }
 
@@ -146,6 +150,7 @@ TimeValueLayer::getPropertyType(const PropertyName &name) const
     if (name == "Colour" && m_plotStyle == PlotSegmentation) return ValueProperty;
     if (name == "Draw Segment Division Lines") return ToggleProperty;
     if (name == "Show Derivative") return ToggleProperty;
+    if (name == "Show Confidence Interval") return ToggleProperty;
     return SingleColourLayer::getPropertyType(name);
 }
 
@@ -176,56 +181,50 @@ TimeValueLayer::getPropertyRangeAndValue(const PropertyName &name,
     int val = 0;
 
     if (name == "Colour" && m_plotStyle == PlotSegmentation) {
-
         if (min) *min = 0;
         if (max) *max = ColourMapper::getColourMapCount() - 1;
         if (deflt) *deflt = 0;
-        
         val = m_colourMap;
-
-    } else if (name == "Plot Type") {
-
+    }
+    else if (name == "Plot Type") {
         if (min) *min = 0;
         if (max) *max = 6;
         if (deflt) *deflt = int(PlotConnectedPoints);
-
         val = int(m_plotStyle);
-
-    } else if (name == "Vertical Scale") {
-
+    }
+    else if (name == "Vertical Scale") {
         if (min) *min = 0;
         if (max) *max = 3;
         if (deflt) *deflt = int(AutoAlignScale);
-
         val = int(m_verticalScale);
-
-    } else if (name == "Scale Units") {
-
+    }
+    else if (name == "Scale Units") {
         if (deflt) *deflt = 0;
         if (m_model) {
-            val = UnitDatabase::getInstance()->getUnitId
-                    (getScaleUnits());
+            val = UnitDatabase::getInstance()->getUnitId(getScaleUnits());
         }
-
-    } else if (name == "Draw Segment Division Lines") {
-
+    }
+    else if (name == "Draw Segment Division Lines") {
         if (min) *min = 0;
         if (max) *max = 0;
         if (deflt) *deflt = 1;
         val = (m_drawSegmentDivisions ? 1.0 : 0.0);
-
-    } else if (name == "Show Derivative") {
-
+    }
+    else if (name == "Show Derivative") {
         if (min) *min = 0;
         if (max) *max = 0;
         if (deflt) *deflt = 0;
         val = (m_derivative ? 1.0 : 0.0);
-
-    } else {
-
+    }
+    else if (name == "Show Confidence Interval") {
+        if (min) *min = 0;
+        if (max) *max = 0;
+        if (deflt) *deflt = 0;
+        val = (m_confidenceInterval ? 1.0 : 0.0);
+    }
+    else {
         val = SingleColourLayer::getPropertyRangeAndValue(name, min, max, deflt);
     }
-
     return val;
 }
 
@@ -277,6 +276,8 @@ TimeValueLayer::setProperty(const PropertyName &name, int value)
         setDrawSegmentDivisions(value > 0.5);
     } else if (name == "Show Derivative") {
         setShowDerivative(value > 0.5);
+    } else if (name == "Show Confidence Interval") {
+        setShowConfidenceInterval(value > 0.5);
     } else {
         SingleColourLayer::setProperty(name, value);
     }
@@ -324,6 +325,14 @@ TimeValueLayer::setShowDerivative(bool show)
 {
     if (m_derivative == show) return;
     m_derivative = show;
+    emit layerParametersChanged();
+}
+
+void
+TimeValueLayer::setShowConfidenceInterval(bool show)
+{
+    if (m_confidenceInterval == show) return;
+    m_confidenceInterval = show;
     emit layerParametersChanged();
 }
 
@@ -989,6 +998,10 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
         int x = v->getXForFrame(p.frame);
         int y = getYForValue(v, value);
 
+        // For drawing confidence intervals
+        int yci0 = getYForValue(v, value - p.confidenceInterval);
+        int yci1 = getYForValue(v, value + p.confidenceInterval);
+
         bool gap = false;
         if (m_plotStyle == PlotDiscreteCurves) {
             if (value == 0.0) {
@@ -1012,6 +1025,8 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
         sv_frame_t nf = v->getModelsEndFrame();
         int nx = v->getXForFrame(nf);
         int ny = y;
+        int nyci0 = yci0;
+        int nyci1 = yci1;
 
         SparseTimeValueModel::PointList::const_iterator j = i;
         ++j;
@@ -1023,6 +1038,8 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
             nf = q.frame;
             nx = v->getXForFrame(nf);
             ny = getYForValue(v, nvalue);
+            int nyci0 = getYForValue(v, nvalue - q.confidenceInterval);
+            int nyci1 = getYForValue(v, nvalue + q.confidenceInterval);
             haveNext = true;
         }
 
@@ -1097,6 +1114,19 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
                 m_plotStyle == PlotDiscreteCurves ||
                 m_plotStyle == PlotCurve) {
             if (haveNext) {
+                if (m_confidenceInterval) {
+                    paint.save();
+                    // Fill
+                    paint.setPen(brushColour);
+                    paint.setOpacity(0.4);
+                    paint.drawRect(x, yci0, nx - x, yci1 - yci0);
+                    paint.setOpacity(1.0);
+                    // Two lines delimiting the CI
+                    paint.drawLine(x + w, yci0, nx, nyci0);
+                    paint.drawLine(x + w, yci1, nx, nyci1);
+                    paint.restore();
+                }
+
                 if (m_plotStyle == PlotConnectedPoints) {
                     paint.save();
                     paint.setPen(brushColour);
@@ -1108,7 +1138,7 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
                     }
                     // paint.drawLine(x + w/2, y, nx + w/2, ny);
                     path.lineTo(nx + w/2, ny);
-                } else {
+                } else { // m_plotStyle == PlotCurve, PlotDiscreteCurves
                     double x0 = x + double(w)/2;
                     double x1 = nx + double(w)/2;
                     double y0 = y;

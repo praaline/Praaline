@@ -385,9 +385,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     //merge_pauses(communications);
 
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        QString m;
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        QString m;
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);
@@ -416,17 +416,19 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // PhonetiserExternal p;
         // m = p.importFromPhonetiser(com, true);
         // m = CPROMDISS::movePointAnnotationToInterval(com);
-        SilentPauseManipulator s;
-        m = s.process(com);
-        if (!m.isEmpty()) printMessage(m);
+
+        // ICIQ3
+        // SilentPauseManipulator s;
+        // m = s.process(com);
+        // if (!m.isEmpty()) printMessage(m);
 
         // MelissaExperiment::exportForEA(com);
         // MelissaExperiment::importPhonetisation(com);
         // printMessage(MelissaExperiment::exportSyntacticAnnotation(com));
-    }
+//    }
 
 
-    return;
+//    return;
 
     // NASSIMA EXPERIMENT - boundaries and pauses
     // if (communications.isEmpty()) return;
@@ -456,16 +458,14 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_speechrate");
     // MacroprosodyExperiment::createCombinedJoystickData(communications, "joystick_pitchmovement");
 
-    // MelissaExperiment::prepareStimuliCorpus(communications.first());
-    // return;
 
 //    expeEmilie(communications);
 //    DisfluenciesExperiments::analysisCreateAdjustedTappingTier(communications);
 //    return;
 
-//    if (communications.isEmpty()) return;
-//    QPointer<Corpus> corpus = communications.first()->corpus();
-//    if (!corpus) return;
+    if (communications.isEmpty()) return;
+    QPointer<Corpus> corpus = communications.first()->corpus();
+    if (!corpus) return;
 //    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/01b_perception_FP_experts/ANALYSES";
 //    // read files
 //    expeProsodicBoundariesExperts(communications);
@@ -477,16 +477,24 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    // Attribute tapping peaks to syllables
 //    ProsodicBoundariesExperimentAnalysis::analysisAttributeTappingToSyllablesLocalMaxima(corpus, "tok_min", "boundaryExpert");
 //    ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "boundaryExpert");
-//    ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "/experts_features.txt", corpus, "boundaryExpert", false);
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/01 Analyse commune frontieres/";
+    // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "locas_naive_boundary_features.txt", corpus, "boundary", false);
+    // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "locas_expert_boundary_features.txt", corpus, "boundaryExpert", false);
+    // Correspondance - Divergence
+//    ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(path + "locas_naive_correspondance.txt", path + "locas_naive_correspondance_bookmarks.xml",
+//                                                                    corpus, "boundary");
+//    ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(path + "locas_expert_correspondance.txt", path + "locas_expert_correspondance_bookmarks.xml",
+//                                                                    corpus, "boundaryExpert");
+//    ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(path + "locas_groups_correspondance.txt", path + "locas_groups_correspondance_bookmarks.xml",
+//                                                                     corpus, "boundaryNaive", "boundaryExpert");
+    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "locas_naive_cohenkappa.txt", path + "locas_naive_fleisskappa.txt",
+                                                                      corpus, "boundaryNaive", "tapping_naive");
+    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "locas_expert_cohenkappa.txt", path + "locas_expert_fleisskappa.txt",
+                                                                      corpus, "boundaryExpert", "tapping_expert");
+
 
     // cuttingStimuli(communications);
-    // importJohannaFiles(communications);
 
-//    for (int i = 1; i <= 54; ++i) {
-//        printMessage(MelissaExperiment::multiplex(i));
-//        printMessage("");
-//    }
-//    return;
 
 
 

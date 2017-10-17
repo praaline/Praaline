@@ -231,6 +231,7 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
 
     loadVisualisationNassima1(corpus, annotationID);
     // loadVisualisationNassima2(corpus, annotationID);
+    // loadVisualisationNassima3(corpus, annotationID);
 
 
 
@@ -259,6 +260,70 @@ void TimelineVisualisationWidget::loadVisualisationNassima1(QPointer<Corpus> cor
     // addTappingDataPane(m_tiers); // for Emilie
     d->visualiser->addTappingDataPane("tapping_boundariesAdj", "tapping_boundaries_smooth", "boundary");
     d->visualiser->addTappingDataPane("tapping_pausesAdj", "tapping_pauses_smooth", "pause");
+}
+
+void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> corpus, const QString &annotationID)
+{
+    QString measure = "pitchmovement"; // "speechrate";
+
+    // Create annotation pane
+    d->visualiser->setAnnotationTiers(d->currentTierGroups);
+    d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
+    QVariantHash annotationPaneParameters;
+    QStringList excludedSpeakers;
+    for (int i = 1; i <=300; ++i) excludedSpeakers << QString("P%1").arg(i);
+    annotationPaneParameters.insert("excludedSpeakers", excludedSpeakers);
+    d->visualiser->addAnnotationPane(annotationPaneParameters);
+
+    // Create a prosogram pane for each recording
+    if (corpus->communication(d->currentCommunicationID)) {
+        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+            if (!rec) continue;
+            d->visualiser->addProsogramPaneToSession(rec);
+        }
+    }
+
+    // Tapping data pane
+    d->visualiser->addTappingDataPane("tapping_boundariesAdj", "tapping_boundaries_smooth", "boundary");
+    d->visualiser->addTappingDataPane("tapping_pausesAdj", "tapping_pauses_smooth", "pause");
+
+    // Continuous measures
+    QString tierName = "joystick_" + measure;
+
+    // All participants, combined with CI
+    AnnotationTierGroup *tiersCombined = d->currentTierGroups.value("combined");
+    if (tiersCombined && tiersCombined->hasTiers()) {
+        Layer *layer_combined = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                tiersCombined->tier(tierName + "_combined"), "timeNanoseconds", "value_mean", "", true, "", "value_stdev");
+        if (layer_combined) {
+            layer_combined->setDisplayExtents(-4.0, 4.0);
+            layer_combined->setProperty("Plot Type", 2); // 4 = Curve 0 = Points, 2 = Connected points
+            layer_combined->setProperty("Show Confidence Interval", 1);
+        }
+    }
+
+    // Objective measure
+    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
+    if (tierName.endsWith("speechrate") && tiersSpk) {
+        Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                    tiersSpk->tier("speech_rate"), "timeNanoseconds", "rate_syll", "", true);
+        if (layer_regions_speechrate) {
+            layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
+            layer_regions_speechrate->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+            layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
+        }
+    }
+    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
+        Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+                    tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
+        if (layer_regions_pitchmovement) {
+            layer_regions_pitchmovement->setDisplayExtents(0.0, 10.0);
+            layer_regions_pitchmovement->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
+        }
+    }
+
+
 }
 
 void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID)

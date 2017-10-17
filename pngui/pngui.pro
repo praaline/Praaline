@@ -217,7 +217,8 @@ HEADERS += \
     grid/QValueFilter.h \
     grid/QValueFilter_p.h \
     grid/SpinboxItemDelegate.h \
-    layer/SpeechRateLayer.h
+    layer/MovingAverageLayer.h \
+    model/annotation/MovingAverageModel.h
 
 SOURCES += \
     model/annotation/AnnotationGridModel.cpp \
@@ -360,7 +361,8 @@ SOURCES += \
     grid/QUniqueValuesProxyModel.cpp \
     grid/QValueFilter.cpp \
     grid/SpinboxItemDelegate.cpp \
-    layer/SpeechRateLayer.cpp
+    layer/MovingAverageLayer.cpp \
+    model/annotation/MovingAverageModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

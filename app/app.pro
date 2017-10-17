@@ -424,4 +424,5 @@ RESOURCES += \
 
 DISTFILES += \
     praaline.ico \
-    praaline.rc
+    praaline.rc \
+    ../.travis.yml
