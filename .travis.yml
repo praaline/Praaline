@@ -1,4 +1,5 @@
-language: c++
+language: cpp
+compiler: gcc
 
 matrix:
  include:
@@ -44,6 +45,7 @@ before_install:
       sudo add-apt-repository ppa:beineri/opt-qt591-trusty -y;
     fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y;
       sudo apt-get update -qq;
     else
       brew update;
@@ -58,6 +60,12 @@ before_install:
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 install:
+  # Needed for a C++14 compiler
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+      sudo apt-get install -qq g++-5;
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90;
+    fi
+  #
   - if [ "$QT_BASE" = "59" ]; then
       if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         sudo apt-get install -qq qt59base ;
@@ -76,9 +84,12 @@ install:
     fi
 
 script:
-  # Build Praaline
-  - mkdir ./build && cd ./build
+  # Check versions
+  - g++ -v;
   - qmake -v;
+  # Create build directory
+  - mkdir ./build && cd ./build
+  # Build Praaline
   - qmake ../Praaline.pro CONFIG+=release;
   - make;
 
