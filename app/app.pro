@@ -425,4 +425,5 @@ RESOURCES += \
 DISTFILES += \
     praaline.ico \
     praaline.rc \
-    ../.travis.yml
+    ../.travis.yml \
+    ../qt-installer-noninteractive.qs
