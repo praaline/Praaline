@@ -52,6 +52,7 @@ before_install:
       sudo apt-get update -qq;
     else
       brew update;
+    fi
   # Install PocketSphinx
   - wget https://sourceforge.net/projects/cmusphinx/files/sphinxbase/5prealpha/sphinxbase-5prealpha.tar.gz
   - tar -xzvf sphinxbase-5prealpha.tar.gz && mv sphinxbase-5prealpha sphinxbase
