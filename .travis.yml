@@ -60,7 +60,7 @@ before_install:
 install:
   - if [ "$QT_BASE" = "59" ]; then
       if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        sudo apt-get install -qq qt59-meta-full; source /opt/qt59/bin/qt59-env.sh;
+        sudo apt-get install -qq qt59-meta-full -y; source /opt/qt59/bin/qt59-env.sh;
       else
         brew install qt5;
         brew link --force qt5;
