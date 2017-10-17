@@ -1,4 +1,4 @@
-language: cpp
+language: c++
 
 matrix:
  include:
@@ -13,10 +13,41 @@ matrix:
     env:
      - QT_BASE=59
 
+cache:
+  directories:
+    - Qt
+
+addons:
+  apt:
+    packages:
+      - libbz2-dev
+      - libfftw3-dev
+      - libfishsound1-dev
+      - libid3tag0-dev
+      - liblo-dev
+      - liblrdf0-dev
+      - libmad0-dev
+      - liboggz2-dev
+      - libpulse-dev
+      - libsamplerate-dev
+      - libsndfile-dev
+      - libsord-dev
+      - libxml2-utils
+      - portaudio19-dev
+      - raptor-utils
+      - librubberband-dev
+      - mlton
+
 before_install:
-  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
-      sudo add-apt-repository ppa:beineri/opt-qt59-trusty -y;
+  - if [ ! -e Qt/5.9.1 ] ; then
+        rm -rf Qt ;
+        wget http://download.qt.io/official_releases/qt/5.9/5.9.1/qt-opensource-linux-x64-5.9.1.run ;
+        chmod +x ./qt-opensource-linux-x64-5.9.1.run ;
+        ./qt-opensource-linux-x64-5.9.1.run --platform minimal --script qt-installer-noninteractive.qs --no-force-installations ;
     fi
+#  - if [[ "$QT_BASE" = "59" && "$TRAVIS_OS_NAME" = "linux" ]]; then
+#      sudo add-apt-repository ppa:beineri/opt-qt59-trusty -y;
+#    fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then
       sudo apt-get update -qq;
     else
