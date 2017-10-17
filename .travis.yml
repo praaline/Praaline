@@ -60,12 +60,12 @@ before_install:
 install:
   - if [ "$QT_BASE" = "59" ]; then
       if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-        sudo apt-get install -qq qt59base
-        sudo apt-get install -qq qt59charts-no-lgpl
-        sudo apt-get install -qq qt59imageformats
-        sudo apt-get install -qq qt59multimedia
-        sudo apt-get install -qq qt59svg
-        sudo apt-get install -qq qt59webengine
+        sudo apt-get install -qq qt59base ;
+        sudo apt-get install -qq qt59charts-no-lgpl ;
+        sudo apt-get install -qq qt59imageformats ;
+        sudo apt-get install -qq qt59multimedia ;
+        sudo apt-get install -qq qt59svg ;
+        sudo apt-get install -qq qt59webengine ;
         source /opt/qt59/bin/qt59-env.sh;
       else
         brew install qt5;
