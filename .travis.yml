@@ -1,5 +1,4 @@
 language: cpp
-compiler: gcc
 
 matrix:
  include:
@@ -14,9 +13,7 @@ matrix:
     env:
      - QT_BASE=59
 
-cache:
-  directories:
-    - Qt
+cache: packages
 
 addons:
   apt:
