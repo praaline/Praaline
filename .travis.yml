@@ -72,6 +72,7 @@ install:
         sudo apt-get install -qq qt59multimedia ;
         sudo apt-get install -qq qt59svg ;
         sudo apt-get install -qq qt59webengine ;
+        sudo apt-get install -qq qt59tools ;
         source /opt/qt59/bin/qt59-env.sh;
       else
         brew install qt5;
