@@ -90,29 +90,29 @@ script:
   - mkdir ./build && cd ./build
   # Build Praaline
   - qmake ../pncore/pncore.pro CONFIG+=release;
-  - make -C ../pncore
+  - make -C ./pncore
   - qmake ../pnlib/pnlib.pro CONFIG+=release;
-  - make -C ../pnlib
+  - make -C ./pnlib
   - qmake ../pngui/pngui.pro CONFIG+=release;
-  - make -C ../pngui
+  - make -C ./pngui
   - qmake ../dataquay/libdataquay.pro CONFIG+=release;
-  - make -C ../dataquay
+  - make -C ./dataquay
   - qmake ../svcore/svcore.pro CONFIG+=release;
-  - make -C ../svcore
+  - make -C ./svcore
   - qmake ../svgui/svgui.pro CONFIG+=release;
-  - make -C ../svgui
+  - make -C ./svgui
   - qmake ../svapp/svapp.pro CONFIG+=release;
-  - make -C ../svapp
+  - make -C ./svapp
   - qmake ../libs/qt-solutions/qtpropertybrowser/qtpropertybrowser.pro CONFIG+=release;
-  - make -C ../libs/qt-solutions/qtpropertybrowser
+  - make -C ./libs/qt-solutions/qtpropertybrowser
   - qmake ../libs/qtilities/src/Qtilities.pro CONFIG+=release;
-  - make -C ../libs/qtilities/src
+  - make -C ./libs/qtilities/src
   - qmake ../libs/qscintilla/Qt4Qt5/qscintilla.pro CONFIG+=release;
-  - make -C ../libs/qscintilla/Qt4Qt5
+  - make -C ./libs/qscintilla/Qt4Qt5
   - qmake ../libs/qcustomplot/qcustomplot.pro CONFIG+=release;
-  - make -C ../libs/qcustomplot
+  - make -C ./libs/qcustomplot
   - qmake ../app/app.pro CONFIG+=release;
-  - make -C ../app;
+  - make -C ./app;
 
 notifications:
   email: false
