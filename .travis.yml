@@ -89,30 +89,19 @@ script:
   # Create build directory
   - mkdir ./build && cd ./build
   # Build Praaline
-  - qmake ../pncore/pncore.pro CONFIG+=release;
-  - make
-  - qmake ../pnlib/pnlib.pro CONFIG+=release;
-  - make
-  - qmake ../pngui/pngui.pro CONFIG+=release;
-  - make
-  - qmake ../dataquay/libdataquay.pro CONFIG+=release;
-  - make
-  - qmake ../svcore/svcore.pro CONFIG+=release;
-  - make
-  - qmake ../svgui/svgui.pro CONFIG+=release;
-  - make
-  - qmake ../svapp/svapp.pro CONFIG+=release;
-  - make
-  - qmake ../libs/qt-solutions/qtpropertybrowser/qtpropertybrowser.pro CONFIG+=release;
-  - make
-  - qmake ../libs/qtilities/src/Qtilities.pro CONFIG+=release;
-  - make
-  - qmake ../libs/qscintilla/Qt4Qt5/qscintilla.pro CONFIG+=release;
-  - make
-  - qmake ../libs/qcustomplot/qcustomplot.pro CONFIG+=release;
-  - make
-  - qmake ../app/app.pro CONFIG+=release;
-  - make
+  - mkdir -p pncore/ && cd pncore/ && qmake ../../pncore/pncore.pro CONFIG+=release && make && cd ..
+  - mkdir -p pnlib/ && cd pnlib/ && qmake ../../pnlib/pnlib.pro CONFIG+=release && make && cd ..
+  - mkdir -p pngui/ && cd pngui/ && qmake ../../pngui/pngui.pro CONFIG+=release && make && cd ..
+  - mkdir -p dataquay/ && cd dataquay/ && qmake ../../dataquay/libdataquay.pro CONFIG+=release && make && cd ..
+  - mkdir -p svcore/ && cd svcore/ && qmake ../../svcore/svcore.pro CONFIG+=release && make && cd ..
+  - mkdir -p svgui/ && cd svgui/ && qmake ../../svgui/svgui.pro CONFIG+=release && make && cd ..
+  - mkdir -p svapp/ && cd svapp/ && qmake ../../svapp/svapp.pro CONFIG+=release && make && cd ..
+  - mkdir -p libs/qt-solutions/qtpropertybrowser/ && cd libs/qt-solutions/qtpropertybrowser/ && qmake ../../../../libs/qt-solutions/qtpropertybrowser/qtpropertybrowser.pro CONFIG+=release && make && cd ../../..
+  - mkdir -p libs/qtilities/src/ && cd libs/qtilities/src/ && qmake ../../../../libs/qtilities/src/Qtilities.pro CONFIG+=release && make && cd ../../..
+  - mkdir -p libs/qscintilla/Qt4Qt5/ && cd libs/qscintilla/Qt4Qt5/ && qmake ../../../../libs/qscintilla/Qt4Qt5/qscintilla.pro CONFIG+=release && make && cd ../../..
+  - mkdir -p libs/qcustomplot/ && cd libs/qcustomplot/ && qmake ../../../libs/qcustomplot/qcustomplot.pro CONFIG+=release && make && cd ../..
+  - mkdir -p app/ && cd app/ && qmake ../../app/app.pro CONFIG+=release && make && cd ..
+  - ls ./app
 
 notifications:
   email: false
