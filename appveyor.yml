@@ -1,0 +1,25 @@
+version: '{build}'
+
+init:
+- git config --global core.autocrlf input
+
+environment:
+  matrix:
+  - QT5: C:\Qt\5.9.1\mingw53_32
+    MINGW: C:\Qt\Tools\mingw530_32
+
+matrix:
+  fast_finish: true
+
+before_build:
+- set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
+
+build_script:
+- mkdir .\build
+- cd .\build
+
+# Build Praaline
+- qmake -v &&
+  qmake ..\Praaline.pro CONFIG+=release DESTDIR=%cd% &&
+  mingw32-make &&
+  dir /s

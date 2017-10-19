@@ -50,3 +50,6 @@ macx* {
     INCLUDEPATH += ../sv-dependency-builds/osx/include
     LIBS += -L../sv-dependency-builds/osx/lib
 }
+
+DISTFILES += \
+    $$PWD/appveyor.yml
