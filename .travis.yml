@@ -90,30 +90,29 @@ script:
   - mkdir ./build && cd ./build
   # Build Praaline
   - qmake ../pncore/pncore.pro CONFIG+=release;
-  - ls
-  - make -C ./pncore
+  - make
   - qmake ../pnlib/pnlib.pro CONFIG+=release;
-  - make -C ./pnlib
+  - make
   - qmake ../pngui/pngui.pro CONFIG+=release;
-  - make -C ./pngui
+  - make
   - qmake ../dataquay/libdataquay.pro CONFIG+=release;
-  - make -C ./dataquay
+  - make
   - qmake ../svcore/svcore.pro CONFIG+=release;
-  - make -C ./svcore
+  - make
   - qmake ../svgui/svgui.pro CONFIG+=release;
-  - make -C ./svgui
+  - make
   - qmake ../svapp/svapp.pro CONFIG+=release;
-  - make -C ./svapp
+  - make
   - qmake ../libs/qt-solutions/qtpropertybrowser/qtpropertybrowser.pro CONFIG+=release;
-  - make -C ./libs/qt-solutions/qtpropertybrowser
+  - make
   - qmake ../libs/qtilities/src/Qtilities.pro CONFIG+=release;
-  - make -C ./libs/qtilities/src
+  - make
   - qmake ../libs/qscintilla/Qt4Qt5/qscintilla.pro CONFIG+=release;
-  - make -C ./libs/qscintilla/Qt4Qt5
+  - make
   - qmake ../libs/qcustomplot/qcustomplot.pro CONFIG+=release;
-  - make -C ./libs/qcustomplot
+  - make
   - qmake ../app/app.pro CONFIG+=release;
-  - make -C ./app;
+  - make
 
 notifications:
   email: false
