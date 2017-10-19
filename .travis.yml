@@ -89,7 +89,18 @@ script:
   # Create build directory
   - mkdir ./build && cd ./build
   # Build Praaline
-  - qmake ../Praaline.pro CONFIG+=release;
+  - qmake ../pncore/pncore.pro CONFIG+=release;
+  - qmake ../pnlib/pnlib.pro CONFIG+=release;
+  - qmake ../pngui/pngui.pro CONFIG+=release;
+  - qmake ../libdataquay/sub_dataquay.pro CONFIG+=release;
+  - qmake ../svcore/svcore.pro CONFIG+=release;
+  - qmake ../svgui/svgui.pro CONFIG+=release;
+  - qmake ../svapp/svapp.pro CONFIG+=release;
+  - qmake ../libs/qt-solutions/qtpropertybrowser/qtpropertybrowser.pro CONFIG+=release;
+  - qmake ../libs/qtilities/src/Qtilities.pro CONFIG+=release;
+  - qmake ../libs/qscintilla/Qt4Qt5/qscintilla.pro CONFIG+=release;
+  - qmake ../libs/qcustomplot/qcustomplot.pro CONFIG+=release;
+  - qmake ../app/app.pro CONFIG+=release;
   - make;
 
 notifications:
