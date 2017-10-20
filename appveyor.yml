@@ -23,7 +23,19 @@ build_script:
 - mkdir -p .\app\build\plugins
 
 # Build Praaline
-- qmake -v &&
-  qmake ..\Praaline.pro CONFIG+=release &&
-  mingw32-make
+- qmake -v
+- qmake ..\Praaline.pro CONFIG+=release && mingw32-make
 - dir /s
+
+# Package
+- cd ..
+- mkdir deploy
+- copy build\app\build\praaline.exe deploy\praaline.exe
+- copy build\pncore\build\release\pncore.dll deploy\pncore.dll
+- windeployqt --release deploy/praaline.exe
+- windeployqt --release deploy/pncore.dll
+- 7z a Praaline_win_%arch%.zip .\deploy\*
+
+artifacts:
+- path: Praaline_win_$(arch).zip
+
