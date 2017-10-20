@@ -4,20 +4,17 @@ exists(svconfig.pri) {
 }
 
 !exists(svconfig.pri) {
-#    CONFIG += release
-#    DEFINES += NDEBUG BUILD_RELEASE NO_TIMING
-
     win32-g++ {
-        INCLUDEPATH += ../sv-dependency-builds/win32-mingw/include
-        LIBS += -LD:/DEVELOP/Praaline/sv-dependency-builds/win32-mingw/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-mingw/include
+        LIBS += -L$$OUT_PWD/../dependency-builds/sv/win32-mingw/lib
     }
     win32-msvc* {
-        INCLUDEPATH += ../sv-dependency-builds/win32-msvc/include
-        LIBS += -LD:/DEVELOP/Praaline/sv-dependency-builds/win32-msvc/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-msvc/include
+        LIBS += -L$$OUT_PWD/dependency-builds/sv/win32-msvc/lib
     }
     macx* {
-        INCLUDEPATH += ../sv-dependency-builds/osx/include
-        LIBS += -L/Users/george/Develop/Praaline/sv-dependency-builds/osx/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/osx/include
+        LIBS += -L$$OUT_PWD/../dependency-builds/sv/osx/lib
     }
 
     DEFINES += HAVE_BZ2 HAVE_FFTW3 HAVE_FFTW3F HAVE_SNDFILE HAVE_SAMPLERATE HAVE_VAMP HAVE_VAMPHOSTSDK HAVE_RUBBERBAND HAVE_LIBLO HAVE_MAD HAVE_ID3TAG
@@ -36,6 +33,10 @@ exists(svconfig.pri) {
         DEFINES += HAVE_LIBPULSE
         LIBS += -lpulse -lasound -ldl
     }
+}
+
+CONFIG(release, debug|release) {
+    DEFINES += NDEBUG BUILD_RELEASE NO_TIMING
 }
 
 DEPENDPATH += . ../svcore ../svgui ../svapp

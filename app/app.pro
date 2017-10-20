@@ -5,9 +5,9 @@
     error( Could not find the common.pri file! )
 }
 
-TARGET = Praaline
-linux*:TARGET = praaline
-solaris*:TARGET = praaline
+# Will build the final executable in the main project directory.
+TARGET = ../Praaline
+!mac*:TARGET = ../praaline
 
 TEMPLATE = app
 
@@ -58,10 +58,8 @@ INCLUDEPATH += $$PWD/../libs/qscintilla/Qt4Qt5
 LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5
 win* {
     CONFIG( debug, debug|release ) {
-        # debug
         LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/debug
     } else {
-        # release
         LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/release
     }
 }
@@ -76,17 +74,21 @@ QT += core gui gui-private
 DEFINES += XLSX_NO_LIB
 
 # Linking dynamically with PocketSphinx ====== this should go into a plugin
-win32 {
-    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+win32-g++ {
+    INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-mingw/include
+    LIBS += -L$$OUT_PWD/../dependency-builds/pn/win32-mingw/lib -lpocketsphinx -lsphinxbase -liconv
+}
+win32-msvc* {
+    INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-msvc/include
+    LIBS += -L$$OUT_PWD/dependency-builds/pn/win32-msvc/lib -lpocketsphinx -lsphinxbase -liconv
+}
+macx* {
+    INCLUDEPATH += $$PWD/../dependency-builds/pn/osx/include
+    LIBS += -L$$OUT_PWD/../dependency-builds/pn/osx/lib -lpocketsphinx -lsphinxbase
 }
 unix {
-    POCKETSPHINX_BASE_PATH = /usr/local
-}
-win32 {
-    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
-}
-unix {
-    LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
+    INCLUDEPATH += /usr/local/include
+    LIBS += -L/usr/local/lib -lpocketsphinx -lsphinxbase
 }
 
 
@@ -108,10 +110,6 @@ PRE_TARGETDEPS += \
         ../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a \
         ../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a \
         ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
-
-# Will build the final executable in the main project directory.
-#!mac*:
-TARGET = ../praaline
 
 SOURCES += main.cpp \
     #visualisation/pitchanalyser.cpp \
