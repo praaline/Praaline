@@ -426,4 +426,5 @@ DISTFILES += \
     praaline.ico \
     praaline.rc \
     ../.travis.yml \
-    ../qt-installer-noninteractive.qs
+    ../qt-installer-noninteractive.qs \
+    ../appveyor.yml

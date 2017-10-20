@@ -4,14 +4,16 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
+# Dependencies
+SUBDIRS += libs/qt-solutions/qtpropertybrowser \
+           libs/qtilities/src/Qtilities.pro \
+           libs/qscintilla/Qt4Qt5/qscintilla.pro \
+           libs/qcustomplot/qcustomplot.pro
+# Praaline
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp \
            # libpraat \
-           libs/qt-solutions/qtpropertybrowser \
-           libs/qtilities/src/Qtilities.pro \
-           libs/qscintilla/Qt4Qt5/qscintilla.pro \
-           libs/qcustomplot/qcustomplot.pro \
-           plugins # praalinepy
+           # plugins # praalinepy
 SUBDIRS += app
 
 sub_dataquay.file = dataquay/libdataquay.pro
