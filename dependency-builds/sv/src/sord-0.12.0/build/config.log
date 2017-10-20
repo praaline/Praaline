@@ -1,0 +1,26 @@
+# project sord (0.12.0) configured on Thu Mar 10 15:37:07 2016 by
+# waf 1.7.9 (abi 98, python 20706f0 on linux2)
+# using ./waf configure
+#
+----------------------------------------
+Setting top to
+/home/george/Develop/Praaline/sv-dependency-builds/src/sord-0.12.0
+----------------------------------------
+Setting out to
+/home/george/Develop/Praaline/sv-dependency-builds/src/sord-0.12.0/build
+----------------------------------------
+Checking for 'gcc' (c compiler)
+find program=['gcc', 'cc'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='CC' -> '/usr/bin/gcc'
+find program=['ar'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='AR' -> '/usr/bin/ar'
+/usr/bin/gcc
+----------------------------------------
+Checking for program pkg-config
+/usr/bin/pkg-config
+find program=['pkg-config'] paths=['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin', '/usr/games', '/usr/local/games'] var='PKGCONFIG' -> '/usr/bin/pkg-config'
+----------------------------------------
+Checking for 'serd-0' >= 0.18.0
+['/usr/bin/pkg-config', '--atleast-version=0.18.0', 'serd-0']
+['/usr/bin/pkg-config', '--cflags', '--libs', 'serd-0']
+out: -I/usr/local/include/serd-0  -L/usr/local/lib -lserd-0  
+
+yes

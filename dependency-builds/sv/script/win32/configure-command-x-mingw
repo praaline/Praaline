@@ -1,0 +1,6 @@
+#!/bin/bash
+mypath=`pwd`/`dirname $0`
+deproot="$mypath"/../../
+prefix="$deproot"/win32-mingw
+CXX="i686-w64-mingw32-g++ -I$prefix/include -L$prefix/lib" CC="i686-w64-mingw32-gcc -I$prefix/include -L$prefix/lib" ./configure --prefix=$prefix/ --host=i686-w64-mingw32 "$@"
+

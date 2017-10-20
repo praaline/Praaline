@@ -1,0 +1,10 @@
+prefix=/Users/cannam/code/sv-dependency-builds/osx
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Serd
+Version: 0.18.2
+Description: Lightweight RDF syntax library
+Libs: -L${libdir} -lserd-0
+Cflags: -I${includedir}/serd-0

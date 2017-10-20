@@ -1,0 +1,158 @@
+Making all in M4
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/M4'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/M4'
+Making all in man
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/man'
+ln -s ./sndfile-metadata-get.1 sndfile-metadata-set.1
+ln -s ./sndfile-interleave.1 sndfile-deinterleave.1
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/man'
+Making all in doc
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/doc'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/doc'
+Making all in Win32
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/Win32'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/Win32'
+Making all in src
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/src'
+make  all-am
+make[2]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/src'
+  CC       sndfile.lo
+  CC       aiff.lo
+  CC       au.lo
+  CC       avr.lo
+  CC       caf.lo
+  CC       dwd.lo
+  CC       flac.lo
+  CC       g72x.lo
+  CC       htk.lo
+  CC       ircam.lo
+  CC       macbinary3.lo
+  CC       macos.lo
+  CC       mat4.lo
+  CC       mat5.lo
+  CC       nist.lo
+  CC       paf.lo
+  CC       pvf.lo
+  CC       raw.lo
+  CC       rx2.lo
+  CC       sd2.lo
+  CC       sds.lo
+  CC       svx.lo
+  CC       txw.lo
+  CC       voc.lo
+  CC       wve.lo
+  CC       w64.lo
+  CC       wav_w64.lo
+  CC       wav.lo
+  CC       xi.lo
+  CC       mpc2k.lo
+  CC       rf64.lo
+  CC       ogg_vorbis.lo
+  CC       ogg_speex.lo
+  CC       ogg_pcm.lo
+  CC       common.lo
+  CC       file_io.lo
+  CC       command.lo
+  CC       pcm.lo
+  CC       ulaw.lo
+  CC       alaw.lo
+  CC       float32.lo
+  CC       double64.lo
+  CC       ima_adpcm.lo
+  CC       ms_adpcm.lo
+  CC       gsm610.lo
+  CC       dwvw.lo
+  CC       vox_adpcm.lo
+  CC       interleave.lo
+  CC       strings.lo
+  CC       dither.lo
+  CC       broadcast.lo
+  CC       audio_detect.lo
+  CC       ima_oki_adpcm.lo
+  CC       chunk.lo
+  CC       ogg.lo
+  CC       chanmap.lo
+  CC       windows.lo
+  CC       id3.lo
+  CCLD     libcommon.la
+  CC       GSM610/add.lo
+  CC       GSM610/code.lo
+  CC       GSM610/decode.lo
+  CC       GSM610/gsm_create.lo
+  CC       GSM610/gsm_decode.lo
+  CC       GSM610/gsm_destroy.lo
+  CC       GSM610/gsm_encode.lo
+  CC       GSM610/gsm_option.lo
+  CC       GSM610/long_term.lo
+  CC       GSM610/lpc.lo
+  CC       GSM610/preprocess.lo
+  CC       GSM610/rpe.lo
+  CC       GSM610/short_term.lo
+  CC       GSM610/table.lo
+  CCLD     GSM610/libgsm.la
+  CC       G72x/g721.lo
+  CC       G72x/g723_16.lo
+  CC       G72x/g723_24.lo
+  CC       G72x/g723_40.lo
+  CC       G72x/g72x.lo
+  CCLD     G72x/libg72x.la
+  CCLD     libsndfile.la
+copying selected object files to avoid basename conflicts...
+make[2]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/src'
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/src'
+Making all in examples
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/examples'
+  CC       make_sine.o
+  CCLD     make_sine
+  CC       sfprocess.o
+  CCLD     sfprocess
+  CC       list_formats.o
+  CCLD     list_formats
+  CC       generate.o
+  CCLD     generate
+  CXX      sndfilehandle.o
+  CXXLD    sndfilehandle
+  CC       sndfile-to-text.o
+  CCLD     sndfile-to-text
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/examples'
+Making all in regtest
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/regtest'
+  CC       sndfile-regtest.o
+  CC       database.o
+  CC       checksum.o
+  CCLD     sndfile-regtest
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/regtest'
+Making all in tests
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/tests'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/tests'
+Making all in programs
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/programs'
+  CC       sndfile-info.o
+  CC       common.o
+  CCLD     sndfile-info
+  CC       sndfile-play.o
+  CCLD     sndfile-play
+  CC       sndfile-convert.o
+  CCLD     sndfile-convert
+  CC       sndfile-cmp.o
+  CCLD     sndfile-cmp
+  CC       sndfile-metadata-set.o
+  CCLD     sndfile-metadata-set
+  CC       sndfile-metadata-get.o
+  CCLD     sndfile-metadata-get
+  CC       sndfile-interleave.o
+  CCLD     sndfile-interleave
+  CC       sndfile-deinterleave.o
+  CCLD     sndfile-deinterleave
+  CC       sndfile-concat.o
+  CCLD     sndfile-concat
+  CC       sndfile-salvage.o
+  CCLD     sndfile-salvage
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25/programs'
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25'
+make[1]: Nothing to be done for `all-am'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsndfile-1.0.25'

@@ -1,0 +1,81 @@
+Making all in M4
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/M4'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/M4'
+Making all in src
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/src'
+make  all-am
+make[2]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/src'
+  CC       samplerate.lo
+  CC       src_sinc.lo
+  CC       src_zoh.lo
+  CC       src_linear.lo
+  CCLD     libsamplerate.la
+make[2]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/src'
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/src'
+Making all in doc
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/doc'
+make[1]: Nothing to be done for `all'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/doc'
+Making all in examples
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/examples'
+  CC       sndfile-resample.o
+  CCLD     sndfile-resample
+  CC       varispeed-play.o
+  CC       audio_out.o
+audio_out.c: In function ‘linux_play’:
+audio_out.c:136:3: warning: ignoring return value of ‘write’, declared with attribute warn_unused_result [-Wunused-result]
+   (void) write (linux_out->fd, buffer, readcount * linux_out->channels * sizeof (short)) ;
+   ^
+  CCLD     varispeed-play
+  CC       timewarp-file.o
+  CCLD     timewarp-file
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/examples'
+Making all in tests
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/tests'
+  CC       misc_test.o
+  CC       util.o
+  CCLD     misc_test
+  CC       termination_test.o
+  CCLD     termination_test
+  CC       simple_test.o
+  CCLD     simple_test
+  CC       callback_test-callback_test.o
+  CC       callback_test-util.o
+  CCLD     callback_test
+  CC       reset_test.o
+  CCLD     reset_test
+  CC       multi_channel_test-multi_channel_test.o
+  CC       multi_channel_test-util.o
+  CC       multi_channel_test-calc_snr.o
+  CCLD     multi_channel_test
+  CC       snr_bw_test-snr_bw_test.o
+  CC       snr_bw_test-calc_snr.o
+  CC       snr_bw_test-util.o
+  CCLD     snr_bw_test
+  CC       float_short_test.o
+  CCLD     float_short_test
+  CC       varispeed_test-varispeed_test.o
+  CC       varispeed_test-util.o
+  CC       varispeed_test-calc_snr.o
+  CCLD     varispeed_test
+  CC       callback_hang_test.o
+  CCLD     callback_hang_test
+  CC       src_evaluate-src-evaluate.o
+  CC       src_evaluate-calc_snr.o
+  CC       src_evaluate-util.o
+  CCLD     src-evaluate
+  CC       throughput_test-throughput_test.o
+  CC       throughput_test-util.o
+  CC       throughput_test-calc_snr.o
+  CCLD     throughput_test
+  CC       multichan_throughput_test-multichan_throughput_test.o
+  CC       multichan_throughput_test-util.o
+  CC       multichan_throughput_test-calc_snr.o
+  CCLD     multichan_throughput_test
+  CC       downsample_test.o
+  CCLD     downsample_test
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8/tests'
+make[1]: Entering directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8'
+make[1]: Nothing to be done for `all-am'.
+make[1]: Leaving directory `/home/george/Develop/Praaline/sv-dependency-builds/src/libsamplerate-0.1.8'
