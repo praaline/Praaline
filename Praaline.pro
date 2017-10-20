@@ -13,7 +13,7 @@ SUBDIRS += libs/qt-solutions/qtpropertybrowser \
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp
 # SUBDIRS += libpraat
-SUBDIRS += plugins
+# SUBDIRS += plugins
 # SUBDIRS += praalinepy
 SUBDIRS += app
 

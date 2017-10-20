@@ -20,6 +20,7 @@ before_build:
 build_script:
 - mkdir .\build
 - cd .\build
+- mkdir -p .\app\build\plugins
 
 # Build Praaline
 - qmake -v &&
