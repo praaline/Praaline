@@ -12,7 +12,7 @@ QTILITIES += testing
 include(../../Qtilities.pri)
 
 CONFIG(debug, debug|release) {
-    TARGET = DebugPlugind
+    # TARGET = DebugPlugind
 } else {
     TARGET = DebugPlugin
 }
