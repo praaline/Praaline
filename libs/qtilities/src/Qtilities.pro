@@ -11,7 +11,7 @@
 
 TARGET      = Qtilities
 TEMPLATE    = subdirs
-SUBDIRS     = Logging Core CoreGui ExtensionSystem ProjectManagement Plugins Testing
+SUBDIRS     = Logging Core CoreGui ExtensionSystem ProjectManagement #Plugins Testing
 
 Tools.file = Tools/QtilitiesTools.pro
 Examples.file = Examples/QtilitiesExamples.pro

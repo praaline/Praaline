@@ -11,7 +11,7 @@ SUBDIRS += libs/qt-solutions/qtpropertybrowser \
            libs/qcustomplot/qcustomplot.pro
 # Praaline
 SUBDIRS += pncore pnlib pngui \
-           sub_dataquay svcore svgui svapp \
+           sub_dataquay svcore svgui svapp
            # libpraat \
            # plugins # praalinepy
 SUBDIRS += app
