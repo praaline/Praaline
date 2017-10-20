@@ -17,7 +17,7 @@ CONFIG     += ordered
 #SUBDIRS    += PluginTemplate
 
 SUBDIRS += \
-    DebugPlugin \
+    #DebugPlugin \
     ProjectManagementPlugin \
     SessionLogPlugin
 
