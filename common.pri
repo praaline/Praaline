@@ -39,16 +39,16 @@ mac {
 
 # Praaline core has a dependency on VAMP SDK (only for RealTime conversion)
 win32-g++ {
-    INCLUDEPATH += ../sv-dependency-builds/win32-mingw/include
-    LIBS += -L../sv-dependency-builds/win32-mingw/lib
+    INCLUDEPATH += ../dependency-builds/sv/win32-mingw/include
+    LIBS += -L../dependency-builds/sv/win32-mingw/lib
 }
 win32-msvc* {
-    INCLUDEPATH += ../sv-dependency-builds/win32-msvc/include
-    LIBS += -L../sv-dependency-builds/win32-msvc/lib
+    INCLUDEPATH += ../dependency-builds/sv/win32-msvc/include
+    LIBS += -L../dependency-builds/sv/win32-msvc/lib
 }
 macx* {
-    INCLUDEPATH += ../sv-dependency-builds/osx/include
-    LIBS += -L../sv-dependency-builds/osx/lib
+    INCLUDEPATH += ../dependency-builds/sv/osx/include
+    LIBS += -L../dependency-builds/sv/osx/lib
 }
 
 DISTFILES += \

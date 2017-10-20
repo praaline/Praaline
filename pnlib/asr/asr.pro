@@ -13,12 +13,19 @@ DEPENDPATH += . .. ../.. ../../pncore
 TARGET = praaline-asr
 
 # Linking dynamically with PocketSphinx
-win32 {
-    POCKETSPHINX_BASE_PATH = C:/Qt/5.8.0-x32/Tools/mingw530_32
+win32-g++ {
+    POCKETSPHINX_BASE_PATH = ../../dependency-builds/pn/win32-mingw
+}
+win32-msvc* {
+    POCKETSPHINX_BASE_PATH = ../../dependency-builds/pn/win32-msvc
 }
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local
 }
+macx* {
+    POCKETSPHINX_BASE_PATH = ../../dependency-builds/pn/osx
+}
+
 INCLUDEPATH += $${POCKETSPHINX_BASE_PATH}/include/pocketsphinx \
                $${POCKETSPHINX_BASE_PATH}/include/sphinxbase \
                $${POCKETSPHINX_BASE_PATH}/include/
