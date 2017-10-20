@@ -76,15 +76,15 @@ DEFINES += XLSX_NO_LIB
 # Linking dynamically with PocketSphinx ====== this should go into a plugin
 win32-g++ {
     INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-mingw/include
-    LIBS += -L$$OUT_PWD/../dependency-builds/pn/win32-mingw/lib -lpocketsphinx -lsphinxbase -liconv
+    LIBS += -L$$PWD/../dependency-builds/pn/win32-mingw/lib -lpocketsphinx -lsphinxbase -liconv
 }
 win32-msvc* {
     INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-msvc/include
-    LIBS += -L$$OUT_PWD/dependency-builds/pn/win32-msvc/lib -lpocketsphinx -lsphinxbase -liconv
+    LIBS += -L$$PWD/dependency-builds/pn/win32-msvc/lib -lpocketsphinx -lsphinxbase -liconv
 }
 macx* {
     INCLUDEPATH += $$PWD/../dependency-builds/pn/osx/include
-    LIBS += -L$$OUT_PWD/../dependency-builds/pn/osx/lib -lpocketsphinx -lsphinxbase
+    LIBS += -L$$PWD/../dependency-builds/pn/osx/lib -lpocketsphinx -lsphinxbase
 }
 unix {
     INCLUDEPATH += /usr/local/include

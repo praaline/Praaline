@@ -1,5 +1,5 @@
 # Praaline
-# (c) George Christodoulides 2012-2014
+# (c) George Christodoulides 2012-2017
 
 TEMPLATE = subdirs
 CONFIG += ordered
@@ -12,8 +12,9 @@ SUBDIRS += libs/qt-solutions/qtpropertybrowser \
 # Praaline
 SUBDIRS += pncore pnlib pngui \
            sub_dataquay svcore svgui svapp
-           # libpraat \
-           # plugins # praalinepy
+# SUBDIRS += libpraat
+SUBDIRS += plugins
+# SUBDIRS += praalinepy
 SUBDIRS += app
 
 sub_dataquay.file = dataquay/libdataquay.pro

@@ -6,15 +6,15 @@ exists(svconfig.pri) {
 !exists(svconfig.pri) {
     win32-g++ {
         INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-mingw/include
-        LIBS += -L$$OUT_PWD/../dependency-builds/sv/win32-mingw/lib
+        LIBS += -L$$PWD/../dependency-builds/sv/win32-mingw/lib
     }
     win32-msvc* {
         INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-msvc/include
-        LIBS += -L$$OUT_PWD/dependency-builds/sv/win32-msvc/lib
+        LIBS += -L$$PWD/dependency-builds/sv/win32-msvc/lib
     }
     macx* {
         INCLUDEPATH += $$PWD/../dependency-builds/sv/osx/include
-        LIBS += -L$$OUT_PWD/../dependency-builds/sv/osx/lib
+        LIBS += -L$$PWD/../dependency-builds/sv/osx/lib
     }
 
     DEFINES += HAVE_BZ2 HAVE_FFTW3 HAVE_FFTW3F HAVE_SNDFILE HAVE_SAMPLERATE HAVE_VAMP HAVE_VAMPHOSTSDK HAVE_RUBBERBAND HAVE_LIBLO HAVE_MAD HAVE_ID3TAG

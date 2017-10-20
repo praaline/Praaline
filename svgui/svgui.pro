@@ -19,16 +19,16 @@ exists(config.pri) {
 }
 !exists(config.pri) {
     win32-g++ {
-        INCLUDEPATH += ../sv-dependency-builds/win32-mingw/include
-        LIBS += -L../sv-dependency-builds/win32-mingw/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-mingw/include
+        LIBS += -L$$PWD/../dependency-builds/sv/win32-mingw/lib
     }
     win32-msvc* {
-        INCLUDEPATH += ../sv-dependency-builds/win32-msvc/include
-        LIBS += -L../sv-dependency-builds/win32-msvc/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-msvc/include
+        LIBS += -L$$PWD/../dependency-builds/sv/win32-msvc/lib
     }
     macx* {
-        INCLUDEPATH += ../sv-dependency-builds/osx/include
-        LIBS += -L../sv-dependency-builds/osx/lib
+        INCLUDEPATH += $$PWD/../dependency-builds/sv/osx/include
+        LIBS += -L$$PWD/../dependency-builds/sv/osx/lib
     }
 
     DEFINES += HAVE_BZ2 HAVE_FFTW3 HAVE_FFTW3F HAVE_SNDFILE HAVE_SAMPLERATE HAVE_VAMP HAVE_VAMPHOSTSDK HAVE_RUBBERBAND HAVE_LIBLO HAVE_MAD HAVE_ID3TAG
