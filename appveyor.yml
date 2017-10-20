@@ -23,6 +23,6 @@ build_script:
 
 # Build Praaline
 - qmake -v &&
-  qmake ..\Praaline.pro CONFIG+=release DESTDIR=%cd% &&
+  qmake ..\Praaline.pro CONFIG+=release &&
   mingw32-make
 - dir /s
