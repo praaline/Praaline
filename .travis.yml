@@ -84,7 +84,7 @@ install:
     fi
   # Install vamp-host-sdk in OSX
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      cd dependency-builds/sv/src/vamp-plugin-sdk-2.5 && ./configure && make clean all && sudo make install && cd ..
+      cd dependency-builds/sv/src/vamp-plugin-sdk-2.5 && ./configure && make clean all && sudo make install && cd ../../../.. ;
     fi
 
 script:
