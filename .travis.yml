@@ -47,6 +47,7 @@ before_install:
       sudo apt-get update -qq;
     else
       brew update;
+      brew install swig;
     fi
   # Install PocketSphinx
   - wget https://sourceforge.net/projects/cmusphinx/files/sphinxbase/5prealpha/sphinxbase-5prealpha.tar.gz
