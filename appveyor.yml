@@ -19,8 +19,8 @@ before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
 
 build_script:
-- mkdir .\build
-- cd .\build
+- if not exist build mkdir build
+- cd build
 - mkdir -p .\app\build\plugins
 
 # Build Praaline
