@@ -26,14 +26,14 @@ RelationTier::RelationTier(const QString &name, const QList<Relation *> &relatio
     qSort(m_relations.begin(), m_relations.end(), RelationTier::compareRelations);
 }
 
-RelationTier::RelationTier(const RelationTier *copy, QString name, QObject *parent) :
+RelationTier::RelationTier(const RelationTier *copy, QString name, bool copyAttributes, QObject *parent) :
     AnnotationTier(parent)
 {
     if (!copy) return;
     m_name = (name.isEmpty()) ? copy->name() : name;
     // deep copy of Relations
     foreach (Relation *relation, copy->relations()) {
-        m_relations << new Relation(*relation);
+        m_relations << new Relation(relation, copyAttributes);
     }
 }
 

@@ -39,12 +39,12 @@ Interval::Interval(const Interval &copy) :
 
 Interval::Interval(const Interval *copy, bool copyAttributes)
 {
+    if (!copy) return;
     m_tMin = copy->m_tMin;
     m_tMax = copy->m_tMax;
     m_text = copy->m_text;
     if (copyAttributes) {
-        foreach (QString attributeID, copy->m_attributes.keys())
-            m_attributes.insert(attributeID, copy->m_attributes.value(attributeID));
+        m_attributes = copy->m_attributes;
     }
 }
 

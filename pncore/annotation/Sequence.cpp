@@ -37,6 +37,17 @@ Sequence::Sequence(const Sequence &copy) :
 {
 }
 
+Sequence::Sequence(const Sequence *copy, bool copyAttributes)
+{
+    if (!copy) return;
+    m_indexFrom = copy->m_indexFrom;
+    m_indexTo = copy->m_indexTo;
+    m_text = copy->m_text;
+    if (copyAttributes) {
+        m_attributes = copy->m_attributes;
+    }
+}
+
 QVariant Sequence::attribute(const QString &name) const
 {
     if (name == "indexFrom") return indexFrom();

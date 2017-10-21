@@ -38,11 +38,14 @@ Point::Point(const Point &copy) :
 {
 }
 
-Point::Point(const Point *copy)
+Point::Point(const Point *copy, bool copyAttributes)
 {
+    if (!copy) return;
     m_time = copy->m_time;
     m_text = copy->m_text;
-    m_attributes = copy->m_attributes;
+    if (copyAttributes) {
+        m_attributes = copy->m_attributes;
+    }
 }
 
 Point::~Point()

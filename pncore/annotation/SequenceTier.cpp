@@ -26,7 +26,7 @@ SequenceTier::SequenceTier(const QString &name, const QList<Sequence *> &sequenc
     qSort(m_sequences.begin(), m_sequences.end(), SequenceTier::compareSequences);
 }
 
-SequenceTier::SequenceTier(const SequenceTier *copy, QString name, QObject *parent) :
+SequenceTier::SequenceTier(const SequenceTier *copy, QString name, bool copyAttributes, QObject *parent) :
     AnnotationTier(parent), m_baseTier(0)
 {
     if (!copy) return;
@@ -34,7 +34,7 @@ SequenceTier::SequenceTier(const SequenceTier *copy, QString name, QObject *pare
     m_baseTier = copy->baseTier();
     // deep copy of Sequences
     foreach (Sequence *sequence, copy->sequences()) {
-        m_sequences << new Sequence(*sequence);
+        m_sequences << new Sequence(sequence, copyAttributes);
     }
 }
 

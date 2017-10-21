@@ -38,7 +38,7 @@ public:
               const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
     PointTier(const QString &name, const QList<Point *> &points,
               const RealTime tMin = RealTime(0, 0), const RealTime tMax = RealTime(0, 0), QObject *parent = 0);
-    PointTier(const PointTier *copy, QString name = QString(), QObject *parent = 0);
+    PointTier(const PointTier *copy, QString name = QString(), bool copyAttributes = true, QObject *parent = 0);
     virtual ~PointTier();
 
     // Implementation of AnnotationTier

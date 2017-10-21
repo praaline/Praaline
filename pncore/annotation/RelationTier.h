@@ -32,7 +32,7 @@ public:
     // Constructors, destructor
     RelationTier(const QString &name = QString(), QObject *parent = 0);
     RelationTier(const QString &name, const QList<Relation *> &relations, QObject *parent = 0);
-    RelationTier(const RelationTier *copy, QString name = QString(), QObject *parent = 0);
+    RelationTier(const RelationTier *copy, QString name = QString(), bool copyAttributes = true, QObject *parent = 0);
     virtual ~RelationTier();
 
     // Implementation of AnnotationTier

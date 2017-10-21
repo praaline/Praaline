@@ -32,7 +32,7 @@ public:
     Point(const RealTime &time, const QString &text = QString());
     Point(const RealTime &time, const QString &text, const QHash<QString, QVariant> &attributes);
     Point(const Point &copy);
-    Point(const Point *copy);
+    Point(const Point *copy, bool copyAttributes = true);
     virtual ~Point();
 
     // Properties

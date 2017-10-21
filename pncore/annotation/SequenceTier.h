@@ -32,7 +32,7 @@ public:
     // Constructors, destructor
     SequenceTier(const QString &name = QString(), AnnotationTier *baseTier = 0, QObject *parent = 0);
     SequenceTier(const QString &name, const QList<Sequence *> &sequences, AnnotationTier *baseTier = 0, QObject *parent = 0);
-    SequenceTier(const SequenceTier *copy, QString name = QString(), QObject *parent = 0);
+    SequenceTier(const SequenceTier *copy, QString name = QString(), bool copyAttributes = true, QObject *parent = 0);
     virtual ~SequenceTier();
 
     // Implementation of AnnotationTier

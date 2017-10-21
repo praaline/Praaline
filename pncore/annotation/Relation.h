@@ -32,6 +32,7 @@ public:
     Relation(int indexFrom, int indexTo, const QString &text);
     Relation(int indexFrom, int indexTo, const QString &text, const QHash<QString, QVariant> &attributes);
     Relation(const Relation &copy);
+    Relation(const Relation *copy, bool copyAttributes = true);
     virtual ~Relation() {}
 
     // Properties

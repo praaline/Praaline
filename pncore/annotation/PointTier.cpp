@@ -33,7 +33,7 @@ PointTier::PointTier(const QString &name, const QList<Point *> &points,
     if (m_tMax < m_points.last()->m_time) m_tMax = m_points.last()->m_time;
 }
 
-PointTier::PointTier(const PointTier *copy, QString name, QObject *parent) :
+PointTier::PointTier(const PointTier *copy, QString name, bool copyAttributes, QObject *parent) :
     AnnotationTier(parent)
 {
     if (!copy) return;
@@ -42,7 +42,7 @@ PointTier::PointTier(const PointTier *copy, QString name, QObject *parent) :
     m_tMax = copy->tMax();
     // deep copy of points
     foreach (Point *point, copy->points()) {
-        m_points << new Point(point->time(), point->text());
+        m_points << new Point(point, copyAttributes);
     }
 }
 

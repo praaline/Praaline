@@ -32,6 +32,7 @@ public:
     Sequence(int indexFrom, int indexTo, const QString &text);
     Sequence(int indexFrom, int indexTo, const QString &text, const QHash<QString, QVariant> &attributes);
     Sequence(const Sequence &copy);
+    Sequence(const Sequence *copy, bool copyAttributes = true);
     virtual ~Sequence() {}
 
     // Properties
