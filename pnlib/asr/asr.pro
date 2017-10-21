@@ -22,9 +22,6 @@ win32-msvc* {
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local
 }
-macx* {
-    POCKETSPHINX_BASE_PATH = $$PWD/../../dependency-builds/pn/osx
-}
 
 INCLUDEPATH += $${POCKETSPHINX_BASE_PATH}/include/pocketsphinx \
                $${POCKETSPHINX_BASE_PATH}/include/sphinxbase \

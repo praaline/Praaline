@@ -82,10 +82,6 @@ win32-msvc* {
     INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-msvc/include
     LIBS += -L$$PWD/dependency-builds/pn/win32-msvc/lib -lpocketsphinx -lsphinxbase -liconv
 }
-macx* {
-    INCLUDEPATH += $$PWD/../dependency-builds/pn/osx/include
-    LIBS += -L$$PWD/../dependency-builds/pn/osx/lib -lpocketsphinx -lsphinxbase
-}
 unix {
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib -lpocketsphinx -lsphinxbase
