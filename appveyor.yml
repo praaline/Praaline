@@ -5,7 +5,8 @@ init:
 
 environment:
   matrix:
-  - QT5: C:\Qt\5.9.1\mingw53_32
+  - arch: x86
+    QT5: C:\Qt\5.9.1\mingw53_32
     MINGW: C:\Qt\Tools\mingw530_32
 
 matrix:
