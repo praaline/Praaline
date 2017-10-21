@@ -265,31 +265,31 @@ void AnnotationTierGroup::insertTierClone(int index, const AnnotationTier *tier,
 {
     if (!tier) return;
     if ((tier->tierType() == AnnotationTier::TierType_Intervals) || (tier->tierType() == AnnotationTier::TierType_Grouping)) {
-        IntervalTier *newTier = new IntervalTier((IntervalTier *)tier, newName, this);
+        IntervalTier *newTier = new IntervalTier((IntervalTier *)tier, newName, true, this);
         newTier->setParent(this);
         m_tiers.insert(index, newTier);
         emit tierInserted(newTier);
     }
     else if (tier->tierType() == AnnotationTier::TierType_Points) {
-        PointTier *newTier = new PointTier((PointTier *)tier, newName, this);
+        PointTier *newTier = new PointTier((PointTier *)tier, newName, true, this);
         newTier->setParent(this);
         m_tiers.insert(index, newTier);
         emit tierInserted(newTier);
     }
     else if (tier->tierType() == AnnotationTier::TierType_Sequences) {
-        SequenceTier *newTier = new SequenceTier((SequenceTier *)tier, newName, this);
+        SequenceTier *newTier = new SequenceTier((SequenceTier *)tier, newName, true, this);
         newTier->setParent(this);
         m_tiers.insert(index, newTier);
         emit tierInserted(newTier);
     }
 //    else if (tier->tierType() == AnnotationTier::TierType_Tree) {
-//        TreeTier *newTier = new TreeTier((TreeTier *)tier, newName, this);
+//        TreeTier *newTier = new TreeTier((TreeTier *)tier, newName, true, this);
 //        newTier->setParent(this);
 //        m_tiers.insert(index, newTier);
 //        emit tierInserted(newTier);
 //    }
     else if (tier->tierType() == AnnotationTier::TierType_Relations) {
-        RelationTier *newTier = new RelationTier((RelationTier *)tier, newName, this);
+        RelationTier *newTier = new RelationTier((RelationTier *)tier, newName, true, this);
         newTier->setParent(this);
         m_tiers.insert(index, newTier);
         emit tierInserted(newTier);

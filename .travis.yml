@@ -64,7 +64,7 @@ install:
       sudo apt-get install -qq g++-5;
       sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 90;
     fi
-  #
+  # Install Qt
   - if [ "$QT_BASE" = "59" ]; then
       if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         sudo apt-get install -qq qt59base ;
@@ -81,6 +81,10 @@ install:
         export HOMEBREW_QT5_VERSION=$(brew list --versions qt5 | rev | cut -d' ' -f1 | rev);
         ln -s /usr/local/Cellar/qt5/$HOMEBREW_QT5_VERSION/mkspecs /usr/local/mkspecs;
       fi
+    fi
+  # Install vamp-host-sdk in OSX
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+      cd dependency-builds/sv/src/vamp-plugin-sdk-2.5 && ./configure && make clean all && sudo make install && cd ..
     fi
 
 script:
