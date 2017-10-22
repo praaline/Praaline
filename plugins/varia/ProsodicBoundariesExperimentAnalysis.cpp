@@ -926,9 +926,7 @@ void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(const QSt
     outFleiss << "stimulusID\t" << "stimulusType\t" << "kappa\n";
 
     foreach (CorpusCommunication *com, corpus->communications()) {
-        QString id = com->ID();
-        if (!id.startsWith("A") && !id.startsWith("B")) continue;
-        if (id == "B19S" || id == "B19N") continue;
+        if (com->property("exclude").toBool()) continue;
 
         // Get list of subjects who tapped during this sample
         QList<QString> annotatorsForSample = corpus->repository()->annotations()->getSpeakersActiveInLevel(com->ID(), tapping_level);
@@ -1165,8 +1163,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QStr
 
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
-        if (!id.startsWith("A") && !id.startsWith("B")) continue;
-        if (id.startsWith("B19")) continue;
+        if (com->property("exclude").toBool()) continue;
 
         QList<QString> features;
 
@@ -1195,7 +1192,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QStr
                 double forceLeft = QString(fields.at(indexForceLeft)).replace(",", ".").toDouble();
                 double forceRight = QString(fields.at(indexForceRight)).replace(",", ".").toDouble();
                 RealTime t = RealTime::fromSeconds(QString(fields.at(indexTimecode)).replace(",", ".").toDouble());
-                if ((forceLeft - forceRight > 0.50) || (forceRight - forceLeft > 0.50)) {
+                if ((forceLeft - forceRight > 0) || (forceRight - forceLeft > 0)) {
                     QString name = QString("%1: %2 %3: %4")
                             .arg(prefixLeft)
                             .arg(QString::number(forceLeft * 100.0, 'f', 0))
