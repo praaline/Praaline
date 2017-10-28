@@ -97,14 +97,16 @@ public:
     void mergeIdenticalAnnotations(const QString &text = QString(), const QStringList &ignoreIntervening = QStringList());
     void mergeContiguousAnnotations(const QStringList &separatorsOfIntervals, const QString &separatorWhenMerging);
 
-    QList<Interval *> getIntervalsContainedIn(const Interval *container) const;
-    QList<Interval *> getIntervalsContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const;
-    QPair<int, int> getIntervalIndexesContainedIn(const Interval *container) const;
     QPair<int, int> getIntervalIndexesContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const;
-    QList<Interval *> getIntervalsOverlappingWith(const Interval *contained) const;
-    QList<Interval *> getIntervalsOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd) const;
-    QList<Interval *> getIntervalsOverlappingWith(const Interval *contained, const RealTime &threshold) const;
-    QList<Interval *> getIntervalsOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd, const RealTime &threshold) const;
+    QPair<int, int> getIntervalIndexesContainedIn(const Interval *container) const;
+    QList<Interval *> getIntervalsContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const;
+    QList<Interval *> getIntervalsContainedIn(const Interval *container) const;
+
+    QPair<int, int> getIntervalIndexesOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd, const RealTime &threshold = RealTime()) const;
+    QPair<int, int> getIntervalIndexesOverlappingWith(const Interval *contained, const RealTime &threshold = RealTime()) const;
+    QList<Interval *> getIntervalsOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd, const RealTime &threshold = RealTime()) const;
+    QList<Interval *> getIntervalsOverlappingWith(const Interval *contained, const RealTime &threshold = RealTime()) const;
+
     IntervalTier *getIntervalTierSubset(const RealTime &timeStart, const RealTime &timeEnd) const;
 
     PointTier *getPointsMin(const QString &name, QObject *parent = 0);

@@ -834,17 +834,17 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(const
            "logdurSyllRel20\tlogdurSyllRel30\tlogdurSyllRel40\tlogdurSyllRel50\t"
            "f0meanSyllRel20\tf0meanSyllRel30\tf0meanSyllRel40\tf0meanSyllRel50\t"
            "intrasyllab_up\tintrasyllab_down\ttrajectory\t"
-           "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\t"
-           "boundaryDelay\tboundaryDispersion\tboundaryForce\tboundaryFirstPPB\tboundaryLastPPB\tpromise_pos";
+           "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\tcontext";
+    foreach (QString attribute, ppbAttributeIDs) {
+        out << "\t" << attribute;
+    }
     if (multilevel) {
         out << "\tsubjectID\tresponseTimeAdj\tresponseTimeOrig\n";
     } else {
         out << "\n";
     }
     foreach (CorpusCommunication *com, corpus->communications()) {
-        QString id = com->ID();
-//        if (!id.startsWith("A") && !id.startsWith("B")) continue;
-//        if (id == "B19S" || id == "B19N") continue;
+        if (com->property("exclude").toBool()) continue;
 
         QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
         foreach (QString speakerID, tiers.keys()) {
@@ -1019,6 +1019,9 @@ void ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(const QSt
         }
         outFleiss << com->ID() << "\t" << com->ID().right(1) << "\t";
         outFleiss << fleissKappa << "\n";
+
+        // Clean up memory
+        qDeleteAll(tiers);
     }
 
     fileCohen.close();
@@ -1050,11 +1053,18 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QStri
     fieldLabels << "f0meanSyllRel20" << "f0meanSyllRel30" << "f0meanSyllRel40" << "f0meanSyllRel50";
     fieldLabels << "intrasyllab_up" << "intrasyllab_down" << "trajectory";
     fieldLabels << "tok_mwu" << "sequence" << "rection" << "syntacticBoundaryType";
-    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex" << "promise_pos";
-    fieldLabels << prefix + "Delay" << prefix + "Dispersion" << prefix + "Force" << prefix + "FirstPPB" << prefix + "LastPPB";
+    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex" << "context";
+    fieldLabels << ppbAttributeIDs;
+
+    int indexTimecode(0), indexForceLeft(0), indexForceRight(0);
     QString headerRow;
-    foreach (QString fieldLabel, fieldLabels) {
+    for (int i = 0; i < fieldLabels.count(); ++i) {
+        QString fieldLabel = fieldLabels.at(i);
         headerRow = headerRow.append(QString("ns_%1\tms_%1\t").arg(fieldLabel));
+        if      (fieldLabel == "syll_tmin") indexTimecode = i;
+        else if (fieldLabel == prefix + "Force") {
+            indexForceLeft = i; indexForceRight = i;
+        }
     }
     headerRow.chop(1);
     out << headerRow << "\n";
@@ -1063,9 +1073,8 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QStri
 
     foreach (CorpusCommunication *com, corpus->communications()) {
         QString id = com->ID();
-        if (!id.startsWith("A") && !id.startsWith("B")) continue;
+        if (com->property("exclude").toBool()) continue;
         if (id.endsWith("S")) continue;
-        if (id.startsWith("B19")) continue;
 
         QString idNS = id; QString idMS = id.remove("N").append("S");
         QList<QString> featuresNS, featuresMS;
@@ -1093,9 +1102,9 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QStri
                 line.chop(1);
                 out << line << "\n";
                 // if intersting case, add it to bookmarks
-                double forceNS = QString(fieldsNS.at(37)).replace(",", ".").toDouble();
-                double forceMS = QString(fieldsMS.at(37)).replace(",", ".").toDouble();
-                RealTime t = RealTime::fromSeconds(QString(fieldsNS.at(4)).replace(",", ".").toDouble());
+                double forceNS = QString(fieldsNS.at(indexForceLeft)).replace(",", ".").toDouble();
+                double forceMS = QString(fieldsMS.at(indexForceRight)).replace(",", ".").toDouble();
+                RealTime t = RealTime::fromSeconds(QString(fieldsNS.at(indexTimecode)).replace(",", ".").toDouble());
                 if ((forceNS - forceMS > 0.40) || (forceMS - forceNS > 0.40)) {
                     QString name = QString("NS: %1 MS: %2")
                             .arg(QString::number(forceNS * 100.0, 'f', 0))
@@ -1117,7 +1126,8 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QStri
 
 void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QString &filenameTable, const QString &filenameBookmarks,
                                                                       Corpus *corpus,
-                                                                      const QString &prefixLeft, const QString &prefixRight)
+                                                                      const QString &prefixLeft, const QString &prefixRight,
+                                                                      double limitLeft, double limitRight)
 {
     if (!corpus) return;
     QStringList ppbAttributeIDs;
@@ -1144,7 +1154,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QStr
     fieldLabels << "f0meanSyllRel20" << "f0meanSyllRel30" << "f0meanSyllRel40" << "f0meanSyllRel50";
     fieldLabels << "intrasyllab_up" << "intrasyllab_down" << "trajectory";
     fieldLabels << "tok_mwu" << "sequence" << "rection" << "syntacticBoundaryType";
-    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex";
+    fieldLabels << "pos_mwu" << "pos_mwu_cat" << "pos_clilex" << "context";
     fieldLabels << ppbAttributeIDs;
 
     int indexTimecode(0), indexForceLeft(0), indexForceRight(0);
@@ -1192,7 +1202,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QStr
                 double forceLeft = QString(fields.at(indexForceLeft)).replace(",", ".").toDouble();
                 double forceRight = QString(fields.at(indexForceRight)).replace(",", ".").toDouble();
                 RealTime t = RealTime::fromSeconds(QString(fields.at(indexTimecode)).replace(",", ".").toDouble());
-                if ((forceLeft - forceRight > 0) || (forceRight - forceLeft > 0)) {
+                if ((forceLeft - forceRight > limitLeft) || (forceRight - forceLeft > limitRight)) {
                     QString name = QString("%1: %2 %3: %4")
                             .arg(prefixLeft)
                             .arg(QString::number(forceLeft * 100.0, 'f', 0))

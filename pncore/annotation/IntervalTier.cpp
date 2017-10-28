@@ -466,82 +466,101 @@ void IntervalTier::fixBoundariesBasedOnTier(const IntervalTier *correctBoundarie
     }
 }
 
+// Intervals contained within a time region
+
+QPair<int, int> IntervalTier::getIntervalIndexesContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const
+{
+    int left = intervalIndexAtTime(timeStart);
+    int right = intervalIndexAtTime(timeEnd);
+    // Check for invalid indexes
+    if ((left < 0) || (right < 0) || (left >= m_intervals.count()) || (right >= m_intervals.count()))
+        return QPair<int, int>(-1, -1);
+    // Strictly contained: move closer if needed
+    if (m_intervals.at(left)->tMin() < timeStart) left++;
+    if (m_intervals.at(right)->tMax() > timeEnd) right--;
+    // Move apart if needed
+    while (((left - 1) >= 0) && ((left - 1) < m_intervals.count()) &&
+           (timeStart <= m_intervals[left - 1]->tMin()) && (m_intervals[left - 1]->tMin() <= timeEnd))
+        left--;
+    while (((right + 1) >= 0) && ((right + 1) < m_intervals.count()) &&
+           (timeStart <= m_intervals[right + 1]->tMax()) && (m_intervals[right + 1]->tMax() <= timeEnd))
+        right++;
+    // Check for a given time interval that would be smaller than any interval on the tier
+    if (right < left) return QPair<int, int>(-1, -1);
+    // Otherwise return result
+    return QPair<int, int>(left, right);
+}
+
+QPair<int, int> IntervalTier::getIntervalIndexesContainedIn(const Interval *container) const
+{
+    if (!container) return QPair<int, int>(-1, -1);
+    return getIntervalIndexesContainedIn(container->tMin(), container->tMax());
+}
+
 QList<Interval *> IntervalTier::getIntervalsContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const
 {
-    Interval *container = new Interval(timeStart, timeEnd, "");
-    QList<Interval *> ret = getIntervalsContainedIn(container);
-    delete container;
+    QList<Interval *> ret;
+    QPair<int, int> indexes = getIntervalIndexesContainedIn(timeStart, timeEnd);
+    if ((indexes.first < 0) || (indexes.second < 0)) return ret;
+    for (int i = indexes.first; i <= indexes.second; ++i)
+        ret << m_intervals.at(i);
     return ret;
 }
 
 QList<Interval *> IntervalTier::getIntervalsContainedIn(const Interval *container) const
 {
-    QList<Interval *> ret;
-    foreach (Interval *intv, m_intervals) {
-        if (container->contains(intv->tMin()) && container->contains(intv->tMax())) {
-            ret << intv;
-        }
-    }
-    return ret;
+    if (!container) return QList<Interval *>();
+    return getIntervalsContainedIn(container->tMin(), container->tMax());
 }
 
-QPair<int, int> IntervalTier::getIntervalIndexesContainedIn(const RealTime &timeStart, const RealTime &timeEnd) const
-{
-    Interval *container = new Interval(timeStart, timeEnd, "");
-    QPair<int, int> ret = getIntervalIndexesContainedIn(container);
-    delete container;
-    return ret;
-}
+// Intervals overlapping with a time region. Default threshold is 0.
 
-QPair<int, int> IntervalTier::getIntervalIndexesContainedIn(const Interval *container) const
+QPair<int, int> IntervalTier::getIntervalIndexesOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd, const RealTime &threshold) const
 {
-    int left = 0; int right = 0;
-    RealTime center = (container->tMin() + container->tMax()) / 2.0;
-    left = right = intervalIndexAtTime(center);
-    while ((left - 1) >= 0 && (left - 1) < m_intervals.count() && container->contains(m_intervals[left - 1]->tMin()))
+    int left = intervalIndexAtTime(timeStart);
+    int right = intervalIndexAtTime(timeEnd);
+    // Check for invalid indexes
+    if ((left < 0) || (right < 0) || (left >= m_intervals.count()) || (right >= m_intervals.count()))
+        return QPair<int, int>(-1, -1);
+    // Strictly contained: move closer if needed
+    if (m_intervals.at(left)->tMin() + threshold < timeStart) left++;
+    if (m_intervals.at(right)->tMax() - threshold > timeEnd) right--;
+    // Move apart if needed
+    while (((left - 1) >= 0) && ((left - 1) < m_intervals.count()) &&
+           (timeStart <= m_intervals[left - 1]->tMin() + threshold) && (m_intervals[left - 1]->tMin() + threshold <= timeEnd))
         left--;
-    while ((right + 1) >= 0 && (right + 1) < m_intervals.count() && container->contains(m_intervals[right + 1]->tMax()))
+    while (((right + 1) >= 0) && ((right + 1) < m_intervals.count()) &&
+           (timeStart <= m_intervals[right + 1]->tMax() - threshold) && (m_intervals[right + 1]->tMax() - threshold <= timeEnd))
         right++;
+    // Check for a given time interval that would be smaller than any interval on the tier
+    if (right < left) return QPair<int, int>(-1, -1);
+    // Otherwise return result
     return QPair<int, int>(left, right);
 }
 
-QList<Interval *> IntervalTier::getIntervalsOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd) const
+QPair<int, int> IntervalTier::getIntervalIndexesOverlappingWith(const Interval *contained, const RealTime &threshold) const
 {
-    Interval *contained = new Interval(timeStart, timeEnd, "");
-    QList<Interval *> ret = getIntervalsOverlappingWith(contained);
-    delete contained;
-    return ret;
-}
-
-QList<Interval *> IntervalTier::getIntervalsOverlappingWith(const Interval *contained) const
-{
-    QList<Interval *> ret;
-    foreach (Interval *intv, m_intervals) {
-        if (intv->overlaps(*contained)) {
-            ret << intv;
-        }
-    }
-    return ret;
+    if (!contained) return QPair<int, int>(-1, -1);
+    return getIntervalIndexesOverlappingWith(contained->tMin(), contained->tMax(), threshold);
 }
 
 QList<Interval *> IntervalTier::getIntervalsOverlappingWith(const RealTime &timeStart, const RealTime &timeEnd, const RealTime &threshold) const
 {
-    Interval *contained = new Interval(timeStart, timeEnd, "");
-    QList<Interval *> ret = getIntervalsOverlappingWith(contained, threshold);
-    delete contained;
+    QList<Interval *> ret;
+    QPair<int, int> indexes = getIntervalIndexesOverlappingWith(timeStart, timeEnd, threshold);
+    if ((indexes.first < 0) || (indexes.second < 0)) return ret;
+    for (int i = indexes.first; i <= indexes.second; ++i)
+        ret << m_intervals.at(i);
     return ret;
 }
 
 QList<Interval *> IntervalTier::getIntervalsOverlappingWith(const Interval *contained, const RealTime &threshold) const
 {
-    QList<Interval *> ret;
-    foreach (Interval *intv, m_intervals) {
-        if (intv->overlaps(*contained, threshold)) {
-            ret << intv;
-        }
-    }
-    return ret;
+    if (!contained) return QList<Interval *>();
+    return getIntervalsOverlappingWith(contained->tMin(), contained->tMax(), threshold);
 }
+
+// Tier subset
 
 IntervalTier *IntervalTier::getIntervalTierSubset(const RealTime &timeStart, const RealTime &timeEnd) const
 {

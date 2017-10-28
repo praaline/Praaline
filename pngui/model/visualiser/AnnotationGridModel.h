@@ -11,7 +11,7 @@
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/Model.h"
 #include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
-#include "pngui/model/annotation/AnnotationGridPointModel.h"
+#include "pngui/model/visualiser/AnnotationGridPointModel.h"
 
 struct AnnotationGridModelData;
 
@@ -40,15 +40,13 @@ public:
                         const QList<QPair<QString, QString> > &attributes);
     virtual ~AnnotationGridModel();
 
-    virtual std::string getType() const { return "AnnotationGridModel"; }
-
     // Model base class implementation
+    virtual std::string getType() const { return "AnnotationGridModel"; }
     virtual bool isOK() const { return true; }
     virtual sv_frame_t getStartFrame() const;
     virtual sv_frame_t getEndFrame() const;
     virtual sv_samplerate_t getSampleRate() const;
     virtual QString getTypeName() const { return tr("Annotation Grid"); }
-
     virtual void toXml(QTextStream &out, QString indent = "", QString extraAttributes = "") const;
 
     int countSpeakers() const;

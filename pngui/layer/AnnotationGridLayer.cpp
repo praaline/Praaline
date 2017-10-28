@@ -6,7 +6,7 @@
 #include "svgui/layer/ColourDatabase.h"
 #include "svgui/view/View.h"
 
-#include "pngui/model/annotation/AnnotationGridModel.h"
+#include "pngui/model/visualiser/AnnotationGridModel.h"
 
 #include <QPainter>
 #include <QMouseEvent>

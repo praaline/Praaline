@@ -42,13 +42,16 @@ FORMS += \
     widgets/ImportDataPreviewWidget.ui
 
 HEADERS += \
-    model/annotation/AnnotationGridPointModel.h \
-    model/annotation/AnnotationGridModel.h \
+    model/visualiser/AnnotationGridPointModel.h \
+    model/visualiser/AnnotationGridModel.h \
+    model/visualiser/ProsogramTonalSegmentModel.h \
+    model/visualiser/ProsogramModel.h \
+    model/visualiser/MovingAverageModel.h \
+    layer/MovingAverageLayer.h \
     layer/AnnotationGridLayer.h \
     layer/PraalineLayersInitialiser.h \
-    model/annotation/ProsogramTonalSegmentModel.h \
-    model/annotation/ProsogramModel.h \
     layer/ProsogramLayer.h \
+    layer/AnnotationDiffLayer.h \
     epsengine/EpsEngine.h \
     xlsx/xlsxzipwriter_p.h \
     xlsx/xlsxzipreader_p.h \
@@ -160,7 +163,6 @@ HEADERS += \
     model/corpus/CorpusTableModel.h \
     FlowLayout.h \
     widgets/ImportDataPreviewWidget.h \
-    layer/AnnotationDiffLayer.h \
     delegate/IntervalSequenceDelegate.h \
     delegate/IntervalSequenceEditor.h \
     model/annotation/AnnotationMultiTierTableModel.h \
@@ -217,15 +219,20 @@ HEADERS += \
     grid/QValueFilter.h \
     grid/QValueFilter_p.h \
     grid/SpinboxItemDelegate.h \
-    layer/MovingAverageLayer.h \
-    model/annotation/MovingAverageModel.h
+    layer/AnnotationTimeInstantLayer.h \
+    layer/AnnotationTimeValueLayer.h \
+    layer/AnnotationRegionLayer.h \
+    model/visualiser/AnnotationTimeValueModel.h
 
 SOURCES += \
-    model/annotation/AnnotationGridModel.cpp \
-    layer/AnnotationGridLayer.cpp \
+    model/visualiser/AnnotationGridModel.cpp \
+    model/visualiser/ProsogramModel.cpp \
+    model/visualiser/MovingAverageModel.cpp \
     layer/PraalineLayersInitialiser.cpp \
-    model/annotation/ProsogramModel.cpp \
+    layer/AnnotationGridLayer.cpp \
     layer/ProsogramLayer.cpp \
+    layer/AnnotationDiffLayer.cpp \
+    layer/MovingAverageLayer.cpp \
     epsengine/EpsPaintEngine.cpp \
     epsengine/EpsPaintDevice.cpp \
     xlsx/xlsxzipwriter.cpp \
@@ -315,7 +322,6 @@ SOURCES += \
     model/corpus/CorpusTableModel.cpp \
     FlowLayout.cpp \
     widgets/ImportDataPreviewWidget.cpp \
-    layer/AnnotationDiffLayer.cpp \
     delegate/IntervalSequenceDelegate.cpp \
     delegate/IntervalSequenceEditor.cpp \
     model/annotation/AnnotationMultiTierTableModel.cpp \
@@ -361,8 +367,10 @@ SOURCES += \
     grid/QUniqueValuesProxyModel.cpp \
     grid/QValueFilter.cpp \
     grid/SpinboxItemDelegate.cpp \
-    layer/MovingAverageLayer.cpp \
-    model/annotation/MovingAverageModel.cpp
+    layer/AnnotationTimeInstantLayer.cpp \
+    layer/AnnotationTimeValueLayer.cpp \
+    layer/AnnotationRegionLayer.cpp \
+    model/visualiser/AnnotationTimeValueModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

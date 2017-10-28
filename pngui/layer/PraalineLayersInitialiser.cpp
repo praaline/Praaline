@@ -18,10 +18,10 @@ void PraalineLayersInitialiser::initialise()
                                   QStringList() << "ProsogramModel",
                                   [](LayerFactory::LayerType) -> Layer * { return new ProsogramLayer(); },
                                   [](Model *) -> Model * { return 0; } ));
-//    factory.registerLayerType("MovingAverage", LayerFactory::LayerConfiguration(
-//                                  "movingaverage", "Moving Average", "movingaverage", false,
-//                                  QStringList() << "AnnotationGridModel",
-//                                  [](LayerFactory::LayerType) -> Layer * { return new MovingAverageLayer(); },
-//                                  [](Model *) -> Model * { return 0; } ));
+    factory.registerLayerType("MovingAverage", LayerFactory::LayerConfiguration(
+                                  "movingaverage", "Moving Average", "movingaverage", false,
+                                  QStringList() << "MovingAverageModel",
+                                  [](LayerFactory::LayerType) -> Layer * { return new MovingAverageLayer(); },
+                                  [](Model *) -> Model * { return 0; } ));
 }
 

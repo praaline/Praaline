@@ -131,10 +131,13 @@
 #include "pncore/annotation/PointTier.h"
 using namespace Praaline::Core;
 
-#include "pngui/model/annotation/AnnotationGridModel.h"
-#include "pngui/model/annotation/ProsogramModel.h"
+#include "pngui/model/visualiser/AnnotationGridModel.h"
+#include "pngui/model/visualiser/ProsogramModel.h"
+#include "pngui/model/visualiser/MovingAverageModel.h"
+
 #include "pngui/layer/AnnotationGridLayer.h"
 #include "pngui/layer/ProsogramLayer.h"
+#include "pngui/layer/MovingAverageLayer.h"
 
 #include "QtilitiesCore/QtilitiesCore"
 #include "QtilitiesCoreGui/QtilitiesCoreGui"
@@ -3377,8 +3380,9 @@ void VisualiserWidget::addAnnotationPane(QVariantHash parameters)
     AnnotationGridModel *model = new AnnotationGridModel(getMainModel()->getSampleRate(), m_tiers, annotationAttributes);
     // Excluded speakers
     QStringList excluded;
-    if (parameters.contains("excludeSpeakers")) excluded = parameters.value("excludeSpeakers").toStringList();
+    if (parameters.contains("excludedSpeakers")) excluded = parameters.value("excludedSpeakers").toStringList();
     model->excludeSpeakerIDs(excluded);
+    m_excludedSpeakers = excluded;
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add annotations pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
@@ -3566,5 +3570,31 @@ void VisualiserWidget::addTappingDataPane(const QString &tappingTierName,
             modelRegions->addPoint(r100);
         }
     }
+}
+
+void VisualiserWidget::addMovingAveragePane(const QString &levelID, const QString &annotationID)
+{
+    if (!getMainModel()) return;
+
+    MovingAverageModel *model = new MovingAverageModel(getMainModel()->getSampleRate(), m_tiers, levelID, annotationID);
+    // Excluded speakers
+    model->excludeSpeakerIDs(m_excludedSpeakers);
+    // Create a pane + layer for the annotations
+    CommandHistory::getInstance()->startCompoundOperation("Add moving average pane", true);
+    AddPaneCommand *command = new AddPaneCommand(this);
+    CommandHistory::getInstance()->addCommand(command);
+    Pane *pane = command->getPane();
+    Layer *newLayer = m_document->createImportedLayer(model);
+    if (newLayer) m_document->addLayerToView(pane, newLayer);
+//    foreach (QString speakerID, model->speakers()) {
+//        Layer *newLayer = m_document->createImportedLayer(model->smoothModel(speakerID));
+//        qobject_cast<TimeValueLayer *>(newLayer)->setPlotStyle(TimeValueLayer::PlotCurve);
+//        qobject_cast<TimeValueLayer *>(newLayer)->setDrawSegmentDivisions(false);
+//        // qobject_cast<TimeValueLayer *>(newLayer)->setBaseColour(ColourDatabase::getInstance()->getColourIndex(tr("Black")));
+//        m_document->addLayerToView(pane, newLayer);
+//    }
+    m_paneStack->setCurrentPane(pane);
+    CommandHistory::getInstance()->endCompoundOperation();
+    updateMenuStates();
 }
 

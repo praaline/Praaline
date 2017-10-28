@@ -10,7 +10,7 @@
 #include "svgui/layer/TimeValueLayer.h"
 #include "svgui/view/View.h"
 
-#include "pngui/model/annotation/ProsogramModel.h"
+#include "pngui/model/visualiser/ProsogramModel.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -186,7 +186,7 @@ void ProsogramLayer::getScaleExtents(View *v, double &min, double &max, bool &lo
     bool autoAlign = true;
     if (autoAlign) {
         if (!v->getValueExtents(getScaleUnits(), min, max, log)) {
-            min = m_model->segmentModel()->getf0MinimumHz();
+            min = m_model->segmentModel()->getf0MinimumST();
             max = m_model->segmentModel()->getf0MaximumST();
         }
     }

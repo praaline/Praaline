@@ -1,7 +1,7 @@
 #ifndef ANNOTATIONGRIDLAYER_H
 #define ANNOTATIONGRIDLAYER_H
 
-#include "pngui/model/annotation/AnnotationGridModel.h"
+#include "pngui/model/visualiser/AnnotationGridModel.h"
 #include "svgui/layer/SingleColourLayer.h"
 
 #include <QObject>

@@ -170,6 +170,10 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
                 if (rection_text.contains("md|")) syntacticBoundaryType = "MD";
             }
 
+            // Context
+            int tokenIndex = tier_tokmwu->intervalIndexAtTime(syll->tCenter());
+            QString context = (tokenIndex > 0) ? tier_tokmwu->getContextSymmetricFormated(tokenIndex, 10) : "";
+
             // --------------------------------------------------------------------------------------------------------
             // Write results to a string list
             // --------------------------------------------------------------------------------------------------------
@@ -203,7 +207,8 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             // Syntax
             resultLine.append(tok_mwu_text).append(sep).append(sequence_text).append(sep).append(rection_text).append(sep);
             resultLine.append(syntacticBoundaryType).append(sep);
-            resultLine.append(pos_mwu).append(sep).append(pos_mwu.left(3)).append(sep).append(categorise_CLI_INT_LEX(tok_mwu));
+            resultLine.append(pos_mwu).append(sep).append(pos_mwu.left(3)).append(sep).append(categorise_CLI_INT_LEX(tok_mwu)).append(sep);
+            resultLine.append(context);
             // Other requested attributes
             QString rest;
             foreach (QString attributeID, additionalAttributeIDs) {

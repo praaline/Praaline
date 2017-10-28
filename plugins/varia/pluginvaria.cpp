@@ -482,18 +482,18 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "locas_expert_boundary_features.txt", corpus, "boundaryExpert", false);
     // Correspondance - Divergence
 //    ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(path + "locas_naive_correspondance.txt", path + "locas_naive_correspondance_bookmarks.xml",
-//                                                                    corpus, "boundary");
+//                                                                    corpus, "boundaryNaive");
 //    ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(path + "locas_expert_correspondance.txt", path + "locas_expert_correspondance_bookmarks.xml",
 //                                                                    corpus, "boundaryExpert");
 //    ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(path + "locas_groups_correspondance.txt", path + "locas_groups_correspondance_bookmarks.xml",
-//                                                                     corpus, "boundaryNaive", "boundaryExpert");
+//                                                                     corpus, "boundaryNaive", "boundaryExpert", 0.5, 0.5);
 //    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "locas_naive_cohenkappa.txt", path + "locas_naive_fleisskappa.txt",
 //                                                                      corpus, "boundaryNaive", "tapping_naive");
 //    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "locas_expert_cohenkappa.txt", path + "locas_expert_fleisskappa.txt",
 //                                                                      corpus, "boundaryExpert", "tapping_expert");
     // Titeuf
 //    ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(path + "titeuf_boundary_vs_pause_correspondance.txt", path + "titeuf_boundary_vs_pause_correspondance_bookmarks.xml",
-//                                                                     corpus, "boundary", "pause");
+//                                                                     corpus, "boundary", "pause", 0.0, 0.0);
 //    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "titeuf_naive_boundary_kappacohen.txt", path + "titeuf_naive_boundary_kappafleiss.txt",
 //                                                                      corpus, "boundary", "tapping_boundaries");
 //    ProsodicBoundariesExperimentAnalysis::statInterAnnotatorAgreement(path + "titeuf_naive_pause_kappacohen.txt", path + "titeuf_naive_pause_kappafleiss.txt",

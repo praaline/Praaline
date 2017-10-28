@@ -35,7 +35,7 @@ public:
                                             const QString &prefix, const QString &tapping_level);
     static void statCorrespondanceNSandMS(const QString &filenameTable, const QString &filenameBookmarks, Corpus *corpus, QString prefix);
     static void statCorrespondanceInternal(const QString &filenameTable, const QString &filenameBookmarks, Corpus *corpus,
-                                           const QString &prefixLeft, const QString &prefixRight);
+                                           const QString &prefixLeft, const QString &prefixRight, double limitLeft = 0.0, double limitRight = 0.0);
 
 private:
     ProsodicBoundariesExperimentAnalysis() {}

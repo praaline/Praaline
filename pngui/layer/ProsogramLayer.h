@@ -1,7 +1,7 @@
 #ifndef PROSOGRAMLAYER_H
 #define PROSOGRAMLAYER_H
 
-#include "pngui/model/annotation/ProsogramModel.h"
+#include "pngui/model/visualiser/ProsogramModel.h"
 #include "svgui/layer/SingleColourLayer.h"
 #include "svgui/layer/VerticalScaleLayer.h"
 #include "svgui/layer/TimeValueLayer.h"

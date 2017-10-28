@@ -72,6 +72,7 @@ AnnotationGridModel::AnnotationGridModel(sv_samplerate_t sampleRate,
 
 AnnotationGridModel::~AnnotationGridModel()
 {
+    if (d) qDeleteAll(d->boundaries);
     if (d) delete d;
 }
 

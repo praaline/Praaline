@@ -57,6 +57,7 @@ public slots:
     void addTappingDataPane(const QString &tappingTierName = "tappingAdj",
                             const QString &smoothTierName = "smooth",
                             const QString &boundaryAttributePrefix = "boundary");
+    void addMovingAveragePane(const QString &levelID, const QString &annotationID);
 
 protected slots:
     virtual void importAudio();
@@ -126,6 +127,7 @@ protected slots:
 protected:
     QMap<QString, QPointer<AnnotationTierGroup> > m_tiers;
     QList<QPair<QString, QString> > m_annotationSelection;
+    QList<QString> m_excludedSpeakers;
 
     bool                     m_mainMenusCreated;
     QMenu                   *m_paneMenu;

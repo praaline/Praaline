@@ -36,12 +36,12 @@ public:
     typedef std::vector<PropertyName> PropertyList;
     
     enum PropertyType {
-	ToggleProperty, // on or off
-	RangeProperty, // range of integers
-	ValueProperty, // range of integers given string labels
-	ColourProperty, // colours, get/set as ColourDatabase indices
+        ToggleProperty, // on or off
+        RangeProperty, // range of integers
+        ValueProperty, // range of integers given string labels
+        ColourProperty, // colours, get/set as ColourDatabase indices
         UnitsProperty, // unit from UnitDatabase, get/set unit id
-	InvalidProperty, // property not found!
+        InvalidProperty, // property not found!
     };
 
     /**

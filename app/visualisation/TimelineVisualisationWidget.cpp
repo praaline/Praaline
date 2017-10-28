@@ -19,6 +19,8 @@ using namespace Praaline::Core;
 
 #include "svgui/layer/Layer.h"
 
+#include "pngui/model/visualiser/MovingAverageModel.h"
+
 #include "VisualiserWidget.h"
 
 
@@ -229,9 +231,9 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
-    loadVisualisationNassima1(corpus, annotationID);
+    // loadVisualisationNassima1(corpus, annotationID);
     // loadVisualisationNassima2(corpus, annotationID);
-    // loadVisualisationNassima3(corpus, annotationID);
+    loadVisualisationNassima3(corpus, annotationID);
 
 
 
@@ -264,7 +266,7 @@ void TimelineVisualisationWidget::loadVisualisationNassima1(QPointer<Corpus> cor
 
 void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> corpus, const QString &annotationID)
 {
-    QString measure = "pitchmovement"; // "speechrate";
+    QString measure = "speechrate"; // "pitchmovement"; // "speechrate";
 
     // Create annotation pane
     d->visualiser->setAnnotationTiers(d->currentTierGroups);
@@ -303,27 +305,27 @@ void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> cor
     }
 
     // Objective measure
-    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
-    if (tierName.endsWith("speechrate") && tiersSpk) {
-        Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiersSpk->tier("speech_rate"), "timeNanoseconds", "rate_syll", "", true);
-        if (layer_regions_speechrate) {
-            layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
-            layer_regions_speechrate->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
-            layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
-        }
-    }
-    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
-        Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
-        if (layer_regions_pitchmovement) {
-            layer_regions_pitchmovement->setDisplayExtents(0.0, 10.0);
-            layer_regions_pitchmovement->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
-            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
-        }
-    }
+    d->visualiser->addMovingAveragePane("syll", "");
 
-
+//    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
+//    if (tierName.endsWith("speechrate") && tiersSpk) {
+//        Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiersSpk->tier("speech_rate"), "timeNanoseconds", "rate_syll", "", true);
+//        if (layer_regions_speechrate) {
+//            layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
+//            layer_regions_speechrate->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+//            layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
+//        }
+//    }
+//    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
+//        Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
+//        if (layer_regions_pitchmovement) {
+//            layer_regions_pitchmovement->setDisplayExtents(0.0, 10.0);
+//            layer_regions_pitchmovement->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+//            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
+//        }
+//    }
 }
 
 void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID)
@@ -378,27 +380,27 @@ void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> cor
     }
 
     // Objective measure
-    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
-    if (tierName.endsWith("speechrate") && tiersSpk) {
-        Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiersSpk->tier("speech_rate"), "timeNanoseconds", "rate_syll", "", true);
-        if (layer_regions_speechrate) {
-            layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
-            layer_regions_speechrate->setProperty("Plot Type", 0); // 4 = Curve 0 = Points
-            layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
-        }
-    }
-    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
-        Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
-        if (layer_regions_pitchmovement) {
-            layer_regions_pitchmovement->setDisplayExtents(0.0, 10.0);
-            layer_regions_pitchmovement->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
-            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
-        }
-    }
+    d->visualiser->addMovingAveragePane("syll", "");
 
-
+//    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
+//    if (tierName.endsWith("speechrate") && tiersSpk) {
+//        Layer *layer_regions_speechrate = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiersSpk->tier("speech_rate"), "timeNanoseconds", "rate_syll", "", true);
+//        if (layer_regions_speechrate) {
+//            layer_regions_speechrate->setDisplayExtents(0.0, 10.0);
+//            layer_regions_speechrate->setProperty("Plot Type", 0); // 4 = Curve 0 = Points
+//            layer_regions_speechrate->setPresentationName("Speech rate syll/sec");
+//        }
+//    }
+//    else if (tierName.endsWith("pitchmovement") && tiersSpk) {
+//        Layer *layer_regions_pitchmovement = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiersSpk->tier("pitch_movement"), "timeNanoseconds", "rate_pitch", "", true);
+//        if (layer_regions_pitchmovement) {
+//            layer_regions_pitchmovement->setDisplayExtents(0.0, 10.0);
+//            layer_regions_pitchmovement->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+//            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
+//        }
+//    }
 }
 
 // ====================================================================================================================

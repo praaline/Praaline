@@ -13,7 +13,7 @@
 
 namespace Praaline {
 namespace Core {
-class CorpusRecording;
+class AnnotationTierGroup;
 }
 }
 
@@ -25,7 +25,9 @@ class MovingAverageModel : public Model
 {
     Q_OBJECT
 public:
-    MovingAverageModel(sv_samplerate_t sampleRate);
+    MovingAverageModel(sv_samplerate_t sampleRate,
+                       QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+                       const QString &levelID, const QString &attributeID);
     virtual ~MovingAverageModel();
 
     virtual std::string getType() const { return "MovingAverageModel"; }
@@ -39,10 +41,30 @@ public:
 
     virtual void toXml(QTextStream &out, QString indent = "", QString extraAttributes = "") const;
 
-    QPointer<SparseTimeValueModel> smoothModel();
+    // Speakers
+    int countSpeakers() const;
+    QList<QString> speakers() const;
+    void excludeSpeakerIDs(const QList<QString> &list);
+    void clearExcludedSpeakerIDs();
+
+    // Model parameters
+    QString levelID() const;
+    void setLevelID(const QString &);
+    QString attributeID() const;
+    void setAttributeID(const QString &);
+    int smoothingStepMsec() const;
+    void setSmoothingStepMsec(int);
+    int windowLeftMsec() const;
+    void setWindowLeftMsec(int);
+    int windowRightMsec() const;
+    void setWindowRightMsec(int);
+
+    // Returns the calculated (smoothed) moving average model
+    QPointer<SparseTimeValueModel> smoothModel(const QString &speakerID);
 
 protected:
     MovingAverageModelData *d;
+    void recalculate();
 };
 
 #endif // MOVINGAVERAGEMODEL_H
