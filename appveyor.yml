@@ -25,7 +25,8 @@ build_script:
 
 # Build Praaline
 - qmake -v
-- qmake ..\PraalineCI.pro CONFIG+=release && mingw32-make
+- qmake ..\Praaline.pro CONFIG+=release && mingw32-make
+#- qmake ..\PraalineCI.pro CONFIG+=release && mingw32-make
 - dir /s
 
 # Package
@@ -40,6 +41,7 @@ build_script:
 - copy libs\qtilities\bin\QtilitiesLogging-1.5.dll deploy\QtilitiesLogging-1.5.dll
 - copy libs\qtilities\bin\QtilitiesProjectManagement-1.5.dll deploy\QtilitiesProjectManagement-1.5.dll
 - copy libs\qt-solutions\qtpropertybrowser\lib\QtSolutions_PropertyBrowser-head.dll deploy\QtSolutions_PropertyBrowser-head.dll
+# WinQtDeploy
 - windeployqt --release deploy/praaline.exe
 - windeployqt --release deploy/pncore.dll
 - windeployqt --release deploy/qscintilla2.dll
@@ -47,3 +49,4 @@ build_script:
 
 artifacts:
 - path: Praaline_win_$(arch).zip
+- path: build\app\build\plugins
