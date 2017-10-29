@@ -25,28 +25,27 @@ build_script:
 
 # Build Praaline
 - qmake -v
-- qmake ..\Praaline.pro CONFIG+=release && mingw32-make
-#- qmake ..\PraalineCI.pro CONFIG+=release && mingw32-make
+- qmake ..\PraalineCI.pro CONFIG+=release && mingw32-make
 - dir /s
 
 # Package
-- cd ..
-- mkdir deploy
-- copy build\app\build\praaline.exe deploy\praaline.exe
-- copy build\pncore\build\release\pncore.dll deploy\pncore.dll
-- copy build\libs\qscintilla\Qt4Qt5\release\qscintilla2.dll deploy\qscintilla2.dll
-- copy libs\qtilities\bin\QtilitiesCore-1.5.dll deploy\QtilitiesCore-1.5.dll
-- copy libs\qtilities\bin\QtilitiesCoreGui-1.5.dll deploy\QtilitiesCoreGui-1.5.dll
-- copy libs\qtilities\bin\QtilitiesExtensionSystem-1.5.dll deploy\QtilitiesExtensionSystem-1.5.dll
-- copy libs\qtilities\bin\QtilitiesLogging-1.5.dll deploy\QtilitiesLogging-1.5.dll
-- copy libs\qtilities\bin\QtilitiesProjectManagement-1.5.dll deploy\QtilitiesProjectManagement-1.5.dll
-- copy libs\qt-solutions\qtpropertybrowser\lib\QtSolutions_PropertyBrowser-head.dll deploy\QtSolutions_PropertyBrowser-head.dll
-# WinQtDeploy
-- windeployqt --release deploy/praaline.exe
-- windeployqt --release deploy/pncore.dll
-- windeployqt --release deploy/qscintilla2.dll
-- 7z a Praaline_win_%arch%.zip .\deploy\*
+#- cd ..
+#- mkdir deploy
+#- copy build\app\build\praaline.exe deploy\praaline.exe
+#- copy build\pncore\build\release\pncore.dll deploy\pncore.dll
+#- copy build\libs\qscintilla\Qt4Qt5\release\qscintilla2.dll deploy\qscintilla2.dll
+#- copy libs\qtilities\bin\QtilitiesCore-1.5.dll deploy\QtilitiesCore-1.5.dll
+#- copy libs\qtilities\bin\QtilitiesCoreGui-1.5.dll deploy\QtilitiesCoreGui-1.5.dll
+#- copy libs\qtilities\bin\QtilitiesExtensionSystem-1.5.dll deploy\QtilitiesExtensionSystem-1.5.dll
+#- copy libs\qtilities\bin\QtilitiesLogging-1.5.dll deploy\QtilitiesLogging-1.5.dll
+#- copy libs\qtilities\bin\QtilitiesProjectManagement-1.5.dll deploy\QtilitiesProjectManagement-1.5.dll
+#- copy libs\qt-solutions\qtpropertybrowser\lib\QtSolutions_PropertyBrowser-head.dll deploy\QtSolutions_PropertyBrowser-head.dll
+## WinQtDeploy
+#- windeployqt --release deploy/praaline.exe
+#- windeployqt --release deploy/pncore.dll
+#- windeployqt --release deploy/qscintilla2.dll
+#- 7z a Praaline_win_%arch%.zip .\deploy\*
 
 artifacts:
-- path: Praaline_win_$(arch).zip
+#- path: Praaline_win_$(arch).zip
 - path: build\app\build\plugins

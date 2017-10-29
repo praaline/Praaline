@@ -422,3 +422,4 @@ DISTFILES += \
     ../.travis.yml \
     ../qt-installer-noninteractive.qs \
     ../appveyor.yml
+
