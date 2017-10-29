@@ -222,7 +222,9 @@ HEADERS += \
     layer/AnnotationTimeInstantLayer.h \
     layer/AnnotationTimeValueLayer.h \
     layer/AnnotationRegionLayer.h \
-    model/visualiser/AnnotationTimeValueModel.h
+    model/visualiser/AnnotationTimeValueModel.h \
+    layer/RegionAverageLayer.h \
+    model/visualiser/RegionAverageModel.h
 
 SOURCES += \
     model/visualiser/AnnotationGridModel.cpp \
@@ -370,7 +372,9 @@ SOURCES += \
     layer/AnnotationTimeInstantLayer.cpp \
     layer/AnnotationTimeValueLayer.cpp \
     layer/AnnotationRegionLayer.cpp \
-    model/visualiser/AnnotationTimeValueModel.cpp
+    model/visualiser/AnnotationTimeValueModel.cpp \
+    layer/RegionAverageLayer.cpp \
+    model/visualiser/RegionAverageModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

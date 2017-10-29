@@ -21,6 +21,7 @@ struct MovingAverageModelData {
         step = RealTime::fromMilliseconds(250);
         slidingWindowLeft = RealTime::fromMilliseconds(1000);
         slidingWindowRight = RealTime::fromMilliseconds(1000);
+        skipSilentPausesCounting = true;
     }
 
     sv_samplerate_t sampleRate;
@@ -31,6 +32,7 @@ struct MovingAverageModelData {
     RealTime slidingWindowRight;
     QString levelID;
     QString attributeID;
+    bool skipSilentPausesCounting;
     QMap<QString, QPointer<AnnotationTierGroup> > tiers;    // Speaker ID, corresponding tiers
     QMap<QString, QPointer<SparseTimeValueModel> > smooth;  // speakerID, smoothed data points
     QList<QString> excludedSpeakerIDs;
@@ -173,6 +175,18 @@ void MovingAverageModel::setWindowRightMsec(int right)
     recalculate();
 }
 
+bool MovingAverageModel::skipSilentPausesCounting() const
+{
+    return d->skipSilentPausesCounting;
+}
+
+void MovingAverageModel::setSkipSilentPausesCounting(bool skipSilentPausesCounting)
+{
+    if (d->skipSilentPausesCounting == skipSilentPausesCounting) return;
+    d->skipSilentPausesCounting = skipSilentPausesCounting;
+    recalculate();
+}
+
 // ====================================================================================================================
 // Calculcation
 // ====================================================================================================================
@@ -206,14 +220,19 @@ void MovingAverageModel::recalculate()
         for (sv_frame_t frame = d->startFrame; frame <= d->endFrame; frame += stepF) {
             sv_frame_t slidingFrame0 = frame - slidingWindowLeftF;
             sv_frame_t slidingFrame1 = frame + slidingWindowRightF;
-            int slidingCount(0);
-            double value(0);
+            int count(0); double value(0);
             if (tier_intv) {
                 QPair<int, int> indexes = tier_intv->getIntervalIndexesOverlappingWith(
                             RealTime::frame2RealTime(slidingFrame0, d->sampleRate), RealTime::frame2RealTime(slidingFrame1, d->sampleRate));
-                if ((indexes.first > 0) && (indexes.second > 0)) slidingCount += indexes.second - indexes.first + 1;
+                if ((indexes.first >= 0) && (indexes.second >= 0)) {
+                    if (!d->skipSilentPausesCounting)
+                        count += indexes.second - indexes.first + 1;
+                    else
+                        for (int i = indexes.first; i <= indexes.second; ++i)
+                            if (!tier_intv->at(i)->isPauseSilent()) count++;
+                }
             }
-            value = ((double) slidingCount) / (d->slidingWindowRight + d->slidingWindowLeft).toDouble();
+            value = ((double) count) / (d->slidingWindowRight + d->slidingWindowLeft).toDouble();
             d->smooth[speakerID]->addPoint(TimeValuePoint(frame, value, ""));
         }
 

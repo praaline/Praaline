@@ -4,6 +4,7 @@
 #include "AnnotationGridLayer.h"
 #include "ProsogramLayer.h"
 #include "MovingAverageLayer.h"
+#include "RegionAverageLayer.h"
 
 void PraalineLayersInitialiser::initialise()
 {
@@ -22,6 +23,11 @@ void PraalineLayersInitialiser::initialise()
                                   "movingaverage", "Moving Average", "movingaverage", false,
                                   QStringList() << "MovingAverageModel",
                                   [](LayerFactory::LayerType) -> Layer * { return new MovingAverageLayer(); },
+                                  [](Model *) -> Model * { return 0; } ));
+    factory.registerLayerType("RegionAverage", LayerFactory::LayerConfiguration(
+                                  "regionaverage", "Region Average", "regionaverage", false,
+                                  QStringList() << "RegionAverageModel",
+                                  [](LayerFactory::LayerType) -> Layer * { return new RegionAverageLayer(); },
                                   [](Model *) -> Model * { return 0; } ));
 }
 

@@ -228,6 +228,7 @@ void MovingAverageLayer::setLevelID(QString levelID)
     if (!m_model) return;
     m_model->setLevelID(levelID);
     updateSublayers();
+    emit layerParametersChanged();
 }
 
 int MovingAverageLayer::getSmoothingStepMsec() const
@@ -241,6 +242,7 @@ void MovingAverageLayer::setSmoothingStepMsec(int step)
     if (!m_model) return;
     m_model->setSmoothingStepMsec(step);
     updateSublayers();
+    emit layerParametersChanged();
 }
 
 int MovingAverageLayer::getWindowLeftMsec() const
@@ -254,6 +256,7 @@ void MovingAverageLayer::setWindowLeftMsec(int left)
     if (!m_model) return;
     m_model->setWindowLeftMsec(left);
     updateSublayers();
+    emit layerParametersChanged();
 }
 
 int MovingAverageLayer::getWindowRightMsec() const
@@ -267,6 +270,7 @@ void MovingAverageLayer::setWindowRightMsec(int right)
     if (!m_model) return;
     m_model->setWindowRightMsec(right);
     updateSublayers();
+    emit layerParametersChanged();
 }
 
 int MovingAverageLayer::getYForValue(View *, double value) const

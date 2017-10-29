@@ -134,10 +134,12 @@ using namespace Praaline::Core;
 #include "pngui/model/visualiser/AnnotationGridModel.h"
 #include "pngui/model/visualiser/ProsogramModel.h"
 #include "pngui/model/visualiser/MovingAverageModel.h"
+#include "pngui/model/visualiser/RegionAverageModel.h"
 
 #include "pngui/layer/AnnotationGridLayer.h"
 #include "pngui/layer/ProsogramLayer.h"
 #include "pngui/layer/MovingAverageLayer.h"
+#include "pngui/layer/RegionAverageLayer.h"
 
 #include "QtilitiesCore/QtilitiesCore"
 #include "QtilitiesCoreGui/QtilitiesCoreGui"
@@ -3576,23 +3578,22 @@ void VisualiserWidget::addMovingAveragePane(const QString &levelID, const QStrin
 {
     if (!getMainModel()) return;
 
-    MovingAverageModel *model = new MovingAverageModel(getMainModel()->getSampleRate(), m_tiers, levelID, annotationID);
-    // Excluded speakers
-    model->excludeSpeakerIDs(m_excludedSpeakers);
     // Create a pane + layer for the annotations
     CommandHistory::getInstance()->startCompoundOperation("Add moving average pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
     CommandHistory::getInstance()->addCommand(command);
     Pane *pane = command->getPane();
+    // Moving average pane
+    MovingAverageModel *model = new MovingAverageModel(getMainModel()->getSampleRate(), m_tiers, levelID, annotationID);
+    model->excludeSpeakerIDs(m_excludedSpeakers);
     Layer *newLayer = m_document->createImportedLayer(model);
     if (newLayer) m_document->addLayerToView(pane, newLayer);
-//    foreach (QString speakerID, model->speakers()) {
-//        Layer *newLayer = m_document->createImportedLayer(model->smoothModel(speakerID));
-//        qobject_cast<TimeValueLayer *>(newLayer)->setPlotStyle(TimeValueLayer::PlotCurve);
-//        qobject_cast<TimeValueLayer *>(newLayer)->setDrawSegmentDivisions(false);
-//        // qobject_cast<TimeValueLayer *>(newLayer)->setBaseColour(ColourDatabase::getInstance()->getColourIndex(tr("Black")));
-//        m_document->addLayerToView(pane, newLayer);
-//    }
+    // Regions average pane
+    RegionAverageModel *modelR = new RegionAverageModel(getMainModel()->getSampleRate(), m_tiers, levelID, "", "IPU");
+    modelR->excludeSpeakerIDs(m_excludedSpeakers);
+    newLayer = m_document->createImportedLayer(modelR);
+    if (newLayer) m_document->addLayerToView(pane, newLayer);
+    // Finish up pane
     m_paneStack->setCurrentPane(pane);
     CommandHistory::getInstance()->endCompoundOperation();
     updateMenuStates();

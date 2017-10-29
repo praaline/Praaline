@@ -1,5 +1,5 @@
-#ifndef MOVINGAVERAGEMODEL_H
-#define MOVINGAVERAGEMODEL_H
+#ifndef REGIONAVERAGEMODEL_H
+#define REGIONAVERAGEMODEL_H
 
 #include <QPointer>
 #include <QMap>
@@ -17,27 +17,28 @@ class AnnotationTierGroup;
 }
 }
 
-class SparseTimeValueModel;
+class RegionModel;
 
-struct MovingAverageModelData;
+struct RegionAverageModelData;
 
-class MovingAverageModel : public Model
+class RegionAverageModel : public Model
 {
     Q_OBJECT
 public:
-    MovingAverageModel(sv_samplerate_t sampleRate,
+    RegionAverageModel(sv_samplerate_t sampleRate,
                        QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
-                       const QString &levelID, const QString &attributeID);
-    virtual ~MovingAverageModel();
+                       const QString &levelID, const QString &attributeID,
+                       const QString &groupingLevelID);
+    virtual ~RegionAverageModel();
 
-    virtual std::string getType() const { return "MovingAverageModel"; }
+    virtual std::string getType() const { return "RegionAverageModel"; }
 
     // Model base class implementation
     virtual bool isOK() const { return true; }
     virtual sv_frame_t getStartFrame() const;
     virtual sv_frame_t getEndFrame() const;
     virtual sv_samplerate_t getSampleRate() const;
-    virtual QString getTypeName() const { return tr("Moving Average"); }
+    virtual QString getTypeName() const { return tr("Region Average"); }
 
     virtual void toXml(QTextStream &out, QString indent = "", QString extraAttributes = "") const;
 
@@ -52,21 +53,17 @@ public:
     void setLevelID(const QString &);
     QString attributeID() const;
     void setAttributeID(const QString &);
-    int smoothingStepMsec() const;
-    void setSmoothingStepMsec(int);
-    int windowLeftMsec() const;
-    void setWindowLeftMsec(int);
-    int windowRightMsec() const;
-    void setWindowRightMsec(int);
-    bool skipSilentPausesCounting() const;
-    void setSkipSilentPausesCounting(bool);
+    QString groupingLevelID() const;
+    void setGroupingLevelID(const QString &);
+    bool showLabel() const;
+    void setShowLabel(bool);
 
-    // Returns the calculated (smoothed) moving average model
-    QPointer<SparseTimeValueModel> smoothModel(const QString &speakerID);
+    // Returns the calculated region average model
+    QPointer<RegionModel> regionModel(const QString &speakerID);
 
 protected:
-    MovingAverageModelData *d;
+    RegionAverageModelData *d;
     void recalculate();
 };
 
-#endif // MOVINGAVERAGEMODEL_H
+#endif // REGIONAVERAGEMODEL_H

@@ -373,6 +373,35 @@ void merge_pauses(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
+void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            if (!annot) continue;
+            QString annotationID = annot->ID();
+            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+            foreach (QString speakerID, tiersAll.keys()) {
+                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                if (!tiers) continue;
+                IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
+                if (!tier_phones) continue;
+                foreach (AnnotationTier *tier, tiers->tiers()) {
+                    IntervalTier *tier_intv = qobject_cast<IntervalTier *>(tier);
+                    if (tier_intv && tier_intv->name() != tier_phones->name()) {
+                        tier_intv->fixBoundariesBasedOnTier(tier_phones, RealTime::fromMilliseconds(10));
+                        qDebug() << annotationID << "\t" << speakerID << "\t" << tier_intv->name();
+                        com->repository()->annotations()->saveTier(annotationID, speakerID, tier_intv);
+                    }
+                }
+            }
+            qDeleteAll(tiersAll);
+        }
+    }
+}
+
+
 #include "PhonetiserExternal.h"
 #include "BratSyntaxAndDisfluencies.h"
 
