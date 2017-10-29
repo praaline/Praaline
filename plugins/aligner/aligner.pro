@@ -38,12 +38,20 @@ include(../../libs/qtilities/src/Qtilities.pri)
 INCLUDEPATH += ../../libs/qtilities/include
 
 # Linking dynamically with PocketSphinx
-win32 {
-    POCKETSPHINX_BASE_PATH = C:/Qt/mingw-4.9.2-x32
+win32-g++ {
+    POCKETSPHINX_BASE_PATH = $$PWD/../../dependency-builds/pn/win32-mingw
+}
+win32-msvc* {
+    POCKETSPHINX_BASE_PATH = $$PWD/../../dependency-builds/pn/win32-msvc
 }
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local
 }
+
+INCLUDEPATH += $${POCKETSPHINX_BASE_PATH}/include/pocketsphinx \
+               $${POCKETSPHINX_BASE_PATH}/include/sphinxbase \
+               $${POCKETSPHINX_BASE_PATH}/include/
+
 # Build folder organisation
 CONFIG( debug, debug|release ) {
     # debug
