@@ -11,7 +11,8 @@ SUBDIRS += libs/qtilities/src/Qtilities.pro
 #SUBDIRS += libs/qcustomplot/qcustomplot.pro
 # Praaline
 SUBDIRS += pncore pnlib pngui
-#SUBDIRS += sub_dataquay svcore svgui svapp
+SUBDIRS += sub_dataquay svcore 
+# SUBDIRS += svgui svapp
 # SUBDIRS += libpraat
 SUBDIRS += plugins
 # SUBDIRS += praalinepy
