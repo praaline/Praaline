@@ -168,5 +168,6 @@
         <file>icons/corpusexplorer/search.png</file>
         <file>icons/corpusexplorer/search@2x.png</file>
         <file>icons/praaline.svg</file>
+        <file>icons/updater/update.png</file>
     </qresource>
 </RCC>

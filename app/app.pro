@@ -220,7 +220,10 @@ SOURCES += main.cpp \
     statistics/StatisticalMeasureAggregator.cpp \
     statistics/disfluencies/AnalyserDisfluencies.cpp \
     statistics/disfluencies/AnalyserDisfluenciesItem.cpp \
-    statistics/disfluencies/AnalyserDisfluenciesWidget.cpp
+    statistics/disfluencies/AnalyserDisfluenciesWidget.cpp \
+    updater/Updater.cpp \
+    updater/QSimpleUpdater.cpp \
+    updater/Downloader.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -341,7 +344,10 @@ HEADERS  += \
     statistics/disfluencies/AnalyserDisfluencies.h \
     statistics/disfluencies/AnalyserDisfluenciesItem.h \
     statistics/AnalyserItemBase.h \
-    statistics/disfluencies/AnalyserDisfluenciesWidget.h
+    statistics/disfluencies/AnalyserDisfluenciesWidget.h \
+    updater/Updater.h \
+    updater/QSimpleUpdater.h \
+    updater/Downloader.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -410,7 +416,8 @@ FORMS    += \
     annotation/SpeechRecognitionWidget.ui \
     annotation/asr/AutomaticTranscriptionWidget.ui \
     corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
-    statistics/disfluencies/AnalyserDisfluenciesWidget.ui
+    statistics/disfluencies/AnalyserDisfluenciesWidget.ui \
+    updater/Downloader.ui
 
 RESOURCES += \
     praaline.qrc \
