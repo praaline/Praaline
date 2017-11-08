@@ -30,7 +30,8 @@ public:
     ~TranscriberWidget();
 
 protected slots:
-    virtual void newSession();
+    virtual void newSession() override;
+
     void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>,
                                  QPointer<CorpusRecording>);

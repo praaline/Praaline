@@ -223,7 +223,8 @@ SOURCES += main.cpp \
     statistics/disfluencies/AnalyserDisfluenciesWidget.cpp \
     updater/Updater.cpp \
     updater/QSimpleUpdater.cpp \
-    updater/Downloader.cpp
+    updater/Downloader.cpp \
+    annotation/asr/LongSoundAlignerWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -347,7 +348,8 @@ HEADERS  += \
     statistics/disfluencies/AnalyserDisfluenciesWidget.h \
     updater/Updater.h \
     updater/QSimpleUpdater.h \
-    updater/Downloader.h
+    updater/Downloader.h \
+    annotation/asr/LongSoundAlignerWidget.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -417,7 +419,8 @@ FORMS    += \
     annotation/asr/AutomaticTranscriptionWidget.ui \
     corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
     statistics/disfluencies/AnalyserDisfluenciesWidget.ui \
-    updater/Downloader.ui
+    updater/Downloader.ui \
+    annotation/asr/LongSoundAlignerWidget.ui
 
 RESOURCES += \
     praaline.qrc \

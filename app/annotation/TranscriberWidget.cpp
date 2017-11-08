@@ -11,7 +11,6 @@
 #include "svgui/view/Pane.h"
 #include "svgui/view/PaneStack.h"
 #include "svgui/view/Overview.h"
-#include "svgui/view/PaneStack.h"
 #include "svgui/layer/WaveformLayer.h"
 #include "svgui/layer/TimeRulerLayer.h"
 #include "svgui/widgets/AudioDial.h"
