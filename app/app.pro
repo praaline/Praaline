@@ -353,7 +353,6 @@ HEADERS  += \
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
-    annotation/asr/LanguageModelBuilderWidget.ui \
     query/AdvancedQueriesWidget.ui \
     query/ConcordancerQuickWidget.ui \
     query/ConcordancerWidget.ui \
@@ -420,7 +419,8 @@ FORMS    += \
     corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
     statistics/disfluencies/AnalyserDisfluenciesWidget.ui \
     updater/Downloader.ui \
-    annotation/asr/LongSoundAlignerWidget.ui
+    annotation/asr/LongSoundAlignerWidget.ui \
+    annotation/asr/LanguageModelBuilderWidget.ui
 
 RESOURCES += \
     praaline.qrc \

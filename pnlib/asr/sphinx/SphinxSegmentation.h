@@ -17,10 +17,14 @@ public:
     ~SphinxSegmentation();
 
     static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Core::Interval *> > &utterances);
+    static QList<Praaline::Core::Interval *> readContinuousFile(const QString &filename);
 
 signals:
 
 public slots:
+
+private:
+    static bool compareIntervals(Praaline::Core::Interval *A, Praaline::Core::Interval *B);
 };
 
 } // namespace ASR

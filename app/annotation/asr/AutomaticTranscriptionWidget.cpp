@@ -126,6 +126,8 @@ struct AutomaticTranscriptionWidget::SphinxAutomaticTranscriptionStep
 void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
 {
     if (!corpus) return;
+    if ((d->corpus == corpus) && (d->communication == com) && (d->recording == rec) && (d->annotation == annot)) return;
+
     if (d->repository != corpus->repository()) {
         if (!corpus->repository()) return;
         d->repository = corpus->repository();
@@ -137,13 +139,12 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
         }
         annotationLevelChanged("");
     }
-    if ((d->corpus != corpus) || (d->communication != com) || (d->recording != rec) || (d->annotation != annot)) {
-        d->corpus = corpus;
-        d->communication = com;
-        d->recording = rec;
-        d->annotation = annot;
-        prepareFile();
-    }
+
+    d->corpus = corpus;
+    d->communication = com;
+    d->recording = rec;
+    d->annotation = annot;
+    prepareFile();
 }
 
 void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
@@ -157,11 +158,9 @@ void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
     ui->comboBoxAnnotationAttributeCompare->clear();
     ui->comboBoxAnnotationAttributeASR->addItem("(text)", "");
     ui->comboBoxAnnotationAttributeCompare->addItem("(text)", "");
-    int i = 0;
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
         ui->comboBoxAnnotationAttributeASR->addItem(attribute->name(), attribute->ID());
         ui->comboBoxAnnotationAttributeCompare->addItem(attribute->name(), attribute->ID());
-        i++;
     }
 }
 

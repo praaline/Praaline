@@ -6,6 +6,8 @@
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
+#include "svapp/framework/VisualiserWindowBase.h"
+
 namespace Ui {
 class LongSoundAlignerWidget;
 }
@@ -23,6 +25,13 @@ public:
 public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,
               Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot) override;
+
+protected slots:
+    void diffTranscriptionWithRecogniser();
+
+protected:
+    VisualiserWindowBase::FileOpenStatus openPath(const QString &fileOrUrl);
+    void close();
 
 private:
     Ui::LongSoundAlignerWidget *ui;

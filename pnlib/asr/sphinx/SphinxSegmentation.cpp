@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QString>
+#include <QStringList>
 #include <QFile>
 #include <QTextStream>
 
@@ -77,6 +78,42 @@ bool SphinxSegmentation::readSegmentationHypothesisFile(const QString &filename,
     }
     fileSeg.close();
     return true;
+}
+
+bool SphinxSegmentation::compareIntervals(Interval *A, Interval *B) {
+    return (A->tMin() < B->tMin());
+}
+
+QList<Interval *> SphinxSegmentation::readContinuousFile(const QString &filename)
+{
+    QList<Interval *> tokens;
+    QFile fileSeg(filename);
+    if ( !fileSeg.open( QIODevice::ReadOnly | QIODevice::Text ) ) return tokens;
+    QTextStream seg(&fileSeg);
+    seg.setCodec("UTF-8");
+    bool inSentence = false;
+    while (!seg.atEnd()) {
+        QString line = seg.readLine();
+        if (line.isEmpty()) continue;
+        QStringList fields = line.split(" ");
+        if (fields.count() < 4) continue;
+        QString word = fields.at(0);
+        if (!inSentence && word == "<s>") { inSentence = true; continue; }
+        if (inSentence && word == "</s>") { inSentence = false; continue; }
+        if (!inSentence) continue;
+        if (word == "<sil>") continue;
+        if (word.startsWith("[") || word.startsWith("<")) continue;
+        word = word.split("(").at(0); // remove pronunciation indicators, e.g. (2), (3)...
+        QString st = fields.at(1);
+        QString et = fields.at(2);
+        QString conf = fields.at(3);
+        Interval *token = new Interval(RealTime::fromSeconds(st.toDouble()), RealTime::fromSeconds(et.toDouble()), word);
+        token->setAttribute("confidence", conf.toDouble());
+        tokens << token;
+    }
+    fileSeg.close();
+    qSort(tokens.begin(), tokens.end(), SphinxSegmentation::compareIntervals);
+    return tokens;
 }
 
 } // namespace ASR

@@ -57,7 +57,10 @@ HEADERS += \
     ForcedAligner.h \
     Phonetiser.h \
     AcousticFeatureExtractor.h \
-    Syllabifier.h
+    Syllabifier.h \
+    sphinx/SphinxLanguageModelBuilder.h \
+    sphinx/SphinxContinuousRecogniser.h \
+    sphinx/SphinxLongSoundAligner.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -74,7 +77,10 @@ SOURCES += \
     phonetiser/DictionaryPhonetiser.cpp \
     sphinx/SphinxConfiguration.cpp \
     sphinx/SphinxOfflineRecogniser.cpp \
-    sphinx/SphinxAcousticModelTrainer.cpp
+    sphinx/SphinxAcousticModelTrainer.cpp \
+    sphinx/SphinxLanguageModelBuilder.cpp \
+    sphinx/SphinxContinuousRecogniser.cpp \
+    sphinx/SphinxLongSoundAligner.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro

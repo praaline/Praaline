@@ -231,11 +231,27 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
-    // loadVisualisationNassima1(corpus, annotationID);
-    // loadVisualisationNassima2(corpus, annotationID);
-    loadVisualisationNassima3(corpus, annotationID);
-
-
+    // Read the name of the visualisation from a file
+    // TODO: Make trully customisable, by describing the visualisation template in a file
+    QString visualisationName = "loadVisualisationNassima3";
+    QString configFilename = QCoreApplication::applicationDirPath() + "/visualiserConfig.txt";
+    QFile fileConfig(configFilename);
+    if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
+        QTextStream stream(&fileConfig);
+        do {
+            QString line = stream.readLine().trimmed();
+            if (line.startsWith("#")) continue;
+            if (line.startsWith("loadVisualisation"))
+                visualisationName = line.trimmed();
+        } while (!stream.atEnd());
+        fileConfig.close();
+    }
+    if      (visualisationName == "loadVisualisationNassima1")
+        loadVisualisationNassima1(corpus, annotationID);
+    else if (visualisationName == "loadVisualisationNassima2")
+        loadVisualisationNassima2(corpus, annotationID);
+    else
+        loadVisualisationNassima3(corpus, annotationID);
 
     // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
 }
