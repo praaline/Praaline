@@ -206,30 +206,54 @@ bool SphinxOfflineRecogniser::setLanguageModel(const QString &filenameLM)
 QString SphinxOfflineRecogniser::getUtterance() const
 {
     QString utterance;
-//    if (!d->pocketSphinx) return QString();
-//    int32 ascr, lscr, sf, ef;
-//    ps_seg_t *itor = ps_seg_iter(d->pocketSphinx);
+    if (!d->pocketSphinx) return QString();
+    int32 ascr, lscr, sf, ef, best_score;
+    ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &best_score);
 
-//    lscr = 0; ascr = 0;
-//    while (itor) {
-//        // Accumulate language model scores
-//        int32 wlascr, wlscr;
-//        ps_seg_prob(itor, &wlascr, &wlscr, NULL);
-//        lscr += wlscr;
-//        ascr += wlascr;
-//        // Get word, start and end frame of word
-//        char const *w = ps_seg_word(itor);
-//        ps_seg_frames(itor, &sf, &ef);
-//        utterance.append(" ").append(w);
-//        // Move to next word
-//        itor = ps_seg_next(itor);
-//    }
+    lscr = 0; ascr = 0;
+    while (itor) {
+        // Accumulate language model scores
+        int32 wlascr, wlscr;
+        ps_seg_prob(itor, &wlascr, &wlscr, NULL);
+        lscr += wlscr;
+        ascr += wlascr;
+        // Get word, start and end frame of word
+        char const *w = ps_seg_word(itor);
+        ps_seg_frames(itor, &sf, &ef);
+        utterance.append(" ").append(w);
+        // Move to next word
+        itor = ps_seg_next(itor);
+    }
     return utterance.trimmed();
 }
 
 QList<Interval *> SphinxOfflineRecogniser::getSegmentation() const
 {
     QList<Interval *> words;
+    if (!d->pocketSphinx) return words;
+    int32 ascr, lscr, sf, ef, best_score;
+    ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &best_score);
+
+    lscr = 0; ascr = 0;
+    while (itor) {
+        // Accumulate language model scores
+        int32 wlascr, wlscr;
+        ps_seg_prob(itor, &wlascr, &wlscr, NULL);
+        lscr += wlscr;
+        ascr += wlascr;
+        // Get word, start and end frame of word
+        char const *w = ps_seg_word(itor);
+        ps_seg_frames(itor, &sf, &ef);
+        // Create interval for this word
+        Interval *word = new Interval(RealTime::fromMilliseconds(sf * 10),
+                                      RealTime::fromMilliseconds(ef * 10),
+                                      QString(w));
+        word->setAttribute("wlscr", wlscr);
+        word->setAttribute("wlascr", wlascr);
+        words << word;
+        // Move to next word
+        itor = ps_seg_next(itor);
+    }
     return words;
 }
 

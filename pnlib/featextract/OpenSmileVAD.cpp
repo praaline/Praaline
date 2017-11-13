@@ -20,6 +20,7 @@ OpenSmileVAD::OpenSmileVAD(QObject *parent) : QObject(parent)
 
 }
 
+// static
 bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivation)
 {
     // Check if wave file exists
@@ -67,6 +68,7 @@ bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, 
     return true;
 }
 
+// static
 IntervalTier *OpenSmileVAD::splitToUtterances(QPointer<CorpusRecording> rec,
                                               RealTime minimumDurationSilent, RealTime minimumDurationVoice,
                                               QString textSilent, QString textVoice)
