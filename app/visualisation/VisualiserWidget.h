@@ -59,6 +59,8 @@ public slots:
                             const QString &boundaryAttributePrefix = "boundary");
     void addMovingAveragePane(const QString &levelID, const QString &annotationID);
 
+    void clearVisualisationPanes();
+
 protected slots:
     virtual void importAudio();
     virtual void importMoreAudio();

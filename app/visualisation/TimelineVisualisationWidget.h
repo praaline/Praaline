@@ -31,6 +31,8 @@ public:
     ~TimelineVisualisationWidget();
 
 protected slots:
+    // Visualisation selector
+    void selectedVisualisationChanged(int selectorIndex);
     // Corpus item selection
     void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>,
@@ -59,9 +61,15 @@ private:
     void visualiserNewSession(QPointer<Corpus>, QPointer<CorpusCommunication>);
     void annotationTimelineEditorOpen(QPointer<Corpus>, const QString &);
 
-    void loadVisualisationNassima1(QPointer<Corpus> corpus, const QString &annotationID);
-    void loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID);
-    void loadVisualisationNassima3(QPointer<Corpus> corpus, const QString &annotationID);
+    void readVisualisationIndexFromConfigFile();
+    void loadVisualisation();
+
+    void loadVisualisationDefault();
+    void loadVisualisationAnnotationsProsogram();
+    void loadVisualisationBoundariesLOCAS();
+    void loadVisualisationBoundariesTITEUF();
+    void loadVisualisationMacroprosodyTITEUF(const QString &measure);
+
 };
 
 #endif // TIMELINEVISUALISATIONWIDGET_H

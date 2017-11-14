@@ -27,7 +27,11 @@ using namespace Praaline::Core;
 struct TimelineVisualisationWidgetData
 {
     TimelineVisualisationWidgetData() :
-        corpusItemSelector(0), visualiser(0), currentCorpus(0) {}
+        currentVisualisationIndex(0), corpusItemSelector(0), visualiser(0), currentCorpus(0) {}
+
+    // Visualisation selector
+    QStringList visualisationNames;
+    int currentVisualisationIndex;
 
     // Visual Elements
     CorpusItemSelectorWidget *corpusItemSelector;   // Corpus items selector
@@ -50,6 +54,18 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     ui(new Ui::TimelineVisualisationWidget), d(new TimelineVisualisationWidgetData)
 {
     ui->setupUi(this);
+
+    // Visualisation selector
+    connect(ui->comboBoxVisualisationSelector, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(selectedVisualisationChanged(int)));
+    d->visualisationNames << "Default" <<
+                             "Annotations and Prosogram" <<
+                             "Experiment Boundaries LOCAS" <<
+                             "Experiment TITEUF Boundaries vs Pauses" <<
+                             "Experiment TITEUF Speech rate" <<
+                             "Experiment TITEUF Pitch rate";
+    ui->comboBoxVisualisationSelector->addItems(d->visualisationNames);
+    readVisualisationIndexFromConfigFile();
 
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
@@ -231,9 +247,17 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
     d->annotationEditor->setData(d->currentTierGroups, d->timelineConfig->selectedLevelsAttributes());
     d->timelineConfig->updateSpeakerList(d->currentTierGroups.keys());
 
-    // Read the name of the visualisation from a file
-    // TODO: Make trully customisable, by describing the visualisation template in a file
-    QString visualisationName = "loadVisualisationNassima3";
+    loadVisualisation();
+
+    // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
+}
+
+// ====================================================================================================================
+// Visualisation selector
+// ====================================================================================================================
+
+void TimelineVisualisationWidget::readVisualisationIndexFromConfigFile()
+{
     QString configFilename = QCoreApplication::applicationDirPath() + "/visualiserConfig.txt";
     QFile fileConfig(configFilename);
     if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
@@ -241,22 +265,47 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
         do {
             QString line = stream.readLine().trimmed();
             if (line.startsWith("#")) continue;
-            if (line.startsWith("loadVisualisation"))
-                visualisationName = line.trimmed();
+            if (line.startsWith("loadVisualisation")) {
+                if (line.split(" ").count() > 1) {
+                    ui->comboBoxVisualisationSelector->setCurrentIndex(line.section(" ", 1, 1).toInt());
+                }
+            }
         } while (!stream.atEnd());
         fileConfig.close();
     }
-    if      (visualisationName == "loadVisualisationNassima1")
-        loadVisualisationNassima1(corpus, annotationID);
-    else if (visualisationName == "loadVisualisationNassima2")
-        loadVisualisationNassima2(corpus, annotationID);
-    else
-        loadVisualisationNassima3(corpus, annotationID);
-
-    // d->visualiser->exportPDF(QString("Emilie_%1.pdf").arg(annotationID));
 }
 
-void TimelineVisualisationWidget::loadVisualisationNassima1(QPointer<Corpus> corpus, const QString &annotationID)
+void TimelineVisualisationWidget::selectedVisualisationChanged(int selectorIndex)
+{
+    if (selectorIndex != d->currentVisualisationIndex) {
+        d->currentVisualisationIndex = selectorIndex;
+        loadVisualisation();
+    }
+}
+
+void TimelineVisualisationWidget::loadVisualisation()
+{
+    d->visualiser->clearVisualisationPanes();
+    if      (d->currentVisualisationIndex == 1)
+        loadVisualisationAnnotationsProsogram();
+    else if (d->currentVisualisationIndex == 2)
+        loadVisualisationBoundariesLOCAS();
+    else if (d->currentVisualisationIndex == 3)
+        loadVisualisationBoundariesTITEUF();
+    else if (d->currentVisualisationIndex == 4)
+        loadVisualisationMacroprosodyTITEUF("speechrate");
+    else if (d->currentVisualisationIndex == 5)
+        loadVisualisationMacroprosodyTITEUF("pitchmovement");
+    else
+        loadVisualisationDefault();
+}
+
+void TimelineVisualisationWidget::loadVisualisationDefault()
+{
+    loadVisualisationAnnotationsProsogram();
+}
+
+void TimelineVisualisationWidget::loadVisualisationAnnotationsProsogram()
 {
     // Create annotation pane
     d->visualiser->setAnnotationTiers(d->currentTierGroups);
@@ -268,22 +317,34 @@ void TimelineVisualisationWidget::loadVisualisationNassima1(QPointer<Corpus> cor
     d->visualiser->addAnnotationPane(annotationPaneParameters);
 
     // Create a prosogram pane for each recording
-    if (corpus->communication(d->currentCommunicationID)) {
-        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+    if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
+        foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
             d->visualiser->addProsogramPaneToSession(rec);
         }
     }
+}
+
+void TimelineVisualisationWidget::loadVisualisationBoundariesLOCAS()
+{
+    loadVisualisationAnnotationsProsogram();
 
     // addTappingDataPane(m_tiers); // for Emilie
+    d->visualiser->addTappingDataPane("tappingAdj_naive", "smooth_naive", "boundaryNaive");
+    d->visualiser->addTappingDataPane("tappingAdj_expert", "smooth_expert", "boundaryExpert");
+}
+
+void TimelineVisualisationWidget::loadVisualisationBoundariesTITEUF()
+{
+    loadVisualisationAnnotationsProsogram();
+
     d->visualiser->addTappingDataPane("tapping_boundariesAdj", "tapping_boundaries_smooth", "boundary");
     d->visualiser->addTappingDataPane("tapping_pausesAdj", "tapping_pauses_smooth", "pause");
 }
 
-void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> corpus, const QString &annotationID)
-{
-    QString measure = "speechrate"; // "pitchmovement"; // "speechrate";
 
+void TimelineVisualisationWidget::loadVisualisationMacroprosodyTITEUF(const QString &measure)
+{
     // Create annotation pane
     d->visualiser->setAnnotationTiers(d->currentTierGroups);
     d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
@@ -294,8 +355,8 @@ void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> cor
     d->visualiser->addAnnotationPane(annotationPaneParameters);
 
     // Create a prosogram pane for each recording
-    if (corpus->communication(d->currentCommunicationID)) {
-        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+    if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
+        foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
             d->visualiser->addProsogramPaneToSession(rec);
         }
@@ -344,59 +405,59 @@ void TimelineVisualisationWidget::loadVisualisationNassima3(QPointer<Corpus> cor
 //    }
 }
 
-void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID)
-{
-    QString measure = "speechrate";
+//void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> corpus, const QString &annotationID)
+//{
+//    QString measure = "speechrate";
 
-    // Create annotation pane
-    d->visualiser->setAnnotationTiers(d->currentTierGroups);
-    d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
-    QVariantHash annotationPaneParameters;
-    QStringList excludedSpeakers;
-    for (int i = 1; i <=300; ++i) excludedSpeakers << QString("P%1").arg(i);
-    annotationPaneParameters.insert("excludedSpeakers", excludedSpeakers);
-    d->visualiser->addAnnotationPane(annotationPaneParameters);
+//    // Create annotation pane
+//    d->visualiser->setAnnotationTiers(d->currentTierGroups);
+//    d->visualiser->setAnnotationLevelAttributeSelection(d->timelineConfig->selectedLevelsAttributes());
+//    QVariantHash annotationPaneParameters;
+//    QStringList excludedSpeakers;
+//    for (int i = 1; i <=300; ++i) excludedSpeakers << QString("P%1").arg(i);
+//    annotationPaneParameters.insert("excludedSpeakers", excludedSpeakers);
+//    d->visualiser->addAnnotationPane(annotationPaneParameters);
 
-    // Create a prosogram pane for each recording
-    if (corpus->communication(d->currentCommunicationID)) {
-        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
-            if (!rec) continue;
-            d->visualiser->addProsogramPaneToSession(rec);
-        }
-    }
+//    // Create a prosogram pane for each recording
+//    if (corpus->communication(d->currentCommunicationID)) {
+//        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+//            if (!rec) continue;
+//            d->visualiser->addProsogramPaneToSession(rec);
+//        }
+//    }
 
-    //    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
-    //                                                        "timeNanoseconds", "rate_phone", "text");
-    //    if (layer_rate_phone) layer_rate_phone->setDisplayExtents(0.0, 30.0);
+//    //    Layer *layer_rate_phone = d->visualiser->addLayerTimeValuesFromAnnotationTier(d->currentTierGroups.first()->tier("speech_rate"),
+//    //                                                        "timeNanoseconds", "rate_phone", "text");
+//    //    if (layer_rate_phone) layer_rate_phone->setDisplayExtents(0.0, 30.0);
 
 
-    bool first(true);
-    QString tierName = "joystick_" + measure;
-    foreach (QString participantID, d->currentTierGroups.keys()) {
-        if (!participantID.startsWith("P")) continue;
-        AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);
-        Layer *layer_joystick = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                    tiers->tier(tierName), "timeNanoseconds", "value_norm", "", first, participantID);
-        if (layer_joystick) {
-            layer_joystick->setDisplayExtents(-4.0, 4.0); // (-32768.0, 32768.0);
-            layer_joystick->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
-            if (first) first = false;
-        }
-    }
+//    bool first(true);
+//    QString tierName = "joystick_" + measure;
+//    foreach (QString participantID, d->currentTierGroups.keys()) {
+//        if (!participantID.startsWith("P")) continue;
+//        AnnotationTierGroup *tiers = d->currentTierGroups.value(participantID);
+//        Layer *layer_joystick = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                    tiers->tier(tierName), "timeNanoseconds", "value_norm", "", first, participantID);
+//        if (layer_joystick) {
+//            layer_joystick->setDisplayExtents(-4.0, 4.0); // (-32768.0, 32768.0);
+//            layer_joystick->setProperty("Plot Type", 4); // 4 = Curve 0 = Points
+//            if (first) first = false;
+//        }
+//    }
 
-    // Combined
-    AnnotationTierGroup *tiersCombined = d->currentTierGroups.value("combined");
-    if (tiersCombined && tiersCombined->hasTiers()) {
-        Layer *layer_combined = d->visualiser->addLayerTimeValuesFromAnnotationTier(
-                tiersCombined->tier(tierName + "_combined"), "timeNanoseconds", "value_mean", "", true);
-        if (layer_combined) {
-            layer_combined->setDisplayExtents(-4.0, 4.0);
-            layer_combined->setProperty("Plot Type", 0); // 4 = Curve 0 = Points
-        }
-    }
+//    // Combined
+//    AnnotationTierGroup *tiersCombined = d->currentTierGroups.value("combined");
+//    if (tiersCombined && tiersCombined->hasTiers()) {
+//        Layer *layer_combined = d->visualiser->addLayerTimeValuesFromAnnotationTier(
+//                tiersCombined->tier(tierName + "_combined"), "timeNanoseconds", "value_mean", "", true);
+//        if (layer_combined) {
+//            layer_combined->setDisplayExtents(-4.0, 4.0);
+//            layer_combined->setProperty("Plot Type", 0); // 4 = Curve 0 = Points
+//        }
+//    }
 
-    // Objective measure
-    d->visualiser->addMovingAveragePane("syll", "");
+//    // Objective measure
+//    d->visualiser->addMovingAveragePane("syll", "");
 
 //    AnnotationTierGroup *tiersSpk = d->currentTierGroups.value(annotationID);
 //    if (tierName.endsWith("speechrate") && tiersSpk) {
@@ -417,7 +478,7 @@ void TimelineVisualisationWidget::loadVisualisationNassima2(QPointer<Corpus> cor
 //            layer_regions_pitchmovement->setPresentationName("Pitch movement ST/sec");
 //        }
 //    }
-}
+// }
 
 // ====================================================================================================================
 // Responding to changes in the timeline configuration >> change the annotation editor view

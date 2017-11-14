@@ -3599,3 +3599,22 @@ void VisualiserWidget::addMovingAveragePane(const QString &levelID, const QStrin
     updateMenuStates();
 }
 
+void VisualiserWidget::clearVisualisationPanes()
+{
+    while (m_paneStack->getPaneCount() > 0) {
+        Pane *pane = m_paneStack->getPane(m_paneStack->getPaneCount() - 1);
+        while (pane->getLayerCount() > 0) {
+            m_document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
+        }
+        m_paneStack->deletePane(pane);
+    }
+    while (m_paneStack->getHiddenPaneCount() > 0) {
+        Pane *pane = m_paneStack->getHiddenPane(m_paneStack->getHiddenPaneCount() - 1);
+        while (pane->getLayerCount() > 0) {
+            m_document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
+        }
+        m_paneStack->deletePane(pane);
+    }
+    m_viewManager->clearSelections();
+    SimpleVisualiserWidget::addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");
+}
