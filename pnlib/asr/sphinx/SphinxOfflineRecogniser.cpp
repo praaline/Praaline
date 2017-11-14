@@ -207,8 +207,12 @@ QString SphinxOfflineRecogniser::getUtterance() const
 {
     QString utterance;
     if (!d->pocketSphinx) return QString();
-    int32 ascr, lscr, sf, ef;
+    int32 ascr, lscr, sf, ef, bestscore;
+#ifdef Q_OS_WIN
+    ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &bestscore);
+#else
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx);
+#endif
 
     lscr = 0; ascr = 0;
     while (itor) {
@@ -231,8 +235,12 @@ QList<Interval *> SphinxOfflineRecogniser::getSegmentation() const
 {
     QList<Interval *> words;
     if (!d->pocketSphinx) return words;
-    int32 ascr, lscr, sf, ef;
+    int32 ascr, lscr, sf, ef, bestscore;
+#ifdef Q_OS_WIN
+    ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &bestscore);
+#else
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx);
+#endif
 
     lscr = 0; ascr = 0;
     while (itor) {
