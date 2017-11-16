@@ -18,6 +18,7 @@ using namespace Praaline::Core;
 using namespace Praaline::ASR;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
+#include "pngui/widgets/GridViewWidget.h"
 
 #include "AutomaticTranscriptionWidget.h"
 #include "ui_AutomaticTranscriptionWidget.h"
@@ -31,6 +32,8 @@ struct AutomaticTranscriptionWidgetData {
     QPointer<CorpusCommunication> communication;
     QPointer<CorpusRecording> recording;
     QPointer<CorpusAnnotation> annotation;
+
+    GridViewWidget *gridviewTranscription;
 
     QString filepathDownsampled;
     QString filepathFeaturesMFC;
@@ -46,6 +49,12 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
     ASRModuleVisualiserWidgetBase(parent), ui(new Ui::AutomaticTranscriptionWidget), d(new AutomaticTranscriptionWidgetData)
 {
     ui->setupUi(this);
+
+    // UI Visualiser and transcription grid
+    ui->gridLayoutVisualiser->addWidget(m_visualiserScroll);
+    d->gridviewTranscription = new GridViewWidget(this);
+    d->gridviewTranscription->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    ui->gridLayoutTranscription->addWidget(d->gridviewTranscription);
 
     // Annotation Level and Attributes
     connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationLevelChanged(QString)));
@@ -133,7 +142,7 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
         d->repository = corpus->repository();
         ui->comboBoxAnnotationLevel->clear();
         ui->comboBoxAnnotationAttributeASR->clear();
-        ui->comboBoxAnnotationAttributeCompare->clear();
+        // ui->comboBoxAnnotationAttributeCompare->clear();
         foreach (AnnotationStructureLevel *level, d->repository->annotationStructure()->levels()) {
             ui->comboBoxAnnotationLevel->addItem(level->name(), level->ID());
         }
@@ -155,12 +164,12 @@ void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
     AnnotationStructureLevel *level = d->repository->annotationStructure()->level(levelID);
     if (!level) return;
     ui->comboBoxAnnotationAttributeASR->clear();
-    ui->comboBoxAnnotationAttributeCompare->clear();
+    // ui->comboBoxAnnotationAttributeCompare->clear();
     ui->comboBoxAnnotationAttributeASR->addItem("(text)", "");
-    ui->comboBoxAnnotationAttributeCompare->addItem("(text)", "");
+    // ui->comboBoxAnnotationAttributeCompare->addItem("(text)", "");
     foreach (AnnotationStructureAttribute *attribute, level->attributes()) {
         ui->comboBoxAnnotationAttributeASR->addItem(attribute->name(), attribute->ID());
-        ui->comboBoxAnnotationAttributeCompare->addItem(attribute->name(), attribute->ID());
+        // ui->comboBoxAnnotationAttributeCompare->addItem(attribute->name(), attribute->ID());
     }
 }
 

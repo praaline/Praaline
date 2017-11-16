@@ -6,121 +6,237 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>715</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Automatic Transcription</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_2">
-    <item row="1" column="0" colspan="3">
-     <widget class="QProgressBar" name="progressBar">
-      <property name="value">
-       <number>0</number>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QPushButton" name="commandStart">
-      <property name="text">
-       <string>Start</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>607</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="2">
-     <widget class="QPushButton" name="commandStop">
-      <property name="text">
-       <string>Stop</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-      <widget class="QListView" name="listViewResults"/>
-      <widget class="QPlainTextEdit" name="textMessages"/>
-     </widget>
-    </item>
-    <item row="0" column="0" colspan="3">
-     <layout class="QGridLayout" name="gridLayoutLevelAttributes">
+   <layout class="QGridLayout" name="gridLayout_5">
+    <property name="leftMargin">
+     <number>3</number>
+    </property>
+    <property name="topMargin">
+     <number>3</number>
+    </property>
+    <property name="rightMargin">
+     <number>3</number>
+    </property>
+    <property name="bottomMargin">
+     <number>3</number>
+    </property>
+    <item row="1" column="0">
+     <layout class="QGridLayout" name="gridLayoutProgress">
       <item row="0" column="0">
-       <widget class="QLabel" name="labelAnnotationLevel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>ASR Transcription Level:</string>
+       <widget class="QProgressBar" name="progressBar">
+        <property name="value">
+         <number>0</number>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QComboBox" name="comboBoxAnnotationLevel"/>
+       <widget class="QPushButton" name="commandPause">
+        <property name="text">
+         <string>Pause</string>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="labelAnnotationAttributeASR">
+       <widget class="QPushButton" name="commandStop">
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QGridLayout" name="gridLayoutTranscription"/>
+    </item>
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayoutCommandSteps">
+      <item row="0" column="0">
+       <widget class="QCommandLinkButton" name="commandPrepare">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Attribute:</string>
+         <string>1. Prepare Features File</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCommandLinkButton" name="commandVAD">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>2. Split Utterances (VAD)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QCommandLinkButton" name="commandAutoTranscribe">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>3. Auto Transcribe</string>
         </property>
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QComboBox" name="comboBoxAnnotationAttributeASR"/>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="labelAnnotationAttributeCompare">
+       <widget class="QCommandLinkButton" name="commandSpeakerAdaptation">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Compare Attribute:</string>
+         <string>4. Speaker Adaptation</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QComboBox" name="comboBoxAnnotationAttributeCompare"/>
       </item>
      </layout>
     </item>
    </layout>
   </widget>
+  <widget class="QDockWidget" name="dockWidgetVisualiser">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Visualiser</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>4</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetVisualiserContents">
+    <layout class="QGridLayout" name="gridLayoutVisualiser">
+     <property name="leftMargin">
+      <number>3</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <property name="rightMargin">
+      <number>3</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetMessages">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Messages</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetMessagesContents">
+    <layout class="QFormLayout" name="formLayout">
+     <property name="leftMargin">
+      <number>3</number>
+     </property>
+     <property name="topMargin">
+      <number>3</number>
+     </property>
+     <property name="rightMargin">
+      <number>3</number>
+     </property>
+     <property name="bottomMargin">
+      <number>3</number>
+     </property>
+     <item row="0" column="0" colspan="2">
+      <widget class="QPlainTextEdit" name="textMessages"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidgetConfiguration">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>Configuration</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelAnnotationLevel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>ASR Transcription Level:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="comboBoxAnnotationLevel"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelAnnotationAttributeASR">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Attribute:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="comboBoxAnnotationAttributeASR"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <tabstops>
+  <tabstop>commandPrepare</tabstop>
+  <tabstop>commandVAD</tabstop>
+  <tabstop>commandAutoTranscribe</tabstop>
+  <tabstop>commandSpeakerAdaptation</tabstop>
+  <tabstop>commandPause</tabstop>
+  <tabstop>commandStop</tabstop>
+  <tabstop>textMessages</tabstop>
   <tabstop>comboBoxAnnotationLevel</tabstop>
   <tabstop>comboBoxAnnotationAttributeASR</tabstop>
-  <tabstop>comboBoxAnnotationAttributeCompare</tabstop>
-  <tabstop>commandStart</tabstop>
-  <tabstop>commandStop</tabstop>
-  <tabstop>listViewResults</tabstop>
-  <tabstop>textMessages</tabstop>
  </tabstops>
  <resources/>
  <connections/>
