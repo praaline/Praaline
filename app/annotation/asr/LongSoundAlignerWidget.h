@@ -1,12 +1,10 @@
 #ifndef LONGSOUNDALIGNERWIDGET_H
 #define LONGSOUNDALIGNERWIDGET_H
 
-#include "ASRModuleWidgetBase.h"
+#include "ASRModuleVisualiserWidgetBase.h"
 
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
-
-#include "svapp/framework/VisualiserWindowBase.h"
 
 namespace Ui {
 class LongSoundAlignerWidget;
@@ -14,7 +12,7 @@ class LongSoundAlignerWidget;
 
 struct LongSoundAlignerWidgetData;
 
-class LongSoundAlignerWidget : public ASRModuleWidgetBase
+class LongSoundAlignerWidget : public ASRModuleVisualiserWidgetBase
 {
     Q_OBJECT
 
@@ -28,10 +26,6 @@ public slots:
 
 protected slots:
     void diffTranscriptionWithRecogniser();
-
-protected:
-    VisualiserWindowBase::FileOpenStatus openPath(const QString &fileOrUrl);
-    void close();
 
 private:
     Ui::LongSoundAlignerWidget *ui;

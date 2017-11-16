@@ -43,7 +43,7 @@ struct AutomaticTranscriptionWidgetData {
 };
 
 AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
-    ASRModuleWidgetBase(parent), ui(new Ui::AutomaticTranscriptionWidget), d(new AutomaticTranscriptionWidgetData)
+    ASRModuleVisualiserWidgetBase(parent), ui(new Ui::AutomaticTranscriptionWidget), d(new AutomaticTranscriptionWidgetData)
 {
     ui->setupUi(this);
 

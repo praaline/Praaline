@@ -1,7 +1,8 @@
 #ifndef AUTOMATICTRANSCRIPTIONWIDGET_H
 #define AUTOMATICTRANSCRIPTIONWIDGET_H
 
-#include "ASRModuleWidgetBase.h"
+#include "ASRModuleVisualiserWidgetBase.h"
+
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
@@ -11,7 +12,7 @@ class AutomaticTranscriptionWidget;
 
 struct AutomaticTranscriptionWidgetData;
 
-class AutomaticTranscriptionWidget : public ASRModuleWidgetBase
+class AutomaticTranscriptionWidget : public ASRModuleVisualiserWidgetBase
 {
     Q_OBJECT
 

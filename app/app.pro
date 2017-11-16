@@ -224,7 +224,8 @@ SOURCES += main.cpp \
     updater/Updater.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
-    annotation/asr/LongSoundAlignerWidget.cpp
+    annotation/asr/LongSoundAlignerWidget.cpp \
+    annotation/asr/ASRModuleVisualiserWidgetBase.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -349,7 +350,8 @@ HEADERS  += \
     updater/Updater.h \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
-    annotation/asr/LongSoundAlignerWidget.h
+    annotation/asr/LongSoundAlignerWidget.h \
+    annotation/asr/ASRModuleVisualiserWidgetBase.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \

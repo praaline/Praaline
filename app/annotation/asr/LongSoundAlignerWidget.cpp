@@ -13,8 +13,6 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "svcore/base/Preferences.h"
-#include "svcore/base/PlayParameterRepository.h"
 #include "svcore/data/model/WaveFileModel.h"
 #include "svgui/view/Pane.h"
 #include "svgui/view/PaneStack.h"
@@ -24,12 +22,6 @@ using namespace Praaline::Core;
 #include "svgui/widgets/AudioDial.h"
 #include "svgui/widgets/Fader.h"
 #include "svgui/widgets/CommandHistory.h"
-#include "svgui/widgets/ProgressDialog.h"
-#include "svapp/framework/Document.h"
-#include "svapp/audioio/AudioCallbackPlaySource.h"
-#include "svapp/audioio/AudioCallbackPlayTarget.h"
-#include "svapp/framework/Document.h"
-#include "svapp/framework/VisualiserWindowBase.h"
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
 #include "pngui/model/visualiser/ProsogramModel.h"
@@ -46,8 +38,6 @@ using namespace Praaline::ASR;
 
 struct LongSoundAlignerWidgetData {
     LongSoundAlignerWidgetData() :
-        document(0), visualiserScroll(0), paneStack(0), viewManager(0), timeRulerLayer(0),
-        playSource(0), playTarget(0),
         gridviewResults(0), modelResults(0)
     {}
 
@@ -56,16 +46,6 @@ struct LongSoundAlignerWidgetData {
     QPointer<CorpusRecording> recording;
     QPointer<CorpusAnnotation> annotation;
 
-    // Visualiser UI elements
-    Document    *document;
-    QScrollArea *visualiserScroll;
-    PaneStack   *paneStack;
-    ViewManager *viewManager;
-    Layer       *timeRulerLayer;
-    // Visualiser sound interface
-    bool audioOutput;
-    AudioCallbackPlaySource *playSource;
-    AudioCallbackPlayTarget *playTarget;
     // Diff UI elements
     GridViewWidget *gridviewResults;
     dtl::Ses<Interval *>::sesElemVec sesSequence;
@@ -73,26 +53,13 @@ struct LongSoundAlignerWidgetData {
 };
 
 LongSoundAlignerWidget::LongSoundAlignerWidget(QWidget *parent) :
-    ASRModuleWidgetBase(parent),
+    ASRModuleVisualiserWidgetBase(parent),
     ui(new Ui::LongSoundAlignerWidget), d(new LongSoundAlignerWidgetData)
 {
     ui->setupUi(this);
 
     // Visualiser
-    d->document = new Document();
-    d->viewManager = new ViewManager();
-    d->paneStack = new PaneStack(0, d->viewManager);
-    d->paneStack->setLayoutStyle(PaneStack::NoPropertyStacks);
-
-    d->playSource = new AudioCallbackPlaySource(d->viewManager, QApplication::applicationName());
-
-    d->visualiserScroll = new QScrollArea(this);
-    d->visualiserScroll->setWidgetResizable(true);
-    d->visualiserScroll->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    d->visualiserScroll->setFrameShape(QFrame::NoFrame);
-    d->visualiserScroll->setWidget(d->paneStack);
-
-    ui->gridLayoutVisualiser->addWidget(d->visualiserScroll);
+    ui->gridLayoutVisualiser->addWidget(m_visualiserScroll);
 
     // Diff grid
     d->gridviewResults = new GridViewWidget(this);
@@ -105,57 +72,7 @@ LongSoundAlignerWidget::LongSoundAlignerWidget(QWidget *parent) :
 LongSoundAlignerWidget::~LongSoundAlignerWidget()
 {
     delete ui;
-    if (d->playTarget) d->playTarget->shutdown();
-    delete d->playSource;
-    delete d->viewManager;
     delete d;
-}
-
-VisualiserWindowBase::FileOpenStatus
-LongSoundAlignerWidget::openPath(const QString &fileOrUrl)
-{
-    ProgressDialog dialog(tr("Opening file or URL..."), true, 2000, this);
-
-    FileSource source = FileSource(fileOrUrl, &dialog);
-
-    if (!source.isAvailable()) {
-        if (source.wasCancelled()) {
-            return VisualiserWindowBase::FileOpenCancelled;
-        } else {
-            return VisualiserWindowBase::FileOpenFailed;
-        }
-    }
-    source.waitForData();
-
-    sv_samplerate_t rate = 0;
-
-    if (Preferences::getInstance()->getFixedSampleRate() != 0) {
-        rate = Preferences::getInstance()->getFixedSampleRate();
-    } else if (Preferences::getInstance()->getResampleOnLoad()) {
-        rate = d->playSource->getSourceSampleRate();
-    }
-
-    WaveFileModel *newModel = new WaveFileModel(source, rate);
-
-    if (!newModel->isOK()) {
-        delete newModel;
-        if (source.wasCancelled()) {
-            return VisualiserWindowBase::FileOpenCancelled;
-        } else {
-            return VisualiserWindowBase::FileOpenFailed;
-        }
-    }
-
-    Model *prevMain = (d->document) ? d->document->getMainModel() : 0;
-    if (prevMain) {
-        d->playSource->removeModel(prevMain);
-        PlayParameterRepository::getInstance()->removePlayable(prevMain);
-    }
-    PlayParameterRepository::getInstance()->addPlayable(newModel);
-
-    d->document->setMainModel(newModel);
-
-    return VisualiserWindowBase::FileOpenSucceeded;
 }
 
 void LongSoundAlignerWidget::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
@@ -175,10 +92,6 @@ void LongSoundAlignerWidget::open(Corpus *corpus, CorpusCommunication *com, Corp
     bool first = false;
     foreach (QPointer<CorpusRecording> rec, com->recordings()) {
         if (!first) {
-            // Open
-            ProgressDialog dialog(tr("Opening file or URL..."), true, 2000, this);
-            connect(&dialog, SIGNAL(showing()), this, SIGNAL(hideSplash()));
-
             // Main audio
             VisualiserWindowBase::FileOpenStatus status = openPath(rec->filePath());
             if (status == VisualiserWindowBase::FileOpenFailed) {
@@ -199,43 +112,21 @@ void LongSoundAlignerWidget::open(Corpus *corpus, CorpusCommunication *com, Corp
         }
     }
 
-    Pane *pane = d->paneStack->addPane();
-    if (!d->timeRulerLayer) {
-        d->timeRulerLayer = d->document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
+    Pane *pane = m_paneStack->addPane();
+    if (!m_timeRulerLayer) {
+        m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
     }
-    d->document->addLayerToView(pane, d->timeRulerLayer);
-    Layer *waveform = d->document->createMainModelLayer(LayerFactory::Type("Waveform"));
-    d->document->addLayerToView(pane, waveform);
+    m_document->addLayerToView(pane, m_timeRulerLayer);
+    Layer *waveform = m_document->createMainModelLayer(LayerFactory::Type("Waveform"));
+    m_document->addLayerToView(pane, waveform);
 
-    ProsogramModel *model = new ProsogramModel(d->document->getMainModel()->getSampleRate(), rec);
-    pane = d->paneStack->addPane();
-    Layer *newLayer = d->document->createImportedLayer(model);
+    ProsogramModel *model = new ProsogramModel(m_document->getMainModel()->getSampleRate(), rec);
+    pane = m_paneStack->addPane();
+    Layer *newLayer = m_document->createImportedLayer(model);
     newLayer->setProperty("Show Vertical Lines", 0);
-    d->document->addLayerToView(pane, newLayer);
-    d->paneStack->setCurrentPane(pane);
-    d->paneStack->setCurrentLayer(pane, newLayer);
-}
-
-void LongSoundAlignerWidget::close()
-{
-    while (d->paneStack->getPaneCount() > 0) {
-        Pane *pane = d->paneStack->getPane(d->paneStack->getPaneCount() - 1);
-        while (pane->getLayerCount() > 0) {
-            d->document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
-        }
-        d->paneStack->deletePane(pane);
-    }
-    while (d->paneStack->getHiddenPaneCount() > 0) {
-        Pane *pane = d->paneStack->getHiddenPane(d->paneStack->getHiddenPaneCount() - 1);
-        while (pane->getLayerCount() > 0) {
-            d->document->removeLayerFromView(pane, pane->getLayer(pane->getLayerCount() - 1));
-        }
-        d->paneStack->deletePane(pane);
-    }
-    delete d->document;
-    d->viewManager->clearSelections();
-    d->timeRulerLayer = 0; // document owned this
-    d->document = new Document();
+    m_document->addLayerToView(pane, newLayer);
+    m_paneStack->setCurrentPane(pane);
+    m_paneStack->setCurrentLayer(pane, newLayer);
 }
 
 void LongSoundAlignerWidget::diffTranscriptionWithRecogniser()
