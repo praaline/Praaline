@@ -59,17 +59,23 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
     // Annotation Level and Attributes
     connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationLevelChanged(QString)));
 
-    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
-    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
-    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
-
-    d->recogniser = new SphinxOfflineRecogniser(this);
+    // Processing steps
+    connect(ui->commandPrepare, SIGNAL(clicked(bool)), this, SLOT(stepPrepare()));
+    connect(ui->commandVAD, SIGNAL(clicked(bool)), this, SLOT(stepVAD()));
+    connect(ui->commandAutoTranscribe, SIGNAL(clicked(bool)), this, SLOT(stepAutoTranscribe()));
+    connect(ui->commandSpeakerAdaptation, SIGNAL(clicked(bool)), this, SLOT(stepSpeakerAdaptation()));
 
     // Sphinx configuration
     QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
     d->config.sphinxHMModelPath = sphinxPath + "model/hmm/french_f0";
     d->config.sphinxPronunciationDictionary = sphinxPath + "model/lm/french_f0/frenchWords62K.dic";
     d->config.sphinxLanguageModelPath = sphinxPath + "model/lm/french_f0/french3g62K.lm.bin";
+
+    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
+    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
+    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
+
+    d->recogniser = new SphinxOfflineRecogniser(this);
 }
 
 AutomaticTranscriptionWidget::~AutomaticTranscriptionWidget()
@@ -153,7 +159,9 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
     d->communication = com;
     d->recording = rec;
     d->annotation = annot;
-    prepareFile();
+
+
+
 }
 
 void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
@@ -173,7 +181,9 @@ void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
     }
 }
 
-void AutomaticTranscriptionWidget::prepareFile()
+// ====================================================================================================================
+
+void AutomaticTranscriptionWidget::stepPrepare()
 {
     if (!d->recording) return;
     ui->textMessages->clear();
@@ -201,7 +211,18 @@ void AutomaticTranscriptionWidget::prepareFile()
     ui->textMessages->appendHtml(QString("Loaded recording %1.").arg(d->recording->ID()));
 }
 
-void AutomaticTranscriptionWidget::transcribe()
+void AutomaticTranscriptionWidget::stepVAD()
 {
 
 }
+
+void AutomaticTranscriptionWidget::stepAutoTranscribe()
+{
+
+}
+
+void AutomaticTranscriptionWidget::stepSpeakerAdaptation()
+{
+
+}
+

@@ -30,13 +30,14 @@ protected slots:
     void futureProgressValueChanged(int);
     void futureFinished();
 
-    void transcribe();
+    void stepPrepare();
+    void stepVAD();
+    void stepAutoTranscribe();
+    void stepSpeakerAdaptation();
 
 private:
     Ui::AutomaticTranscriptionWidget *ui;
     AutomaticTranscriptionWidgetData *d;
-
-    void prepareFile();
 
     struct SphinxAutomaticTranscriptionStep;
 };
