@@ -55,6 +55,11 @@ SphinxLongSoundAligner::~SphinxLongSoundAligner()
     delete d;
 }
 
+SphinxLongSoundAligner::State SphinxLongSoundAligner::currentState() const
+{
+    return d->state;
+}
+
 SphinxConfiguration SphinxLongSoundAligner::config() const
 {
     return d->recogniser->config();
@@ -63,11 +68,6 @@ SphinxConfiguration SphinxLongSoundAligner::config() const
 bool SphinxLongSoundAligner::initialize(const SphinxConfiguration &config)
 {
     return d->recogniser->initialize(config);
-}
-
-SphinxLongSoundAligner::State SphinxLongSoundAligner::currentState() const
-{
-    return d->state;
 }
 
 QString SphinxLongSoundAligner::tableTokensRecognised() const

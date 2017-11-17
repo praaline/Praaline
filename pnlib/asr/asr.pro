@@ -60,7 +60,8 @@ HEADERS += \
     Syllabifier.h \
     sphinx/SphinxLanguageModelBuilder.h \
     sphinx/SphinxContinuousRecogniser.h \
-    sphinx/SphinxLongSoundAligner.h
+    sphinx/SphinxLongSoundAligner.h \
+    sphinx/SphinxAutoTranscriber.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -80,7 +81,8 @@ SOURCES += \
     sphinx/SphinxAcousticModelTrainer.cpp \
     sphinx/SphinxLanguageModelBuilder.cpp \
     sphinx/SphinxContinuousRecogniser.cpp \
-    sphinx/SphinxLongSoundAligner.cpp
+    sphinx/SphinxLongSoundAligner.cpp \
+    sphinx/SphinxAutoTranscriber.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro
