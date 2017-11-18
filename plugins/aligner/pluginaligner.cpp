@@ -297,8 +297,10 @@ struct OpenSmileVADSegmentationStep
             if (id > 10) return QString("%1 ok").arg(id);
             if (!rec->ID().contains("PASSENGER")) continue;
 
+            QList<QPair<double, double> > vadActivations;
+            OpenSmileVAD::runVAD(rec->filePath(), vadActivations);
             IntervalTier *tier_utterances =
-                    OpenSmileVAD::splitToUtterances(rec, RealTime::fromSeconds(0.250), RealTime::fromSeconds(0.250), "_", "");
+                    OpenSmileVAD::splitToUtterances(vadActivations, RealTime::fromSeconds(0.250), RealTime::fromSeconds(0.250), "_", "");
             if (!tier_utterances) continue;
             tier_utterances->setName("auto_segment");
             // Save

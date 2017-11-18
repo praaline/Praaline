@@ -105,3 +105,14 @@ void ASRModuleVisualiserWidgetBase::close()
     m_document = new Document();
 }
 
+WaveFileModel * ASRModuleVisualiserWidgetBase::getMainModel()
+{
+    if (!m_document) return 0;
+    return m_document->getMainModel();
+}
+
+const WaveFileModel * ASRModuleVisualiserWidgetBase::getMainModel() const
+{
+    if (!m_document) return 0;
+    return m_document->getMainModel();
+}

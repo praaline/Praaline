@@ -9,6 +9,7 @@
 
 namespace Praaline {
 namespace Core {
+class Interval;
 class CorpusRecording;
 class IntervalTier;
 }
@@ -20,11 +21,19 @@ class OpenSmileVAD : public QObject
 public:
     explicit OpenSmileVAD(QObject *parent = 0);
 
-    static bool runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivation);
-    static Praaline::Core::IntervalTier *splitToUtterances(
-            QPointer<Praaline::Core::CorpusRecording> rec,
-            RealTime minimumDurationSilent, RealTime minimumDurationVoice,
-            QString textSilent, QString textVoice);
+    static bool
+    runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivations);
+
+    static Praaline::Core::IntervalTier *
+    splitToUtterances(QList<QPair<double, double> > &VADActivations,
+                      RealTime minimumDurationSilent, RealTime minimumDurationVoice,
+                      QString textSilent, QString textVoice);
+
+    static QList<Praaline::Core::Interval *>
+    splitToUtterancesWithoutPauses(QList<QPair<double, double> > &VADActivations,
+                                   RealTime minimumDurationSilent, RealTime minimumDurationVoice,
+                                   QString textVoice);
+
 signals:
 
 public slots:

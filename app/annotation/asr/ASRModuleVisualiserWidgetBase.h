@@ -7,6 +7,7 @@
 using namespace Praaline::Core;
 
 #include <QScrollArea>
+#include "svcore/data/model/WaveFileModel.h"
 #include "svgui/view/PaneStack.h"
 #include "svgui/view/ViewManager.h"
 #include "svgui/layer/Layer.h"
@@ -26,6 +27,8 @@ public:
 protected:
     VisualiserWindowBase::FileOpenStatus openPath(const QString &fileOrUrl);
     void close();
+    WaveFileModel * getMainModel();
+    const WaveFileModel * getMainModel() const;
 
     // Visualiser UI elements
     QScrollArea *m_visualiserScroll;

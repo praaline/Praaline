@@ -21,7 +21,7 @@ OpenSmileVAD::OpenSmileVAD(QObject *parent) : QObject(parent)
 }
 
 // static
-bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivation)
+bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivations)
 {
     // Check if wave file exists
     if (!QFile::exists(filenameInputWave)) return false;
@@ -53,7 +53,7 @@ bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, 
     QTextStream vad(&fileCSVOutput);
     vad.setCodec("UTF-8");
     // Clean-up results list
-    resultVADActivation.clear();
+    resultVADActivations.clear();
     // Read file
     while (!vad.atEnd()) {
         QString line = vad.readLine().trimmed();
@@ -63,21 +63,17 @@ bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, 
         QString stringScore = line.section(",", 1, 1);
         double time = stringTime.toDouble();
         double score = stringScore.toDouble();
-        resultVADActivation << QPair<double, double>(time, score);
+        resultVADActivations << QPair<double, double>(time, score);
     }
     return true;
 }
 
 // static
-IntervalTier *OpenSmileVAD::splitToUtterances(QPointer<CorpusRecording> rec,
-                                              RealTime minimumDurationSilent, RealTime minimumDurationVoice,
-                                              QString textSilent, QString textVoice)
+IntervalTier *
+OpenSmileVAD::splitToUtterances(QList<QPair<double, double> > &VADActivations,
+                                RealTime minimumDurationSilent, RealTime minimumDurationVoice,
+                                QString textSilent, QString textVoice)
 {
-    if (!rec) return 0;
-    QString filenameWave = QString(rec->filePath()).replace(".wav", ".16k.wav");
-    QList<QPair<double, double> > VADActivations;
-    bool result = runVAD(filenameWave, VADActivations);
-    if (!result) return 0;
     if (VADActivations.isEmpty()) return 0;
     QList<Interval *> intervalsSounding, intervalsSilent;
     QPair<double, double> point = VADActivations.first();
@@ -110,8 +106,31 @@ IntervalTier *OpenSmileVAD::splitToUtterances(QPointer<CorpusRecording> rec,
         if (intv->duration() < minimumDurationVoice)
             intv->setText("silent");
     }
-    tier->mergeIdenticalAnnotations();
+    tier->mergeIdenticalAnnotations();   
     tier->replace("", "sounding", textVoice);
-    tier->replace("", "silent", textSilent);
+    tier->replace("", "silent", textSilent);    
     return tier;
 }
+
+// static
+QList<Interval *>
+OpenSmileVAD::splitToUtterancesWithoutPauses(QList<QPair<double, double> > &VADActivations,
+                                             RealTime minimumDurationSilent, RealTime minimumDurationVoice,
+                                             QString textVoice)
+{
+    IntervalTier *tier_utterances = splitToUtterances(VADActivations, minimumDurationSilent, minimumDurationVoice, "silent", "sounding");
+    if (!tier_utterances) return QList<Interval *>();
+    QList<RealTime> boundaries;
+    boundaries << tier_utterances->tMin();
+    for (int i = 1; i < tier_utterances->count() - 1; ++i) {
+        if (tier_utterances->interval(i)->text() == "silent")
+            boundaries << tier_utterances->interval(i)->tCenter();
+    }
+    boundaries << tier_utterances->tMax();
+    QList<Interval *> intervals;
+    for (int i = 0; i < boundaries.count() - 1; ++i)
+        intervals << new Interval(boundaries.at(i), boundaries.at(i + 1), textVoice);
+    delete tier_utterances;
+    return intervals;
+}
+

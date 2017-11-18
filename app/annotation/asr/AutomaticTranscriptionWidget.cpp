@@ -1,30 +1,37 @@
 #include <QObject>
 #include <QPointer>
 #include <QApplication>
-#include <QElapsedTimer>
-#include <QtConcurrent>
-#include <QFuture>
-#include <QFutureWatcher>
-#include <QMutex>
 #include <QTabWidget>
+#include <QMessageBox>
 
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/structure/AnnotationStructure.h"
+#include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/SpeechRecognitionRecipes.h"
-#include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
+#include "pnlib/asr/sphinx/SphinxConfiguration.h"
+#include "pnlib/asr/sphinx/SphinxAutoTranscriber.h"
 using namespace Praaline::ASR;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
 #include "pngui/widgets/GridViewWidget.h"
 
+#include "svcore/data/model/WaveFileModel.h"
+#include "svcore/data/model/SparseTimeValueModel.h"
+#include "svgui/view/Pane.h"
+#include "svgui/layer/WaveformLayer.h"
+#include "svgui/layer/TimeRulerLayer.h"
+#include "svgui/layer/TimeInstantLayer.h"
+#include "svgui/layer/TimeValueLayer.h"
+
 #include "AutomaticTranscriptionWidget.h"
 #include "ui_AutomaticTranscriptionWidget.h"
 
 struct AutomaticTranscriptionWidgetData {
-    AutomaticTranscriptionWidgetData()
+    AutomaticTranscriptionWidgetData() :
+        paneVisualisation(0), layerVAD(0),
+        gridviewTranscription(0), transcriber(0)
     {}
 
     QPointer<CorpusRepository> repository;
@@ -33,16 +40,14 @@ struct AutomaticTranscriptionWidgetData {
     QPointer<CorpusRecording> recording;
     QPointer<CorpusAnnotation> annotation;
 
+    Pane *paneVisualisation;
+    Layer *layerVAD;
+    Layer *layerUtterances;
+
     GridViewWidget *gridviewTranscription;
 
-    QString filepathDownsampled;
-    QString filepathFeaturesMFC;
-
-    QFuture<QString> future;
-    QFutureWatcher<QString> watcher;
-
-    SpeechRecognitionRecipes::Configuration config;
-    SphinxOfflineRecogniser *recogniser;
+    SphinxConfiguration config;
+    SphinxAutoTranscriber *transcriber;
 };
 
 AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
@@ -67,15 +72,14 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
 
     // Sphinx configuration
     QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
-    d->config.sphinxHMModelPath = sphinxPath + "model/hmm/french_f0";
-    d->config.sphinxPronunciationDictionary = sphinxPath + "model/lm/french_f0/frenchWords62K.dic";
-    d->config.sphinxLanguageModelPath = sphinxPath + "model/lm/french_f0/french3g62K.lm.bin";
+    d->config.setDirectoryAcousticModel(sphinxPath + "model/hmm/french_f0");
+    d->config.setFilenamePronunciationDictionary(sphinxPath + "model/lm/french_f0/frenchWords62K.dic");
+    d->config.setFilenameLanguageModel(sphinxPath + "model/lm/french_f0/french3g62K.lm.bin");
 
-    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
-    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
-    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
-
-    d->recogniser = new SphinxOfflineRecogniser(this);
+    // Automatic Transcriber module
+    d->transcriber = new SphinxAutoTranscriber(this);
+    d->transcriber->setConfiguration(d->config);
+    connect(d->transcriber, SIGNAL(printMessage(QString)), this, SLOT(receivedMessage(QString)));
 }
 
 AutomaticTranscriptionWidget::~AutomaticTranscriptionWidget()
@@ -83,60 +87,6 @@ AutomaticTranscriptionWidget::~AutomaticTranscriptionWidget()
     delete ui;
     delete d;
 }
-
-void AutomaticTranscriptionWidget::futureResultReadyAt(int index)
-{
-    QString result = d->watcher.resultAt(index);
-    ui->textMessages->appendPlainText(result);
-    ui->progressBar->setValue(d->watcher.progressValue() * 100 / d->watcher.progressMaximum());
-}
-
-void AutomaticTranscriptionWidget::futureProgressValueChanged(int progressValue)
-{
-    if (d->watcher.progressMaximum() > 0)
-        ui->progressBar->setValue(progressValue * 100 / d->watcher.progressMaximum());
-    else
-        ui->progressBar->setValue(100);
-}
-
-void AutomaticTranscriptionWidget::futureFinished()
-{
-    ui->progressBar->setValue(100);
-    ui->textMessages->appendPlainText("Finished");
-}
-
-struct AutomaticTranscriptionWidget::SphinxAutomaticTranscriptionStep
-{
-    SphinxAutomaticTranscriptionStep(
-            const QString &sphinxAcousticModel, const QString &sphinxLanguageModel,
-            const QString &sphinxPronunciationDictionary, const QString &sphinxMLLRMatrix)
-        : m_sphinxAcousticModel(sphinxAcousticModel), m_sphinxLanguageModel(sphinxLanguageModel),
-          m_sphinxPronunciationDictionary(sphinxPronunciationDictionary), m_sphinxMLLRMatrix(sphinxMLLRMatrix) { }
-    typedef QString result_type;
-
-    QString operator() (const QPointer<CorpusCommunication> &com)
-    {
-        if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            int id = rec->ID().left(3).right(2).toInt();
-            if (id > 10) return QString("%1 ok").arg(id);
-
-            bool result = false; /*SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(
-                        com, rec, rec->ID(), "auto_segment", "auto_transcription",
-                        m_sphinxAcousticModel, m_sphinxLanguageModel,
-                        m_sphinxPronunciationDictionary, m_sphinxMLLRMatrix);*/
-            if (result) {
-//                SpeechRecognitionRecipes::updateSegmentationFromTranscription(
-//                            com, "auto_segment", "auto_transcription");
-            }
-        }
-        return QString("%1\tautomatically transcribed %2 recording(s) using Sphinx.").arg(com->ID()).arg(com->recordingsCount());
-    }
-    QString m_sphinxAcousticModel;
-    QString m_sphinxLanguageModel;
-    QString m_sphinxPronunciationDictionary;
-    QString m_sphinxMLLRMatrix;
-};
 
 void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot)
 {
@@ -160,7 +110,62 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
     d->recording = rec;
     d->annotation = annot;
 
+    // Update transcriber object
+    if (d->recording) {
+        d->transcriber->setWorkingDirectory(d->recording->basePath() + "/asr");
+        d->transcriber->setFilePathRecording(d->recording->filePath());
+        ui->textMessages->appendHtml(QString("<b>Opened Communication %1, Recording %2</b>").arg(com->ID()).arg(rec->ID()));
+    }
 
+    // Visualisation
+    if (!com) return;
+    // Remove previous panes
+    close();
+    // Open each recording in the communication and add a corresponding audio panel
+    bool first = false;
+    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        if (!first) {
+            // Main audio
+            VisualiserWindowBase::FileOpenStatus status = openPath(rec->filePath());
+            if (status == VisualiserWindowBase::FileOpenFailed) {
+                QMessageBox::critical(this, tr("Failed to open file"),
+                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(rec->filePath()));
+                return;
+            } else if (status == VisualiserWindowBase::FileOpenWrongMode) {
+                QMessageBox::critical(this, tr("Failed to open file"),
+                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>"
+                                         "Please load at least one audio file before importing annotations.").arg(rec->filePath()));
+                return;
+            }
+            first = true;
+        }
+        else {
+            // import more audio
+            // addRecordingToSession(rec);
+        }
+    }
+    // Visualiser pane
+    Pane *pane = m_paneStack->addPane();
+    d->paneVisualisation = pane;
+    if (!m_timeRulerLayer) {
+        m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
+    }
+    // Waveform and time ruler
+    m_document->addLayerToView(pane, m_timeRulerLayer);
+    Layer *waveform = m_document->createMainModelLayer(LayerFactory::Type("Waveform"));
+    m_document->addLayerToView(pane, waveform);
+    // Superposed VAD results
+    d->layerVAD = m_document->createEmptyLayer(LayerFactory::Type("TimeValues"));
+    TimeValueLayer *layerVAD = qobject_cast<TimeValueLayer *>(d->layerVAD);
+    if (layerVAD) {
+        layerVAD->setPlotStyle(TimeValueLayer::PlotCurve);
+        layerVAD->setDrawSegmentDivisions(false);
+        layerVAD->setDisplayExtents(-1.0, 1.0);
+    }
+    m_document->addLayerToView(pane, d->layerVAD);
+    // Superposed utterance boundaries
+    d->layerUtterances = m_document->createEmptyLayer(LayerFactory::Type("TimeInstants"));
+    m_document->addLayerToView(pane, d->layerUtterances);
 
 }
 
@@ -181,44 +186,45 @@ void AutomaticTranscriptionWidget::annotationLevelChanged(QString text)
     }
 }
 
+void AutomaticTranscriptionWidget::receivedMessage(QString text)
+{
+    ui->textMessages->appendHtml(text);
+}
+
 // ====================================================================================================================
 
 void AutomaticTranscriptionWidget::stepPrepare()
 {
-    if (!d->recording) return;
-    ui->textMessages->clear();
-    if (!QFile::exists(d->recording->filePath())) {
-        ui->textMessages->appendHtml(QString("File <i>%1</i> does not exist.").append(d->recording->filePath()));
-        return;
-    }
-    QString filepathDownsampled = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".16k.wav");
-    QString filepathFeaturesMFC = d->recording->basePath() + "/asr/" + QString(d->recording->filename()).replace(".wav", ".16k.mfc");
-    if (!QFile::exists(filepathFeaturesMFC)) {
-        ui->textMessages->appendHtml(QString("Preparing recording for automatic speech recognition."));
-        if (!QDir(d->recording->basePath() + "/asr").exists()) {
-            QDir(d->recording->basePath()).mkdir("asr");
-        }
-        if (!QFile::exists(filepathDownsampled)) {
-            SpeechRecognitionRecipes::downsampleWaveFile(d->recording, d->recording->basePath() + "/asr");
-            ui->textMessages->appendHtml(QString("Created downsampled file."));
-            QApplication::processEvents();
-        }
-        SpeechRecognitionRecipes::createSphinxFeatureFiles(QStringList() << filepathDownsampled, d->config);
-        ui->textMessages->appendHtml(QString("Created MFCC feature file for Sphinx."));
-    }
-    d->filepathDownsampled = filepathDownsampled;
-    d->filepathFeaturesMFC = filepathFeaturesMFC;
-    ui->textMessages->appendHtml(QString("Loaded recording %1.").arg(d->recording->ID()));
+    d->transcriber->stepExtractFeaturesFile();
 }
 
 void AutomaticTranscriptionWidget::stepVAD()
 {
+    if (!d->transcriber->stepVoiceActivityDetection()) return;
+    // Visualise results
+    sv_samplerate_t sampleRate = getMainModel()->getSampleRate();
+    // VAD results (probability of frame being speech)
+    QPair<double, double> v;
+    SparseTimeValueModel *modelVAD = qobject_cast<SparseTimeValueModel *>(d->layerVAD->getModel());
+    if (modelVAD) modelVAD->clear();
+    foreach (v, d->transcriber->vadResults()) {
+        RealTime t = RealTime::fromSeconds(v.first);
+        SparseTimeValueModel::Point vadPoint(RealTime::realTime2Frame(t, sampleRate), v.second, QString());
+        modelVAD->addPoint(vadPoint);
+    }
+    // Utterance boundaries
+    SparseOneDimensionalModel *modelUtterances = qobject_cast<SparseOneDimensionalModel *>(d->layerUtterances->getModel());
+    foreach(Interval *intv, d->transcriber->utterances()) {
+        SparseOneDimensionalModel::Point point(RealTime::realTime2Frame(intv->tMin(), sampleRate), "");
+        modelUtterances->addPoint(point);
+    }
+    // Update grid with new utterances
 
 }
 
 void AutomaticTranscriptionWidget::stepAutoTranscribe()
 {
-
+    d->transcriber->stepAutoTranscribe();
 }
 
 void AutomaticTranscriptionWidget::stepSpeakerAdaptation()

@@ -2,6 +2,7 @@
 #define SPHINXAUTOTRANSCRIBER_H
 
 #include <QObject>
+#include "pncore/base/RealTime.h"
 #include "SphinxConfiguration.h"
 
 namespace Praaline {
@@ -30,14 +31,18 @@ public:
     explicit SphinxAutoTranscriber(QObject *parent = nullptr);
     virtual ~SphinxAutoTranscriber();
 
-    SphinxConfiguration config() const;
-    bool initialize(const SphinxConfiguration &config);
-
     State currentState() const;
     QString filePathRecording() const;
-    void setFilePathRecording(const QString &filePath);
-    QString basePath() const;
-    void setBasePath(const QString &basePath);
+    void setFilePathRecording(const QString &);
+    QString workingDirectory() const;
+    void setWorkingDirectory(const QString &);
+    bool keepDownsampledFile() const;
+    void setKeepDownsampledFile(bool);
+    SphinxConfiguration configuration() const;
+    bool setConfiguration(const SphinxConfiguration &);
+    QList<QPair<double, double> > &vadResults();
+    QList<Praaline::Core::Interval *> utterances();
+    QList<Praaline::Core::Interval *> tokens();
 
     bool stepExtractFeaturesFile();
     bool stepVoiceActivityDetection();
@@ -48,6 +53,8 @@ signals:
     void printMessage(QString message);
 
 public slots:
+    void recogniserError(QString message);
+    void recogniserInfo(QString message);
 
 private:
     SphinxAutoTranscriberData *d;

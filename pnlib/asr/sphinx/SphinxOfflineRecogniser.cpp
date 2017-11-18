@@ -67,6 +67,7 @@ bool SphinxOfflineRecogniser::initialize(const SphinxConfiguration &config)
     }
     d->pocketSphinx = ps;
     d->mfccVectorLength = cmd_ln_int32_r(ps_config, "-ceplen");
+    d->config = config;
     return true;
 }
 
@@ -133,6 +134,7 @@ bool SphinxOfflineRecogniser::decode(int startFrame, int endFrame)
     float32 *floats;
     int32 numberOfFrames;
     size_t length;
+    int32 nmfc;
 
     // Checks
     if (!d->pocketSphinx) return false;
@@ -142,6 +144,15 @@ bool SphinxOfflineRecogniser::decode(int startFrame, int endFrame)
         return false;
     }
 
+    // Return to beginning of MFC file and read first 4 bytes
+    fseek(d->mfccFileHandle, 0, SEEK_SET);
+    if (fread(&nmfc, 4, 1, d->mfccFileHandle) != 1) {
+        error("Failed to read 4 bytes from MFCC file");
+        fclose(d->mfccFileHandle);
+        return false;
+    }
+    // All is OK
+
     // Read MFCC data corresponding to stard-end frame
     fseek(d->mfccFileHandle, startFrame * 4 * d->mfccVectorLength, SEEK_CUR);
     if (endFrame == -1)
@@ -150,7 +161,9 @@ bool SphinxOfflineRecogniser::decode(int startFrame, int endFrame)
     mfcs = (mfcc_t **)(ckd_calloc_2d(numberOfFrames, d->mfccVectorLength, sizeof(**mfcs)));
     floats = (float32 *)mfcs[0];
     length = numberOfFrames * d->mfccVectorLength;
-    if (fread(floats, 4, length, d->mfccFileHandle) != length) {
+    size_t ret = fread(floats, sizeof(mfcc_t), length, d->mfccFileHandle);
+    if (ret != length) {
+        perror("Error");
         error("Failed to read items from mfcfile");
         ckd_free_2d(mfcs);
         return false;
@@ -203,7 +216,7 @@ bool SphinxOfflineRecogniser::setLanguageModel(const QString &filenameLM)
     return true;
 }
 
-QString SphinxOfflineRecogniser::getUtterance() const
+QString SphinxOfflineRecogniser::getUtteranceText() const
 {
     QString utterance;
     if (!d->pocketSphinx) return QString();

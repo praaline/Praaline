@@ -118,4 +118,35 @@ bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &f
     return true;
 }
 
+// static
+bool AudioSegmenter::resample(const QString &filenameIn, const QString &filenameOut,
+                              uint newSamplingRate, bool normalise, int channels)
+{
+    QProcess sox;
+    // DIRECTORY:
+    QString soxPath;
+#ifdef Q_OS_WIN
+    QString appPath = QCoreApplication::applicationDirPath();
+    soxPath = appPath + "/tools/sox/";
+    sox.setWorkingDirectory(soxPath);
+#else
+    soxPath = "/usr/bin/";
+#endif
+    QStringList arguments;
+    arguments << filenameIn;
+    if (normalise) {
+        arguments << QString("--norm");
+    }
+    arguments << filenameOut;
+    if (channels > 0) {
+        arguments << "channels" << QString("%1").arg(channels);
+    }
+    if (newSamplingRate) {
+        arguments << "rate" << QString::number(newSamplingRate);
+    }
+    sox.start(soxPath + "sox", arguments);
+    if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+        return false;
+    return true;
+}
 

@@ -28,7 +28,7 @@ public:
     bool closeFeatureFile();
 
     bool decode(int startFrame, int endFrame);
-    QString getUtterance() const;
+    QString getUtteranceText() const;
     QList<Interval *> getSegmentation() const;
 
     bool setMLLR(const QString &filenameMLLR);

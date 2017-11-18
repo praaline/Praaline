@@ -25,10 +25,8 @@ public slots:
               Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot) override;
 
 protected slots:
+    void receivedMessage(QString text);
     void annotationLevelChanged(QString text);
-    void futureResultReadyAt(int);
-    void futureProgressValueChanged(int);
-    void futureFinished();
 
     void stepPrepare();
     void stepVAD();
