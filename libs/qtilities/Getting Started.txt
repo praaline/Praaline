@@ -1,1 +1,0 @@
-Please see https://github.com/JPNaude/Qtilities/wiki/Getting-Started for details on how to get started with Qtilities.

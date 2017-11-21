@@ -35,8 +35,8 @@ DEPENDPATH += . .. ../.. ../../pncore ../../svcore ../../svgui ../../app/interfa
 
 # Qtilities configuration
 QTILITIES += extension_system
-include(../../libs/qtilities/src/Qtilities.pri)
-INCLUDEPATH += ../../libs/qtilities/include
+include(../../dependencies/qtilities/src/Qtilities.pri)
+INCLUDEPATH += ../../dependencies/qtilities/include
 
 # Build folder organisation
 CONFIG( debug, debug|release ) {

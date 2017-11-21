@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Praaline</Name>
+    <Version>0.8.0</Version>
+    <Title>Praaline Installer</Title>
+    <Publisher>praaline.org</Publisher>
+    <StartMenuDir>Praaline</StartMenuDir>
+    <TargetDir>@HomeDir@/Praaline</TargetDir>
+</Installer>

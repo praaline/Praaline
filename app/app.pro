@@ -49,22 +49,22 @@ QTILITIES += core
 QTILITIES += coregui
 QTILITIES += extension_system
 QTILITIES += project_management
-include(../libs/qtilities/src/Qtilities.pri)
-include(../libs/qtilities/src/Dependencies.pri)
-INCLUDEPATH += libs/qtilities/include
+include(../dependencies/qtilities/src/Qtilities.pri)
+include(../dependencies/qtilities/src/Dependencies.pri)
+INCLUDEPATH += dependencies/qtilities/include
 
 # QScintilla
-INCLUDEPATH += $$PWD/../libs/qscintilla/Qt4Qt5
-LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5
+INCLUDEPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
+LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
 win* {
     CONFIG( debug, debug|release ) {
-        LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/debug
+        LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/debug
     } else {
-        LIBPATH_QSCINTILLA=$$OUT_PWD/../libs/qscintilla/Qt4Qt5/release
+        LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/release
     }
 }
 LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
-DEPENDPATH += $$PWD/../libs/qscintilla/Qt4Qt5
+DEPENDPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
 
 # Node editor
 DEFINES += NODE_EDITOR_STATIC

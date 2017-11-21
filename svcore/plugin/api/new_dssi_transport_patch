@@ -1,0 +1,245 @@
+diff -r dssi-CVS-20051012=0.9.1/dssi/dssi.h _dssi-transport-mine-new/dssi/dssi.h
+5,6c5,6
+<    DSSI version 0.9
+<    Copyright (c) 2004 Chris Cannam, Steve Harris and Sean Bolton
+---
+>    DSSI version 0.10
+>    Copyright (c) 2004,2005 Chris Cannam, Steve Harris and Sean Bolton
+30c30
+< #define DSSI_VERSION "0.9"
+---
+> #define DSSI_VERSION "0.10"
+32c32
+< #define DSSI_VERSION_MINOR 9
+---
+> #define DSSI_VERSION_MINOR 10
+76a77,152
+> #define DSSI_TRANSPORT_VALID_STATE  0x01
+> #define DSSI_TRANSPORT_VALID_BPM    0x02
+> #define DSSI_TRANSPORT_VALID_BBT    0x10
+> #define DSSI_TRANSPORT_VALID_TIME   0x20
+> 
+> #define DSSI_TRANSPORT_STATE_STOPPED       0
+> #define DSSI_TRANSPORT_STATE_RUNNING       1
+> #define DSSI_TRANSPORT_STATE_FREEWHEELING  2
+> #define DSSI_TRANSPORT_STATE_OTHER         3  /* waiting for sync, ? */
+> 
+> typedef struct _DSSI_Transport_Info {
+> 
+>     /** The value of this field indicates which of the following
+>      *  transport information fields contain valid values. It is
+>      *  the logical OR of the DSSI_TRANSPORT_VALID_* bits defined
+>      *  above, and may be zero. */
+>     int  Valid;
+> 
+> 
+>     /** This field is valid when (Valid & DSSI_TRANSPORT_VALID_STATE)
+>      *  is true:
+>      *
+>      *  ---- The current transport state, one of the DSSI_TRANSPORT_STATE_*
+>      *       values defined above. */
+>     int  State;
+> 
+> 
+>     /** This field is valid when (Valid & DSSI_TRANSPORT_VALID_BPM)
+>      *  is true:
+>      *
+>      *  ---- The current tempo, in beats per minute.  */
+>     double Beats_Per_Minute;
+> 
+> 
+>     /** These six fields are valid when (Valid & DSSI_TRANSPORT_VALID_BBT)
+>      *  is true:
+>      *
+>      *  ---- The bar number at the beginning of the current process cycle. */
+>     unsigned long Bar;
+> 
+>      *  ---- The beat within that Bar. */
+>     unsigned long Beat;
+>     
+>     /** ---- The tick within that Beat. */
+>     unsigned long Tick;
+> 
+>     /** ---- The (possibly fractional) tick count since transport 'start'
+>      *       and the beginning of the current Bar. */
+>     double Bar_Start_Tick;
+> 
+>     /** ---- The number of beats per bar. */
+>     float  Beats_Per_Bar;
+> 
+>     /** ---- The number of ticks for each beat. */
+>     double Ticks_Per_Beat;
+> 
+>     /* [Sean says: I left out the 'beat_type' (time signature "denominator")
+>      * field of the jack_position_t structure, because I think it's useless
+>      * except to a notation program. Does anybody else feel like we need it?]
+>     
+> 
+>     /** These two fields are valid when (Valid & DSSI_TRANSPORT_VALID_TIME)
+>      *  is true:
+>      *
+>      *  ---- The transport time at the beginning of the current process
+>      *       cycle, in seconds. */
+>     double  Current_Time;
+> 
+>     /** ---- The transport time at the beginning of the next process
+>              cycle, unless repositioning occurs. */
+>     double  Next_Time;
+> 
+> } DSSI_Transport_Info;
+> 
+> typedef struct _DSSI_Host_Descriptor DSSI_Host_Descriptor; /* below */
+> 
+83,84c159,161
+<      * If we're lucky, this will never be needed.  For now all plugins
+<      * must set it to 1.
+---
+>      * All plugins must set this to 1 or 2.  The version 1 API contains
+>      * all DSSI_Descriptor fields through run_multiple_synths_adding(),
+>      * while the version 2 API adds the receive_host_descriptor().
+376a454,472
+> 
+>     /**
+>      * receive_host_descriptor()
+>      *
+>      * This member is a function pointer by which a host may provide
+>      * a plugin with a pointer to its DSSI_Host_Descriptor. Hosts
+>      * which provide host descriptor support must call this function
+>      * once per plugin shared object file, before any calls to
+>      * instantiate().
+>      *
+>      * NOTE: This field was added in version 2 of the DSSI API. Hosts
+>      * supporting version 2 must not access this field in a plugin
+>      * whose DSSI_API_Version is 1, and plugins supporting version 2
+>      * should behave reasonably under hosts (of any version) which do
+>      * not implement this function. A version 2 plugin that does not
+>      * provide this function must set this member to NULL.
+>      */
+>     void (*receive_host_descriptor)(DSSI_Host_Descriptor *Descriptor);
+> 
+377a474,598
+> 
+> struct _DSSI_Host_Descriptor {
+> 
+>     /**
+>      * DSSI_API_Version
+>      *
+>      * This member indicates the DSSI API level used by this host.
+>      * All hosts must set this to 2.  Hopefully, we'll get this right
+>      * the first time, and this will never be needed.
+>      */
+>     int DSSI_API_Version;
+> 
+>     /**
+>      * request_tranport_information()
+>      *
+>      * This member is a function pointer by which a plugin instance may
+>      * request that a host begin providing transport information (if
+>      * Request is non-zero), or notify the host that it no longer needs
+>      * transport information (if Request is zero).  Upon receiving a
+>      * non-zero request, the host should return a pointer to a
+>      * DSSI_Transport_Info structure if it is able to provide transport
+>      * information, or NULL otherwise.
+>      *
+>      * Once a plugin instance has received a non-null transport
+>      * information pointer, it may read from the structure at any time
+>      * within the execution of an audio class function (see doc/RFC.txt).
+>      * It should not consider the structure contents to be meaningful
+>      * while within a instantiation or control class function.  Also,
+>      * since the validity of fields within the structure may change
+>      * between each new invocation of an audio class function, a plugin
+>      * instance must check the Valid field of the structure accordingly
+>      * before using the structure's other contents.
+>      *
+>      * A host which does not support this function must set this member
+>      * to NULL.
+>      */
+>     DSSI_Transport_Info *
+>         (*request_transport_information)(LADSPA_Handle Instance,
+>                                          int           Request);
+> 
+>     /**
+>      * request_midi_send()
+>      *
+>      * This member is a function pointer that allows a plugin to
+>      * request the ability to send MIDI events to the host.
+>      *
+>      * While the interpretation of plugin-generated MIDI events is
+>      * host implementation specific, a mechanism exists by which a
+>      * plugin may declare to the host the number of destination
+>      * 'ports' and MIDI channels it can expect will be used in the
+>      * plugin-generated events.  Plugins which generate unchannelized
+>      * MIDI should supply zero for both Ports and Channels, otherwise
+>      * they should supply the maximum numbers for Ports and Channels
+>      * they expect to use.
+>      *
+>      * A plugin instance must call this function during instantiate().
+>      * [Sean says: this restriction seems reasonable to me, since
+>      * the host may need to create output ports, etc., and instantiate()
+>      * seems like a good place to do such things.  I'm sure I haven't
+>      * fully thought through all the details, though....]
+>      *
+>      * The host should return a non-zero value if it is able to
+>      * provide MIDI send for the plugin instance, otherwise it should
+>      * return zero, and the plugin instance may not subsequently call
+>      * midi_send().
+>      *
+>      * A host which does not support the MIDI send function must set
+>      * both this member and (*midi_send)() below to NULL.
+>      */
+>     int (*request_midi_send)(LADSPA_Handle Instance,
+>                              unsigned char Ports,
+>                              unsigned char Channels);
+> 
+>     /**
+>      * midi_send()
+>      *
+>      * This member is a function pointer by which a plugin actually
+>      * sends MIDI events to the host (provided it has received a non-
+>      * zero return from request_midi_send()). As in the run_synth()
+>      * functions, the Event pointer points to a block of EventCount
+>      * ALSA sequencer events.  The dest.port and data.*.channel fields
+>      * of each event are used to specify destination port and channel,
+>      * respectively, when the plugin is supplying channelized events.
+>      *
+>      * A plugin may only call this function from within the execution
+>      * of the audio class run_*() or select_program() functions. When
+>      * called from a run_*() functions, the events are timestamped
+>      * relative to the start of the block, (mis)using the ALSA "tick
+>      * time" field as a frame count. The plugin is responsible for
+>      * ensuring that events with differing timestamps are already
+>      * ordered by time, and that timestamps across multiple calls to
+>      * midi_send() from within the same run_*() invocation are
+>      * monotonic.  When midi_send() is called from within
+>      * select_program(), the timestamps are ignored, and the events
+>      * are considered to originate at the same frame time as the
+>      * select_program() call, if such a timing can be considered
+>      * meaningful.
+>      *
+>      * The memory pointed to by Event belongs to the plugin, and it is
+>      * the host's responsibility to copy the events as needed before
+>      * returning from the midi_send() call.
+>      *
+>      * A host which does not support the MIDI send function must set
+>      * both this member and (*request_midi_send)() above to NULL.
+>      */
+>     void (*midi_send)(LADSPA_Handle    Instance,
+>                       snd_seq_event_t *Event,
+>                       unsigned long    EventCount);
+> 
+>    /**
+>     * . . . additional fields could follow here, possibly supporting:
+>     *
+>     *   - a facility by which a plugin instance may request from a
+>     *       host a non-realtime thread in which to do off-line
+>     *       rendering, I/O, etc., thus (hopefully) avoiding the
+>     *       crashes that seem to occur when plugins create their own
+>     *       threads.  I got this idea after noticing that ZynAddSubFX
+>     *       achieves its gorgeous textures while remaining very
+>     *       responsive by doing a lot of non-real-time rendering.
+>     *       Several other uses for it have been mentioned on the DSSI
+>     *       list; I forget what.
+>     *
+>     *   - per-voice audio output
+>     */
+> };

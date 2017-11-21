@@ -1,0 +1,32 @@
+Number of sequences broken down by disfluency type
+    Single-token
+    Repetitions
+    Structured
+    Complex
+    as a percentage of total number of tokens
+Number of all tokens in sequence broken down by disfluency type
+    as a percentage of total number of tokens
+Number of disfluent tokens in sequence broken down by disfluency type
+    as a percentage of total number of tokens
+
+Disfluency sequences
+    types of sequences by frequency
+
+Repetitions
+    number of repeated segments
+    number of repetitions
+    % repetitions of a single function word
+    % repetitions of two or more function words
+    % repetitions of a single content word
+    % repetitions of two or more content words
+    % repetitions of one function word and one content word
+    % repetitions of several function and content words
+    
+Substitutions
+    length of elements substituted
+    
+Number of tokens between disfluency sequences - average, std dev, distribution
+
+Double Cognitive
+Double Motor
+No Secondary Task

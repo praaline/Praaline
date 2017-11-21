@@ -21,9 +21,9 @@ DEPENDPATH += . .. ../pncore ../svcore ../svgui
 QTILITIES += logging
 QTILITIES += core
 QTILITIES += coregui
-include(../libs/qtilities/src/Qtilities.pri)
-include(../libs/qtilities/src/Dependencies.pri)
-INCLUDEPATH += libs/qtilities/include
+include(../dependencies/qtilities/src/Qtilities.pri)
+include(../dependencies/qtilities/src/Dependencies.pri)
+INCLUDEPATH += dependencies/qtilities/include
 
 # For QXlsx
 QT += core gui gui-private

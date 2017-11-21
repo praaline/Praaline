@@ -1,0 +1,9 @@
+*\~
+*.o
+*.a
+praat
+praat.dll
+libpraat.so
+libpraat.dylib
+makefile.defs
+*.swp
