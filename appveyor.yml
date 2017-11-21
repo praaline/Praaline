@@ -12,8 +12,11 @@ environment:
 matrix:
   fast_finish: true
 
-cache:
-  build/libs
+#cache:
+#  build/dependencies
+
+install:
+- git submodule update --init --recursive
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
