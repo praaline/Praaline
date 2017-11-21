@@ -5,10 +5,10 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 # Dependencies
-SUBDIRS += libs/qt-solutions/qtpropertybrowser
-SUBDIRS += libs/qtilities/src/Qtilities.pro
-SUBDIRS += libs/qscintilla/Qt4Qt5/qscintilla.pro
-SUBDIRS += libs/qcustomplot/qcustomplot.pro
+SUBDIRS += dependencies/qt-solutions/qtpropertybrowser
+SUBDIRS += dependencies/qtilities/src/Qtilities.pro
+SUBDIRS += dependencies/qscintilla/Qt4Qt5/qscintilla.pro
+SUBDIRS += dependencies/qcustomplot/qcustomplot.pro
 # Praaline
 SUBDIRS += pncore pnlib pngui
 SUBDIRS += sub_dataquay svcore 
