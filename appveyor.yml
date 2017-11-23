@@ -22,6 +22,7 @@ install:
 - ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_x86.zip"
 - ps: Write-Host $download
 - ps: Invoke-WebRequest $download
+- dir
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
