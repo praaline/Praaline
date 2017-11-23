@@ -19,7 +19,7 @@ install:
 - git submodule update --init --recursive
 - ps: $releases = "https://api.github.com/repos/praaline/praaline-dependencies/releases"
 - ps: $tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
-- ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_$arch.zip"
+- ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_%arch%.zip"
 - ps: Write-Host $download
 - ps: Invoke-WebRequest $download
 
