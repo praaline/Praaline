@@ -32,11 +32,11 @@ build_script:
 # Path to save plugins
 - mkdir -p .\app\build\plugins
 # Install dependencies
-- mkdir -p build\dependencies\qscintilla\Qt4Qt5\release
+- mkdir -p .\build\dependencies\qscintilla\Qt4Qt5\release
 - 7z e praaline_dependencies_win_x86.zip -o build\dependencies\qscintilla\Qt4Qt5\release qscintilla2.dll
-- mkdir -p dependencies\qtilities\bin
+- mkdir -p .\dependencies\qtilities\bin
 - 7z e praaline_dependencies_win_x86.zip -o dependencies\qtilities\bin Qtilities*.dll
-- mkdir -p dependencies\qt-solutions\qtpropertybrowser\lib
+- mkdir -p .\dependencies\qt-solutions\qtpropertybrowser\lib
 - 7z e praaline_dependencies_win_x86.zip -o dependencies\qt-solutions\qtpropertybrowser\lib QtSolutions_PropertyBrowser-head.dll
 # Build Praaline
 - qmake -v
