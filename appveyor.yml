@@ -17,13 +17,10 @@ matrix:
 
 install:
 - git submodule update --init --recursive
+- ps: ci\download-latest-praaline-dependencies.ps
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
-- ps: $LATEST_RELEASE = $(curl -L -s -H "Accept: application/json" https://github.com/praaline/praaline-dependencies/releases/latest)
-- ps: $LATEST_VERSION = $(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/')
-- set ARTIFACT_URL = "https://github.com/praaline/praaline-dependencies/releases/download/%LATEST_VERSION%/praaline_dependencies_win_%arch%.zip"
-- echo %ARTIFACT_URL%
 
 build_script:
 - if not exist build mkdir build
