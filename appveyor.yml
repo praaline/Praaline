@@ -17,7 +17,11 @@ matrix:
 
 install:
 - git submodule update --init --recursive
-- ps: .\ci\download-latest-praaline-dependencies.ps
+- ps: $releases = "https://api.github.com/repos/praaline/praaline-dependencies/releases"
+- ps: $tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
+- ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_$arch.zip"
+- ps: Invoke-WebRequest $download
+
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
