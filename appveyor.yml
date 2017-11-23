@@ -19,10 +19,9 @@ install:
 - git submodule update --init --recursive
 - ps: $releases = "https://api.github.com/repos/praaline/praaline-dependencies/releases"
 - ps: $tag = (Invoke-WebRequest $releases | ConvertFrom-Json)[0].tag_name
-- ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_%arch%.zip"
+- ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_x86.zip"
 - ps: Write-Host $download
 - ps: Invoke-WebRequest $download
-
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
@@ -30,8 +29,15 @@ before_build:
 build_script:
 - if not exist build mkdir build
 - cd build
+# Path to save plugins
 - mkdir -p .\app\build\plugins
-
+# Install dependencies
+- mkdir -p build\dependencies\qscintilla\Qt4Qt5\release
+- 7z e praaline_dependencies_win_x86.zip -o build\dependencies\qscintilla\Qt4Qt5\release qscintilla2.dll
+- mkdir -p dependencies\qtilities\bin
+- 7z e praaline_dependencies_win_x86.zip -o dependencies\qtilities\bin Qtilities*.dll
+- mkdir -p dependencies\qt-solutions\qtpropertybrowser\lib
+- 7z e praaline_dependencies_win_x86.zip -o dependencies\qt-solutions\qtpropertybrowser\lib QtSolutions_PropertyBrowser-head.dll
 # Build Praaline
 - qmake -v
 - qmake ..\PraalineCI.pro CONFIG+=release && mingw32-make
@@ -40,8 +46,7 @@ build_script:
 # Package
 - cd ..
 - mkdir deploy
-- copy build\app\build\praaline.exe deploy\praaline.exe
-- copy build\pncore\build\release\pncore.dll deploy\pncore.dll
+# Package dependencies
 - copy build\dependencies\qscintilla\Qt4Qt5\release\qscintilla2.dll deploy\qscintilla2.dll
 - copy dependencies\qtilities\bin\QtilitiesCore-1.5.dll deploy\QtilitiesCore-1.5.dll
 - copy dependencies\qtilities\bin\QtilitiesCoreGui-1.5.dll deploy\QtilitiesCoreGui-1.5.dll
@@ -49,6 +54,9 @@ build_script:
 - copy dependencies\qtilities\bin\QtilitiesLogging-1.5.dll deploy\QtilitiesLogging-1.5.dll
 - copy dependencies\qtilities\bin\QtilitiesProjectManagement-1.5.dll deploy\QtilitiesProjectManagement-1.5.dll
 - copy dependencies\qt-solutions\qtpropertybrowser\lib\QtSolutions_PropertyBrowser-head.dll deploy\QtSolutions_PropertyBrowser-head.dll
+# Package build result
+- copy build\app\build\praaline.exe deploy\praaline.exe
+- copy build\pncore\build\release\pncore.dll deploy\pncore.dll
 # WinQtDeploy
 - windeployqt --release deploy/praaline.exe
 - windeployqt --release deploy/pncore.dll
