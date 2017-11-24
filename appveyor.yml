@@ -22,7 +22,6 @@ install:
 - ps: $download = "https://github.com/praaline/praaline-dependencies/releases/download/$tag/praaline_dependencies_win_x86.zip"
 - ps: Write-Host $download
 - ps: Invoke-WebRequest $download -OutFile praaline_dependencies_win.zip
-- dir
 
 before_build:
 - set PATH=%MINGW%\bin;%QT5%\bin;%PATH%
@@ -33,11 +32,8 @@ build_script:
 # Path to save plugins
 - mkdir -p .\app\build\plugins
 # Install dependencies
-#- mkdir -p .\dependencies\qscintilla\Qt4Qt5\release
 - 7z e ..\praaline_dependencies_win.zip -o..\build\dependencies\qscintilla\Qt4Qt5\release qscintilla2.dll
-#- mkdir -p ..\dependencies\qtilities\bin
 - 7z e ..\praaline_dependencies_win.zip -o..\dependencies\qtilities\bin Qtilities*.dll
-#- mkdir -p ..\dependencies\qt-solutions\qtpropertybrowser\lib
 - 7z e ..\praaline_dependencies_win.zip -o..\dependencies\qt-solutions\qtpropertybrowser\lib QtSolutions_PropertyBrowser-head.dll
 # Build Praaline
 - qmake -v
@@ -67,3 +63,5 @@ build_script:
 artifacts:
 - path: Praaline_win_$(arch).zip
 #- path: build\app\build\plugins
+
+test: off
