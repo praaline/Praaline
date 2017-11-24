@@ -1,11 +1,10 @@
-#Includes common configuration for all subdirectory .pro files.
+# Includes common configuration for all subdirectory .pro files.
 INCLUDEPATH += . ..
 WARNINGS += -Wall
 
 TEMPLATE = lib
 
-# The following keeps the generated files at least somewhat separate 
-# from the source files.
+# The following keeps the generated files at least somewhat separate from the source files.
 CONFIG(debug, debug|release) {
     DESTDIR = build/debug
 } else {
@@ -37,16 +36,3 @@ mac {
     LIB_SUFFIX = dylib
 }
 
-# Praaline core has a dependency on VAMP SDK (only for RealTime conversion)
-win32-g++ {
-    INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-mingw/include
-    LIBS += -L$$PWD/../dependency-builds/sv/win32-mingw/lib
-}
-win32-msvc* {
-    INCLUDEPATH += $$PWD/../dependency-builds/sv/win32-msvc/include
-    LIBS += -L$$PWD/../dependency-builds/sv/win32-msvc/lib
-}
-macx* {
-    INCLUDEPATH += $$PWD/../dependency-builds/sv/osx/include
-    LIBS += -L$$PWD/../dependency-builds/sv/osx/lib
-}
