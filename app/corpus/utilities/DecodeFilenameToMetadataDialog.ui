@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DecodeFilenameToMetadataDialog</class>
+ <widget class="QDialog" name="DecodeFilenameToMetadataDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>813</width>
+    <height>544</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Decode Recording Filename Into Metadata Attributes</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_5">
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxCorrespondances">
+     <property name="title">
+      <string>Correspondances</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0" rowspan="2">
+       <widget class="QListView" name="listViewCorrespondances"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="commandRemove">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxUpdateMetadata">
+     <property name="title">
+      <string>Update Metadata</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="1">
+       <widget class="QRadioButton" name="radioButtonOverwrite">
+        <property name="text">
+         <string>Overwrite existing metadata</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButtonOnlyUpdate">
+        <property name="text">
+         <string>Update metadata only when empty</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QCheckBox" name="checkBoxCreateAttributes">
+        <property name="text">
+         <string>Add new metadata attributes</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QCommandLinkButton" name="commandUpdateMetadata">
+          <property name="text">
+           <string>Update Metadata</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QProgressBar" name="progressBar">
+          <property name="value">
+           <number>0</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>706</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="commandClose">
+     <property name="text">
+      <string>Close</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBoxFilenameDecoding">
+     <property name="title">
+      <string>Filename Decoding</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="labelOperation">
+          <property name="text">
+           <string>Operation:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxOperation">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <item>
+           <property name="text">
+            <string>Get delimited section</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Characters from left</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Characters from right</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Characters between</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelFrom">
+          <property name="text">
+           <string>From:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxFrom"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelTo">
+          <property name="text">
+           <string>To:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinBoxTo"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="labelDelimiter">
+          <property name="text">
+           <string>Delimiter:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="editDelimiter">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelExample">
+        <property name="text">
+         <string>Example:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayoutAttribute">
+        <item>
+         <widget class="QLabel" name="labelMetadataAttribute">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Save into metadata attribute:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxMetadataAttribute"/>
+        </item>
+       </layout>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="commandAdd">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>comboBoxOperation</tabstop>
+  <tabstop>spinBoxFrom</tabstop>
+  <tabstop>spinBoxTo</tabstop>
+  <tabstop>editDelimiter</tabstop>
+  <tabstop>comboBoxMetadataAttribute</tabstop>
+  <tabstop>commandAdd</tabstop>
+  <tabstop>listViewCorrespondances</tabstop>
+  <tabstop>commandRemove</tabstop>
+  <tabstop>radioButtonOnlyUpdate</tabstop>
+  <tabstop>radioButtonOverwrite</tabstop>
+  <tabstop>checkBoxCreateAttributes</tabstop>
+  <tabstop>commandUpdateMetadata</tabstop>
+  <tabstop>commandClose</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

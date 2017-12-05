@@ -31,6 +31,7 @@ public:
 
     // Statistics
     static void statExtractFeaturesForModelling(const QString &filename, Corpus *corpus, QString prefix, bool multilevel);
+    static void statExtractFeaturesForModellingPerSubject(const QString &filename, Corpus *corpus, QString prefix, QStringList subjectIDs);
     static void statInterAnnotatorAgreement(const QString &filenameCohen, const QString &filenameFleiss, Corpus *corpus,
                                             const QString &prefix, const QString &tapping_level);
     static void statCorrespondanceNSandMS(const QString &filenameTable, const QString &filenameBookmarks, Corpus *corpus, QString prefix);

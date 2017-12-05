@@ -889,6 +889,75 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(const
     file.close();
 }
 
+void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModellingPerSubject(const QString &filename,
+                                                                                     Corpus *corpus, QString prefix,
+                                                                                     QStringList subjectIDs)
+{
+    if (!corpus) return;
+    QStringList ppbAttributeIDs;
+    ppbAttributeIDs << prefix + "Delay" << prefix + "Dispersion" << prefix + "Force" <<
+                       prefix + "FirstPPB" << prefix + "LastPPB" << "promise_pos" <<
+                       prefix + "Subjects";
+
+    QFile file(filename);
+    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << "stimulusID\tstimulusType\tspeaker\tsyll_ID\tsyll_tmin\tsyll\t"
+           "offlineBoundaryType\tofflineContour\tofflineBoundary\t"
+           "durNextPause\tlogdurNextPause\tlogdurNextPauseZ\t"
+           "durSyllRel20\tdurSyllRel30\tdurSyllRel40\tdurSyllRel50\t"
+           "logdurSyllRel20\tlogdurSyllRel30\tlogdurSyllRel40\tlogdurSyllRel50\t"
+           "f0meanSyllRel20\tf0meanSyllRel30\tf0meanSyllRel40\tf0meanSyllRel50\t"
+           "intrasyllab_up\tintrasyllab_down\ttrajectory\t"
+           "tok_mwu\tsequence\trection\tsyntacticBoundaryType\tpos_mwu\tpos_mwu_cat\tpos_clilex\tcontext";
+    foreach (QString attribute, ppbAttributeIDs) {
+        out << "\t" << attribute;
+    }
+    foreach (QString subjectID, subjectIDs) {
+        out << "\t" << subjectID;
+    }
+    out << "\n";
+
+    foreach (CorpusCommunication *com, corpus->communications()) {
+        if (com->property("exclude").toBool()) continue;
+
+        QMap<QString, QPointer<AnnotationTierGroup> > tiers = corpus->repository()->annotations()->getTiersAllSpeakers(com->ID());
+        foreach (QString speakerID, tiers.keys()) {
+            QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+            IntervalTier *tier_syll = tiersSpk->getIntervalTierByName("syll");
+            if (!tier_syll) continue;
+            // Select syllables that we want to analyse: all syllables that are a potential boundary site
+            QList<int> ppbSyllables;
+            for (int i = 0; i < tier_syll->count(); ++i) {
+                Interval *syll = tier_syll->interval(i);
+                if (!syll->attribute(prefix + "PotentialSite").toBool()) continue;
+                ppbSyllables << i;
+            }
+            // Analyse the selected syllables
+            if (ppbSyllables.isEmpty()) continue;
+            QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables, ppbAttributeIDs);
+            // One line per syllable, with separate columns indicating whether each subject annotated this boundary
+            foreach (QString line, results) {
+                QStringList subjectsPPB = line.section("\t", - 1).split("|");
+                out << line;
+                foreach (QString subjectID, subjectIDs) {
+                    if (subjectsPPB.contains(subjectID))
+                        out << "\tB";
+                    else
+                        out << "\to";
+                }
+                out << "\n";
+            }
+        }
+        qDeleteAll(tiers);
+        qDebug() << com->ID();
+    }
+
+    file.close();
+}
+
+
 double getCohenKappa(const QList<bool> &annotations1, const QList<bool> &annotations2)
 {
     int n00 = 0, n01 = 0, n10 = 0, n11 = 0;

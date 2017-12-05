@@ -1,3 +1,0 @@
-target = PraalinePy
-sources = sipPraalinePycmodule.cpp sipPraalinePyRealTime.cpp sipPraalinePystdstring.cpp
-headers = sipAPIPraalinePy.h

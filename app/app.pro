@@ -225,7 +225,8 @@ SOURCES += main.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
     annotation/asr/LongSoundAlignerWidget.cpp \
-    annotation/asr/ASRModuleVisualiserWidgetBase.cpp
+    annotation/asr/ASRModuleVisualiserWidgetBase.cpp \
+    corpus/utilities/DecodeFilenameToMetadataDialog.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -351,7 +352,8 @@ HEADERS  += \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
     annotation/asr/LongSoundAlignerWidget.h \
-    annotation/asr/ASRModuleVisualiserWidgetBase.h
+    annotation/asr/ASRModuleVisualiserWidgetBase.h \
+    corpus/utilities/DecodeFilenameToMetadataDialog.h
 
 FORMS    += \
     corpus/MergeCorporaDialog.ui \
@@ -422,7 +424,8 @@ FORMS    += \
     statistics/disfluencies/AnalyserDisfluenciesWidget.ui \
     updater/Downloader.ui \
     annotation/asr/LongSoundAlignerWidget.ui \
-    annotation/asr/LanguageModelBuilderWidget.ui
+    annotation/asr/LanguageModelBuilderWidget.ui \
+    corpus/utilities/DecodeFilenameToMetadataDialog.ui
 
 RESOURCES += \
     praaline.qrc \

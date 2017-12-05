@@ -12,7 +12,7 @@ SUBDIRS += pncore pnlib pngui
 SUBDIRS += sub_dataquay svcore svgui svapp
 # SUBDIRS += libpraat
 SUBDIRS += plugins
-# SUBDIRS += praalinepy
+SUBDIRS += PraalinePy
 SUBDIRS += app
 
 sub_dataquay.file = dataquay/libdataquay.pro
