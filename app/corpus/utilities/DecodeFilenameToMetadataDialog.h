@@ -2,6 +2,13 @@
 #define DECODEFILENAMETOMETADATADIALOG_H
 
 #include <QDialog>
+#include <QPointer>
+
+namespace Praaline {
+namespace Core {
+    class Corpus;
+}
+}
 
 namespace Ui {
 class DecodeFilenameToMetadataDialog;
@@ -14,10 +21,12 @@ class DecodeFilenameToMetadataDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DecodeFilenameToMetadataDialog(QWidget *parent = 0);
+    explicit DecodeFilenameToMetadataDialog(QPointer<Praaline::Core::Corpus> corpus,
+                                            QWidget *parent = 0);
     ~DecodeFilenameToMetadataDialog();
 
 private slots:
+    void operationChanged(int);
     void addCorrespondance();
     void removeCorrespondance();
     void updateMetadata();
