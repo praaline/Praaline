@@ -9,6 +9,7 @@ using namespace Praaline::Core;
 
 #include "asr/ASRModuleWidgetBase.h"
 #include "asr/AutomaticTranscriptionWidget.h"
+#include "asr/ForcedAlignmentWidget.h"
 #include "asr/LanguageModelBuilderWidget.h"
 #include "asr/LongSoundAlignerWidget.h"
 
@@ -30,6 +31,7 @@ SpeechRecognitionWidget::SpeechRecognitionWidget(QWidget *parent) :
 
     // Module Selector
     ui->comboBoxModuleSelection->addItem("Automatic Transcription", "AutomaticTranscription");
+    ui->comboBoxModuleSelection->addItem("Forced Alignment", "ForcedAlignment");
     ui->comboBoxModuleSelection->addItem("Long Sound Alignment", "LongSoundAligner");
     ui->comboBoxModuleSelection->addItem("Language Model Builder", "LanguageModelBuilder");
     ui->comboBoxModuleSelection->setCurrentIndex(0);
@@ -119,6 +121,9 @@ void SpeechRecognitionWidget::moduleTabNew()
     QString moduleName = ui->comboBoxModuleSelection->currentData().toString();
     if      (moduleName == "AutomaticTranscription") {
         module = new AutomaticTranscriptionWidget(this);
+    }
+    else if (moduleName == "ForcedAlignment") {
+        module = new ForcedAlignmentWidget(this);
     }
     else if (moduleName == "LongSoundAligner") {
         module = new LongSoundAlignerWidget(this);

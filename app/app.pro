@@ -227,7 +227,8 @@ SOURCES += main.cpp \
     updater/Updater.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
-    corpus/utilities/MergeCommunicationsDialog.cpp
+    corpus/utilities/MergeCommunicationsDialog.cpp \
+    annotation/asr/ForcedAlignmentWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -355,7 +356,8 @@ HEADERS  += \
     updater/Updater.h \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
-    corpus/utilities/MergeCommunicationsDialog.h
+    corpus/utilities/MergeCommunicationsDialog.h \
+    annotation/asr/ForcedAlignmentWidget.h
 
 FORMS    += \
     MainWindow.ui \
@@ -428,7 +430,8 @@ FORMS    += \
     help/ContentWidget.ui \
     help/HelpModeConfig.ui \
     updater/Downloader.ui \
-    corpus/utilities/MergeCommunicationsDialog.ui
+    corpus/utilities/MergeCommunicationsDialog.ui \
+    annotation/asr/ForcedAlignmentWidget.ui
 
 RESOURCES += \
     praaline.qrc \
