@@ -2,9 +2,12 @@
 #define SPLITCOMMUNICATIONSDIALOG_H
 
 #include <QDialog>
-#include <QPointer>
-#include "pncore/corpus/Corpus.h"
-using namespace Praaline::Core;
+
+namespace Praaline {
+namespace Core {
+class Corpus;
+}
+}
 
 namespace Ui {
 class SplitCommunicationsDialog;
@@ -17,7 +20,7 @@ class SplitCommunicationsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SplitCommunicationsDialog(QPointer<Corpus> corpus, QWidget *parent = 0);
+    explicit SplitCommunicationsDialog(Praaline::Core::Corpus *corpus, QWidget *parent = 0);
     ~SplitCommunicationsDialog();
 
 private:

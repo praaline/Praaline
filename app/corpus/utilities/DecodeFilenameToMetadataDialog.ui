@@ -20,16 +20,6 @@
       <string>Correspondances</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0" rowspan="2">
-       <widget class="QListView" name="listViewCorrespondances"/>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="commandRemove">
-        <property name="text">
-         <string>Remove</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="1">
        <spacer name="verticalSpacer">
         <property name="orientation">
@@ -42,6 +32,16 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="commandRemove">
+        <property name="text">
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" rowspan="2">
+       <widget class="QTreeView" name="treeViewCorrespondances"/>
       </item>
      </layout>
     </widget>
@@ -72,16 +72,6 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QCheckBox" name="checkBoxCreateAttributes">
-        <property name="text">
-         <string>Add new metadata attributes</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0" colspan="3">
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
@@ -99,6 +89,19 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -259,11 +262,10 @@
   <tabstop>editDelimiter</tabstop>
   <tabstop>comboBoxMetadataAttribute</tabstop>
   <tabstop>commandAdd</tabstop>
-  <tabstop>listViewCorrespondances</tabstop>
+  <tabstop>treeViewCorrespondances</tabstop>
   <tabstop>commandRemove</tabstop>
   <tabstop>radioButtonOnlyUpdate</tabstop>
   <tabstop>radioButtonOverwrite</tabstop>
-  <tabstop>checkBoxCreateAttributes</tabstop>
   <tabstop>commandUpdateMetadata</tabstop>
   <tabstop>commandClose</tabstop>
  </tabstops>

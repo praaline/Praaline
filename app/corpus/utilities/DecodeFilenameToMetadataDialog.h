@@ -6,7 +6,7 @@
 
 namespace Praaline {
 namespace Core {
-    class Corpus;
+class Corpus;
 }
 }
 
@@ -21,8 +21,7 @@ class DecodeFilenameToMetadataDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DecodeFilenameToMetadataDialog(QPointer<Praaline::Core::Corpus> corpus,
-                                            QWidget *parent = 0);
+    explicit DecodeFilenameToMetadataDialog(Praaline::Core::Corpus *corpus, QWidget *parent = 0);
     ~DecodeFilenameToMetadataDialog();
 
 private slots:

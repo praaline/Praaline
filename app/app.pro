@@ -109,67 +109,25 @@ PRE_TARGETDEPS += \
 
 SOURCES += main.cpp \
     #visualisation/pitchanalyser.cpp \
-    corpus/MergeCorporaDialog.cpp \
     PraalineMainWindow.cpp \
-    visualisation/SimpleVisualiserWidget.cpp \
-    annotation/asr/LanguageModelBuilderWidget.cpp \
-    visualisation/ExportVisualisationDialog.cpp \
-    query/sql/SqlTextEdit.cpp \
-    query/sql/SqlUiLexer.cpp \
-    query/AdvancedQueriesWidget.cpp \
+    NetworkPermissionTester.cpp \
+    PraalineSplash.cpp \
+    CorpusRepositoriesManager.cpp \
     corpus/CorpusExplorerTableWidget.cpp \
     corpus/CorpusExplorerWidget.cpp \
-    query/ConcordancerQuickWidget.cpp \
-    query/ConcordancerWidget.cpp \
-    query/CreateDatasetWidget.cpp \
-    query/ExtractSoundBitesWidget.cpp \
-    query/QueryMode.cpp \
-    query/QueryModeWidget.cpp \
-    scripting/ScriptingMode.cpp \
-    annotation/AnnotationMode.cpp \
-    annotation/AnnotationModeWidget.cpp \
-    annotation/AutomaticAnnotationWidget.cpp \
-    annotation/BatchEditorWidget.cpp \
-    annotation/CompareAnnotationsWidget.cpp \
-    annotation/ManualAnnotationWidget.cpp \
-    annotation/TranscriberWidget.cpp \
-    scripting/ScriptingModeWidget.cpp \
-    corpus/CheckMediaFilesDialog.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
     corpus/CorpusExplorerOptionsDialog.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
-    corpus/SplitCommunicationsDialog.cpp \
-    statistics/StatisticsMode.cpp \
-    statistics/StatisticsModeWidget.cpp \
-    NetworkPermissionTester.cpp \
-    PraalineSplash.cpp \
-    visualisation/AudioEnabledWidget.cpp \
-    visualisation/GlobalVisualisationWidget.cpp \
-    visualisation/PitchAnalyser.cpp \
-    visualisation/PitchAnalyserWidget.cpp \
-    visualisation/TimelineVisualisationWidget.cpp \
-    visualisation/VisualisationMode.cpp \
-    visualisation/VisualisationModeWidget.cpp \
-    visualisation/VisualiserWidget.cpp \
-    annotation/dis/AnnotationControlsDisfluencies.cpp \
-    annotation/dis/DisfluencyAnalyser.cpp \
+    corpus/utilities/SplitCommunicationsDialog.cpp \
+    corpus/utilities/CheckMediaFilesDialog.cpp \
+    corpus/utilities/MergeCorporaDialog.cpp \
+    corpus/utilities/DecodeFilenameToMetadataDialog.cpp \
     corpus/structureeditors/MetadataStructureEditor.cpp \
     corpus/structureeditors/AnnotationStructureEditor.cpp \
-    help/SearchWidgetFactory.cpp \
-    help/IndexWidgetFactory.cpp \
-    help/HelpMode.cpp \
-    help/HelpModeWidget.cpp \
-    help/ContentWidgetFactory.cpp \
-    help/HelpBrowser.cpp \
-    help/HelpModeConfig.cpp \
     corpus/structureeditors/AddAttributeDialog.cpp \
     corpus/structureeditors/AddLevelDialog.cpp \
-    scripting/ScriptEditorWidget.cpp \
     corpus/structureeditors/NameValueListEditor.cpp \
-    query/AnnotationBrowserWidget.cpp \
-    query/dataseteditor/DatasetEditorWidget.cpp \
-    CorpusRepositoriesManager.cpp \
     corpus/exportannotations/ExportAnnotationsWizard.cpp \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.cpp \
     corpus/exportmetadata/ExportMetadataWizard.cpp \
@@ -184,6 +142,67 @@ SOURCES += main.cpp \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
     corpus/importmetadata/ImportMetadataWizardFinalPage.cpp \
     corpus/importannotations/ImportAnnotationsWizard.cpp \
+    corpus/CorpusRepositoryPropertiesDialog.cpp \
+    corpus/CorpusRepositoryCreateWizard.cpp \
+    corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
+    annotation/AnnotationMode.cpp \
+    annotation/AnnotationModeWidget.cpp \
+    annotation/AutomaticAnnotationWidget.cpp \
+    annotation/BatchEditorWidget.cpp \
+    annotation/CompareAnnotationsWidget.cpp \
+    annotation/ManualAnnotationWidget.cpp \
+    annotation/TranscriberWidget.cpp \
+    annotation/editors/AnnotationEditorBase.cpp \
+    annotation/editors/TranscriptAnnotationEditor.cpp \
+    annotation/editors/LaTexTranscriptionBuilder.cpp \
+    annotation/SpeechRecognitionWidget.cpp \
+    annotation/asr/AutomaticTranscriptionWidget.cpp \
+    annotation/asr/ASRModuleWidgetBase.cpp \
+    annotation/editors/GroupingAnnotationEditor.cpp \
+    annotation/editors/AnnotationMultiTierEditor.cpp \
+    annotation/calculate/TidyUpAnnotationsDialog.cpp \
+    annotation/calculate/AddCalculatedAnnotationDialog.cpp \
+    annotation/calculate/ComposeTranscriptionDialog.cpp \
+    annotation/calculate/CreateSequenceAnnotationDialog.cpp \
+    annotation/dis/AnnotationControlsDisfluencies.cpp \
+    annotation/dis/DisfluencyAnalyser.cpp \
+    annotation/asr/LanguageModelBuilderWidget.cpp \
+    annotation/asr/LongSoundAlignerWidget.cpp \
+    annotation/asr/ASRModuleVisualiserWidgetBase.cpp \
+    visualisation/AudioEnabledWidget.cpp \
+    visualisation/GlobalVisualisationWidget.cpp \
+    visualisation/PitchAnalyser.cpp \
+    visualisation/PitchAnalyserWidget.cpp \
+    visualisation/TimelineVisualisationWidget.cpp \
+    visualisation/VisualisationMode.cpp \
+    visualisation/VisualisationModeWidget.cpp \
+    visualisation/VisualiserWidget.cpp \
+    visualisation/SimpleVisualiserWidget.cpp \    
+    visualisation/ExportVisualisationDialog.cpp \
+    query/sql/SqlTextEdit.cpp \
+    query/sql/SqlUiLexer.cpp \
+    query/AdvancedQueriesWidget.cpp \
+    query/ConcordancerQuickWidget.cpp \
+    query/ConcordancerWidget.cpp \
+    query/CreateDatasetWidget.cpp \
+    query/ExtractSoundBitesWidget.cpp \
+    query/QueryMode.cpp \
+    query/QueryModeWidget.cpp \
+    query/AnnotationBrowserWidget.cpp \
+    query/dataseteditor/DatasetEditorWidget.cpp \
+    scripting/ScriptingMode.cpp \
+    scripting/ScriptingModeWidget.cpp \
+    scripting/ScriptEditorWidget.cpp \
+    statistics/StatisticsMode.cpp \
+    statistics/StatisticsModeWidget.cpp \
+    help/SearchWidgetFactory.cpp \
+    help/IndexWidgetFactory.cpp \
+    help/HelpMode.cpp \
+    help/HelpModeWidget.cpp \
+    help/ContentWidgetFactory.cpp \
+    help/HelpBrowser.cpp \
+    help/HelpModeConfig.cpp \
     statistics/StatisticalAnalysisBasicWidget.cpp \
     statistics/temporal/AnalyserSegmentDuration.cpp \
     statistics/temporal/StatisticsPluginTemporal.cpp \
@@ -194,28 +213,12 @@ SOURCES += main.cpp \
     statistics/basic/StatisticsPluginBasicWidget.cpp \
     statistics/interrater/KappaStatisticsWidget.cpp \
     statistics/prosody/AnalyserMacroprosody.cpp \
-    annotation/calculate/AddCalculatedAnnotationDialog.cpp \
-    annotation/calculate/ComposeTranscriptionDialog.cpp \
-    annotation/calculate/CreateSequenceAnnotationDialog.cpp \
     statistics/temporal/AnalyserTemporalItem.cpp \
     statistics/temporal/AnalyserTemporal.cpp \
     statistics/prosody/GlobalProsodicProfileWidget.cpp \
     statistics/temporal/AnalyserTemporalWidget.cpp \
-    statistics/temporal/PauseLengthDistributionWidget.cpp \
-    corpus/CorpusRepositoryPropertiesDialog.cpp \
-    corpus/CorpusRepositoryCreateWizard.cpp \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
-    annotation/calculate/TidyUpAnnotationsDialog.cpp \
+    statistics/temporal/PauseLengthDistributionWidget.cpp \   
     statistics/interrater/KappaStatisticsCalculator.cpp \
-    annotation/editors/AnnotationEditorBase.cpp \
-    annotation/editors/TranscriptAnnotationEditor.cpp \
-    annotation/editors/LaTexTranscriptionBuilder.cpp \
-    annotation/SpeechRecognitionWidget.cpp \
-    annotation/asr/AutomaticTranscriptionWidget.cpp \
-    annotation/asr/ASRModuleWidgetBase.cpp \
-    annotation/editors/GroupingAnnotationEditor.cpp \
-    annotation/editors/AnnotationMultiTierEditor.cpp \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
     statistics/disfluencies/StatisticsPluginDisfluencies.cpp \
     statistics/StatisticalMeasureAggregator.cpp \
     statistics/disfluencies/AnalyserDisfluencies.cpp \
@@ -224,79 +227,32 @@ SOURCES += main.cpp \
     updater/Updater.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
-    annotation/asr/LongSoundAlignerWidget.cpp \
-    annotation/asr/ASRModuleVisualiserWidgetBase.cpp \
-    corpus/utilities/DecodeFilenameToMetadataDialog.cpp
+    corpus/utilities/MergeCommunicationsDialog.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
-    corpus/MergeCorporaDialog.h \
     PraalineMainWindow.h \
-    visualisation/SimpleVisualiserWidget.h \
-    annotation/asr/LanguageModelBuilderWidget.h \
-    visualisation/ExportVisualisationDialog.h \
-    query/sql/SqlTextEdit.h \
-    query/sql/SqlUiLexer.h \
-    query/AdvancedQueriesWidget.h \
+    NetworkPermissionTester.h \
+    PraalineSplash.h \
+    Version.h \
+    CorpusRepositoriesManager.h \
+    PraalineUserInterfaceOptions.h \
+    interfaces/IAnnotationPlugin.h \
+    interfaces/IStatisticsPlugin.h \
     corpus/CorpusExplorerTableWidget.h \
     corpus/CorpusExplorerWidget.h \
-    query/ConcordancerQuickWidget.h \
-    query/ConcordancerWidget.h \
-    query/CreateDatasetWidget.h \
-    query/ExtractSoundBitesWidget.h \
-    query/QueryMode.h \
-    query/QueryModeWidget.h \
-    annotation/dis/AnnotationControlsDisfluencies.h \
-    annotation/dis/DisfluencyAnalyser.h \
-    annotation/AnnotationMode.h \
-    annotation/AnnotationModeWidget.h \
-    annotation/AutomaticAnnotationWidget.h \
-    annotation/BatchEditorWidget.h \
-    annotation/CompareAnnotationsWidget.h \
-    annotation/ManualAnnotationWidget.h \
-    annotation/TranscriberWidget.h \
-    corpus/CheckMediaFilesDialog.h \
     corpus/CorpusDatabaseConnectionDialog.h \
     corpus/CorpusExplorerOptionsDialog.h \
     corpus/CorpusMode.h \
     corpus/CorpusModeWidget.h \
-    corpus/SplitCommunicationsDialog.h \
-    scripting/ScriptingMode.h \
-    scripting/ScriptingModeWidget.h \
-    statistics/StatisticsMode.h \
-    statistics/StatisticsModeWidget.h \
-    visualisation/AudioEnabledWidget.h \
-    visualisation/GlobalVisualisationWidget.h \
-    visualisation/PitchAnalyser.h \
-    visualisation/PitchAnalyserWidget.h \
-    visualisation/TimelineVisualisationWidget.h \
-    visualisation/VisualisationMode.h \
-    visualisation/VisualisationModeWidget.h \
-    visualisation/VisualiserWidget.h \
-    NetworkPermissionTester.h \
-    PraalineSplash.h \
-    Version.h \
     corpus/structureeditors/MetadataStructureEditor.h \
     corpus/structureeditors/AnnotationStructureEditor.h \
-    help/SearchWidgetFactory.h \
-    help/IndexWidgetFactory.h \
-    help/HelpMode.h \
-    help/HelpModeWidget.h \
-    help/ContentWidgetFactory.h \
-    help/HelpBrowser.h \
-    help/HelpModeConfig.h \
-    interfaces/IAnnotationPlugin.h \
-    interfaces/IStatisticsPlugin.h \
     corpus/structureeditors/AddAttributeDialog.h \
     corpus/structureeditors/AddLevelDialog.h \
-    scripting/ScriptEditorWidget.h \
     corpus/structureeditors/NameValueListEditor.h \
-    query/AnnotationBrowserWidget.h \
-    query/dataseteditor/DatasetEditorWidget.h \
-    query/dataseteditor/DatasetEditorModels.h \
-    CorpusRepositoriesManager.h \
     corpus/exportannotations/ExportAnnotationsWizard.h \
     corpus/exportannotations/ExportAnnotationsWizardPraatPage.h \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h \
     corpus/exportmetadata/ExportMetadataWizard.h \
     corpus/importcorpusitems/ImportCorpusItemsWizard.h \
     corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.h \
@@ -309,6 +265,61 @@ HEADERS  += \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.h \
     corpus/importmetadata/ImportMetadataWizardFinalPage.h \
     corpus/importannotations/ImportAnnotationsWizard.h \
+    corpus/importannotations/ImportTableDataPreviewWizardPage.h \
+    corpus/CorpusRepositoryPropertiesDialog.h \
+    corpus/CorpusRepositoryCreateWizard.h \
+    corpus/utilities/MergeCorporaDialog.h \
+    corpus/utilities/CheckMediaFilesDialog.h \
+    corpus/utilities/DecodeFilenameToMetadataDialog.h \
+    corpus/utilities/SplitCommunicationsDialog.h \
+    annotation/asr/LanguageModelBuilderWidget.h \
+    annotation/dis/AnnotationControlsDisfluencies.h \
+    annotation/dis/DisfluencyAnalyser.h \
+    annotation/AnnotationMode.h \
+    annotation/AnnotationModeWidget.h \
+    annotation/AutomaticAnnotationWidget.h \
+    annotation/BatchEditorWidget.h \
+    annotation/CompareAnnotationsWidget.h \
+    annotation/ManualAnnotationWidget.h \
+    annotation/TranscriberWidget.h \
+    annotation/calculate/TidyUpAnnotationsDialog.h \
+    annotation/editors/AnnotationEditorBase.h \
+    annotation/editors/TranscriptAnnotationEditor.h \
+    annotation/editors/LaTexTranscriptionBuilder.h \
+    annotation/SpeechRecognitionWidget.h \
+    annotation/asr/AutomaticTranscriptionWidget.h \
+    annotation/asr/ASRModuleWidgetBase.h \
+    annotation/editors/GroupingAnnotationEditor.h \
+    annotation/editors/AnnotationMultiTierEditor.h \
+    annotation/calculate/AddCalculatedAnnotationDialog.h \
+    annotation/calculate/ComposeTranscriptionDialog.h \
+    annotation/calculate/CreateSequenceAnnotationDialog.h \
+    annotation/asr/LongSoundAlignerWidget.h \
+    annotation/asr/ASRModuleVisualiserWidgetBase.h \
+    visualisation/AudioEnabledWidget.h \
+    visualisation/GlobalVisualisationWidget.h \
+    visualisation/PitchAnalyser.h \
+    visualisation/PitchAnalyserWidget.h \
+    visualisation/TimelineVisualisationWidget.h \
+    visualisation/VisualisationMode.h \
+    visualisation/VisualisationModeWidget.h \
+    visualisation/VisualiserWidget.h \
+    visualisation/SimpleVisualiserWidget.h \
+    visualisation/ExportVisualisationDialog.h \
+    query/sql/SqlTextEdit.h \
+    query/sql/SqlUiLexer.h \
+    query/AdvancedQueriesWidget.h \
+    query/ConcordancerQuickWidget.h \
+    query/ConcordancerWidget.h \
+    query/CreateDatasetWidget.h \
+    query/ExtractSoundBitesWidget.h \
+    query/QueryMode.h \
+    query/QueryModeWidget.h \
+    query/AnnotationBrowserWidget.h \
+    query/dataseteditor/DatasetEditorWidget.h \
+    query/dataseteditor/DatasetEditorModels.h \
+    statistics/StatisticsMode.h \
+    statistics/StatisticsModeWidget.h \
     statistics/StatisticalAnalysisBasicWidget.h \
     statistics/temporal/AnalyserSegmentDuration.h \
     statistics/temporal/StatisticsPluginTemporal.h \
@@ -319,75 +330,44 @@ HEADERS  += \
     statistics/basic/StatisticsPluginBasicWidget.h \
     statistics/interrater/KappaStatisticsWidget.h \
     statistics/prosody/AnalyserMacroprosody.h \
-    annotation/calculate/AddCalculatedAnnotationDialog.h \
-    annotation/calculate/ComposeTranscriptionDialog.h \
-    annotation/calculate/CreateSequenceAnnotationDialog.h \
     statistics/temporal/AnalyserTemporalItem.h \
     statistics/temporal/AnalyserTemporal.h \
-    PraalineUserInterfaceOptions.h \
     statistics/prosody/GlobalProsodicProfileWidget.h \
     statistics/temporal/AnalyserTemporalWidget.h \
     statistics/temporal/PauseLengthDistributionWidget.h \
-    corpus/CorpusRepositoryPropertiesDialog.h \
-    corpus/CorpusRepositoryCreateWizard.h \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.h \
-    annotation/calculate/TidyUpAnnotationsDialog.h \
-    statistics/interrater/KappaStatisticsCalculator.h \
-    annotation/editors/AnnotationEditorBase.h \
-    annotation/editors/TranscriptAnnotationEditor.h \
-    annotation/editors/LaTexTranscriptionBuilder.h \
-    annotation/SpeechRecognitionWidget.h \
-    annotation/asr/AutomaticTranscriptionWidget.h \
-    annotation/asr/ASRModuleWidgetBase.h \
-    annotation/editors/GroupingAnnotationEditor.h \
-    annotation/editors/AnnotationMultiTierEditor.h \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h \
     statistics/disfluencies/StatisticsPluginDisfluencies.h \
     statistics/StatisticalMeasureAggregator.h \
     statistics/disfluencies/AnalyserDisfluencies.h \
     statistics/disfluencies/AnalyserDisfluenciesItem.h \
     statistics/AnalyserItemBase.h \
     statistics/disfluencies/AnalyserDisfluenciesWidget.h \
+    statistics/interrater/KappaStatisticsCalculator.h \
+    scripting/ScriptEditorWidget.h \
+    scripting/ScriptingMode.h \
+    scripting/ScriptingModeWidget.h \
+    help/SearchWidgetFactory.h \
+    help/IndexWidgetFactory.h \
+    help/HelpMode.h \
+    help/HelpModeWidget.h \
+    help/ContentWidgetFactory.h \
+    help/HelpBrowser.h \
+    help/HelpModeConfig.h \   
     updater/Updater.h \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
-    annotation/asr/LongSoundAlignerWidget.h \
-    annotation/asr/ASRModuleVisualiserWidgetBase.h \
-    corpus/utilities/DecodeFilenameToMetadataDialog.h
+    corpus/utilities/MergeCommunicationsDialog.h
 
 FORMS    += \
-    corpus/MergeCorporaDialog.ui \
-    query/AdvancedQueriesWidget.ui \
-    query/ConcordancerQuickWidget.ui \
-    query/ConcordancerWidget.ui \
-    query/CreateDatasetWidget.ui \
-    query/ExtractSoundBitesWidget.ui \
-    query/QueryModeWidget.ui \
-    annotation/dis/AnnotationControlsDisfluencies.ui \
-    annotation/AnnotationModeWidget.ui \
-    annotation/AutomaticAnnotationWidget.ui \
-    annotation/CompareAnnotationsWidget.ui \
-    annotation/ManualAnnotationWidget.ui \
-    annotation/TranscriberWidget.ui \
     MainWindow.ui \
-    visualisation/ExportVisualisationDialog.ui \
-    visualisation/GlobalVisualisationWidget.ui \
-    visualisation/TimelineVisualisationWidget.ui \
-    visualisation/VisualisationModeWidget.ui \
-    statistics/StatisticsModeWidget.ui \
-    scripting/ScriptingModeWidget.ui \
-    corpus/SplitCommunicationsDialog.ui \
     corpus/CorpusModeWidget.ui \
     corpus/CorpusExplorerWidget.ui \
     corpus/CorpusExplorerTableWidget.ui \
     corpus/CorpusExplorerOptionsDialog.ui \
     corpus/CorpusDatabaseConnectionDialog.ui \
-    corpus/CheckMediaFilesDialog.ui \
-    annotation/BatchEditorWidget.ui \
+    corpus/CorpusRepositoryPropertiesDialog.ui \
+    corpus/CorpusRepositoryCreateWizard.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
-    help/ContentWidget.ui \
-    help/HelpModeConfig.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
     corpus/structureeditors/AddLevelDialog.ui \
     corpus/exportannotations/ExportAnnotationsWizard.ui \
@@ -404,28 +384,51 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
     corpus/importannotations/ImportAnnotationsWizard.ui \
+    corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
+    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
+    corpus/utilities/CheckMediaFilesDialog.ui \
+    corpus/utilities/MergeCorporaDialog.ui \
+    corpus/utilities/SplitCommunicationsDialog.ui \
+    corpus/utilities/DecodeFilenameToMetadataDialog.ui \
+    annotation/BatchEditorWidget.ui \
+    annotation/dis/AnnotationControlsDisfluencies.ui \
+    annotation/AnnotationModeWidget.ui \
+    annotation/AutomaticAnnotationWidget.ui \
+    annotation/CompareAnnotationsWidget.ui \
+    annotation/ManualAnnotationWidget.ui \
+    annotation/TranscriberWidget.ui \
+    annotation/calculate/AddCalculatedAnnotationDialog.ui \
+    annotation/calculate/ComposeTranscriptionDialog.ui \
+    annotation/calculate/CreateSequenceAnnotationDialog.ui \
+    annotation/calculate/TidyUpAnnotationsDialog.ui \
+    annotation/SpeechRecognitionWidget.ui \
+    annotation/asr/AutomaticTranscriptionWidget.ui \
+    annotation/asr/LongSoundAlignerWidget.ui \
+    annotation/asr/LanguageModelBuilderWidget.ui \
+    visualisation/ExportVisualisationDialog.ui \
+    visualisation/GlobalVisualisationWidget.ui \
+    visualisation/TimelineVisualisationWidget.ui \
+    visualisation/VisualisationModeWidget.ui \
+    query/AdvancedQueriesWidget.ui \
+    query/ConcordancerQuickWidget.ui \
+    query/ConcordancerWidget.ui \
+    query/CreateDatasetWidget.ui \
+    query/ExtractSoundBitesWidget.ui \
+    query/QueryModeWidget.ui \
+    statistics/StatisticsModeWidget.ui \
     statistics/StatisticalAnalysisBasicWidget.ui \
     statistics/prosody/AnalyserMacroprosodyWidget.ui \
     statistics/basic/StatisticsPluginBasicWidget.ui \
     statistics/interrater/KappaStatisticsWidget.ui \
-    annotation/calculate/AddCalculatedAnnotationDialog.ui \
-    annotation/calculate/ComposeTranscriptionDialog.ui \
-    annotation/calculate/CreateSequenceAnnotationDialog.ui \
     statistics/prosody/GlobalProsodicProfileWidget.ui \
     statistics/temporal/AnalyserTemporalWidget.ui \
     statistics/temporal/PauseLengthDistributionWidget.ui \
-    corpus/CorpusRepositoryPropertiesDialog.ui \
-    corpus/CorpusRepositoryCreateWizard.ui \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
-    annotation/calculate/TidyUpAnnotationsDialog.ui \
-    annotation/SpeechRecognitionWidget.ui \
-    annotation/asr/AutomaticTranscriptionWidget.ui \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
     statistics/disfluencies/AnalyserDisfluenciesWidget.ui \
+    scripting/ScriptingModeWidget.ui \
+    help/ContentWidget.ui \
+    help/HelpModeConfig.ui \
     updater/Downloader.ui \
-    annotation/asr/LongSoundAlignerWidget.ui \
-    annotation/asr/LanguageModelBuilderWidget.ui \
-    corpus/utilities/DecodeFilenameToMetadataDialog.ui
+    corpus/utilities/MergeCommunicationsDialog.ui
 
 RESOURCES += \
     praaline.qrc \

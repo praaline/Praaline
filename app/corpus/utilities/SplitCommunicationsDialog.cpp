@@ -6,11 +6,13 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QStandardItemModel>
+
 #include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/annotation/Interval.h"
+using namespace Praaline::Core;
 
 #include "pnlib/mediautil/AudioSegmenter.h"
 
@@ -26,7 +28,7 @@ struct SplitCommunicationsDialogData{
     QStandardItemModel *modelDistinctValues;
 };
 
-SplitCommunicationsDialog::SplitCommunicationsDialog(QPointer<Corpus> corpus, QWidget *parent) :
+SplitCommunicationsDialog::SplitCommunicationsDialog(Corpus *corpus, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::SplitCommunicationsDialog), d(new SplitCommunicationsDialogData)
 {

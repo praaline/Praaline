@@ -49,12 +49,16 @@ private slots:
     void exportMetadata();
     void importAnnotations();
     void exportAnnotations();
-    // Tools
+    // Corpus integrity
     void checkMediaFiles();
     void createAnnotationsFromRecordings();
     void createSpeakersFromAnnotations();
     void cleanUpParticipationsFromAnnotations();
-    void splitCommunications();
+    // Utilities
+    void utilitiesSplitCommunications();
+    void utilitiesMergeCommunications();
+    void utilitiesDecodeFilenameToMetadata();
+    void utilitiesMergeCorpora();
     // Presentation
     void attributesAndGroupings();
     void metadataEditorPrimaryStyleTree();
@@ -75,6 +79,8 @@ private:
     void updateMetadataEditorsForCom(CorpusCommunication *communication);
     void updateMetadataEditorsForSpk(CorpusSpeaker *speaker);
     void updateMetadataEditorsForCorpus(Corpus *corpus);
+
+    bool checkForActiveCorpus();
 };
 
 #endif // CORPUSEXPLORERWIDGET_H
