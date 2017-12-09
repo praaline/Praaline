@@ -24,8 +24,8 @@ public:
     QString attributePhonetisationOfTokens() const;
     void setAttributePhonetisationOfTokens(const QString &attributeID);
 
-    QString exportToPhonetiser(QPointer<CorpusCommunication> com);
-    QString importFromPhonetiser(QPointer<CorpusCommunication> com, bool fromTranscriptionTier = false);
+    QString exportToPhonetiser(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString importFromPhonetiser(QPointer<Praaline::Core::CorpusCommunication> com, bool fromTranscriptionTier = false);
 
 private:
     PhonetiserExternalData *d;

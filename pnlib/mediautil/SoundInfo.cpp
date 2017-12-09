@@ -74,14 +74,18 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
             info.precisionBits = line.section(":", 1, -1).replace("-bit", "").trimmed().toInt();
         }
         else if (line.startsWith("Duration")) {
-            QString durationText = line.section(":", 1, -1).section("=", 0, 0).trimmed();
-            long h = durationText.section(":", 0, 0).toInt();
-            long m = durationText.section(":", 1, 1).toInt();
-            long s = durationText.section(":", 2, 2).section(".", 0, 0).toInt();
-            long ms = durationText.section(".", 1, 1).toInt();
-            long msec = h * 3600000 + m * 60000 + s * 1000 + ms;
+            QString durationText = line.section(":", 1, -1).section("=", 1, 1).replace("samples", "").trimmed();
+            sv_frame_t samples = durationText.toLongLong();
+            info.duration = RealTime::frame2RealTime(samples, info.sampleRate);
+            // Old method
+            // QString durationText = line.section(":", 1, -1).section("=", 0, 0).trimmed();
+            // long h = durationText.section(":", 0, 0).toInt();
+            // long m = durationText.section(":", 1, 1).toInt();
+            // long s = durationText.section(":", 2, 2).section(".", 0, 0).toInt();
+            // long ms = durationText.section(".", 1, 1).toInt();
+            // long msec = h * 3600000 + m * 60000 + s * 1000 + ms;
             // qDebug() << h << m << s << ms << "   " << msec;
-            info.duration = RealTime::fromMilliseconds(msec);
+            // info.duration = RealTime::fromMilliseconds(msec);
         }
         else if (line.startsWith("Bit Rate")) {
             QString b = line.section(":", 1, -1).replace("k", "").trimmed();

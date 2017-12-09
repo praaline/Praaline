@@ -35,6 +35,7 @@
 #include "BratAnnotationExporter.h"
 #include "CPROMDISS.h"
 #include "SilentPauseManipulator.h"
+#include "ExperimentUtterances.h"
 
 #include "pluginvaria.h"
 
@@ -414,9 +415,16 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     //merge_pauses(communications);
 
-//    foreach (QPointer<CorpusCommunication> com, communications) {
-//        if (!com) continue;
-//        QString m;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        QString m;
+//        PhonetiserExternal p;
+//        m = p.importFromPhonetiser(com, true);
+//        m.chop(1); m = m.append("\tAlign:\t");
+//        m = m.append(ExperimentUtterances::align(com));
+        m = ExperimentUtterances::concatenate(com);
+        if (!m.isEmpty()) printMessage(m);
+    }
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);
@@ -477,20 +485,20 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "boundary");
     // ProsodicBoundariesExperimentAnalysis::calculateDelayAndDispersion(corpus, "pause");
     // Extract tables for statistics
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/01 Analyse commune frontieres/";
+//    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/01 Analyse commune frontieres/";
     // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "titeuf_naive_boundary_features.txt", corpus, "boundary", false);
     // ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(path + "titeuf_naive_pause_features.txt", corpus, "pause", false);
 
-    QStringList subjects;
-    foreach (QString id, corpus->speakerIDs()) {
-        if (!corpus->speaker(id)) continue;
-        if (!corpus->speaker(id)->property("isExperimentSubject").toBool()) continue;
-        if (corpus->speaker(id)->property("exclude").toBool()) continue;
-        if (corpus->speaker(id)->property("subjectGroup").toString() != "Expert") continue;
-        subjects << id;
-    }
-    qSort(subjects);
-    ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModellingPerSubject(path + "locas_boundary_persubject_e.txt", corpus, "boundaryExpert", subjects);
+//    QStringList subjects;
+//    foreach (QString id, corpus->speakerIDs()) {
+//        if (!corpus->speaker(id)) continue;
+//        if (!corpus->speaker(id)->property("isExperimentSubject").toBool()) continue;
+//        if (corpus->speaker(id)->property("exclude").toBool()) continue;
+//        if (corpus->speaker(id)->property("subjectGroup").toString() != "Expert") continue;
+//        subjects << id;
+//    }
+//    qSort(subjects);
+//    ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModellingPerSubject(path + "locas_boundary_persubject_e.txt", corpus, "boundaryExpert", subjects);
 
     // z-score normalisation
     // MacroprosodyExperiment::calculateZScoreForJoystickDataPerSampleAndParticipant(communications, "joystick_speechrate");

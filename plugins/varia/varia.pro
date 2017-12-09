@@ -49,9 +49,14 @@ CONFIG( debug, debug|release ) {
 # Application components
 LIBS +=  \
         -L../../svcore/$${COMPONENTSPATH} -lsvcore \
+        -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
+        -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
+        ../../svcore/$${COMPONENTSPATH}/libsvcore.a \
+        ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
+        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
@@ -84,7 +89,8 @@ HEADERS += \
     SequencerProsodicUnits.h \
     SequencerCombineUnits.h \
     CPROMDISS.h \
-    SilentPauseManipulator.h
+    SilentPauseManipulator.h \
+    ExperimentUtterances.h
 
 
 SOURCES += \ 
@@ -116,4 +122,5 @@ SOURCES += \
     SequencerProsodicUnits.cpp \
     SequencerCombineUnits.cpp \
     CPROMDISS.cpp \
-    SilentPauseManipulator.cpp
+    SilentPauseManipulator.cpp \
+    ExperimentUtterances.cpp

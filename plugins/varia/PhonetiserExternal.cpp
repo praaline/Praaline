@@ -168,7 +168,8 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
                     if (intv->isPauseSilent()) continue;
                     QString t = intv->attribute("phonetisation").toString().trimmed();
                     if (t.isEmpty() || t == "_") continue;
-                    phonetisations << QString(t).replace("  ", " ").replace(" ", "|");
+                    if (t.endsWith("| _")) t.chop(3);
+                    phonetisations << t; // QString(t).replace("  ", " ").replace(" ", "|"); ???
                 }
             }
             else {
@@ -207,7 +208,8 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
                     QStringList phonetokens = phonetisation.split("|");
                     int j(0);
                     foreach (Interval *intv, utterance) {
-                        if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "puisqu'" && intv->text() != "parce qu'") continue;
+                        if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "puisqu'"
+                                                       && intv->text() != "parce qu'" && intv->text() != "quelqu'") continue;
                         j++;
                     }
                     if (j != phonetokens.count()) {
@@ -233,7 +235,8 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
                 QStringList phonetokens = phonetisation.split("|");
                 int j(0);
                 foreach (Interval *intv, utterance) {
-                    if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "puisqu'" && intv->text() != "parce qu'") continue;
+                    if (intv->text().endsWith("'") && intv->text() != "jusqu'" && intv->text() != "lorsqu'" && intv->text() != "puisqu'"
+                                                   && intv->text() != "parce qu'" && intv->text() != "quelqu'") continue;
                     intv->setAttribute(d->attributePhonetisationOfTokens, QString(phonetokens.at(j)).replace(" ", ""));
                     j++;
                 }
@@ -243,7 +246,7 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
             // Apostrophes
             for (int i = 0; i < tier_tokens->count() - 1; ++i) {
                 if (!tier_tokens->at(i)->attribute(d->attributePhonetisationOfTokens).toString().isEmpty()) continue;
-                QString t = tier_tokens->at(i)->text();
+                QString t = tier_tokens->at(i)->text().toLower();
                 QString p = tier_tokens->at(i+1)->attribute(d->attributePhonetisationOfTokens).toString();
                 if      (t == "c'" && p.startsWith("s")) {
                     tier_tokens->at(i)->setAttribute(d->attributePhonetisationOfTokens, "s");

@@ -10,26 +10,33 @@ namespace ASR {
 class SpeechToken
 {
 public:
-    SpeechToken (int start, int end, QString orthographic) : start(start), end(end), orthographic(orthographic) {}
-    ~SpeechToken() {}
+    SpeechToken (int start, int end, QString orthographic) :
+        start(start), end(end), orthographic(orthographic)
+    {}
 
     int start;
     int end;
     QString orthographic;
-    QString phonetisation;
+    QStringList phonetisations;
 };
 
 class SpeechPhone
 {
 public:
-    SpeechPhone (QString phone, RealTime start, RealTime end, double scoreAM, QString token) :
-        phone(phone), start(start), end(end), scoreAM(scoreAM), token(token) {}
+    SpeechPhone (QString phone, RealTime start, RealTime end, double scoreAM,
+                 QString token, bool isTokenStart = false) :
+        phone(phone), start(start), end(end), scoreAM(scoreAM),
+        token(token), isTokenStart(isTokenStart)
+    {}
 
     QString phone;
     RealTime start;
     RealTime end;
     double scoreAM;
     QString token;
+    bool isTokenStart;
+
+    RealTime duration() { return end - start; }
 };
 
 } // namespace ASR

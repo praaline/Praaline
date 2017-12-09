@@ -190,14 +190,14 @@ QList<SpeechToken> ExternalPhonetiser::phonetiseList(QList<Interval *> tokens, c
             putterances << PUtterance(putterance_tokens, putterance_orthographic);
             putterance_orthographic.clear();
             putterance_tokens.clear();
-            ptokens[i].phonetisation = "_";
+            ptokens[i].phonetisations << "_";
         }
         else if (ptokens[i].orthographic != "_") {
             putterance_orthographic.append(ptokens[i].orthographic).append(" ");
             putterance_tokens << i;
         }
         else {
-            ptokens[i].phonetisation = "_";
+            ptokens[i].phonetisations << "_";
         }
     }
     // last
@@ -215,13 +215,13 @@ QList<SpeechToken> ExternalPhonetiser::phonetiseList(QList<Interval *> tokens, c
             }
             callPhonetiserCitationForms(citationForms);
             foreach (int ptoken_id, putterance.ptokens) {
-                ptokens[ptoken_id].phonetisation = citationForms.value(ptokens[ptoken_id].orthographic, "@");
+                ptokens[ptoken_id].phonetisations << citationForms.value(ptokens[ptoken_id].orthographic, "@");
             }
             continue;
         }
         for (int i = 0; i < phonetisation_split.count(); ++i) {
             int ptoken_id = putterance.ptokens[i];
-            ptokens[ptoken_id].phonetisation = phonetisation_split[i].trimmed();
+            ptokens[ptoken_id].phonetisations << phonetisation_split[i].trimmed();
         }
     }
     return ptokens;
@@ -242,7 +242,7 @@ void ExternalPhonetiser::addPhonetisationToTokens(IntervalTier *tier_tokens, con
         bool alreadyAddedPhonetisation = false;
         for (int i = atoken.start; i <= atoken.end; ++i) {
             if (!alreadyAddedPhonetisation) {
-                tier_tokens->interval(i)->setAttribute(attributeIDPhonetisation, atoken.phonetisation);
+                tier_tokens->interval(i)->setAttribute(attributeIDPhonetisation, atoken.phonetisations.first());
                 alreadyAddedPhonetisation = true;
             } else {
                 tier_tokens->interval(i)->setAttribute(attributeIDPhonetisation, "^^^");

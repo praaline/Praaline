@@ -107,8 +107,8 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
         QString phonetized;
         foreach (SpeechToken atoken, atokens) {
             ls_words << atoken.orthographic;
-            ls_phonetizations << atoken.phonetisation;
-            phonetized = phonetized.append(atoken.phonetisation).append("| ");
+            ls_phonetizations << atoken.phonetisations.first();
+            phonetized = phonetized.append(atoken.phonetisations.first()).append("| ");
         }
         // If the number of phonetisations is less than the number of words (should not happen)
         // add fake phonetisations to ensure no words are lost

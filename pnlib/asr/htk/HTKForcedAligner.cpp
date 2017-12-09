@@ -1,11 +1,15 @@
 #include <QDebug>
+#include <QList>
 #include <QString>
+#include <QStringList>
 #include <QProcess>
 #include <QTemporaryDir>
 #include <QTextStream>
 #include <QCoreApplication>
 
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
 #include "pnlib/mediautil/AudioSegmenter.h"
@@ -17,12 +21,21 @@ namespace Praaline {
 namespace ASR {
 
 struct HTKForcedAlignerData {
+    HTKForcedAlignerData() :
+        useAlternativePronunciations(true), useOptionalElision(true)
+    {}
+
     QString filenameCFG;
     QString filenameHMM;
     QString filenamePhoneList;
     uint sampleRateAM;
     uint beamThreshold;
     QHash<QString, QString> phonemeTranslations;
+    QString pathTemp;
+    QStringList phonemes;
+    QRegExp regexMatchPhoneme;
+    bool useAlternativePronunciations;
+    bool useOptionalElision;
 };
 
 
@@ -30,19 +43,31 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     : QObject(parent), d(new HTKForcedAlignerData)
 {
     // DIRECTORY:
-    // QString appPath = QCoreApplication::applicationDirPath();
-    QString path = "D:/Aligner_tests/";
-    d->filenameCFG = path + "fra.cfg";
-    d->filenameHMM = path + "fra.hmm";
-    d->filenamePhoneList = path + "fra_phone.list";
+    QString appPath = QCoreApplication::applicationDirPath();
+    QString modelsPath = appPath + "/tools/htk/";
+    d->filenameCFG = modelsPath + "fra.cfg";
+    d->filenameHMM = modelsPath + "fra.hmm";
+    d->filenamePhoneList = modelsPath + "fra_phone.list";
     d->sampleRateAM = 16000;
     d->beamThreshold = 500;
+
+    // The order is important. Start with the longest phonemes.
+    d->phonemes << "9~" << "a~" << "e~" << "o~"
+                << "2" << "9" << "A" << "@" << "E" << "H" << "O" << "R" << "S" << "Z"
+                << "a" << "b" << "d" << "e" << "f" << "g" << "i" << "j" << "k" << "l"
+                << "m" << "n" << "o" << "p" << "s" << "t" << "u" << "v" << "w" << "y" << "z";
+    QString regex;
+    foreach (QString phoneme, d->phonemes)
+        regex = regex.append(QString("%1\\*|%1|").arg(phoneme));
+    if (!regex.isEmpty()) regex.chop(1);
+    d->regexMatchPhoneme = QRegExp(regex);
 
     d->phonemeTranslations.insert("9~", "oe~");
     d->phonemeTranslations.insert("2", "eu");
     d->phonemeTranslations.insert("9", "oe");
     d->phonemeTranslations.insert("A", "a");
-    d->phonemeTranslations.insert("*", "");
+
+    d->pathTemp = "/home/george/aligner_test/";
 }
 
 HTKForcedAligner::~HTKForcedAligner()
@@ -50,7 +75,8 @@ HTKForcedAligner::~HTKForcedAligner()
     delete d;
 }
 
-QString encodeEntities(const QString &src, const QString &force=QString())
+// Encode UTF entities (used for accented characters in dictionary and transcription files)
+QString HTKForcedAligner::encodeEntities(const QString &src, const QString &force)
 {
     QString tmp(src);
     uint len = tmp.length();
@@ -68,7 +94,8 @@ QString encodeEntities(const QString &src, const QString &force=QString())
     return tmp;
 }
 
-QString decodeEntities(const QString &src)
+// Decode UTF entities (used for accented characters in dictionary and transcription files)
+QString HTKForcedAligner::decodeEntities(const QString &src)
 {
     QString ret(src);
     QRegExp re("&#([0-9]+);");
@@ -81,7 +108,7 @@ QString decodeEntities(const QString &src)
     return ret;
 }
 
-QString HTKForcedAligner::translatePhonemes(QString input)
+QString HTKForcedAligner::translatePhonemes(const QString &input)
 {
     QString translated(input);
     translated = translated.append(" ");
@@ -89,6 +116,58 @@ QString HTKForcedAligner::translatePhonemes(QString input)
         translated = translated.replace(original + " ", d->phonemeTranslations.value(original) + " ");
     }
     return translated.trimmed();
+}
+
+QList<SpeechToken> HTKForcedAligner::alignerTokensFromIntervalTier(IntervalTier *tier_tokens, int indexFrom, int indexTo)
+{
+    QList<SpeechToken> alignerTokens;
+    if (!tier_tokens) return alignerTokens;
+    if (tier_tokens->count() == 0) return alignerTokens;
+    if (indexTo < 0) indexTo = tier_tokens->count() - 1;
+    if (indexTo >= tier_tokens->count()) indexTo = tier_tokens->count() - 1;
+    if (indexFrom < 0) indexFrom = 0;
+    if (indexTo >= tier_tokens->count()) indexTo = tier_tokens->count() - 1;
+
+    for (int index = indexFrom; index <= indexTo; ++index) {
+        Interval *token = tier_tokens->at(index);
+        SpeechToken atoken(index, index, token->text());
+        QString phonetisationGiven = token->attribute("phonetisation").toString();
+        if (!d->useAlternativePronunciations) {
+            phonetisationGiven = phonetisationGiven.replace("*", "");
+        }
+        phonetisationGiven = phonetisationGiven.trimmed();
+        // Separate phonemes
+        QStringList phonetisationSeparated;
+        int pos = 0;
+        while ((pos = d->regexMatchPhoneme.indexIn(phonetisationGiven, pos)) != -1) {
+            phonetisationSeparated << d->regexMatchPhoneme.cap(0);
+            pos += d->regexMatchPhoneme.matchedLength();
+        }
+        // Process alternative phonetisations
+        QList<QStringList> phonetisations;
+        phonetisations << QStringList();
+        foreach (QString phoneme, phonetisationSeparated) {
+            if (phoneme.endsWith("*")) {
+                QList<QStringList> additionalPhonetisations;
+                for (int i = 0; i < phonetisations.count(); ++i) {
+                    additionalPhonetisations << phonetisations[i];      // without
+                    phonetisations[i].append(phoneme.replace("*", "")); // with
+                }
+                phonetisations << additionalPhonetisations;
+            }
+            else {
+                for (int i = 0; i < phonetisations.count(); ++i) {
+                    phonetisations[i].append(phoneme);
+                }
+            }
+        }
+        foreach (QStringList phonetisation, phonetisations) {
+            atoken.phonetisations.append(phonetisation.join(" "));
+            // qDebug() << atoken.orthographic << phonetisation.join(" ");
+        }
+        alignerTokens << atoken;
+    }
+    return alignerTokens;
 }
 
 bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<SpeechToken> &atokens)
@@ -113,9 +192,11 @@ bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<S
         if (atoken.orthographic == "_") continue;
         QString orthoEncoded = encodeEntities(atoken.orthographic);
         lab << orthoEncoded << "\n";
-        QPair<QString, QString> pronunciation(orthoEncoded, atoken.phonetisation);
-        if (!pronunciations.contains(pronunciation))
-            pronunciations << pronunciation;
+        foreach (QString phonetisation, atoken.phonetisations) {
+            QPair<QString, QString> pronunciation(orthoEncoded, phonetisation);
+            if (!pronunciations.contains(pronunciation))
+                pronunciations << pronunciation;
+        }
     }
     fileLAB.close();
     // Create DCT file with pronunciation variants
@@ -125,17 +206,16 @@ bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<S
     dct.setCodec("ISO 8859-1");
     dct << "sil\tsil\n";
     for (int i = 0; i < pronunciations.count(); ++i) {
-        dct << pronunciations[i].first << "\t" << translatePhonemes(pronunciations[i].second);
-        if (i != pronunciations.count() - 1)
-            dct << " sp\n";
-        else
-            dct << "\n";
+        QString pron = translatePhonemes(pronunciations[i].second);
+        dct << pronunciations[i].first << "\t" << pron << " sp\n";
+        // if (i != pronunciations.count() - 1)
     }
     fileDCT.close();
     return true;
 }
 
-bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken> &atokens, QList<SpeechPhone> &aphones)
+bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken> &atokens, QList<SpeechPhone> &aphones,
+                                  QString &alignerOutput)
 {
     if (!createFilesDCTandLAB(filenameBase, atokens)) return false;
     aphones.clear();
@@ -155,12 +235,22 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     // Run HTK Viterbi recogniser
     // DIRECTORY:
     QString appPath = QCoreApplication::applicationDirPath();
-    QString htkPath = appPath + "/plugins/aligner/";
+    QString htkPath = appPath + "/tools/htk/";
+#ifdef Q_OS_WIN
+    QString htkExecutable = htkPath + "hvite.exe";
+#else
+#ifdef Q_OS_MAC
+    QString htkExecutable = htkPath + "HVite";
+#else
+    QString htkExecutable = htkPath + "HVite";
+#endif
+#endif
     QProcess hvite;
     hvite.setWorkingDirectory(htkPath);
-    hvite.start(htkPath + "hvite.exe" , hviteParameters);
+    hvite.start(htkExecutable , hviteParameters);
     if (!hvite.waitForStarted(-1))  return false;
     if (!hvite.waitForFinished(-1)) return false;
+    alignerOutput = QString(hvite.readAllStandardOutput());
 
     QFile fileREC(filenameBase + ".rec");
     if ( !fileREC.open( QIODevice::ReadOnly | QIODevice::Text ) ) return false;
@@ -182,18 +272,109 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
         phone = fields[2];
         if (phone == "sil") phone = "_";
         scoreAM = fields[3].toDouble();
-        if (fields.count() > 4) token = fields[4];
-        aphones << SpeechPhone(phone, RealTime::fromNanoseconds(start), RealTime::fromNanoseconds(end), scoreAM, token);
+        bool isTokenStart(false);
+        if (fields.count() > 4) {
+            token = fields[4];
+            isTokenStart = true;
+        }
+        aphones << SpeechPhone(phone, RealTime::fromNanoseconds(start), RealTime::fromNanoseconds(end), scoreAM, token, isTokenStart);
     }
     return true;
 }
 
-void HTKForcedAligner::alignUtterances(QString waveFile, IntervalTier *tier_utterances, IntervalTier *tier_tokens, IntervalTier *tier_phones)
-{
-    QString path = "D:/Aligner_tests/";
 
+bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tier_tokens, QList<Interval *> &list_phones,
+                                      QString &alignerOutput)
+{
     QList<SpeechToken> atokens;
     QList<SpeechPhone> aphones;
+    QList<RealTime> updatedTokenBoundaries;
+    int indexFrom = 0;
+    int indexTo = tier_tokens->count() - 1;
+
+    // Create resampled wave file in temporary directory
+    QString waveResampledBase = d->pathTemp + QFileInfo(waveFile).baseName();
+    AudioSegmenter::resample(waveFile, waveResampledBase + ".wav", d->sampleRateAM);
+    // Remove pauses from within the utterance
+    for (int i = indexTo - 1; i >= 1; --i) {
+        if (tier_tokens->at(i)->isPauseSilent())
+            tier_tokens->removeInterval(i);
+    }
+    // Create alignment tokens for the entire utterance
+    atokens = alignerTokensFromIntervalTier(tier_tokens, indexFrom, indexTo);
+    runAligner(waveResampledBase, atokens, aphones, alignerOutput);
+    // Check that the aligner came up with a proper solution
+    if (aphones.isEmpty()) return false;
+    // Verify micro-pauses inserted before occlusive consonants
+    QStringList occlusives;
+    occlusives << "p" << "t" << "k";
+    for (int i = aphones.count() - 2; i > 1; --i) {
+        SpeechPhone aphone = aphones.at(i);
+        if ((aphone.phone == "sp") && (occlusives.contains(aphones.at(i + 1).phone))) {
+            if (aphone.duration() < RealTime::fromMilliseconds(80)) {
+                // Remove pre-occlusive micro-pause and give all its duration to the occlusive
+                aphones[i + 1].start = aphone.start;
+                aphones.removeAt(i);
+            }
+        }
+        else if ((aphone.phone == "sp") && (aphone.duration() < RealTime::fromMilliseconds(80))) {
+            // Remove micro-pause and split its duration into two equal parts
+            aphones[i + 1].start = aphones[i + 1].start - aphone.duration() / 2;
+            aphones[i - 1].end = aphones[i + 1].start;
+            aphones.removeAt(i);
+        }
+    }
+    // Add micro-pauses where necessary
+    int indexToken(0);
+    for (int i = 0; i < aphones.count(); ++i) {
+        if (aphones[i].phone == "sp") {
+            aphones[i].phone = "_";
+            if ((indexToken > 0) && !aphones[i].isTokenStart) {
+                aphones[i].isTokenStart = true;
+                // normal micro-pause between words
+                tier_tokens->splitToEqual(indexToken - 1, 2).last()->setText("_");
+            }
+        }
+        if (aphones[i].isTokenStart) {
+            indexToken++;
+        }
+    }
+    // Create list of phones
+    RealTime offset = tier_tokens->tMin();
+    foreach (SpeechPhone phone, aphones) {
+        list_phones << new Interval(offset + phone.start, offset + phone.end, phone.phone);
+        if (phone.isTokenStart) {
+            updatedTokenBoundaries << offset + phone.start;
+        }
+    }
+    updatedTokenBoundaries << offset + aphones.last().end;
+    // Modify boundaries of tokens
+    bool ok = tier_tokens->realignIntervals(0, updatedTokenBoundaries);
+    bool cleanUpTempFiles(false);
+    // Clean-up
+    if (ok && cleanUpTempFiles) {
+        QFile::remove(waveResampledBase + ".wav");
+        QFile::remove(waveResampledBase + ".lab");
+        QFile::remove(waveResampledBase + ".dct");
+        QFile::remove(waveResampledBase + ".rec");
+    }
+    // For testing
+    if (!ok || !cleanUpTempFiles) {
+        IntervalTier *tier_phones = new IntervalTier("phone", list_phones);
+        AnnotationTierGroup *txg = new AnnotationTierGroup();
+        txg->addTier(tier_phones);
+        txg->addTier(new IntervalTier(tier_tokens));
+        PraatTextGrid::save(waveResampledBase + ".TextGrid", txg);
+    }
+    return ok;
+}
+
+
+void HTKForcedAligner::alignUtterances(const QString &waveFile, IntervalTier *tier_utterances, IntervalTier *tier_tokens, IntervalTier *tier_phones)
+{
+    QList<SpeechToken> atokens;
+    QList<SpeechPhone> aphones;
+    QString alignerOutput;
 
     QList<Interval *> list_utterances;
     int i = 0;
@@ -210,7 +391,7 @@ void HTKForcedAligner::alignUtterances(QString waveFile, IntervalTier *tier_utte
         QList<Interval *> utt_tokens = tier_tokens->getIntervalsContainedIn(utt);
         if (utt_tokens.isEmpty()) continue;
         atokens = ExternalPhonetiser::phonetiseList(utt_tokens);
-        runAligner(QString("%1/%2").arg(path).arg(utt->attribute("utteranceID").toString()), atokens, aphones);
+        runAligner(QString("%1/%2").arg(d->pathTemp).arg(utt->attribute("utteranceID").toString()), atokens, aphones, alignerOutput);
         if (aphones.isEmpty()) continue;
         RealTime offset = utt->tMin();
         foreach (SpeechPhone phone, aphones) {

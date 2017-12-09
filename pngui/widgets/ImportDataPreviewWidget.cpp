@@ -169,9 +169,13 @@ void ImportDataPreviewWidget::readExcel()
     if (!xlsx.selectSheet(d->excelSheetName)) return;
     QXlsx::Worksheet *sheet = xlsx.currentWorksheet();
     if (!sheet) return;
+    // Get calculated results instead of formulas in cells
+    sheet->setFormulasVisible(false);
+    // Get row and column count for preview
     int rowCount = sheet->dimension().rowCount();
     if (rowCount > 50) rowCount = 50;
     int columnCount = sheet->dimension().columnCount();
+    // Loop through preview rows
     for (int row = d->skipRows + 1; row <= rowCount; ++row) {
         QList<QString> fields;
         for (int column = 1; column <= columnCount; ++column) {
@@ -190,8 +194,12 @@ void ImportDataPreviewWidget::preparePreview()
     d->previewModel->setColumnCount(d->columnCount);
     d->previewModel->setRowCount((d->hasHeader) ? d->preview.count() - 1 : d->preview.count());
     for (int i = 0; i < d->preview.count(); ++i) {
-        if (d->hasHeader && i == 0) continue;
         int j = 0;
+        // In case the file has a header, and this is the first line, set column labels
+        if (d->hasHeader && i == 0) {
+            d->previewModel->setHorizontalHeaderLabels(d->preview.at(i));
+        }
+        // Otherwise, process row
         int model_i = ((d->hasHeader) ? i - 1 : i);
         foreach(QString field, d->preview.at(i)) {
             d->previewModel->setItem(model_i, j, new QStandardItem(field));
