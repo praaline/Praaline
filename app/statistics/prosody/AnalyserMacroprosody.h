@@ -36,6 +36,11 @@ public:
 
     QPointer<QStandardItemModel> model();
 
+    void setMacroUnitsLevel(const QString &);
+    void setMetadataAttributesCommunication(const QStringList &attributeIDs);
+    void setMetadataAttributesSpeaker(const QStringList &attributeIDs);
+    void setMetadataAttributesAnnotation(const QStringList &attributeIDs);
+
     QString calculate(QPointer<Praaline::Core::Corpus> corpus, QPointer<Praaline::Core::CorpusCommunication> com);
     QString calculate(QPointer<Praaline::Core::Corpus> corpus,
                       const QString &communicationID, const QString &annotationID, const QString &speakerIDfilter = QString(),

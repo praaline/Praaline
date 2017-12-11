@@ -35,6 +35,9 @@ struct AnalyserMacroprosodyData {
     bool getFirstLastSyllableValues;
 
     QStandardItemModel *model;
+    QStringList metadataAttributeIDsCom;
+    QStringList metadataAttributeIDsSpk;
+    QStringList metadataAttributeIDsAnnot;
 };
 
 AnalyserMacroprosody::AnalyserMacroprosody(QObject *parent)
@@ -64,6 +67,7 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
                             << "NumSyllArticulated" << "NumFilledPauses" << "NumSilentPauses"
                             << "RatioArticulation"
                             << "SpeechRate" << "ArticulationRate" << "RateFILandSyll"
+                            << "TimeSilentPauseBefore" << "TimeSilentPauseAfter"
                             << "MeanPitch" << "MeanPitchStDev" << "PitchLow" << "PitchHigh" << "PitchRange"
                             << "MeanPitchFirstSyll" << "PitchLowFirstSyll" << "PitchHighFirstSyll" << "PitchStartFirstSyll"
                             << "MeanPitchLastSyll" << "PitchLowLastSyll" << "PitchHighLastSyll" << "PitchEndLastSyll"
@@ -78,47 +82,49 @@ QList<QString> AnalyserMacroprosody::measureIDs(const QString &groupingLevel)
 StatisticalMeasureDefinition AnalyserMacroprosody::measureDefinition(const QString &groupingLevel, const QString &measureID)
 {
     Q_UNUSED(groupingLevel)
-    if (measureID == "StartTime")           return StatisticalMeasureDefinition("StartTime", "Start time of unit", "s");
-    if (measureID == "EndTime")             return StatisticalMeasureDefinition("EndTime", "End time of unit", "s");
-    if (measureID == "Duration")            return StatisticalMeasureDefinition("Duration", "Duration of unit", "s");
-    if (measureID == "StartSyll")           return StatisticalMeasureDefinition("StartSyll", "Syllable index at start of unit", "");
-    if (measureID == "EndSyll")             return StatisticalMeasureDefinition("EndSyll", "Syllable index at end of unit", "");
-    if (measureID == "TextTokens")          return StatisticalMeasureDefinition("TextTokens", "Text of tokens", "");
-    if (measureID == "TextSyllables")       return StatisticalMeasureDefinition("TextSyllables", "Text of syllables", "");
-    if (measureID == "TimeArticulation")    return StatisticalMeasureDefinition("TimeArticulation", "Articulation time", "s");
-    if (measureID == "TimeFilledPause")     return StatisticalMeasureDefinition("TimeFilledPause", "Filled pause time", "s");
-    if (measureID == "TimeSilentPause")     return StatisticalMeasureDefinition("TimeSilentPause", "Sillent pausetime", "s");
-    if (measureID == "NumSyllArticulated")  return StatisticalMeasureDefinition("NumSyllArticulated", "Number of articulated syllables (excluding filled pauses)", "");
-    if (measureID == "NumFilledPauses")     return StatisticalMeasureDefinition("NumFilledPauses", "Number of filled pauses", "");
-    if (measureID == "NumSilentPauses")     return StatisticalMeasureDefinition("NumSilentPauses", "Number of silent pauses", "");
-    if (measureID == "SpeechRate")          return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
-    if (measureID == "ArticulationRate")    return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Articulation time");
-    if (measureID == "RateFILandSyll")      return StatisticalMeasureDefinition("RateFILandSyll", "Articulation (incl FIL) rate", "syll/s", "All articulated syllables (including filled pauses) / Articulation + filled pause time");
-    if (measureID == "MeanPitch")           return StatisticalMeasureDefinition("MeanPitch", "Mean of the mean pitch of all stylised syllables in unit", "ST");
-    if (measureID == "MeanPitchStDev")      return StatisticalMeasureDefinition("MeanPitchStDev", "Standard deviation of the mean pitch of all stylised syllables in unit", "ST");
-    if (measureID == "PitchLow")            return StatisticalMeasureDefinition("PitchLow", "Minimum of the low pitch of all stylised syllables in unit", "ST");
-    if (measureID == "PitchHigh")           return StatisticalMeasureDefinition("PitchHigh", "Maximum of the high pitch of all stylised syllables in unit", "ST");
-    if (measureID == "PitchRange")          return StatisticalMeasureDefinition("PitchRange", "Pitch range: pitch high - pitch low", "ST");
-    if (measureID == "MeanPitchFirstSyll")  return StatisticalMeasureDefinition("MeanPitchFirstSyll", "Mean pitch of the unit's first syllable", "ST");
-    if (measureID == "PitchLowFirstSyll")   return StatisticalMeasureDefinition("PitchLowFirstSyll", "Low pitch of the unit's first syllable", "ST");
-    if (measureID == "PitchHighFirstSyll")  return StatisticalMeasureDefinition("PitchHighFirstSyll", "High pitch of the unit's first syllable", "ST");
-    if (measureID == "PitchStartFirstSyll") return StatisticalMeasureDefinition("PitchStartFirstSyll", "Start pitch of the unit's first syllable", "ST");
-    if (measureID == "MeanPitchLastSyll")   return StatisticalMeasureDefinition("MeanPitchLastSyll", "Mean pitch of the unit's last syllable", "ST");
-    if (measureID == "PitchLowLastSyll")    return StatisticalMeasureDefinition("PitchLowLastSyll", "Low pitch of the unit's last syllable", "ST");
-    if (measureID == "PitchHighLastSyll")   return StatisticalMeasureDefinition("PitchHighLastSyll", "High pitch of the unit's last syllable", "ST");
-    if (measureID == "PitchEndLastSyll")    return StatisticalMeasureDefinition("PitchEndLastSyll", "End pitch of the unit's last syllable", "ST");
-    if (measureID == "NumRisingSyll")       return StatisticalMeasureDefinition("NumRisingSyll", "Number of rising syllables", "");
-    if (measureID == "NumFallingSyll")      return StatisticalMeasureDefinition("NumFallingSyll", "Number of falling syllables", "");
-    if (measureID == "NumProminentSyll")    return StatisticalMeasureDefinition("NumProminentSyll", "Number of prominent syllables", "");
-    if (measureID == "RatioRisingSyll")     return StatisticalMeasureDefinition("RatioRisingSyll", "Percentage of rising syllables over articulated syllables", "%");
-    if (measureID == "RatioFallingSyll")    return StatisticalMeasureDefinition("RatioFallingSyll", "Percentage of falling syllables over articulated syllables", "%");
-    if (measureID == "RatioProminentSyll")  return StatisticalMeasureDefinition("RatioProminentSyll", "Percentage of prominent syllables over articulated syllables", "%");
-    if (measureID == "MelodicPath")         return StatisticalMeasureDefinition("MelodicPath", "Melodic path", "ST/s", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up) / Sum of stylised nucleus time");
-    if (measureID == "NumDisfluencyLEN")    return StatisticalMeasureDefinition("NumDisfluencyLEN", "Number of disfluencies: lengthening", "");
-    if (measureID == "NumDisfluencyFST")    return StatisticalMeasureDefinition("NumDisfluencyFST", "Number of disfluencies: false starts", "");
-    if (measureID == "NumDisfluencyREP")    return StatisticalMeasureDefinition("NumDisfluencyREP", "Number of disfluencies: repetitions", "");
-    if (measureID == "NumDisfluencyStruct") return StatisticalMeasureDefinition("NumDisfluencyStruct", "Number of disfluencies: structured", "");
-    if (measureID == "DisfluencyText")      return StatisticalMeasureDefinition("DisfluencyText", "Disfluency text", "");
+    if (measureID == "StartTime")               return StatisticalMeasureDefinition("StartTime", "Start time of unit", "s");
+    if (measureID == "EndTime")                 return StatisticalMeasureDefinition("EndTime", "End time of unit", "s");
+    if (measureID == "Duration")                return StatisticalMeasureDefinition("Duration", "Duration of unit", "s");
+    if (measureID == "StartSyll")               return StatisticalMeasureDefinition("StartSyll", "Syllable index at start of unit", "");
+    if (measureID == "EndSyll")                 return StatisticalMeasureDefinition("EndSyll", "Syllable index at end of unit", "");
+    if (measureID == "TextTokens")              return StatisticalMeasureDefinition("TextTokens", "Text of tokens", "");
+    if (measureID == "TextSyllables")           return StatisticalMeasureDefinition("TextSyllables", "Text of syllables", "");
+    if (measureID == "TimeArticulation")        return StatisticalMeasureDefinition("TimeArticulation", "Articulation time", "s");
+    if (measureID == "TimeFilledPause")         return StatisticalMeasureDefinition("TimeFilledPause", "Filled pause time", "s");
+    if (measureID == "TimeSilentPause")         return StatisticalMeasureDefinition("TimeSilentPause", "Sillent pausetime", "s");
+    if (measureID == "NumSyllArticulated")      return StatisticalMeasureDefinition("NumSyllArticulated", "Number of articulated syllables (excluding filled pauses)", "");
+    if (measureID == "NumFilledPauses")         return StatisticalMeasureDefinition("NumFilledPauses", "Number of filled pauses", "");
+    if (measureID == "NumSilentPauses")         return StatisticalMeasureDefinition("NumSilentPauses", "Number of silent pauses", "");
+    if (measureID == "SpeechRate")              return StatisticalMeasureDefinition("SpeechRate", "Speech rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Speech time");
+    if (measureID == "ArticulationRate")        return StatisticalMeasureDefinition("ArticulationRate", "Articulation rate", "syll/s", "All articulated syllables (excluding SIL and FIL) / Articulation time");
+    if (measureID == "RateFILandSyll")          return StatisticalMeasureDefinition("RateFILandSyll", "Articulation (incl FIL) rate", "syll/s", "All articulated syllables (including filled pauses) / Articulation + filled pause time");
+    if (measureID == "TimeSilentPauseBefore")   return StatisticalMeasureDefinition("TimeSilentPauseBefore", "Silent pause time before unit", "s", "");
+    if (measureID == "TimeSilentPauseAfter")    return StatisticalMeasureDefinition("TimeSilentPauseAfter", "Silent pause time after unit", "s", "");
+    if (measureID == "MeanPitch")               return StatisticalMeasureDefinition("MeanPitch", "Mean of the mean pitch of all stylised syllables in unit", "ST");
+    if (measureID == "MeanPitchStDev")          return StatisticalMeasureDefinition("MeanPitchStDev", "Standard deviation of the mean pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchLow")                return StatisticalMeasureDefinition("PitchLow", "Minimum of the low pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchHigh")               return StatisticalMeasureDefinition("PitchHigh", "Maximum of the high pitch of all stylised syllables in unit", "ST");
+    if (measureID == "PitchRange")              return StatisticalMeasureDefinition("PitchRange", "Pitch range: pitch high - pitch low", "ST");
+    if (measureID == "MeanPitchFirstSyll")      return StatisticalMeasureDefinition("MeanPitchFirstSyll", "Mean pitch of the unit's first syllable", "ST");
+    if (measureID == "PitchLowFirstSyll")       return StatisticalMeasureDefinition("PitchLowFirstSyll", "Low pitch of the unit's first syllable", "ST");
+    if (measureID == "PitchHighFirstSyll")      return StatisticalMeasureDefinition("PitchHighFirstSyll", "High pitch of the unit's first syllable", "ST");
+    if (measureID == "PitchStartFirstSyll")     return StatisticalMeasureDefinition("PitchStartFirstSyll", "Start pitch of the unit's first syllable", "ST");
+    if (measureID == "MeanPitchLastSyll")       return StatisticalMeasureDefinition("MeanPitchLastSyll", "Mean pitch of the unit's last syllable", "ST");
+    if (measureID == "PitchLowLastSyll")        return StatisticalMeasureDefinition("PitchLowLastSyll", "Low pitch of the unit's last syllable", "ST");
+    if (measureID == "PitchHighLastSyll")       return StatisticalMeasureDefinition("PitchHighLastSyll", "High pitch of the unit's last syllable", "ST");
+    if (measureID == "PitchEndLastSyll")        return StatisticalMeasureDefinition("PitchEndLastSyll", "End pitch of the unit's last syllable", "ST");
+    if (measureID == "NumRisingSyll")           return StatisticalMeasureDefinition("NumRisingSyll", "Number of rising syllables", "");
+    if (measureID == "NumFallingSyll")          return StatisticalMeasureDefinition("NumFallingSyll", "Number of falling syllables", "");
+    if (measureID == "NumProminentSyll")        return StatisticalMeasureDefinition("NumProminentSyll", "Number of prominent syllables", "");
+    if (measureID == "RatioRisingSyll")         return StatisticalMeasureDefinition("RatioRisingSyll", "Percentage of rising syllables over articulated syllables", "%");
+    if (measureID == "RatioFallingSyll")        return StatisticalMeasureDefinition("RatioFallingSyll", "Percentage of falling syllables over articulated syllables", "%");
+    if (measureID == "RatioProminentSyll")      return StatisticalMeasureDefinition("RatioProminentSyll", "Percentage of prominent syllables over articulated syllables", "%");
+    if (measureID == "MelodicPath")             return StatisticalMeasureDefinition("MelodicPath", "Melodic path", "ST/s", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up) / Sum of stylised nucleus time");
+    if (measureID == "NumDisfluencyLEN")        return StatisticalMeasureDefinition("NumDisfluencyLEN", "Number of disfluencies: lengthening", "");
+    if (measureID == "NumDisfluencyFST")        return StatisticalMeasureDefinition("NumDisfluencyFST", "Number of disfluencies: false starts", "");
+    if (measureID == "NumDisfluencyREP")        return StatisticalMeasureDefinition("NumDisfluencyREP", "Number of disfluencies: repetitions", "");
+    if (measureID == "NumDisfluencyStruct")     return StatisticalMeasureDefinition("NumDisfluencyStruct", "Number of disfluencies: structured", "");
+    if (measureID == "DisfluencyText")          return StatisticalMeasureDefinition("DisfluencyText", "Disfluency text", "");
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
 
@@ -140,15 +146,37 @@ double HzToSTre1Hz(double Hz)
     return 12.0 * log2(Hz);
 }
 
+void AnalyserMacroprosody::setMetadataAttributesCommunication(const QStringList &attributeIDs)
+{
+    d->metadataAttributeIDsCom = attributeIDs;
+}
+
+void AnalyserMacroprosody::setMetadataAttributesSpeaker(const QStringList &attributeIDs)
+{
+    d->metadataAttributeIDsSpk = attributeIDs;
+}
+
+void AnalyserMacroprosody::setMetadataAttributesAnnotation(const QStringList &attributeIDs)
+{
+    d->metadataAttributeIDsAnnot = attributeIDs;
+}
+
+void AnalyserMacroprosody::setMacroUnitsLevel(const QString &levelID)
+{
+    d->levelMacroUnits = levelID;
+}
+
 QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &communicationID, const QString &annotationID, const QString &speakerIDfilter,
                                         const QList<Interval *> &units)
 {
     if (!corpus) return tr("Error accessing corpus. No statistical analysis produced.");
-    d->model->clear();
+    d->model->clear();  
     // Create model headers
     QStringList labels;
-    labels << "CommunicationID" << "AnnotationID" << "SpeakerID";
-    if (!d->levelMacroUnits.isEmpty()) labels << "Unit No" << d->levelMacroUnits;
+    labels << "CommunicationID" << d->metadataAttributeIDsCom;
+    labels << "AnnotationID" << d->metadataAttributeIDsAnnot;
+    labels << "SpeakerID" << d->metadataAttributeIDsSpk;
+    if (!d->levelMacroUnits.isEmpty()) labels << "UnitNo" << d->levelMacroUnits;
     labels << measureIDs("");
     d->model->setHorizontalHeaderLabels(labels);
     // Process data
@@ -157,6 +185,11 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             ->getTiersAllSpeakers(annotationID, QStringList() << d->levelPhones << d->levelSyllables << d->levelTokens);
     foreach (QString speakerID, tiersAll.keys()) {
         if ((!speakerIDfilter.isEmpty()) && (speakerIDfilter != speakerID)) continue;
+        // Get metadata objects
+        QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+        QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+        QPointer<CorpusAnnotation> annot = (com) ? com->annotation(annotationID) : 0;
+        // Get tiers for this speaker
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
         IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllables);
@@ -186,6 +219,7 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             double f0_mean_first(-1), f0_min_first(-1), f0_max_first(-1);
             double f0_mean_last(-1), f0_min_last(-1), f0_max_last(-1);
             double f0_start_first(-1), f0_end_last(-1);
+            RealTime timeSilentPauseBefore, timeSilentPauseAfter;
 
             // For each token
             foreach (Interval *token, tier_tokmin->getIntervalsContainedIn(unit)) {
@@ -208,6 +242,16 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
 
             // The basic units of time measurement are the speaker's syllables
             QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(unit);
+            // Check for pauses before and after the unit
+            if (syllIndices.first - 1 >= 0) {
+                if (tier_syll->at(syllIndices.first - 1)->isPauseSilent())
+                    timeSilentPauseBefore = tier_syll->at(syllIndices.first - 1)->duration();
+            }
+            if (syllIndices.second + 1 < tier_syll->count()) {
+                if (tier_syll->at(syllIndices.second + 1)->isPauseSilent())
+                    timeSilentPauseAfter = tier_syll->at(syllIndices.second + 1)->duration();
+            }
+            // For each syllable...
             for (int i = syllIndices.first; i <= syllIndices.second; ++i) {
                 Interval *syll = tier_syll->interval(i);
                 if (!syll) continue;
@@ -271,10 +315,20 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
 
             QList<QStandardItem *> items;
             QStandardItem *item;
+            // Identifiers and Metadata
             item = new QStandardItem(); item->setData(communicationID, Qt::DisplayRole); items << item;
+            foreach (QString attributeID, d->metadataAttributeIDsCom) {
+                item = new QStandardItem(); if (com) item->setData(com->property(attributeID), Qt::DisplayRole); items << item;
+            }
             item = new QStandardItem(); item->setData(annotationID, Qt::DisplayRole); items << item;
+            foreach (QString attributeID, d->metadataAttributeIDsAnnot) {
+                item = new QStandardItem(); if (annot) item->setData(annot->property(attributeID), Qt::DisplayRole); items << item;
+            }
             item = new QStandardItem(); item->setData(speakerID, Qt::DisplayRole); items << item;
-            // unit data
+            foreach (QString attributeID, d->metadataAttributeIDsSpk) {
+                item = new QStandardItem(); if (spk) item->setData(spk->property(attributeID), Qt::DisplayRole); items << item;
+            }
+            // Unit data
             item = new QStandardItem(); item->setData(unitNo, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(unit->text().replace("\t", " ").replace("\n", " "), Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(unit->tMin().toDouble(), Qt::DisplayRole); items << item;
@@ -299,6 +353,9 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
             item = new QStandardItem(); item->setData(rateSpeech, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(rateArticulation, Qt::DisplayRole); items << item;
             item = new QStandardItem(); item->setData(rateArtSyllAndFIL, Qt::DisplayRole); items << item;
+            // pause before and after
+            item = new QStandardItem(); item->setData(timeSilentPauseBefore.toDouble(), Qt::DisplayRole); items << item;
+            item = new QStandardItem(); item->setData(timeSilentPauseAfter.toDouble(), Qt::DisplayRole); items << item;
 //            item = new QStandardItem(); item->setData(timeStylisedNuclei.toDouble(), Qt::DisplayRole); items << item;
 //            item = new QStandardItem(); item->setData(numNuclei, Qt::DisplayRole); items << item;
             // pitch

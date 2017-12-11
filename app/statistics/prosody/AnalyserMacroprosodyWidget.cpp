@@ -3,6 +3,8 @@
 #include <QProgressBar>
 #include <QFileDialog>
 #include <QFile>
+#include <QFileInfo>
+#include <QMessageBox>
 #include <QTextStream>
 #include <QStandardItemModel>
 
@@ -60,6 +62,22 @@ AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *reposit
     d->repository = repository;
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
+    // Metadata attributes
+    int i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)){
+        ui->comboBoxMetadataCom->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)){
+        ui->comboBoxMetadataSpk->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Annotation)){
+        ui->comboBoxMetadataAnnot->insertItem(i, attr->name(), false);
+        ++i;
+    }
     // Levels from annotation structure
     ui->comboBoxMUTier->addItems(repository->annotationStructure()->levelIDs());
     // Command Analyse
@@ -131,10 +149,34 @@ void AnalyserMacroprosodyWidget::analyse()
     QScopedPointer<AnalyserMacroprosody> analyser(new AnalyserMacroprosody);
     QStandardItemModel *model = new QStandardItemModel(this);
 
+    // Metadata to be included by the analyser
+    QStringList attributeIDs;
+    for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+        if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        if (attr) attributeIDs << attr->ID();
+    }
+    analyser->setMetadataAttributesCommunication(attributeIDs);
+    attributeIDs.clear();
+    for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
+        if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        if (attr) attributeIDs << attr->ID();
+    }
+    analyser->setMetadataAttributesSpeaker(attributeIDs);
+    attributeIDs.clear();
+    for (int i = 0; i < ui->comboBoxMetadataAnnot->count(); ++i) {
+        if (!ui->comboBoxMetadataAnnot->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Annotation).at(i);
+        if (attr) attributeIDs << attr->ID();
+    }
+    analyser->setMetadataAttributesSpeaker(attributeIDs);
+
     // Collect units
     QMap<QString, QList<AnalyserMacroprosodyUnit> > unitGroups;
     if (ui->optionMULIstFromTier->isChecked()) {
         QString tierNameMacroUnits = ui->comboBoxMUTier->currentText();
+        analyser->setMacroUnitsLevel(tierNameMacroUnits);
         foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
             if (!com) continue;
             foreach (QString annotationID, com->annotationIDs()) {
@@ -168,7 +210,11 @@ void AnalyserMacroprosodyWidget::analyse()
         // CommunicationID | AnnotationID | SpeakerID | tMin | tMax | Label
         // =============================================================================
         QFile file(ui->editFilenameMUList->text());
-        if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return;
+        if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) {
+            QMessageBox::warning(this, "Cannot open MU file", "Cannot open file containing macro-unit information.");
+            return;
+        }
+        analyser->setMacroUnitsLevel(QFileInfo(ui->editFilenameMUList->text()).baseName());
         QTextStream stream(&file);
         do {
             QString line = stream.readLine().trimmed();

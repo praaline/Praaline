@@ -422,7 +422,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = p.importFromPhonetiser(com, true);
 //        m.chop(1); m = m.append("\tAlign:\t");
 //        m = m.append(ExperimentUtterances::align(com));
-        m = ExperimentUtterances::concatenate(com);
+//        m = ExperimentUtterances::concatenate(com);
+//        m = ExperimentUtterances::createUnitTier(com);
+        m = ExperimentUtterances::averageProsody(com);
         if (!m.isEmpty()) printMessage(m);
     }
 

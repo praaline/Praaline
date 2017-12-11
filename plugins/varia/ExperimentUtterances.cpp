@@ -12,6 +12,8 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/datastore/FileDatastore.h"
+#include "pncore/statistics/Measures.h"
+#include "pncore/statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
 
 #include "pnlib/asr/htk/HTKForcedAligner.h"
@@ -139,7 +141,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
         QString commandSoxConcatenate = "sox ";
         QSharedPointer<AnnotationTierGroup> tierGroupConcatenated(new AnnotationTierGroup);
         QList<Interval *> intervals_IDs;
-        QStringList tierNames; tierNames << "phone" << "syll" << "tok_min";
+        QStringList tierNames; tierNames << "phone" << "syll" << "tok_min" << "sequence";
         QHash<QString, QList<Interval *> > intervals_annot;
         foreach (QString levelID, tierNames)
             intervals_annot.insert(levelID, QList<Interval *>());
@@ -175,6 +177,168 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
         tierGroupConcatenated->addTier(tier_IDs);
         PraatTextGrid::save(basePathForConcatenatedMedia + "/" + groupID + ".TextGrid", tierGroupConcatenated.data());
     }
+
+    return ret;
+}
+
+QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    // Import sequence trigrams
+    QHash<QString, QStringList> trigrams;
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production";
+    QString line;
+    QFile file(path + "/sequences_trigrams.txt");
+    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return "Error reading trigrams file";
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    do {
+        line = stream.readLine();
+        if (line.startsWith("#")) continue;
+        QStringList fields = line.split("\t");
+        trigrams.insert(fields.at(0), fields);
+    } while (!stream.atEnd());
+    file.close();
+
+    if (!com) return "Error";
+    QPointer<Corpus> corpus = com->corpus();
+    if (!corpus) return "Error";
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        if (!com) continue;
+        QPointer<CorpusRecording> rec = com->recordings().first();
+        if (!rec) continue;
+        QString annotationID = rec->ID();
+        QString speakerID = com->property("SubjectID").toString();
+        IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+        if (!tier_tokens) return "No tier tokens";
+        IntervalTier *tier_units = new IntervalTier(tier_tokens, "sequence", false);
+        QString stimulusID = com->property("StimulusID").toString();
+        QString tokenBefore = trigrams[stimulusID].at(1);
+        QString tokenTarget = trigrams[stimulusID].at(2);
+        QString tokenAfter  = trigrams[stimulusID].at(3);
+        bool found(false);
+        for (int i = 1; i < tier_tokens->count() - 1; ++i) {
+            QString target = tier_tokens->at(i)->text();
+            if (target != tokenTarget) continue;
+            int j = i - 1;
+            while ((j > 0) && (tier_tokens->at(j)->isPauseSilent())) j--;
+            QString before = tier_tokens->at(j)->text();
+            if (before != tokenBefore) continue;
+            int k = i + 1;
+            while ((k < tier_tokens->count()) && (tier_tokens->at(k)->isPauseSilent())) k++;
+            QString after = tier_tokens->at(k)->text();
+            if (after != tokenAfter) continue;
+            // found it
+            tier_tokens->at(i)->setAttribute("target", "*");
+            tier_units->merge(k, tier_tokens->count() - 2)->setText("S2");
+            tier_units->at(i)->setText("MD");
+            tier_units->merge(1, j)->setText("S1");
+            found = true;
+            break;
+        }
+        com->repository()->annotations()->saveTier(annotationID, speakerID, tier_units);
+        ret.append(com->ID()).append(found ? " OK\n" : " Trigram not found\n");
+        delete tier_tokens;
+        delete tier_units;
+    }
+    return ret;
+}
+
+struct ProtoToken {
+    ProtoToken(const QString &token) : token(token) {}
+    QString token;
+    QList<double> durations;
+    QList<double> meanPitches;
+};
+
+QString ExperimentUtterances::averageProsody(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    QMap<QString, QList<ProtoToken> > utterances;
+    if (!com) return "Error";
+    QPointer<Corpus> corpus = com->corpus();
+    if (!corpus) return "Error";
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        if (!com) continue;
+        QPointer<CorpusRecording> rec = com->recordings().first();
+        if (!rec) continue;
+        QString annotationID = rec->ID();
+        QString speakerID = com->property("SubjectID").toString();
+        QString stimulusID = com->property("StimulusID").toString();
+        IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+        if (!tier_tokens) return "No tier tokens";
+        IntervalTier *tier_syll = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
+        if (!tier_syll) return "No tier syll";
+        // If this is the first time, construct the prototypical utterance
+        if (!utterances.contains(stimulusID)) {
+            QList<ProtoToken> prototokens;
+            foreach (Interval *token, tier_tokens->intervals()) {
+                if (token->isPauseSilent()) continue;
+                prototokens << ProtoToken(token->text());
+            }
+            utterances.insert(stimulusID, prototokens);
+        }
+        // Interpolate syllable pitch values
+        for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
+            Interval *syll = tier_syll->interval(isyll);
+            // Smoothing for non-stylised syllables
+            if (!syll->isPauseSilent() && syll->attribute("f0_min").toInt() == 0) {
+                syll->setAttribute("f0_min", Measures::mean(tier_syll, "f0_min", isyll, 4, 4, true, "f0_min"));
+                syll->setAttribute("f0_max", Measures::mean(tier_syll, "f0_max", isyll, 4, 4, true, "f0_min"));
+                syll->setAttribute("f0_mean", Measures::mean(tier_syll, "f0_mean", isyll, 4, 4, true, "f0_min"));
+                syll->setAttribute("int_peak", Measures::mean(tier_syll, "int_peak", isyll, 4, 4, true, "f0_min"));
+            }
+        }
+        // Process
+        int i = 0;
+        foreach (Interval *token, tier_tokens->intervals()) {
+            if (token->isPauseSilent()) continue;
+            QList<double> f0_means;
+            QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(token);
+            // smoothing
+            while (syllIndices.second - syllIndices.first < 5) {
+                if (syllIndices.first > 0) syllIndices.first--;
+                if (syllIndices.second < tier_syll->count() - 1) syllIndices.second++;
+            }
+            for (int i = syllIndices.first; i <= syllIndices.second; ++i) {
+                Interval *syll = tier_syll->interval(i);
+                if (!syll) continue;
+                if (syll->attribute("nucl_t1").toDouble() > 0 && syll->attribute("nucl_t2").toDouble() > 0) {
+                    f0_means << syll->attribute("f0_mean").toDouble();
+                }
+            }
+            StatisticalSummary summary_f0_means(f0_means);
+            utterances[stimulusID][i].durations << token->duration().toDouble();
+            utterances[stimulusID][i].meanPitches << summary_f0_means.mean();
+            ++i;
+        }
+        delete tier_tokens;
+        delete tier_syll;
+    }
+    // Output
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
+    QFile file(path + "/averageprosody.txt");
+    if ( !file.open( QIODevice::ReadWrite | QIODevice::Text ) ) return "Error reading transcriptions file";
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << "StimulusID\tDiscourseMarker\tDiscourseRelation\tToken\tTime\tDurationMean\tDurationStdev\tPitchMean\tPitchStdev\n";
+    foreach (QString stimulusID, utterances.keys()) {
+        QList<ProtoToken> tokens = utterances[stimulusID];
+        double time(0.0);
+        foreach (ProtoToken t, tokens) {
+            StatisticalSummary summary_duration(t.durations);
+            StatisticalSummary summary_pitch(t.meanPitches);
+            out << stimulusID << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+            out << t.token << "\t" << time << "\t";
+            out << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
+            out << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
+            time = time + summary_duration.mean();
+        }
+    }
+    file.close();
 
     return ret;
 }

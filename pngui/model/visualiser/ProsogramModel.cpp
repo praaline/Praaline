@@ -50,7 +50,7 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecord
     QString prosoPath = rec->property("ProsogramPath").toString();
     if (prosoPath.isEmpty()) {
         QFileInfo info(rec->filePath());
-        prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
+        prosoPath = info.absolutePath() + "/prosogram/";
     }
     QList<QPointer<CorpusParticipation> > participations = corpus->participationsForCommunication(rec->communicationID());
     if (participations.isEmpty()) {
