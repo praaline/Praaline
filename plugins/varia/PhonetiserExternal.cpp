@@ -16,6 +16,9 @@ struct PhonetiserExternalData {
     QString levelTokens;
     QString attributePhonetisationOfTokens;
     QString outputFilesPath;
+    QStringList phonemes;
+    QRegExp regexMatchPhoneme;
+    QHash<QString, QString> citationForms;
 };
 
 PhonetiserExternal::PhonetiserExternal() :
@@ -24,6 +27,17 @@ PhonetiserExternal::PhonetiserExternal() :
     d->levelTokens = "tok_min";
     d->attributePhonetisationOfTokens = "phonetisation";
     d->outputFilesPath = "/home/george/AA/";
+
+    // The order is important. Start with the longest phonemes.
+    d->phonemes << "9~" << "a~" << "e~" << "o~"
+                << "2" << "9" << "A" << "@" << "E" << "H" << "O" << "R" << "S" << "Z"
+                << "a" << "b" << "d" << "e" << "f" << "g" << "i" << "j" << "k" << "l"
+                << "m" << "n" << "o" << "p" << "s" << "t" << "u" << "v" << "w" << "y" << "z";
+    QString regex;
+    foreach (QString phoneme, d->phonemes)
+        regex = regex.append(QString("%1\\*|%1|").arg(phoneme));
+    if (!regex.isEmpty()) regex.chop(1);
+    d->regexMatchPhoneme = QRegExp(regex);
 }
 
 PhonetiserExternal::~PhonetiserExternal()
@@ -291,3 +305,73 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
     return ret;
 }
 
+QString PhonetiserExternal::correctPhonemeChains(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    if (!com) return ret;
+
+
+
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->levelTokens);
+            if (!tier_tokens) continue;
+
+            for (int i = 1; i < tier_tokens->count() - 1; ++i) {
+                QString token = tier_tokens->at(i)->text();
+                if (!d->citationForms.contains(token)) continue;
+                QString citation = d->citationForms.value(token);
+                QString phonetisation = tier_tokens->at(i)->attribute(d->attributePhonetisationOfTokens).toString();
+                QString phonetisationAfter = tier_tokens->at(i - 1)->attribute(d->attributePhonetisationOfTokens).toString();
+                QStringList phones = separatePhones(phonetisation);
+                if (phones.isEmpty()) continue;
+                QStringList phonesAfter = separatePhones(phonetisationAfter);
+                if (phonesAfter.isEmpty()) continue;
+                if (phonetisation + phonesAfter.first() == citation) {
+
+                }
+                
+                
+                
+            }
+
+
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tokens);
+            ret.append(QString("Corrected phoneme chains for %1 %2\n").arg(annotationID).arg(speakerID));
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret;
+}
+
+QStringList PhonetiserExternal::separatePhones(const QString &phonetisation) {
+    // Separate phonemes
+    QStringList separated;
+    int pos = 0;
+    while ((pos = d->regexMatchPhoneme.indexIn(phonetisation, pos)) != -1) {
+        separated << d->regexMatchPhoneme.cap(0);
+        pos += d->regexMatchPhoneme.matchedLength();
+    }
+    return separated;
+}
+
+bool PhonetiserExternal::readCitationFormDictionary(const QString &filename)
+{
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return false;
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    do {
+        line = stream.readLine();
+        if (line.startsWith("#")) continue;
+        QStringList fields = line.split("\t");
+        if (fields.count() > 1) d->citationForms.insert(fields.at(0), fields.at(1));
+    } while (!stream.atEnd());
+    file.close();
+    return true;
+}

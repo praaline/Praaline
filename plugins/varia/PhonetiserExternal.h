@@ -26,6 +26,9 @@ public:
 
     QString exportToPhonetiser(QPointer<Praaline::Core::CorpusCommunication> com);
     QString importFromPhonetiser(QPointer<Praaline::Core::CorpusCommunication> com, bool fromTranscriptionTier = false);
+    QString correctPhonemeChains(QPointer<Praaline::Core::CorpusCommunication> com);
+    QStringList separatePhones(const QString &phonetisation);
+    bool readCitationFormDictionary(const QString &filename);
 
 private:
     PhonetiserExternalData *d;
