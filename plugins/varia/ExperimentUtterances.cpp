@@ -141,7 +141,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
         QString commandSoxConcatenate = "sox ";
         QSharedPointer<AnnotationTierGroup> tierGroupConcatenated(new AnnotationTierGroup);
         QList<Interval *> intervals_IDs;
-        QStringList tierNames; tierNames << "phone" << "syll" << "tok_min" << "sequence";
+        QStringList tierNames; tierNames << "phone" << "syll" << "tok_min" << "prosodic_unit" << "sequence";
         QHash<QString, QList<Interval *> > intervals_annot;
         foreach (QString levelID, tierNames)
             intervals_annot.insert(levelID, QList<Interval *>());

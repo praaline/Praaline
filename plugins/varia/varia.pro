@@ -90,7 +90,8 @@ HEADERS += \
     SequencerCombineUnits.h \
     CPROMDISS.h \
     SilentPauseManipulator.h \
-    ExperimentUtterances.h
+    ExperimentUtterances.h \
+    ProsodicUnits.h
 
 
 SOURCES += \ 
@@ -123,4 +124,5 @@ SOURCES += \
     SequencerCombineUnits.cpp \
     CPROMDISS.cpp \
     SilentPauseManipulator.cpp \
-    ExperimentUtterances.cpp
+    ExperimentUtterances.cpp \
+    ProsodicUnits.cpp

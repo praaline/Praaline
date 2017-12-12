@@ -405,6 +405,7 @@ void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
 
 #include "PhonetiserExternal.h"
 #include "BratSyntaxAndDisfluencies.h"
+#include "ProsodicUnits.h"
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
@@ -419,12 +420,18 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         if (!com) continue;
         QString m;
 //        PhonetiserExternal p;
+//        p.readCitationFormDictionary("/home/george/citation_forms.txt");
 //        m = p.importFromPhonetiser(com, true);
-//        m.chop(1); m = m.append("\tAlign:\t");
+//        m = m.append(p.correctPhonemeChains(com));
+//        m.chop(1);
+//        m = m.append("\tAlign:\t");
 //        m = m.append(ExperimentUtterances::align(com));
-//        m = ExperimentUtterances::concatenate(com);
 //        m = ExperimentUtterances::createUnitTier(com);
-        m = ExperimentUtterances::averageProsody(com);
+//        ProsodicUnits p;
+//        p.createProsodicUnits(com);
+//        m = p.transcriptionInProsodicUnits(com);
+//        m = ExperimentUtterances::concatenate(com);
+//        m = ExperimentUtterances::averageProsody(com);
         if (!m.isEmpty()) printMessage(m);
     }
 

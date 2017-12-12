@@ -31,6 +31,7 @@ struct HTKForcedAlignerData {
     uint sampleRateAM;
     uint beamThreshold;
     QHash<QString, QString> phonemeTranslations;
+    QHash<QString, QString> phonemeReverseTranslations;
     QString pathTemp;
     QStringList phonemes;
     QRegExp regexMatchPhoneme;
@@ -66,6 +67,10 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     d->phonemeTranslations.insert("2", "eu");
     d->phonemeTranslations.insert("9", "oe");
     d->phonemeTranslations.insert("A", "a");
+
+    d->phonemeReverseTranslations.insert("oe~", "9~");
+    d->phonemeReverseTranslations.insert("eu", "2");
+    d->phonemeReverseTranslations.insert("oe", "9");
 
     d->pathTemp = "/home/george/aligner_test/";
 }
@@ -183,13 +188,14 @@ bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<S
 //    a	a
     // Create LAB file
     QFile fileLAB(filenameBase + ".lab");
-    if ( !fileLAB.open( QIODevice::ReadWrite | QIODevice::Text ) ) return false;
+    if ( !fileLAB.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return false;
     QTextStream lab(&fileLAB);
     lab.setCodec("ISO 8859-1");
     // Insert all tokens into LAB file and populate a hash table with (unique) pronunciation variants
     QList<QPair<QString, QString> > pronunciations;
     foreach (SpeechToken atoken, atokens) {
         if (atoken.orthographic == "_") continue;
+        if (atoken.orthographic.trimmed() == "") continue;
         QString orthoEncoded = encodeEntities(atoken.orthographic);
         lab << orthoEncoded << "\n";
         foreach (QString phonetisation, atoken.phonetisations) {
@@ -201,7 +207,7 @@ bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<S
     fileLAB.close();
     // Create DCT file with pronunciation variants
     QFile fileDCT(filenameBase + ".dct");
-    if ( !fileDCT.open( QIODevice::ReadWrite | QIODevice::Text ) ) return false;
+    if ( !fileDCT.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return false;
     QTextStream dct(&fileDCT);
     dct.setCodec("ISO 8859-1");
     dct << "sil\tsil\n";
@@ -253,7 +259,7 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     alignerOutput = QString(hvite.readAllStandardOutput());
 
     QFile fileREC(filenameBase + ".rec");
-    if ( !fileREC.open( QIODevice::ReadOnly | QIODevice::Text ) ) return false;
+    if ( !fileREC.open( QIODevice::ReadOnly | QIODevice::Truncate | QIODevice::Text ) ) return false;
     QTextStream rec(&fileREC);
     rec.setCodec("ISO 8859-1");
     long long start = 0, end = 0;
@@ -267,11 +273,15 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
         // Format: 0 700000 sil -428.240662 sil
         start = fields[0].toLongLong() * 100;
         end = fields[1].toLongLong() * 100;
-        if (start == end)
+        if (start >= end)
             continue;
         phone = fields[2];
+        // Phone reverse translation
         if (phone == "sil") phone = "_";
+        if (d->phonemeReverseTranslations.contains(phone)) phone = d->phonemeReverseTranslations.value(phone);
+        // Acoustic model score
         scoreAM = fields[3].toDouble();
+        // Beginning of a token
         bool isTokenStart(false);
         if (fields.count() > 4) {
             token = fields[4];
@@ -294,11 +304,25 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
 
     // Create resampled wave file in temporary directory
     QString waveResampledBase = d->pathTemp + QFileInfo(waveFile).baseName();
+    if (QFile::exists(waveResampledBase + ".wav")) QFile::remove(waveResampledBase + ".wav");
     AudioSegmenter::resample(waveFile, waveResampledBase + ".wav", d->sampleRateAM);
+    // Insert silent pauses at the beginning and end
+    if (!tier_tokens->at(indexFrom)->isPauseSilent()) {
+        tier_tokens->splitToEqual(indexFrom, 2);
+        tier_tokens->at(indexFrom)->setText("_");
+        indexTo++;
+    }
+    if (!tier_tokens->at(indexTo)->isPauseSilent()) {
+        tier_tokens->splitToEqual(indexTo, 2);
+        indexTo++;
+        tier_tokens->at(indexTo)->setText("_");
+    }
     // Remove pauses from within the utterance
-    for (int i = indexTo - 1; i >= 1; --i) {
-        if (tier_tokens->at(i)->isPauseSilent())
+    for (int i = indexTo - 1; i >= indexFrom + 1; --i) {
+        if (tier_tokens->at(i)->isPauseSilent()) {
             tier_tokens->removeInterval(i);
+            indexTo--;
+        }
     }
     // Create alignment tokens for the entire utterance
     atokens = alignerTokensFromIntervalTier(tier_tokens, indexFrom, indexTo);
