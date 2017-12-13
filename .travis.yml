@@ -9,6 +9,7 @@ matrix:
     env:
      - QT_BASE=59
   - os: osx
+    sudo: required
     compiler: clang
     env:
      - QT_BASE=59
