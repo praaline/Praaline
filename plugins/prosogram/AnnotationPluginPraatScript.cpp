@@ -5,7 +5,7 @@
 #include <QProcess>
 #include <QDebug>
 
-#include "annotationpluginpraatscript.h"
+#include "AnnotationPluginPraatScript.h"
 
 AnnotationPluginPraatScript::AnnotationPluginPraatScript(QObject *parent) :
     QObject(parent)

@@ -4,11 +4,12 @@
 #include <QString>
 
 namespace Praaline {
+
 namespace Core {
 class IntervalTier;
 }
-}
 
+namespace ASR {
 
 class SyllabifierEasy
 {
@@ -22,5 +23,8 @@ private:
     static int phoneCategory(const QString &phone);
     static void delcurrent(Praaline::Core::IntervalTier *tier_syll, int index, const QString &ruleName);
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // SYLLABIFIEREASY_H

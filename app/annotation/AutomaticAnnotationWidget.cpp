@@ -1,10 +1,6 @@
 #include <QString>
 #include <QList>
 #include <QMessageBox>
-#include <QFile>
-#include <QFileDialog>
-#include <QTextStream>
-#include <QFont>
 #include <QDebug>
 #include "qtpropertymanager.h"
 #include "qtvariantproperty.h"
@@ -15,6 +11,7 @@
 
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/CheckableProxyModel.h"
+#include "pngui/widgets/StatusMessagesWidget.h"
 
 #include "PraalineUserInterfaceOptions.h"
 
@@ -32,10 +29,6 @@ struct AutomaticAnnotationWidgetData {
     { }
 
     QAction *actionAnnotate;
-    QAction *actionSaveOutput;
-    QAction *actionClearOutput;
-
-    QTextEdit *textResults;
     int runningPlugins;
 
     QPointer<TreeNode> corporaTopLevelNode;
@@ -51,6 +44,8 @@ struct AutomaticAnnotationWidgetData {
     QtTreePropertyBrowser *propertyBrowserPluginParameters;
     QHash<QString, QtProperty *> propertiesSelectedPlugins;
     QHash<QString, QHash<QString, QtProperty *> > propertiesParameters;
+
+    StatusMessagesWidget *statusMessages;
 };
 
 AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
@@ -67,10 +62,9 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
         if (node && node->observerName() == tr("Corpus Explorer")) d->corporaTopLevelNode = node;
     }
 
-    d->textResults = new QTextEdit(this);
-    QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-    d->textResults->setFont(fixedFont);
-    ui->gridLayoutOutput->addWidget(d->textResults);
+    // Status messages output widget
+    d->statusMessages = new StatusMessagesWidget(this);
+    ui->gridLayoutOutput->addWidget(d->statusMessages);
 
     // Create observer widget for communications sub-tree
     d->observerWidgetCorpusItems = new ObserverWidget(Qtilities::TreeView, this);
@@ -125,13 +119,7 @@ AutomaticAnnotationWidget::~AutomaticAnnotationWidget()
 
 void AutomaticAnnotationWidget::setupActions()
 {
-    ui->toolbarOutput->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    ui->toolbarOutput->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     connect(ui->commandAnnotate, SIGNAL(clicked()), this, SLOT(actionAnnotate()));
-    d->actionSaveOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), tr("Save output"));
-    connect(d->actionSaveOutput, SIGNAL(triggered()), this, SLOT(actionSaveOutput()));
-    d->actionClearOutput = ui->toolbarOutput->addAction(QIcon(":/icons/actions/clear.png"), tr("Clear output"));
-    connect(d->actionClearOutput, SIGNAL(triggered()), this, SLOT(actionClearOutput()));
 }
 
 void AutomaticAnnotationWidget::pluginSelectionChanged()
@@ -176,31 +164,11 @@ void AutomaticAnnotationWidget::pluginSelectionChanged()
     }
 }
 
-void AutomaticAnnotationWidget::actionSaveOutput()
-{
-    QFileDialog::Options options;
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Automatic Annotation Output"),
-                                tr("praaline_report.txt"), tr("Text File (*.txt);;All Files (*)"),
-                                &selectedFilter, options);
-    if (fileName.isEmpty()) return;
-    QFile fileOut(fileName);
-    if (! fileOut.open(QFile::WriteOnly | QFile::Text)) return;
-    QTextStream out(&fileOut);
-    out.setCodec("UTF-8");
-    out << d->textResults->document()->toPlainText();
-    fileOut.close();
-}
 
-void AutomaticAnnotationWidget::actionClearOutput()
-{
-    d->textResults->clear();
-}
 
 void AutomaticAnnotationWidget::logAnnotationMessage(QString message)
 {
-    d->textResults->append(message);
-    d->textResults->moveCursor(QTextCursor::End);
+    d->statusMessages->appendMessage(message);
     QCoreApplication::processEvents();
 }
 

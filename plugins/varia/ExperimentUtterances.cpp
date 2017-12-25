@@ -17,6 +17,7 @@
 using namespace Praaline::Core;
 
 #include "pnlib/asr/htk/HTKForcedAligner.h"
+#include "pnlib/asr/syllabifier/SyllabifierEasy.h"
 using namespace  Praaline::ASR;
 
 #include "ExperimentUtterances.h"
@@ -81,8 +82,6 @@ QString ExperimentUtterances::loadTranscriptions(QPointer<CorpusCommunication> c
     return ret;
 }
 
-#include "SyllabifierEasy.h"
-
 QString ExperimentUtterances::align(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
@@ -118,6 +117,54 @@ QString ExperimentUtterances::align(QPointer<Praaline::Core::CorpusCommunication
     return ret;
 }
 
+QString ExperimentUtterances::fixTiers(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    QPointer<CorpusRecording> rec = com->recordings().first();
+    if (!rec) return "Error";
+    QString annotationID = rec->ID();
+    QString speakerID = com->property("SubjectID").toString();
+    QStringList tierNames;
+    tierNames << "phone" << "syll" << "tok_min" << "tok_mwu" << "prosodic_unit" << "sequence" << "ID";
+    foreach (QString tierName, tierNames) {
+        IntervalTier *tier = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, tierName));
+        if (!tier) continue;
+        if (tier->count() < 1) continue;
+        tier->moveTierEnd(rec->duration());
+        com->repository()->annotations()->saveTier(annotationID, speakerID, tier);
+        delete tier;
+    }
+    ret.append(com->ID());
+    return ret;
+}
+
+QString ExperimentUtterances::fixTranscription(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    QPointer<CorpusRecording> rec = com->recordings().first();
+    if (!rec) return "Error";
+    QString annotationID = rec->ID();
+    QString speakerID = com->property("SubjectID").toString();
+    IntervalTier *tier_transcription = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "transcription"));
+    IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+    QList<RealTime> boundaries;
+    boundaries << tier_tokens->first()->tMin() << tier_tokens->first()->tMax();
+    boundaries << tier_tokens->last()->tMin();
+    bool ok = tier_transcription->realignIntervals(0, boundaries);
+    tier_transcription->moveTierEnd(tier_tokens->tMax());
+    com->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
+    delete tier_tokens;
+    delete tier_transcription;
+    ret.append(com->ID());
+    ret.append((ok) ? " OK" : " Error");
+    return ret;
+}
+
 QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
@@ -129,6 +176,9 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
     QMap<QString, QStringList> concatenationGroups;
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
+        // Hack
+        if (!com->ID().startsWith("E")) continue;
+        //
         QString groupID = com->property("SubjectID").toString();
         if (!concatenationGroups.contains(groupID))
             concatenationGroups.insert(groupID, QStringList() << com->ID());
@@ -136,6 +186,9 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
             concatenationGroups[groupID] << com->ID();
     }
     foreach (QString groupID, concatenationGroups.keys()) {
+        // Hack
+        if ((groupID != "S15") && (groupID != "S17")) continue;
+        //
         QStringList comIDs = concatenationGroups.value(groupID);
         qSort(comIDs);
         QString commandSoxConcatenate = "sox ";
@@ -159,7 +212,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
                             (corpus->repository()->annotations()->getTier(annotationID, groupID, levelID));
                     tier->timeShift(offset);
                     intervals_annot[levelID] << tier->intervals();
-                    if (maxDuration < tier->duration()) maxDuration = tier->duration();
+                    // if (maxDuration < tier->duration()) maxDuration = tier->duration();
                 }
                 intervals_IDs << new Interval(offset, offset + maxDuration, rec->ID());
                 offset = offset + maxDuration;
@@ -167,7 +220,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
         }
         QString basePathForConcatenatedMedia = corpus->repository()->files()->basePath();
         commandSoxConcatenate = commandSoxConcatenate.append(basePathForConcatenatedMedia + "/" + groupID + ".wav");
-        // ret.append(commandSoxConcatenate).append("\n");
+        ret.append(commandSoxConcatenate).append("\n");
         // Export textgrid
         foreach (QString levelID, tierNames) {
             IntervalTier *tier = new IntervalTier(levelID, intervals_annot[levelID]);
@@ -237,6 +290,7 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
             found = true;
             break;
         }
+        com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tokens);
         com->repository()->annotations()->saveTier(annotationID, speakerID, tier_units);
         ret.append(com->ID()).append(found ? " OK\n" : " Trigram not found\n");
         delete tier_tokens;
@@ -245,101 +299,153 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
     return ret;
 }
 
-struct ProtoToken {
-    ProtoToken(const QString &token) : token(token) {}
-    QString token;
-    QList<double> durations;
-    QList<double> meanPitches;
-};
-
-QString ExperimentUtterances::averageProsody(QPointer<Praaline::Core::CorpusCommunication> com)
+QString ExperimentUtterances::rereadCorrectedTGs(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
-    QMap<QString, QList<ProtoToken> > utterances;
     if (!com) return "Error";
     QPointer<Corpus> corpus = com->corpus();
     if (!corpus) return "Error";
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
-        if (!com) continue;
-        QPointer<CorpusRecording> rec = com->recordings().first();
-        if (!rec) continue;
-        QString annotationID = rec->ID();
-        QString speakerID = com->property("SubjectID").toString();
-        QString stimulusID = com->property("StimulusID").toString();
-        IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
-                (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
-        if (!tier_tokens) return "No tier tokens";
-        IntervalTier *tier_syll = qobject_cast<IntervalTier *>
-                (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
-        if (!tier_syll) return "No tier syll";
-        // If this is the first time, construct the prototypical utterance
-        if (!utterances.contains(stimulusID)) {
-            QList<ProtoToken> prototokens;
-            foreach (Interval *token, tier_tokens->intervals()) {
-                if (token->isPauseSilent()) continue;
-                prototokens << ProtoToken(token->text());
-            }
-            utterances.insert(stimulusID, prototokens);
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production/CORPUS_REPONSES/TO_CHECK_NEW/";
+    QStringList filenameTGs;
+    filenameTGs << "S1" << "S2" << "S3" << "S4" << "S5" << "S6" << "S7" << "S8" << "S9" << "S10"
+                << "S11" << "S12" << "S13" << "S14" << "S15" << "S16" << "S17" << "S18" << "S19" << "S20";
+    filenameTGs << "S15_ONLY_ET" << "S17_ONLY_ET";
+    foreach (QString filenameTG, filenameTGs) {
+        AnnotationTierGroup *txg = new AnnotationTierGroup();
+        if (!PraatTextGrid::load(path + filenameTG + ".TextGrid", txg)) {
+            ret.append("Error ").append(filenameTG).append("\n");
+            continue;
         }
-        // Interpolate syllable pitch values
-        for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
-            Interval *syll = tier_syll->interval(isyll);
-            // Smoothing for non-stylised syllables
-            if (!syll->isPauseSilent() && syll->attribute("f0_min").toInt() == 0) {
-                syll->setAttribute("f0_min", Measures::mean(tier_syll, "f0_min", isyll, 4, 4, true, "f0_min"));
-                syll->setAttribute("f0_max", Measures::mean(tier_syll, "f0_max", isyll, 4, 4, true, "f0_min"));
-                syll->setAttribute("f0_mean", Measures::mean(tier_syll, "f0_mean", isyll, 4, 4, true, "f0_min"));
-                syll->setAttribute("int_peak", Measures::mean(tier_syll, "int_peak", isyll, 4, 4, true, "f0_min"));
-            }
-        }
-        // Process
-        int i = 0;
-        foreach (Interval *token, tier_tokens->intervals()) {
-            if (token->isPauseSilent()) continue;
-            QList<double> f0_means;
-            QPair<int, int> syllIndices = tier_syll->getIntervalIndexesContainedIn(token);
-            // smoothing
-            while (syllIndices.second - syllIndices.first < 5) {
-                if (syllIndices.first > 0) syllIndices.first--;
-                if (syllIndices.second < tier_syll->count() - 1) syllIndices.second++;
-            }
-            for (int i = syllIndices.first; i <= syllIndices.second; ++i) {
-                Interval *syll = tier_syll->interval(i);
-                if (!syll) continue;
-                if (syll->attribute("nucl_t1").toDouble() > 0 && syll->attribute("nucl_t2").toDouble() > 0) {
-                    f0_means << syll->attribute("f0_mean").toDouble();
+        IntervalTier *tier_ID = txg->getIntervalTierByName("ID");
+        if (!tier_ID) { ret.append("Error ").append(filenameTG).append("\n"); continue; }
+        QStringList tierNames; tierNames << "phone" << "syll" << "tok_min";
+        foreach (Interval *ID, tier_ID->intervals()) {
+            QString speakerID = filenameTG.left(3);
+            foreach (QString tierName, tierNames) {
+                IntervalTier *tier_tg = txg->getIntervalTierByName(tierName);
+                if (!tier_tg) { ret.append("Error ").append(filenameTG).append("\n"); continue; }
+                IntervalTier *tier = qobject_cast<IntervalTier *>(corpus->repository()->annotations()->getTier(ID->text(), speakerID, tierName));
+                if (!tier) { ret.append("Error ").append(filenameTG).append("\n"); continue; }
+                QList<Interval *> intervals;
+                RealTime tFrom = ID->tMin(); if (tFrom < tier_tg->tMin()) tFrom = tier_tg->tMin();
+                RealTime tTo = ID->tMax(); if (tTo > tier_tg->tMax()) tTo = tier_tg->tMax();
+                foreach (Interval *intv, tier_tg->getIntervalsContainedIn(tFrom, tTo)) {
+                    intervals << new Interval(intv->tMin() - ID->tMin(), intv->tMax() - ID->tMin(), intv->text());
                 }
+                tier->replaceAllIntervals(intervals);
+                tier->fillEmptyWith("", "_");
+                tier->mergeIdenticalAnnotations("_");
+                com->repository()->annotations()->saveTier(ID->text(), speakerID, tier);
+                delete tier;
             }
-            StatisticalSummary summary_f0_means(f0_means);
-            utterances[stimulusID][i].durations << token->duration().toDouble();
-            utterances[stimulusID][i].meanPitches << summary_f0_means.mean();
-            ++i;
+            ret.append(ID->text()).append(" OK\n");
         }
-        delete tier_tokens;
-        delete tier_syll;
+        delete txg;
     }
-    // Output
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
-    QFile file(path + "/averageprosody.txt");
-    if ( !file.open( QIODevice::ReadWrite | QIODevice::Text ) ) return "Error reading transcriptions file";
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << "StimulusID\tDiscourseMarker\tDiscourseRelation\tToken\tTime\tDurationMean\tDurationStdev\tPitchMean\tPitchStdev\n";
-    foreach (QString stimulusID, utterances.keys()) {
-        QList<ProtoToken> tokens = utterances[stimulusID];
-        double time(0.0);
-        foreach (ProtoToken t, tokens) {
-            StatisticalSummary summary_duration(t.durations);
-            StatisticalSummary summary_pitch(t.meanPitches);
-            out << stimulusID << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
-            out << t.token << "\t" << time << "\t";
-            out << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
-            out << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
-            time = time + summary_duration.mean();
-        }
-    }
-    file.close();
+    return ret;
+}
 
+bool containsVowel(QString syll) {
+    QStringList vowels;
+    vowels << "i" << "e" << "E" << "a" << "A" << "o" << "O" << "y" << "2" << "9" << "@";
+    // nasals are covered "e~" << "a~" << "o~" << "9~"
+    for (int i = 0; i < syll.length(); ++i) {
+        QString p = syll.mid(i, 1);
+        if (vowels.contains(p)) return true;
+    }
+    return false;
+}
+
+QString ExperimentUtterances::resyllabifyMDs(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    QPointer<CorpusRecording> rec = com->recordings().first();
+    if (!rec) return "Error";
+    QString annotationID = rec->ID();
+    QString speakerID = com->property("SubjectID").toString();
+    IntervalTier *tier_phone = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "phone"));
+    IntervalTier *tier_syll = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
+    IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+
+    tier_syll->fixBoundariesBasedOnTier(tier_phone);
+
+    Interval *target(0);
+    foreach (Interval *intv, tier_tokens->intervals()) {
+        if (intv->attribute("target").toString() == "*") target = intv;
+    }
+    if (!target) { ret.append(com->ID()).append(" target not found"); return ret; }
+    QPair<int, int> indicesPhone = tier_phone->getIntervalIndexesContainedIn(target);
+    QPair<int, int> indicesSyll = tier_syll->getIntervalIndexesOverlappingWith(target);
+    ret.append(com->ID()).append("\t").append(target->text()).append("\t");
+    for (int ip = indicesPhone.first; (ip > 0) && (ip <= indicesPhone.second); ++ip)
+        ret.append(tier_phone->at(ip)->text());
+    ret.append("\t");
+    for (int is = indicesSyll.first; (is > 0) && (is <= indicesSyll.second); ++is)
+        ret.append(tier_syll->at(is)->text()).append(".");
+    if (ret.endsWith(".")) ret.chop(1);
+    if ((indicesPhone.first < 0) || (indicesPhone.second < 0)) { ret.append(" phones not found"); return ret; }
+    ret.append("\t");
+
+    RealTime tMinFirstPhoneme = tier_phone->at(indicesPhone.first)->tMin();
+    RealTime tMaxLastPhoneme = tier_phone->at(indicesPhone.second)->tMax();
+
+    bool splitFirst(false), splitLast(false);
+    int indexSyllAtFirstPhoneme = tier_syll->intervalIndexAtTime(tMinFirstPhoneme);
+    if (tier_syll->at(indexSyllAtFirstPhoneme)->tMin() != tMinFirstPhoneme) {
+        ret.append(" split first ");
+        splitFirst = true;
+        tier_syll->split(indexSyllAtFirstPhoneme, tMinFirstPhoneme);
+        QString before;
+        foreach (Interval *intv, tier_phone->getIntervalsContainedIn(tier_syll->at(indexSyllAtFirstPhoneme)))
+            before = before.append(intv->text());       
+        tier_syll->at(indexSyllAtFirstPhoneme)->setText(before);
+        QString after;
+        foreach (Interval *intv, tier_phone->getIntervalsContainedIn(tier_syll->at(indexSyllAtFirstPhoneme + 1)))
+            after = after.append(intv->text());
+        tier_syll->at(indexSyllAtFirstPhoneme + 1)->setText(after);
+        // Check
+        if (!containsVowel(tier_syll->at(indexSyllAtFirstPhoneme)->text())) {
+            tier_syll->merge(indexSyllAtFirstPhoneme - 1, indexSyllAtFirstPhoneme);
+        }
+        // Return
+        indexSyllAtFirstPhoneme = tier_syll->intervalIndexAtTime(tMinFirstPhoneme);
+        for (int i = -1; i <= 1; ++i)
+            ret.append(tier_syll->at(indexSyllAtFirstPhoneme + i)->text()).append("|");
+        if (ret.endsWith("|")) ret.chop(1);
+    }
+    int indexSyllAtLastPhoneme = tier_syll->intervalIndexAtTime(tMaxLastPhoneme, true);
+    if (tier_syll->at(indexSyllAtLastPhoneme)->tMax() != tMaxLastPhoneme) {
+        ret.append(" split last ");
+        splitLast = true;
+        tier_syll->split(indexSyllAtLastPhoneme, tMaxLastPhoneme);
+        QString before;
+        foreach (Interval *intv, tier_phone->getIntervalsContainedIn(tier_syll->at(indexSyllAtLastPhoneme)))
+            before = before.append(intv->text());
+        tier_syll->at(indexSyllAtLastPhoneme)->setText(before);
+        QString after;
+        foreach (Interval *intv, tier_phone->getIntervalsContainedIn(tier_syll->at(indexSyllAtLastPhoneme + 1)))
+            after = after.append(intv->text());
+        tier_syll->at(indexSyllAtLastPhoneme + 1)->setText(after);
+        // Check
+        if (!containsVowel(tier_syll->at(indexSyllAtLastPhoneme)->text())) {
+            tier_syll->merge(indexSyllAtLastPhoneme - 1, indexSyllAtLastPhoneme);
+        }
+        // Return
+        indexSyllAtLastPhoneme = tier_syll->intervalIndexAtTime(tMaxLastPhoneme, true);
+        for (int i = -1; i <= 1; ++i)
+            ret.append(tier_syll->at(indexSyllAtLastPhoneme + i)->text()).append("|");
+        if (ret.endsWith("|")) ret.chop(1);
+    }
+
+    if (!splitFirst && !splitLast) ret = "";
+    com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
+    delete tier_phone;
+    delete tier_syll;
+    delete tier_tokens;
     return ret;
 }
 

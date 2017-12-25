@@ -73,6 +73,11 @@ DEFINES += NODE_EDITOR_STATIC
 QT += core gui gui-private
 DEFINES += XLSX_NO_LIB
 
+# For QCustomPlot
+INCLUDEPATH += ../dependencies/qcustomplot
+LIBS += -L../dependencies/qcustomplot/$${COMPONENTSPATH} -lqcustomplot
+PRE_TARGETDEPS += ../dependencies/qcustomplot/$${COMPONENTSPATH}/libqcustomplot.a
+
 # Linking dynamically with PocketSphinx ====== this should go into a plugin
 win32-g++ {
     INCLUDEPATH += $$PWD/../dependency-builds/pn/win32-mingw/include
@@ -228,7 +233,8 @@ SOURCES += main.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
     corpus/utilities/MergeCommunicationsDialog.cpp \
-    annotation/asr/ForcedAlignmentWidget.cpp
+    annotation/asr/ForcedAlignmentWidget.cpp \
+    web/PraalineWebsite.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -357,7 +363,8 @@ HEADERS  += \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
     corpus/utilities/MergeCommunicationsDialog.h \
-    annotation/asr/ForcedAlignmentWidget.h
+    annotation/asr/ForcedAlignmentWidget.h \
+    web/PraalineWebsite.h
 
 FORMS    += \
     MainWindow.ui \

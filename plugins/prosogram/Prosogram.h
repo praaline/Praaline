@@ -9,7 +9,7 @@
 #include "pncore/corpus/CorpusAnnotation.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
-#include "annotationpluginpraatscript.h"
+#include "AnnotationPluginPraatScript.h"
 
 class ProsoGram : public AnnotationPluginPraatScript
 {
@@ -29,6 +29,8 @@ public:
     QString levelPhone;
     QString levelSyllable;
     QString levelSegmentation;
+    QString levelTonalSegments;
+    QString levelVUV;
     int glissandoThreshold;
     bool keepIntermediateFiles;
     // Plotting
@@ -44,6 +46,9 @@ signals:
 
 public slots:
 
+private:
+    bool updateTonalSegmentsAndVUV(const QString &filenameNuclei, const QString &filenameStylPitchTier,
+                                   IntervalTier *tier_tonal_segments, IntervalTier *tier_vuv);
 };
 
 #endif // PROSOGRAM_H

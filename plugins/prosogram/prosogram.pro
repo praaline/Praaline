@@ -54,12 +54,14 @@ PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
-    pluginprosogram_global.h \
-    pluginprosogram.h \ 
-    annotationpluginpraatscript.h \
-    prosogram.h
+    Prosogram.h \
+    PluginProsogram_global.h \
+    IntonationAnnotator.h \
+    AnnotationPluginPraatScript.h \
+    PluginProsogram.h
 	
 SOURCES += \ 
-    pluginprosogram.cpp \ 
-    annotationpluginpraatscript.cpp \
-    prosogram.cpp
+    Prosogram.cpp \
+    PluginProsogram.cpp \
+    IntonationAnnotator.cpp \
+    AnnotationPluginPraatScript.cpp

@@ -7,9 +7,11 @@ using namespace Praaline::Core;
 
 #include "SyllabifierEasy.h"
 
+namespace Praaline {
+namespace ASR {
+
 SyllabifierEasy::SyllabifierEasy()
 {
-
 }
 
 IntervalTier *SyllabifierEasy::syllabify(IntervalTier *tier_phone)
@@ -233,3 +235,5 @@ int SyllabifierEasy::phoneCategory(const QString &phone)
     return 0;
 }
 
+} // namespace ASR
+} // namespace Praaline

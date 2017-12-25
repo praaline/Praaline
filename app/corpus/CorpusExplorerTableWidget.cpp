@@ -78,6 +78,7 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
     connect(d->corpusRepositoryManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
     // Add grid
     d->tableView = new GridViewWidget(this);
+    d->tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     ui->gridLayoutTable->addWidget(d->tableView);
     d->tableView->tableView()->verticalHeader()->setDefaultSectionSize(20);
     // Corpus object types

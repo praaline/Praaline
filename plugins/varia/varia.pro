@@ -84,14 +84,14 @@ HEADERS += \
     SequencerSyntax.h \
     SequencerDisfluencies.h \
     BratSyntaxAndDisfluencies.h \
-    SyllabifierEasy.h \
     ForcedAlignerDummy.h \
     SequencerProsodicUnits.h \
     SequencerCombineUnits.h \
     CPROMDISS.h \
     SilentPauseManipulator.h \
     ExperimentUtterances.h \
-    ProsodicUnits.h
+    ProsodicUnits.h \
+    AggregateProsody.h
 
 
 SOURCES += \ 
@@ -118,11 +118,11 @@ SOURCES += \
     SequencerSyntax.cpp \
     SequencerDisfluencies.cpp \
     BratSyntaxAndDisfluencies.cpp \
-    SyllabifierEasy.cpp \
     ForcedAlignerDummy.cpp \
     SequencerProsodicUnits.cpp \
     SequencerCombineUnits.cpp \
     CPROMDISS.cpp \
     SilentPauseManipulator.cpp \
     ExperimentUtterances.cpp \
-    ProsodicUnits.cpp
+    ProsodicUnits.cpp \
+    AggregateProsody.cpp

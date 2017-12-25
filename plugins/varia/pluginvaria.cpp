@@ -406,6 +406,7 @@ void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
 #include "PhonetiserExternal.h"
 #include "BratSyntaxAndDisfluencies.h"
 #include "ProsodicUnits.h"
+#include "AggregateProsody.h"
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
@@ -415,10 +416,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    if (!m.isEmpty()) printMessage(m);
 
     //merge_pauses(communications);
-
+    QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        QString m;
 //        PhonetiserExternal p;
 //        p.readCitationFormDictionary("/home/george/citation_forms.txt");
 //        m = p.importFromPhonetiser(com, true);
@@ -426,14 +426,21 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m.chop(1);
 //        m = m.append("\tAlign:\t");
 //        m = m.append(ExperimentUtterances::align(com));
-//        m = ExperimentUtterances::createUnitTier(com);
 //        ProsodicUnits p;
 //        p.createProsodicUnits(com);
 //        m = p.transcriptionInProsodicUnits(com);
+//        m = ExperimentUtterances::fixTiers(com);
 //        m = ExperimentUtterances::concatenate(com);
 //        m = ExperimentUtterances::averageProsody(com);
+//        m = ExperimentUtterances::fixTranscription(com);
+//        m = ExperimentUtterances::resyllabifyMDs(com);
         if (!m.isEmpty()) printMessage(m);
     }
+    // ExperimentUtterances::concatenate(communications.first());
+    // m = AggregateProsody::averageContours(communications.first());
+    // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
+    // m = ExperimentUtterances::createUnitTier(communications.first());
+    printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

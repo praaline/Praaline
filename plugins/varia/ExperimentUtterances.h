@@ -19,7 +19,10 @@ public:
     static QString align(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString concatenate(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString createUnitTier(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString averageProsody(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString fixTiers(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString fixTranscription(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString rereadCorrectedTGs(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString resyllabifyMDs(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // EXPERIMENTUTTERANCES_H

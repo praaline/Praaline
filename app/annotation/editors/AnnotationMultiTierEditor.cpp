@@ -89,6 +89,7 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     d->toolbarEditor->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     // Editor grid
     d->editor = new AnnotationMultiTierEditorWidget(this);
+    d->editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     // Timeline configuration
     d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
     connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),

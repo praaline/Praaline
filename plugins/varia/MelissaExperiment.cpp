@@ -663,7 +663,8 @@ QString MelissaExperiment::reimportAlignment(QPointer<Praaline::Core::CorpusComm
 }
 
 #include "ForcedAlignerDummy.h"
-#include "SyllabifierEasy.h"
+#include "pnlib/asr/syllabifier/SyllabifierEasy.h"
+using namespace Praaline::ASR;
 
 QString MelissaExperiment::preprocessAlignment(QPointer<Praaline::Core::CorpusCommunication> com)
 {

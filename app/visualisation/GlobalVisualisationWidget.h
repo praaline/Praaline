@@ -17,6 +17,9 @@ public:
 
 private:
     Ui::GlobalVisualisationWidget *ui;
+    void test1();
+    void test2();
+    void test3();
 };
 
 #endif // GLOBALVISUALISATIONWIDGET_H

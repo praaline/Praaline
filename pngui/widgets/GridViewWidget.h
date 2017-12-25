@@ -27,6 +27,15 @@ public:
     bool exportToTabSeparated(const QString &);
     bool exportToExcel(const QString &);
 
+    bool toolbarVisible() const;
+    void setToolbarVisible(bool);
+
+    QSize toolbarIconSize() const;
+    void setToolbarIconSize(QSize);
+
+    bool resultsLabelVisible() const;
+    void setResultsLabelVisible(bool);
+
 public slots:
     void resultCountChanged(int filterRows, int unfilteredRows);
     void splitGridActionTriggered();

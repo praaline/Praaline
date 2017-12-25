@@ -56,6 +56,7 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
     connect(commandRefresh, SIGNAL(clicked(bool)), this, SLOT(loadAnnotationData()));
     // Grid view
     d->gridview = new GridViewWidget(this);
+    d->gridview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d->gridview->tableView()->verticalHeader()->setDefaultSectionSize(20);
     // Main toolbar
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);

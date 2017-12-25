@@ -43,6 +43,7 @@ BatchEditorWidget::BatchEditorWidget(QWidget *parent) :
 
     // Manual selection model - table
     d->tableDistinctValues = new GridViewWidget(this);
+    d->tableDistinctValues->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     d->tableDistinctValues->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->tableDistinctValues );
 

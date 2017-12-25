@@ -23,8 +23,7 @@ public:
 private slots:
 
     void actionAnnotate();
-    void actionSaveOutput();
-    void actionClearOutput();
+
 
     void pluginSelectionChanged();
 

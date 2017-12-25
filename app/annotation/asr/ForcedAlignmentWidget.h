@@ -24,6 +24,11 @@ public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,
               Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot) override;
 
+private slots:
+    void stepPhonetiseAll();
+    void stepAlignAll();
+    void stepSpeakerAdaptation();
+
 private:
     Ui::ForcedAlignmentWidget *ui;
     ForcedAlignmentWidgetData *d;

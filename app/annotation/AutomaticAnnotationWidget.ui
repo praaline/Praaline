@@ -213,22 +213,6 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QToolBar" name="toolbarOutput">
-           <property name="iconSize">
-            <size>
-             <width>16</width>
-             <height>16</height>
-            </size>
-           </property>
-           <property name="toolButtonStyle">
-            <enum>Qt::ToolButtonIconOnly</enum>
-           </property>
-           <property name="floatable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>

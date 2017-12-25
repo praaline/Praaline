@@ -371,3 +371,34 @@ void GridViewWidget::toggleFilterRows()
 {
     ui->advancedTableView->setShowFilter(!ui->advancedTableView->showFilter());
 }
+
+bool GridViewWidget::toolbarVisible() const
+{
+    return ui->frameToolbox->isVisible();
+}
+
+void GridViewWidget::setToolbarVisible(bool visible)
+{
+    ui->frameToolbox->setVisible(visible);
+}
+
+QSize GridViewWidget::toolbarIconSize() const
+{
+    return QSize();
+}
+
+void setToolbarIconSize(QSize)
+{
+
+}
+
+bool GridViewWidget::resultsLabelVisible() const
+{
+    return ui->advancedTableViewResultLabel->isVisible();
+}
+
+void GridViewWidget::setResultsLabelVisible(bool visible)
+{
+    ui->advancedTableViewResultLabel->setVisible(visible);
+}
+

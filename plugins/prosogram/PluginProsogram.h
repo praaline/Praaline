@@ -1,7 +1,7 @@
 #ifndef PLUGINPROSOGRAM_H
 #define PLUGINPROSOGRAM_H
 
-#include "pluginprosogram_global.h"
+#include "PluginProsogram_global.h"
 
 #include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>
@@ -73,11 +73,14 @@ namespace Praaline {
                 PluginProsogramPrivateData* d;
 
                 void createProsogramSyllableInfoStructure(CorpusRepository *repository);
-                void createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications);
                 static void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
                                             const QString &ID, const QString &name = QString(), const QString &description = QString(),
                                             const DataType &datatype = DataType(DataType::VarChar, 256), int order = 0,
                                             bool indexed = false, const QString &nameValueList = QString());
+
+                void createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications);
+                void runProsogram(const QList<QPointer<CorpusCommunication> > &communications);
+                void runIntonationAnnotation(const QList<QPointer<CorpusCommunication> > &communications);
             };
         }
     }

@@ -8,13 +8,16 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pluginprosogram.h"
+#include "PluginProsogram.h"
 #include "pncore/corpus/Corpus.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/IntervalTier.h"
-#include "prosogram.h"
+using namespace Praaline::Core;
+
+#include "Prosogram.h"
+#include "IntonationAnnotator.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -31,6 +34,8 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
         segmentationMethod = 3;
         levelPhone = "phone";
         levelSyllable = "syll";
+        levelTonalSegments = "prosogram_tonal_segments";
+        levelVUV = "prosogram_vuv";
         glissandoThreshold = 0;
         plottingTiersToShow = "phone, syll";
         plottingOutputDirectory = QDir::homePath() + "/<basename>_";
@@ -49,6 +54,8 @@ struct Praaline::Plugins::Prosogram::PluginProsogramPrivateData {
     QString levelPhone;
     QString levelSyllable;
     QString levelSegmentation;
+    QString levelTonalSegments;
+    QString levelVUV;
     int glissandoThreshold; // enum
     bool keepIntermediateFiles;
     QString attributePrefix;
@@ -134,7 +141,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
 
     parameters << PluginParameter("command", "Function to apply", QVariant::Int, d->command, QStringList() <<
                                   "ProsoGram v. 2.9" <<
-                                  "Create utterance segmentation from auto syllables");
+                                  "Create utterance segmentation from auto syllables" <<
+                                  "Automatic Intonation Annotation");
     parameters << PluginParameter("createLevels", "Create annotation levels when they do not exist?", QVariant::Bool, d->createLevels);
     parameters << PluginParameter("overwrite", "Overwrite existing annotations/values?", QVariant::Bool, d->overwrite);
     parameters << PluginParameter("autosyllablePauseThreshold", "Autosyllable pause threshold (sec)", QVariant::Double, d->autosyllablePauseThreshold);
@@ -252,8 +260,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     createAttribute(repository, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", DataType::Double);
     // ...after stylisation
+    createAttribute(repository, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", DataType::Double);
@@ -269,6 +277,29 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     createAttribute(repository, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", DataType::Double);
     createAttribute(repository, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", DataType::Double);
+    // Tonal annotation
+    createAttribute(repository, level_syll, d->attributePrefix, "tonal_label", "Tonal label", "Tonal annotation label (Polytonia model)", DataType(DataType::VarChar, 16));
+    createAttribute(repository, level_syll, d->attributePrefix, "tonal_movement", "Tonal movement", "Tonal annotation movement label (Polytonia model)", DataType(DataType::VarChar, 16));
+    createAttribute(repository, level_syll, d->attributePrefix, "tonal_label_method", "Tonal annotation method", "Tonal annotation method (Polytonia model)", DataType(DataType::VarChar, 16));
+
+    // Create level for tonal segments
+    AnnotationStructureLevel *level_tonal_segments = repository->annotationStructure()->level(d->levelTonalSegments);
+    if (!level_tonal_segments) {
+        level_tonal_segments = new AnnotationStructureLevel(d->levelTonalSegments, AnnotationStructureLevel::IndependentIntervalsLevel, "Prosogram Tonal Segments", "");
+        if (!repository->annotations()->createAnnotationLevel(level_tonal_segments)) return;
+        repository->annotationStructure()->addLevel(level_tonal_segments);
+    }
+    createAttribute(repository, level_tonal_segments, "", "f0_start", "f0 start", "f0 (Hz) at start of tonal segment after stylization", DataType::Double);
+    createAttribute(repository, level_tonal_segments, "", "f0_end", "f0 end", "f0 (Hz) at end of tonal segment after stylization", DataType::Double);
+    createAttribute(repository, level_tonal_segments, "", "tone_label", "Tone label", "Tonal annotation label", DataType(DataType::VarChar, 16));
+
+    // Create level for voiced-unvoiced regions (intervals)
+    AnnotationStructureLevel *level_vuv = repository->annotationStructure()->level(d->levelVUV);
+    if (!level_vuv) {
+        level_vuv = new AnnotationStructureLevel(d->levelVUV, AnnotationStructureLevel::IndependentIntervalsLevel, "Prosogram Voiced-Unvoiced Regions", "");
+        if (!repository->annotations()->createAnnotationLevel(level_vuv)) return;
+        repository->annotationStructure()->addLevel(level_vuv);
+    }
 }
 
 
@@ -334,18 +365,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
     printMessage("Finished");
 }
 
-void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    d->levelPhone = d->levelPhone.trimmed();
-    d->levelSegmentation = d->levelSegmentation.trimmed();
-    d->levelSyllable = d->levelSyllable.trimmed();
-
-    if (d->command == 1) {
-        createSegmentsFromAutoSyllables(communications);
-        return;
-    }
-    // otherwise, good old ProsoGram
-
     ProsoGram *prosogram = new ProsoGram(this);
     connect(prosogram, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
     connect(prosogram, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
@@ -359,6 +380,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer
     prosogram->levelPhone = d->levelPhone;
     prosogram->levelSyllable = d->levelSyllable;
     prosogram->levelSegmentation = d->levelSegmentation;
+    prosogram->levelTonalSegments = d->levelTonalSegments;
+    prosogram->levelVUV = d->levelVUV;
     prosogram->glissandoThreshold = d->glissandoThreshold;
     prosogram->keepIntermediateFiles = d->keepIntermediateFiles;
     // Plotting
@@ -441,6 +464,48 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer
     delete prosogram;
     madeProgress(100);
     printMessage("ProsoGram finished.");
+}
+
+void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    if (communications.isEmpty()) {
+        printMessage("No Communications selected.");
+        return;
+    }
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Automatic Annotation of Intonation running");
+    IntonationAnnotator annotator;
+    QPointer<Corpus> corpus = communications.first()->corpus();
+    printMessage("Pitch range estimation...");
+    annotator.estimatePitchRange(corpus);
+    printMessage("Annotation...");
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        printMessage(QString("Annotating %1").arg(com->ID()));
+        annotator.annotate(com);
+        QApplication::processEvents();
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+    madeProgress(100);
+    printMessage("Automatic Annotation of Intonation finished.");
+}
+
+void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    d->levelPhone = d->levelPhone.trimmed();
+    d->levelSegmentation = d->levelSegmentation.trimmed();
+    d->levelSyllable = d->levelSyllable.trimmed();
+
+    if (d->command == 0) {
+        runProsogram(communications);
+    }
+    else if (d->command == 1) {
+        createSegmentsFromAutoSyllables(communications);
+    }
+    else if (d->command == 2) {
+        runIntonationAnnotation(communications);
+    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
