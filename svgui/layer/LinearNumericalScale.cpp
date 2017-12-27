@@ -35,10 +35,9 @@ LinearNumericalScale::paintVertical(View *v,
                                     QPainter &paint,
                                     int x0,
                                     double minf,
-                                    double maxf)
+                                    double maxf,
+                                    int n)
 {
-    int n = 10;
-
     double val = minf;
     double inc = (maxf - val) / n;
 

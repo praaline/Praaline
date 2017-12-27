@@ -228,19 +228,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
         printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
 }
 
-void Praaline::Plugins::Prosogram::PluginProsogram::createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
-                                                                    const QString &ID, const QString &name /*= QString()*/, const QString &description /*= QString()*/,
-                                                                    const DataType &datatype /*= DataType(DataType::VarChar, 256)*/, int order /*= 0*/,
-                                                                    bool indexed /*= false*/, const QString &nameValueList /*= QString()*/)
-{
-    if (level->hasAttribute(ID)) return;
-    AnnotationStructureAttribute *attr = new AnnotationStructureAttribute(prefix + ID, name, description, datatype,
-                                                                          order, indexed, nameValueList);
-    if (repository->annotations()->createAnnotationAttribute(level->ID(), attr))
-        level->addAttribute(attr);
-}
-
-void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoStructure(CorpusRepository *repository)
+void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramDataStructures(CorpusRepository *repository)
 {
     if (!repository) return;
     d->attributePrefix = d->attributePrefix.trimmed();
@@ -253,34 +241,35 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
     }
     // Create syllable attributes where necessary
     // ...identification
-    createAttribute(repository, level_syll, d->attributePrefix, "nucl_t1", "Nucleus t1", "Syllabic nucleus start", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "nucl_t2", "Nucleus t2", "Syllabic nucleus end", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "nucl_t1", "Nucleus t1", "Syllabic nucleus start", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "nucl_t2", "Nucleus t2", "Syllabic nucleus end", DataType::Double);
     // ...before stylisation
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_min", "f0 minimum", "f0 min (Hz) within nucleus before stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_max", "f0 maximum", "f0 max (Hz) within nucleus before stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_mean", "f0 mean", "f0 mean (ST) within nucleus before stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_median", "f0 median", "f0 median (Hz) within nucleus before stylization", DataType::Double);
     // ...after stylisation
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "intersyllab", "Intersyllabic mvt", "Intersyllabic interval (ST) between end of previous nucleus and start of current one", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "intrasyllabdown", "Intrasyllabic mvt down", "Sum of downward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", DataType::Integer);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_start", "f0 start", "f0 value (Hz) at start of nucleus after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "f0_end", "f0 end", "f0 value (Hz) at end of nucleus after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "lopitch", "Pitch low", "f0 min (Hz) within nucleus after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "hipitch", "Pitch high", "f0 max (Hz) within nucleus after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "intersyllab", "Intersyllabic mvt", "Intersyllabic interval (ST) between end of previous nucleus and start of current one", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "intrasyllabdown", "Intrasyllabic mvt down", "Sum of downward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "intrasyllabup", "Intrasyllabic mvt up", "Sum of upward pitch interval (ST) of tonal segments in nucleus", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "trajectory", "Trajectory", "Sum of absolute pitch interval (ST) of tonal segments in nucleus (rises and falls add up)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "dynamic", "Dynamic mvt", "Dynamic movement: 0 = static, 1 = rising, -1 = falling", DataType::Integer);
     // ...intensity
-    createAttribute(repository, level_syll, d->attributePrefix, "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "int_peak", "Intensity peak", "Peak intensity in nucleus (dB)", DataType::Double);
     // ...durations
-    createAttribute(repository, level_syll, d->attributePrefix, "syll_dur", "Syllable duration", "Syllable duration (msec)", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "vowel_dur", "Vowel duration", "Vowel duration (msec)", DataType::Double);
-    createAttribute(repository, level_syll, d->attributePrefix, "rime_dur", "Rime duration", "Rime duration (msec)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "syll_dur", "Syllable duration", "Syllable duration (msec)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "nucl_dur", "Nucleus duration", "Syllabic nucleus duration (msec)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "vowel_dur", "Vowel duration", "Vowel duration (msec)", DataType::Double);
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "rime_dur", "Rime duration", "Rime duration (msec)", DataType::Double);
     // Tonal annotation
-    createAttribute(repository, level_syll, d->attributePrefix, "tonal_label", "Tonal label", "Tonal annotation label (Polytonia model)", DataType(DataType::VarChar, 16));
-    createAttribute(repository, level_syll, d->attributePrefix, "tonal_movement", "Tonal movement", "Tonal annotation movement label (Polytonia model)", DataType(DataType::VarChar, 16));
-    createAttribute(repository, level_syll, d->attributePrefix, "tonal_label_method", "Tonal annotation method", "Tonal annotation method (Polytonia model)", DataType(DataType::VarChar, 16));
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "tonal_annotation", "Tonal annotation", "Tonal annotation: pitch label + movement (Polytonia model)", DataType(DataType::VarChar, 16));
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "tonal_label", "Tonal label", "Tonal annotation label (Polytonia model)", DataType(DataType::VarChar, 16));
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "tonal_movement", "Tonal movement", "Tonal annotation movement label (Polytonia model)", DataType(DataType::VarChar, 16));
+    repository->createAnnotationAttribute(d->levelSyllable, d->attributePrefix + "tonal_label_method", "Tonal annotation method", "Tonal annotation method (Polytonia model)", DataType(DataType::VarChar, 16));
 
     // Create level for tonal segments
     AnnotationStructureLevel *level_tonal_segments = repository->annotationStructure()->level(d->levelTonalSegments);
@@ -289,9 +278,9 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
         if (!repository->annotations()->createAnnotationLevel(level_tonal_segments)) return;
         repository->annotationStructure()->addLevel(level_tonal_segments);
     }
-    createAttribute(repository, level_tonal_segments, "", "f0_start", "f0 start", "f0 (Hz) at start of tonal segment after stylization", DataType::Double);
-    createAttribute(repository, level_tonal_segments, "", "f0_end", "f0 end", "f0 (Hz) at end of tonal segment after stylization", DataType::Double);
-    createAttribute(repository, level_tonal_segments, "", "tone_label", "Tone label", "Tonal annotation label", DataType(DataType::VarChar, 16));
+    repository->createAnnotationAttribute(d->levelTonalSegments, "f0_start", "f0 start", "f0 (Hz) at start of tonal segment after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelTonalSegments, "f0_end", "f0 end", "f0 (Hz) at end of tonal segment after stylization", DataType::Double);
+    repository->createAnnotationAttribute(d->levelTonalSegments, "tonal_movement", "Tonal movement", "Tonal annotation movement label", DataType(DataType::VarChar, 16));
 
     // Create level for voiced-unvoiced regions (intervals)
     AnnotationStructureLevel *level_vuv = repository->annotationStructure()->level(d->levelVUV);
@@ -300,6 +289,12 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramSyllableInfoS
         if (!repository->annotations()->createAnnotationLevel(level_vuv)) return;
         repository->annotationStructure()->addLevel(level_vuv);
     }
+
+    // Create speaker metadata attributes for pitch range
+    repository->createMetadataAttribute(CorpusObject::Type_Speaker, "", "ProsogramPitchRangeCountSyll", "Prosogram Pitch Range Syllable Count", "Number of syllables on the basis of which the speaker's pitch range was estimated", DataType::Integer);
+    repository->createMetadataAttribute(CorpusObject::Type_Speaker, "", "ProsogramPitchRangeTopHz", "Prosogram Pitch Range Top (Hz)", "Top of the speaker's pitch range (in Hz)", DataType::Double);
+    repository->createMetadataAttribute(CorpusObject::Type_Speaker, "", "ProsogramPitchRangeMedianHz", "Prosogram Pitch Range Median (Hz)", "Median (key) of the speaker's pitch range (in Hz)", DataType::Double);
+    repository->createMetadataAttribute(CorpusObject::Type_Speaker, "", "ProsogramPitchRangeBottomHz", "Prosogram Pitch Range Bottom (Hz)", "Bottom of the speaker's pitch range (in Hz)", DataType::Double);
 }
 
 
@@ -397,13 +392,11 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
     madeProgress(0);
     printMessage("ProsoGram v.2.9m running");
 
-    QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
-
     foreach(QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
-
-        if (d->createLevels && !repositoriesWithAnnotationStructure.contains(com->repository())) {
+        // Create segmentation level if it does not exist
+        if (d->createLevels) {
             // Create segmentation level if it does not exist
             if ((!d->levelSegmentation.isEmpty()) && (!com->repository()->annotationStructure()->hasLevel(d->levelSegmentation))) {
                 AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(
@@ -414,10 +407,6 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
                 }
                 com->repository()->annotationStructure()->addLevel(level_segment);
             }
-            // Create and/or add attributes to syllable level
-            createProsogramSyllableInfoStructure(com->repository());
-            // This repository has been processed
-            repositoriesWithAnnotationStructure << com->repository();
         }
 
         printMessage(QString("Annotating %1").arg(com->ID()));
@@ -496,6 +485,19 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer
     d->levelPhone = d->levelPhone.trimmed();
     d->levelSegmentation = d->levelSegmentation.trimmed();
     d->levelSyllable = d->levelSyllable.trimmed();
+
+    // Create data structures if needed
+    QList<QPointer<CorpusRepository> > repositoriesWithDataStructures;
+    foreach(QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        if (!com->repository()) continue;
+        if (d->createLevels && !repositoriesWithDataStructures.contains(com->repository())) {
+            // Create and/or add attributes to syllable level
+            createProsogramDataStructures(com->repository());
+            // This repository has been processed
+            repositoriesWithDataStructures << com->repository();
+        }
+    }
 
     if (d->command == 0) {
         runProsogram(communications);

@@ -10,6 +10,9 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/corpus/CorpusParticipation.h"
+#include "pncore/datastore/CorpusRepository.h"
+#include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "svcore/data/model/SparseTimeValueModel.h"
@@ -21,16 +24,22 @@ using namespace Praaline::Core;
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
 struct ProsogramModelData {
-    ProsogramModelData () : sampleRate(0), segments(0), phones(0), sylls(0),
-        vuvregions(0), pitch(0), intensity(0) {}
+    ProsogramModelData () :
+        sampleRate(0), segments(0), phones(0), sylls(0), tones(0), vuvregions(0), pitch(0), intensity(0),
+        pitchRangeBottomST(0.0), pitchRangeMedianST(0.0), pitchRangeTopST(0.0)
+    {}
 
     sv_samplerate_t sampleRate;
     QPointer<ProsogramTonalSegmentModel> segments;
     QPointer<AnnotationGridPointModel> phones;
     QPointer<AnnotationGridPointModel> sylls;
+    QPointer<AnnotationGridPointModel> tones;
     QPointer<AnnotationGridPointModel> vuvregions;
     QPointer<SparseTimeValueModel> pitch;
     QPointer<SparseTimeValueModel> intensity;
+    double pitchRangeBottomST;
+    double pitchRangeMedianST;
+    double pitchRangeTopST;
 };
 
 ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecording> rec) :
@@ -40,6 +49,7 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecord
     d->segments = new ProsogramTonalSegmentModel(sampleRate, 1, true);
     d->phones = new AnnotationGridPointModel(sampleRate, 1, true);
     d->sylls = new AnnotationGridPointModel(sampleRate, 1, true);
+    d->tones = new AnnotationGridPointModel(sampleRate, 1, true);
     d->vuvregions = new AnnotationGridPointModel(sampleRate, 1, true);
     d->pitch = new SparseTimeValueModel(sampleRate, 1, false);
     d->intensity = new SparseTimeValueModel(sampleRate, 1, false);
@@ -58,16 +68,30 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecord
                            prosoPath + QString("%1_nucl.TextGrid").arg(rec->ID()),
                            prosoPath + QString("%1_styl.PitchTier").arg(rec->ID()),
                            prosoPath + QString("%1.PitchTier").arg(rec->ID()),
-                           prosoPath + QString("%1.IntensityTier").arg(rec->ID()));
+                           prosoPath + QString("%1.IntensityTier").arg(rec->ID()),
+                           corpus, rec->ID());
 
     } else {
         foreach (QPointer<CorpusParticipation> participation, participations) {
             if (!participation) continue;
-            readProsogramFiles(sampleRate, participation->speakerID(), d->segments,
+            QString speakerID = participation->speakerID();
+            readProsogramFiles(sampleRate, speakerID, d->segments,
                                prosoPath + QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(participation->speakerID()),
                                prosoPath + QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
                                prosoPath + QString("%1_%2.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
-                               prosoPath + QString("%1_%2.IntensityTier").arg(rec->ID()).arg(participation->speakerID()));
+                               prosoPath + QString("%1_%2.IntensityTier").arg(rec->ID()).arg(participation->speakerID()),
+                               corpus, rec->ID());
+            // Get pitch range
+            QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+            if (spk) {
+                double Hz(0.0);
+                Hz = spk->property("ProsogramPitchRangeTopHz").toDouble();
+                if (Hz > 0.0) d->pitchRangeTopST = 12.0 * log2(Hz);
+                Hz = spk->property("ProsogramPitchRangeMedianHz").toDouble();
+                if (Hz > 0.0) d->pitchRangeMedianST = 12.0 * log2(Hz);
+                Hz = spk->property("ProsogramPitchRangeBottomHz").toDouble();
+                if (Hz > 0.0) d->pitchRangeBottomST = 12.0 * log2(Hz);
+            }
         }
     }
 }
@@ -75,7 +99,8 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecord
 bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QString &speakerID,
                                         QPointer<ProsogramTonalSegmentModel> segments,
                                         const QString &filenameNuclei, const QString &filenameStylPitchTier,
-                                        const QString &filenamePitchTier, const QString &filenameIntensityTier)
+                                        const QString &filenamePitchTier, const QString &filenameIntensityTier,
+                                        QPointer<Corpus> corpus, const QString &annotationID)
 {
     QMap<RealTime, double> pitchStylised;
     if (!PraatPointTierFile::load(filenameStylPitchTier, pitchStylised))
@@ -106,12 +131,16 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
         }
     }
     // Syllables
-    IntervalTier *tier_syll = tiers_nuclei->getIntervalTierByName("syll");
+    // IntervalTier *tier_syll = tiers_nuclei->getIntervalTierByName("syll");
+    IntervalTier *tier_syll = qobject_cast<IntervalTier *>
+            (corpus->repository()->annotations()->getTier(annotationID, speakerID, "syll", QStringList() << "tonal_annotation"));
     if (tier_syll) {
         for (int i = 0; i < tier_syll->count(); ++i) {
             Interval *intv = tier_syll->interval(i);
             d->sylls->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate), speakerID,
                                                    "syll", intv->text()));
+            d->tones->addPoint(AnnotationGridPoint(RealTime::realTime2Frame(intv->tMin(), sampleRate), speakerID,
+                                                   "tonal_annotation", intv->attribute("tonal_annotation").toString()));
         }
     }
     // Voiced-Unvoiced regions
@@ -166,6 +195,21 @@ void ProsogramModel::toXml(QTextStream &out, QString indent, QString extraAttrib
 
 }
 
+double ProsogramModel::pitchRangeTopST() const
+{
+    return d->pitchRangeTopST;
+}
+
+double ProsogramModel::pitchRangeMedianST() const
+{
+    return d->pitchRangeMedianST;
+}
+
+double ProsogramModel::pitchRangeBottomST() const
+{
+    return d->pitchRangeBottomST;
+}
+
 QPointer<ProsogramTonalSegmentModel> ProsogramModel::segmentModel()
 {
     return d->segments;
@@ -179,6 +223,11 @@ QPointer<AnnotationGridPointModel> ProsogramModel::phoneModel()
 QPointer<AnnotationGridPointModel> ProsogramModel::syllModel()
 {
     return d->sylls;
+}
+
+QPointer<AnnotationGridPointModel> ProsogramModel::tonalModel()
+{
+    return d->tones;
 }
 
 QPointer<AnnotationGridPointModel> ProsogramModel::vuvRegionModel()

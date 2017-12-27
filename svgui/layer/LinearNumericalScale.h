@@ -29,7 +29,7 @@ public:
 
     void paintVertical
     (View *v, const VerticalScaleLayer *layer, QPainter &paint, int x0,
-     double minf, double maxf);
+     double minf, double maxf, int n = 10);
 };
 
 #endif

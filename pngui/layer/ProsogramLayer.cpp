@@ -24,7 +24,9 @@
 ProsogramLayer::ProsogramLayer() :
     SingleColourLayer(),
     m_model(0), m_layerIntensity(new TimeValueLayer), m_layerPitch(new TimeValueLayer),
-    m_showPitch(true), m_showPitchRange(true), m_showIntensity(true), m_showVerticalLines(true)
+    m_semitonesSetAsideForTiers(20.0),
+    m_showPitch(true), m_showPitchRange(true), m_showIntensity(true), m_showVerticalLines(true),
+    m_showPhoneTier(true), m_showSyllTier(true), m_showTonalAnnotationTier(true)
 {
     m_layerIntensity->setBaseColour(ColourDatabase::getInstance()->getColourIndex(QString("Green")));
     m_layerIntensity->setPlotStyle(TimeValueLayer::PlotCurve);
@@ -171,10 +173,11 @@ void ProsogramLayer::paintVerticalScale(View *v, bool, QPainter &paint, QRect re
     if (!m_model) return;
     double min, max;
     bool logarithmic;
-    int w = getVerticalScaleWidth(v, false, paint);
-    int h = v->height();
+    // int w = getVerticalScaleWidth(v, false, paint);
+    // int h = v->height();
     getScaleExtents(v, min, max, logarithmic);
-    LinearNumericalScale().paintVertical(v, this, paint, 0, min, max);
+    int n = (max - min) / 10.0; // ticks every 10 ST
+    LinearNumericalScale().paintVertical(v, this, paint, 0, min, max, n);
     paint.drawText(5, 5 + paint.fontMetrics().ascent(), "ST");
 }
 
@@ -186,8 +189,9 @@ void ProsogramLayer::getScaleExtents(View *v, double &min, double &max, bool &lo
     bool autoAlign = true;
     if (autoAlign) {
         if (!v->getValueExtents(getScaleUnits(), min, max, log)) {
-            min = m_model->segmentModel()->getf0MinimumST();
-            max = m_model->segmentModel()->getf0MaximumST();
+            // sensible defaults for ST scale if the model is not available
+            min = 70.0 - m_semitonesSetAsideForTiers;
+            max = 110.0;
         }
     }
     else {
@@ -200,16 +204,16 @@ bool ProsogramLayer::getValueExtents(double &min, double &max, bool &logarithmic
     if (!m_model) return false;
     min = m_model->segmentModel()->getf0MinimumST();
     max = m_model->segmentModel()->getf0MaximumST();
-    unit = getScaleUnits();
+    // round up to the decade
+    min = floor((min - 5.0) / 10.0) * 10.0;
+    max = ceil((max + 5.0) / 10.0) * 10.0;
+    min = min - m_semitonesSetAsideForTiers;
     if (max == min) {
-        max = max + 5;
-        min = min - 5;
-    } else {
-        double margin = (max - min) / 10.0;
-        if (margin < 5.0) margin = 5.0;
-        max = max + margin;
-        min = min - margin;
+        max = max + 10.0;
+        min = min - 10.0;
     }
+    unit = getScaleUnits();
+    logarithmic = false;
     return true;
 }
 
@@ -227,7 +231,7 @@ int ProsogramLayer::getYForValue(View *v, double value) const
 {
     double min = 0.0, max = 0.0;
     bool logarithmic = false;
-    int h = v->height() * 0.9;
+    int h = v->height();
     getScaleExtents(v, min, max, logarithmic);
     return int(h - ((value - min) * h) / (max - min));
 }
@@ -408,7 +412,7 @@ bool ProsogramLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolut
 
 void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t frame0, sv_frame_t frame1,
                                          int tier_y0, int tier_y1, Qt::PenStyle verticalLinePenstyle,
-                                         QPointer<AnnotationGridPointModel> model) const
+                                         QPointer<AnnotationGridPointModel> model, bool IPA) const
 {
     paint.setBrush(Qt::black);
     if (!model) return;
@@ -434,7 +438,7 @@ void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t fr
         }
         // Label (convert SAMPA to IPA)
         if (p.label.isEmpty()) continue;
-        QString label = convertSAMPAtoIPAUnicode(p.label);
+        QString label = (IPA) ? convertSAMPAtoIPAUnicode(p.label) : p.label;
         int boxMaxWidth = v->getXForFrame(nextFrame) - x - 2;
         int boxMaxHeight = tier_y1 - tier_y0 - 2;
         QRect textRect = QRect(x + 1, tier_y0 + 1, boxMaxWidth, boxMaxHeight);
@@ -485,7 +489,7 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     int minR = (int) min; int maxR = (int) max;
     for (int ST = minR; ST < maxR; ST += 2) {
         int y = getYForValue(v, ST);
-        if (y >= getYForValue(v, segmentModel->getf0MinimumST())) continue;
+        if (y >= getYForValue(v, min + 20.0)) continue;
         paint.setPen(QPen(Qt::gray, 1, Qt::DotLine));
         paint.drawLine(xStart, y, xEnd, y);
     }
@@ -493,7 +497,15 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     // Draw pitch range
     // ----------------------------------------------------------------------------------------------------------------
     if (m_showPitchRange) {
-
+        QList<double> values;
+        values << m_model->pitchRangeBottomST() << m_model->pitchRangeMedianST() << m_model->pitchRangeTopST();
+        foreach (double ST, values) {
+            if (ST > 0) {
+                int y = getYForValue(v, ST);
+                paint.setPen(QPen(Qt::magenta, 1, Qt::DashLine));
+                paint.drawLine(xStart, y, xEnd, y);
+            }
+        }
     }
 
     // Draw intensity and pitch
@@ -510,19 +522,37 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     // ----------------------------------------------------------------------------------------------------------------
     QPointer<AnnotationGridPointModel> phoneModel = m_model->phoneModel();
     QPointer<AnnotationGridPointModel> syllModel = m_model->syllModel();
-    int phone_y0 = getYForValue(v, segmentModel->getf0MinimumST());
-    int tiersHeight = (v->height() - phone_y0 - 2) / 2;
-    int phone_y1 = phone_y0 + tiersHeight;
-    int syll_y0 = phone_y1 + 1;
-    int syll_y1 = v->height();
-    paint.setRenderHint(QPainter::Antialiasing, false);
-    paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
-    paint.drawLine(xStart, phone_y0, xEnd, phone_y0);
-    paintAnnotationTier(v, paint, frame0, frame1, phone_y0, phone_y1, Qt::DotLine, phoneModel);
-    paint.setRenderHint(QPainter::Antialiasing, false);
-    paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
-    paint.drawLine(xStart, syll_y0, xEnd, syll_y0);
-    paintAnnotationTier(v, paint, frame0, frame1, syll_y0, syll_y1, Qt::DashLine, syllModel);
+    QPointer<AnnotationGridPointModel> tonalModel = m_model->tonalModel();
+    // 20 ST (or a custom value) of space is reserved for tier annotations
+    int countTiers(0);
+    if (m_showPhoneTier) countTiers++;
+    if (m_showSyllTier) countTiers++;
+    if (m_showTonalAnnotationTier) countTiers++;
+    int tier_y0 = getYForValue(v, min + m_semitonesSetAsideForTiers);
+    int tier_height = (v->height() - tier_y0 - countTiers) / countTiers;
+    int tier_y1 = tier_y0 + tier_height;
+    if (m_showPhoneTier) {
+        paint.setRenderHint(QPainter::Antialiasing, false);
+        paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        paint.drawLine(xStart, tier_y0, xEnd, tier_y0);
+        paintAnnotationTier(v, paint, frame0, frame1, tier_y0, tier_y1, Qt::DotLine, phoneModel, true);
+        tier_y0 = tier_y1 + 1;
+        tier_y1 = tier_y0 + tier_height;
+    }
+    if (m_showSyllTier) {
+        paint.setRenderHint(QPainter::Antialiasing, false);
+        paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        paint.drawLine(xStart, tier_y0, xEnd, tier_y0);
+        paintAnnotationTier(v, paint, frame0, frame1, tier_y0, tier_y1, Qt::DashLine, syllModel, true);
+        tier_y0 = tier_y1 + 1;
+        tier_y1 = tier_y0 + tier_height;
+    }
+    if (m_showSyllTier) {
+        paint.setRenderHint(QPainter::Antialiasing, false);
+        paint.setPen(QPen(Qt::black, 1, Qt::SolidLine));
+        paint.drawLine(xStart, tier_y0, xEnd, tier_y0);
+        paintAnnotationTier(v, paint, frame0, frame1, tier_y0, tier_y1, Qt::DashLine, tonalModel, false);
+    }
 
     // Draw voiced-unvoiced regions
     // ----------------------------------------------------------------------------------------------------------------

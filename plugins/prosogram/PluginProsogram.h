@@ -72,12 +72,7 @@ namespace Praaline {
             private:
                 PluginProsogramPrivateData* d;
 
-                void createProsogramSyllableInfoStructure(CorpusRepository *repository);
-                static void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
-                                            const QString &ID, const QString &name = QString(), const QString &description = QString(),
-                                            const DataType &datatype = DataType(DataType::VarChar, 256), int order = 0,
-                                            bool indexed = false, const QString &nameValueList = QString());
-
+                void createProsogramDataStructures(CorpusRepository *repository);
                 void createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications);
                 void runProsogram(const QList<QPointer<CorpusCommunication> > &communications);
                 void runIntonationAnnotation(const QList<QPointer<CorpusCommunication> > &communications);

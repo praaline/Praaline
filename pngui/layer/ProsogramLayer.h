@@ -76,11 +76,12 @@ protected:
     ProsogramTonalSegmentModel::PointList getLocalTonalSegments(View *v, int x) const;
     void paintAnnotationTier(View *v, QPainter &paint, sv_frame_t frame0, sv_frame_t frame1,
                              int tier_y0, int tier_y1, Qt::PenStyle verticalLinePenstyle,
-                             QPointer<AnnotationGridPointModel> model) const;
+                             QPointer<AnnotationGridPointModel> model, bool IPA) const;
 
     ProsogramModel *m_model;
     TimeValueLayer *m_layerPitch;
     TimeValueLayer *m_layerIntensity;
+    double m_semitonesSetAsideForTiers;
 
     mutable double m_scaleMinimum;
     mutable double m_scaleMaximum;
@@ -88,6 +89,9 @@ protected:
     bool m_showPitchRange;
     bool m_showIntensity;
     bool m_showVerticalLines;
+    bool m_showPhoneTier;
+    bool m_showSyllTier;
+    bool m_showTonalAnnotationTier;
 };
 
 #endif // PROSOGRAMLAYER_H

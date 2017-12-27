@@ -22,7 +22,12 @@ using namespace Praaline::Core;
 // (rise, fall, level) and size (large and small melodic intervals, adjusted to the speaker's pitch range).
 
 struct IntonationAnnotatorData {
+    IntonationAnnotatorData() :
+        savePitchRangesToSpeakerMetadata(true)
+    {}
+
     QHash<QString, IntonationAnnotator::PitchRangeInfo> pitchRanges;
+    bool savePitchRangesToSpeakerMetadata;
 };
 
 IntonationAnnotator::IntonationAnnotator() :
@@ -98,6 +103,15 @@ void IntonationAnnotator::estimatePitchRange(QPointer<Corpus> corpus, const QStr
         d->pitchRanges.insert(speakerID, pitchRange);
         qDebug() << speakerID << "\t" << pitchRange.bottomST() << "\t" << pitchRange.medianST() << "\t"
                  << pitchRange.topST() << "\t" << pitchRange.countSyll;
+        if (d->savePitchRangesToSpeakerMetadata) {
+            CorpusSpeaker *spk = corpus->speaker(speakerID);
+            if (spk) {
+                spk->setProperty("ProsogramPitchRangeCountSyll", pitchRange.countSyll);
+                spk->setProperty("ProsogramPitchRangeTopHz", pitchRange.topHz);
+                spk->setProperty("ProsogramPitchRangeMedianHz", pitchRange.medianHz);
+                spk->setProperty("ProsogramPitchRangeBottomHz", pitchRange.bottomHz);
+            }
+        }
     }
 }
 
@@ -402,6 +416,14 @@ void IntonationAnnotator::annotate(QPointer<CorpusCommunication> com)
                 pitchLevelExtrapolated(pitchRange, tier_syll);
                 pitchLevelExtrapolated(pitchRange, tier_syll);
                 pitchLevelExtrapolated(pitchRange, tier_syll);
+                foreach (Interval *syll, tier_syll->intervals()) {
+                    if (syll->isPauseSilent()) continue;
+                    QString tonal_label = syll->attribute("tonal_label").toString();
+                    if (tonal_label.isEmpty()) tonal_label = "?";
+                    QString tonal_movement = syll->attribute("tonal_movement").toString();
+                    if (tonal_movement == "_") tonal_movement = "";
+                    syll->setAttribute("tonal_annotation", tonal_label + tonal_movement);
+                }
                 // Save changes
                 com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tonal_segments);
                 com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_syll);

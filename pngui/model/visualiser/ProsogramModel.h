@@ -15,6 +15,7 @@
 
 namespace Praaline {
 namespace Core {
+class Corpus;
 class CorpusRecording;
 }
 }
@@ -28,7 +29,8 @@ class ProsogramModel : public Model
     Q_OBJECT
 
 public:
-    ProsogramModel(sv_samplerate_t sampleRate, QPointer<Praaline::Core::CorpusRecording> rec);
+    ProsogramModel(sv_samplerate_t sampleRate,
+                   QPointer<Praaline::Core::CorpusRecording> rec);
     virtual ~ProsogramModel();
 
     virtual std::string getType() const { return "ProsogramModel"; }
@@ -45,10 +47,15 @@ public:
     QPointer<ProsogramTonalSegmentModel> segmentModel();
     QPointer<AnnotationGridPointModel> phoneModel();
     QPointer<AnnotationGridPointModel> syllModel();
+    QPointer<AnnotationGridPointModel> tonalModel();
     QPointer<AnnotationGridPointModel> vuvRegionModel();
 
     QPointer<SparseTimeValueModel> pitchModel();
     QPointer<SparseTimeValueModel> intensityModel();
+
+    double pitchRangeTopST() const;
+    double pitchRangeMedianST() const;
+    double pitchRangeBottomST() const;
 
 protected:
     ProsogramModelData *d;
@@ -56,7 +63,8 @@ protected:
     bool readProsogramFiles(sv_samplerate_t sampleRate, const QString &speakerID,
                             QPointer<ProsogramTonalSegmentModel> segments,
                             const QString &filenameNuclei, const QString &filenameStylPitchTier,
-                            const QString &filenamePitchTier, const QString &filenameIntensityTier);
+                            const QString &filenamePitchTier, const QString &filenameIntensityTier,
+                            QPointer<Praaline::Core::Corpus> corpus, const QString &annotationID);
 };
 
 #endif // PROSOGRAMMODEL_H

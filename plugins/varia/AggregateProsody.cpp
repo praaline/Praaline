@@ -136,6 +136,18 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     if (!com) return "Error";
     QPointer<Corpus> corpus = com->corpus();
     if (!corpus) return "Error";
+    // Select contextLength
+    int contextLeft(3), contextRight(3);
+    // Per stimulus measures
+    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
+
+    QFile filePerStim(path + "/prosodic_measures_per_stimulus.txt");
+    if ( !filePerStim.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream outPerStim(&filePerStim);
+    outPerStim.setCodec("UTF-8");
+    outPerStim << "StimulusID\tUtteranceID\tDiscourseMarker\tDiscourseRelation\tT1_duration\tT2_duration\t";
+    outPerStim << "T1_f0_mean\tT2_f0_mean\tT1_intersyllab\tR1_intersyllab\n";
+
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
         QPointer<CorpusRecording> rec = com->recordings().first();
@@ -153,13 +165,13 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         // If this is the first time, insert contour
         if (!contoursLeft.contains(stimulusID)) {
             QList<AggregateSyllable> left;
-            for (int i = 1; i <= 5; ++i) left.append(AggregateSyllable(""));
+            for (int i = 1; i <= contextLeft; ++i) left.append(AggregateSyllable(""));
             contoursLeft.insert(stimulusID, left);
             QList<AggregateSyllable> target;
             for (int i = 1; i <= 2; ++i) target.append(AggregateSyllable(""));
             targets.insert(stimulusID, target);
             QList<AggregateSyllable> right;
-            for (int i = 1; i <= 5; ++i) right.append(AggregateSyllable(""));
+            for (int i = 1; i <= contextRight; ++i) right.append(AggregateSyllable(""));
             contoursRight.insert(stimulusID, right);
         }
         // Interpolate syllable pitch values
@@ -185,47 +197,55 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         QPair<int, int> targetSyllIndices = tier_syll->getIntervalIndexesOverlappingWith(tier_tokens->at(targetTokenIndex));
         // Hack for alors
         if (targetSyllIndices.second - targetSyllIndices.first >= 2) targetSyllIndices.second--;
-        QString textSyll;
+        // Start
+        QString textSyll, tonalAnnotation;
         // Get f0_mean baseline
         double f0_mean_baseline = tier_syll->at(targetSyllIndices.first)->attribute("f0_mean").toDouble();
         double normalise(0.0);
         // Left context
         int syllIndex(0); int contextSyllCount(0);
         syllIndex = targetSyllIndices.first - 1;
-        while ((syllIndex >= 0) && (contextSyllCount < 5)) {
+        while ((syllIndex >= 0) && (contextSyllCount < contextLeft)) {
             Interval *syll = tier_syll->at(syllIndex);
             if (syll->isPauseSilent()) {
 
             }
             else {
                 textSyll.prepend(".").prepend(syll->text());
+                tonalAnnotation.prepend(".").prepend(syll->attribute("tonal_annotation").toString());
                 contoursLeft[stimulusID][contextSyllCount].durations << syll->duration().toDouble();
                 contoursLeft[stimulusID][contextSyllCount].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
                 contextSyllCount++;
             }
             syllIndex--;
         }
-        if (textSyll.startsWith(".")) textSyll.remove(0, 1);
+        if (textSyll.endsWith(".")) textSyll.chop(1);
         textSyll.append("{");
+        if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
+        tonalAnnotation.append("{");
         // Target
         for (syllIndex = targetSyllIndices.first; syllIndex <= targetSyllIndices.second; ++syllIndex) {
             if ((syllIndex < 0) || (syllIndex >= tier_syll->count())) break;
             Interval * syll = tier_syll->at(syllIndex);
             textSyll.append(syll->text()).append(".");
+            tonalAnnotation.append(syll->attribute("tonal_annotation").toString()).append(".");
             targets[stimulusID][syllIndex - targetSyllIndices.first].durations << syll->duration().toDouble();
             targets[stimulusID][syllIndex - targetSyllIndices.first].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
         }
         if (textSyll.endsWith(".")) textSyll.chop(1);
         textSyll.append("}");
+        if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
+        tonalAnnotation.append("}");
         // Right context
         syllIndex = targetSyllIndices.second + 1; contextSyllCount = 0;
-        while ((syllIndex < tier_syll->count()) && (contextSyllCount < 5)) {
+        while ((syllIndex < tier_syll->count()) && (contextSyllCount < contextRight)) {
             Interval *syll = tier_syll->at(syllIndex);
             if (syll->isPauseSilent()) {
 
             }
             else {
                 textSyll.append(syll->text()).append(".");
+                tonalAnnotation.append(syll->attribute("tonal_annotation").toString()).append(".");
                 contoursRight[stimulusID][contextSyllCount].durations << syll->duration().toDouble();
                 contoursRight[stimulusID][contextSyllCount].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
                 contextSyllCount++;
@@ -233,18 +253,37 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             syllIndex++;
         }
         if (textSyll.endsWith(".")) textSyll.chop(1);
-        ret.append(stimulusID).append("\t").append(speakerID).append("\t").append(textSyll).append("\n");
+        if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
+
+        // Output per-stimulus prosodic measures
+        // StimulusID  UtteranceID  DiscourseMarker  DiscourseRelation  T1_duration  T2_duration  T1_f0_mean  T2_f0_mean T1_intersyllab  R1_intersyllab
+        Interval *T1 = tier_syll->at(targetSyllIndices.first);
+        Interval *T2 = tier_syll->at(targetSyllIndices.second);
+        Interval *R1 = tier_syll->at(targetSyllIndices.second + 1);
+        // Stylised?
+        bool T1stylised = T1->attribute("nucl_t1").toDouble() > 0.0;
+        bool T2stylised = T2->attribute("nucl_t1").toDouble() > 0.0;
+        bool R1stylised = R1->attribute("nucl_t1").toDouble() > 0.0;
+        // output
+        outPerStim << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+        outPerStim << T1->duration().toDouble() << "\t";
+        outPerStim << T2->duration().toDouble() << "\t";
+        if (T1stylised) outPerStim << T1->attribute("f0_mean").toDouble() << "\t"; else outPerStim << "NA\t";
+        if (T2stylised) outPerStim << T2->attribute("f0_mean").toDouble() << "\t"; else outPerStim << "NA\t";
+        if (T1stylised) outPerStim << T1->attribute("intersyllab").toDouble() << "\t"; else outPerStim << "NA\t";
+        if (R1stylised) outPerStim << R1->attribute("intersyllab").toDouble() << "\n"; else outPerStim << "NA\n";
+
+        // User output
+        ret.append(stimulusID).append("\t").append(speakerID).append("\t").append(textSyll).append("\t").append(tonalAnnotation).append("\n");
         delete tier_tokens;
         delete tier_syll;
     }
-    // return ret;
     // Output
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
-    QFile file(path + "/average_contours.txt");
-    if ( !file.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << "StimulusID\tUtteranceID\tDiscourseMarker\tDiscourseRelation\tSyll\tTime\tDurationMean\tDurationStdev\tPitchMean\tPitchStdev\n";
+    QFile fileAggr(path + "/average_contours.txt");
+    if ( !fileAggr.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream outAggr(&fileAggr);
+    outAggr.setCodec("UTF-8");
+    outAggr << "StimulusID\tUtteranceID\tDiscourseMarker\tDiscourseRelation\tSyll\tTime\tDurationMean\tDurationStdev\tPitchMean\tPitchStdev\n";
     foreach (QString stimulusID, contoursLeft.keys()) {
         QList<AggregateSyllable> syllablesLeft   = contoursLeft[stimulusID];
         QList<AggregateSyllable> syllablesTarget = targets[stimulusID];
@@ -256,10 +295,10 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             StatisticalSummary summary_duration(syll.durations);
             StatisticalSummary summary_pitch(syll.f0_means);
             time = time - summary_duration.mean();
-            out << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
-            out << QString("L%1").arg(i + 1) << "\t" << time << "\t";
-            out << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
-            out << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
+            outAggr << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+            outAggr << QString("L%1").arg(- contextLeft + i) << "\t" << time << "\t";
+            outAggr << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
+            outAggr << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
         }
         time = 0.0;
         for (int i = 0; i < syllablesTarget.count(); ++i) {
@@ -267,10 +306,10 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             if (syll.durations.count() == 0) break;
             StatisticalSummary summary_duration(syll.durations);
             StatisticalSummary summary_pitch(syll.f0_means);
-            out << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
-            out << QString("T%1").arg(i + 1) << "\t" << time << "\t";
-            out << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
-            out << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
+            outAggr << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+            outAggr << QString("T%1").arg(i + 1) << "\t" << time << "\t";
+            outAggr << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
+            outAggr << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
             time = time + summary_duration.mean();
         }
         for (int i = 0; i < syllablesRight.count(); ++i) {
@@ -278,13 +317,15 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             if (syll.durations.count() == 0) break;
             StatisticalSummary summary_duration(syll.durations);
             StatisticalSummary summary_pitch(syll.f0_means);
-            out << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
-            out << QString("R%1").arg(i + 1) << "\t" << time << "\t";
-            out << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
-            out << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
+            outAggr << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+            outAggr << QString("R%1").arg(i + 1) << "\t" << time << "\t";
+            outAggr << summary_duration.mean() << "\t" << summary_duration.stDev() << "\t";
+            outAggr << summary_pitch.mean() << "\t" << summary_pitch.stDev() << "\n";
             time = time + summary_duration.mean();
         }
     }
-    file.close();
+    // Clean-up output files
+    fileAggr.close();
+    filePerStim.close();
     return ret;
 }
