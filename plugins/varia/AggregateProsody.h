@@ -15,6 +15,7 @@ class AggregateProsody
 public:
     AggregateProsody();
 
+    static QString markTargetSyllables(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString averageOnTokens(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString averageContours(QPointer<Praaline::Core::CorpusCommunication> com);
 };

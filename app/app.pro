@@ -234,7 +234,12 @@ SOURCES += main.cpp \
     updater/Downloader.cpp \
     corpus/utilities/MergeCommunicationsDialog.cpp \
     annotation/asr/ForcedAlignmentWidget.cpp \
-    web/PraalineWebsite.cpp
+    web/PraalineWebsite.cpp \
+    welcome/WelcomeMode.cpp \
+    web/WebDesignerMode.cpp \
+    welcome/WelcomeModeWidget.cpp \
+    web/WebDesignerModeWidget.cpp \
+    query/dataseteditor/AnnotationLevelDataModel.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -364,7 +369,13 @@ HEADERS  += \
     updater/Downloader.h \
     corpus/utilities/MergeCommunicationsDialog.h \
     annotation/asr/ForcedAlignmentWidget.h \
-    web/PraalineWebsite.h
+    web/PraalineWebsite.h \
+    welcome/WelcomeMode.h \
+    web/WebDesignerMode.h \
+    welcome/WelcomeModeWidget.h \
+    web/WebDesignerModeWidget.h \
+    query/dataseteditor/AnnotationLevelDataModel.h \
+    query/dataseteditor/AnnotationAttributeNodeData.h
 
 FORMS    += \
     MainWindow.ui \
@@ -438,7 +449,9 @@ FORMS    += \
     help/HelpModeConfig.ui \
     updater/Downloader.ui \
     corpus/utilities/MergeCommunicationsDialog.ui \
-    annotation/asr/ForcedAlignmentWidget.ui
+    annotation/asr/ForcedAlignmentWidget.ui \
+    welcome/WelcomeModeWidget.ui \
+    web/WebDesignerModeWidget.ui
 
 RESOURCES += \
     praaline.qrc \

@@ -27,6 +27,7 @@
 #include "QtilitiesProjectManagement/QtilitiesProjectManagement"
 
 // Application Modes
+#include "welcome/WelcomeMode.h"
 #include "corpus/CorpusMode.h"
 #include "annotation/AnnotationMode.h"
 #include "visualisation/VisualisationMode.h"
@@ -225,6 +226,11 @@ void PraalineMainWindow::initialise()
 
     // USER INTERFACE MODES
     // ============================================================================================
+    // Create an instance of the Welcome Mode
+    WelcomeMode* welcome_mode = new WelcomeMode();
+    CONTEXT_MANAGER->registerContext(welcome_mode->contextString());
+    OBJECT_MANAGER->registerObject(welcome_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
+
     // Create an instance of the Corpus Mode
     CorpusMode* corpus_mode = new CorpusMode();
     CONTEXT_MANAGER->registerContext(corpus_mode->contextString());
@@ -268,10 +274,11 @@ void PraalineMainWindow::initialise()
     // Now that all the modes have been loaded from the plugins, add them to the main window:
     m_mainWindow->modeManager()->initialize();
     QStringList mode_order;
-    mode_order << tr("Corpus") << tr("Annotation") << tr("Visualisation") << tr("Query") << tr("Statistics") << tr("Scripting");
+    mode_order << tr("Welcome") << tr("Corpus") << tr("Annotation") << tr("Visualisation");
+    mode_order << tr("Query") << tr("Statistics") << tr("Scripting");
     mode_order << tr("Help") << tr("Session Log");
     m_mainWindow->modeManager()->setPreferredModeOrder(mode_order);
-    m_mainWindow->modeManager()->setActiveMode(MODE_CORPUS_ID);
+    m_mainWindow->modeManager()->setActiveMode(MODE_WELCOME_ID);
 
     // Initialize the config widget:
     d->configurationWidget->initialize();

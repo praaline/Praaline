@@ -489,7 +489,7 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     int minR = (int) min; int maxR = (int) max;
     for (int ST = minR; ST < maxR; ST += 2) {
         int y = getYForValue(v, ST);
-        if (y >= getYForValue(v, min + 20.0)) continue;
+        if (y >= getYForValue(v, min + m_semitonesSetAsideForTiers)) continue;
         paint.setPen(QPen(Qt::gray, 1, Qt::DotLine));
         paint.drawLine(xStart, y, xEnd, y);
     }
@@ -511,6 +511,15 @@ void ProsogramLayer::paint(View *v, QPainter &paint, QRect rect) const
     // Draw intensity and pitch
     // ----------------------------------------------------------------------------------------------------------------
     if (m_showIntensity) {
+        double intensityMin(0.0), intensityMinValues(0.0), intensityMax(0.0);
+        m_layerIntensity->getDisplayExtents(intensityMin, intensityMax);
+        intensityMinValues = intensityMin;
+        int y0_intensity = m_layerIntensity->getYForValue(v, intensityMin);
+        while ((y0_intensity > getYForValue(v, min + m_semitonesSetAsideForTiers)) && (intensityMin > 0.0)) {
+            intensityMin = intensityMin - (intensityMax - intensityMin) * 0.05;
+            m_layerIntensity->setDisplayExtents(intensityMin, intensityMax);
+            y0_intensity = m_layerIntensity->getYForValue(v, intensityMinValues);
+        }
         m_layerIntensity->paint(v, paint, rect);
     }
     if (m_showPitch) {

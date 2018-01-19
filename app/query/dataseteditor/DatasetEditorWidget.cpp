@@ -11,6 +11,7 @@
 
 #include "DatasetEditorModels.h"
 #include "DatasetEditorWidget.h"
+#include "AnnotationLevelDataModel.h"
 
 struct DatasetEditorWidgetData {
     FlowScene *scene;
@@ -39,6 +40,8 @@ std::shared_ptr<DataModelRegistry> DatasetEditorWidget::registerDataModels()
 {
     auto ret = std::make_shared<DataModelRegistry>();
     ret->registerModel<MyDataModel>();
+    //ret->registerModel<AnnotationLevelDataModel>("test");
+    //ret->registerModel<AnnotationLevelDataModel>("testing");
     return ret;
 }
 

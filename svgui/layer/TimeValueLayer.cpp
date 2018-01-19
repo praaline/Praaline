@@ -918,8 +918,7 @@ TimeValueLayer::paint(View *v, QPainter &paint, QRect rect) const
     sv_frame_t frame1 = v->getFrameForX(x1);
     if (m_derivative) --frame0;
 
-    SparseTimeValueModel::PointList points(m_model->getPoints
-                                           (frame0, frame1));
+    SparseTimeValueModel::PointList points(m_model->getPoints(frame0, frame1));
     if (points.empty()) return;
 
     paint.setPen(getBaseQColor());

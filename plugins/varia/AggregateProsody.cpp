@@ -30,6 +30,71 @@ struct AggregateToken {
     QList<double> meanPitches;
 };
 
+QString AggregateProsody::markTargetSyllables(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    ret = com->ID();
+    QPointer<CorpusRecording> rec = com->recordings().first();
+    if (!rec) return "Error";
+    QString annotationID = rec->ID();
+    QString speakerID = com->property("SubjectID").toString();
+    // Get tiers
+    IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+    if (!tier_tokens) return ret + " No tier tokens";
+    IntervalTier *tier_syll = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
+    if (!tier_syll) return ret = " No tier syll";
+    // Find target token and corresponding syllables
+    int targetTokenIndex(-1);
+    for (int i = 0; i < tier_tokens->count(); ++i) {
+        if (tier_tokens->at(i)->attribute("target").toString() == "*") {
+            targetTokenIndex = i;
+            break;
+        }
+    }
+    if (targetTokenIndex < 0) { return ret + " Target token not found"; }
+    QPair<int, int> targetSyllIndices = tier_syll->getIntervalIndexesOverlappingWith(tier_tokens->at(targetTokenIndex));
+    if ((targetSyllIndices.first < 0) || (targetSyllIndices.second < 0)) {
+        return ret + " Syllables not found";
+    }
+    // Select context
+    int contextLeft(5), contextRight(5);
+    // Left context
+    int syllIndex(0); int contextSyllCount(0);
+    syllIndex = targetSyllIndices.first - 1;
+    while ((syllIndex >= 0) && (contextSyllCount < contextLeft)) {
+        Interval *syll = tier_syll->at(syllIndex);
+        if (!syll->isPauseSilent()) {
+            syll->setAttribute("target", QString("L%1").arg(-contextSyllCount-1));
+            contextSyllCount++;
+        }
+        syllIndex--;
+    }
+    // Target
+    contextSyllCount = 0;
+    for (syllIndex = targetSyllIndices.first; syllIndex <= targetSyllIndices.second; ++syllIndex) {
+        if ((syllIndex < 0) || (syllIndex >= tier_syll->count())) break;
+        Interval * syll = tier_syll->at(syllIndex);
+        syll->setAttribute("target", QString("T%1").arg(contextSyllCount + 1));
+        contextSyllCount++;
+    }
+    // Right context
+    syllIndex = targetSyllIndices.second + 1; contextSyllCount = 0;
+    while ((syllIndex < tier_syll->count()) && (contextSyllCount < contextRight)) {
+        Interval *syll = tier_syll->at(syllIndex);
+        if (!syll->isPauseSilent()) {
+            syll->setAttribute("target", QString("R%1").arg(contextSyllCount + 1));
+            contextSyllCount++;
+        }
+        syllIndex++;
+    }
+    // Save syllable tier
+    com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
+    return ret;
+}
+
 QString AggregateProsody::averageOnTokens(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
@@ -145,8 +210,13 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     if ( !filePerStim.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
     QTextStream outPerStim(&filePerStim);
     outPerStim.setCodec("UTF-8");
-    outPerStim << "StimulusID\tUtteranceID\tDiscourseMarker\tDiscourseRelation\tT1_duration\tT2_duration\t";
-    outPerStim << "T1_f0_mean\tT2_f0_mean\tT1_intersyllab\tR1_intersyllab\n";
+    outPerStim << "CommunicationID\tSpeakerID\tStimulusID\tUtteranceID\tDiscourseMarker\tDiscourseRelation\t";
+    outPerStim << "T1_duration\tT2_duration\tT1_f0_mean\tT2_f0_mean\tT1_intersyllab\tT2_intersyllab\tR1_intersyllab\t";
+    outPerStim << "L3_durRel30\tL2_durRel30\tL1_durRel30\tT1_durRel30\tT2_durRel30\tR1_durRel30\tR2_durRel30\tR3_durRel30\t";
+    outPerStim << "L1_prom\tT1_prom\tT2_prom\tR1_prom\tL1_boundary\tT1_boundary\tT2_boundary\tR1_boundary\t";
+    outPerStim << "L3_tone\tL3_tonemvt\tL2_tone\tL2_tonemvt\tL1_tone\tL1_tonemvt\t";
+    outPerStim << "T1_tone\tT1_tonemvt\tT2_tone\tT2_tonemvt\t";
+    outPerStim << "R1_tone\tR1_tonemvt\tR2_tone\tR2_tonemvt\tR3_tone\tR3_tonemvt\n";
 
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
@@ -198,6 +268,8 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         // Hack for alors
         if (targetSyllIndices.second - targetSyllIndices.first >= 2) targetSyllIndices.second--;
         // Start
+        Interval *L3(0); Interval *L2(0); Interval *L1(0); Interval *T1(0); Interval *T2(0); Interval *R1(0); Interval *R2(0); Interval *R3(0);
+        int indexL3(-1), indexL2(-1), indexL1(-1), indexT1(-1), indexT2(-1), indexR1(-1), indexR2(-1), indexR3(-1);
         QString textSyll, tonalAnnotation;
         // Get f0_mean baseline
         double f0_mean_baseline = tier_syll->at(targetSyllIndices.first)->attribute("f0_mean").toDouble();
@@ -216,6 +288,9 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
                 contoursLeft[stimulusID][contextSyllCount].durations << syll->duration().toDouble();
                 contoursLeft[stimulusID][contextSyllCount].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
                 contextSyllCount++;
+                if (contextSyllCount == 1) { L1 = syll; indexL1 = syllIndex; }
+                if (contextSyllCount == 2) { L2 = syll; indexL2 = syllIndex; }
+                if (contextSyllCount == 3) { L3 = syll; indexL3 = syllIndex; }
             }
             syllIndex--;
         }
@@ -224,6 +299,7 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
         tonalAnnotation.append("{");
         // Target
+        contextSyllCount = 0;
         for (syllIndex = targetSyllIndices.first; syllIndex <= targetSyllIndices.second; ++syllIndex) {
             if ((syllIndex < 0) || (syllIndex >= tier_syll->count())) break;
             Interval * syll = tier_syll->at(syllIndex);
@@ -231,13 +307,17 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             tonalAnnotation.append(syll->attribute("tonal_annotation").toString()).append(".");
             targets[stimulusID][syllIndex - targetSyllIndices.first].durations << syll->duration().toDouble();
             targets[stimulusID][syllIndex - targetSyllIndices.first].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
+            contextSyllCount++;
+            if (contextSyllCount == 1) { T1 = syll; indexT1 = syllIndex; }
+            if (contextSyllCount == 2) { T2 = syll; indexT2 = syllIndex; }
         }
         if (textSyll.endsWith(".")) textSyll.chop(1);
         textSyll.append("}");
         if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
         tonalAnnotation.append("}");
         // Right context
-        syllIndex = targetSyllIndices.second + 1; contextSyllCount = 0;
+        contextSyllCount = 0;
+        syllIndex = targetSyllIndices.second + 1;
         while ((syllIndex < tier_syll->count()) && (contextSyllCount < contextRight)) {
             Interval *syll = tier_syll->at(syllIndex);
             if (syll->isPauseSilent()) {
@@ -249,6 +329,9 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
                 contoursRight[stimulusID][contextSyllCount].durations << syll->duration().toDouble();
                 contoursRight[stimulusID][contextSyllCount].f0_means  << syll->attribute("f0_mean").toDouble() - normalise;
                 contextSyllCount++;
+                if (contextSyllCount == 1) { R1 = syll; indexR1 = syllIndex; }
+                if (contextSyllCount == 2) { R2 = syll; indexR2 = syllIndex; }
+                if (contextSyllCount == 3) { R3 = syll; indexR3 = syllIndex; }
             }
             syllIndex++;
         }
@@ -256,22 +339,63 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         if (tonalAnnotation.endsWith(".")) tonalAnnotation.chop(1);
 
         // Output per-stimulus prosodic measures
-        // StimulusID  UtteranceID  DiscourseMarker  DiscourseRelation  T1_duration  T2_duration  T1_f0_mean  T2_f0_mean T1_intersyllab  R1_intersyllab
-        Interval *T1 = tier_syll->at(targetSyllIndices.first);
-        Interval *T2 = tier_syll->at(targetSyllIndices.second);
-        Interval *R1 = tier_syll->at(targetSyllIndices.second + 1);
+        // CommunicationID  SpeakerID  StimulusID  UtteranceID  DiscourseMarker  DiscourseRelation
+        // T1_duration  T2_duration  T1_f0_mean  T2_f0_mean T1_intersyllab  T2_intersyllab  R1_intersyllab
+        // L3_durRel30  L2_durRel30  L1_durRel30  T1_durRel30  T2_durRel30  R1_durRel30  R2_durRel30  R3_durRel30
+        // L1_prom  T1_prom  T2_prom  R1_prom  L1_boundary  T1_boundary  T2_boundary  R1_boundary
+        // L3_tone  L3_tonemvt  ...  R3_tone  R3_tonemvt
         // Stylised?
-        bool T1stylised = T1->attribute("nucl_t1").toDouble() > 0.0;
-        bool T2stylised = T2->attribute("nucl_t1").toDouble() > 0.0;
-        bool R1stylised = R1->attribute("nucl_t1").toDouble() > 0.0;
+        bool T1stylised = (T1) ? (T1->attribute("nucl_t1").toDouble() > 0.0) : false;
+        bool T2stylised = (T2) ? (T2->attribute("nucl_t1").toDouble() > 0.0) : false;
+        bool R1stylised = (R1) ? (R1->attribute("nucl_t1").toDouble() > 0.0) : false;
         // output
-        outPerStim << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
-        outPerStim << T1->duration().toDouble() << "\t";
-        outPerStim << T2->duration().toDouble() << "\t";
+        outPerStim << com->ID() << "\t" << speakerID << "\t" << stimulusID << "\t" << stimulusID.left(3) << "\t" << stimulusID.left(1) << "\t" << stimulusID.mid(3, 3) << "\t";
+        // duration of the MD
+        if (T1) outPerStim << T1->duration().toDouble() << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim << T2->duration().toDouble() << "\t"; else outPerStim << "NA\t";
+        // pitch of the MD
         if (T1stylised) outPerStim << T1->attribute("f0_mean").toDouble() << "\t"; else outPerStim << "NA\t";
         if (T2stylised) outPerStim << T2->attribute("f0_mean").toDouble() << "\t"; else outPerStim << "NA\t";
+        // intersyllabic movement S1-->T1 and T1/T2-->R1
         if (T1stylised) outPerStim << T1->attribute("intersyllab").toDouble() << "\t"; else outPerStim << "NA\t";
-        if (R1stylised) outPerStim << R1->attribute("intersyllab").toDouble() << "\n"; else outPerStim << "NA\n";
+        if (T2stylised) outPerStim << T2->attribute("intersyllab").toDouble() << "\t"; else outPerStim << "NA\t";
+        if (R1stylised) outPerStim << R1->attribute("intersyllab").toDouble() << "\t"; else outPerStim << "NA\t";
+        // relative duration (searching for lengthenings)
+        if (L3) outPerStim <<  Measures::relative(tier_syll, "duration", indexL3, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (L2) outPerStim <<  Measures::relative(tier_syll, "duration", indexL2, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (L1) outPerStim <<  Measures::relative(tier_syll, "duration", indexL1, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (T1) outPerStim <<  Measures::relative(tier_syll, "duration", indexT1, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim <<  Measures::relative(tier_syll, "duration", indexT2, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim <<  Measures::relative(tier_syll, "duration", indexR1, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim <<  Measures::relative(tier_syll, "duration", indexR2, 3, 0, true, "", false) << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim <<  Measures::relative(tier_syll, "duration", indexR3, 3, 0, true, "", false) << "\t"    ; else outPerStim << "NA\t";
+        // prominence
+        if (L1) outPerStim << L1->attribute("promise_pos").toString() << "\t"; else outPerStim << "NA\t";
+        if (T1) outPerStim << T1->attribute("promise_pos").toString() << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim << T2->attribute("promise_pos").toString() << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim << R1->attribute("promise_pos").toString() << "\t"; else outPerStim << "NA\t";
+        // boundaries
+        if (L1) outPerStim << L1->attribute("promise_boundary").toString() << "\t"; else outPerStim << "NA\t";
+        if (T1) outPerStim << T1->attribute("promise_boundary").toString() << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim << T2->attribute("promise_boundary").toString() << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim << R1->attribute("promise_boundary").toString() << "\t"; else outPerStim << "NA\t";
+        // tonal annotation
+        if (L3) outPerStim << L3->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (L3) outPerStim << L3->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (L2) outPerStim << L2->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (L2) outPerStim << L2->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (L1) outPerStim << L1->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (L1) outPerStim << L1->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (T1) outPerStim << T1->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (T1) outPerStim << T1->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim << T2->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (T2) outPerStim << T2->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim << R1->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (R1) outPerStim << R1->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (R2) outPerStim << R2->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (R2) outPerStim << R2->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        if (R3) outPerStim << R3->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
+        if (R3) outPerStim << R3->attribute("tonal_movement").toString() << "\n"; else outPerStim << "NA\n";
 
         // User output
         ret.append(stimulusID).append("\t").append(speakerID).append("\t").append(textSyll).append("\t").append(tonalAnnotation).append("\n");

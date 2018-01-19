@@ -418,9 +418,17 @@ void IntonationAnnotator::annotate(QPointer<CorpusCommunication> com)
                 pitchLevelExtrapolated(pitchRange, tier_syll);
                 foreach (Interval *syll, tier_syll->intervals()) {
                     if (syll->isPauseSilent()) continue;
+                    // Get tonal label. If unknown use ? symbol
                     QString tonal_label = syll->attribute("tonal_label").toString();
                     if (tonal_label.isEmpty()) tonal_label = "?";
+                    syll->setAttribute("tonal_label", tonal_label);
+                    // Get tonal movement
                     QString tonal_movement = syll->attribute("tonal_movement").toString();
+                    // if the syllable has been attributed a pitch level (by extrapolation) but has no movement
+                    // (no tonal segments) set movement to flat
+                    if (tonal_movement.isEmpty() && tonal_label != "?") tonal_movement = "_";
+                    syll->setAttribute("tonal_movement", tonal_movement);
+                    // Simplify tonal annotation: e.g. H_ becomes H
                     if (tonal_movement == "_") tonal_movement = "";
                     syll->setAttribute("tonal_annotation", tonal_label + tonal_movement);
                 }

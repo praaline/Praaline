@@ -47,6 +47,6 @@ private:
     CorpusModePrivateData *d;
 };
 
-}
+} // namespace Praaline
 
 #endif // CORPUSMODE_H
