@@ -63,7 +63,11 @@ win* {
         LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/release
     }
 }
-LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
+CONFIG( debug, debug|release ) {
+    LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5_debug
+} else {
+    LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
+}
 DEPENDPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
 
 # Node editor
