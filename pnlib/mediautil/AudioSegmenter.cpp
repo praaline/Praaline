@@ -82,7 +82,7 @@ bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &f
     soxPath = appPath + "/tools/sox/";
     sox.setWorkingDirectory(soxPath);
 #else
-    soxPath = "/usr/bin/";
+    soxPath = "/usr/local/bin/";
 #endif
     int i = 1;
     QMap<RealTime, Interval *> mapRemoveSorted;
@@ -130,7 +130,7 @@ bool AudioSegmenter::resample(const QString &filenameIn, const QString &filename
     soxPath = appPath + "/tools/sox/";
     sox.setWorkingDirectory(soxPath);
 #else
-    soxPath = "/usr/bin/";
+    soxPath = "/usr/local/bin/";
 #endif
     QStringList arguments;
     arguments << filenameIn;
