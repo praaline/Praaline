@@ -33,9 +33,9 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/CorpusParticipationTableModel.h"
 #include "pngui/widgets/SelectionListDataProviderProxy.h"
 #include "pngui/widgets/GridViewWidget.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 #include "CorpusRepositoriesManager.h"
-#include "PraalineUserInterfaceOptions.h"
 
 struct CorpusExplorerTableWidgetData
 {

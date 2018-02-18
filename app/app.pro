@@ -252,7 +252,6 @@ HEADERS  += \
     PraalineSplash.h \
     Version.h \
     CorpusRepositoriesManager.h \
-    PraalineUserInterfaceOptions.h \
     interfaces/IAnnotationPlugin.h \
     interfaces/IStatisticsPlugin.h \
     corpus/CorpusExplorerTableWidget.h \

@@ -26,7 +26,7 @@ using namespace Praaline::Core;
 #include "pngui/xlsx/xlsxdocument.h"
 #include "pngui/xlsx/xlsxformat.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 struct CompareAnnotationsWidgetData {

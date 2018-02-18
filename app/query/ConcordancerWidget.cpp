@@ -18,7 +18,7 @@ using namespace Praaline::Core;
 #include "pngui/model/query/QueryFilterSequenceTableModel.h"
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 struct ConcordancerWidgetData {

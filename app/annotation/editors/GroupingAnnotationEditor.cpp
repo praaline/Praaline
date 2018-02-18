@@ -20,7 +20,7 @@ using namespace QtilitiesCoreGui;
 #include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 #include "pngui/widgets/GroupingAnnotationEditorWidget.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"

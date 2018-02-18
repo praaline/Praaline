@@ -22,7 +22,7 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"
 #include "pngui/widgets/GridViewWidget.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 struct ConcordancerQuickWidgetData {
@@ -89,7 +89,7 @@ ConcordancerQuickWidget::ConcordancerQuickWidget(QWidget *parent) :
     d->toolbarMetadataFilters->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
 //    d->toolbarQueryDefinition = new QToolBar(this);
 //    d->toolbarQueryDefinition->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-//    d->toolbarQueryDefinition->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
+//    d->toolbarQueryDefinition->setIconSize(pngui/PraalineUserInterfaceOptions.h::smallIconSize());
     d->toolbarLevelsAttributes = new QToolBar(this);
     d->toolbarLevelsAttributes->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     d->toolbarLevelsAttributes->setIconSize(PraalineUserInterfaceOptions::smallIconSize());

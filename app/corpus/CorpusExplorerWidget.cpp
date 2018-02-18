@@ -27,7 +27,7 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/widgets/CorpusItemPreview.h"
 #include "pngui/observers/CorpusObserver.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
 #include "CorpusModeWidget.h"

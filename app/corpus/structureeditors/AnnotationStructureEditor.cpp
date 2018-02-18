@@ -20,7 +20,7 @@ using namespace Praaline::Core;
 #include "AddAttributeDialog.h"
 #include "AddLevelDialog.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 struct AnnotationStructureEditorData {
     AnnotationStructureEditorData() : corpusRepositoriesManager(0), treemodelAnnotationStructure(0)

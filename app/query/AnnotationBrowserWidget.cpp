@@ -13,7 +13,7 @@ using namespace Praaline::Core;
 #include "CorpusRepositoriesManager.h"
 #include "AnnotationBrowserWidget.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 struct AnnotationBrowserWidgetData {
     AnnotationBrowserWidgetData() :

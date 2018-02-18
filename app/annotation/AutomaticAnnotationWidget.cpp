@@ -13,7 +13,7 @@
 #include "pngui/model/CheckableProxyModel.h"
 #include "pngui/widgets/StatusMessagesWidget.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 #include <QtilitiesExtensionSystem>
 using namespace QtilitiesExtensionSystem;

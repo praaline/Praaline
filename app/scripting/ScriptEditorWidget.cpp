@@ -16,6 +16,7 @@
 #include <QToolBar>
 
 #include <Qsci/qsciscintilla.h>
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 #include "ScriptEditorWidget.h"
 
@@ -100,12 +101,14 @@ void ScriptEditorWidget::setupActions()
 void ScriptEditorWidget::setupToolBars()
 {
     d->fileToolBar = addToolBar(tr("File"));
+    d->fileToolBar->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->fileToolBar->addAction(d->newAction);
     d->fileToolBar->addAction(d->openAction);
     d->fileToolBar->addAction(d->saveAction);
     d->fileToolBar->addAction(d->saveAsAction);
 
     d->editToolBar = addToolBar(tr("Edit"));
+    d->editToolBar->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     d->editToolBar->addAction(d->cutAction);
     d->editToolBar->addAction(d->copyAction);
     d->editToolBar->addAction(d->pasteAction);

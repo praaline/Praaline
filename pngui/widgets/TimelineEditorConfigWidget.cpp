@@ -14,6 +14,8 @@
 #include "QtilitiesCore/QtilitiesCore"
 #include "QtilitiesCoreGui/QtilitiesCoreGui"
 
+#include "PraalineUserInterfaceOptions.h"
+
 using namespace Qtilities;
 using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
@@ -50,6 +52,7 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
     // Levels/Attributes: toolbar and actions
     d->toolbarLevelsAttributes = new QToolBar("Levels and Attributes", this);
     d->toolbarLevelsAttributes->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    d->toolbarLevelsAttributes->setIconSize(PraalineUserInterfaceOptions::smallIconSize());
     setupActions();
     // Levels and attributes selection
     d->modelLevelsAttributes = new QStandardItemModel;

@@ -225,7 +225,9 @@ HEADERS += \
     model/visualiser/AnnotationTimeValueModel.h \
     layer/RegionAverageLayer.h \
     model/visualiser/RegionAverageModel.h \
-    widgets/StatusMessagesWidget.h
+    widgets/StatusMessagesWidget.h \
+    pngui/PraalineUserInterfaceOptions.h.h \
+    model/annotation/PhonetisationTableModel.h
 
 SOURCES += \
     model/visualiser/AnnotationGridModel.cpp \
@@ -376,7 +378,8 @@ SOURCES += \
     model/visualiser/AnnotationTimeValueModel.cpp \
     layer/RegionAverageLayer.cpp \
     model/visualiser/RegionAverageModel.cpp \
-    widgets/StatusMessagesWidget.cpp
+    widgets/StatusMessagesWidget.cpp \
+    model/annotation/PhonetisationTableModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

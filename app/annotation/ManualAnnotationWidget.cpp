@@ -23,7 +23,7 @@
 #include "editors/GroupingAnnotationEditor.h"
 #include "editors/TranscriptAnnotationEditor.h"
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 struct ManualAnnotationWidgetData {
     ManualAnnotationWidgetData() :

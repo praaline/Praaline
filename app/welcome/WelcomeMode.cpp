@@ -52,7 +52,7 @@ void WelcomeMode::initializeMode() {
 }
 
 QIcon WelcomeMode::modeIcon() const {
-    return QIcon(":/icons/modes/welcome_mode_48x48.png");
+    return QIcon(":/icons/praaline.svg");
 }
 
 QString WelcomeMode::modeName() const {

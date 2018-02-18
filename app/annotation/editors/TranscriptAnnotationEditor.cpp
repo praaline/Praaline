@@ -19,7 +19,7 @@ using namespace QtilitiesCoreGui;
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "PraalineUserInterfaceOptions.h"
+#include "pngui/PraalineUserInterfaceOptions.h"
 
 #include "TranscriptAnnotationEditor.h"
 
