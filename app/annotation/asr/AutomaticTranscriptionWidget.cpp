@@ -112,6 +112,9 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
 
     // Update transcriber object
     if (d->recording) {
+        // Create asr directory if it does not exist
+        if (!QDir(d->recording->basePath() + "/asr").exists())
+            QDir().mkdir(d->recording->basePath() + "/asr");
         d->transcriber->setWorkingDirectory(d->recording->basePath() + "/asr");
         d->transcriber->setFilePathRecording(d->recording->filePath());
         ui->textMessages->appendHtml(QString("<b>Opened Communication %1, Recording %2</b>").arg(com->ID()).arg(rec->ID()));
