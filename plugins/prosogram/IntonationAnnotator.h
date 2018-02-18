@@ -3,6 +3,7 @@
 
 #include <QPointer>
 #include <QPair>
+#include <cmath>
 
 namespace Praaline {
 namespace Core {
