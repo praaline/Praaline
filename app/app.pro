@@ -73,7 +73,7 @@ macx* {
         LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
     }
 }
-unix {
+linux* {
     LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
     LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
 }

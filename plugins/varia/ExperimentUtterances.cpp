@@ -448,5 +448,3 @@ QString ExperimentUtterances::resyllabifyMDs(QPointer<Praaline::Core::CorpusComm
     delete tier_tokens;
     return ret;
 }
-
-

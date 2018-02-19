@@ -204,7 +204,8 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     // Select contextLength
     int contextLeft(3), contextRight(3);
     // Per stimulus measures
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
+    // QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
+    QString path = "/Users/george/Documents";
 
     QFile filePerStim(path + "/prosodic_measures_per_stimulus.txt");
     if ( !filePerStim.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
@@ -232,6 +233,9 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         IntervalTier *tier_syll = qobject_cast<IntervalTier *>
                 (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
         if (!tier_syll) return "No tier syll";
+        IntervalTier *tier_sequence = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, "sequence"));
+        if (!tier_sequence) return "No tier sequence";
         // If this is the first time, insert contour
         if (!contoursLeft.contains(stimulusID)) {
             QList<AggregateSyllable> left;
@@ -267,6 +271,31 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         QPair<int, int> targetSyllIndices = tier_syll->getIntervalIndexesOverlappingWith(tier_tokens->at(targetTokenIndex));
         // Hack for alors
         if (targetSyllIndices.second - targetSyllIndices.first >= 2) targetSyllIndices.second--;
+        // Prosodic measures on sequences
+        double speechRateS1(0.0), speechRateS2(0.0), pauseBeforeMD(0.0), pauseAfterMD(0.0);
+        for (int iseq = 0; iseq < tier_sequence->count(); ++iseq) {
+            QString s = tier_sequence->at(iseq)->text();
+            Interval *unit = new Interval(tier_tokens->getBoundaryClosestTo(tier_sequence->at(iseq)->tMin()),
+                                          tier_tokens->getBoundaryClosestTo(tier_sequence->at(iseq)->tMax()), s);
+            if (s == "S1") {
+                QPair<int, int> syllsS1 = tier_syll->getIntervalIndexesContainedIn(unit);
+                if (syllsS1.second - syllsS1.first > 0)
+                    speechRateS1 = ((double) (syllsS1.second - syllsS1.first + 1)) / unit->duration().toDouble();
+            }
+            else if (s == "MD") {
+                if ((iseq - 1 > 0) && (tier_sequence->interval(iseq - 1)->isPauseSilent())) {
+                    pauseBeforeMD = tier_sequence->interval(iseq - 1)->duration().toDouble();
+                }
+                if ((iseq + 1 < tier_sequence->count()) && (tier_sequence->interval(iseq + 1)->isPauseSilent())) {
+                    pauseAfterMD = tier_sequence->interval(iseq + 1)->duration().toDouble();
+                }
+            }
+            else if (s == "S2") {
+                QPair<int, int> syllsS2 = tier_syll->getIntervalIndexesContainedIn(unit);
+                if (syllsS2.second - syllsS2.first > 0)
+                    speechRateS2 = ((double) (syllsS2.second - syllsS2.first + 1)) / unit->duration().toDouble();
+            }
+        }
         // Start
         Interval *L3(0); Interval *L2(0); Interval *L1(0); Interval *T1(0); Interval *T2(0); Interval *R1(0); Interval *R2(0); Interval *R3(0);
         int indexL3(-1), indexL2(-1), indexL1(-1), indexT1(-1), indexT2(-1), indexR1(-1), indexR2(-1), indexR3(-1);
@@ -344,6 +373,7 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         // L3_durRel30  L2_durRel30  L1_durRel30  T1_durRel30  T2_durRel30  R1_durRel30  R2_durRel30  R3_durRel30
         // L1_prom  T1_prom  T2_prom  R1_prom  L1_boundary  T1_boundary  T2_boundary  R1_boundary
         // L3_tone  L3_tonemvt  ...  R3_tone  R3_tonemvt
+
         // Stylised?
         bool T1stylised = (T1) ? (T1->attribute("nucl_t1").toDouble() > 0.0) : false;
         bool T2stylised = (T2) ? (T2->attribute("nucl_t1").toDouble() > 0.0) : false;
@@ -397,6 +427,12 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         if (R3) outPerStim << R3->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
         if (R3) outPerStim << R3->attribute("tonal_movement").toString() << "\n"; else outPerStim << "NA\n";
 
+        // Update Communication with prosodic measures
+        com->setProperty("speechRateS1", speechRateS1);
+        com->setProperty("speechRateS2", speechRateS2);
+        com->setProperty("pauseBeforeMD", pauseBeforeMD);
+        com->setProperty("pauseAfterMD", pauseAfterMD);
+
         // User output
         ret.append(stimulusID).append("\t").append(speakerID).append("\t").append(textSyll).append("\t").append(tonalAnnotation).append("\n");
         delete tier_tokens;
@@ -448,6 +484,8 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
             time = time + summary_duration.mean();
         }
     }
+    // Save prosodic measures written to metadata
+    corpus->save();
     // Clean-up output files
     fileAggr.close();
     filePerStim.close();
