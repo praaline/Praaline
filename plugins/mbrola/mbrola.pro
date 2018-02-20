@@ -58,11 +58,13 @@ HEADERS += \
     pluginmbrola.h \ 
     annotationpluginpraatscript.h \
     mbrolafilemanager.h \
-    pseudolanguage.h
+    pseudolanguage.h \
+    MBROLAResynthesiser.h
 	
 SOURCES += \ 
     pluginmbrola.cpp \ 
     annotationpluginpraatscript.cpp \
     mbrolafilemanager.cpp \
-    pseudolanguage.cpp
+    pseudolanguage.cpp \
+    MBROLAResynthesiser.cpp
 	

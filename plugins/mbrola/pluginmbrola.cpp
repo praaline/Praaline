@@ -18,6 +18,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "mbrolafilemanager.h"
 #include "pseudolanguage.h"
+#include "MBROLAResynthesiser.h"
 
 
 using namespace Qtilities::ExtensionSystem;
@@ -122,6 +123,13 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::scriptFinished(int exitcode)
 
 void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
+    QString m;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        m = MBROLAResynthesiser::resynthesise("/home/george/resynth", com);
+        if (!m.isEmpty()) printMessage(m);
+    }
+
 //    QFile file("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/test.txt");
 //    if ( !file.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
 //    QTextStream out(&file);
@@ -129,48 +137,48 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<Corpu
 //    out << "communicationID\tspeakerID\tsyll_intervalNo\tsyll_tMin\tboundary\tcontour\tcategory\ttok_mwu\tpos\tpos_cat\t";
 //    out << "isLexical\tnpauseDur\tnpauseDurLog\tnpauseDurLogZ\tsyllDurRel20\tsyllDurRel30\tsyllDurRel40\tsyllDurRel50\tsyllDurLogRel20\tsyllDurLogRel30\tsyllDurLogRel40\tsyllDurLogRel50\tsyllF0meanRel20\tsyllF0meanRel30\tsyllF0meanRel40\tsyllF0meanRel50\tintrasyllab_up\tintrasyllab_down\ttrajectory\tcorrect\n";
 
-    MBROLAFileManager *mgr = new MBROLAFileManager();
-    connect(mgr, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    connect(mgr, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+//    MBROLAFileManager *mgr = new MBROLAFileManager();
+//    connect(mgr, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
+//    connect(mgr, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
 
-    PseudoLanguage *pseudo = new PseudoLanguage();
+//    PseudoLanguage *pseudo = new PseudoLanguage();
 
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-                if (!annot) continue;
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//            if (!rec) continue;
+//            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//                if (!annot) continue;
 
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
-                foreach (QString speakerID, tiersAll.keys()) {
-                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+//                foreach (QString speakerID, tiersAll.keys()) {
+//                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
 
-                    IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
-                    if (!tier_phones) continue;
+//                    IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
+//                    if (!tier_phones) continue;
 
-                    QString filename = QString("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/synth/%1_%2_pseudo.pho")
-                            .arg(annot->ID()).arg(speakerID);
+//                    QString filename = QString("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/synth/%1_%2_pseudo.pho")
+//                            .arg(annot->ID()).arg(speakerID);
 
-                    if (mgr->updatePhoneTierFromPhoFile(filename, tier_phones, "pseudo_phone", true, false))
-                        printMessage(filename);
+//                    if (mgr->updatePhoneTierFromPhoFile(filename, tier_phones, "pseudo_phone", true, false))
+//                        printMessage(filename);
 
-//                    pseudo->substitutePhonemes(tier_phones, "pseudolang");
-//                    mgr->createPhoFile(QString("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/%1_%2_pseudo.pho")
-//                                       .arg(annot->ID()).arg(speakerID), tier_phones, "pseudolang");
+////                    pseudo->substitutePhonemes(tier_phones, "pseudolang");
+////                    mgr->createPhoFile(QString("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/%1_%2_pseudo.pho")
+////                                       .arg(annot->ID()).arg(speakerID), tier_phones, "pseudolang");
 
-                    com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phones);
-                }
-                qDeleteAll(tiersAll);
+//                    com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_phones);
+//                }
+//                qDeleteAll(tiersAll);
 
-            }
-        }
-    }
+//            }
+//        }
+//    }
 
-    delete pseudo;
-    disconnect(mgr, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    disconnect(mgr, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
-    delete mgr;
+//    delete pseudo;
+//    disconnect(mgr, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
+//    disconnect(mgr, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+//    delete mgr;
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

@@ -106,7 +106,7 @@ void MetadataStructureEditor::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // STRUCTURE EDITOR
     // ------------------------------------------------------------------------------------------------------
-    d->actionSaveMetadataStructure = new QAction(QIcon(":icons/actions/save.png"), "Save", this);
+    d->actionSaveMetadataStructure = new QAction(QIcon(":icons/actions/action_save.png"), "Save", this);
     connect(d->actionSaveMetadataStructure, SIGNAL(triggered()), SLOT(saveMetadataStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveMetadataStructure", d->actionSaveMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -130,13 +130,13 @@ void MetadataStructureEditor::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionRemoveMetadataStructureItem);
 
-    d->actionImportMetadataStructure = new QAction("Import Metadata Structure", this);
+    d->actionImportMetadataStructure = new QAction(QIcon(":icons/actions/table_import.png"), "Import Metadata Structure", this);
     connect(d->actionImportMetadataStructure, SIGNAL(triggered()), SLOT(importMetadataStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ImportMetadataStructure", d->actionImportMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionImportMetadataStructure);
 
-    d->actionExportMetadataStructure = new QAction("Export Metadata Structure", this);
+    d->actionExportMetadataStructure = new QAction(QIcon(":icons/actions/table_export.png"), "Export Metadata Structure", this);
     connect(d->actionExportMetadataStructure, SIGNAL(triggered()), SLOT(exportMetadataStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ExportMetadataStructure", d->actionExportMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));

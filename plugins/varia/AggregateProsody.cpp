@@ -205,7 +205,8 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     int contextLeft(3), contextRight(3);
     // Per stimulus measures
     // QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production Analyses";
-    QString path = "/Users/george/Documents";
+    // QString path = "/Users/george/Documents";
+    QString path = "/home/george";
 
     QFile filePerStim(path + "/prosodic_measures_per_stimulus.txt");
     if ( !filePerStim.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";

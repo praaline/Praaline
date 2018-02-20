@@ -482,7 +482,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    }
 
 
-//    return;
+    return;
 
     // NASSIMA EXPERIMENT - boundaries and pauses
      if (communications.isEmpty()) return;

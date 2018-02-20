@@ -108,7 +108,7 @@ void AnnotationStructureEditor::setupActions()
     // STRUCTURE EDITOR
     // ------------------------------------------------------------------------------------------------------
 
-    d->actionSaveAnnotationStructure = new QAction(QIcon(":icons/actions/save.png"), "Save", this);
+    d->actionSaveAnnotationStructure = new QAction(QIcon(":icons/actions/action_save.png"), "Save", this);
     connect(d->actionSaveAnnotationStructure, SIGNAL(triggered()), SLOT(saveAnnotationStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveAnnotationStructure", d->actionSaveAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -132,13 +132,13 @@ void AnnotationStructureEditor::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionRemoveAnnotationStructureItem);
 
-    d->actionImportAnnotationStructure = new QAction("Import Annotation Structure", this);
+    d->actionImportAnnotationStructure = new QAction(QIcon(":icons/actions/table_import.png"), "Import Annotation Structure", this);
     connect(d->actionImportAnnotationStructure, SIGNAL(triggered()), SLOT(importAnnotationStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ImportAnnotationStructure", d->actionImportAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionImportAnnotationStructure);
 
-    d->actionExportAnnotationStructure = new QAction("Export Annotation Structure", this);
+    d->actionExportAnnotationStructure = new QAction(QIcon(":icons/actions/table_export.png"), "Export Annotation Structure", this);
     connect(d->actionExportAnnotationStructure, SIGNAL(triggered()), SLOT(exportAnnotationStructure()));
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ExportAnnotationStructure", d->actionExportAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
