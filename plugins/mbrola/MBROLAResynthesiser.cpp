@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QProcess>
+#include <QCoreApplication>
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/IntervalTier.h"
