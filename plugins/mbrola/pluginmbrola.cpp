@@ -126,7 +126,9 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<Corpu
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        m = MBROLAResynthesiser::resynthesise("/home/george/resynth", com);
+        QString dir = "/Users/george/Documents/resynth";
+        // dir = "/home/george/resynth";
+        m = MBROLAResynthesiser::resynthesise(dir, com);
         if (!m.isEmpty()) printMessage(m);
     }
 

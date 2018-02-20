@@ -86,7 +86,7 @@ QString MBROLAResynthesiser::resynthesise(const QString &directory, QPointer<Pra
     QString speakerID = com->property("SubjectID").toString();
     QPointer<CorpusSpeaker> spk = com->corpus()->speaker(speakerID);
     QString sex = spk->property("Sex").toString();
-    QString voice = (sex == "F") ? "/home/george/Downloads/mbrola/fr2/fr2" : "/home/george/Downloads/mbrola/fr1/fr1";
+    QString voice;
 
     // Filenames
     QString filenamePho = directory + "/" + rec->ID() + ".pho";
@@ -102,9 +102,11 @@ QString MBROLAResynthesiser::resynthesise(const QString &directory, QPointer<Pra
     commandMBROLA = appPath + "/tools/mbrola.exe";
 #else
 #ifdef Q_OS_MAC
-    commandMBROLA = "/Users/george/mbrola";
+    commandMBROLA = "/Users/george/Develop/mbrola/mbrola";
+    voice  = (sex == "F") ? "/Users/george/Develop/mbrola/fr2/fr2" : "/Users/george/Develop/mbrola/fr1/fr1";
 #else Q_OS_WIN
     commandMBROLA = "/home/george/Downloads/mbrola/mbrola";
+    voice = (sex == "F") ? "/home/george/Downloads/mbrola/fr2/fr2" : "/home/george/Downloads/mbrola/fr1/fr1";
 #endif
 #endif
     QStringList args;
