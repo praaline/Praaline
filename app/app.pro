@@ -96,7 +96,6 @@ unix {
     LIBS += -L/usr/local/lib -lpocketsphinx -lsphinxbase
 }
 
-
 # Application components
 LIBS +=  \
         -L../pngui/$${COMPONENTSPATH} -lpngui \
