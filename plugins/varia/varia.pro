@@ -37,20 +37,11 @@ QTILITIES += extension_system
 include(../../dependencies/qtilities/src/Qtilities.pri)
 INCLUDEPATH += ../../dependencies/qtilities/include
 
-
-# Build folder organisation
-CONFIG( debug, debug|release ) {
-    # debug
-    COMPONENTSPATH = build/debug
-} else {
-    # release
-    COMPONENTSPATH = build/release
-}
 # Application components
 LIBS +=  \
         -L../../svcore/$${COMPONENTSPATH} -lsvcore \
         -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
-        -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
+        -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \

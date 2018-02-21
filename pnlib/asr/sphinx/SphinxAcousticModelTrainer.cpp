@@ -12,7 +12,8 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "pnlib/mediautil/AudioSegmenter.h"
+#include "pnlib/media/AudioSegmenter.h"
+using namespace Praaline::Media;
 
 #include "SphinxPronunciationDictionary.h"
 #include "SphinxAcousticModelTrainer.h"

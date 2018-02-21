@@ -26,12 +26,14 @@
 #include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
 using namespace Praaline::ASR;
 
+#include "pnlib/media/AudioSegmenter.h"
+using namespace Praaline::Media;
+
 #include "phonemedatabase.h"
 #include "EasyAlignBasic.h"
 #include "LongSoundAligner.h"
 #include "BroadClassAligner.h"
 
-#include "pnlib/mediautil/AudioSegmenter.h"
 #include "pnlib/featextract/OpenSmileVAD.h"
 
 #include "pncore/interfaces/praat/PraatTextGrid.h"

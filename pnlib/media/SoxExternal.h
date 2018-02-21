@@ -3,6 +3,9 @@
 
 #include <QObject>
 
+namespace Praaline {
+namespace Media {
+
 class SoxExternal : public QObject
 {
     Q_OBJECT
@@ -21,6 +24,7 @@ public slots:
     float duration(QString filename, float fps);
 };
 
-
+} // namespace Media
+} // namespace Praaline
 
 #endif // SOXEXTERNAL_H

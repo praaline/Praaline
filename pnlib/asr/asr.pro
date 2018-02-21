@@ -33,6 +33,12 @@ unix {
     LIBS += -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
 }
 
+LIBS +=  \
+        -L../media/$${COMPONENTSPATH} -lpraaline-media \
+        $$LIBS
+PRE_TARGETDEPS += \
+        ../media/$${COMPONENTSPATH}/libpraaline-media.a
+
 HEADERS += \
     SpeechToken.h \
     SpeechRecognitionRecipes.h \

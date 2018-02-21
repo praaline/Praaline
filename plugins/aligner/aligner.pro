@@ -67,12 +67,12 @@ win32 {
 unix {
     LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
 }
-LIBS += -L../../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
+LIBS += -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
         -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX}
 PRE_TARGETDEPS += \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a
-        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a
+        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-media.a
         ../../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 

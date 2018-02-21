@@ -22,11 +22,12 @@
 #include "pncore/annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
-#include "pngui/widgets/GridViewWidget.h"
-#include "pnlib/mediautil/AudioSegmenter.h"
-#include "pnlib/mediautil/SoundInfo.h"
-#include "CorpusRepositoriesManager.h"
+#include "pnlib/media/AudioSegmenter.h"
+#include "pnlib/media/SoundInfo.h"
+using namespace Praaline::Media;
 
+#include "pngui/widgets/GridViewWidget.h"
+#include "CorpusRepositoriesManager.h"
 
 struct ExtractSoundBitesWidgetData {
     ExtractSoundBitesWidgetData() : manualSelectionModel(0) {}

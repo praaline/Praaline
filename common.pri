@@ -7,8 +7,10 @@ TEMPLATE = lib
 # The following keeps the generated files at least somewhat separate from the source files.
 CONFIG(debug, debug|release) {
     DESTDIR = build/debug
+    COMPONENTSPATH = build/debug
 } else {
     DESTDIR = build/release
+    COMPONENTSPATH = build/release
 }
 
 OBJECTS_DIR = $$DESTDIR/.obj

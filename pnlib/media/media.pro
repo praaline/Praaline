@@ -10,7 +10,7 @@ CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11
 INCLUDEPATH += . .. ../.. ../../pncore
 DEPENDPATH += . .. ../.. ../../pncore
 
-TARGET = praaline-mediautil
+TARGET = praaline-media
 
 HEADERS += \
     SoundInfo.h \

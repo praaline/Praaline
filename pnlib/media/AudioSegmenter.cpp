@@ -9,6 +9,9 @@ using namespace Praaline::Core;
 
 #include "AudioSegmenter.h"
 
+namespace Praaline {
+namespace Media {
+
 // Audio Segmenter
 // Input:  a wave file to extract segments from
 //         the path where the extracts should be saved
@@ -150,3 +153,5 @@ bool AudioSegmenter::resample(const QString &filenameIn, const QString &filename
     return true;
 }
 
+} // namespace Media
+} // namespace Praaline

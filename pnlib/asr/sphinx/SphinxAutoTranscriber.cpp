@@ -9,12 +9,15 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
+#include "pnlib/media/AudioSegmenter.h"
+using namespace Praaline::Media;
+
+#include "pnlib/featextract/OpenSmileVAD.h"
+
 // Other Sphinx modules and OpenSmile VAD
 #include "SphinxConfiguration.h"
 #include "SphinxFeatureExtractor.h"
 #include "SphinxOfflineRecogniser.h"
-#include "mediautil/AudioSegmenter.h"
-#include "featextract/OpenSmileVAD.h"
 
 #include "SphinxAutoTranscriber.h"
 

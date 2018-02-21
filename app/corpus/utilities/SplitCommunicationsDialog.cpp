@@ -14,7 +14,8 @@
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
 
-#include "pnlib/mediautil/AudioSegmenter.h"
+#include "pnlib/media/AudioSegmenter.h"
+using namespace Praaline::Media;
 
 #include "SplitCommunicationsDialog.h"
 #include "ui_SplitCommunicationsDialog.h"

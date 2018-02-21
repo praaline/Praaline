@@ -12,7 +12,9 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
-#include "pnlib/mediautil/AudioSegmenter.h"
+#include "pnlib/media/AudioSegmenter.h"
+using namespace Praaline::Media;
+
 #include "SpeechToken.h"
 #include "HTKForcedAligner.h"
 #include "phonetiser/ExternalPhonetiser.h"

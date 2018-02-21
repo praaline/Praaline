@@ -10,6 +10,9 @@
 #include "base/RealTime.h"
 #include "SoundInfo.h"
 
+namespace Praaline {
+namespace Media {
+
 SoundInfo::SoundInfo() :
     channels(0), sampleRate(0), precisionBits(0), bitRate(0), filesize(0)
 {
@@ -98,3 +101,5 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
     return true;
 }
 
+} // namespace Media
+} // namespace Praaline

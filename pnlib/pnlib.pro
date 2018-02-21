@@ -5,5 +5,5 @@ SUBDIRS +=  asr \
             crf \
             diff \
             featextract \
-            mediautil
+            media
 

@@ -9,7 +9,10 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/FileDatastore.h"
-#include "pnlib/mediautil/SoundInfo.h"
+using namespace Praaline::Core;
+
+#include "pnlib/media/SoundInfo.h"
+using namespace Praaline::Media;
 
 CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
     QDialog(parent),

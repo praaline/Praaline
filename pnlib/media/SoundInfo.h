@@ -5,6 +5,8 @@
 #include <QPair>
 #include "base/RealTime.h"
 
+namespace Praaline {
+namespace Media {
 
 class SoundInfo
 {
@@ -26,5 +28,8 @@ public:
     static QPair<long long, QString> getSizeAndMD5(const QString &filename);
 
 };
+
+} // namespace Media
+} // namespace Praaline
 
 #endif // SOUNDINFO_H

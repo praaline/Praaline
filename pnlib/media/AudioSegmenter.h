@@ -5,10 +5,12 @@
 #include <QList>
 
 namespace Praaline {
+
 namespace Core {
     class Interval;
 }
-}
+
+namespace Media {
 
 class AudioSegmenter
 {
@@ -28,5 +30,8 @@ private:
     AudioSegmenter() {}
     ~AudioSegmenter() {}
 };
+
+} // namespace Media
+} // namespace Praaline
 
 #endif // AUDIOSEGMENTER_H

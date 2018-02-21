@@ -5,6 +5,9 @@
 
 #include "SoxExternal.h"
 
+namespace Praaline {
+namespace Media {
+
 SoxExternal::SoxExternal(QObject *parent) :
     QObject(parent)
 {
@@ -186,3 +189,7 @@ float SoxExternal::duration(QString filename, float fps)
         result = result*fps;
     return result;
 }
+
+} // namespace Media
+} // namespace Praaline
+

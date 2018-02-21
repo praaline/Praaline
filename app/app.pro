@@ -31,15 +31,6 @@ macx* {
 DEPENDPATH += . ../pncore ../pnlib ../pngui
 INCLUDEPATH += . .. ../.. ../pncore ../pnlib ../pngui
 
-# Build folder organisation
-CONFIG( debug, debug|release ) {
-    # debug
-    COMPONENTSPATH = build/debug
-} else {
-    # release
-    COMPONENTSPATH = build/release
-}
-
 # Sonic Visualiser libraries
 include (svinclude.pri)
 
@@ -113,7 +104,7 @@ LIBS +=  \
         -L../pnlib/crf/$${COMPONENTSPATH} -lpraaline-crf \
         -L../pnlib/diff/$${COMPONENTSPATH} -lpraaline-diff \
         -L../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
-        -L../pnlib/mediautil/$${COMPONENTSPATH} -lpraaline-mediautil \
+        -L../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
         -L../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \

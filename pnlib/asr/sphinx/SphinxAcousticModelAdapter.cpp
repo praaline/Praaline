@@ -7,7 +7,7 @@
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
-#include "pnlib/mediautil/AudioSegmenter.h"
+#include "pnlib/media/AudioSegmenter.h"
 
 #include "SphinxAcousticModelAdapter.h"
 

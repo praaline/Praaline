@@ -3,8 +3,12 @@
 #include <QCloseEvent>
 #include <QStandardItem>
 #include <QStandardItemModel>
+
 #include "pncore/corpus/Corpus.h"
-#include "pnlib/mediautil/SoundInfo.h"
+using namespace Praaline::Core;
+
+#include "pnlib/media/SoundInfo.h"
+using namespace Praaline::Media;
 
 #include "ImportCorpusItemsWizardProcessMediaPage.h"
 #include "ui_ImportCorpusItemsWizardProcessMediaPage.h"

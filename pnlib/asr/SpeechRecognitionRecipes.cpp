@@ -11,12 +11,13 @@
 #include "pncore/annotation/Interval.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
-#include "pnlib/mediautil/AudioSegmenter.h"
+#include "pnlib/media/AudioSegmenter.h"
 #include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
 #include "pnlib/asr/sphinx/SphinxRecogniser.h"
 #include "SpeechRecognitionRecipes.h"
 
 using namespace Praaline::Core;
+using namespace Praaline::Media;
 
 namespace Praaline {
 namespace ASR {
