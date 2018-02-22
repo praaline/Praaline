@@ -226,10 +226,13 @@ void PraalineMainWindow::initialise()
 
     // USER INTERFACE MODES
     // ============================================================================================
+
+#ifdef PRAALINE_HAS_WELCOME
     // Create an instance of the Welcome Mode
     WelcomeMode* welcome_mode = new WelcomeMode();
     CONTEXT_MANAGER->registerContext(welcome_mode->contextString());
     OBJECT_MANAGER->registerObject(welcome_mode, QtilitiesCategory("GUI::Application Modes (IMode)", "::"));
+#endif
 
     // Create an instance of the Corpus Mode
     CorpusMode* corpus_mode = new CorpusMode();
