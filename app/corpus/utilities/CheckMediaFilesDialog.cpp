@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QPointer>
 #include <QFileInfo>
 #include <QCloseEvent>
@@ -66,6 +67,7 @@ void CheckMediaFilesDialog::process()
     ui->progressBar->setValue(0);
     m_stop = false;
     for (int i = 0; i < numberOfRecordings; ++i) {
+        if (i % 10 == 0) QApplication::processEvents();
         // this is used to break the loop when the user closes the dialog
         if (m_stop) return;
 
@@ -83,13 +85,10 @@ void CheckMediaFilesDialog::process()
             continue;
         }
         SoundInfo info;
-        bool ok = SoundInfo::getSoundInfo(m_corpus->repository()->files()->basePath() + "/" + filename, info);
+        bool ok = SoundInfo::getSoundInfo(rec->filePath(), info);
         if (!ok) {
             m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;
-        }
-        if (rec->checksumMD5() == info.checksumMD5) {
-            m_model->setItem(i, 3, new QStandardItem(tr("OK")));
         }
         else {
             QFileInfo fileinfo(filename);
@@ -102,10 +101,13 @@ void CheckMediaFilesDialog::process()
             rec->setEncoding(info.encoding);
             rec->setFileSize(info.filesize);
             rec->setChecksumMD5(info.checksumMD5);
+            qDebug() << rec->duration().toDouble();
             m_model->setItem(i, 3, new QStandardItem(tr("UPDATED")));
+            if (rec->checksumMD5() == info.checksumMD5) {
+                m_model->setItem(i, 3, new QStandardItem(tr("OK")));
+            }
         }
         ui->progressBar->setValue(i);
-        QApplication::processEvents();
     }
     ui->progressBar->setValue(numberOfRecordings);
 }

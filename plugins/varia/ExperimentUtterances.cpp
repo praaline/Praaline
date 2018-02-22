@@ -33,7 +33,8 @@ QString ExperimentUtterances::loadTranscriptions(QPointer<CorpusCommunication> c
 
     // Import transcriptions (and possibly phonetisation) from file
     QHash<QString, QStringList> importedTranscriptions;
-    QString path = "/media/george/Seagate Expansion Drive/TEST";
+    QString path = "/Users/george";
+
     QString line;
     QFile file(path + "/transcription.txt");
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return "Error reading transcriptions file";
@@ -150,8 +151,10 @@ QString ExperimentUtterances::fixTranscription(QPointer<Praaline::Core::CorpusCo
     QString speakerID = com->property("SubjectID").toString();
     IntervalTier *tier_transcription = qobject_cast<IntervalTier *>
             (com->repository()->annotations()->getTier(annotationID, speakerID, "transcription"));
+    if (!tier_transcription) return "Error: no tier transcription";
     IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
             (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
+    if (!tier_tokens) return "Error: no tier tokens";
     QList<RealTime> boundaries;
     boundaries << tier_tokens->first()->tMin() << tier_tokens->first()->tMax();
     boundaries << tier_tokens->last()->tMin();
@@ -176,9 +179,6 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
     QMap<QString, QStringList> concatenationGroups;
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
-        // Hack
-        if (!com->ID().startsWith("E")) continue;
-        //
         QString groupID = com->property("SubjectID").toString();
         if (!concatenationGroups.contains(groupID))
             concatenationGroups.insert(groupID, QStringList() << com->ID());
@@ -187,7 +187,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
     }
     foreach (QString groupID, concatenationGroups.keys()) {
         // Hack
-        if ((groupID != "S15") && (groupID != "S17")) continue;
+        if (groupID != "S0") continue;
         //
         QStringList comIDs = concatenationGroups.value(groupID);
         qSort(comIDs);

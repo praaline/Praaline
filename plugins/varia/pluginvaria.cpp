@@ -419,17 +419,21 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        if (com->property("SubjectID").toString() != "S0") continue;
+//        m = ExperimentUtterances::loadTranscriptions(com);
 //        PhonetiserExternal p;
-//        p.readCitationFormDictionary("/home/george/citation_forms.txt");
+//        p.readCitationFormDictionary("/Users/george/citation_forms.txt");
 //        m = p.importFromPhonetiser(com, true);
 //        m = m.append(p.correctPhonemeChains(com));
 //        m.chop(1);
 //        m = m.append("\tAlign:\t");
-//        m = m.append(ExperimentUtterances::align(com));
+//        m = m.append(ExperimentUtterances::align(com)).append("\n");
 //        ProsodicUnits p;
 //        p.createProsodicUnits(com);
 //        m = p.transcriptionInProsodicUnits(com);
 //        m = ExperimentUtterances::fixTiers(com);
+//        m = ExperimentUtterances::fixTranscription(com);
+
 //        m = ExperimentUtterances::concatenate(com);
 //        m = ExperimentUtterances::averageProsody(com);
 //        m = ExperimentUtterances::fixTranscription(com);
@@ -439,9 +443,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     }
     // ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
-    m = AggregateProsody::averageContours(communications.first());
+    // m = AggregateProsody::averageContours(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());
-    printMessage(m);
+    // printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

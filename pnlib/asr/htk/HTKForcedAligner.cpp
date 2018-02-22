@@ -48,6 +48,7 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     // DIRECTORY:
     QString appPath = QCoreApplication::applicationDirPath();
     QString modelsPath = appPath + "/tools/htk/";
+    modelsPath = "/Users/george/tools/htk/";
     d->filenameCFG = modelsPath + "fra.cfg";
     d->filenameHMM = modelsPath + "fra.hmm";
     d->filenamePhoneList = modelsPath + "fra_phone.list";
@@ -74,7 +75,7 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     d->phonemeReverseTranslations.insert("eu", "2");
     d->phonemeReverseTranslations.insert("oe", "9");
 
-    d->pathTemp = "/home/george/aligner_test/";
+    d->pathTemp = "/Users/george/aligner_test/";
 }
 
 HTKForcedAligner::~HTKForcedAligner()
@@ -243,21 +244,29 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     // Run HTK Viterbi recogniser
     // DIRECTORY:
     QString appPath = QCoreApplication::applicationDirPath();
-    QString htkPath = appPath + "/tools/htk/";
 #ifdef Q_OS_WIN
+    QString htkPath = appPath + "/tools/htk/";
     QString htkExecutable = htkPath + "hvite.exe";
 #else
 #ifdef Q_OS_MAC
-    QString htkExecutable = htkPath + "HVite";
+    QString htkPath = "/usr/local/bin";
+    QString htkExecutable = "/usr/local/bin/HVite";
 #else
+    QString htkPath = appPath + "/tools/htk/";
     QString htkExecutable = htkPath + "HVite";
 #endif
 #endif
     QProcess hvite;
     hvite.setWorkingDirectory(htkPath);
     hvite.start(htkExecutable , hviteParameters);
-    if (!hvite.waitForStarted(-1))  return false;
-    if (!hvite.waitForFinished(-1)) return false;
+    if (!hvite.waitForStarted(-1)) {
+        alignerOutput = QString(hvite.readAllStandardOutput() + hvite.readAllStandardError());
+        return false;
+    }
+    if (!hvite.waitForFinished(-1)) {
+        alignerOutput = QString(hvite.readAllStandardOutput() + hvite.readAllStandardError());
+        return false;
+    }
     alignerOutput = QString(hvite.readAllStandardOutput());
 
     QFile fileREC(filenameBase + ".rec");
@@ -330,7 +339,9 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
     atokens = alignerTokensFromIntervalTier(tier_tokens, indexFrom, indexTo);
     runAligner(waveResampledBase, atokens, aphones, alignerOutput);
     // Check that the aligner came up with a proper solution
-    if (aphones.isEmpty()) return false;
+    if (aphones.isEmpty()) {
+        return false;
+    }
     // Verify micro-pauses inserted before occlusive consonants
     QStringList occlusives;
     occlusives << "p" << "t" << "k";

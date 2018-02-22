@@ -1,3 +1,4 @@
+#include <QDebug>
 #include <QString>
 #include <QByteArray>
 #include <QList>
@@ -48,13 +49,19 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
     soxPath = appPath + "/tools/sox/";
     sox.setWorkingDirectory(soxPath);
 #else
-    soxPath = "/usr/bin/";
+    soxPath = "/usr/local/bin/";
 #endif
+    qDebug() << soxPath + "sox --i " << filename;
     sox.start(soxPath + "sox" , QStringList() <<
               "--i" << filename);
+    if (!sox.waitForStarted(-1)) // sets current thread to sleep and waits for sox end
+        return false;
     if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
         return false;
     QString output(sox.readAllStandardOutput());
+    QString errors(sox.readAllStandardError());
+    qDebug() << output;
+    qDebug() << errors;
     QStringList output_l = output.split("\n");
     foreach (QString line, output_l) {
         if (line.isEmpty()) continue;
@@ -98,6 +105,7 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
             info.encoding = line.section(":", 1, -1).trimmed();
         }
     }
+    // qDebug() << info.duration.toDouble();
     return true;
 }
 
