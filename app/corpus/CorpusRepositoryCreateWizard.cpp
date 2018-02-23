@@ -69,7 +69,7 @@ void CorpusRepositoryCreateWizard::populateTemplates()
     QDir dirinfo;
     QFileInfoList list;
     // Metadata templates
-    dirinfo.setPath(QApplication::applicationDirPath() + "/templates/metadata");
+    dirinfo.setPath(QDir::homePath() + "/Praaline/templates/metadata");
     dirinfo.setNameFilters(QStringList() << "*.xml");
     list << dirinfo.entryInfoList();
     int i = 0;
@@ -84,7 +84,7 @@ void CorpusRepositoryCreateWizard::populateTemplates()
     ui->treeviewMetadataTemplates->setModel(d->modelMetadataTemplates);
     ui->treeviewMetadataTemplates->setHeaderHidden(true);
     // Annotation templates
-    dirinfo.setPath(QApplication::applicationDirPath() + "/templates/annotation");
+    dirinfo.setPath(QDir::homePath() + "/Praaline/templates/annotation");
     dirinfo.setNameFilters(QStringList() << "*.xml");
     list << dirinfo.entryInfoList();
     list.clear();

@@ -46,9 +46,7 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     : QObject(parent), d(new HTKForcedAlignerData)
 {
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString modelsPath = appPath + "/tools/htk/";
-    modelsPath = "/Users/george/tools/htk/";
+    QString modelsPath = QDir::homePath() + "/Praaline/tools/htk/";
     d->filenameCFG = modelsPath + "fra.cfg";
     d->filenameHMM = modelsPath + "fra.hmm";
     d->filenamePhoneList = modelsPath + "fra_phone.list";
@@ -75,7 +73,7 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     d->phonemeReverseTranslations.insert("eu", "2");
     d->phonemeReverseTranslations.insert("oe", "9");
 
-    d->pathTemp = "/Users/george/aligner_test/";
+    d->pathTemp = QDir::homePath() + "/Praaline/aligner_temp/";
 }
 
 HTKForcedAligner::~HTKForcedAligner()
@@ -243,19 +241,8 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     hviteParameters << filenameBase + ".wav";   // wave file of utterance to align
     // Run HTK Viterbi recogniser
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-#ifdef Q_OS_WIN
-    QString htkPath = appPath + "/tools/htk/";
-    QString htkExecutable = htkPath + "hvite.exe";
-#else
-#ifdef Q_OS_MAC
-    QString htkPath = "/usr/local/bin";
-    QString htkExecutable = "/usr/local/bin/HVite";
-#else
-    QString htkPath = appPath + "/tools/htk/";
+    QString htkPath = QDir::homePath() + "/Praaline/tools/htk/";
     QString htkExecutable = htkPath + "HVite";
-#endif
-#endif
     QProcess hvite;
     hvite.setWorkingDirectory(htkPath);
     hvite.start(htkExecutable , hviteParameters);
@@ -313,6 +300,11 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
     int indexFrom = 0;
     int indexTo = tier_tokens->count() - 1;
 
+    // Create temp path, if it does not exist
+    QDir tempDir(d->pathTemp);
+    if (!tempDir.exists()) {
+        tempDir.mkpath(".");
+    }
     // Create resampled wave file in temporary directory
     QString waveResampledBase = d->pathTemp + QFileInfo(waveFile).baseName();
     if (QFile::exists(waveResampledBase + ".wav")) QFile::remove(waveResampledBase + ".wav");

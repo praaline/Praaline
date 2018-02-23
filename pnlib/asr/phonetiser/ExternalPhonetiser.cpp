@@ -4,6 +4,7 @@
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QCoreApplication>
+#include <QDir>
 
 #include "SpeechToken.h"
 #include "ExternalPhonetiser.h"
@@ -64,8 +65,7 @@ bool callPhonetiserCitationForms(QHash<QString, QString> &citationForms)
 
     // Pass to external phonetiser
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString phonPath = appPath + "/plugins/aligner/phonetiser/";
+    QString phonPath = QDir::homePath() + "/Praaline/plugins/aligner/phonetiser/";
     QProcess phonetiser;
     phonetiser.setWorkingDirectory(phonPath);
     phonetiser.start(phonPath + "lang/fra/phon250.exe" , QStringList() <<
@@ -113,8 +113,7 @@ bool callPhonetiser(QList<PUtterance> &utterances)
 
     // Pass to external phonetiser
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString phonPath = appPath + "/plugins/aligner/phonetiser/";
+    QString phonPath = QDir::homePath() + "/Praaline/plugins/aligner/phonetiser/";
     QProcess phonetiser;
     phonetiser.setWorkingDirectory(phonPath);
     phonetiser.start(phonPath + "lang/fra/phon250.exe" , QStringList() <<

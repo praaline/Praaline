@@ -27,12 +27,13 @@
 #include "DisfluencyDetector.h"
 #include "DiscourseTagger.h"
 #include "DisMoTrainer.h"
+#include "DisMoConfiguration.h"
 using namespace DisMoAnnotator;
 
 DismoTrainer::DismoTrainer(const QString modelsPath) {
     m_modelsPath = modelsPath;
     if (modelsPath.isEmpty()) {
-        m_modelsPath = QCoreApplication::applicationDirPath();
+        m_modelsPath = DisMoConfiguration::resourcesPath() + "/models";
     }
 }
 

@@ -80,7 +80,7 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
 //    addLevelAttribute("tok_min", "liaison_forbidden");
 //    addLevelAttribute("tok_min", "", "context", "");
 
-    QString configFilename = QCoreApplication::applicationDirPath() + "/timelineConfig.txt";
+    QString configFilename = QDir::homePath() + "/Praaline/timelineConfig.txt";
     QFile fileConfig(configFilename);
     if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
         QTextStream stream(&fileConfig);
@@ -209,7 +209,7 @@ void TimelineEditorConfigWidget::updateEditor()
 
 void TimelineEditorConfigWidget::saveConfiguration()
 {
-    QString configFilename = QCoreApplication::applicationDirPath() + "/timelineConfig.txt";
+    QString configFilename = QDir::homePath() + "/Praaline/timelineConfig.txt";
     QFile fileConfig(configFilename);
     if ( !fileConfig.open( QIODevice::WriteOnly | QIODevice::Text ) ) return;
     QTextStream out(&fileConfig);

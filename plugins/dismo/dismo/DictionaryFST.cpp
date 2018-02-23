@@ -22,6 +22,7 @@
 #include <QCoreApplication>
 #include "DictionaryQuery.h"
 #include "DictionaryFST.h"
+#include "DisMoConfiguration.h"
 using namespace DisMoAnnotator;
 
 DictionaryFST::DictionaryFST(const QString &filename)
@@ -59,8 +60,7 @@ void DictionaryFST::lookup(QHash<QString, QStringList> &table)
     // Pass the tokens trough the lookup function of HFST
     QProcess *lookup = new QProcess();
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    lookup->start(appPath + "/plugins/dismo/lex/hfst-lookup.exe", QStringList() <<
+    lookup->start(DisMoConfiguration::resourcesPath() + "/lex/hfst-lookup.exe", QStringList() <<
                   "-I" << filenameIn << "-o" << filenameOut << "-i" << m_filenameFST);
     if (!(lookup->waitForStarted(-1))) return;
     if (!(lookup->waitForFinished(-1))) return;

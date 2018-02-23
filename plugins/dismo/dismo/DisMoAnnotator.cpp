@@ -24,6 +24,7 @@
 #include "Tokenizer.h"
 #include "TokenList.h"
 #include "DisMoAnnotator.h"
+#include "DisMoConfiguration.h"
 using namespace DisMoAnnotator;
 
 DismoAnnotator::DismoAnnotator(const QString &language)
@@ -31,11 +32,10 @@ DismoAnnotator::DismoAnnotator(const QString &language)
 {
     // default model filenames
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    m_modelFilename_POSMin = appPath + "/plugins/dismo/models/posmin_" + language + ".model";
-    m_modelFilename_Disfluency = appPath + "/plugins/dismo/models/disfluency_" + language + ".model";
-    m_modelFilename_Discourse = appPath + "/plugins/dismo/models/discourse_" + language + ".model";
-    m_modelFilename_POSFin = appPath + "/plugins/dismo/models/posfin_" + language + ".model";
+    m_modelFilename_POSMin = DisMoConfiguration::resourcesPath() + "/models/posmin_" + language + ".model";
+    m_modelFilename_Disfluency = DisMoConfiguration::resourcesPath() + "/models/disfluency_" + language + ".model";
+    m_modelFilename_Discourse = DisMoConfiguration::resourcesPath() + "/models/discourse_" + language + ".model";
+    m_modelFilename_POSFin = DisMoConfiguration::resourcesPath() + "/models/posfin_" + language + ".model";
 }
 
 DismoAnnotator::~DismoAnnotator()

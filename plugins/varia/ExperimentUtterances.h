@@ -17,6 +17,7 @@ public:
 
     static QString loadTranscriptions(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString align(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString syllabify(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString concatenate(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString createUnitTier(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString fixTiers(QPointer<Praaline::Core::CorpusCommunication> com);

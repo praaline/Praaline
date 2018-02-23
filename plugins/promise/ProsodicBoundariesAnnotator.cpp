@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTemporaryFile>
-#include <QCoreApplication>
+#include <QDir>
 #include <QDebug>
 
 #include "pncore/annotation/AnnotationTierGroup.h"
@@ -397,17 +397,7 @@ IntervalTier *ProsodicBoundariesAnnotator::annotateWithCRF(IntervalTier *tier_sy
     // Pass to CRF decoder
     QProcess decoder;
     // DIRECTORY:
-    QString decoderCommand;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    decoderCommand = appPath + "/tools/crf/crf_test";
-#else
-#ifdef Q_OS_MAC
-    decoderCommand = "/usr/local/bin/crf_test";
-#else
-    decoderCommand = "/usr/local/bin/crf_test";
-#endif
-#endif
+    QString decoderCommand = QDir::homePath() + "/Praaline/tools/crf/crf_test";
     decoder.start(decoderCommand, QStringList() <<
                   "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
     if (!decoder.waitForStarted(-1)) return promise;

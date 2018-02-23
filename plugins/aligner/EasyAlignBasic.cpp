@@ -162,8 +162,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
 
 void EasyAlignBasic::runEasyAlign(QString filenameSound, QString filenameTextgrid)
 {
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString script = appPath + "/plugins/easyalign/align_sound.praat";
+    QString script = QDir::homePath() + "/Praaline/plugins/easyalign/align_sound.praat";
     QStringList scriptArguments;
 //    QString filenameSound = com->basePath() + "/" + com->recordings().first()->filename();
 //    QString filenameTextgrid = QString(filenameSound).replace(".wav", ".TextGrid");
@@ -227,8 +226,7 @@ QString EasyAlignBasic::postAlignment(const QString &filenameTextgrid)
 
 void EasyAlignBasic::runSyllabify(QString filenameTextgrid)
 {
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString script = appPath + "/plugins/easyalign/syllabify2.praat";
+    QString script = QDir::homePath() + "/Praaline/plugins/easyalign/syllabify2.praat";
     QStringList scriptArguments;
 //    QString filenameTextgrid = com->basePath() + "/" + com->recordings().first()->filename();
 //    filenameTextgrid = filenameTextgrid.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");

@@ -3,6 +3,7 @@
 #include <QByteArray>
 #include <QList>
 #include <QPair>
+#include <QDir>
 #include <QTemporaryFile>
 #include <QProcess>
 #include <QCoreApplication>
@@ -43,20 +44,14 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
 {
     QProcess sox;
     // DIRECTORY:
-    QString soxPath;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    soxPath = appPath + "/tools/sox/";
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
     sox.setWorkingDirectory(soxPath);
-#else
-    soxPath = "/usr/local/bin/";
-#endif
     qDebug() << soxPath + "sox --i " << filename;
     sox.start(soxPath + "sox" , QStringList() <<
               "--i" << filename);
-    if (!sox.waitForStarted(-1)) // sets current thread to sleep and waits for sox end
+    if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
         return false;
-    if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+    if (!sox.waitForFinished(-1))   // sets current thread to sleep and waits for sox end
         return false;
     QString output(sox.readAllStandardOutput());
     QString errors(sox.readAllStandardError());

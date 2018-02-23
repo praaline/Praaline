@@ -31,27 +31,13 @@ void SphinxConfiguration::setConfig(const SphinxConfiguration &config)
 // static
 QString SphinxConfiguration::sphinxPath()
 {
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    return appPath + "/plugins/aligner/sphinx/";
-#endif
-#ifdef Q_OS_MAC
-    return "/usr/local/bin/";
-#else
-    return "/usr/local/bin/";
-#endif
+    return QDir::homePath() + "/Praaline/plugins/aligner/sphinx/";
 }
 
 // static
 QString SphinxConfiguration::defaultModelsPath()
 {
-    QString appPath = QCoreApplication::applicationDirPath();
-#ifdef Q_OS_MAC
-    QDir dir(appPath);
-    dir.cdUp(); dir.cdUp(); dir.cdUp();
-    appPath = dir.absolutePath() + "/";
-#endif
-    return appPath + "/plugins/aligner/sphinx/";
+    return QDir::homePath() + "/Praaline/plugins/aligner/sphinx/";
 }
 
 } // namespace ASR

@@ -276,7 +276,7 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
 
     SyllableProminenceAnnotator *promise = new SyllableProminenceAnnotator();
-    promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
+    promise->setModelsPath(QDir::homePath() + "/Praaline/plugins/promise/");
     promise->setModelFilenameWithoutPOS(d->modelProminence_NoPOS);
     promise->setModelFilenameWithPOS(d->modelProminence_POS);
     promise->setAttributeProminenceTrain("prom");
@@ -385,7 +385,7 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
 
     ProsodicBoundariesAnnotator *promise = new ProsodicBoundariesAnnotator();
-    promise->setModelsPath(QCoreApplication::applicationDirPath() + "/plugins/promise/");
+    promise->setModelsPath(QDir::homePath() + "/Praaline/plugins/promise/");
     promise->setModelFilenameBoundary(d->modelBoundary);
     promise->setModelFilenameBoundaryCountours(d->modelBoundaryContours);
     promise->setAttributeBoundaryTrain(d->attributeBoundaries);

@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QApplication>
+#include <QDir>
 #include "pncore/corpus/CorpusBookmark.h"
 
 #include "disfluencypatterndetector.h"
@@ -32,7 +33,7 @@ DisfluencyPatternDetector::DisfluencyPatternDetector() :
     d(new DisfluencyPatternDetectorData)
 {
     // Read file of discourse markers to skip in the pattern detection
-    QString filenameSkip = QApplication::applicationDirPath() + "/plugins/dismo/dis/discoursemarkerstoskip.txt";
+    QString filenameSkip = QDir::homePath() + "/Praaline/plugins/dismo/dis/discoursemarkerstoskip.txt";
     QFile file(filenameSkip);
     if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) {
         qDebug() << "Error: could not read file " << filenameSkip;

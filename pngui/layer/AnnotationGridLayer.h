@@ -5,6 +5,7 @@
 #include "svgui/layer/SingleColourLayer.h"
 
 #include <QObject>
+#include <QPointer>
 #include <QColor>
 #include <QLineEdit>
 
@@ -108,7 +109,7 @@ protected:
 
     // Text editing
     bool m_textEditing;
-    QLineEdit *m_textEditor;
+    QPointer<QLineEdit> m_textEditor;
     AnnotationGridPointModel::Point m_textEditorPoint;
     int m_textEditorTierIndex;
     QString m_textEditorSpeakerID, m_textEditorLevelID, m_textEditorAttributeID;

@@ -26,8 +26,7 @@ bool OpenSmileVAD::runVAD(const QString &filenameInputWave, QList<QPair<double, 
     // Check if wave file exists
     if (!QFile::exists(filenameInputWave)) return false;
     // Call OpenSMILE
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString openSmilePath = appPath + "/tools/opensmile/";
+    QString openSmilePath = QDir::homePath() + "/Praaline/tools/opensmile/";
     QProcess openSmile;
     openSmile.setWorkingDirectory(openSmilePath);
     QStringList openSmileParams;

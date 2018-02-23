@@ -121,7 +121,7 @@ bool SphinxLongSoundAligner::stepFirstPassRecogniser()
 bool SphinxLongSoundAligner::stepDiffTranscriptionWithRecogniser()
 {
     if (!d->annotation) return false;
-    QString path = "/home/george/test_lsa/";
+    QString path = QDir::homePath() + "/Praaline/test_lsa/";
     d->tokens_recognised = SphinxSegmentation::readContinuousFile(path + "output.txt");
 
     d->tokens_transcription = d->annotation->repository()->annotations()->getIntervals(

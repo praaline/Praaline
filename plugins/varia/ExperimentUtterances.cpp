@@ -118,6 +118,24 @@ QString ExperimentUtterances::align(QPointer<Praaline::Core::CorpusCommunication
     return ret;
 }
 
+QString ExperimentUtterances::syllabify(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    QPointer<CorpusRecording> rec = com->recordings().first();
+    if (!rec) return "Error";
+    QString annotationID = rec->ID();
+    QString speakerID = com->property("SubjectID").toString();
+
+    IntervalTier *tier_phone = qobject_cast<IntervalTier *>
+            (com->repository()->annotations()->getTier(annotationID, speakerID, "phone"));
+    if (!tier_phone) return "No tier phone";
+    IntervalTier *tier_syll = SyllabifierEasy::syllabify(tier_phone);
+    tier_syll->setName("syll");
+    com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
+    return ret;
+}
+
 QString ExperimentUtterances::fixTiers(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
@@ -210,6 +228,7 @@ QString ExperimentUtterances::concatenate(QPointer<Praaline::Core::CorpusCommuni
                 foreach (QString levelID, tierNames) {
                     IntervalTier *tier = qobject_cast<IntervalTier *>
                             (corpus->repository()->annotations()->getTier(annotationID, groupID, levelID));
+                    if (!tier) continue;
                     tier->timeShift(offset);
                     intervals_annot[levelID] << tier->intervals();
                     // if (maxDuration < tier->duration()) maxDuration = tier->duration();
@@ -239,7 +258,8 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
     QString ret;
     // Import sequence trigrams
     QHash<QString, QStringList> trigrams;
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production";
+    QString path = "/mnt/hgfs/Dropbox/MIS_Phradico/Experiences/03_Production-prosodie-relations-de-discours/Production";
+
     QString line;
     QFile file(path + "/sequences_trigrams.txt");
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return "Error reading trigrams file";
@@ -262,6 +282,9 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
         if (!rec) continue;
         QString annotationID = rec->ID();
         QString speakerID = com->property("SubjectID").toString();
+
+        if (speakerID != "S0") continue;
+
         IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
                 (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
         if (!tier_tokens) return "No tier tokens";

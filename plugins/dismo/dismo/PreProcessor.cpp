@@ -27,16 +27,19 @@
 #include "DictionaryFST.h"
 #include "DictionarySQL.h"
 #include "PreProcessor.h"
+#include "DisMoConfiguration.h"
 using namespace DisMoAnnotator;
 
 Preprocessor::Preprocessor(const QString &language, TokenList &tokens)
     : m_language(language), m_useSQLDictionary(true), m_tokens(tokens)
 {
     // DIRECTORY:
-    QString appPath = QCoreApplication::applicationDirPath();
-    m_filenameDictionary = appPath + "/plugins/dismo/lex/dismodic_" + language;
-    if (m_useSQLDictionary) m_filenameDictionary.append(".db"); else m_filenameDictionary.append(".fst");
-    m_filenameMWUDictionary = appPath + "/plugins/dismo/lex/mwudic_" + language + ".txt";
+    m_filenameDictionary = DisMoConfiguration::filePathDictionary(m_language);
+    if (m_useSQLDictionary)
+        m_filenameDictionary.append(".db");
+    else
+        m_filenameDictionary.append(".fst");
+    m_filenameMWUDictionary = DisMoConfiguration::filePathMWUDictionary(m_language);
     loadDictionaries();
 }
 

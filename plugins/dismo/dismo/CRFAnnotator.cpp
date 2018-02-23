@@ -23,6 +23,7 @@
 #include "Token.h"
 #include "TokenList.h"
 #include "CRFAnnotator.h"
+#include "DisMoConfiguration.h"
 using namespace DisMoAnnotator;
 
 // Public
@@ -73,18 +74,7 @@ void CRFAnnotator::tagFromCRF(const QString &filenameModel, bool isTokenUnitLeve
     // Pass to CRF decoder
     QProcess *decoder = new QProcess();
     // DIRECTORY:
-    QString decoderCommand;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    decoderCommand = appPath + "/tools/crf/crf_test";
-#else
-#ifdef Q_OS_MAC
-    decoderCommand = "/usr/local/bin/crf_test";
-#else
-    decoderCommand = "/usr/local/bin/crf_test";
-#endif
-#endif
-    decoder->start(decoderCommand, QStringList() <<
+    decoder->start(DisMoConfiguration::filePathCRFTest(), QStringList() <<
                    "-m" << filenameModel << "-v" << "2" << "-o" << filenameOut << filenameIn);
     if (!(decoder->waitForStarted(-1))) return;
     if (!(decoder->waitForFinished(-1))) return;

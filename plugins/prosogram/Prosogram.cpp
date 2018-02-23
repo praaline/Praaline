@@ -215,9 +215,8 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
     QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
 
-    // Execute prosogram5
-    QString appPath = QCoreApplication::applicationDirPath();
-    QString script = appPath + "/plugins/prosogram/praaline_prosogram.praat";
+    // Execute ProsoGram
+    QString script = QDir::homePath() + "/Praaline/plugins/prosogram/praaline_prosogram.praat";
     QStringList scriptArguments;
 
     // Create prosogram directory if it does not exist in the folder

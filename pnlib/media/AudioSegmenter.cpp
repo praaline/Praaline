@@ -2,7 +2,7 @@
 #include <QString>
 #include <QStringList>
 #include <QProcess>
-#include <QCoreApplication>
+#include <QDir>
 
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
@@ -56,14 +56,8 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
 {
     QProcess sox;
     // DIRECTORY:
-    QString soxPath;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    soxPath = appPath + "/tools/sox/";
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
     sox.setWorkingDirectory(soxPath);
-#else
-    soxPath = "/usr/bin/";
-#endif
     QString path = pathOut;
     if (path.endsWith("/")) path.chop(1);
     QList<QStringList> scriptArguments = script(filenameIn, pathOut, segments, attribute, newSamplingRate, normalise, channels);
@@ -79,14 +73,8 @@ bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &f
 {
     QProcess sox;
     // DIRECTORY:
-    QString soxPath;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    soxPath = appPath + "/tools/sox/";
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
     sox.setWorkingDirectory(soxPath);
-#else
-    soxPath = "/usr/local/bin/";
-#endif
     int i = 1;
     QMap<RealTime, Interval *> mapRemoveSorted;
     foreach (Interval *intv, intervalsToRemove)
@@ -127,14 +115,8 @@ bool AudioSegmenter::resample(const QString &filenameIn, const QString &filename
 {
     QProcess sox;
     // DIRECTORY:
-    QString soxPath;
-#ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    soxPath = appPath + "/tools/sox/";
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
     sox.setWorkingDirectory(soxPath);
-#else
-    soxPath = "/usr/local/bin/";
-#endif
     QStringList arguments;
     arguments << filenameIn;
     if (normalise) {

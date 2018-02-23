@@ -422,30 +422,30 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         if (com->property("SubjectID").toString() != "S0") continue;
 //        m = ExperimentUtterances::loadTranscriptions(com);
 //        PhonetiserExternal p;
-//        p.readCitationFormDictionary("/Users/george/citation_forms.txt");
+//        p.readCitationFormDictionary("/home/george/citation_forms.txt");
 //        m = p.importFromPhonetiser(com, true);
-//        m = m.append(p.correctPhonemeChains(com));
+//         m = m.append(p.correctPhonemeChains(com));
 //        m.chop(1);
 //        m = m.append("\tAlign:\t");
-//        m = m.append(ExperimentUtterances::align(com)).append("\n");
+//         m = m.append(ExperimentUtterances::align(com)).append("\n");
 //        ProsodicUnits p;
 //        p.createProsodicUnits(com);
 //        m = p.transcriptionInProsodicUnits(com);
-//        m = ExperimentUtterances::fixTiers(com);
-//        m = ExperimentUtterances::fixTranscription(com);
+        // m = ExperimentUtterances::fixTiers(com);
+        // m = m + ExperimentUtterances::fixTranscription(com);
+        // m = m + ExperimentUtterances::syllabify(com);
 
-//        m = ExperimentUtterances::concatenate(com);
 //        m = ExperimentUtterances::averageProsody(com);
 //        m = ExperimentUtterances::fixTranscription(com);
 //        m = ExperimentUtterances::resyllabifyMDs(com);
 //        m = AggregateProsody::markTargetSyllables(com);
         if (!m.isEmpty()) printMessage(m);
     }
-    // ExperimentUtterances::concatenate(communications.first());
+    m = ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
     // m = AggregateProsody::averageContours(communications.first());
-    // m = ExperimentUtterances::createUnitTier(communications.first());
-    // printMessage(m);
+//    m = ExperimentUtterances::createUnitTier(communications.first());
+    printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

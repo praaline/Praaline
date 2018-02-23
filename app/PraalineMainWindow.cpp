@@ -93,6 +93,15 @@ void PraalineMainWindow::initialise()
     icon.addFile(QString::fromUtf8(":/icons/praaline.svg"), QSize(), QIcon::Normal, QIcon::Off);
     m_mainWindow->setWindowIcon(icon);
 
+    // Ensure that there is a Praaline directory in the home path, create it if necessary
+    QDir dirPraalineHome(QDir::homePath() + "/Praaline");
+    if (!dirPraalineHome.exists()) {
+        dirPraalineHome.mkpath(".");
+        dirPraalineHome.mkpath("./plugins");
+        dirPraalineHome.mkpath("./tools");
+        dirPraalineHome.mkpath("./templates");
+    }
+
     // Create the configuration widget
     d->configurationWidget->setCategorizedTabDisplay(true);
     QtilitiesApplication::setConfigWidget(d->configurationWidget);

@@ -25,9 +25,10 @@ AnnotationGridLayer::AnnotationGridLayer() :
     m_boundaryEditingPoint(AnnotationGridPointModel::Point(0)),
     m_boundaryEditingCommand(0),
     m_textEditing(false),
-    m_textEditor(new QLineEdit()),
+    m_textEditor(0),
     m_textEditorPoint(AnnotationGridPointModel::Point(0))
 {
+    m_textEditor = new QLineEdit();
     m_textEditor->setVisible(false);
     m_textEditor->setFrame(false);
     m_textEditor->setAlignment(Qt::AlignHCenter);
@@ -37,6 +38,7 @@ AnnotationGridLayer::AnnotationGridLayer() :
 AnnotationGridLayer::~AnnotationGridLayer()
 {
     textEditingFinished();
+    if (m_textEditor) delete m_textEditor;
 }
 
 bool AnnotationGridLayer::trySetModel(Model *model)

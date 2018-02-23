@@ -98,7 +98,8 @@ HEADERS += \
     serialisers/DisMoSerialiserSQL.h \
     serialisers/DisMoSerialiserTiers.h \
     PluginDisMo.h \
-    PluginDisMo_global.h
+    PluginDisMo_global.h \
+    dismo/DisMoConfiguration.h
 
 SOURCES += \
     plugindismo.cpp \
@@ -130,4 +131,5 @@ SOURCES += \
     dismo/TokenList.cpp \
     dismo/TokenUnit.cpp \
     serialisers/DisMoSerialiserSQL.cpp \
-    serialisers/DisMoSerialiserTiers.cpp
+    serialisers/DisMoSerialiserTiers.cpp \
+    dismo/DisMoConfiguration.cpp

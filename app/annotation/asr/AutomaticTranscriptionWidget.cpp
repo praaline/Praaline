@@ -71,7 +71,7 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
     connect(ui->commandSpeakerAdaptation, SIGNAL(clicked(bool)), this, SLOT(stepSpeakerAdaptation()));
 
     // Sphinx configuration
-    QString sphinxPath = QCoreApplication::applicationDirPath() + "/plugins/aligner/sphinx/";
+    QString sphinxPath = QDir::homePath() + "/Praaline/plugins/aligner/sphinx/";
     d->config.setDirectoryAcousticModel(sphinxPath + "model/hmm/french_f0");
     d->config.setFilenamePronunciationDictionary(sphinxPath + "model/lm/french_f0/frenchWords62K.dic");
     d->config.setFilenameLanguageModel(sphinxPath + "model/lm/french_f0/french3g62K.lm.bin");

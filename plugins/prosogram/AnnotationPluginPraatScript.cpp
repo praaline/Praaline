@@ -33,7 +33,7 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
 #else
 #ifdef Q_OS_MAC
     praatCommand = "/Applications/Praat.app/Contents/MacOS/Praat";
-#else Q_OS_WIN
+#else
     praatCommand = "/usr/bin/praat";
 #endif
 #endif
