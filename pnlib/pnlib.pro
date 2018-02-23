@@ -1,9 +1,10 @@
 TEMPLATE = subdirs
 CONFIG += ordered
 
-SUBDIRS +=  asr \
+SUBDIRS +=  media \
+            asr \
             crf \
             diff \
-            featextract \
-            media
+            featextract
+
 
