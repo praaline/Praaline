@@ -26,6 +26,12 @@ PhonetisationTableModel::PhonetisationTableModel(QMap<QString, QPointer<Praaline
                                                  QObject *parent) :
     QAbstractTableModel(parent), d(new PhonetisationTableModelData)
 {
+    d->tiers = tiers;
+    d->tiernameTokens = tiernameTokens;
+    d->attributeOrthographic = attributeOrthographic;
+    d->attributePhonetisation = attributePhonetisation;
+    // No utterance selected yet
+    d->indexStart = d->indexEnd = -1;
 }
 
 PhonetisationTableModel::~PhonetisationTableModel()
@@ -130,4 +136,20 @@ Qt::ItemFlags PhonetisationTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::ItemIsEnabled;
     return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+}
+
+bool PhonetisationTableModel::setUtterance(const QString &speakerID, int indexStart, int indexEnd)
+{
+    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(speakerID, 0);
+    if (!spk_tiers) return false;
+    IntervalTier *tier_tokens = spk_tiers->getIntervalTierByName(d->tiernameTokens);
+    if (!tier_tokens) return false;
+    if ((indexStart < 0) || (indexStart >= tier_tokens->count())) return false;
+    if ((indexEnd < 0) || (indexEnd >= tier_tokens->count())) return false;
+    emit beginResetModel();
+    d->speakerID = speakerID;
+    d->indexStart = indexStart;
+    d->indexEnd = indexEnd;
+    emit endResetModel();
+    return true;
 }

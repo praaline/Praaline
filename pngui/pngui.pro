@@ -227,7 +227,8 @@ HEADERS += \
     model/visualiser/RegionAverageModel.h \
     widgets/StatusMessagesWidget.h \
     pngui/PraalineUserInterfaceOptions.h.h \
-    model/annotation/PhonetisationTableModel.h
+    model/annotation/PhonetisationTableModel.h \
+    model/annotation/TranscriptionTableModel.h
 
 SOURCES += \
     model/visualiser/AnnotationGridModel.cpp \
@@ -379,7 +380,8 @@ SOURCES += \
     layer/RegionAverageLayer.cpp \
     model/visualiser/RegionAverageModel.cpp \
     widgets/StatusMessagesWidget.cpp \
-    model/annotation/PhonetisationTableModel.cpp
+    model/annotation/PhonetisationTableModel.cpp \
+    model/annotation/TranscriptionTableModel.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc
