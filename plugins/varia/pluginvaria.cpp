@@ -441,11 +441,11 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = AggregateProsody::markTargetSyllables(com);
         if (!m.isEmpty()) printMessage(m);
     }
-    m = ExperimentUtterances::concatenate(communications.first());
+    // m = ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
-    // m = AggregateProsody::averageContours(communications.first());
-//    m = ExperimentUtterances::createUnitTier(communications.first());
-    printMessage(m);
+    m = AggregateProsody::averageContours(communications.first());
+    // m = ExperimentUtterances::createUnitTier(communications.first());
+    // printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);
