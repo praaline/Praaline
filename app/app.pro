@@ -112,7 +112,7 @@ PRE_TARGETDEPS += \
         ../pnlib/crf/$${COMPONENTSPATH}/libpraaline-crf.a \
         ../pnlib/diff/$${COMPONENTSPATH}/libpraaline-diff.a \
         ../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a \
-        ../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a \
+        ../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
         ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 SOURCES += main.cpp \

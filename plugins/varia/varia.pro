@@ -47,7 +47,7 @@ LIBS +=  \
 PRE_TARGETDEPS += \
         ../../svcore/$${COMPONENTSPATH}/libsvcore.a \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
-        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-mediautil.a \
+        ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
