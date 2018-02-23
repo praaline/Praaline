@@ -218,7 +218,8 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     outPerStim << "L1_prom\tT1_prom\tT2_prom\tR1_prom\tL1_boundary\tT1_boundary\tT2_boundary\tR1_boundary\t";
     outPerStim << "L3_tone\tL3_tonemvt\tL2_tone\tL2_tonemvt\tL1_tone\tL1_tonemvt\t";
     outPerStim << "T1_tone\tT1_tonemvt\tT2_tone\tT2_tonemvt\t";
-    outPerStim << "R1_tone\tR1_tonemvt\tR2_tone\tR2_tonemvt\tR3_tone\tR3_tonemvt\n";
+    outPerStim << "R1_tone\tR1_tonemvt\tR2_tone\tR2_tonemvt\tR3_tone\tR3_tonemvt\t";
+    outPerStim << "SpeechRateS1\tSpeechRateS2\tPauseBeforeMD\tPauseAfterMD\n";
 
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
@@ -374,6 +375,7 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         // L3_durRel30  L2_durRel30  L1_durRel30  T1_durRel30  T2_durRel30  R1_durRel30  R2_durRel30  R3_durRel30
         // L1_prom  T1_prom  T2_prom  R1_prom  L1_boundary  T1_boundary  T2_boundary  R1_boundary
         // L3_tone  L3_tonemvt  ...  R3_tone  R3_tonemvt
+        // SpeechRateS1  SpeechRateS2  PauseBeforeMD  PauseAfterMD
 
         // Stylised?
         bool T1stylised = (T1) ? (T1->attribute("nucl_t1").toDouble() > 0.0) : false;
@@ -426,7 +428,10 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
         if (R2) outPerStim << R2->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
         if (R2) outPerStim << R2->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
         if (R3) outPerStim << R3->attribute("tonal_label").toString() << "\t"; else outPerStim << "NA\t";
-        if (R3) outPerStim << R3->attribute("tonal_movement").toString() << "\n"; else outPerStim << "NA\n";
+        if (R3) outPerStim << R3->attribute("tonal_movement").toString() << "\t"; else outPerStim << "NA\t";
+        // speech rate - pauses
+        outPerStim << speechRateS1 << "\t" << speechRateS2 << "\t";
+        outPerStim << pauseBeforeMD << "\t" << pauseAfterMD << "\n";
 
         // Update Communication with prosodic measures
         com->setProperty("speechRateS1", speechRateS1);
