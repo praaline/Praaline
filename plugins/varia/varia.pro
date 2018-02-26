@@ -82,7 +82,10 @@ HEADERS += \
     SilentPauseManipulator.h \
     ExperimentUtterances.h \
     ProsodicUnits.h \
-    AggregateProsody.h
+    AggregateProsody.h \
+    LanguageDefinition.h \
+    PFCAlignment.h \
+    Rhapsodie.h
 
 
 SOURCES += \ 
@@ -116,4 +119,7 @@ SOURCES += \
     SilentPauseManipulator.cpp \
     ExperimentUtterances.cpp \
     ProsodicUnits.cpp \
-    AggregateProsody.cpp
+    AggregateProsody.cpp \
+    LanguageDefinition.cpp \
+    PFCAlignment.cpp \
+    Rhapsodie.cpp

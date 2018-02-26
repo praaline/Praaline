@@ -492,7 +492,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
         if (d->command.contains("tokenise")) ValibelProcessor::tokenise(communications);
         if (d->command.contains("pauses")) ValibelProcessor::pauses(communications);
     }
-    else if (d->corpusType == "pfc5") {
+    else if (d->corpusType == "pfc") {
         if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(communications);
         if (d->command.contains("checkSpeakers")) checkSpeakers(communications);
         if (d->command.contains("separateSpeakers")) separateSpeakers(communications);

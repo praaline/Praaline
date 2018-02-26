@@ -36,6 +36,7 @@
 #include "CPROMDISS.h"
 #include "SilentPauseManipulator.h"
 #include "ExperimentUtterances.h"
+#include "Rhapsodie.h"
 
 #include "pluginvaria.h"
 
@@ -419,7 +420,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        if (com->property("SubjectID").toString() != "S0") continue;
+//        if (com->property("SubjectID").toString() != "S0") continue;
 //        m = ExperimentUtterances::loadTranscriptions(com);
 //        PhonetiserExternal p;
 //        p.readCitationFormDictionary("/home/george/citation_forms.txt");
@@ -439,11 +440,13 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = ExperimentUtterances::fixTranscription(com);
 //        m = ExperimentUtterances::resyllabifyMDs(com);
 //        m = AggregateProsody::markTargetSyllables(com);
+        m = Rhapsodie::updateSyllables(com);
+
         if (!m.isEmpty()) printMessage(m);
     }
     // m = ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
-    m = AggregateProsody::averageContours(communications.first());
+    // m = AggregateProsody::averageContours(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());
     // printMessage(m);
 
