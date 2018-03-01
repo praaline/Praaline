@@ -18,6 +18,7 @@ public:
 
     static QString updateSyllables(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString loadPitch(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString readProsodicConstituencyTree(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // RHAPSODIE_H

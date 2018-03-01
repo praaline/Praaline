@@ -1,6 +1,8 @@
 #include <QSharedPointer>
 #include <QString>
 #include <QMap>
+#include <QFile>
+#include <QDomDocument>
 #include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
@@ -129,6 +131,39 @@ QString Rhapsodie::loadPitch(QPointer<CorpusCommunication> com)
         pitch_tier->addPoints(points);
         com->repository()->annotations()->saveTier(annotationID, "pitch", pitch_tier);
         ret.append(annotationID).append(" Pitch imported");
+    }
+    return ret;
+}
+
+QString Rhapsodie::readProsodicConstituencyTree(QPointer<CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    if (!com->corpus()) return "Error";
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        // Open XML file
+        QString path = QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_files/Rhap-proso-all-xml/";
+        QFile file(path + annotationID + "-Pro.xml");
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            ret.append(annotationID).append("\tCannot open XML file :").append(file.errorString());
+            continue;
+        }
+        QDomDocument domDocument;
+        QString errorStr;
+        int errorLine, errorColumn;
+        if (!domDocument.setContent(&file, true, &errorStr, &errorLine, &errorColumn)) {
+            ret.append(annotationID).append(QString("\tError parsing XML at %1, %2 : %3").arg(errorLine).arg(errorColumn).arg(errorStr));
+            continue;
+        }
+        // Move data from XML to annotation tiers
+        QDomElement cursor = domDocument.documentElement();
+
+        ret = ret.append(annotationID).append("\tOK");
+        qDeleteAll(tiersAll);
     }
     return ret;
 }
