@@ -3,6 +3,7 @@
 #include <QPair>
 #include <QMap>
 #include <QPointer>
+#include <QSharedPointer>
 #include <QTextStream>
 #include <QFileInfo>
 #include <QDir>
@@ -105,8 +106,8 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     QMap<RealTime, double> pitchStylised;
     if (!PraatPointTierFile::load(filenameStylPitchTier, pitchStylised))
         return false;
-    QPointer<AnnotationTierGroup> tiers_nuclei = new AnnotationTierGroup();
-    if (!PraatTextGrid::load(filenameNuclei, tiers_nuclei))
+    QSharedPointer<AnnotationTierGroup> tiers_nuclei(new AnnotationTierGroup());
+    if (!PraatTextGrid::load(filenameNuclei, tiers_nuclei.data()))
         return false;
     // Tonal segments
     IntervalTier *tier_pointer = tiers_nuclei->getIntervalTierByName("pointer");
@@ -132,8 +133,8 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
     }
     // Syllables
     // IntervalTier *tier_syll = tiers_nuclei->getIntervalTierByName("syll");
-    IntervalTier *tier_syll = qobject_cast<IntervalTier *>
-            (corpus->repository()->annotations()->getTier(annotationID, speakerID, "syll", QStringList() << "tonal_annotation"));
+    QSharedPointer<IntervalTier> tier_syll(qobject_cast<IntervalTier *>
+                                           (corpus->repository()->annotations()->getTier(annotationID, speakerID, "syll", QStringList() << "tonal_annotation")));
     if (tier_syll) {
         for (int i = 0; i < tier_syll->count(); ++i) {
             Interval *intv = tier_syll->interval(i);
@@ -158,9 +159,25 @@ bool ProsogramModel::readProsogramFiles(sv_samplerate_t sampleRate, const QStrin
         for(QMap<RealTime, double>::iterator i = pitch.begin(); i != pitch.end(); ++i)
             // Converting Hz to semitones (rel to 1 Hz)
             d->pitch->addPoint(TimeValuePoint(RealTime::realTime2Frame(i.key(), sampleRate),
-                                              12.0 * log2(i.value()), ""));
+                                              12.0 * log2(i.value()), QString()));
+        d->pitch->setResolution(RealTime::realTime2Frame(RealTime::fromSeconds(0.02), sampleRate));
     }
-    d->pitch->setResolution(RealTime::realTime2Frame(RealTime::fromSeconds(0.02), sampleRate));
+    else {
+        QSharedPointer<PointTier> tier_pitch(qobject_cast<PointTier *>
+                                             (corpus->repository()->annotations()->getTier(annotationID, "pitch", "pitch_smooth")));
+        if (tier_pitch) {
+            for (int i = 0; i < tier_pitch->count(); ++i) {
+                Point *p = tier_pitch->point(i);
+                double f_Hz = p->attribute("frequency").toDouble();
+                if (f_Hz > 0.0) {
+                    d->pitch->addPoint(TimeValuePoint(RealTime::realTime2Frame(p->time(), sampleRate),
+                                                      12.0 * log2(f_Hz), QString()));
+                }
+            }
+            d->pitch->setResolution(RealTime::realTime2Frame(RealTime::fromSeconds(0.01), sampleRate));
+        }
+    }
+
     // Intensity
     QMap<RealTime, double> intensity;
     if (PraatPointTierFile::load(filenameIntensityTier, intensity)) {
