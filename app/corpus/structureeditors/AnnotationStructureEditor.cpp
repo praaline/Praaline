@@ -269,8 +269,8 @@ void AnnotationStructureEditor::removeAnnotationStructureItem()
         if (QMessageBox::warning(this, "Remove annotation level?",
                                  QString("Do you want to delete all the annotations stored on Level '%1'? This action cannot be reversed!")
                                  .arg(level->name()), "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        repository->annotations()->deleteAnnotationLevel(level->ID());
-        repository->annotationStructure()->removeLevelByID(level->ID());
+        if (repository->annotations()->deleteAnnotationLevel(level->ID()))
+            repository->annotationStructure()->removeLevelByID(level->ID());
         refreshAnnotationStructureTreeView(repository->annotationStructure());
     }
     else {
@@ -279,8 +279,8 @@ void AnnotationStructureEditor::removeAnnotationStructureItem()
         if (QMessageBox::warning(this, "Remove annotation attribute?",
                                  QString("Do you want to delete all the annotations stored for Attribute '%1'? This action cannot be reversed!")
                                  .arg(attr->name()), "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
-        repository->annotations()->deleteAnnotationAttribute(level->ID(), attr->ID());
-        level->removeAttributeByID(attr->ID());
+        if (repository->annotations()->deleteAnnotationAttribute(level->ID(), attr->ID()))
+            level->removeAttributeByID(attr->ID());
         refreshAnnotationStructureTreeView(repository->annotationStructure());
     }
 }

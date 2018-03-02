@@ -78,14 +78,14 @@ HEADERS += \
     ForcedAlignerDummy.h \
     SequencerProsodicUnits.h \
     SequencerCombineUnits.h \
-    CPROMDISS.h \
     SilentPauseManipulator.h \
     ExperimentUtterances.h \
     ProsodicUnits.h \
     AggregateProsody.h \
     LanguageDefinition.h \
-    PFCAlignment.h \
-    Rhapsodie.h
+    coprus-specific/CPROMDISS.h \
+    coprus-specific/PFCAlignment.h \
+    coprus-specific/Rhapsodie.h
 
 
 SOURCES += \ 
@@ -115,11 +115,11 @@ SOURCES += \
     ForcedAlignerDummy.cpp \
     SequencerProsodicUnits.cpp \
     SequencerCombineUnits.cpp \
-    CPROMDISS.cpp \
     SilentPauseManipulator.cpp \
     ExperimentUtterances.cpp \
     ProsodicUnits.cpp \
     AggregateProsody.cpp \
     LanguageDefinition.cpp \
-    PFCAlignment.cpp \
-    Rhapsodie.cpp
+    corpus-specific/CPROMDISS.cpp \
+    corpus-specific/PFCAlignment.cpp \
+    corpus-specific/Rhapsodie.cpp

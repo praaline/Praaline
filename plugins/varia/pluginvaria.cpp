@@ -441,7 +441,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = ExperimentUtterances::resyllabifyMDs(com);
 //        m = AggregateProsody::markTargetSyllables(com);
 //        m = Rhapsodie::updateSyllables(com);
-        m = Rhapsodie::loadPitch(com);
+//        m = Rhapsodie::loadPitch(com);
+//        m = Rhapsodie::readProsodicConstituencyTree(com);
+        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
 
         if (!m.isEmpty()) printMessage(m);
     }
