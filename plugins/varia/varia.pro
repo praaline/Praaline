@@ -85,7 +85,8 @@ HEADERS += \
     LanguageDefinition.h \
     corpus-specific/CPROMDISS.h \
     corpus-specific/PFCAlignment.h \
-    corpus-specific/Rhapsodie.h
+    corpus-specific/Rhapsodie.h \
+    corpus-specific/LOCASF.h
 
 
 SOURCES += \ 
@@ -122,4 +123,5 @@ SOURCES += \
     LanguageDefinition.cpp \
     corpus-specific/CPROMDISS.cpp \
     corpus-specific/PFCAlignment.cpp \
-    corpus-specific/Rhapsodie.cpp
+    corpus-specific/Rhapsodie.cpp \
+    corpus-specific/LOCASF.cpp

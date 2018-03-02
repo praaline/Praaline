@@ -33,10 +33,15 @@
 #include "SequencerProsodicUnits.h"
 #include "SequencerCombineUnits.h"
 #include "BratAnnotationExporter.h"
-#include "CPROMDISS.h"
+#include "PhonetiserExternal.h"
+#include "BratSyntaxAndDisfluencies.h"
+#include "ProsodicUnits.h"
+#include "AggregateProsody.h"
 #include "SilentPauseManipulator.h"
 #include "ExperimentUtterances.h"
-#include "Rhapsodie.h"
+#include "corpus-specific/CPROMDISS.h"
+#include "corpus-specific/Rhapsodie.h"
+#include "corpus-specific/PFCAlignment.h"
 
 #include "pluginvaria.h"
 
@@ -404,10 +409,7 @@ void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
 }
 
 
-#include "PhonetiserExternal.h"
-#include "BratSyntaxAndDisfluencies.h"
-#include "ProsodicUnits.h"
-#include "AggregateProsody.h"
+
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {

@@ -3,6 +3,7 @@
 #include <QString>
 #include <QMap>
 #include <QFile>
+#include <QTextStream>
 #include <QDomDocument>
 #include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/AnnotationDatastore.h"
@@ -107,8 +108,6 @@ QString Rhapsodie::loadPitch(QPointer<CorpusCommunication> com)
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
@@ -254,4 +253,43 @@ QString Rhapsodie::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
     return ret;
 }
 
+QString Rhapsodie::importMicrosyntaxCONLL(QPointer<CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    if (!com->corpus()) return "Error";
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        // Load pitch file
+        QString path = QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_files/Microsyntaxe_conll/";
+        QFile file(path + QString(annotationID).replace("-", ".") + ".micro.conll");
+
+
+
+        // com->repository()->annotations()->saveTier(annotationID, "pitch", pitch_tier);
+        // ret.append(annotationID).append(" Pitch imported");
+    }
+    return ret;
+}
+
+QString Rhapsodie::importMicrosyntaxTabular(QPointer<CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    if (!com->corpus()) return "Error";
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        // Load pitch file
+        QString path = QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_files/Microsyntaxe_conll/";
+        QFile file(path + QString(annotationID).replace("-", ".") + ".micro.conll");
+
+
+
+        // com->repository()->annotations()->saveTier(annotationID, "pitch", pitch_tier);
+        // ret.append(annotationID).append(" Pitch imported");
+    }
+    return ret;
+}
 

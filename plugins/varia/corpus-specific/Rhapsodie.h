@@ -20,6 +20,9 @@ public:
     static QString loadPitch(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString readProsodicConstituencyTree(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString noteProsodicBoundaryOnSyll(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString importMicrosyntaxCONLL(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString importMicrosyntaxTabular(QPointer<Praaline::Core::CorpusCommunication> com);
+
 };
 
 #endif // RHAPSODIE_H
