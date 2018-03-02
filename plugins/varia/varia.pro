@@ -83,9 +83,9 @@ HEADERS += \
     ProsodicUnits.h \
     AggregateProsody.h \
     LanguageDefinition.h \
-    coprus-specific/CPROMDISS.h \
-    coprus-specific/PFCAlignment.h \
-    coprus-specific/Rhapsodie.h
+    corpus-specific/CPROMDISS.h \
+    corpus-specific/PFCAlignment.h \
+    corpus-specific/Rhapsodie.h
 
 
 SOURCES += \ 
