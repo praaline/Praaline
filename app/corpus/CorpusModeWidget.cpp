@@ -8,8 +8,8 @@ using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
 
 // Contained widgets
-#include "CorpusExplorerWidget.h"
-#include "CorpusExplorerTableWidget.h"
+#include "corpusexplorer/CorpusExplorerWidget.h"
+#include "corpusexplorer/CorpusExplorerTableWidget.h"
 #include "structureeditors/MetadataStructureEditor.h"
 #include "structureeditors/AnnotationStructureEditor.h"
 
@@ -241,7 +241,9 @@ void CorpusModeWidget::newCorpusRepository()
     if (!repository) return;
     d->corpusRepositoriesManager->addCorpusRepository(repository);
     d->corpusRepositoriesManager->setActiveCorpusRepository(repository->ID());
+    // Update recent files
     d->recentFiles->addFile(repository->definition().filenameDefinition);
+    setupRecentFilesMenu();
 }
 
 void CorpusModeWidget::openCorpusRepository()
@@ -302,7 +304,9 @@ void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filenam
     // Corpus repository opened succesfully. Register corpus with the Corpus Manager and global object pool.
     d->corpusRepositoriesManager->addCorpusRepository(repository);
     d->corpusRepositoriesManager->setActiveCorpusRepository(repository->ID());
+    // Update recent files
     d->recentFiles->addFile(filename);
+    setupRecentFilesMenu();
 }
 
 void CorpusModeWidget::editCorpusRepository()
@@ -351,7 +355,9 @@ void CorpusModeWidget::saveCorpusRepositoryAs()
                                                     tr("Praaline Corpus File (*.PraalineRepository);;All Files (*)"), &selectedFilter, options);
     if (filename.isEmpty()) return;
     repository->definition().save(filename);
+    // Update recent files
     d->recentFiles->addFile(repository->definition().filenameDefinition);
+    setupRecentFilesMenu();
     // else show error message
     // m_mainStatusBar->showMessage("Saved corpus \"" + fileName, 5000);
 }

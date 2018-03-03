@@ -56,7 +56,6 @@ HEADERS += \
     crfannotator.h \
     chunkannotator.h \
     svbridge.h \
-    prosodicboundaries.h \
     InterraterAgreement.h \
     ProsodyCourse.h \
     MyExperiments.h \
@@ -86,7 +85,8 @@ HEADERS += \
     corpus-specific/CPROMDISS.h \
     corpus-specific/PFCAlignment.h \
     corpus-specific/Rhapsodie.h \
-    corpus-specific/LOCASF.h
+    corpus-specific/LOCASF.h \
+    ProsodicBoundaries.h
 
 
 SOURCES += \ 
@@ -94,7 +94,6 @@ SOURCES += \
     crfannotator.cpp \
     chunkannotator.cpp \
     svbridge.cpp \
-    prosodicboundaries.cpp \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
     MyExperiments.cpp \
@@ -124,4 +123,5 @@ SOURCES += \
     corpus-specific/CPROMDISS.cpp \
     corpus-specific/PFCAlignment.cpp \
     corpus-specific/Rhapsodie.cpp \
-    corpus-specific/LOCASF.cpp
+    corpus-specific/LOCASF.cpp \
+    ProsodicBoundaries.cpp

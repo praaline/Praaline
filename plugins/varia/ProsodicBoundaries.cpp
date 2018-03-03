@@ -7,23 +7,56 @@
 #include "pncore/statistics/Measures.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
-#include "prosodicboundaries.h"
+using namespace Praaline::Core;
 
-QStringList ProsodicBoundaries::POS_CLI = QStringList( { "PRP:det", "DET:def", "DET:dem", "DET:int", "DET:par", "DET:pos",
-                                                         "PFX", "PRO:per:objd", "PRO:per:obji", "PRO:per:sjt", "PRO:ref", "PRP" } );
-QStringList ProsodicBoundaries::POS_INT = QStringList( { "ADV:deg", "ADV:int", "ADV:neg", "CON:coo", "CON:sub", "DET:ind", "ITJ",
-                                                         "NUM:crd:det", "PRO:dem", "PRO:ind", "PRO:int", "PRO:rel",
-                                                         "VER:cond:aux", "VER:fut:aux", "VER:impe:aux", "VER:impf:aux", "VER:inf:aux",
-                                                         "VER:ppas:aux", "VER:ppre:aux", "VER:pres:aux", "VER:pres:entatif",
-                                                         "VER:pres:pred:aux",  "VER:simp:aux", "VER:subp:aux"} );
-QStringList ProsodicBoundaries::POS_LEX = QStringList( { "ADJ", "ADV", "ADV:comp", "FRG", "INTROD",
-                                                         "NOM:acr", "NOM:com", "NOM:nom", "NOM:pro",
-                                                         "NUM:crd", "NUM:crd:nom", "NUM:ord:adj",
-                                                         "PRO:per:ton", "PRO:pos",
-                                                         "VER:cond", "VER:fut", "VER:impe", "VER:impf", "VER:inf", "VER:ppas",
-                                                         "VER:ppre", "VER:pres", "VER:simp", "VER:subi", "VER:subp" } );
+#include "ProsodicBoundaries.h"
 
-bool ProsodicBoundaries::isLexical(Interval *token)
+struct ProsodicBoundariesData {
+    QString attributePOS;
+    QStringList POS_CLI;
+    QStringList POS_INT;
+    QStringList POS_LEX;
+    QStringList additionalAttributes;
+
+    ProsodicBoundariesData() {
+        POS_CLI = QStringList( { "PRP:det", "DET:def", "DET:dem", "DET:int", "DET:par", "DET:pos",
+                                 "PFX", "PRO:per:objd", "PRO:per:obji", "PRO:per:sjt", "PRO:ref", "PRP" } );
+        POS_INT = QStringList( { "ADV:deg", "ADV:int", "ADV:neg", "CON:coo", "CON:sub", "DET:ind", "ITJ",
+                                 "NUM:crd:det", "PRO:dem", "PRO:ind", "PRO:int", "PRO:rel",
+                                 "VER:cond:aux", "VER:fut:aux", "VER:impe:aux", "VER:impf:aux", "VER:inf:aux",
+                                 "VER:ppas:aux", "VER:ppre:aux", "VER:pres:aux", "VER:pres:entatif",
+                                 "VER:pres:pred:aux",  "VER:simp:aux", "VER:subp:aux"} );
+        POS_LEX = QStringList( { "ADJ", "ADV", "ADV:comp", "FRG", "INTROD",
+                                 "NOM:acr", "NOM:com", "NOM:nom", "NOM:pro",
+                                 "NUM:crd", "NUM:crd:nom", "NUM:ord:adj",
+                                 "PRO:per:ton", "PRO:pos",
+                                 "VER:cond", "VER:fut", "VER:impe", "VER:impf", "VER:inf", "VER:ppas",
+                                 "VER:ppre", "VER:pres", "VER:simp", "VER:subi", "VER:subp" } );
+        attributePOS = "pos_mwu";
+    }
+};
+
+ProsodicBoundaries::ProsodicBoundaries() :
+    d(new ProsodicBoundariesData())
+{
+}
+
+ProsodicBoundaries::~ProsodicBoundaries()
+{
+    delete d;
+}
+
+QStringList ProsodicBoundaries::additionalAttributeIDs() const
+{
+    return d->additionalAttributes;
+}
+
+void ProsodicBoundaries::setAdditionalAttributeIDs(const QStringList &attributeIDs)
+{
+    d->additionalAttributes = attributeIDs;
+}
+
+bool ProsodicBoundaries::isLexical(Interval *token) const
 {
     // LEX:
     // ADJ, ADV, NUM, NOM, FRG, ITJ, PFX, PRO:pos, VER except...
@@ -33,7 +66,7 @@ bool ProsodicBoundaries::isLexical(Interval *token)
     // "-t-il", "-t-elle"
     // *** A VOIR *** certains adverbes, prepositions longues, mots grammaticaux post-poses
     QString currentToken = token->text();
-    QString currentPOS = token->attribute("pos_mwu").toString();
+    QString currentPOS = token->attribute(d->attributePOS).toString();
     if (currentPOS == "CON:sub") return false;
     if (currentPOS.left(3) == "DET") return false;
     if (currentPOS.left(3) == "PRO" && currentPOS != "PRO:pos") return false;
@@ -44,38 +77,35 @@ bool ProsodicBoundaries::isLexical(Interval *token)
     return true;
 }
 
-QString ProsodicBoundaries::categorise_CLI_INT_LEX(Interval *token)
+QString ProsodicBoundaries::categorise_CLI_INT_LEX(Interval *token) const
 {
     if (!token) return "0";
     if (token->isPauseSilent()) return "_";
-    QString currentPOS = token->attribute("pos_mwu").toString();
+    QString currentPOS = token->attribute(d->attributePOS).toString();
     if (currentPOS == "0") return "FST"; // false starts
-    if (POS_CLI.contains(currentPOS)) return "CLI";
-    if (POS_INT.contains(currentPOS)) return "INT";
-    if (POS_LEX.contains(currentPOS)) return "LEX";
+    if (d->POS_CLI.contains(currentPOS)) return "CLI";
+    if (d->POS_INT.contains(currentPOS)) return "INT";
+    if (d->POS_LEX.contains(currentPOS)) return "LEX";
     return "LEX";
 }
 
-QList<QString>
-ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &annotID,
-                                                 QList<int> syllIndices, QStringList additionalAttributeIDs)
+QStringList
+ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &annotationID, QList<int> syllIndices)
 {
-    QList<QString> results;
+    QStringList results;
     if (!corpus) return results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotID);
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;
         IntervalTier *tier_tokmwu = tiers->getIntervalTierByName("tok_mwu");
-        IntervalTier *tier_sequence = tiers->getIntervalTierByName("sequence");
-        IntervalTier *tier_rection = tiers->getIntervalTierByName("rection");
         RealValueList pause_durations;
 
         // Prepare syllables (calculcate log duration and a list of pause durations)
         // Distinguish between intra-speaker and inter-speaker pauses
         // Note: for getSpeakerTimeline, in the experiment corpus communicationID = annotationID
-        IntervalTier *timeline = corpus->repository()->annotations()->getSpeakerTimeline(annotID, annotID, "syll");
+        IntervalTier *timeline = corpus->repository()->annotations()->getSpeakerTimeline(annotationID, annotationID, "syll");
         foreach (Interval *syll, tier_syll->intervals()) {
             syll->setAttribute("duration_log", log(syll->attribute("duration").toDouble()));
             if (syll->text() == "_") {
@@ -92,16 +122,6 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
         foreach (int isyll, syllIndices) {
             if ((isyll < 0) || (isyll >= tier_syll->count())) continue;
             Interval *syll = tier_syll->interval(isyll);
-
-            // Expert annotation
-            // --------------------------------------------------------------------------------------------------------
-            QString expertBoundary = syll->attribute("boundary").toString();
-            QString expertBoundaryType = "0";
-            if      (expertBoundary.contains("///"))   expertBoundaryType = "///";
-            else if (expertBoundary.contains("//"))    expertBoundaryType = "//";
-            else if (expertBoundary.contains("hesi"))  expertBoundaryType = "hesi";
-            else if (expertBoundary.contains("#"))     expertBoundaryType = "#";
-            QString expertContour = syll->attribute("contour").toString();
 
             // Prosodic features
             // --------------------------------------------------------------------------------------------------------
@@ -145,30 +165,7 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             // Syntax
             // --------------------------------------------------------------------------------------------------------
             Interval *tok_mwu = (tier_tokmwu) ? tier_tokmwu->intervalAtTime(syll->tCenter()) : 0;
-            Interval *sequence = (tier_sequence) ? tier_sequence->intervalAtTime(syll->tCenter()) : 0;
-            Interval *rection = (tier_rection) ? tier_rection->intervalAtTime(syll->tCenter()) : 0;
-
-            RealTime t10ns = RealTime::fromNanoseconds(10);
-            Interval *tok_mwu_next = (tier_tokmwu) ? tier_tokmwu->intervalAtTime(syll->tMax() + t10ns) : 0;
-            Interval *sequence_next = (tier_sequence) ? tier_sequence->intervalAtTime(syll->tMax() + t10ns) : 0;
-            Interval *rection_next = (tier_rection) ? tier_rection->intervalAtTime(syll->tMax() + t10ns) : 0;
-
-            QString pos_mwu = (tok_mwu) ? tok_mwu->attribute("pos_mwu").toString() : "unk";
-
-            QString tok_mwu_text = (tok_mwu) ? tok_mwu->text() : "";
-            if (tok_mwu_next) tok_mwu_text = tok_mwu_text.append("|").append(tok_mwu_next->text());
-            QString sequence_text = (sequence) ? sequence->text() : "";
-            if (sequence_next) sequence_text = sequence_text.append("|").append(sequence_next->text());
-            QString rection_text = (rection) ? rection->text() : "";
-            if (rection_next) rection_text = rection_text.append("|").append(rection_next->text());
-
-            QString syntacticBoundaryType = "0";
-            if ((tok_mwu) && (tok_mwu != tok_mwu_next)) syntacticBoundaryType = "MWU";
-            if ((sequence) && (sequence != sequence_next)) syntacticBoundaryType = "SEQ";
-            if ((rection) && (rection != rection_next)) {
-                syntacticBoundaryType = "REC";
-                if (rection_text.contains("md|")) syntacticBoundaryType = "MD";
-            }
+            QString pos_mwu = (tok_mwu) ? tok_mwu->attribute(d->attributePOS).toString() : "unk";
 
             // Context
             int tokenIndex = tier_tokmwu->intervalIndexAtTime(syll->tCenter());
@@ -179,12 +176,14 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             // --------------------------------------------------------------------------------------------------------
             QString resultLine;
             QString sep = "\t", decimal = ",";
-            resultLine.append(annotID).append(sep).append(annotID.right(1)).append(sep).append(speakerID);
+            resultLine.append(annotationID).append(sep).append(annotationID.right(1)).append(sep).append(speakerID);
             resultLine.append(sep).append(QString::number(isyll)).append(sep);
             resultLine.append(QString::number(tier_syll->interval(isyll)->tMin().toDouble()).replace(".", decimal)).append(sep);
             resultLine.append(QString(syll->text()).remove("\t").remove("\n")).append(sep);
             // Expert
-            resultLine.append(expertBoundaryType).append(sep).append(expertContour).append(sep).append(expertBoundary).append(expertContour).append(sep);
+            resultLine.append(syll->attribute("boundaryType").toString()).append(sep);
+            resultLine.append(syll->attribute("contour").toString()).append(sep);
+            resultLine.append(syll->attribute("boundary").toString()).append(syll->attribute("contour").toString()).append(sep);
             // Prosody
             resultLine.append(QString::number(durNextPause).replace(".", decimal)).append(sep);
             resultLine.append(QString::number(logdurNextPause).replace(".", decimal)).append(sep);
@@ -205,13 +204,12 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
             resultLine.append(QString::number(intrasyllab_down).replace(".", decimal)).append(sep);
             resultLine.append(QString::number(trajectory).replace(".", decimal)).append(sep);
             // Syntax
-            resultLine.append(tok_mwu_text).append(sep).append(sequence_text).append(sep).append(rection_text).append(sep);
-            resultLine.append(syntacticBoundaryType).append(sep);
-            resultLine.append(pos_mwu).append(sep).append(pos_mwu.left(3)).append(sep).append(categorise_CLI_INT_LEX(tok_mwu)).append(sep);
+            resultLine.append(pos_mwu).append(sep).append(pos_mwu.left(3)).append(sep);
+            resultLine.append(categorise_CLI_INT_LEX(tok_mwu)).append(sep);
             resultLine.append(context);
             // Other requested attributes
             QString rest;
-            foreach (QString attributeID, additionalAttributeIDs) {
+            foreach (QString attributeID, d->additionalAttributes) {
                 rest.append(syll->attribute(attributeID).toString().replace(".", decimal)).append(sep);
             }
             if (rest.endsWith(sep)) rest.chop(sep.length());
@@ -222,31 +220,56 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
     return results;
 }
 
-
-void ProsodicBoundaries::analyseBoundaryList(QTextStream &out, Corpus *corpus, const QString &annotID,
-                                             QList<int> syllIndices, QStringList additionalAttributeIDs)
+void ProsodicBoundaries::analyseBoundaryListToStream(QTextStream &out, Corpus *corpus, const QString &annotationID,
+                                                     QList<int> syllIndices)
 {
-    QList<QString> results = analyseBoundaryListToStrings(corpus, annotID, syllIndices, additionalAttributeIDs);
+    QStringList results = analyseBoundaryListToStrings(corpus, annotationID, syllIndices);
     foreach (QString line, results) {
         out << line << "\n";
     }
 }
 
-
-QList<QString> ProsodicBoundaries::analyseCorpusSampleToStrings(Corpus *corpus, const QString &annotID)
+QStringList ProsodicBoundaries::analyseAnnotationToStrings(Corpus *corpus, const QString &annotationID)
 {
-    QList<QString> results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotID);
+    QStringList results;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
     foreach (QString speakerID, tiersAll.keys()) {
         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-
+        // Create a list of all syllables excluding pauses
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;
-        IntervalTier *tier_group = tiers->getIntervalTierByName("sequence");
-        if (!tier_group) continue;
-
         QList<int> syllables;
-        QStringList additionalAttributeIDs;
+        for (int i = 0; i < tier_syll->count(); ++i) {
+            if (tier_syll->at(i)->isPauseSilent()) continue;
+            syllables << i;
+        }
+        results << analyseBoundaryListToStrings(corpus, annotationID, syllables);
+    }
+    qDeleteAll(tiersAll);
+    return results;
+}
+
+void ProsodicBoundaries::analyseAnnotationToStream(QTextStream &out, Corpus *corpus, const QString &annotationID)
+{
+    QStringList results = analyseAnnotationToStrings(corpus, annotationID);
+    foreach (QString line, results) {
+        out << line << "\n";
+    }
+}
+
+QStringList ProsodicBoundaries::analyseLastSyllOfSequenceToStrings(Corpus *corpus, const QString &annotationID,
+                                                                   const QString &sequenceLevelID)
+{
+    QStringList results;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
+    foreach (QString speakerID, tiersAll.keys()) {
+        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        // Create a list of all syllables at the end of sequences, excluding pauses
+        IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+        if (!tier_syll) continue;
+        IntervalTier *tier_group = tiers->getIntervalTierByName(sequenceLevelID);
+        if (!tier_group) continue;
+        QList<int> syllables;
         foreach (Interval *group, tier_group->intervals()) {
             if (group->text() == "_") continue;
             RealTime t = group->tMax() - RealTime::fromNanoseconds(10);
@@ -254,20 +277,18 @@ QList<QString> ProsodicBoundaries::analyseCorpusSampleToStrings(Corpus *corpus, 
             if (i_lastsyll == -1) continue;
             syllables << i_lastsyll;
         }
-
-        results << analyseBoundaryListToStrings(corpus, annotID, syllables, additionalAttributeIDs);
+        results << analyseBoundaryListToStrings(corpus, annotationID, syllables);
     }
+    qDeleteAll(tiersAll);
     return results;
 }
 
-void ProsodicBoundaries::analyseCorpusSample(QTextStream &out, Corpus *corpus, const QString &annotID)
+void ProsodicBoundaries::analyseLastSyllOfSequenceToStream(QTextStream &out, Corpus *corpus, const QString &annotationID,
+                                                           const QString &sequenceLevelID)
 {
-    QList<QString> results = analyseCorpusSampleToStrings(corpus, annotID);
+    QStringList results = analyseLastSyllOfSequenceToStrings(corpus, annotationID, sequenceLevelID);
     foreach (QString line, results) {
         out << line << "\n";
     }
 }
-
-
-
 

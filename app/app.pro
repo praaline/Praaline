@@ -121,15 +121,19 @@ SOURCES += main.cpp \
     NetworkPermissionTester.cpp \
     PraalineSplash.cpp \
     CorpusRepositoriesManager.cpp \
-    corpus/CorpusExplorerTableWidget.cpp \
-    corpus/CorpusExplorerWidget.cpp \
-    corpus/CorpusDatabaseConnectionDialog.cpp \
-    corpus/CorpusExplorerOptionsDialog.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
+    corpus/CorpusDatabaseConnectionDialog.cpp \
+    corpus/CorpusRepositoryCreateWizard.cpp \
+    corpus/CorpusRepositoryPropertiesDialog.cpp \
+    corpus/corpusexplorer/CorpusExplorerWidget.cpp \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.cpp \
+    corpus/corpusexplorer/CorpusExplorerTableWidget.cpp \
+    corpus/corpusexplorer/CorpusExplorerOptionsDialog.cpp \
     corpus/utilities/SplitCommunicationsDialog.cpp \
     corpus/utilities/CheckMediaFilesDialog.cpp \
     corpus/utilities/MergeCorporaDialog.cpp \
+    corpus/utilities/MergeCommunicationsDialog.cpp \
     corpus/utilities/DecodeFilenameToMetadataDialog.cpp \
     corpus/structureeditors/MetadataStructureEditor.cpp \
     corpus/structureeditors/AnnotationStructureEditor.cpp \
@@ -150,8 +154,6 @@ SOURCES += main.cpp \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
     corpus/importmetadata/ImportMetadataWizardFinalPage.cpp \
     corpus/importannotations/ImportAnnotationsWizard.cpp \
-    corpus/CorpusRepositoryPropertiesDialog.cpp \
-    corpus/CorpusRepositoryCreateWizard.cpp \
     corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
     corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
     annotation/AnnotationMode.cpp \
@@ -199,6 +201,7 @@ SOURCES += main.cpp \
     query/QueryModeWidget.cpp \
     query/AnnotationBrowserWidget.cpp \
     query/dataseteditor/DatasetEditorWidget.cpp \
+    query/dataseteditor/AnnotationLevelDataModel.cpp \
     scripting/ScriptingMode.cpp \
     scripting/ScriptingModeWidget.cpp \
     scripting/ScriptEditorWidget.cpp \
@@ -235,14 +238,12 @@ SOURCES += main.cpp \
     updater/Updater.cpp \
     updater/QSimpleUpdater.cpp \
     updater/Downloader.cpp \
-    corpus/utilities/MergeCommunicationsDialog.cpp \
     annotation/asr/ForcedAlignmentWidget.cpp \
     web/PraalineWebsite.cpp \
     welcome/WelcomeMode.cpp \
     web/WebDesignerMode.cpp \
     welcome/WelcomeModeWidget.cpp \
-    web/WebDesignerModeWidget.cpp \
-    query/dataseteditor/AnnotationLevelDataModel.cpp
+    web/WebDesignerModeWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -253,12 +254,15 @@ HEADERS  += \
     CorpusRepositoriesManager.h \
     interfaces/IAnnotationPlugin.h \
     interfaces/IStatisticsPlugin.h \
-    corpus/CorpusExplorerTableWidget.h \
-    corpus/CorpusExplorerWidget.h \
-    corpus/CorpusDatabaseConnectionDialog.h \
-    corpus/CorpusExplorerOptionsDialog.h \
     corpus/CorpusMode.h \
     corpus/CorpusModeWidget.h \
+    corpus/CorpusRepositoryPropertiesDialog.h \
+    corpus/CorpusRepositoryCreateWizard.h \
+    corpus/CorpusDatabaseConnectionDialog.h \
+    corpus/corpusexplorer/CorpusExplorerWidget.h \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.h \
+    corpus/corpusexplorer/CorpusExplorerTableWidget.h \
+    corpus/corpusexplorer/CorpusExplorerOptionsDialog.h \
     corpus/structureeditors/MetadataStructureEditor.h \
     corpus/structureeditors/AnnotationStructureEditor.h \
     corpus/structureeditors/AddAttributeDialog.h \
@@ -280,9 +284,8 @@ HEADERS  += \
     corpus/importmetadata/ImportMetadataWizardFinalPage.h \
     corpus/importannotations/ImportAnnotationsWizard.h \
     corpus/importannotations/ImportTableDataPreviewWizardPage.h \
-    corpus/CorpusRepositoryPropertiesDialog.h \
-    corpus/CorpusRepositoryCreateWizard.h \
     corpus/utilities/MergeCorporaDialog.h \
+    corpus/utilities/MergeCommunicationsDialog.h \
     corpus/utilities/CheckMediaFilesDialog.h \
     corpus/utilities/DecodeFilenameToMetadataDialog.h \
     corpus/utilities/SplitCommunicationsDialog.h \
@@ -332,6 +335,8 @@ HEADERS  += \
     query/AnnotationBrowserWidget.h \
     query/dataseteditor/DatasetEditorWidget.h \
     query/dataseteditor/DatasetEditorModels.h \
+    query/dataseteditor/AnnotationLevelDataModel.h \
+    query/dataseteditor/AnnotationAttributeNodeData.h \
     statistics/StatisticsMode.h \
     statistics/StatisticsModeWidget.h \
     statistics/StatisticalAnalysisBasicWidget.h \
@@ -369,25 +374,22 @@ HEADERS  += \
     updater/Updater.h \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
-    corpus/utilities/MergeCommunicationsDialog.h \
     annotation/asr/ForcedAlignmentWidget.h \
     web/PraalineWebsite.h \
     welcome/WelcomeMode.h \
     web/WebDesignerMode.h \
     welcome/WelcomeModeWidget.h \
-    web/WebDesignerModeWidget.h \
-    query/dataseteditor/AnnotationLevelDataModel.h \
-    query/dataseteditor/AnnotationAttributeNodeData.h
+    web/WebDesignerModeWidget.h
 
 FORMS    += \
     MainWindow.ui \
     corpus/CorpusModeWidget.ui \
-    corpus/CorpusExplorerWidget.ui \
-    corpus/CorpusExplorerTableWidget.ui \
-    corpus/CorpusExplorerOptionsDialog.ui \
     corpus/CorpusDatabaseConnectionDialog.ui \
     corpus/CorpusRepositoryPropertiesDialog.ui \
     corpus/CorpusRepositoryCreateWizard.ui \
+    corpus/corpusexplorer/CorpusExplorerWidget.ui \
+    corpus/corpusexplorer/CorpusExplorerTableWidget.ui \
+    corpus/corpusexplorer/CorpusExplorerOptionsDialog.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
@@ -412,6 +414,7 @@ FORMS    += \
     corpus/utilities/MergeCorporaDialog.ui \
     corpus/utilities/SplitCommunicationsDialog.ui \
     corpus/utilities/DecodeFilenameToMetadataDialog.ui \
+    corpus/utilities/MergeCommunicationsDialog.ui \
     annotation/BatchEditorWidget.ui \
     annotation/dis/AnnotationControlsDisfluencies.ui \
     annotation/AnnotationModeWidget.ui \
@@ -450,7 +453,6 @@ FORMS    += \
     help/ContentWidget.ui \
     help/HelpModeConfig.ui \
     updater/Downloader.ui \
-    corpus/utilities/MergeCommunicationsDialog.ui \
     annotation/asr/ForcedAlignmentWidget.ui \
     welcome/WelcomeModeWidget.ui \
     web/WebDesignerModeWidget.ui

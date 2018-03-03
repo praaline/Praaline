@@ -42,6 +42,7 @@ QString LOCASF::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
                 else if (expertBoundary.contains("//"))    expertBoundaryType = "//";
                 else if (expertBoundary.contains("hesi"))  expertBoundaryType = "hesi";
                 // else if (expertBoundary.contains("#"))     expertBoundaryType = "#";
+                if (syll->isPauseSilent()) expertBoundaryType = "";
                 syll->setAttribute("boundaryType", expertBoundaryType);
 
                 // Syntax
@@ -69,7 +70,8 @@ QString LOCASF::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
                     syntacticBoundaryType = "REC";
                     if (rection_text.contains("md|")) syntacticBoundaryType = "MD";
                 }
-                syll->setAttribute("syntacticBoundaryType", syntacticBoundaryType);
+                if (syll->isPauseSilent()) syntacticBoundaryType = "";
+                syll->setAttribute("boundarySyntactic", syntacticBoundaryType);
             }
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
         }

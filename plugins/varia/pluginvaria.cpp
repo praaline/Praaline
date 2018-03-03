@@ -409,7 +409,7 @@ void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
 }
 
 
-
+#include "corpus-specific/LOCASF.h"
 
 void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
@@ -445,7 +445,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = Rhapsodie::updateSyllables(com);
 //        m = Rhapsodie::loadPitch(com);
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
-        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
+//        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
+        m = LOCASF::noteProsodicBoundaryOnSyll(com);
 
         if (!m.isEmpty()) printMessage(m);
     }

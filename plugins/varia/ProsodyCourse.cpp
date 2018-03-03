@@ -12,7 +12,7 @@
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 
-#include "prosodicboundaries.h"
+#include "ProsodicBoundaries.h"
 #include "ProsodyCourse.h"
 
 ProsodyCourse::ProsodyCourse()
@@ -152,7 +152,9 @@ void ProsodyCourse::syllableTables(Corpus *corpus)
                 QList<int> syllables;
                 for (int i = 0; i < tier_syll->count(); ++i) { syllables << i; }
                 if (syllables.isEmpty()) continue;
-                QStringList results = ProsodicBoundaries::analyseBoundaryListToStrings(corpus, annotationID, syllables, extraAttributes);
+                ProsodicBoundaries pb;
+                pb.setAdditionalAttributeIDs(extraAttributes);
+                QStringList results = pb.analyseBoundaryListToStrings(corpus, annotationID, syllables);
                 foreach (QString line, results) out << line.replace(",", ".") << "\n";
             }
             qDeleteAll(tiers);

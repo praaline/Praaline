@@ -8,10 +8,6 @@
 #include <QTreeView>
 #include <QProgressDialog>
 
-#include "CorpusModeWidget.h"
-#include "CorpusExplorerWidget.h"
-#include "ui_CorpusExplorerWidget.h"
-
 #include <QtilitiesProjectManagement>
 using namespace QtilitiesProjectManagement;
 
@@ -30,19 +26,22 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/PraalineUserInterfaceOptions.h"
 #include "CorpusRepositoriesManager.h"
 
-#include "CorpusModeWidget.h"
+#include "../CorpusModeWidget.h"
 #include "CorpusExplorerOptionsDialog.h"
 
-#include "importmetadata/ImportMetadataWizard.h"
-#include "exportmetadata/ExportMetadataWizard.h"
-#include "importcorpusitems/ImportCorpusItemsWizard.h"
-#include "importannotations/ImportAnnotationsWizard.h"
-#include "exportannotations/ExportAnnotationsWizard.h"
-#include "utilities/CheckMediaFilesDialog.h"
-#include "utilities/SplitCommunicationsDialog.h"
-#include "utilities/MergeCommunicationsDialog.h"
-#include "utilities/DecodeFilenameToMetadataDialog.h"
-#include "utilities/MergeCorporaDialog.h"
+#include "../importmetadata/ImportMetadataWizard.h"
+#include "../exportmetadata/ExportMetadataWizard.h"
+#include "../importcorpusitems/ImportCorpusItemsWizard.h"
+#include "../importannotations/ImportAnnotationsWizard.h"
+#include "../exportannotations/ExportAnnotationsWizard.h"
+#include "../utilities/CheckMediaFilesDialog.h"
+#include "../utilities/SplitCommunicationsDialog.h"
+#include "../utilities/MergeCommunicationsDialog.h"
+#include "../utilities/DecodeFilenameToMetadataDialog.h"
+#include "../utilities/MergeCorporaDialog.h"
+
+#include "CorpusExplorerWidget.h"
+#include "ui_CorpusExplorerWidget.h"
 
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
