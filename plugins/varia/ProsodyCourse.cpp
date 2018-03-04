@@ -154,7 +154,7 @@ void ProsodyCourse::syllableTables(Corpus *corpus)
                 if (syllables.isEmpty()) continue;
                 ProsodicBoundaries pb;
                 pb.setAdditionalAttributeIDs(extraAttributes);
-                QStringList results = pb.analyseBoundaryListToStrings(corpus, annotationID, syllables);
+                QStringList results = pb.analyseBoundaryListToStrings(corpus, annotationID, speakerID, syllables);
                 foreach (QString line, results) out << line.replace(",", ".") << "\n";
             }
             qDeleteAll(tiers);

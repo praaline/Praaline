@@ -777,7 +777,7 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModelling(const
             if (ppbSyllables.isEmpty()) continue;
             ProsodicBoundaries PBAnalyser;
             PBAnalyser.setAdditionalAttributeIDs(ppbAttributeIDs);
-            QStringList results = PBAnalyser.analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables);
+            QStringList results = PBAnalyser.analyseBoundaryListToStrings(corpus, com->ID(), speakerID, ppbSyllables);
             // If the output file will be used for multi-level modelling, we need one line per tapping (i.e. per subject), otherwise
             // we need one line per syllable.
             if (!multilevel) {
@@ -855,7 +855,7 @@ void ProsodicBoundariesExperimentAnalysis::statExtractFeaturesForModellingPerSub
             if (ppbSyllables.isEmpty()) continue;
             ProsodicBoundaries PBAnalyser;
             PBAnalyser.setAdditionalAttributeIDs(ppbAttributeIDs);
-            QStringList results = PBAnalyser.analyseBoundaryListToStrings(corpus, com->ID(), ppbSyllables);
+            QStringList results = PBAnalyser.analyseBoundaryListToStrings(corpus, com->ID(), speakerID, ppbSyllables);
             // One line per syllable, with separate columns indicating whether each subject annotated this boundary
             foreach (QString line, results) {
                 QStringList subjectsPPB = line.section("\t", - 1).split("|");
@@ -1080,8 +1080,8 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceNSandMS(const QStri
             }
             ProsodicBoundaries PBAnalyser;
             PBAnalyser.setAdditionalAttributeIDs(ppbAttributeIDs);
-            featuresNS = PBAnalyser.analyseBoundaryListToStrings(corpus, idNS, ppbSyllables);
-            featuresMS = PBAnalyser.analyseBoundaryListToStrings(corpus, idMS, ppbSyllables);
+            featuresNS = PBAnalyser.analyseBoundaryListToStrings(corpus, idNS, speakerID, ppbSyllables);
+            featuresMS = PBAnalyser.analyseBoundaryListToStrings(corpus, idMS, speakerID, ppbSyllables);
             for (int i = 0; i < featuresNS.count(); ++i) {
                 QStringList fieldsNS = featuresNS.at(i).split("\t");
                 QStringList fieldsMS = featuresMS.at(i).split("\t");
@@ -1181,7 +1181,7 @@ void ProsodicBoundariesExperimentAnalysis::statCorrespondanceInternal(const QStr
             }
             ProsodicBoundaries PBAnalyser;
             PBAnalyser.setAdditionalAttributeIDs(ppbAttributeIDs);
-            features = PBAnalyser.analyseBoundaryListToStrings(corpus, id, ppbSyllables);
+            features = PBAnalyser.analyseBoundaryListToStrings(corpus, id, speakerID, ppbSyllables);
             for (int i = 0; i < features.count(); ++i) {
                 QStringList fields = features.at(i).split("\t");
                 QString line;

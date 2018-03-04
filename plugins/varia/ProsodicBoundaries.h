@@ -24,11 +24,11 @@ public:
 
     /// Analyse syllables from a given list of indices and return results in a QStringList
     QStringList analyseBoundaryListToStrings(Praaline::Core::Corpus *corpus, const QString &annotationID,
-                                             QList<int> syllIndices);
+                                             const QString &speakerID, QList<int> syllIndices);
 
     /// Analyse syllables from a given list of indices and write results to a stream
     void analyseBoundaryListToStream(QTextStream &out, Praaline::Core::Corpus *corpus, const QString &annotationID,
-                                     QList<int> syllIndices);
+                                     const QString &speakerID, QList<int> syllIndices);
 
     /// Analyse all syllables in a given annotation and return results in a QStringList
     QStringList analyseAnnotationToStrings(Praaline::Core::Corpus *corpus, const QString &annotationID);

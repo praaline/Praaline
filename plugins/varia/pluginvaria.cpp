@@ -446,7 +446,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = Rhapsodie::loadPitch(com);
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
 //        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
-        m = LOCASF::noteProsodicBoundaryOnSyll(com);
+//        m = LOCASF::noteProsodicBoundaryOnSyll(com);
 
         if (!m.isEmpty()) printMessage(m);
     }
@@ -454,7 +454,10 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
     // m = AggregateProsody::averageContours(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());
-    // printMessage(m);
+
+    //m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
+    m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
+    printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

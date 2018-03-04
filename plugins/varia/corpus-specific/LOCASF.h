@@ -6,6 +6,7 @@
 
 namespace Praaline {
 namespace Core {
+class Corpus;
 class CorpusCommunication;
 }
 }
@@ -16,6 +17,7 @@ public:
     LOCASF();
 
     static QString noteProsodicBoundaryOnSyll(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
 };
 
 #endif // LOCASF_H

@@ -14,6 +14,7 @@
 #include "pncore/interfaces/praat/PraatPitchFile.h"
 using namespace Praaline::Core;
 
+#include "ProsodicBoundaries.h"
 #include "Rhapsodie.h"
 
 Rhapsodie::Rhapsodie()
@@ -293,3 +294,20 @@ QString Rhapsodie::importMicrosyntaxTabular(QPointer<CorpusCommunication> com)
     return ret;
 }
 
+QString Rhapsodie::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus)
+{
+    QString filename = QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_Boundaries.txt";
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << "\n";
+    ProsodicBoundaries PBAnalyser;
+    PBAnalyser.setAdditionalAttributeIDs(QStringList() << "boundarySyntactic" << "tok_mwu_text"
+                                         << "sequence_text" << "rection_text");
+    foreach (QString annotationID, corpus->annotationIDs()) {
+        PBAnalyser.analyseAnnotationToStream(out, corpus, annotationID);
+    }
+    file.close();
+    return "OK";
+}

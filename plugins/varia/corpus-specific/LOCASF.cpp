@@ -5,6 +5,7 @@
 #include "pncore/annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
+#include "ProsodicBoundaries.h"
 #include "LOCASF.h"
 
 LOCASF::LOCASF()
@@ -72,6 +73,9 @@ QString LOCASF::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
                 }
                 if (syll->isPauseSilent()) syntacticBoundaryType = "";
                 syll->setAttribute("boundarySyntactic", syntacticBoundaryType);
+                syll->setAttribute("tok_mwu_text", tok_mwu_text);
+                syll->setAttribute("sequence_text", sequence_text);
+                syll->setAttribute("rection_text", rection_text);
             }
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
         }
@@ -79,4 +83,22 @@ QString LOCASF::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
         ret = ret.append(annotationID).append("\tUpdated syll tier with boundary information.");
     }
     return ret;
+}
+
+QString LOCASF::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus)
+{
+    QString filename = QDir::homePath() + "/Dropbox/CORPORA/LOCASF_Boundaries.txt";
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out << "\n";
+    ProsodicBoundaries PBAnalyser;
+    PBAnalyser.setAdditionalAttributeIDs(QStringList() << "boundarySyntactic" << "tok_mwu_text"
+                                         << "sequence_text" << "rection_text");
+    foreach (QString annotationID, corpus->annotationIDs()) {
+        PBAnalyser.analyseAnnotationToStream(out, corpus, annotationID);
+    }
+    file.close();
+    return "OK";
 }
