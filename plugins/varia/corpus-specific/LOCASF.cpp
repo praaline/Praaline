@@ -92,10 +92,10 @@ QString LOCASF::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::C
     if ( !file.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
     QTextStream out(&file);
     out.setCodec("UTF-8");
-    out << "\n";
     ProsodicBoundaries PBAnalyser;
     PBAnalyser.setAdditionalAttributeIDs(QStringList() << "boundarySyntactic" << "tok_mwu_text"
                                          << "sequence_text" << "rection_text");
+    out << PBAnalyser.headerLineForTables() << "\n";
     foreach (QString annotationID, corpus->annotationIDs()) {
         PBAnalyser.analyseAnnotationToStream(out, corpus, annotationID);
     }

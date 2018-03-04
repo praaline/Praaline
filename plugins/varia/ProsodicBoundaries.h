@@ -44,6 +44,7 @@ public:
     void analyseLastSyllOfSequenceToStream(QTextStream &out, Praaline::Core::Corpus *corpus, const QString &annotationID,
                                            const QString &sequenceLevelID);
 
+    QString headerLineForTables() const;
 private:
     ProsodicBoundariesData *d;
 };

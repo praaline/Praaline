@@ -89,6 +89,25 @@ QString ProsodicBoundaries::categorise_CLI_INT_LEX(Interval *token) const
     return "LEX";
 }
 
+QString ProsodicBoundaries::headerLineForTables() const
+{
+    QString header;
+    QString sep = "\t";
+    header.append("annotationID").append(sep).append("speakerID").append(sep);
+    header.append("syllIndex").append(sep).append("syllTMin").append(sep).append("syllText").append(sep);
+    header.append("boundaryType").append(sep).append("contour").append(sep).append("boundary").append(sep);
+    header.append("durNextPause").append(sep).append("logdurNextPause").append(sep).append("logdurNextPauseZ").append(sep);
+    header.append("durSyllRel20").append(sep).append("durSyllRel30").append(sep).append("durSyllRel40").append(sep).append("durSyllRel50").append(sep);
+    header.append("logdurSyllRel20").append(sep).append("logdurSyllRel30").append(sep).append("logdurSyllRel40").append(sep).append("logdurSyllRel50").append(sep);
+    header.append("f0meanSyllRel20").append(sep).append("f0meanSyllRel30").append(sep).append("f0meanSyllRel40").append(sep).append("f0meanSyllRel50").append(sep);
+    header.append("intrasyllabUp").append(sep).append("intrasyllabDown").append(sep).append("trajectory").append(sep);
+    header.append("POSFull").append(sep).append("POSCat").append(sep).append("POSLex").append(sep);
+    header.append("context").append(sep);
+    foreach (QString attributeID, d->additionalAttributes) header.append(attributeID).append(sep);
+    if (header.endsWith(sep)) header.chop(sep.length());
+    return header;
+}
+
 QStringList
 ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &annotationID, const QString &speakerID,
                                                  QList<int> syllIndices)
@@ -176,8 +195,8 @@ ProsodicBoundaries::analyseBoundaryListToStrings(Corpus *corpus, const QString &
         // --------------------------------------------------------------------------------------------------------
         QString resultLine;
         QString sep = "\t", decimal = ",";
+
         resultLine.append(annotationID).append(sep);
-        resultLine.append(annotationID.right(1)).append(sep);
         resultLine.append(speakerID).append(sep);
         resultLine.append(QString::number(isyll)).append(sep);
         resultLine.append(QString::number(tier_syll->interval(isyll)->tMin().toDouble()).replace(".", decimal)).append(sep);
