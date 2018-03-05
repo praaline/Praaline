@@ -1,5 +1,5 @@
-#ifndef STATISTICSPLUGININTERRATER_H
-#define STATISTICSPLUGININTERRATER_H
+#ifndef STATISTICSPLUGINPCA_H
+#define STATISTICSPLUGINPCA_H
 
 #include "interfaces/IStatisticsPlugin.h"
 #include <QtilitiesCategory>
@@ -7,29 +7,29 @@
 
 namespace Praaline {
     namespace Plugins {
-        namespace StatisticsPluginInterrater {
+        namespace StatisticsPluginPCA {
             /*!
-              \struct StatisticsPluginInterraterData
-              \brief The StatisticsPluginInterraterData struct stores private data used by the StatisticsPluginInterrater class.
+              \struct StatisticsPluginPCAData
+              \brief The StatisticsPluginPCAData struct stores private data used by the StatisticsPluginPCA class.
              */
-            struct StatisticsPluginInterraterData;
+            struct StatisticsPluginPCAData;
 
             /*!
-              \class StatisticsPluginInterrater
-              \brief Statistical analysis plugin: Interrater Measures
+              \class StatisticsPluginPCA
+              \brief Statistical analysis plugin: Principal Component Analysis
               This class is the entry point into the plugin and is an implementation of the Qtilities::ExtensionSystem::Interfaces::IPlugin interface.
              */
-            class StatisticsPluginInterrater : public QObject, public IStatisticsPlugin
+            class StatisticsPluginPCA : public QObject, public IStatisticsPlugin
             {
                 Q_OBJECT
                 Q_INTERFACES(Qtilities::ExtensionSystem::Interfaces::IPlugin)
                 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                // Q_PLUGIN_METADATA(IID "org.praaline.StatisticsPluginInterrater")
+                // Q_PLUGIN_METADATA(IID "org.praaline.StatisticsPluginPCA")
                 #endif
 
             public:
-                StatisticsPluginInterrater(QObject* parent = 0);
-                virtual ~StatisticsPluginInterrater();
+                StatisticsPluginPCA(QObject* parent = 0);
+                virtual ~StatisticsPluginPCA();
 
                 // IObjectBase implementation
                 QObject* objectBase() override { return this; }
@@ -55,11 +55,11 @@ namespace Praaline {
                 QWidget *analyser(const QString &analyserName, CorpusRepository *repository, QWidget *parent = 0) override;
 
             private:
-                StatisticsPluginInterraterData* d;
+                StatisticsPluginPCAData* d;
 
             };
         }
     }
 }
 
-#endif // STATISTICSPLUGININTERRATER_H
+#endif // STATISTICSPLUGINPCA_H

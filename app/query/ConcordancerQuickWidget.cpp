@@ -149,6 +149,8 @@ ConcordancerQuickWidget::ConcordancerQuickWidget(QWidget *parent) :
     connect(d->corpusRepositoryManager, SIGNAL(activeCorpusRepositoryChanged(QString)),
             this, SLOT(activeCorpusRepositoryChanged(QString)));
     connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelChanged(QString)));
+
+    ui->splitterLR->setSizes(QList<int>() << 100 << 200 << 100);
 }
 
 ConcordancerQuickWidget::~ConcordancerQuickWidget()

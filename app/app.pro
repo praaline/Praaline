@@ -243,7 +243,9 @@ SOURCES += main.cpp \
     welcome/WelcomeMode.cpp \
     web/WebDesignerMode.cpp \
     welcome/WelcomeModeWidget.cpp \
-    web/WebDesignerModeWidget.cpp
+    web/WebDesignerModeWidget.cpp \
+    statistics/pca/StatisticsPluginPCA.cpp \
+    statistics/pca/PCAPlotWidget.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -379,7 +381,9 @@ HEADERS  += \
     welcome/WelcomeMode.h \
     web/WebDesignerMode.h \
     welcome/WelcomeModeWidget.h \
-    web/WebDesignerModeWidget.h
+    web/WebDesignerModeWidget.h \
+    statistics/pca/StatisticsPluginPCA.h \
+    statistics/pca/PCAPlotWidget.h
 
 FORMS    += \
     MainWindow.ui \
@@ -455,7 +459,8 @@ FORMS    += \
     updater/Downloader.ui \
     annotation/asr/ForcedAlignmentWidget.ui \
     welcome/WelcomeModeWidget.ui \
-    web/WebDesignerModeWidget.ui
+    web/WebDesignerModeWidget.ui \
+    statistics/pca/PCAPlotWidget.ui
 
 RESOURCES += \
     praaline.qrc \

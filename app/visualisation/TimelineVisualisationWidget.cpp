@@ -100,8 +100,8 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     ui->gridLayoutAnnotationEditor->addWidget(d->annotationEditor);
 
     // Set splitters
-    ui->splitterLeftRight->setSizes(QList<int>() << 50 << 300);
     ui->splitterCanvasTopBottom->setSizes(QList<int>() << 60 << 40);
+    ui->splitterLeftRight->setSizes(QList<int>() << 250 << 500);
 
     // Synchronise visualiser with annotation editor
     connect(d->annotationEditor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
