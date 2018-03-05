@@ -58,17 +58,8 @@ HEADERS += \
     svbridge.h \
     InterraterAgreement.h \
     ProsodyCourse.h \
-    MyExperiments.h \
-    DisfluenciesExperiments.h \
-    SpeechRateExperiments.h \
-    TappingAnnotatorExperiment.h \
     XMLTranscription.h \
-    ProsodicBoundariesExperimentPreparation.h \
-    ProsodicBoundariesExperimentAnalysis.h \
-    StutteredSpeechAlignmentExperiments.h \
-    MelissaExperiment.h \
     ForcedAligner.h \
-    MacroprosodyExperiment.h \
     BratAnnotationExporter.h \
     PhonetiserExternal.h \
     SequencerSyntax.h \
@@ -78,14 +69,23 @@ HEADERS += \
     SequencerProsodicUnits.h \
     SequencerCombineUnits.h \
     SilentPauseManipulator.h \
-    ExperimentUtterances.h \
     ProsodicUnits.h \
-    AggregateProsody.h \
     LanguageDefinition.h \
     corpus-specific/CPROMDISS.h \
     corpus-specific/PFCAlignment.h \
     corpus-specific/Rhapsodie.h \
     corpus-specific/LOCASF.h \
+    experiments/SpeechRateExperiments.h \
+    experiments/TappingAnnotatorExperiment.h \
+    experiments/MyExperiments.h \
+    experiments/ProsodicBoundariesExperimentPreparation.h \
+    experiments/ProsodicBoundariesExperimentAnalysis.h \
+    experiments/DisfluenciesExperiments.h \
+    experiments/StutteredSpeechAlignmentExperiments.h \
+    experiments/MelissaExperiment.h \
+    experiments/MacroprosodyExperiment.h \
+    experiments/ExperimentUtterances.h \
+    experiments/AggregateProsody.h \
     ProsodicBoundaries.h
 
 
@@ -96,17 +96,8 @@ SOURCES += \
     svbridge.cpp \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
-    MyExperiments.cpp \
-    DisfluenciesExperiments.cpp \
-    SpeechRateExperiments.cpp \
-    TappingAnnotatorExperiment.cpp \
     XMLTranscription.cpp \
-    ProsodicBoundariesExperimentPreparation.cpp \
-    ProsodicBoundariesExperimentAnalysis.cpp \
-    StutteredSpeechAlignmentExperiments.cpp \
-    MelissaExperiment.cpp \
     ForcedAligner.cpp \
-    MacroprosodyExperiment.cpp \
     BratAnnotationExporter.cpp \
     PhonetiserExternal.cpp \
     SequencerSyntax.cpp \
@@ -116,12 +107,21 @@ SOURCES += \
     SequencerProsodicUnits.cpp \
     SequencerCombineUnits.cpp \
     SilentPauseManipulator.cpp \
-    ExperimentUtterances.cpp \
     ProsodicUnits.cpp \
-    AggregateProsody.cpp \
     LanguageDefinition.cpp \
     corpus-specific/CPROMDISS.cpp \
     corpus-specific/PFCAlignment.cpp \
     corpus-specific/Rhapsodie.cpp \
     corpus-specific/LOCASF.cpp \
+    experiments/MyExperiments.cpp \
+    experiments/DisfluenciesExperiments.cpp \
+    experiments/SpeechRateExperiments.cpp \
+    experiments/TappingAnnotatorExperiment.cpp \
+    experiments/StutteredSpeechAlignmentExperiments.cpp \
+    experiments/ProsodicBoundariesExperimentPreparation.cpp \
+    experiments/ProsodicBoundariesExperimentAnalysis.cpp \
+    experiments/MelissaExperiment.cpp \
+    experiments/MacroprosodyExperiment.cpp \
+    experiments/ExperimentUtterances.cpp \
+    experiments/AggregateProsody.cpp \
     ProsodicBoundaries.cpp

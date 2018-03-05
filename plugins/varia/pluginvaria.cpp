@@ -20,14 +20,7 @@
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
 
 #include "InterraterAgreement.h"
-#include "ProsodicBoundariesExperimentAnalysis.h"
-#include "MyExperiments.h"
 #include "ProsodyCourse.h"
-#include "DisfluenciesExperiments.h"
-#include "SpeechRateExperiments.h"
-#include "TappingAnnotatorExperiment.h"
-#include "MelissaExperiment.h"
-#include "MacroprosodyExperiment.h"
 #include "SequencerSyntax.h"
 #include "SequencerDisfluencies.h"
 #include "SequencerProsodicUnits.h"
@@ -36,12 +29,21 @@
 #include "PhonetiserExternal.h"
 #include "BratSyntaxAndDisfluencies.h"
 #include "ProsodicUnits.h"
-#include "AggregateProsody.h"
 #include "SilentPauseManipulator.h"
-#include "ExperimentUtterances.h"
+
 #include "corpus-specific/CPROMDISS.h"
 #include "corpus-specific/Rhapsodie.h"
 #include "corpus-specific/PFCAlignment.h"
+
+#include "experiments/DisfluenciesExperiments.h"
+#include "experiments/SpeechRateExperiments.h"
+#include "experiments/TappingAnnotatorExperiment.h"
+#include "experiments/MelissaExperiment.h"
+#include "experiments/MacroprosodyExperiment.h"
+#include "experiments/ProsodicBoundariesExperimentAnalysis.h"
+#include "experiments/MyExperiments.h"
+#include "experiments/ExperimentUtterances.h"
+#include "experiments/AggregateProsody.h"
 
 #include "pluginvaria.h"
 
@@ -422,26 +424,24 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-//        if (com->property("SubjectID").toString() != "S0") continue;
+//        if (com->property("SubjectID").toString() != "SX2") continue;
 //        m = ExperimentUtterances::loadTranscriptions(com);
 //        PhonetiserExternal p;
 //        p.readCitationFormDictionary("/home/george/citation_forms.txt");
 //        m = p.importFromPhonetiser(com, true);
-//         m = m.append(p.correctPhonemeChains(com));
+//        m = m.append(p.correctPhonemeChains(com));
 //        m.chop(1);
 //        m = m.append("\tAlign:\t");
-//         m = m.append(ExperimentUtterances::align(com)).append("\n");
+//        m = m.append(ExperimentUtterances::align(com)).append("\n");
 //        ProsodicUnits p;
 //        p.createProsodicUnits(com);
 //        m = p.transcriptionInProsodicUnits(com);
         // m = ExperimentUtterances::fixTiers(com);
         // m = m + ExperimentUtterances::fixTranscription(com);
         // m = m + ExperimentUtterances::syllabify(com);
-
-//        m = ExperimentUtterances::averageProsody(com);
-//        m = ExperimentUtterances::fixTranscription(com);
 //        m = ExperimentUtterances::resyllabifyMDs(com);
 //        m = AggregateProsody::markTargetSyllables(com);
+
 //        m = Rhapsodie::updateSyllables(com);
 //        m = Rhapsodie::loadPitch(com);
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
@@ -450,13 +450,16 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
         if (!m.isEmpty()) printMessage(m);
     }
+    if (communications.isEmpty()) return;
     // m = ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
-    // m = AggregateProsody::averageContours(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());
+    // m = AggregateProsody::averageContours(communications.first());
+    m = AggregateProsody::calculatePairwiseDistances(communications.first());
 
-    //m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
+
+    // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
+    //m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     printMessage(m);
 
 //         SequencerSyntax s;

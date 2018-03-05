@@ -99,7 +99,7 @@ QString ProsodicBoundaries::headerLineForTables() const
     header.append("durNextPause").append(sep).append("logdurNextPause").append(sep).append("logdurNextPauseZ").append(sep);
     header.append("durSyllRel20").append(sep).append("durSyllRel30").append(sep).append("durSyllRel40").append(sep).append("durSyllRel50").append(sep);
     header.append("logdurSyllRel20").append(sep).append("logdurSyllRel30").append(sep).append("logdurSyllRel40").append(sep).append("logdurSyllRel50").append(sep);
-    header.append("f0meanSyllRel20").append(sep).append("f0meanSyllRel30").append(sep).append("f0meanSyllRel40").append(sep).append("f0meanSyllRel50").append(sep);
+    header.append("").append(sep).append("f0meanSyllRel30").append(sep).append("f0meanSyllRel40").append(sep).append("f0meanSyllRel50").append(sep);
     header.append("intrasyllabUp").append(sep).append("intrasyllabDown").append(sep).append("trajectory").append(sep);
     header.append("POSFull").append(sep).append("POSCat").append(sep).append("POSLex").append(sep);
     header.append("context").append(sep);

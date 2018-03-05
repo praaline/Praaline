@@ -87,14 +87,16 @@ QString LOCASF::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
 
 QString LOCASF::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus)
 {
-    QString filename = QDir::homePath() + "/Dropbox/CORPORA/LOCASF_Boundaries.txt";
+    QString filename = QDir::homePath() + "/Dropbox/CORPORA/Boundaries_LOCAS.txt";
     QFile file(filename);
     if ( !file.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
     QTextStream out(&file);
     out.setCodec("UTF-8");
     ProsodicBoundaries PBAnalyser;
     PBAnalyser.setAdditionalAttributeIDs(QStringList() << "boundarySyntactic" << "tok_mwu_text"
-                                         << "sequence_text" << "rection_text");
+                                         << "sequence_text" << "rection_text"
+                                         << "promise_pos" << "promise_boundary" << "promise_contour"
+                                         << "rh_prom" << "rh_hes" << "rh_contour");
     out << PBAnalyser.headerLineForTables() << "\n";
     foreach (QString annotationID, corpus->annotationIDs()) {
         PBAnalyser.analyseAnnotationToStream(out, corpus, annotationID);

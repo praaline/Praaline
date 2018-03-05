@@ -283,7 +283,7 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
         QString annotationID = rec->ID();
         QString speakerID = com->property("SubjectID").toString();
 
-        if (speakerID != "S0") continue;
+        if (speakerID != "SX2") continue;
 
         IntervalTier *tier_tokens = qobject_cast<IntervalTier *>
                 (com->repository()->annotations()->getTier(annotationID, speakerID, "tok_min"));
@@ -298,11 +298,11 @@ QString ExperimentUtterances::createUnitTier(QPointer<Praaline::Core::CorpusComm
             QString target = tier_tokens->at(i)->text();
             if (target != tokenTarget) continue;
             int j = i - 1;
-            while ((j > 0) && (tier_tokens->at(j)->isPauseSilent())) j--;
+            while ((j > 0) && (tier_tokens->at(j)->isPauseSilent() || tier_tokens->at(j)->text() == "euh")) j--;
             QString before = tier_tokens->at(j)->text();
             if (before != tokenBefore) continue;
             int k = i + 1;
-            while ((k < tier_tokens->count()) && (tier_tokens->at(k)->isPauseSilent())) k++;
+            while ((k < tier_tokens->count()) && (tier_tokens->at(k)->isPauseSilent() || tier_tokens->at(j)->text() == "euh")) k++;
             QString after = tier_tokens->at(k)->text();
             if (after != tokenAfter) continue;
             // found it
@@ -328,11 +328,10 @@ QString ExperimentUtterances::rereadCorrectedTGs(QPointer<Praaline::Core::Corpus
     if (!com) return "Error";
     QPointer<Corpus> corpus = com->corpus();
     if (!corpus) return "Error";
-    QString path = "/home/george/Dropbox/MIS_Phradico/Experiences/03_prosodie-relations-de-discours/Production/CORPUS_REPONSES/TO_CHECK_NEW/";
+    QString path = QDir::homePath() + "/Dropbox/MIS_Phradico/Experiences/03_Production-prosodie-relations-de-discours/Production/CORPUS_REPONSES/SX1/";
     QStringList filenameTGs;
-    filenameTGs << "S1" << "S2" << "S3" << "S4" << "S5" << "S6" << "S7" << "S8" << "S9" << "S10"
-                << "S11" << "S12" << "S13" << "S14" << "S15" << "S16" << "S17" << "S18" << "S19" << "S20";
-    filenameTGs << "S15_ONLY_ET" << "S17_ONLY_ET";
+    filenameTGs << "S0";
+
     foreach (QString filenameTG, filenameTGs) {
         AnnotationTierGroup *txg = new AnnotationTierGroup();
         if (!PraatTextGrid::load(path + filenameTG + ".TextGrid", txg)) {
@@ -346,9 +345,9 @@ QString ExperimentUtterances::rereadCorrectedTGs(QPointer<Praaline::Core::Corpus
             QString speakerID = filenameTG.left(3);
             foreach (QString tierName, tierNames) {
                 IntervalTier *tier_tg = txg->getIntervalTierByName(tierName);
-                if (!tier_tg) { ret.append("Error ").append(filenameTG).append("\n"); continue; }
+                if (!tier_tg) { ret.append("Error opening textgrid tier ").append(filenameTG).append("\n"); continue; }
                 IntervalTier *tier = qobject_cast<IntervalTier *>(corpus->repository()->annotations()->getTier(ID->text(), speakerID, tierName));
-                if (!tier) { ret.append("Error ").append(filenameTG).append("\n"); continue; }
+                if (!tier) { ret.append("Error opening database tier ").append(tierName).append(filenameTG).append("\n"); continue; }
                 QList<Interval *> intervals;
                 RealTime tFrom = ID->tMin(); if (tFrom < tier_tg->tMin()) tFrom = tier_tg->tMin();
                 RealTime tTo = ID->tMax(); if (tTo > tier_tg->tMax()) tTo = tier_tg->tMax();
