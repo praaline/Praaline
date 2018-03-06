@@ -455,6 +455,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());
     // m = AggregateProsody::averageContours(communications.first());
+    // m = AggregateProsody::readPCAdata(communications.first());
     m = AggregateProsody::calculatePairwiseDistances(communications.first());
 
 

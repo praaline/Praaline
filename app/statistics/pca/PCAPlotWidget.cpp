@@ -29,6 +29,7 @@ struct PCAPlotWidgetData {
     {}
     CorpusRepository *repository;
     QCustomPlot *plot;
+    QList<QPointer<CorpusCommunication> > communications;
 };
 
 PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
@@ -57,6 +58,8 @@ PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
             this, SLOT(plotItemClick(QCPAbstractPlottable*,int,QMouseEvent*)));
     connect(d->plot, SIGNAL(plottableDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*)),
             this, SLOT(plotItemDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*)));
+
+    ui->comboBoxFilterAttribute->setCurrentText("Utterance ID");
 }
 
 PCAPlotWidget::~PCAPlotWidget()
@@ -85,24 +88,42 @@ void PCAPlotWidget::fileterListSelectionChanged(const QString &attributeValue)
     QString attributeID = ui->comboBoxFilterAttribute->currentData().toString();
     if (!d->repository->metadataStructure()->attributeIDs(CorpusObject::Type_Communication).contains(attributeID)) return;
 
+    // Select communications
+    if (d->repository->listCorporaIDs().isEmpty()) return;
+    QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(d->repository->listCorporaIDs().first());
+    if (!corpus) return;
+    QList<QPointer<CorpusCommunication> > communications;
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        if (!com) continue;
+        if (com->property(attributeID).toString() == attributeValue)
+            communications << com;
+    }
 
-    // generate some data:
-    QVector<double> x(101), y(101); // initialize with entries 0..100
-    for (int i=0; i<101; ++i)
+    // Generate data points
+    QVector<double> x(communications.count()), y(communications.count()); // initialize with entries 0..100
+    for (int i = 0; i < communications.count(); ++i)
     {
-        x[i] = i/50.0 - 1; // x goes from -1 to 1
-        y[i] = pow(x[i], attributeValue.length());
+        x[i] = communications.at(i)->property("PCA_dim1").toDouble();
+        y[i] = communications.at(i)->property("PCA_dim2").toDouble();
     }
     // create graph and assign data to it:
     d->plot->clearGraphs();
     d->plot->addGraph();
     d->plot->graph(0)->setData(x, y);
-    // give the axes some labels:
-    d->plot->xAxis->setLabel("x");
-    d->plot->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    d->plot->xAxis->setRange(-1, 1);
-    d->plot->yAxis->setRange(0, 1);
+    d->plot->graph(0)->setLineStyle(QCPGraph::lsNone);
+    d->plot->graph(0)->setScatterStyle(QCPScatterStyle::ssCircle);
+    // Axis labels
+    d->plot->xAxis->setLabel("PCA Dimension 1");
+    d->plot->yAxis->setLabel("PCA Dimension 2");
+    // Set axes so that all data is visible, with a little margin
+    d->plot->rescaleAxes(true);
+    d->plot->xAxis->setRange(d->plot->xAxis->range().lower - 1.0, d->plot->xAxis->range().upper + 1.0);
+    d->plot->yAxis->setRange(d->plot->yAxis->range().lower - 1.0, d->plot->yAxis->range().upper + 1.0);
+    // Set graph title
+    d->plot->plotLayout()->clear();
+    d->plot->plotLayout()->insertRow(0);
+    d->plot->plotLayout()->addElement(0, 0, new QCPTextElement(d->plot, QString("Principal Component Analysis - Samples for %1").arg(attributeValue),
+                                                               QFont("sans", 12, QFont::Bold)));
     d->plot->replot();
 }
 

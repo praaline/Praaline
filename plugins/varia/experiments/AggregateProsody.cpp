@@ -529,6 +529,46 @@ QString AggregateProsody::averageContours(QPointer<Praaline::Core::CorpusCommuni
     return ret;
 }
 
+QString AggregateProsody::readPCAdata(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    QPointer<Corpus> corpus = com->corpus();
+    if (!corpus) return "Error";
+
+    QString path = QDir::homePath() + "/Dropbox/MIS_Phradico/Experiences/03_Production-prosodie-relations-de-discours/Production Analyses/stimuli_selection/";
+    QStringList utteranceIDs;
+    for (int i = 1; i <= 16; ++i) {
+        utteranceIDs << ((i < 10) ? QString("A0%1").arg(i) : QString("A%1").arg(i));
+        utteranceIDs << ((i < 10) ? QString("E0%1").arg(i) : QString("E%1").arg(i));
+    }
+    foreach (QString utteranceID, utteranceIDs) {
+        QFile file(path + utteranceID + ".pca.txt");
+        if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return QString("Error opening file ") + utteranceID + "\n";
+        QTextStream stream(&file);
+        do {
+            QString line = stream.readLine();
+            if (line.startsWith("\t")) continue;
+            QString communicationID = utteranceID + line.section("\t", 0, 0);
+            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            if (!com) {
+                ret.append(communicationID).append(" does not exist\n");
+                continue;
+            }
+            com->setProperty("PCA_dim1", line.section("\t", 1, 1).toDouble());
+            com->setProperty("PCA_dim2", line.section("\t", 2, 2).toDouble());
+            com->setProperty("PCA_dim3", line.section("\t", 3, 3).toDouble());
+            com->setProperty("PCA_dim4", line.section("\t", 4, 4).toDouble());
+        } while (!stream.atEnd());
+        file.close();
+        ret.append(utteranceID).append(" OK");
+    }
+    corpus->save();
+    return ret;
+}
+
+
+
 struct ScoringGroup {
     QString ID;                                             // e.g. A01
     QString discourseRelation1;                             // e.g. CSQ
@@ -536,7 +576,8 @@ struct ScoringGroup {
     QList<QPointer<CorpusCommunication> > communications1;  // e.g. A01CSQ_S01, A01CSQ_S02 ...
     QList<QPointer<CorpusCommunication> > communications2;  // e.g. A01CHN_S01, A01CHN_S02 ...
     QMap<QString, double> distances;                        // e.g. {S01_S02, 0.5}
-    QMap<double, QString> scores;                           // e.g. {0.5, S01_S01}
+    QMap<double, QString> scores;                           // e.g. {0.5, S01_S02}
+    QMap<double, QString> sameSpeakerScores;                // e.g. {0.5, S01_S01}
 };
 
 QString AggregateProsody::calculatePairwiseDistances(QPointer<Praaline::Core::CorpusCommunication> com)
@@ -588,22 +629,28 @@ QString AggregateProsody::calculatePairwiseDistances(QPointer<Praaline::Core::Co
                 QString speaker1 = com1->property("SubjectID").toString();
                 QString speaker2 = com2->property("SubjectID").toString();
                 // Calculate distance
-                double com1_pca1 = com1->property("PCA1").toDouble(); double com1_pca2 = com1->property("PCA2").toDouble();
-                double com2_pca1 = com2->property("PCA1").toDouble(); double com2_pca2 = com2->property("PCA2").toDouble();
-                double distance = sqrt(pow(com2_pca1 - com1_pca1, 2.0) + pow(com2_pca2 - com1_pca2, 2.0));
+                // com 1 - 4 dimensions
+                double com1_pca1 = com1->property("PCA_dim1").toDouble(); double com1_pca2 = com1->property("PCA_dim2").toDouble();
+                double com1_pca3 = com1->property("PCA_dim3").toDouble(); double com1_pca4 = com1->property("PCA_dim4").toDouble();
+                // com 2 - 4 dimensions
+                double com2_pca1 = com2->property("PCA_dim1").toDouble(); double com2_pca2 = com2->property("PCA_dim2").toDouble();
+                double com2_pca3 = com2->property("PCA_dim3").toDouble(); double com2_pca4 = com2->property("PCA_dim4").toDouble();
+                double distance = sqrt(pow(com2_pca1 - com1_pca1, 2.0) + pow(com2_pca2 - com1_pca2, 2.0) +
+                                       pow(com2_pca3 - com1_pca3, 2.0) + pow(com2_pca4 - com1_pca4, 2.0));
                 // Save to matrix
                 groups[utteranceID].distances.insert(speaker1 + "_" + speaker2, distance);
                 groups[utteranceID].scores.insert(- distance, speaker1 + "_" + speaker2);
+                if (speaker1 == speaker2) groups[utteranceID].sameSpeakerScores.insert(- distance, speaker1);
             }
         }
     }
     // Step 3: Output
-    QString path = QDir::homePath();
+    QString path = QDir::homePath() + "/Dropbox/MIS_Phradico/Experiences/03_Production-prosodie-relations-de-discours/Production Analyses/stimuli_selection/";
     QFile fileHighScores(path + "/stimuli_selection_high_scores.txt");
     if ( !fileHighScores.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
     QTextStream outHighScores(&fileHighScores);
     outHighScores.setCodec("UTF-8");
-    int numberOfHighScoresDesired = 3;
+    int numberOfHighScoresDesired = 5;
     outHighScores << "UtteranceID\tRelation1\tRelation2";
     for (int i = 1; i <= numberOfHighScoresDesired; ++i)
         outHighScores << QString("\tPair%1\tDistance%1").arg(i);
@@ -613,15 +660,38 @@ QString AggregateProsody::calculatePairwiseDistances(QPointer<Praaline::Core::Co
                       << groups[utteranceID].discourseRelation1 << "\t" << groups[utteranceID].discourseRelation2;
         int i = 1;
         QMap<double, QString>::const_iterator iter = groups[utteranceID].scores.constBegin();
-        while (iter != groups[utteranceID].scores.constEnd()) {
-            outHighScores << "\t" << iter.value() << "\t" << iter.key();
+        while ((iter != groups[utteranceID].scores.constEnd()) && (i <= numberOfHighScoresDesired)) {
+            outHighScores << "\t" << iter.value() << "\t" << -iter.key();
             ++iter;
             ++i;
         }
         outHighScores << "\n";
         // Matrix file
 
+    }
+    fileHighScores.close();
+    // Step 3b: Output most different speakers
+    QFile fileSameSpeaker(path + "/stimuli_selection_high_scores_same_speaker.txt");
+    if ( !fileSameSpeaker.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream outSameSpeaker(&fileSameSpeaker);
+    outSameSpeaker.setCodec("UTF-8");
+    outSameSpeaker << "UtteranceID\tRelation1\tRelation2";
+    for (int i = 1; i <= numberOfHighScoresDesired; ++i)
+        outSameSpeaker << QString("\tSameSpkPair%1\tDistance%1").arg(i);
+    outSameSpeaker << "\n";
+    foreach (QString utteranceID, groups.keys()) {
+        outSameSpeaker << utteranceID << "\t"
+                       << groups[utteranceID].discourseRelation1 << "\t" << groups[utteranceID].discourseRelation2;
+        int i = 1;
+        QMap<double, QString>::const_iterator iter = groups[utteranceID].sameSpeakerScores.constBegin();
+        while ((iter != groups[utteranceID].sameSpeakerScores.constEnd()) && (i <= numberOfHighScoresDesired)) {
+            outSameSpeaker << "\t" << iter.value() << "\t" << -iter.key();
+            ++iter;
+            ++i;
+        }
+        outSameSpeaker << "\n";
         ret.append(utteranceID).append("\n");
     }
+    fileSameSpeaker.close();
     return ret;
 }
