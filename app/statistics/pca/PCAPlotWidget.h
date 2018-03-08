@@ -29,7 +29,7 @@ public:
 
 private slots:
     void filterAttributeChanged(const QString &attributeName);
-    void fileterListSelectionChanged(const QString &attributeValue);
+    void replot();
     void plotItemClick(QCPAbstractPlottable*,int,QMouseEvent*);
     void plotItemDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*);
 

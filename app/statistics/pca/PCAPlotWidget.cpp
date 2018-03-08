@@ -16,6 +16,8 @@
 #include "pncore/annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
+#include "svgui/layer/ColourDatabase.h"
+
 #include "qcustomplot.h"
 #include "pngui/widgets/GridViewWidget.h"
 
@@ -29,7 +31,7 @@ struct PCAPlotWidgetData {
     {}
     CorpusRepository *repository;
     QCustomPlot *plot;
-    QList<QPointer<CorpusCommunication> > communications;
+    QMap<QString, QList<QPointer<CorpusCommunication> > > communications;
 };
 
 PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
@@ -41,13 +43,17 @@ PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
 
     ui->splitter->setSizes(QList<int>() << 400 << 100);
 
-    // List of metadata attributes for Communication -> Filter attribute
+    // List of metadata attributes for Communication
     foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        ui->comboBoxClassificationAttribute->addItem(attr->name(), attr->ID());
         ui->comboBoxFilterAttribute->addItem(attr->name(), attr->ID());
     }
+    // Properties of selected communication
+    ui->treeWidgetItemProperties->setHeaderLabels(QStringList() << tr("Property") << tr("Value"));
+    // Respond to user changes in the parameters
     connect(ui->comboBoxFilterAttribute, SIGNAL(currentIndexChanged(QString)), this, SLOT(filterAttributeChanged(QString)));
-    // Selection
-    connect(ui->listFilterAttributeValues, SIGNAL(currentTextChanged(QString)), this, SLOT(fileterListSelectionChanged(QString)));
+    connect(ui->listFilterAttributeValues, SIGNAL(currentTextChanged(QString)), this, SLOT(replot()));
+    connect(ui->comboBoxClassificationAttribute, SIGNAL(currentIndexChanged(QString)), this, SLOT(replot()));
 
     // Set up plot
     d->plot = new QCustomPlot(this);
@@ -60,6 +66,7 @@ PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
             this, SLOT(plotItemDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*)));
 
     ui->comboBoxFilterAttribute->setCurrentText("Utterance ID");
+    ui->comboBoxClassificationAttribute->setCurrentText("Discourse Relation");
 }
 
 PCAPlotWidget::~PCAPlotWidget()
@@ -82,36 +89,66 @@ void PCAPlotWidget::filterAttributeChanged(const QString &attributeName)
     }
 }
 
-void PCAPlotWidget::fileterListSelectionChanged(const QString &attributeValue)
+void PCAPlotWidget::replot()
 {
+    // Check for valid repository and corpus
     if (!d->repository) return;
-    QString attributeID = ui->comboBoxFilterAttribute->currentData().toString();
-    if (!d->repository->metadataStructure()->attributeIDs(CorpusObject::Type_Communication).contains(attributeID)) return;
-
-    // Select communications
     if (d->repository->listCorporaIDs().isEmpty()) return;
     QPointer<Corpus> corpus = d->repository->metadata()->getCorpus(d->repository->listCorporaIDs().first());
     if (!corpus) return;
-    QList<QPointer<CorpusCommunication> > communications;
+    // Get attributes
+    QString filterAttributeID = ui->comboBoxFilterAttribute->currentData().toString();
+    if (!d->repository->metadataStructure()->attributeIDs(CorpusObject::Type_Communication).contains(filterAttributeID)) return;
+    QString classificationAttributeID = ui->comboBoxClassificationAttribute->currentData().toString();
+    if (!d->repository->metadataStructure()->attributeIDs(CorpusObject::Type_Communication).contains(classificationAttributeID)) classificationAttributeID = "";
+    // Filter attribute
+    if (!ui->listFilterAttributeValues->currentItem()) return;
+    QString filterAttributeValue = ui->listFilterAttributeValues->currentItem()->text();
+
+    // Select communications and classify them
+    d->communications.clear();
     foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
         if (!com) continue;
-        if (com->property(attributeID).toString() == attributeValue)
-            communications << com;
+        // Filter
+        if (com->property(filterAttributeID).toString() != filterAttributeValue ) continue;
+        // Classify
+        QString comClass = com->property(classificationAttributeID).toString();
+        if (!d->communications.contains(comClass)) {
+            d->communications.insert(comClass, QList<QPointer<CorpusCommunication> >());
+        }
+        d->communications[comClass] << com;
     }
 
-    // Generate data points
-    QVector<double> x(communications.count()), y(communications.count()); // initialize with entries 0..100
-    for (int i = 0; i < communications.count(); ++i)
-    {
-        x[i] = communications.at(i)->property("PCA_dim1").toDouble();
-        y[i] = communications.at(i)->property("PCA_dim2").toDouble();
-    }
-    // create graph and assign data to it:
+    // Create a graph for each class
+    int indexClass(0);
+    QVector<QCPScatterStyle::ScatterShape> shapes;
+
+    shapes << QCPScatterStyle::ssDisc << QCPScatterStyle::ssSquare << QCPScatterStyle::ssTriangle
+           << QCPScatterStyle::ssCircle << QCPScatterStyle::ssDiamond << QCPScatterStyle::ssStar
+           << QCPScatterStyle::ssCross << QCPScatterStyle::ssPlus  << QCPScatterStyle::ssTriangleInverted
+           << QCPScatterStyle::ssCrossSquare << QCPScatterStyle::ssPlusSquare << QCPScatterStyle::ssCrossCircle << QCPScatterStyle::ssPlusCircle;
+    ColourDatabase *cdb = ColourDatabase::getInstance();
     d->plot->clearGraphs();
-    d->plot->addGraph();
-    d->plot->graph(0)->setData(x, y);
-    d->plot->graph(0)->setLineStyle(QCPGraph::lsNone);
-    d->plot->graph(0)->setScatterStyle(QCPScatterStyle::ssCircle);
+    foreach (QString comClass, d->communications.keys()) {
+        QList<QPointer<CorpusCommunication> > communications = d->communications[comClass];
+        // Generate data points
+        QVector<double> x(communications.count()), y(communications.count());
+        for (int i = 0; i < communications.count(); ++i) {
+            x[i] = communications.at(i)->property("PCA_dim1").toDouble();
+            y[i] = communications.at(i)->property("PCA_dim2").toDouble();
+        }
+        // Create graph and assign data to it
+        if (d->plot->graphCount() < indexClass + 1) {
+            d->plot->addGraph();
+            d->plot->graph(indexClass)->setLineStyle(QCPGraph::lsNone);
+            d->plot->graph(indexClass)->setScatterStyle(shapes.at(indexClass % shapes.count()));
+            d->plot->graph(indexClass)->setPen(QPen(cdb->getColour((indexClass + 1) % cdb->getColourCount())));
+            d->plot->graph(indexClass)->setBrush(QBrush(cdb->getColour((indexClass + 1) % cdb->getColourCount())));
+        }
+        d->plot->graph(indexClass)->addData(x, y);
+        d->plot->graph(indexClass)->setName(comClass);
+        indexClass++;
+    }
     // Axis labels
     d->plot->xAxis->setLabel("PCA Dimension 1");
     d->plot->yAxis->setLabel("PCA Dimension 2");
@@ -119,17 +156,26 @@ void PCAPlotWidget::fileterListSelectionChanged(const QString &attributeValue)
     d->plot->rescaleAxes(true);
     d->plot->xAxis->setRange(d->plot->xAxis->range().lower - 1.0, d->plot->xAxis->range().upper + 1.0);
     d->plot->yAxis->setRange(d->plot->yAxis->range().lower - 1.0, d->plot->yAxis->range().upper + 1.0);
-    // Set graph title
-    d->plot->plotLayout()->clear();
-    d->plot->plotLayout()->insertRow(0);
-    d->plot->plotLayout()->addElement(0, 0, new QCPTextElement(d->plot, QString("Principal Component Analysis - Samples for %1").arg(attributeValue),
-                                                               QFont("sans", 12, QFont::Bold)));
+    // Legend
+    d->plot->legend->setVisible(true);
+    d->plot->legend->setFont(QFont("Helvetica", 9));
     d->plot->replot();
 }
 
 void PCAPlotWidget::plotItemClick(QCPAbstractPlottable *plottable, int index, QMouseEvent *event)
 {
-    QMessageBox::information(this, "Click", QString("%1 %2").arg(plottable->name()).arg(index));
+    QList<QPointer<CorpusCommunication> > communications = d->communications.value(plottable->name());
+    if (index < 0) return;
+    if (index >= communications.count()) return;
+    QPointer<CorpusCommunication> com = communications.at(index);
+    if (!com) return;
+    QList<QTreeWidgetItem *> items;
+    foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        QString attributeValue = com->property(attr->ID()).toString();
+        items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList() << attr->name() << attributeValue));
+    }
+    ui->treeWidgetItemProperties->clear();
+    ui->treeWidgetItemProperties->insertTopLevelItems(0, items);
 }
 
 void PCAPlotWidget::plotItemDoubleClick(QCPAbstractPlottable *plottable, int index, QMouseEvent *event)
