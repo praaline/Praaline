@@ -50,10 +50,10 @@ LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
 win* {
     CONFIG( debug, debug|release ) {
         LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/debug
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
+        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5d
     } else {
         LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/release
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2
+        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
     }
 }
 macx* {
