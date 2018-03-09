@@ -81,6 +81,8 @@ TimelineEditorConfigWidget::TimelineEditorConfigWidget(QWidget *parent) :
 //    addLevelAttribute("tok_min", "", "context", "");
 
     QString configFilename = QDir::homePath() + "/Praaline/timelineConfig.txt";
+    if (!QFile::exists(configFilename))
+        configFilename = QApplication::applicationDirPath() + "/timelineConfig.txt";
     QFile fileConfig(configFilename);
     if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
         QTextStream stream(&fileConfig);

@@ -259,6 +259,8 @@ void TimelineVisualisationWidget::annotationTimelineEditorOpen(QPointer<Corpus> 
 void TimelineVisualisationWidget::readVisualisationIndexFromConfigFile()
 {
     QString configFilename = QDir::homePath() + "/Praaline/visualiserConfig.txt";
+    if (!QFile::exists(configFilename))
+        configFilename = QApplication::applicationDirPath() + "/visualiserConfig.txt";
     QFile fileConfig(configFilename);
     if (fileConfig.open( QIODevice::ReadOnly | QIODevice::Text )) {
         QTextStream stream(&fileConfig);
