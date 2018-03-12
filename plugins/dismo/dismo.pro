@@ -33,10 +33,11 @@ INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces
 DEPENDPATH += . .. ../.. ../../pncore
 
 # Qtilities include for plugin interfaces
-INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCore
-INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCoreGui
-INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesLogging
-INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesExtensionSystem
+QTILITIES += extension_system
+QTILITIES_SOURCE_BASE  = $$PWD/../../dependencies/qtilities
+QTILITIES_BUILD_BASE   = $$OUT_PWD/../../dependencies/qtilities
+QTILITIES_DEPENDENCIES = $$OUT_PWD/../../dependencies
+include(../../dependencies/qtilities/src/Qtilities.pri)
 
 unix {
     DEFINES += HAVE_CRFPP_CONFIG_H
