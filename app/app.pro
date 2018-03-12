@@ -40,35 +40,28 @@ QTILITIES += core
 QTILITIES += coregui
 QTILITIES += extension_system
 QTILITIES += project_management
+QTILITIES_SOURCE_BASE  = $$PWD/../dependencies/qtilities
+QTILITIES_BUILD_BASE   = $$OUT_PWD/../dependencies/qtilities
+QTILITIES_DEPENDENCIES = $$OUT_PWD/../dependencies
 include(../dependencies/qtilities/src/Qtilities.pri)
-include(../dependencies/qtilities/src/Dependencies.pri)
-INCLUDEPATH += dependencies/qtilities/include
 
 # QScintilla
 INCLUDEPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
-LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
-win* {
-    CONFIG( debug, debug|release ) {
-        LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/debug
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5d
+DEPENDPATH  += $$PWD/../dependencies/qscintilla/Qt4Qt5
+LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/$${COMPONENTSPATH}
+CONFIG(debug, debug|release) {
+    mac: {
+        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt$${QT_MAJOR_VERSION}_debug
     } else {
-        LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/release
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
+        win32: {
+            LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt$${QT_MAJOR_VERSION}d
+        } else {
+            LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt$${QT_MAJOR_VERSION}
+        }
     }
+} else {
+    LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt$${QT_MAJOR_VERSION}
 }
-macx* {
-    LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
-    CONFIG( debug, debug|release ) {
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5_debug
-    } else {
-        LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
-    }
-}
-linux* {
-    LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5
-    LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt5
-}
-DEPENDPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
 
 # Node editor
 DEFINES += NODE_EDITOR_STATIC

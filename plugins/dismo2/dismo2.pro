@@ -32,10 +32,11 @@ else {
 INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces
 DEPENDPATH += . .. ../.. ../../pncore
 
-# Qtilities configuration
-QTILITIES += extension_system
-include(../../dependencies/qtilities/src/Qtilities.pri)
-INCLUDEPATH += ../../dependencies/qtilities/include
+# Qtilities include for plugin interfaces
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCore
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCoreGui
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesLogging
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesExtensionSystem
 
 unix {
     DEFINES += HAVE_CRFPP_CONFIG_H

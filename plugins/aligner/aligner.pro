@@ -32,10 +32,11 @@ else {
 INCLUDEPATH += . .. ../.. ../../pncore ../../pnlib ../../app/interfaces
 DEPENDPATH += . .. ../.. ../../pncore ../../pnlib
 
-# Qtilities configuration
-QTILITIES += extension_system
-include(../../dependencies/qtilities/src/Qtilities.pri)
-INCLUDEPATH += ../../dependencies/qtilities/include
+# Qtilities include for plugin interfaces
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCore
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesCoreGui
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesLogging
+INCLUDEPATH += ../../dependencies/qtilities/include/QtilitiesExtensionSystem
 
 # Linking dynamically with PocketSphinx
 win32-g++ {
