@@ -6,6 +6,7 @@
 
 namespace Praaline {
 namespace Core {
+class Corpus;
 class CorpusCommunication;
 }
 }
@@ -24,6 +25,11 @@ public:
     static QString fixTranscription(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString rereadCorrectedTGs(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString resyllabifyMDs(QPointer<Praaline::Core::CorpusCommunication> com);
+
+    static QString createStimuli(QPointer<Praaline::Core::Corpus> corpus);
+    static QString createStimuli(QPointer<Praaline::Core::CorpusCommunication> comA,
+                                 QPointer<Praaline::Core::CorpusCommunication> comB);
+
 };
 
 #endif // EXPERIMENTUTTERANCES_H

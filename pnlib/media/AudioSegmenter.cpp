@@ -69,6 +69,19 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
     return true;
 }
 
+bool AudioSegmenter::runSoxCommand(const QString &command)
+{
+    QProcess sox;
+    // DIRECTORY:
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
+    sox.setWorkingDirectory(soxPath);
+    QStringList arguments = command.split(" ");
+    sox.start(soxPath + "sox", arguments);
+    if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+        return false;
+    return true;
+}
+
 bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &filenameOut, QList<Interval *> intervalsToRemove)
 {
     QProcess sox;

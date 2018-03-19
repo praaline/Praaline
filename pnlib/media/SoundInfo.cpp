@@ -79,7 +79,8 @@ bool SoundInfo::getSoundInfo(const QString &filename, SoundInfo &info)
             info.precisionBits = line.section(":", 1, -1).replace("-bit", "").trimmed().toInt();
         }
         else if (line.startsWith("Duration")) {
-            QString durationText = line.section(":", 1, -1).section("=", 1, 1).replace("samples", "").trimmed();
+            QString durationText = line.section(":", 1, -1).section("=", 1, 1).section("samples", 0, 0)
+                                       .replace("samples", "").trimmed();
             sv_frame_t samples = durationText.toLongLong();
             info.duration = RealTime::frame2RealTime(samples, info.sampleRate);
             // Old method

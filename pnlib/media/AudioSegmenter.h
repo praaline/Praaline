@@ -26,6 +26,8 @@ public:
     static bool resample(const QString &filenameIn, const QString &filenameOut,
                          uint newSamplingRate, bool normalise = false, int channels = 1);
 
+    static bool runSoxCommand(const QString &command);
+
 private:
     AudioSegmenter() {}
     ~AudioSegmenter() {}
