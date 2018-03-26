@@ -58,8 +58,14 @@ PRE_TARGETDEPS += \
 HEADERS += \ 
     pluginfloralpfc_global.h \
     pluginfloralpfc.h \
-    valibelprocessor.h
+    valibelprocessor.h \
+    PFCPreprocessor.h \
+    PFCPhonetiser.h \
+    PFCAligner.h
 	
 SOURCES += \ 
     pluginfloralpfc.cpp \
-    valibelprocessor.cpp
+    valibelprocessor.cpp \
+    PFCPreprocessor.cpp \
+    PFCPhonetiser.cpp \
+    PFCAligner.cpp
