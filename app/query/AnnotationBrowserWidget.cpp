@@ -1,6 +1,7 @@
 #include <QLabel>
 #include <QComboBox>
 #include <QVBoxLayout>
+#include <QGroupBox>
 #include <QMessageBox>
 
 #include "pncore/datastore/CorpusRepository.h"

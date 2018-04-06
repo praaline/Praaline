@@ -80,7 +80,8 @@ void StatisticsPluginBasicWidget::analyse()
     if (!corpus) return;
 
     d->levelIDs = d->repository->annotationStructure()->levelIDs();
-    d->attributeIDs.clear(); d->attributeIDs << "annotationID" << "speakerID";
+    d->attributeIDs.clear();
+    d->attributeIDs << "annotationID" << "speakerID";
     // Exclude pauses from counts
     QStringList valuesForSilentPause;
     valuesForSilentPause << "" << "_" << "#";
@@ -89,6 +90,7 @@ void StatisticsPluginBasicWidget::analyse()
         QList<QPair<QList<QVariant>, long long> > counts = d->repository->annotations()->countItems(levelID, d->attributeIDs, true, valuesForSilentPause);
         QPair<QList<QVariant>, long long> count;
         foreach (count, counts) {
+            // ID = Annotation ID \tab Speaker ID
             QString id = count.first.at(0).toString() + "\t" + count.first.at(1).toString();
             d->dataCounts[id].insert(levelID, count.second);
         }
@@ -104,7 +106,9 @@ void StatisticsPluginBasicWidget::updateTable()
     // Create new model
     QStandardItemModel *model = new QStandardItemModel(this);
     // Build header
-    QStringList header; header << "Annotation ID" << "Speaker ID " << d->levelIDs;
+    QStringList header;
+
+    header << "Annotation ID" << "Speaker ID " << d->levelIDs;
     if (orientation == Qt::Vertical) {
         model->setHorizontalHeaderLabels(header);
         model->setColumnCount(d->levelIDs.count() + 2);

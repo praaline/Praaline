@@ -13,12 +13,13 @@ class IntervalTier;
 
 struct TranscriptAnnotationEditorData;
 
-class TranscriptAnnotationEditor : public AnnotationEditorBase
+class TranscriptAnnotationEditor : public QMainWindow, public AnnotationEditorBase
 {
     Q_OBJECT
 public:
     TranscriptAnnotationEditor(QWidget *parent = 0);
     virtual ~TranscriptAnnotationEditor();
+    QWidget *editorWidget() override { return this; }
 
 public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,

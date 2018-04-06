@@ -63,8 +63,14 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
     QList<QStringList> scriptArguments = script(filenameIn, pathOut, segments, attribute, newSamplingRate, normalise, channels);
     foreach (QStringList arguments, scriptArguments) {
         sox.start(soxPath + "sox", arguments);
-        if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+        if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
             return false;
+        if (!sox.waitForFinished(-1))   // sets current thread to sleep and waits for sox end
+            return false;
+        QString output(sox.readAllStandardOutput());
+        QString errors(sox.readAllStandardError());
+        qDebug() << output;
+        qDebug() << errors;
     }
     return true;
 }
@@ -77,8 +83,14 @@ bool AudioSegmenter::runSoxCommand(const QString &command)
     sox.setWorkingDirectory(soxPath);
     QStringList arguments = command.split(" ");
     sox.start(soxPath + "sox", arguments);
-    if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+    if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
         return false;
+    if (!sox.waitForFinished(-1))   // sets current thread to sleep and waits for sox end
+        return false;
+    QString output(sox.readAllStandardOutput());
+    QString errors(sox.readAllStandardError());
+    qDebug() << output;
+    qDebug() << errors;
     return true;
 }
 
@@ -143,9 +155,29 @@ bool AudioSegmenter::resample(const QString &filenameIn, const QString &filename
         arguments << "rate" << QString::number(newSamplingRate);
     }
     sox.start(soxPath + "sox", arguments);
-    if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
+    if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
         return false;
+    if (!sox.waitForFinished(-1))   // sets current thread to sleep and waits for sox end
+        return false;
+    QString output(sox.readAllStandardOutput());
+    QString errors(sox.readAllStandardError());
+    qDebug() << output;
+    qDebug() << errors;
     return true;
+}
+
+// static
+bool AudioSegmenter::generateSilence(const QString &filenameOut, RealTime duration)
+{
+    // Sox generate silence
+    // sox -n -r 16000 -c 1 silence0.4.wav trim 0.0 0.4
+    // Description:
+    // -n    : no input (null file handle)
+    // -r     : sampling rate (16000 Hz)
+    // -c     : channel (1 for mono, 2 for stereo)
+    QString cmd = QString("-n -r 16000 -c 1 %1 trim 0.0 %2").arg(filenameOut).arg(duration.toDouble());
+    cmd = cmd.replace("  ", " ");
+    return runSoxCommand(cmd);
 }
 
 } // namespace Media

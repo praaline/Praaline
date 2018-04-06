@@ -49,7 +49,7 @@ struct TranscriptAnnotationEditorData {
 };
 
 TranscriptAnnotationEditor::TranscriptAnnotationEditor(QWidget *parent) :
-    AnnotationEditorBase(parent), d(new TranscriptAnnotationEditorData)
+    QMainWindow(parent), d(new TranscriptAnnotationEditorData)
 {
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);

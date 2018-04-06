@@ -7,13 +7,14 @@
 
 struct GroupingAnnotationEditorData;
 
-class GroupingAnnotationEditor : public AnnotationEditorBase
+class GroupingAnnotationEditor : public QMainWindow, public AnnotationEditorBase
 {
     Q_OBJECT
 
 public:
     GroupingAnnotationEditor(QWidget *parent = 0);
     virtual ~GroupingAnnotationEditor();
+    QWidget *editorWidget() override { return this; }
 
 public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,

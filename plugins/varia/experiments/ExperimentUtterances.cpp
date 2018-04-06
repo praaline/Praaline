@@ -533,43 +533,79 @@ QString ExperimentUtterances::createStimuli(QPointer<Praaline::Core::CorpusCommu
     IntervalTier *tier_sequence_B = qobject_cast<IntervalTier *>
             (comA->repository()->annotations()->getTier(annotationID_B, speakerID, "sequence"));
 
-    RealTime A_S1_tMax, A_MD_tMin, A_MD_tMax, A_S2_tMin, B_S2_tMin;
-    foreach (Interval *intv, tier_sequence_A->intervals()) {
-        if      (intv->text() == "S1") { A_S1_tMax = intv->tMax(); }
-        else if (intv->text() == "MD") { A_MD_tMin = intv->tMin(); A_MD_tMax = intv->tMax(); }
-        else if (intv->text() == "S2") { A_S2_tMin = intv->tMin(); }
+    RealTime A_S1_tMin, A_S1_tMax, A_MD_tMin, A_MD_tMax, A_S2_tMin, A_S2_tMax, B_S2_tMin, B_S2_tMax;
+    for (int i = 0; i < tier_sequence_A->count(); ++i) {
+        Interval *intv = tier_sequence_A->interval(i);
+        if      (intv->text() == "S1") {
+            A_S1_tMin = intv->tMin();
+            A_S1_tMax = intv->tMax();
+        }
+        else if (intv->text() == "MD") {
+            A_MD_tMin = intv->tMin();
+            if (tier_sequence_A->interval(i + 1)->isPauseSilent())
+                A_MD_tMax = tier_sequence_A->interval(i + 1)->tMax();
+            else
+                A_MD_tMax = intv->tMax();
+        }
+        else if (intv->text() == "S2") {
+            A_S2_tMin = intv->tMin();
+            A_S2_tMax = intv->tMax();
+        }
     }
     foreach (Interval *intv, tier_sequence_B->intervals()) {
-        if      (intv->text() == "S2") { B_S2_tMin = intv->tMin(); }
+        if      (intv->text() == "S2") {
+            B_S2_tMin = intv->tMin();
+            B_S2_tMax = intv->tMax();
+        }
     }
 
-    // Select pause
-    QString pauseFile = QDir::homePath() + "/temp_cutting/"; RealTime pauseBeforeMD;
+    // Calculate initial pause
+    RealTime pauseInitial, startCut;
+    QString pauseInitialFile = QDir::homePath() + QString("/temp_cutting/%1_pauseinitial.wav ").arg(utteranceID);
+    if (A_S1_tMin < RealTime::fromMilliseconds(250)) {
+        pauseInitial = RealTime::fromMilliseconds(250) - A_S1_tMin;
+        AudioSegmenter::generateSilence(pauseInitialFile, pauseInitial);
+        // Cut A_S1 from zero
+        startCut = RealTime::zeroTime;
+    }
+    else {
+        pauseInitialFile = "";
+        // Cut A_S1 from 250 ms before the start of S1
+        startCut = A_S1_tMin - RealTime::fromMilliseconds(250);
+    }
+
+    // Select pause before MD
+    RealTime pauseBeforeMD;
+    QString pauseBeforeMDFile = QDir::homePath() + "/temp_cutting/";
     if (utteranceID.startsWith("A")) {
-        if      (relationA == "CSQ") { pauseFile.append("pauses/pause100ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(100); }
-        else if (relationA == "CCS") { pauseFile.append("pauses/pause300ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(300); }
-        else if (relationA == "SPE") { pauseFile.append("pauses/pause500ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(500); }
-        else if (relationA == "CHN") { pauseFile.append("pauses/pause750ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(750); }
+        if      (relationA == "CSQ") { pauseBeforeMDFile.append("pauses/pause100ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(100); }
+        else if (relationA == "CCS") { pauseBeforeMDFile.append("pauses/pause300ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(300); }
+        else if (relationA == "SPE") { pauseBeforeMDFile.append("pauses/pause500ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(500); }
+        else if (relationA == "CHN") { pauseBeforeMDFile.append("pauses/pause750ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(750); }
     }
     else if (utteranceID.startsWith("E")) {
-        if      (relationA == "ADD") { pauseFile.append("pauses/pause125ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(125); }
-        else if (relationA == "CSQ") { pauseFile.append("pauses/pause125ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(125); }
-        else if (relationA == "TMP") { pauseFile.append("pauses/pause450ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(450); }
-        else if (relationA == "SPE") { pauseFile.append("pauses/pause500ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(500); }
+        if      (relationA == "ADD") { pauseBeforeMDFile.append("pauses/pause125ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(125); }
+        else if (relationA == "CSQ") { pauseBeforeMDFile.append("pauses/pause125ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(125); }
+        else if (relationA == "TMP") { pauseBeforeMDFile.append("pauses/pause450ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(450); }
+        else if (relationA == "SPE") { pauseBeforeMDFile.append("pauses/pause500ms16k.wav "); pauseBeforeMD = RealTime::fromMilliseconds(500); }
     }
 
+    RealTime endA = A_S2_tMax + RealTime::fromMilliseconds(250);
+    if (endA > tier_sequence_A->tMax()) endA = tier_sequence_A->tMax();
+    RealTime endB = B_S2_tMax + RealTime::fromMilliseconds(250);
+    if (endB > tier_sequence_B->tMax()) endB = tier_sequence_B->tMax();
 
     QString pathTemp = QDir::homePath() + "/temp_cutting/parts";
     QList<Interval *> cutsA, cutsB;
-    cutsA << new Interval(RealTime::zeroTime, A_S1_tMax, utteranceID + relationA + "_A_S1");
+    cutsA << new Interval(startCut, A_S1_tMax, utteranceID + relationA + "_A_S1");
     cutsA << new Interval(A_MD_tMin, A_S2_tMin, utteranceID + relationA + "_A_MD");
-    cutsA << new Interval(A_S2_tMin, tier_sequence_A->tMax(), utteranceID + relationA + "_A_S2");
-    cutsB << new Interval(B_S2_tMin, tier_sequence_B->tMax(), utteranceID + relationB + "_B_S2");
+    cutsA << new Interval(A_S2_tMin, endA, utteranceID + relationA + "_A_S2");
+    cutsB << new Interval(B_S2_tMin, endB, utteranceID + relationB + "_B_S2");
     AudioSegmenter::segment(recA->filePath(), pathTemp, cutsA, QString(), 16000);
     AudioSegmenter::segment(recB->filePath(), pathTemp, cutsB, QString(), 16000);
 
-    RealTime startA0 = RealTime::zeroTime;
-    RealTime startA1 = cutsA[0]->duration() + pauseBeforeMD;
+    RealTime startA0 = RealTime::fromMilliseconds(250);
+    RealTime startA1 = startA0 + (A_S1_tMax - A_S1_tMin) + pauseBeforeMD;
     RealTime startA2 = startA1 + cutsA[1]->duration();
     RealTime startB2 = startA1 + cutsA[1]->duration();
 
@@ -584,13 +620,17 @@ QString ExperimentUtterances::createStimuli(QPointer<Praaline::Core::CorpusCommu
         IntervalTier *tier_B = qobject_cast<IntervalTier *>
                 (comA->repository()->annotations()->getTier(annotationID_B, speakerID, tierName));
         QList<Interval *> tierIntervals1, tierIntervals2, tierIntervalsOrig;
-        tierIntervalsOrig = tier_A->getIntervalsContainedIn(cutsA[0]);
+        tierIntervals1 << new Interval(RealTime::zeroTime, RealTime::fromMilliseconds(250), "_");
+        tierIntervals2 << new Interval(RealTime::zeroTime, RealTime::fromMilliseconds(250), "_");
+        // start
+        tierIntervalsOrig = tier_A->getIntervalsContainedIn(A_S1_tMin, A_S1_tMax);
+        RealTime delta = RealTime::fromMilliseconds(250) - A_S1_tMin;
         foreach (Interval *intv, tierIntervalsOrig) {
-            tierIntervals1 << new Interval(intv);
-            tierIntervals2 << new Interval(intv);
+            tierIntervals1 << new Interval(intv->tMin() + delta, intv->tMax() + delta, intv->text());
+            tierIntervals2 << new Interval(intv->tMin() + delta, intv->tMax() + delta, intv->text());
         }
         tierIntervalsOrig = tier_A->getIntervalsContainedIn(cutsA[1]);
-        RealTime delta = startA1 - cutsA[1]->tMin();
+        delta = startA1 - cutsA[1]->tMin();
         foreach (Interval *intv, tierIntervalsOrig) {
             tierIntervals1 << new Interval(intv->tMin() + delta, intv->tMax() + delta, intv->text());
             tierIntervals2 << new Interval(intv->tMin() + delta, intv->tMax() + delta, intv->text());
@@ -605,27 +645,46 @@ QString ExperimentUtterances::createStimuli(QPointer<Praaline::Core::CorpusCommu
         foreach (Interval *intv, tierIntervalsOrig) {
             tierIntervals2 << new Interval(intv->tMin() + delta, intv->tMax() + delta, intv->text());
         }
+        tierIntervals1 << new Interval(tierIntervals1.last()->tMax(), tierIntervals1.last()->tMax() + RealTime::fromMilliseconds(250) , "_");
+        tierIntervals2 << new Interval(tierIntervals2.last()->tMax(), tierIntervals2.last()->tMax() + RealTime::fromMilliseconds(250) , "_");
         IntervalTier *tier1 = new IntervalTier(tierName, tierIntervals1);
         IntervalTier *tier2 = new IntervalTier(tierName, tierIntervals2);
+        tier1->moveTierEnd(startA2 + cutsA[2]->duration());
+        tier2->moveTierEnd(startB2 + cutsB[0]->duration());
+        tier1->fillEmptyWith("", "_");
+        tier2->fillEmptyWith("", "_");
         txgStimulus1->addTier(tier1);
         txgStimulus2->addTier(tier2);
     }
     QString outPath = QDir::homePath() + "/Dropbox/MIS_Phradico/Experiences/05_Perception-prosodie-relations-discours/Stimuli/";
-    PraatTextGrid::save(outPath + stimulusID_1 + ".TextGrid", txgStimulus1);
-    PraatTextGrid::save(outPath + stimulusID_2 + ".TextGrid", txgStimulus2);
+    // PraatTextGrid::save(outPath + stimulusID_1 + ".TextGrid", txgStimulus1);
+    // PraatTextGrid::save(outPath + stimulusID_2 + ".TextGrid", txgStimulus2);
     delete txgStimulus1;
     delete txgStimulus2;
 
-    QString soxCommand1, soxCommand2;
+    QString pause300File = QDir::homePath() + "/temp_cutting/pauses/pause300ms16k.wav ";
+
+    QString soxCommand0, soxCommand1, soxCommand2;
     pathTemp = pathTemp.append("/");
-    soxCommand1.append(pathTemp).append(utteranceID + relationA + "_A_S1.wav ").append(pauseFile)
-               .append(pathTemp).append(utteranceID + relationA + "_A_MD.wav ")
-               .append(pathTemp).append(utteranceID + relationA + "_A_S2.wav ").append(outPath + stimulusID_1).append(".wav");
-    soxCommand2.append(pathTemp).append(utteranceID + relationA + "_A_S1.wav ").append(pauseFile)
-               .append(pathTemp).append(utteranceID + relationA + "_A_MD.wav ")
-               .append(pathTemp).append(utteranceID + relationB + "_B_S2.wav ").append(outPath + stimulusID_2).append(".wav");
-    AudioSegmenter::runSoxCommand(soxCommand1);
-    AudioSegmenter::runSoxCommand(soxCommand2);
+    soxCommand0.append(pauseInitialFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_S1.wav ")
+            .append(pauseBeforeMDFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_MD.wav ")
+            .append(pause300File)
+            .append(outPath + "S1MD_only/" + QString("STIM_") + utteranceID + relationA + ".wav");
+    soxCommand1.append(pauseInitialFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_S1.wav ")
+            .append(pauseBeforeMDFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_MD.wav ")
+            .append(pathTemp).append(utteranceID + relationA + "_A_S2.wav ").append(outPath + stimulusID_1).append(".wav");
+    soxCommand2.append(pauseInitialFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_S1.wav ")
+            .append(pauseBeforeMDFile)
+            .append(pathTemp).append(utteranceID + relationA + "_A_MD.wav ")
+            .append(pathTemp).append(utteranceID + relationB + "_B_S2.wav ").append(outPath + stimulusID_2).append(".wav");
+    // AudioSegmenter::runSoxCommand(soxCommand0);
+    // AudioSegmenter::runSoxCommand(soxCommand1);
+    // AudioSegmenter::runSoxCommand(soxCommand2);
 
     ret.append("sox ").append(soxCommand1).append("\n").append("sox ").append(soxCommand2);
     return ret;

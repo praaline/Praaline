@@ -15,14 +15,13 @@ class CorpusAnnotation;
 }
 }
 
-class AnnotationEditorBase : public QMainWindow
+class AnnotationEditorBase
 {
-    Q_OBJECT
 public:
-    explicit AnnotationEditorBase(QWidget *parent = 0);
-    virtual ~AnnotationEditorBase();
+    explicit AnnotationEditorBase() {}
+    virtual ~AnnotationEditorBase() {}
 
-public slots:
+    virtual QWidget *editorWidget() = 0;
     virtual void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,
                       Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot) = 0;
     virtual void jumpToTime(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com, Praaline::Core::CorpusAnnotation *annot,

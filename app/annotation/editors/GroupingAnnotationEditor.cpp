@@ -71,7 +71,7 @@ struct GroupingAnnotationEditorData {
 };
 
 GroupingAnnotationEditor::GroupingAnnotationEditor(QWidget *parent) :
-    AnnotationEditorBase(parent), d(new GroupingAnnotationEditorData())
+    QMainWindow(parent), d(new GroupingAnnotationEditorData())
 {
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);

@@ -16,6 +16,10 @@
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 
+#include "PFCPreprocessor.h"
+#include "PFCPhonetiser.h"
+#include "PFCAligner.h"
+
 #include "valibelprocessor.h"
 
 
@@ -125,10 +129,22 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(const QHash<QS
 
 void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
+//    PFCPreprocessor p;
+//    QString m = p.renameTextgridTiers("/mnt/hgfs/DATA/PFCALIGN/Textgrids");
+//    printMessage(m);
+//    return;
+
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        PFCPreprocessor p;
+        QString m = p.prepareTranscription(com);
+        if (!m.isEmpty()) printMessage(m);
+    }
+    return;
+
     if (d->corpusType == "valibel") {
-        if (d->command.contains("import")) ValibelProcessor::importValibelFile(communications.first()->corpus(), d->path + "/" + d->filename);
-        if (d->command.contains("tokenise")) ValibelProcessor::tokenise(communications);
-        if (d->command.contains("pauses")) ValibelProcessor::pauses(communications);
+//        if (d->command.contains("import")) ValibelProcessor::importValibelFile(communications.first()->corpus(), d->path + "/" + d->filename);
+//        if (d->command.contains("tokenise")) ValibelProcessor::tokenise(communications);
+//        if (d->command.contains("pauses")) ValibelProcessor::pauses(communications);
     }
     else if (d->corpusType == "pfc") {
         // if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(communications);

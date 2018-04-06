@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include "pncore/base/RealTime.h"
 
 namespace Praaline {
 
@@ -27,6 +28,7 @@ public:
                          uint newSamplingRate, bool normalise = false, int channels = 1);
 
     static bool runSoxCommand(const QString &command);
+    static bool generateSilence(const QString &filenameOut, RealTime duration);
 
 private:
     AudioSegmenter() {}

@@ -22,6 +22,7 @@
 #include "editors/AnnotationMultiTierEditor.h"
 #include "editors/GroupingAnnotationEditor.h"
 #include "editors/TranscriptAnnotationEditor.h"
+#include "editors/PFCTranscriptionEditor.h"
 
 #include "pngui/PraalineUserInterfaceOptions.h"
 
@@ -52,6 +53,7 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     ui->comboBoxEditorSelection->addItem("Timeline Editor", "AnnotationMultiTierEditor");
     ui->comboBoxEditorSelection->addItem("Grouping Annotation Editor", "GroupingAnnotationEditor");
     ui->comboBoxEditorSelection->addItem("Transcrtipt Editor", "TranscriptAnnotationEditor");
+    ui->comboBoxEditorSelection->addItem("PFC Editor", "PFCTranscriptionEditor");
     ui->comboBoxEditorSelection->setCurrentIndex(0);
     connect(ui->commandOpenEditor, SIGNAL(clicked(bool)), this, SLOT(editorTabNew()));
 
@@ -157,10 +159,13 @@ void ManualAnnotationWidget::editorTabNew()
     else if (editorType == "TranscriptAnnotationEditor") {
         editor = new TranscriptAnnotationEditor(this);
     }
+    else if (editorType == "PFCTranscriptionEditor") {
+        editor = new PFCTranscriptionEditor(this);
+    }
     if (!editor) return;
     d->openEditors.append(editor);
-    ui->tabWidgetEditors->addTab(editor, ui->comboBoxEditorSelection->currentText());
-    ui->tabWidgetEditors->setCurrentWidget(editor);
+    ui->tabWidgetEditors->addTab(editor->editorWidget(), ui->comboBoxEditorSelection->currentText());
+    ui->tabWidgetEditors->setCurrentWidget(editor->editorWidget());
     editor->open(d->corpus, d->com, d->rec, d->annot);
 }
 
@@ -168,7 +173,7 @@ void ManualAnnotationWidget::editorTabCloseRequested(int index)
 {
     AnnotationEditorBase *editor = d->openEditors.takeAt(index);
     if (editor) {
-        editor->deleteLater();
         ui->tabWidgetEditors->removeTab(index);
+        delete editor;
     }
 }

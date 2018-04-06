@@ -88,7 +88,8 @@ HEADERS += \
     experiments/MacroprosodyExperiment.h \
     experiments/ExperimentUtterances.h \
     experiments/AggregateProsody.h \
-    ProsodicBoundaries.h
+    ProsodicBoundaries.h \
+    CorpusCommunicationSplicer.h
 
 
 SOURCES += \ 
@@ -126,4 +127,5 @@ SOURCES += \
     experiments/MacroprosodyExperiment.cpp \
     experiments/ExperimentUtterances.cpp \
     experiments/AggregateProsody.cpp \
-    ProsodicBoundaries.cpp
+    ProsodicBoundaries.cpp \
+    CorpusCommunicationSplicer.cpp

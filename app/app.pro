@@ -156,7 +156,6 @@ SOURCES += main.cpp \
     annotation/CompareAnnotationsWidget.cpp \
     annotation/ManualAnnotationWidget.cpp \
     annotation/TranscriberWidget.cpp \
-    annotation/editors/AnnotationEditorBase.cpp \
     annotation/editors/TranscriptAnnotationEditor.cpp \
     annotation/editors/LaTexTranscriptionBuilder.cpp \
     annotation/SpeechRecognitionWidget.cpp \
@@ -238,7 +237,9 @@ SOURCES += main.cpp \
     welcome/WelcomeModeWidget.cpp \
     web/WebDesignerModeWidget.cpp \
     statistics/pca/StatisticsPluginPCA.cpp \
-    statistics/pca/PCAPlotWidget.cpp
+    statistics/pca/PCAPlotWidget.cpp \ #\
+    annotation/editors/PFCTranscriptionEditor.cpp
+    #statistics/basic/AnalyserBasic.cpp
 
 HEADERS  += \
     #visualisation/pitchanalyser.h \
@@ -376,7 +377,9 @@ HEADERS  += \
     welcome/WelcomeModeWidget.h \
     web/WebDesignerModeWidget.h \
     statistics/pca/StatisticsPluginPCA.h \
-    statistics/pca/PCAPlotWidget.h
+    statistics/pca/PCAPlotWidget.h \ #\
+    annotation/editors/PFCTranscriptionEditor.h
+    #statistics/basic/AnalyserBasic.h
 
 FORMS    += \
     MainWindow.ui \
@@ -453,7 +456,8 @@ FORMS    += \
     annotation/asr/ForcedAlignmentWidget.ui \
     welcome/WelcomeModeWidget.ui \
     web/WebDesignerModeWidget.ui \
-    statistics/pca/PCAPlotWidget.ui
+    statistics/pca/PCAPlotWidget.ui \
+    annotation/editors/PFCTranscriptionEditor.ui
 
 RESOURCES += \
     praaline.qrc \

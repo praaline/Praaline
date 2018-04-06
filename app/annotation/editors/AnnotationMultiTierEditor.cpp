@@ -78,7 +78,7 @@ struct AnnotationMultiTierEditorData {
 };
 
 AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
-    AnnotationEditorBase(parent), d(new AnnotationMultiTierEditorData())
+    QMainWindow(parent), d(new AnnotationMultiTierEditorData())
 {
     // Toolbars and actions
     d->toolbarMain = new QToolBar(tr("Manual annotation"), this);

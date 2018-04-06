@@ -2,12 +2,14 @@
 #include <QList>
 #include <QPointer>
 #include <QMap>
+#include <QRegularExpression>
 
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
 #include "pncore/annotation/IntervalTier.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
+#include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
 #include "PFCPreprocessor.h"
@@ -25,10 +27,81 @@ PFCPreprocessor::~PFCPreprocessor()
     delete d;
 }
 
+QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
+{
+    QString ret;
+    InterfaceTextFile::setDefaultEncoding("ISO 8859-1");
+
+    QDir dirinfo(directory);
+    QFileInfoList list;
+    list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
+    dirinfo.setNameFilters(QStringList() << "*.textgrid");
+    list << dirinfo.entryInfoList();
+
+    bool save = true;
+
+    foreach (QFileInfo info, list) {
+        if (info.isDir()) {
+            ret.append(renameTextgridTiers(info.filePath()));
+        }
+        else {
+            QString txgFilename = info.filePath();
+            AnnotationTierGroup *txg = new AnnotationTierGroup();
+            if (!PraatTextGrid::load(txgFilename, txg)) {
+                ret.append(txgFilename).append("\tCHECK\t0\n");
+            }
+            else if ((txg->tiersCount() == 1) &&
+                     ((txgFilename.endsWith("m.TextGrid") || txgFilename.endsWith("c.TextGrid") ||
+                       txgFilename.endsWith("ms.TextGrid") || txgFilename.endsWith("ms2.TextGrid") || txgFilename.endsWith("s.TextGrid")))) {
+                QString tiername_ortho = txg->tier(0)->name().trimmed();
+                txg->tier(0)->setName("transcription");
+                if (save) PraatTextGrid::save(txgFilename, txg);
+                ret.append(txgFilename).append("\tOK\t1\t").append(tiername_ortho).append("\n");
+            }
+            else if ((txg->tiersCount() == 3) || (txg->tiersCount() == 4)) {
+                if (txg->tiersCount() == 4 && txg->tier(3)->name() == "Anonymisation")
+                    txg->tier(3)->setName("anonymisation");
+                QString tiername_ortho, tiername_schwa, tiername_liaison, tiername_others;
+                if (txg->tier(1)->name().toLower().contains("liaison") && txg->tier(2)->name().toLower().contains("schwa")) {
+                    tiername_ortho   = txg->tier(0)->name().trimmed(); txg->tier(0)->setName("transcription");
+                    tiername_liaison = txg->tier(1)->name().trimmed(); txg->tier(1)->setName("liaison");
+                    tiername_schwa   = txg->tier(2)->name().trimmed(); txg->tier(2)->setName("schwa");
+                    if (txg->tiersCount() == 4) tiername_others = txg->tier(3)->name();
+                    if (save) PraatTextGrid::save(txgFilename, txg);
+                    ret.append(txgFilename).append("\tOK\t").append(QString("%1").arg(txg->tiersCount())).append("\t")
+                            .append(tiername_ortho).append("\t").append(tiername_liaison).append("\t").append(tiername_schwa).append("\t")
+                            .append(tiername_others).append("\n");
+                }
+                else if (txg->tier(2)->name().toLower().contains("liaison") && txg->tier(1)->name().toLower().contains("schwa")) {
+                    tiername_ortho   = txg->tier(0)->name().trimmed(); txg->tier(0)->setName("transcription");
+                    tiername_liaison = txg->tier(2)->name().trimmed(); txg->tier(2)->setName("liaison");
+                    tiername_schwa   = txg->tier(1)->name().trimmed(); txg->tier(1)->setName("schwa");
+                    if (txg->tiersCount() == 4) tiername_others = txg->tier(3)->name();
+                    if (save) PraatTextGrid::save(txgFilename, txg);
+                    ret.append(txgFilename).append("\tOK\t").append(QString("%1").arg(txg->tiersCount())).append("\t")
+                            .append(tiername_ortho).append("\t").append(tiername_liaison).append("\t").append(tiername_schwa).append("\t")
+                            .append(tiername_others).append("\n");
+                }
+                else {
+                    ret.append(txgFilename).append("\tCHECK\t").append(QString("%1").arg(txg->tiersCount()))
+                            .append("\t\t\t\t").append(txg->tierNames().join(" ")).append("\n");
+                }
+            }
+            else {
+                ret.append(txgFilename).append("\tCHECK\t").append(QString("%1").arg(txg->tiersCount()))
+                        .append("\t\t\t\t").append(txg->tierNames().join(" ")).append("\n");
+            }
+            delete txg;
+        }
+    }
+    return ret;
+}
+
 QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
 {
     if (!com) return "No Communication";
     QStringList levels; levels << "transcription";
+    bool checkThisCom(false);
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
@@ -54,16 +127,19 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
             int o = ortho.split(" ").count();
             int s = schwa.split(" ").count();
             int l = liaison.split(" ").count();
-            QString comment;
-            if (o != s || o != l || s != l) comment = "check";
+            QString tocheck;
+            if (o != s || o != l || s != l) {
+                tocheck = "CHECK";
+                checkThisCom = true;
+            }
             intv->setText(ortho);
             intv->setAttribute("schwa", schwa);
             intv->setAttribute("liaison", liaison);
-            intv->setAttribute("comment", comment);
+            intv->setAttribute("tocheck", tocheck);
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }
-    return com->ID();
+    return QString(com->ID()).append((checkThisCom) ? "\t CHECK" : "");
 }
 
 QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
@@ -380,5 +456,28 @@ QString PFCPreprocessor::liaisonCoding(QPointer<CorpusCommunication> com)
         qDeleteAll(tiersAll);
     }
     return com->ID();
+}
+
+QString PFCPreprocessor::checkCharacterSet(QPointer<CorpusCommunication> com)
+{
+    QString ret;
+    QRegularExpression regex("^[a-zA-Z\u00C9\u00E9\u00C0\u00E0\u00C8\u00E8\u00D9\u00F9\u00C2\u00E2\u00CA\u00EA\u00CE\u00EE\u00D4\u00F4\u00DB\u00FB\u00CB\u00EB\u00CF\u00EF\u00DC\u00FC\u0178\u00FF\u00C7\u00E7\u0152\u0153\u00C6\u00E6]");
+    regex.optimize();
+    if (!com) return "No Communication";
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+        foreach (QString speakerID, tiersAll.keys()) {
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
+            IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+            if (!tier_tok_min) continue;
+            foreach (Interval *tok_min, tier_tok_min->intervals()) {
+                if (!regex.match(tok_min->text()).hasMatch()) {
+                    ret.append(com->ID()).append("\t").append(tok_min->text()).append("\n");
+                }
+            }
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret;
 }
 

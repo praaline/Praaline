@@ -7,13 +7,14 @@
 
 struct AnnotationMultiTierEditorData;
 
-class AnnotationMultiTierEditor : public AnnotationEditorBase
+class AnnotationMultiTierEditor : public QMainWindow, public AnnotationEditorBase
 {
     Q_OBJECT
 
 public:
     AnnotationMultiTierEditor(QWidget *parent = 0);
     virtual ~AnnotationMultiTierEditor();
+    QWidget *editorWidget() override { return this; }
 
 public slots:
     void open(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusCommunication *com,

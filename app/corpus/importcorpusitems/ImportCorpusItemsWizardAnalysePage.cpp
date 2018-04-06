@@ -219,8 +219,10 @@ void ImportCorpusItemsWizardAnalysePage::copyAnalysisTable()
         previous = index;
     }
 
-    copy_table.append(abmodel->data(list.last()).toString());
-    copy_table.append('\n');
+    if (!list.isEmpty()) {
+        copy_table.append(abmodel->data(list.last()).toString());
+        copy_table.append('\n');
+    }
 
     QClipboard *clipboard = QApplication::clipboard();
     clipboard->setText(copy_table);
