@@ -20,6 +20,7 @@ public:
     bool readFromFile(const QString &filename);
     bool writeToFile(const QString &filename) const;
     QList<QString> phonemes() const;
+    bool writePhonemeList(const QString &filename) const;
 
     QString phonetise(const QString &word) const;
     void addWord(const QString &word, const QString &phonetisation);

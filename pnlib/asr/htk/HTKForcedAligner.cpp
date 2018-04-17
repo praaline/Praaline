@@ -39,6 +39,9 @@ struct HTKForcedAlignerData {
     QRegExp regexMatchPhoneme;
     bool useAlternativePronunciations;
     bool useOptionalElision;
+    QString tokenPhonetisationAttributeID;
+    QString phonetisationSeparatorForAlternate;
+    QString phonetisationSeparatorForPhonemes;
 };
 
 
@@ -74,6 +77,10 @@ HTKForcedAligner::HTKForcedAligner(QObject *parent)
     d->phonemeReverseTranslations.insert("oe", "9");
 
     d->pathTemp = QDir::homePath() + "/Praaline/aligner_temp/";
+
+    d->tokenPhonetisationAttributeID = "phonetisation";
+    d->phonetisationSeparatorForAlternate = "|";
+    d->phonetisationSeparatorForPhonemes = " ";
 }
 
 HTKForcedAligner::~HTKForcedAligner()
@@ -81,7 +88,18 @@ HTKForcedAligner::~HTKForcedAligner()
     delete d;
 }
 
+QString HTKForcedAligner::tokenPhonetisationAttributeID() const
+{
+    return d->tokenPhonetisationAttributeID;
+}
+
+void HTKForcedAligner::setTokenPhonetisationAttributeID(const QString &attributeID)
+{
+    d->tokenPhonetisationAttributeID = attributeID;
+}
+
 // Encode UTF entities (used for accented characters in dictionary and transcription files)
+// private
 QString HTKForcedAligner::encodeEntities(const QString &src, const QString &force)
 {
     QString tmp(src);
@@ -101,6 +119,7 @@ QString HTKForcedAligner::encodeEntities(const QString &src, const QString &forc
 }
 
 // Decode UTF entities (used for accented characters in dictionary and transcription files)
+// private
 QString HTKForcedAligner::decodeEntities(const QString &src)
 {
     QString ret(src);
@@ -114,6 +133,7 @@ QString HTKForcedAligner::decodeEntities(const QString &src)
     return ret;
 }
 
+// private
 QString HTKForcedAligner::translatePhonemes(const QString &input)
 {
     QString translated(input);
@@ -124,58 +144,98 @@ QString HTKForcedAligner::translatePhonemes(const QString &input)
     return translated.trimmed();
 }
 
-QList<SpeechToken> HTKForcedAligner::alignerTokensFromIntervalTier(IntervalTier *tier_tokens, int indexFrom, int indexTo)
+// private
+QList<SpeechToken> HTKForcedAligner::alignerTokensFromIntervalTier(bool insertLeadingAndTrailingPauses, IntervalTier *tierTokens, int indexFrom, int indexTo)
 {
     QList<SpeechToken> alignerTokens;
-    if (!tier_tokens) return alignerTokens;
-    if (tier_tokens->count() == 0) return alignerTokens;
-    if (indexTo < 0) indexTo = tier_tokens->count() - 1;
-    if (indexTo >= tier_tokens->count()) indexTo = tier_tokens->count() - 1;
+    if (!tierTokens) return alignerTokens;
+    if (tierTokens->count() == 0) return alignerTokens;
+    if (indexTo < 0) indexTo = tierTokens->count() - 1;
+    if (indexTo >= tierTokens->count()) indexTo = tierTokens->count() - 1;
     if (indexFrom < 0) indexFrom = 0;
-    if (indexTo >= tier_tokens->count()) indexTo = tier_tokens->count() - 1;
+    if (indexTo >= tierTokens->count()) indexTo = tierTokens->count() - 1;
+    if (indexTo < indexFrom) return alignerTokens;
 
+    QSharedPointer<IntervalTier> tierTokensCopy(new IntervalTier(tierTokens));
+
+    // On the working copy: Insert silent pauses at the beginning and end, if authorised to do so.
+    if (insertLeadingAndTrailingPauses) {
+        if (!tierTokensCopy->at(indexFrom)->isPauseSilent()) {
+            // Insert pause at the beginning of the utterance:
+            // [xxx] becomes [ _ ][xxx]
+            tierTokensCopy->split(indexFrom, tierTokensCopy->at(indexFrom)->tCenter(), true);
+            tierTokensCopy->at(indexFrom)->setText("_");
+            indexTo++;
+        }
+        if (!tierTokensCopy->at(indexTo)->isPauseSilent()) {
+            // Insert pause at the end of the utterance
+            // [xxx] becomes [xxx][ _ ]
+            tierTokensCopy->split(indexTo, tierTokensCopy->at(indexTo)->tCenter(), false);
+            indexTo++;
+            tierTokensCopy->at(indexTo)->setText("_");
+        }
+    }
+    // On the working copy: Remove pauses from within the utterance
+    for (int i = indexTo - 1; i >= indexFrom + 1; --i) {
+        if (tierTokensCopy->at(i)->isPauseSilent()) {
+            tierTokensCopy->removeInterval(i);
+            indexTo--;
+        }
+    }
+    // Create tokens for alignment
     for (int index = indexFrom; index <= indexTo; ++index) {
-        Interval *token = tier_tokens->at(index);
+        Interval *token = tierTokensCopy->at(index);
         SpeechToken atoken(index, index, token->text());
-        QString phonetisationGiven = token->attribute("phonetisation").toString();
+        QString phonetisationAttributeText = token->attribute(d->tokenPhonetisationAttributeID).toString();
         if (!d->useAlternativePronunciations) {
-            phonetisationGiven = phonetisationGiven.replace("*", "");
+            phonetisationAttributeText = phonetisationAttributeText.replace("*", "");
         }
-        phonetisationGiven = phonetisationGiven.trimmed();
-        // Separate phonemes
-        QStringList phonetisationSeparated;
-        int pos = 0;
-        while ((pos = d->regexMatchPhoneme.indexIn(phonetisationGiven, pos)) != -1) {
-            phonetisationSeparated << d->regexMatchPhoneme.cap(0);
-            pos += d->regexMatchPhoneme.matchedLength();
-        }
-        // Process alternative phonetisations
-        QList<QStringList> phonetisations;
-        phonetisations << QStringList();
-        foreach (QString phoneme, phonetisationSeparated) {
-            if (phoneme.endsWith("*")) {
-                QList<QStringList> additionalPhonetisations;
-                for (int i = 0; i < phonetisations.count(); ++i) {
-                    additionalPhonetisations << phonetisations[i];      // without
-                    phonetisations[i].append(phoneme.replace("*", "")); // with
+        phonetisationAttributeText = phonetisationAttributeText.trimmed();
+        // Split the given phonetisation text into proposed alternates (e.g. abc | def)
+        QStringList phonetisationsProposed = phonetisationAttributeText.split(d->phonetisationSeparatorForAlternate, QString::SkipEmptyParts);
+        // Create list of alternate phonetisations
+        foreach (QString phonetisationProposed, phonetisationsProposed) {
+            QStringList phonemesSeparated;
+            // Separate phonemes
+            if (d->phonetisationSeparatorForPhonemes.isEmpty()) {
+                int pos = 0;
+                while ((pos = d->regexMatchPhoneme.indexIn(phonetisationProposed, pos)) != -1) {
+                    phonemesSeparated << d->regexMatchPhoneme.cap(0);
+                    pos += d->regexMatchPhoneme.matchedLength();
                 }
-                phonetisations << additionalPhonetisations;
             }
             else {
-                for (int i = 0; i < phonetisations.count(); ++i) {
-                    phonetisations[i].append(phoneme);
+                phonemesSeparated = phonetisationProposed.split(d->phonetisationSeparatorForPhonemes, QString::SkipEmptyParts);
+            }
+            // Process alternative phonetisations
+            QList<QStringList> phonetisations;
+            phonetisations << QStringList();
+            foreach (QString phoneme, phonemesSeparated) {
+                if (phoneme.endsWith("*")) {
+                    QList<QStringList> additionalPhonetisations;
+                    for (int i = 0; i < phonetisations.count(); ++i) {
+                        additionalPhonetisations << phonetisations[i];      // without
+                        phonetisations[i].append(phoneme.replace("*", "")); // with
+                    }
+                    phonetisations << additionalPhonetisations;
+                }
+                else {
+                    for (int i = 0; i < phonetisations.count(); ++i) {
+                        phonetisations[i].append(phoneme);
+                    }
                 }
             }
-        }
-        foreach (QStringList phonetisation, phonetisations) {
-            atoken.phonetisations.append(phonetisation.join(" "));
-            // qDebug() << atoken.orthographic << phonetisation.join(" ");
+            foreach (QStringList phonetisation, phonetisations) {
+                atoken.phonetisations.append(phonetisation.join(" "));
+                // qDebug() << atoken.orthographic << phonetisation.join(" ");
+            }
         }
         alignerTokens << atoken;
     }
     return alignerTokens;
 }
 
+// private
 bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<SpeechToken> &atokens)
 {
 //    sil	sil
@@ -221,11 +281,13 @@ bool HTKForcedAligner::createFilesDCTandLAB(const QString &filenameBase, QList<S
     return true;
 }
 
+// private
 bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken> &atokens, QList<SpeechPhone> &aphones,
                                   QString &alignerOutput)
 {
-    if (!createFilesDCTandLAB(filenameBase, atokens)) return false;
     aphones.clear();
+    QFile::remove(filenameBase + ".rec");
+    if (!createFilesDCTandLAB(filenameBase, atokens)) return false;
 
     // Parameters for HTK Viterbi recogniser
     QStringList     hviteParameters;
@@ -290,15 +352,30 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     return true;
 }
 
+// private
+void HTKForcedAligner::cleanUpTempFiles(const QString &waveResampledBase)
+{
+    QFile::remove(waveResampledBase + ".wav");
+    QFile::remove(waveResampledBase + ".lab");
+    QFile::remove(waveResampledBase + ".dct");
+    QFile::remove(waveResampledBase + ".rec");
+}
 
-bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tier_tokens, QList<Interval *> &list_phones,
-                                      QString &alignerOutput)
+// public
+bool HTKForcedAligner::alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,
+                                   Praaline::Core::IntervalTier *tierTokens, int &indexFrom, int &indexTo,
+                                   bool insertLeadingAndTrailingPauses,
+                                   QList<Praaline::Core::Interval *> &outPhonesList, QString &outAlignerOutput)
 {
     QList<SpeechToken> atokens;
     QList<SpeechPhone> aphones;
     QList<RealTime> updatedTokenBoundaries;
-    int indexFrom = 0;
-    int indexTo = tier_tokens->count() - 1;
+    if (!tierTokens) return false;
+    if (indexFrom < 0) return false;
+    if (indexFrom >= tierTokens->count()) return false;
+    if (indexTo < 0) return false;
+    if (indexTo >= tierTokens->count()) return false;
+    if (indexTo < indexFrom) return false;
 
     // Create temp path, if it does not exist
     QDir tempDir(d->pathTemp);
@@ -306,33 +383,46 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
         tempDir.mkpath(".");
     }
     // Create resampled wave file in temporary directory
-    QString waveResampledBase = d->pathTemp + QFileInfo(waveFile).baseName();
+    QString waveResampledBase = d->pathTemp + QFileInfo(waveFilepath).baseName();
     if (QFile::exists(waveResampledBase + ".wav")) QFile::remove(waveResampledBase + ".wav");
-    AudioSegmenter::resample(waveFile, waveResampledBase + ".wav", d->sampleRateAM);
-    // Insert silent pauses at the beginning and end
-    if (!tier_tokens->at(indexFrom)->isPauseSilent()) {
-        tier_tokens->splitToEqual(indexFrom, 2);
-        tier_tokens->at(indexFrom)->setText("_");
-        indexTo++;
+    if ((timeFrom > RealTime::zeroTime) && (timeTo > timeFrom)) {
+        AudioSegmenter::segment(waveFilepath, waveResampledBase + ".wav", timeFrom, timeTo, d->sampleRateAM, false, 1);
+    } else {
+        AudioSegmenter::resample(waveFilepath, waveResampledBase + ".wav", d->sampleRateAM, false, 1);
+    }  
+    // Simulate run on alignment tokens
+    // Create alignment tokens for the entire utterance
+    atokens = alignerTokensFromIntervalTier(insertLeadingAndTrailingPauses, tierTokens, indexFrom, indexTo);
+    bool alignerOK = runAligner(waveResampledBase, atokens, aphones, outAlignerOutput);
+    // Check that the aligner came up with a proper solution
+    if ((!alignerOK) || aphones.isEmpty()) {
+        cleanUpTempFiles(waveResampledBase);
+        return false;
     }
-    if (!tier_tokens->at(indexTo)->isPauseSilent()) {
-        tier_tokens->splitToEqual(indexTo, 2);
-        indexTo++;
-        tier_tokens->at(indexTo)->setText("_");
+    // Apply changes to actual tokens tier
+    // Insert silent pauses at the beginning and end, if authorised to do so.
+    if (insertLeadingAndTrailingPauses) {
+        if (!tierTokens->at(indexFrom)->isPauseSilent()) {
+            // Insert pause at the beginning of the utterance:
+            // [xxx] becomes [ _ ][xxx]
+            tierTokens->split(indexFrom, tierTokens->at(indexFrom)->tCenter(), true);
+            tierTokens->at(indexFrom)->setText("_");
+            indexTo++;
+        }
+        if (!tierTokens->at(indexTo)->isPauseSilent()) {
+            // Insert pause at the end of the utterance
+            // [xxx] becomes [xxx][ _ ]
+            tierTokens->split(indexTo, tierTokens->at(indexTo)->tCenter(), false);
+            indexTo++;
+            tierTokens->at(indexTo)->setText("_");
+        }
     }
     // Remove pauses from within the utterance
     for (int i = indexTo - 1; i >= indexFrom + 1; --i) {
-        if (tier_tokens->at(i)->isPauseSilent()) {
-            tier_tokens->removeInterval(i);
+        if (tierTokens->at(i)->isPauseSilent()) {
+            tierTokens->removeInterval(i);
             indexTo--;
         }
-    }
-    // Create alignment tokens for the entire utterance
-    atokens = alignerTokensFromIntervalTier(tier_tokens, indexFrom, indexTo);
-    runAligner(waveResampledBase, atokens, aphones, alignerOutput);
-    // Check that the aligner came up with a proper solution
-    if (aphones.isEmpty()) {
-        return false;
     }
     // Verify micro-pauses inserted before occlusive consonants
     QStringList occlusives;
@@ -354,14 +444,15 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
         }
     }
     // Add micro-pauses where necessary
-    int indexToken(0);
+    int indexToken(indexFrom);
     for (int i = 0; i < aphones.count(); ++i) {
         if (aphones[i].phone == "sp") {
             aphones[i].phone = "_";
             if ((indexToken > 0) && !aphones[i].isTokenStart) {
                 aphones[i].isTokenStart = true;
-                // normal micro-pause between words
-                tier_tokens->splitToEqual(indexToken - 1, 2).last()->setText("_");
+                // Normal micro-pause between words. Add a pause token to the tokens tier.
+                tierTokens->splitToEqual(indexToken - 1, 2).last()->setText("_");
+                indexTo++;
             }
         }
         if (aphones[i].isTokenStart) {
@@ -369,65 +460,116 @@ bool HTKForcedAligner::alignUtterance(const QString &waveFile, IntervalTier *tie
         }
     }
     // Create list of phones
-    RealTime offset = tier_tokens->tMin();
+    RealTime offset = (timeFrom > RealTime::zeroTime) ? timeFrom : RealTime::zeroTime;
     foreach (SpeechPhone phone, aphones) {
-        list_phones << new Interval(offset + phone.start, offset + phone.end, phone.phone);
+        outPhonesList << new Interval(offset + phone.start, offset + phone.end, phone.phone);
         if (phone.isTokenStart) {
             updatedTokenBoundaries << offset + phone.start;
         }
     }
-    updatedTokenBoundaries << offset + aphones.last().end;
+    updatedTokenBoundaries << ((timeTo > RealTime::zeroTime) ? timeTo : (offset + aphones.last().end));
     // Modify boundaries of tokens
-    bool ok = tier_tokens->realignIntervals(0, updatedTokenBoundaries);
-    bool cleanUpTempFiles(false);
+    bool ok = tierTokens->realignIntervals(indexFrom, updatedTokenBoundaries);
+    bool shouldCleanUpTempFiles(false);
     // Clean-up
-    if (ok && cleanUpTempFiles) {
-        QFile::remove(waveResampledBase + ".wav");
-        QFile::remove(waveResampledBase + ".lab");
-        QFile::remove(waveResampledBase + ".dct");
-        QFile::remove(waveResampledBase + ".rec");
+    if (ok && shouldCleanUpTempFiles) {
+        cleanUpTempFiles(waveResampledBase);
     }
-    // For testing
-    if (!ok || !cleanUpTempFiles) {
-        IntervalTier *tier_phones = new IntervalTier("phone", list_phones);
+    // For testing purposes only
+    if (!ok || !shouldCleanUpTempFiles) {
+        // We must copy the phones because the AnnotationTierGroup will seize ownership of the pointers
+        // and will delete them. If that happened, the output of this method would be a list of stale pointers.
+        QList<Interval *> phones;
+        foreach (Interval *p, outPhonesList) phones << new Interval(p);
+        IntervalTier *tierPhones = new IntervalTier("phone", phones);
         AnnotationTierGroup *txg = new AnnotationTierGroup();
-        txg->addTier(tier_phones);
-        txg->addTier(new IntervalTier(tier_tokens));
+        txg->addTier(tierPhones);
+        txg->addTier(new IntervalTier(tierTokens));
         PraatTextGrid::save(waveResampledBase + ".TextGrid", txg);
+        delete txg;
     }
     return ok;
 }
 
-
-void HTKForcedAligner::alignUtterances(const QString &waveFile, IntervalTier *tier_utterances, IntervalTier *tier_tokens, IntervalTier *tier_phones)
+// public
+bool HTKForcedAligner::alignAllTokens(const QString &waveFilepath, Praaline::Core::IntervalTier *tierTokens,
+                                      QList<Praaline::Core::Interval *> &outPhonesList, QString &outAlignerOutput)
 {
-    QList<SpeechToken> atokens;
-    QList<SpeechPhone> aphones;
-    QString alignerOutput;
+    if (!tierTokens) return false;
+    if (tierTokens->count() == 0) return false;
+    int indexFrom = 0;
+    int indexTo = tierTokens->count() - 1;
+    return alignTokens(waveFilepath, RealTime(-1, 0), RealTime(-1, 0),
+                       tierTokens, indexFrom, indexTo, true,
+                       outPhonesList, outAlignerOutput);
+}
 
-    QList<Interval *> list_utterances;
-    int i = 0;
-    foreach (Interval *intv, tier_utterances->intervals()) {
-        if (intv->isPauseSilent()) { i++; continue; }
-        Interval *utt = new Interval(intv);
-        utt->setAttribute("utteranceID", QString::number(i));
-        list_utterances << utt;
-        i++;
-    }
-    // AudioSegmenter::segment(waveFile, path, list_utterances, "utteranceID", m_sampleRateAM);
-    QList<Interval *> list_phones;
-    foreach (Interval *utt, list_utterances) {
-        QList<Interval *> utt_tokens = tier_tokens->getIntervalsContainedIn(utt);
-        if (utt_tokens.isEmpty()) continue;
-        atokens = ExternalPhonetiser::phonetiseList(utt_tokens);
-        runAligner(QString("%1/%2").arg(d->pathTemp).arg(utt->attribute("utteranceID").toString()), atokens, aphones, alignerOutput);
-        if (aphones.isEmpty()) continue;
-        RealTime offset = utt->tMin();
-        foreach (SpeechPhone phone, aphones) {
-            list_phones << new Interval(offset + phone.start, offset + phone.end, phone.phone);
+// public
+bool HTKForcedAligner::alignUtterance(const QString &waveFilepath,
+                                      Praaline::Core::IntervalTier *tierUtterances, int &indexUtteranceToAlign,
+                                      Praaline::Core::IntervalTier *tierTokens, Praaline::Core::IntervalTier *tierPhones,
+                                      QString &outAlignerOutput, bool insertLeadingAndTrailingPauses)
+{
+    if (!tierUtterances) return false;
+    if (!tierTokens) return false;
+    if (!tierPhones) return false;
+    if (indexUtteranceToAlign < 0) return false;
+    if (indexUtteranceToAlign >= tierUtterances->count()) return false;
+    Interval *utterance = tierUtterances->at(indexUtteranceToAlign);
+
+    RealTime timeFrom = utterance->tMin();
+    RealTime timeTo = utterance->tMax();
+    QPair<int, int> tokenIndices = tierTokens->getIntervalIndexesContainedIn(tierUtterances->at(indexUtteranceToAlign));
+    int tokenIndexFrom = tokenIndices.first;
+    int tokenIndexTo = tokenIndices.second;
+    QList<Interval *> phonesList;
+
+    bool ok = alignTokens(waveFilepath, timeFrom, timeTo, tierTokens, tokenIndexFrom, tokenIndexTo,
+                          insertLeadingAndTrailingPauses, phonesList, outAlignerOutput);
+    if (ok) {
+        int i(-1);
+        i = tokenIndexFrom;
+        while ((i < tierTokens->count()) && (tierTokens->at(i)->isPauseSilent())) i++;
+        if ((i < tierTokens->count()) && (tierTokens->at(i)->tMin() != utterance->tMin())) {
+            tierUtterances->split(indexUtteranceToAlign, tierTokens->at(i)->tMin(), true);
+            tierUtterances->at(indexUtteranceToAlign)->setText("_");
+            indexUtteranceToAlign++;
         }
+        i = tokenIndexTo;
+        while ((i - 1 >= 0) && (tierTokens->at(i - 1)->isPauseSilent())) i--;
+        if ((i >= 0) && (tierTokens->at(i)->isPauseSilent())) {
+            tierUtterances->split(indexUtteranceToAlign, tierTokens->at(i)->tMin(), false);
+            tierUtterances->at(indexUtteranceToAlign + 1)->setText("_");
+        }
+        tierPhones->patchIntervals(phonesList, timeFrom, timeTo);
     }
-    tier_phones->replaceAllIntervals(list_phones);
+    return ok;
+}
+
+bool HTKForcedAligner::alignAllUtterances(const QString &waveFilepath,
+                                          Praaline::Core::IntervalTier *tierUtterances,
+                                          Praaline::Core::IntervalTier *tierTokens, Praaline::Core::IntervalTier *tierPhones,
+                                          bool insertLeadingAndTrailingPauses)
+{
+    if (!tierUtterances) return false;
+    if (!tierTokens) return false;
+    if (!tierPhones) return false;
+    int indexUtterance = tierUtterances->count() - 1;
+    while (indexUtterance >= 0) {
+        if (tierUtterances->at(indexUtterance)->isPauseSilent()) { indexUtterance--; continue; }
+        QString alignerOutput;
+        bool result(false);
+        result = alignUtterance(waveFilepath, tierUtterances, indexUtterance, tierTokens, tierPhones,
+                                alignerOutput, insertLeadingAndTrailingPauses);
+        if (!result) qDebug() << result << tierUtterances->at(indexUtterance)->text() << alignerOutput;
+        alignerMessage(alignerOutput);
+        indexUtterance--;
+    }
+    tierTokens->mergeIdenticalAnnotations("_");
+    tierUtterances->mergeIdenticalAnnotations("_");
+    tierPhones->fillEmptyWith("", "_");
+    tierPhones->mergeIdenticalAnnotations("_");
+    return true;
 }
 
 } // namespace ASR

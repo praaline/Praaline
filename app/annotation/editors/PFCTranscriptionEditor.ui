@@ -15,16 +15,33 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
+    <item row="7" column="2">
+     <widget class="QLabel" name="labelTotalToCheck">
+      <property name="text">
+       <string>Total to check:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="2" colspan="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>601</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
     <item row="3" column="1" colspan="4">
      <widget class="QTableView" name="tableView"/>
     </item>
-    <item row="7" column="4">
-     <widget class="QPushButton" name="commandNext">
+    <item row="7" column="1">
+     <widget class="QLabel" name="labelIndex">
       <property name="text">
-       <string>Next &gt;&gt;</string>
-      </property>
-      <property name="shortcut">
-       <string>PgDown</string>
+       <string>Index:</string>
       </property>
      </widget>
     </item>
@@ -38,61 +55,61 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="2">
-     <widget class="QLabel" name="labelTotalToCheck">
-      <property name="text">
-       <string>Total to check:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="7" column="2" colspan="2">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>601</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="5" column="1" colspan="4">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelTranscript">
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelComment">
         <property name="text">
-         <string>Transcript:</string>
+         <string>Comment:</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="1" column="2">
        <widget class="QLineEdit" name="editTranscript"/>
       </item>
-      <item row="1" column="0">
+      <item row="4" column="2">
+       <widget class="QLineEdit" name="editComment"/>
+      </item>
+      <item row="2" column="0">
        <widget class="QLabel" name="labelLiaison">
         <property name="text">
          <string>Liaison:</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="editLiaison"/>
-      </item>
-      <item row="2" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="labelSchwa">
         <property name="text">
          <string>Schwa:</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="2" column="2">
+       <widget class="QLineEdit" name="editLiaison"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelTranscript">
+        <property name="text">
+         <string>Transcript:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
        <widget class="QLineEdit" name="editSchwa"/>
       </item>
      </layout>
     </item>
-    <item row="7" column="1">
+    <item row="8" column="4">
+     <widget class="QPushButton" name="commandNext">
+      <property name="text">
+       <string>Next &gt;&gt;</string>
+      </property>
+      <property name="shortcut">
+       <string>PgDown</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
      <widget class="QPushButton" name="commandPrevious">
       <property name="text">
        <string>&lt;&lt; Previous</string>
@@ -102,10 +119,17 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
-     <widget class="QLabel" name="labelIndex">
+    <item row="6" column="1" colspan="4">
+     <widget class="QLabel" name="labelCheck">
       <property name="text">
-       <string>Index:</string>
+       <string>Check: </string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="4">
+     <widget class="QLabel" name="labelAnnotationID">
+      <property name="text">
+       <string>AnnotationID :</string>
       </property>
      </widget>
     </item>
@@ -117,10 +141,11 @@
   <tabstop>editTranscript</tabstop>
   <tabstop>editLiaison</tabstop>
   <tabstop>editSchwa</tabstop>
+  <tabstop>editComment</tabstop>
   <tabstop>commandPrevious</tabstop>
   <tabstop>commandNext</tabstop>
-  <tabstop>tableView</tabstop>
   <tabstop>commandSave</tabstop>
+  <tabstop>tableView</tabstop>
  </tabstops>
  <resources/>
  <connections/>

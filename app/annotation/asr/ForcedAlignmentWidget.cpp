@@ -220,7 +220,7 @@ void ForcedAlignmentWidget::stepAlignAll()
         QList<Interval *> list_phones;
         QString alignerOutput;
         HTKForcedAligner aligner;
-        bool ok = aligner.alignUtterance(d->recording->filePath(), tier_tokens, list_phones, alignerOutput);
+        bool ok = aligner.alignAllTokens(d->recording->filePath(), tier_tokens, list_phones, alignerOutput);
         d->statusMessages->appendMessage(alignerOutput);
 
         if (ok) {

@@ -97,7 +97,7 @@ QString ExperimentUtterances::align(QPointer<Praaline::Core::CorpusCommunication
     QList<Interval *> list_phones;
     QString alignerOutput;
     HTKForcedAligner aligner;
-    bool ok = aligner.alignUtterance(rec->filePath(), tier_tokens, list_phones, alignerOutput);
+    bool ok = aligner.alignAllTokens(rec->filePath(), tier_tokens, list_phones, alignerOutput);
     ret.append(QString("%1\t%2\t%3").arg(annotationID).arg(speakerID).arg((ok) ? "OK" : "Error"));
     if (!ok) {
         ret.append("\n").append(alignerOutput);

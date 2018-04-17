@@ -1,7 +1,7 @@
 #ifndef PLUGINFLORALPFC_H
 #define PLUGINFLORALPFC_H
 
-#include "pluginfloralpfc_global.h"
+#include "PluginFloralPFC_global.h"
 
 #include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>

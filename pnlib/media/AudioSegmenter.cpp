@@ -50,7 +50,6 @@ QList<QStringList> AudioSegmenter::script(const QString &filenameIn, const QStri
     return script;
 }
 
-
 bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, QList<Interval *> segments,
                              const QString &attribute, uint newSamplingRate, bool normalise, int channels)
 {
@@ -72,6 +71,41 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
         qDebug() << output;
         qDebug() << errors;
     }
+    return true;
+}
+
+// static
+bool AudioSegmenter::segment(const QString &filenameIn, const QString &filenameOut,
+                             RealTime timeFrom, RealTime timeTo,
+                             uint newSamplingRate, bool normalise, int channels)
+{
+    QProcess sox;
+    // DIRECTORY:
+    QString soxPath = QDir::homePath() + "/Praaline/tools/sox/";
+    sox.setWorkingDirectory(soxPath);
+    QStringList arguments;
+    arguments << filenameIn;
+    if (normalise) {
+        arguments << QString("--norm");
+    }
+    arguments << filenameOut;
+    arguments << "trim" << QString::number(timeFrom.toDouble(), 'g', 6) <<
+                           QString::number((timeTo - timeFrom).toDouble(), 'g', 6);
+    if (channels > 0) {
+        arguments << "channels" << QString("%1").arg(channels);
+    }
+    if (newSamplingRate) {
+        arguments << "rate" << QString::number(newSamplingRate);
+    }
+    sox.start(soxPath + "sox", arguments);
+    if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
+        return false;
+    if (!sox.waitForFinished(-1))   // sets current thread to sleep and waits for sox end
+        return false;
+    QString output(sox.readAllStandardOutput());
+    QString errors(sox.readAllStandardError());
+    qDebug() << output;
+    qDebug() << errors;
     return true;
 }
 

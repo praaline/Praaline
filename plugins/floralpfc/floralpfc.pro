@@ -50,22 +50,30 @@ CONFIG( debug, debug|release ) {
 }
 # Application components
 LIBS +=  \
+        -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
+        -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
+        ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
+        ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
-    pluginfloralpfc_global.h \
-    pluginfloralpfc.h \
     valibelprocessor.h \
     PFCPreprocessor.h \
     PFCPhonetiser.h \
-    PFCAligner.h
+    PFCAligner.h \
+    WordAlign.h \
+    PluginFloralPFC.h \
+    PluginFloralPFC_global.h \
+    PFCReports.h
 	
 SOURCES += \ 
-    pluginfloralpfc.cpp \
     valibelprocessor.cpp \
     PFCPreprocessor.cpp \
     PFCPhonetiser.cpp \
-    PFCAligner.cpp
+    PFCAligner.cpp \
+    WordAlign.cpp \
+    PluginFloralPFC.cpp \
+    PFCReports.cpp

@@ -9,7 +9,7 @@
 #include <QTextStream>
 
 
-#include "pluginfloralpfc.h"
+#include "PluginFloralPFC.h"
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
@@ -19,6 +19,7 @@
 #include "PFCPreprocessor.h"
 #include "PFCPhonetiser.h"
 #include "PFCAligner.h"
+#include "PFCReports.h"
 
 #include "valibelprocessor.h"
 
@@ -134,12 +135,59 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
 //    printMessage(m);
 //    return;
 
-    foreach (QPointer<CorpusCommunication> com, communications) {
+//    PFCPreprocessor p;
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        QString m = p.prepareTranscription(com);
+//        m = m.append("\t").append(p.checkSpeakers(com));
+//        if (!m.isEmpty()) printMessage(m);
+//    }
+//    return;
+
+    if (communications.isEmpty()) return;
+
+    if (false) {
         PFCPreprocessor p;
-        QString m = p.prepareTranscription(com);
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            QString m = p.separateSpeakers(com);
+            m = m.append("\t").append(p.tokenise(com));
+            m = m.append("\t").append(p.tokmin_punctuation(com));
+            if (!m.isEmpty()) printMessage(m);
+        }
+
+        PFCPhonetiser phon;
+        phon.loadPhonetisationDictionary();
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            QString m = phon.phonetiseFromDictionary(com);
+            if (!m.isEmpty()) printMessage(m);
+        }
+        printMessage(phon.writeListOfWordsOOV("/mnt/hgfs/DATA/PFCALIGN/phonetisation/oov.txt"));
+        printMessage(phon.writeListOfWordsFalseStarts("/mnt/hgfs/DATA/PFCALIGN/phonetisation/falsestarts.txt"));
+
+        PFCAligner aligner;
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (!com->ID().endsWith("t")) continue;
+            QString m = aligner.align(com);
+            if (!m.isEmpty()) printMessage(m);
+        }
+
+        PFCReports report;
+    //    QString m = report.corpusCoverageStatistics(communications.first()->corpus());
+    //    if (!m.isEmpty()) printMessage(m);
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            QString m = report.reportCorrections(com);
+            if (!m.isEmpty()) printMessage(m);
+        }
+    }
+
+    PFCPhonetiser phon;
+    phon.loadPhonetisationDictionary();
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        QString m = phon.phonetiseFromDictionary(com);
         if (!m.isEmpty()) printMessage(m);
     }
-    return;
+    printMessage(phon.writeListOfWordsOOV("/mnt/hgfs/Dropbox/CORPORA/NCCFR/oov.txt"));
+    printMessage(phon.writeListOfWordsFalseStarts("/mnt/hgfs/Dropbox/CORPORA/NCCFR/falsestarts.txt"));
+
 
     if (d->corpusType == "valibel") {
 //        if (d->command.contains("import")) ValibelProcessor::importValibelFile(communications.first()->corpus(), d->path + "/" + d->filename);
@@ -147,7 +195,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
 //        if (d->command.contains("pauses")) ValibelProcessor::pauses(communications);
     }
     else if (d->corpusType == "pfc") {
-        // if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(communications);
+//        if (d->command.contains("prepareTranscriptions")) prepareTranscriptions(communications);
 //        if (d->command.contains("checkSpeakers")) checkSpeakers(communications);
 //        if (d->command.contains("separateSpeakers")) separateSpeakers(communications);
 //        if (d->command.contains("tokenise")) tokenise(communications);

@@ -42,6 +42,7 @@ PFCTranscriptionEditor::PFCTranscriptionEditor(QWidget *parent) :
     ui->editTranscript->setFont(fixedFont);
     ui->editLiaison->setFont(fixedFont);
     ui->editSchwa->setFont(fixedFont);
+    ui->labelIndex->setFont(fixedFont);
     d->editing = false;
 }
 
@@ -60,7 +61,7 @@ void PFCTranscriptionEditor::open(Corpus *corpus, CorpusCommunication *com, Corp
     QList<AnnotationElement *> elements = d->repository->annotations()->getAnnotationElements(
                 AnnotationDatastore::Selection("", "", "transcription"));
     foreach (AnnotationElement *element, elements) {
-        if (element->attribute("tocheck").toString() == "CHECK")
+        if (!element->attribute("tocheck").toString().isEmpty())
             d->elements << element;
     }
     d->index = 0;
@@ -100,7 +101,16 @@ void PFCTranscriptionEditor::edit()
     ui->editTranscript->setText(d->elements.at(d->index)->text());
     ui->editLiaison->setText(d->elements.at(d->index)->attribute("liaison").toString());
     ui->editSchwa->setText(d->elements.at(d->index)->attribute("schwa").toString());
-    ui->labelIndex->setText(QString("Index: %1").arg(d->index + 1));
+    ui->editComment->setText(d->elements.at(d->index)->attribute("comment").toString());
+    ui->labelCheck->setText(d->elements.at(d->index)->attribute("tocheck").toString());
+    ui->labelAnnotationID->setText(QString("AnnotationID: %1 Interval Index: %2")
+                                   .arg(d->elements.at(d->index)->attribute("annotationID").toString())
+                                   .arg(d->elements.at(d->index)->attribute("indexNo").toString()));
+    ui->labelIndex->setText(QString("Index: %1\n%2\n%3")
+                            .arg(d->index + 1)
+                            .arg(d->elements.at(d->index)->attribute("wordalign").toString())
+                            .arg(d->elements.at(d->index)->attribute("wordalign_wer").toString())
+                            );
     updateTableView();
     ui->editTranscript->setFocus();
     d->editing = true;
@@ -114,6 +124,7 @@ void PFCTranscriptionEditor::update()
     d->elements.at(d->index)->setText(ui->editTranscript->text());
     d->elements.at(d->index)->setAttribute("liaison", ui->editLiaison->text());
     d->elements.at(d->index)->setAttribute("schwa", ui->editSchwa->text());
+    d->elements.at(d->index)->setAttribute("comment", ui->editComment->text());
 }
 
 void PFCTranscriptionEditor::save()

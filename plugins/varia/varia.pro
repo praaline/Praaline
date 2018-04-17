@@ -74,7 +74,6 @@ HEADERS += \
     ProsodicUnits.h \
     LanguageDefinition.h \
     corpus-specific/CPROMDISS.h \
-    corpus-specific/PFCAlignment.h \
     corpus-specific/Rhapsodie.h \
     corpus-specific/LOCASF.h \
     experiments/SpeechRateExperiments.h \
@@ -89,7 +88,8 @@ HEADERS += \
     experiments/ExperimentUtterances.h \
     experiments/AggregateProsody.h \
     ProsodicBoundaries.h \
-    CorpusCommunicationSplicer.h
+    CorpusCommunicationSplicer.h \
+    corpus-specific/NCCFR.h
 
 
 SOURCES += \ 
@@ -113,7 +113,6 @@ SOURCES += \
     ProsodicUnits.cpp \
     LanguageDefinition.cpp \
     corpus-specific/CPROMDISS.cpp \
-    corpus-specific/PFCAlignment.cpp \
     corpus-specific/Rhapsodie.cpp \
     corpus-specific/LOCASF.cpp \
     experiments/MyExperiments.cpp \
@@ -128,4 +127,5 @@ SOURCES += \
     experiments/ExperimentUtterances.cpp \
     experiments/AggregateProsody.cpp \
     ProsodicBoundaries.cpp \
-    CorpusCommunicationSplicer.cpp
+    CorpusCommunicationSplicer.cpp \
+    corpus-specific/NCCFR.cpp

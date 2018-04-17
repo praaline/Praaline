@@ -11,7 +11,7 @@ namespace Praaline {
 namespace ASR {
 
 struct SphinxPronunciationDictionaryData {
-    QMap<QString, QString> dictionary;
+    QMap<QString, QList<QString> > dictionary;
     QSet<QString> phonemes;
 };
 
@@ -38,13 +38,22 @@ bool SphinxPronunciationDictionary::readFromFile(const QString &filename)
     while (!dic.atEnd()) {
         QString line = dic.readLine();
         if (!line.contains(" ")) continue;
-        QString word = line.section(" ", 0, 1);
+        while (line.contains("  ")) line = line.replace("  ", " ");
+        QString word_and_id = line.section(" ", 0, 0);
+        QString word;
+        if (word_and_id.contains("("))
+            word = word_and_id.section("(", 0, 0).trimmed();
+        else
+            word = word_and_id.trimmed();
         QStringList phonetisation = line.section(" ", 1, -1).split(" ");
-        d->phonemes.intersect(QSet<QString>::fromList(phonetisation));
-        d->dictionary.insert(word, phonetisation.join(" "));
+        d->phonemes.unite(phonetisation.toSet());
+        if (!d->dictionary.contains(word)) {
+            d->dictionary.insert(word, QList<QString>() << phonetisation.join(" "));
+        } else {
+            d->dictionary[word].append(phonetisation.join(" "));
+        }
     }
     fileDictIn.close();
-
     return true;
 }
 
@@ -55,7 +64,16 @@ bool SphinxPronunciationDictionary::writeToFile(const QString &filename) const
     QTextStream dictOut(&fileDictOut);
     dictOut.setCodec("UTF-8");
     foreach (QString word, d->dictionary.keys()) {
-        dictOut << word << " " << d->dictionary.value(word) << "\n";
+        if (d->dictionary.value(word).count() == 1) {
+            dictOut << word << " " << d->dictionary.value(word).first() << "\n";
+        }
+        else if (d->dictionary.value(word).count() > 1) {
+            for (int id = 1; id <= d->dictionary.value(word).count(); ++id) {
+                dictOut << word;
+                if (id > 1) dictOut << QString("(%1)").arg(id);
+                dictOut << " " << d->dictionary.value(word).at(id) << "\n";
+            }
+        }
     }
     fileDictOut.close();
     return true;
@@ -66,15 +84,28 @@ QList<QString> SphinxPronunciationDictionary::phonemes() const
     return d->phonemes.toList();
 }
 
+bool SphinxPronunciationDictionary::writePhonemeList(const QString &filename) const
+{
+    QFile filePhonemesOut(filename);
+    if ( !filePhonemesOut.open( QIODevice::WriteOnly | QIODevice::Text ) ) return false;
+    QTextStream phonemesOut(&filePhonemesOut);
+    phonemesOut.setCodec("UTF-8");
+    foreach (QString phoneme, d->phonemes) {
+        phonemesOut << phoneme << "\n";
+    }
+    filePhonemesOut.close();
+    return true;
+}
+
 QString SphinxPronunciationDictionary::phonetise(const QString &word) const
 {
-    return d->dictionary.value(word);
+    return d->dictionary.value(word, QList<QString>()).join(" | ");
 }
 
 void SphinxPronunciationDictionary::addWord(const QString &word, const QString &phonetisation)
 {
-    d->phonemes.intersect(QSet<QString>::fromList(phonetisation.split(" ")));
-    d->dictionary.insert(word, phonetisation);
+//    d->phonemes.intersect(QSet<QString>::fromList(phonetisation.split(" ")));
+//    d->dictionary.insert(word, phonetisation);
 }
 
 bool SphinxPronunciationDictionary::contains(const QString &word) const

@@ -26,10 +26,13 @@ public:
     QString tokenise(QPointer<Praaline::Core::CorpusCommunication> com);
     QString tokmin_punctuation(QPointer<Praaline::Core::CorpusCommunication> com);
     QString liaisonCoding(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString checkCharacterSet(QPointer<CorpusCommunication> com);
+    QString checkCharacterSet(QPointer<Praaline::Core::CorpusCommunication> com);
 
 private:
     PFCPreprocessorData *d;
+
+    bool startsWithPunctuation(const QString &text);
+    bool endsWithPunctuation(const QString &text);
 };
 
 #endif // PFCPREPROCESSOR_H

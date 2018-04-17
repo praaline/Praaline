@@ -1,28 +1,23 @@
-#ifndef PFCALIGNER_H
-#define PFCALIGNER_H
+#ifndef NCCFR_H
+#define NCCFR_H
 
 #include <QString>
 #include <QPointer>
 
 namespace Praaline {
 namespace Core {
+class Corpus;
 class CorpusCommunication;
-class Interval;
 }
 }
 
-struct PFCAlignerData;
-
-class PFCAligner
+class NCCFR
 {
 public:
-    PFCAligner();
-    ~PFCAligner();
+    NCCFR();
 
+    QString prepareTranscription(QPointer<Praaline::Core::CorpusCommunication> com);
     QString align(QPointer<Praaline::Core::CorpusCommunication> com);
-
-private:
-    PFCAlignerData *d;
 };
 
-#endif // PFCALIGNER_H
+#endif // NCCFR_H

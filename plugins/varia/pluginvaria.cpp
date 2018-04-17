@@ -33,7 +33,7 @@
 
 #include "corpus-specific/CPROMDISS.h"
 #include "corpus-specific/Rhapsodie.h"
-#include "corpus-specific/PFCAlignment.h"
+#include "corpus-specific/NCCFR.h"
 
 #include "experiments/DisfluenciesExperiments.h"
 #include "experiments/SpeechRateExperiments.h"
@@ -448,6 +448,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
 //        m = LOCASF::noteProsodicBoundaryOnSyll(com);
 
+        NCCFR nccfr;
+        // m = nccfr.prepareTranscription(com);
+        m = nccfr.align(com);
         if (!m.isEmpty()) printMessage(m);
     }
     if (communications.isEmpty()) return;
@@ -457,7 +460,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // m = AggregateProsody::averageContours(communications.first());
     // m = AggregateProsody::readPCAdata(communications.first());
     // m = AggregateProsody::calculatePairwiseDistances(communications.first());
-    m = ExperimentUtterances::createStimuli(communications.first()->corpus());
+    // m = ExperimentUtterances::createStimuli(communications.first()->corpus());
 
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());

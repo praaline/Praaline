@@ -12,14 +12,16 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
+#include "WordAlign.h"
 #include "PFCPreprocessor.h"
 
 struct PFCPreprocessorData {
-    int i;
+    QStringList punctuationMarks;
 };
 
 PFCPreprocessor::PFCPreprocessor() : d(new PFCPreprocessorData())
 {
+    d->punctuationMarks << "." << "," << "?" << "!" << "-" << ":" << "\"";
 }
 
 PFCPreprocessor::~PFCPreprocessor()
@@ -136,6 +138,11 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
             intv->setAttribute("schwa", schwa);
             intv->setAttribute("liaison", liaison);
             intv->setAttribute("tocheck", tocheck);
+
+            WordAlign align;
+            align.align(ortho.split(" "), schwa.split(" "));
+            intv->setAttribute("wordalign", align.alignmentText());
+            intv->setAttribute("wordalign_wer", align.WER());
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }
@@ -157,11 +164,11 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
             int o = ortho.split(":").count();
             int s = schwa.split(":").count();
             int l = liaison.split(":").count();
-            if (o != s || o != l || s != l) intv->setAttribute("comment", "num loc a");
+            if (o != s || o != l || s != l) intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc a");
             o = ortho.split("<").count();
             s = schwa.split("<").count();
             l = liaison.split("<").count();
-            if (o != s || o != l || s != l) intv->setAttribute("comment", "num loc b");
+            if (o != s || o != l || s != l) intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc b");
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }
@@ -175,7 +182,7 @@ void mergeInsideParentheses(QString &input) {
     int s = -1;
     while ((s = rx.indexIn(input, s+1)) >= 0) {
         QString capture = rx.cap(0);
-        input.replace(s, capture.length(), capture.replace(" ", "_"));
+        input.replace(s, capture.length(), capture.replace(" ", "_").replace("'", "'_").replace("-", "-_"));
         s += rx.cap(1).length();
     }
 }
@@ -187,9 +194,11 @@ QString formatSegment(QString input)
     if (input.endsWith("'")) { ret.chop(1); ret = ret.append("\""); }
     ret = ret.replace(" '", " \"").replace("' ", "\" ").replace("'.", "\".").replace("', ", "\", ").replace("\" ,", "\",").replace("\" .", "\".");
     ret = ret.replace("/", "/ ").replace("/ ,", "/,").replace("/ .", "/.").replace("/ )", "/)");
-    ret = ret.replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ");
+    while (ret.contains("  ")) ret = ret.replace("  ", " ");
     ret = ret.replace(" .", ".").replace(" ,", ",").replace(" ?", "?").replace(" !", "!");
-    ret = ret.replace("  ", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ");
+    ret = ret.replace(".(", ". (").replace(",(", ", (").replace("?(", "? (").replace("!(", "! (");
+    while (ret.contains("  ")) ret = ret.replace("  ", " ");
+    ret = ret.replace(" _", "_").replace("_ ", "_");
     return ret.trimmed();
 }
 
@@ -292,28 +301,30 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
             foreach (Interval *i, t->intervals()) {
                 if (i->text().isEmpty()) { i->setText("_"); i->setAttribute("schwa", "_"); i->setAttribute("liaison", "_"); }
             }
-            tiersAll.insert(annot->ID() + "_" + spk, t);
+            QString speakerID = annot->ID().left(6) + "_" + spk;
+            tiersAll.insert(speakerID, t);
         }
 
-        foreach (QString spk, tiersAll.keys()) {
-            com->repository()->annotations()->saveTier(annot->ID(), spk, tiersAll.value(spk));
+        foreach (QString speakerID, tiersAll.keys()) {
+            com->repository()->annotations()->saveTier(annot->ID(), speakerID, tiersAll.value(speakerID));
         }
 
         delete segment;
         delete segmentMain;
-        qDeleteAll(tiersAll);
+        //qDeleteAll(tiersAll);
+        //tiersAll.clear();
     }
     return com->ID();
 }
 
 QList<QString> splitToken(QString input)
 {
-    input = input.replace("'", "' ");
-    input = input.replace("\u2019", "' ");
+    input = input.replace("'", "' ").replace("' _", "'_");
+    input = input.replace("\u2019", "' ").replace("' _", "'_");
     // Dashes
     if (input.startsWith("-"))
         input.remove(0, 1); // if a token begins with '-', the next rule would create a lonely dash token
-    input = input.replace("-", "- ");
+    input = input.replace("-", "- ").replace("- _", "-_");
     //
     input = input.replace("aujourd' hui", "aujourd'hui");
     input = input.replace("t- il", "t-il");
@@ -322,7 +333,7 @@ QList<QString> splitToken(QString input)
 
     // break everything at spaces
     QList<QString> ret;
-    QList<QString> result = input.split(" ", QString::SkipEmptyParts);
+    QList<QString> result = input.trimmed().split(" ", QString::SkipEmptyParts);
     int i = 0;
     while (i < result.count()) {
         if (result.at(i).startsWith("parce", Qt::CaseInsensitive)) {
@@ -358,31 +369,55 @@ QString PFCPreprocessor::tokenise(QPointer<CorpusCommunication> com)
                 QList<QString> splitOrtho = splitToken(ortho);
                 QList<QString> splitSchwa = splitToken(schwa);
                 QList<QString> splitLiaison = splitToken(liaison);
+                // Whenever there is a count mismatch, we drop the schwa and liaison coding; better than creating
+                // inconsistent intervals. These cases should have been caught earlier in the preprocessor.
                 int count = splitOrtho.count();
                 if (count != splitSchwa.count()) splitSchwa = splitOrtho;
                 if (count != splitLiaison.count()) splitLiaison = splitOrtho;
+                // Create intervals proportional to the length of each token in characters
                 QList<int> lengths;
                 for (int i = 0; i < count; ++i) lengths << splitOrtho.at(i).length();
-                if (segment->duration().toDouble() > 1.0) lengths << 2;
                 QList<Interval *> intervals_tok_min = tier_tok_min->splitToProportions(itok, lengths);
-                if (intervals_tok_min.count() == 0) intervals_tok_min << tier_tok_min->interval(itok);
+                if (intervals_tok_min.count() == 0) {
+                    intervals_tok_min << tier_tok_min->interval(itok);
+                }
+                // Insert the tokenised data (token-schwa-liaison) into the corresponding interval
                 for (int i = 0; i < count; ++i) {
                     intervals_tok_min[i]->setText(splitOrtho.at(i));
                     intervals_tok_min[i]->setAttribute("schwa", splitSchwa.at(i));
                     intervals_tok_min[i]->setAttribute("liaison", splitLiaison.at(i));
                 }
                 itok = itok + count;
-                if (segment->duration().toDouble() > 1.0) itok = itok + 1;
             }
+            // Fill empty intervals with the pause symbol and merge contiguous pauses
             tier_tok_min->fillEmptyWith("", "_");
             tier_tok_min->mergeIdenticalAnnotations("_");
-
+            // Now fill pauses with the pause symbol for the schwa and liaison attributes
+            tier_tok_min->fillEmptyWith("schwa", "_");
+            tier_tok_min->fillEmptyWith("liaison", "_");
+            // Save the created tok_min tier into the database
             com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             delete tier_tok_min;
         }
         qDeleteAll(tiersAll);
     }
     return com->ID();
+}
+
+bool PFCPreprocessor::startsWithPunctuation(const QString &text)
+{
+    if (text.isEmpty()) return false;
+    QString c = text.left(1);
+    if (d->punctuationMarks.contains(c)) return true;
+    return false;
+}
+
+bool PFCPreprocessor::endsWithPunctuation(const QString &text)
+{
+    if (text.isEmpty()) return false;
+    QString c = text.right(1);
+    if (d->punctuationMarks.contains(c)) return true;
+    return false;
 }
 
 QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
@@ -395,25 +430,23 @@ QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
             if (!tier_tok_min) continue;
             foreach (Interval *tok_min, tier_tok_min->intervals()) {
-                QString t = tok_min->text();
+                QString t = tok_min->text().trimmed();
                 QString s = tok_min->attribute("schwa").toString();
                 QString l = tok_min->attribute("liaison").toString();
-                if (t.endsWith(",")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", ","); }
-                if (t.endsWith(".")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", "."); }
-                if (t.endsWith("?")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", "?"); }
-                if (t.endsWith("!")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", "!"); }
-                if (t.endsWith("-")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", "-"); }
-                if (t.endsWith(":")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", ":"); }
-                if (t.startsWith("\"")) { t = t.remove(0, 1); tok_min->setText(t); tok_min->setAttribute("punctuation_before", "\""); }
-                if (t.endsWith("\"")) { t.chop(1); tok_min->setText(t); tok_min->setAttribute("punctuation_after", "\""); }
-
-                if (s.endsWith(",") || s.endsWith(".") || s.endsWith("?") || s.endsWith("!") || s.endsWith("-") || s.endsWith(":") || s.endsWith("\""))
-                { s.chop(1); tok_min->setAttribute("schwa", s); }
-                if (s.startsWith("\"")) { s = s.remove(0, 1); tok_min->setAttribute("schwa", s); }
-
-                if (l.endsWith(",") || l.endsWith(".") || l.endsWith("?") || l.endsWith("!") || l.endsWith("-") || l.endsWith(":") || l.endsWith("\""))
-                { l.chop(1); tok_min->setAttribute("liaison", l); }
-                if (l.startsWith("\"")) { l = l.remove(0, 1); tok_min->setAttribute("liaison", l); }
+                // Remove all punctuation marks. Keep track of the marks removed (based on the token's text)
+                QString punctuation_before, punctuation_after;
+                while (startsWithPunctuation(t))    { punctuation_before.append(t.left(1));  t = t.remove(0, 1); }
+                while (endsWithPunctuation(t))      { punctuation_after.prepend(t.right(1)); t.chop(1);          }
+                while (startsWithPunctuation(s))    { s = s.remove(0, 1); }
+                while (endsWithPunctuation(s))      { s.chop(1); }
+                while (startsWithPunctuation(l))    { l = l.remove(0, 1); }
+                while (endsWithPunctuation(l))      { l.chop(1); }
+                // Update the token
+                tok_min->setText(t);
+                tok_min->setAttribute("schwa", s);
+                tok_min->setAttribute("liaison", l);
+                tok_min->setAttribute("punctuation_before", punctuation_before);
+                tok_min->setAttribute("punctuation_after", punctuation_after);
             }
             com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
         }
