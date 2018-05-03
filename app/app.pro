@@ -238,7 +238,9 @@ SOURCES += main.cpp \
     web/WebDesignerModeWidget.cpp \
     statistics/pca/StatisticsPluginPCA.cpp \
     statistics/pca/PCAPlotWidget.cpp \ #\
-    annotation/editors/PFCTranscriptionEditor.cpp
+    annotation/editors/PFCTranscriptionEditor.cpp \
+    web/MetadataWebDesigner.cpp \
+    web/ConcordancerWebDesigner.cpp
     #statistics/basic/AnalyserBasic.cpp
 
 HEADERS  += \
@@ -378,7 +380,9 @@ HEADERS  += \
     web/WebDesignerModeWidget.h \
     statistics/pca/StatisticsPluginPCA.h \
     statistics/pca/PCAPlotWidget.h \ #\
-    annotation/editors/PFCTranscriptionEditor.h
+    annotation/editors/PFCTranscriptionEditor.h \
+    web/MetadataWebDesigner.h \
+    web/ConcordancerWebDesigner.h
     #statistics/basic/AnalyserBasic.h
 
 FORMS    += \

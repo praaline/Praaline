@@ -61,11 +61,11 @@ int QueryOccurrenceTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
     if (!d->queryDefinition) return 0;
-    // corpusID, communicationID, annotationID, speakerID, tMin, tMax, Left Context + {sequences} + Right Context
+    // corpusID, communicationID, annotationID, speakerID, interval No, tMin, tMax, Left Context + {sequences} + Right Context
     if (d->multiLine)
-        return d->queryDefinition->longestSequenceLength() + 8;
+        return d->queryDefinition->longestSequenceLength() + 9;
     else
-        return d->queryDefinition->longestSequenceLength() * d->queryDefinition->resultLevelsAttributes.count() + 8;
+        return d->queryDefinition->longestSequenceLength() * d->queryDefinition->resultLevelsAttributes.count() + 9;
 }
 
 QVariant QueryOccurrenceTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -77,10 +77,11 @@ QVariant QueryOccurrenceTableModel::headerData(int section, Qt::Orientation orie
         else if (section == 1)  return tr("Communication ID");
         else if (section == 2)  return tr("Annotation ID");
         else if (section == 3)  return tr("Speaker ID");
-        else if (section == 4)  return tr("tMin");
-        else if (section == 5)  return tr("tMax");
-        else if (section == 6)  return tr("Left Context");
-        else if (section >= 7 && section < columnCount() - 1)
+        else if (section == 4)  return tr("Interval No");
+        else if (section == 5)  return tr("tMin");
+        else if (section == 6)  return tr("tMax");
+        else if (section == 7)  return tr("Left Context");
+        else if (section >= 8 && section < columnCount() - 1)
             return QString("T%1").arg(section - 6);
         else if (section == columnCount() - 1)
             return tr("Right Context");
@@ -90,14 +91,15 @@ QVariant QueryOccurrenceTableModel::headerData(int section, Qt::Orientation orie
         else if (section == 1)  return tr("Communication ID");
         else if (section == 2)  return tr("Annotation ID");
         else if (section == 3)  return tr("Speaker ID");
-        else if (section == 4)  return tr("tMin");
-        else if (section == 5)  return tr("tMax");
-        else if (section == 6)  return tr("Left Context");
-        else if (section >= 7 && section < columnCount() - 1) {
+        else if (section == 4)  return tr("Interval No");
+        else if (section == 5)  return tr("tMin");
+        else if (section == 6)  return tr("tMax");
+        else if (section == 7)  return tr("Left Context");
+        else if (section >= 8 && section < columnCount() - 1) {
             if (d->queryDefinition->resultLevelsAttributes.count() == 0)
                 return QVariant();
-            int indexLevelAttribute = (section - 7) % d->queryDefinition->resultLevelsAttributes.count();
-            int indexSeq = (section - 7) / d->queryDefinition->resultLevelsAttributes.count();
+            int indexLevelAttribute = (section - 8) % d->queryDefinition->resultLevelsAttributes.count();
+            int indexSeq = (section - 8) / d->queryDefinition->resultLevelsAttributes.count();
             if ((indexLevelAttribute < 0) || (indexLevelAttribute >= d->queryDefinition->resultLevelsAttributes.count()))
                 return QVariant();
             QString attributeID = d->queryDefinition->resultLevelsAttributes.at(indexLevelAttribute).second;
@@ -148,12 +150,12 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
     if (d->multiLine) {
         indexOccurrence = index.row() / d->queryDefinition->resultLevelsAttributes.count();
         indexLevelAttribute = index.row() % d->queryDefinition->resultLevelsAttributes.count();
-        indexSeq = index.column() - 7;
+        indexSeq = index.column() - 8;
         // qDebug() << "Multiline format: occurrence " << indexOccurrence << " lev-attr " << indexLevelAttribute << " seq " << indexSeq;
     } else {
         indexOccurrence = index.row();
-        indexLevelAttribute = (index.column() - 7) % d->queryDefinition->resultLevelsAttributes.count();
-        indexSeq = (index.column() - 7) / d->queryDefinition->resultLevelsAttributes.count();
+        indexLevelAttribute = (index.column() - 8) % d->queryDefinition->resultLevelsAttributes.count();
+        indexSeq = (index.column() - 8) / d->queryDefinition->resultLevelsAttributes.count();
         // qDebug() << "Exploded format: occurrence " << indexOccurrence << " lev-attr " << indexLevelAttribute << " seq " << indexSeq;
     }
 
@@ -172,9 +174,10 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
         else if (index.column() == 1)   return occurrence->communicationID();
         else if (index.column() == 2)   return occurrence->annotationID();
         else if (index.column() == 3)   return occurrence->speakerIDs();
-        else if (index.column() == 4)   return occurrence->tMin().toDouble();
-        else if (index.column() == 5)   return occurrence->tMax().toDouble();
-        else if (index.column() == 6) {
+        else if (index.column() == 4)   return occurrence->intervalNoTarget();
+        else if (index.column() == 5)   return occurrence->tMin().toDouble();
+        else if (index.column() == 6)   return occurrence->tMax().toDouble();
+        else if (index.column() == 7) {
             // Left context
             if (d->leftContext.contains(index.row())) {
                 return d->leftContext.value(index.row());
@@ -193,7 +196,7 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
                 return leftContext;
             }
         }
-        else if (index.column() >= 7 && index.column() < columnCount() - 1) {
+        else if (index.column() >= 8 && index.column() < columnCount() - 1) {
             // Target
             if ((indexLevelAttribute < 0) || (indexLevelAttribute >= d->queryDefinition->resultLevelsAttributes.count()))
                 return QVariant();
@@ -233,9 +236,9 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
         }
     }
     else if (role == Qt::TextAlignmentRole) {
-        if (index.column() >= 4 && index.column() <= 6) // tMin, tMax, left context
+        if (index.column() >= 4 && index.column() <= 7) // interval No, tMin, tMax, left context
             return QVariant(Qt::AlignRight | Qt::AlignVCenter);
-        else if (index.column() >= 7 && index.column() < columnCount() - 1)
+        else if (index.column() >= 8 && index.column() < columnCount() - 1)
             return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);
     }
     else if (role == Qt::BackgroundColorRole) {
@@ -248,7 +251,7 @@ Qt::ItemFlags QueryOccurrenceTableModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
         return Qt::ItemIsEnabled;
-    if (index.column() >= 7 && index.column() < columnCount() - 1)
+    if (index.column() >= 8 && index.column() < columnCount() - 1)
         return QAbstractTableModel::flags(index) | Qt::ItemIsEditable | Qt::ItemIsSelectable;
     return QAbstractTableModel::flags(index) | Qt::ItemIsSelectable;
 }
@@ -257,18 +260,18 @@ bool QueryOccurrenceTableModel::setData(const QModelIndex &index, const QVariant
 {
     if (!index.isValid()) return false;
     if (role != Qt::EditRole) return false;
-    if (index.column() < 7 || index.column() == columnCount() - 1) return false;
+    if (index.column() < 8 || index.column() == columnCount() - 1) return false;
 
     int indexOccurrence = 0, indexLevelAttribute = 0, indexSeq = 0;
     if (d->multiLine) {
         indexOccurrence = index.row() / d->queryDefinition->resultLevelsAttributes.count();
         indexLevelAttribute = index.row() % d->queryDefinition->resultLevelsAttributes.count();
-        indexSeq = index.column() - 7;
+        indexSeq = index.column() - 8;
         // qDebug() << "Write Multiline format: occurrence " << indexOccurrence << " lev-attr " << indexLevelAttribute << " seq " << indexSeq;
     } else {
         indexOccurrence = index.row();
-        indexLevelAttribute = (index.column() - 7) % d->queryDefinition->resultLevelsAttributes.count();
-        indexSeq = (index.column() - 7) / d->queryDefinition->resultLevelsAttributes.count();
+        indexLevelAttribute = (index.column() - 8) % d->queryDefinition->resultLevelsAttributes.count();
+        indexSeq = (index.column() - 8) / d->queryDefinition->resultLevelsAttributes.count();
         // qDebug() << "Write Exploded format: occurrence " << indexOccurrence << " lev-attr " << indexLevelAttribute << " seq " << indexSeq;
     }
 

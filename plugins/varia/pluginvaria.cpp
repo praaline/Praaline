@@ -44,6 +44,7 @@
 #include "experiments/MyExperiments.h"
 #include "experiments/ExperimentUtterances.h"
 #include "experiments/AggregateProsody.h"
+#include "experiments/PhonogenreDiscourseMarkers.h"
 
 #include "pluginvaria.h"
 
@@ -436,22 +437,21 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        ProsodicUnits p;
 //        p.createProsodicUnits(com);
 //        m = p.transcriptionInProsodicUnits(com);
-        // m = ExperimentUtterances::fixTiers(com);
-        // m = m + ExperimentUtterances::fixTranscription(com);
-        // m = m + ExperimentUtterances::syllabify(com);
+//        m = ExperimentUtterances::fixTiers(com);
+//        m = m + ExperimentUtterances::fixTranscription(com);
+//        m = m + ExperimentUtterances::syllabify(com);
 //        m = ExperimentUtterances::resyllabifyMDs(com);
 //        m = AggregateProsody::markTargetSyllables(com);
-
 //        m = Rhapsodie::updateSyllables(com);
 //        m = Rhapsodie::loadPitch(com);
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
 //        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
 //        m = LOCASF::noteProsodicBoundaryOnSyll(com);
 
-        NCCFR nccfr;
+        // NCCFR nccfr;
         // m = nccfr.prepareTranscription(com);
-        m = nccfr.align(com);
-        if (!m.isEmpty()) printMessage(m);
+        // m = nccfr.align(com);
+        // if (!m.isEmpty()) printMessage(m);
     }
     if (communications.isEmpty()) return;
     // m = ExperimentUtterances::concatenate(communications.first());
@@ -461,10 +461,11 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // m = AggregateProsody::readPCAdata(communications.first());
     // m = AggregateProsody::calculatePairwiseDistances(communications.first());
     // m = ExperimentUtterances::createStimuli(communications.first()->corpus());
-
+    // m = PhonogenreDiscourseMarkers::readBackAnnotations(communications.first());
+    m = PhonogenreDiscourseMarkers::statistics(communications.first());
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    //m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
+    // m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     printMessage(m);
 
 //         SequencerSyntax s;

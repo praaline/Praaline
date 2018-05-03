@@ -20,6 +20,8 @@ public:
     static QString averageContours(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString readPCAdata(QPointer<Praaline::Core::CorpusCommunication> com);
     static QString calculatePairwiseDistances(QPointer<Praaline::Core::CorpusCommunication> com);
+
+    static QString percentagesProminence(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // AGGREGATEPROSODY_H

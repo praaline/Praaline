@@ -695,3 +695,61 @@ QString AggregateProsody::calculatePairwiseDistances(QPointer<Praaline::Core::Co
     fileSameSpeaker.close();
     return ret;
 }
+
+QString AggregateProsody::percentagesProminence(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+
+    if (!com) return "Error";
+    QPointer<Corpus> corpus = com->corpus();
+    if (!corpus) return "Error";
+
+    QStringList metadataAttributes; metadataAttributes << "DiscourseMarker" << "DiscourseRelation";
+    QString syllFilterAttribute = "target";
+    QStringList syllFilterValues; syllFilterValues << "L-1" << "T1" << "T2" << "R1";
+    QString syllAttribute = "promise_pos";
+    QStringList syllAttributeValues; syllAttributeValues << "P";
+
+    QString path = "/home/george";
+
+    QFile fileStat(path + "/percentages_prominence.txt");
+    if ( !fileStat.open( QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text ) ) return "Error writing output file";
+    QTextStream outStat(&fileStat);
+    outStat.setCodec("UTF-8");
+    QString header;
+    foreach (QString attr, metadataAttributes) header.append(attr).append("\t");
+    header.append(syllFilterAttribute).append("\t");
+    header.append(syllAttribute).append("\t").append("Percentage").append("\n");
+    outStat << header;
+
+    QMap<QString, int> counts, totals;
+
+    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        if (!com) continue;
+        QPointer<CorpusRecording> rec = com->recordings().first();
+        if (!rec) continue;
+        QString annotationID = rec->ID();
+        QString speakerID = com->property("SubjectID").toString();
+        // Metadata
+        QString metadata;
+        foreach (QString attr, metadataAttributes) {
+            metadata.append(com->property(attr).toString()).append("\t");
+        }
+        // Get tiers
+        IntervalTier *tier_syll = qobject_cast<IntervalTier *>
+                (com->repository()->annotations()->getTier(annotationID, speakerID, "syll"));
+        if (!tier_syll) continue;
+
+        foreach (Interval *syll, tier_syll->intervals()) {
+            if (syll->isPauseSilent()) continue;
+            if (!syllFilterValues.contains(syll->attribute(syllFilterAttribute).toString())) continue;
+
+
+        }
+
+
+
+        delete tier_syll;
+    }
+    fileStat.close();
+}
