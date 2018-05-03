@@ -163,7 +163,8 @@ QVariant QueryOccurrenceTableModel::data(const QModelIndex &index, int role) con
     QueryOccurrence *occurrence = d->occurrences.value(indexOccurrence, 0);
     if (!occurrence) {
         // lazy loading
-        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
+        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition,
+                                                                 d->queryDefinition->lengthContextLeft, d->queryDefinition->lengthContextRight);
         d->occurrences.insert(indexOccurrence, occurrence);
         // qDebug() << "loaded " << indexOccurrence;
     }
@@ -282,7 +283,8 @@ bool QueryOccurrenceTableModel::setData(const QModelIndex &index, const QVariant
     QueryOccurrence *occurrence = d->occurrences.value(indexOccurrence, 0);
     if (!occurrence) {
         // lazy loading
-        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition);
+        occurrence = d->repository->annotations()->getOccurrence(d->pointers.at(indexOccurrence), d->queryDefinition,
+                                                                 d->queryDefinition->lengthContextLeft, d->queryDefinition->lengthContextRight);
         d->occurrences.insert(indexOccurrence, occurrence);
         qDebug() << "loaded " << indexOccurrence;
     }

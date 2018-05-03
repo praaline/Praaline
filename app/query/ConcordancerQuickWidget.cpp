@@ -373,6 +373,9 @@ void ConcordancerQuickWidget::searchOccurrences()
         }
     }
     query->filterGroups.first().filterSequences.append(sequence);
+    // Context length
+    query->lengthContextLeft = 20;
+    query->lengthContextRight = 20;
 
     // Results attributes
     QPair<QString, QString> pair;
