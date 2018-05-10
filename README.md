@@ -19,13 +19,13 @@ Citation
 ========
 If you use Praaline for research, please cite the following article:
 
-@inproceedings{Christodoulides.2014.Praaline,
+    @inproceedings{Praaline.LREC,
 	title = {Praaline: integrating tools for speech corpus research},
-  author = {George Christodoulides},
-  booktitle = {{LREC} 2014 -- 9\textsuperscript{th} International Conference on Language Resources 
+	author = {George Christodoulides},
+	booktitle = {{LREC} 2014 -- 9\textsuperscript{th} International Conference on Language Resources 
 	and Evaluation, May 26--31, Reykjavik, Iceland, Proceedings},
 	year = {2014},
 	pages = {31--34},
-  note = {\url{http://www.praaline.org}}
- }
+  	note = {\url{http://www.praaline.org}}
+    }
  
