@@ -135,6 +135,11 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
 //    printMessage(m);
 //    return;
 
+    PFCReports report;
+    QString m = report.corpusCoverageStatistics(communications.first()->corpus());
+    if (!m.isEmpty()) printMessage(m);
+    return;
+
 //    PFCPreprocessor p;
 //    foreach (QPointer<CorpusCommunication> com, communications) {
 //        QString m = p.prepareTranscription(com);

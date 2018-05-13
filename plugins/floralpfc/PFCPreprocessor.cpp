@@ -115,15 +115,18 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
             ortho = ortho.replace("< ", "<").replace("<", " <").replace(" >", ">").replace(">", "> ").replace(" :", ":")
                     .replace(" )", ")").replace("( ", "(")
                     .replace(" .", ".").replace(" ,", ",")
-                    .replace("  ", " ").replace("  ", " ").replace("  ", " ").trimmed();
+                    .replace("  ", " ").replace("  ", " ").replace("  ", " ")
+                    .replace("d\u00E9clar\u00E9:", "d\u00E9clar\u00E9").trimmed();
             schwa = schwa.replace("< ", "<").replace("<", " <").replace(" >", ">").replace(">", "> ").replace(" :", ":")
                     .replace(" )", ")").replace("( ", "(")
                     .replace(" .", ".").replace(" ,", ",")
-                    .replace("  ", " ").replace("  ", " ").replace("  ", " ").trimmed();
+                    .replace("  ", " ").replace("  ", " ").replace("  ", " ")
+                    .replace("d\u00E9clar\u00E9:", "d\u00E9clar\u00E9").trimmed();
             liaison = liaison.replace("< ", "<").replace("<", " <").replace(" >", ">").replace(">", "> ").replace(" :", ":")
                     .replace(" )", ")").replace("( ", "(")
                     .replace(" .", ".").replace(" ,", ",")
-                    .replace("  ", " ").replace("  ", " ").replace("  ", " ").trimmed();
+                    .replace("  ", " ").replace("  ", " ").replace("  ", " ")
+                    .replace("d\u00E9clar\u00E9:", "d\u00E9clar\u00E9").trimmed();
             if (liaison.isEmpty()) liaison = ortho;
             if (schwa.isEmpty()) schwa = ortho;
             int o = ortho.split(" ").count();
@@ -164,6 +167,12 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
             int o = ortho.split(":").count();
             int s = schwa.split(":").count();
             int l = liaison.split(":").count();
+            // Check for single speaker
+            if ((o == s) && (o == l) && (o == 2)) {
+                // Single speaker intervals are formatted like that: LOC: text text ...
+                intv->setAttribute("single_speaker", ortho.split(":").at(0));
+            }
+            // Check if error in the number of speakers given by the ":" symbol
             if (o != s || o != l || s != l) intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc a");
             o = ortho.split("<").count();
             s = schwa.split("<").count();
