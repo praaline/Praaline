@@ -12,6 +12,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
+#include "pnlib/asr/phonetiser/PhonemeTranslation.h"
 #include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
 using namespace Praaline::ASR;
 
@@ -19,7 +20,7 @@ using namespace Praaline::ASR;
 
 struct PFCPhonetiserData {
     SphinxPronunciationDictionary *sphinxDictionary;
-    QHash<QString, QString> phonemesSphinxToSampa;
+    PhonemeTranslation phonemeTranslation;
     QString symbolFalseStart;
     QStringList wordsFalseStarts;
     QStringList wordsOOV;
@@ -29,41 +30,6 @@ PFCPhonetiser::PFCPhonetiser() : d(new PFCPhonetiserData())
 {
     d->symbolFalseStart = "/";
     d->sphinxDictionary = new SphinxPronunciationDictionary();
-    d->phonemesSphinxToSampa.insert("aa", "a");
-    d->phonemesSphinxToSampa.insert("ai", "e");
-    d->phonemesSphinxToSampa.insert("an", "a~");
-    d->phonemesSphinxToSampa.insert("au", "o");
-    d->phonemesSphinxToSampa.insert("bb", "b");
-    d->phonemesSphinxToSampa.insert("ch", "S");
-    d->phonemesSphinxToSampa.insert("dd", "d");
-    d->phonemesSphinxToSampa.insert("ee", "@");
-    d->phonemesSphinxToSampa.insert("ei", "E");
-    d->phonemesSphinxToSampa.insert("eu", "2");
-    d->phonemesSphinxToSampa.insert("ff", "f");
-    d->phonemesSphinxToSampa.insert("gg", "g");
-    d->phonemesSphinxToSampa.insert("gn", "J");
-    d->phonemesSphinxToSampa.insert("ii", "i");
-    d->phonemesSphinxToSampa.insert("in", "e~");
-    d->phonemesSphinxToSampa.insert("jj", "Z");
-    d->phonemesSphinxToSampa.insert("kk", "k");
-    d->phonemesSphinxToSampa.insert("ll", "l");
-    d->phonemesSphinxToSampa.insert("mm", "m");
-    d->phonemesSphinxToSampa.insert("nn", "n");
-    d->phonemesSphinxToSampa.insert("oe", "9");
-    d->phonemesSphinxToSampa.insert("on", "o~");
-    d->phonemesSphinxToSampa.insert("oo", "O");
-    d->phonemesSphinxToSampa.insert("ou", "u");
-    d->phonemesSphinxToSampa.insert("pp", "p");
-    d->phonemesSphinxToSampa.insert("rr", "R");
-    d->phonemesSphinxToSampa.insert("ss", "s");
-    d->phonemesSphinxToSampa.insert("tt", "t");
-    d->phonemesSphinxToSampa.insert("un", "9~");
-    d->phonemesSphinxToSampa.insert("uu", "y");
-    d->phonemesSphinxToSampa.insert("uy", "H");
-    d->phonemesSphinxToSampa.insert("vv", "v");
-    d->phonemesSphinxToSampa.insert("ww", "w");
-    d->phonemesSphinxToSampa.insert("yy", "j");
-    d->phonemesSphinxToSampa.insert("zz", "z");
 }
 
 PFCPhonetiser::~PFCPhonetiser()
@@ -74,6 +40,7 @@ PFCPhonetiser::~PFCPhonetiser()
 
 QString PFCPhonetiser::loadPhonetisationDictionary()
 {
+    d->phonemeTranslation.read("/mnt/hgfs/DATA/PFCALIGN/phonetisation/sphinx_to_sampa.json");
     d->sphinxDictionary->readFromFile("/mnt/hgfs/DATA/PFCALIGN/phonetisation/fr.dict");
     d->sphinxDictionary->writePhonemeList("/mnt/hgfs/DATA/PFCALIGN/phonetisation/fr.phonemes");
     return "Phonetisation dictionary loaded";
@@ -85,7 +52,7 @@ QString PFCPhonetiser::convertSphinxToSampa(const QString &sphinx)
     foreach (QString phonetisationSphinx, sphinx.split("|")) {
         QString phonetisationSampa;
         foreach (QString phoneSphinx, phonetisationSphinx.split(" ", QString::SkipEmptyParts)) {
-            QString phoneSampa = d->phonemesSphinxToSampa.value(phoneSphinx, phoneSphinx);
+            QString phoneSampa = d->phonemeTranslation.translate(phoneSphinx);
             phonetisationSampa.append(phoneSampa).append(" ");
         }
         phonetisationsSampa << phonetisationSampa.trimmed();

@@ -1,7 +1,6 @@
 #ifndef SPHINXPRONUNCIATIONDICTIONARY_H
 #define SPHINXPRONUNCIATIONDICTIONARY_H
 
-#include <QObject>
 #include <QString>
 #include <QList>
 
@@ -10,11 +9,10 @@ namespace ASR {
 
 struct SphinxPronunciationDictionaryData;
 
-class SphinxPronunciationDictionary : public QObject
+class SphinxPronunciationDictionary
 {
-    Q_OBJECT
 public:
-    explicit SphinxPronunciationDictionary(QObject *parent = 0);
+    explicit SphinxPronunciationDictionary();
     virtual ~SphinxPronunciationDictionary();
 
     bool readFromFile(const QString &filename);

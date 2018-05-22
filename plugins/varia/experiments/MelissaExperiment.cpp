@@ -723,7 +723,8 @@ QString MelissaExperiment::preprocessAlignment(QPointer<Praaline::Core::CorpusCo
             }
             ret.append(QString("%1\tTotal unaligned:%2 Aligned: %3\n").arg(annotationID).arg(unalignedTotal).arg(unalignedAligned));
 
-            IntervalTier *tier_syll_ours = SyllabifierEasy::syllabify(tier_phone);
+            SyllabifierEasy syllabifier;
+            IntervalTier *tier_syll_ours = syllabifier.createSyllableTier(tier_phone);
             tier_syll_ours->setName("syll");
             txg->insertTierReplacing(1, tier_syll_ours);
             PraatTextGrid::save("/home/george/AA/align_auto/" + annotationID + "_" + speakerID + ".TextGrid", txg);

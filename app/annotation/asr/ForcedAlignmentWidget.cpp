@@ -224,8 +224,9 @@ void ForcedAlignmentWidget::stepAlignAll()
         d->statusMessages->appendMessage(alignerOutput);
 
         if (ok) {
+            SyllabifierEasy syllabifier;
             IntervalTier *tier_phone = new IntervalTier("phone", list_phones);
-            IntervalTier *tier_syll= SyllabifierEasy::syllabify(tier_phone);
+            IntervalTier *tier_syll= syllabifier.createSyllableTier(tier_phone);
             tier_syll->setName("syll");
             d->repository->annotations()->saveTier(annotationID, speakerID, tier_tokens);
             d->repository->annotations()->saveTier(annotationID, speakerID, tier_phone);

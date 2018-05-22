@@ -2,6 +2,7 @@
 #define SYLLABIFIEREASY_H
 
 #include <QString>
+#include "pncore/base/RealTime.h"
 
 namespace Praaline {
 
@@ -16,12 +17,14 @@ class SyllabifierEasy
 public:
     SyllabifierEasy();
 
-    static Praaline::Core::IntervalTier *syllabify(Praaline::Core::IntervalTier *tier_phone);
+    bool syllabify(Praaline::Core::IntervalTier *tier_phone, Praaline::Core::IntervalTier *tier_syll,
+                   RealTime from, RealTime to);
+    Praaline::Core::IntervalTier *createSyllableTier(Praaline::Core::IntervalTier *tier_phone);
 
 private:
-    static int getCategory(Praaline::Core::IntervalTier *tier_syll, int index, int offset);
-    static int phoneCategory(const QString &phone);
-    static void delcurrent(Praaline::Core::IntervalTier *tier_syll, int index, const QString &ruleName);
+    int getCategory(Praaline::Core::IntervalTier *tier_syll, int index, int offset);
+    int phoneCategory(const QString &phone);
+    void delcurrent(Praaline::Core::IntervalTier *tier_syll, int index, const QString &ruleName);
 };
 
 } // namespace ASR

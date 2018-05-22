@@ -14,11 +14,34 @@ SyllabifierEasy::SyllabifierEasy()
 {
 }
 
-IntervalTier *SyllabifierEasy::syllabify(IntervalTier *tier_phone)
+IntervalTier *SyllabifierEasy::SyllabifierEasy::createSyllableTier(IntervalTier *tier_phone)
 {
-    IntervalTier *tier_syll = new IntervalTier(tier_phone);
+    IntervalTier *tier_syll = new IntervalTier("syll", tier_phone->tMin(), tier_phone->tMax());
+    bool result = syllabify(tier_phone, tier_syll, tier_phone->tMin(), tier_phone->tMax());
+    if (!result) {
+        delete tier_syll;
+        return nullptr;
+    }
+    return tier_syll;
+}
 
-    int current = tier_syll->count() - 1;
+bool SyllabifierEasy::syllabify(IntervalTier *tier_phone, IntervalTier *tier_syll, RealTime from, RealTime to)
+{
+    if (!tier_phone) return false;
+    if (!tier_syll) return false;
+    if (from > to) return false;
+    QList<Interval *> phones;
+    foreach (Interval *intv, tier_phone->getIntervalsContainedIn(from, to))
+        phones << new Interval(intv);
+    if (phones.isEmpty()) return false;
+    if (!tier_syll->patchIntervals(phones, from, to)) {
+        qDeleteAll(phones);
+        return false;
+    }
+    QPair<int, int> indices = tier_syll->getIntervalIndexesContainedIn(from, to);
+    if ((indices.first < 0) || (indices.second < 0)) return false;
+
+    int current = indices.second;
     int nncat(0), ncat(0);
     int ccat = getCategory(tier_syll, current, 0);
     int pcat = getCategory(tier_syll, current, -1);
@@ -29,7 +52,7 @@ IntervalTier *SyllabifierEasy::syllabify(IntervalTier *tier_phone)
     // QString label   = (current >= 0) ? tier_syll->at(current)->text() : "";
     // QString labeln, labelnn;
 
-    while (current > 0) {
+    while (current > indices.first) {
         // For debug purposes
         // RealTime t = tier_syll->at(current)->tMin();
         // qDebug() << t.sec << labelpp << labelp << "." << label << labeln << labelnn

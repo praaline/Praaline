@@ -61,7 +61,6 @@ HEADERS += \
     InterraterAgreement.h \
     ProsodyCourse.h \
     XMLTranscription.h \
-    ForcedAligner.h \
     BratAnnotationExporter.h \
     PhonetiserExternal.h \
     SequencerSyntax.h \
@@ -101,7 +100,6 @@ SOURCES += \
     InterraterAgreement.cpp \
     ProsodyCourse.cpp \
     XMLTranscription.cpp \
-    ForcedAligner.cpp \
     BratAnnotationExporter.cpp \
     PhonetiserExternal.cpp \
     SequencerSyntax.cpp \

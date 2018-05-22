@@ -27,7 +27,7 @@ public:
 
     void setTierUtterances(const QString &levelID, const QString &attributeID);
     void setTierTokens(const QString &levelID, const QString &attributeID);
-    void setPronunciationDictionary(QPointer<SphinxPronunciationDictionary> dic);
+    void setPronunciationDictionary(const SphinxPronunciationDictionary &dic);
     void setOutputPath(const QString &path);
     void setSpeakersIncludeFilter(const QStringList &speakerIDs);
     void setSpeakersExcludeFilter(const QStringList &speakerIDs);

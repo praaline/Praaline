@@ -205,7 +205,7 @@ void BroadClassAligner::prepareBPCTrainingFromCommunications(QList<QPointer<Corp
     trainer->setTierUtterances("cid_transcription", "");
     trainer->setTierTokens("cid_syll", "broad_phonetic_class");
     trainer->setOutputPath(outputPath);
-    trainer->setPronunciationDictionary(&(d->dictionary));
+    trainer->setPronunciationDictionary(d->dictionary);
     trainer->createFiles(communications, unknownWords, true, false);
 }
 

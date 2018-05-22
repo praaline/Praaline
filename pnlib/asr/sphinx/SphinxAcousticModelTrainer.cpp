@@ -27,7 +27,7 @@ struct SphinxAcousticModelTrainerData
 
     QString levelUtterances, attributeUtterances;
     QString levelTokens, attributeTokens;
-    QPointer<SphinxPronunciationDictionary> dictionary;
+    SphinxPronunciationDictionary dictionary;
     QString outputPath;
     QStringList speakersInclude;
     QStringList speakersExclude;
@@ -57,7 +57,7 @@ void SphinxAcousticModelTrainer::setTierTokens(const QString &levelID, const QSt
     d->attributeTokens = attributeID;
 }
 
-void SphinxAcousticModelTrainer::setPronunciationDictionary(QPointer<SphinxPronunciationDictionary> dic)
+void SphinxAcousticModelTrainer::setPronunciationDictionary(const SphinxPronunciationDictionary &dic)
 {
     d->dictionary = dic;
 }
@@ -172,7 +172,7 @@ bool SphinxAcousticModelTrainer::createFiles(
                                 QString t = (d->attributeTokens.isEmpty()) ? token->text() : token->attribute(d->attributeTokens).toString();
                                 transcriptionLine.append(t).append(" ");
                                 utteranceLine.append(t).append(" ");
-                                if ((d->dictionary) && (!d->dictionary->contains(t))) outUnknownWordsList << t;
+                                if (!d->dictionary.contains(t)) outUnknownWordsList << t;
                             }
                             transcriptionLine.append("</s> (").append(utteranceID).append(")");
                             utteranceLine.append("</s>");
@@ -180,7 +180,7 @@ bool SphinxAcousticModelTrainer::createFiles(
                             QString transcript = (d->attributeUtterances.isEmpty()) ? utt->text() : utt->attribute(d->attributeUtterances).toString();
                             transcript = transcript.replace("'", "' ");
                             foreach (QString word, transcript.split(" ")) {
-                                if (!d->dictionary->contains(word)) outUnknownWordsList << word;
+                                if (!d->dictionary.contains(word)) outUnknownWordsList << word;
                             }
                             transcriptionLine.append("<s> ").append(transcript).append(" </s> (").append(utteranceID).append(")");
                             utteranceLine.append("<s> ").append(transcript).append(" </s>");

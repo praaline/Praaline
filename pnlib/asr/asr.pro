@@ -50,9 +50,7 @@ HEADERS += \
     htk/HTKForcedAligner.h \
     htk/HTKAcousticModelTrainer.h \
     htk/HTKAcousticModelAdapter.h \
-    phonetiser/RuleBasedPhonetiser.h \
     phonetiser/ExternalPhonetiser.h \
-    phonetiser/DictionaryPhonetiser.h \
     sphinx/SphinxConfiguration.h \
     sphinx/SphinxOfflineRecogniser.h \
     sphinx/SphinxAcousticModelTrainer.h \
@@ -69,8 +67,10 @@ HEADERS += \
     sphinx/SphinxLongSoundAligner.h \
     sphinx/SphinxAutoTranscriber.h \
     syllabifier/SyllabifierEasy.h \
-    phonetiser/PhonetiserDictionary.h \
-    phonetiser/PhonetiserRuleBased.h
+    phonetiser/DictionaryPhonetiser.h \
+    phonetiser/PhonemeTranslation.h \
+    phonetiser/PhoneticDictionary.h \
+    phonetiser/RuleBasedPhonetiser.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -84,7 +84,6 @@ SOURCES += \
     htk/HTKAcousticModelAdapter.cpp \
     phonetiser/RuleBasedPhonetiser.cpp \
     phonetiser/ExternalPhonetiser.cpp \
-    phonetiser/DictionaryPhonetiser.cpp \
     sphinx/SphinxConfiguration.cpp \
     sphinx/SphinxOfflineRecogniser.cpp \
     sphinx/SphinxAcousticModelTrainer.cpp \
@@ -93,8 +92,9 @@ SOURCES += \
     sphinx/SphinxLongSoundAligner.cpp \
     sphinx/SphinxAutoTranscriber.cpp \
     syllabifier/SyllabifierEasy.cpp \
-    phonetiser/PhonetiserDictionary.cpp \
-    phonetiser/PhonetiserRuleBased.cpp
+    phonetiser/DictionaryPhonetiser.cpp \
+    phonetiser/PhonemeTranslation.cpp \
+    phonetiser/PhoneticDictionary.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro

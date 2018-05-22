@@ -421,6 +421,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    QString m = b.test();
 //    if (!m.isEmpty()) printMessage(m);
 
+    Rhapsodie r;
+
     //merge_pauses(communications);
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -447,11 +449,12 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
 //        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
 //        m = LOCASF::noteProsodicBoundaryOnSyll(com);
+        m = r.prepareMultiSpeakerTextgrids(com);
 
         // NCCFR nccfr;
         // m = nccfr.prepareTranscription(com);
         // m = nccfr.align(com);
-        // if (!m.isEmpty()) printMessage(m);
+        if (!m.isEmpty()) printMessage(m);
     }
     if (communications.isEmpty()) return;
     // m = ExperimentUtterances::concatenate(communications.first());
@@ -462,11 +465,11 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     // m = AggregateProsody::calculatePairwiseDistances(communications.first());
     // m = ExperimentUtterances::createStimuli(communications.first()->corpus());
     // m = PhonogenreDiscourseMarkers::readBackAnnotations(communications.first());
-    m = PhonogenreDiscourseMarkers::statistics(communications.first());
+    // m = PhonogenreDiscourseMarkers::statistics(communications.first());
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     // m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    printMessage(m);
+    // printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);
@@ -510,9 +513,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     return;
 
     // NASSIMA EXPERIMENT - boundaries and pauses
-     if (communications.isEmpty()) return;
-     QPointer<Corpus> corpus = communications.first()->corpus();
-     if (!corpus) return;
+    // if (communications.isEmpty()) return;
+    // QPointer<Corpus> corpus = communications.first()->corpus();
+    // if (!corpus) return;
     // calculate delta RT and adjust taps
     // ProsodicBoundariesExperimentAnalysis::analysisCalculateDeltaRT(corpus);
     // calculate adjusted tapping tiers

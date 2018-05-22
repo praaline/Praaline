@@ -1,7 +1,8 @@
-#ifndef RULEBASEDPHONETISER_H
-#define RULEBASEDPHONETISER_H
+#ifndef PHONETISERRULEBASED_H
+#define PHONETISERRULEBASED_H
 
 #include <QObject>
+#include <QString>
 #include "Phonetiser.h"
 
 namespace Praaline {
@@ -13,14 +14,14 @@ class RuleBasedPhonetiser : public Phonetiser
 {
     Q_OBJECT
 public:
-    explicit RuleBasedPhonetiser(QObject *parent = 0);
+    explicit RuleBasedPhonetiser(QObject *parent = nullptr);
     ~RuleBasedPhonetiser();
-
-    bool readRuleFile(const QString &filename);
-    QString phonetise(const QString &input);
 
     QString phonetiseWord(const QString &word) override {}
     QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override {}
+
+    bool readRuleFile(const QString &filename);
+    QString phonetise(const QString &input);
 
 signals:
 
@@ -33,4 +34,4 @@ private:
 } // namespace ASR
 } // namespace Praaline
 
-#endif // RULEBASEDPHONETISER_H
+#endif // EXTERNALPHONETISER_H

@@ -104,8 +104,9 @@ QString ExperimentUtterances::align(QPointer<Praaline::Core::CorpusCommunication
     }
 
     if (ok) {
+        SyllabifierEasy syllabifier;
         IntervalTier *tier_phone = new IntervalTier("phone", list_phones);
-        IntervalTier *tier_syll= SyllabifierEasy::syllabify(tier_phone);
+        IntervalTier *tier_syll= syllabifier.createSyllableTier(tier_phone);
         tier_syll->setName("syll");
         com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tokens);
         com->repository()->annotations()->saveTier(annotationID, speakerID, tier_phone);
@@ -130,7 +131,8 @@ QString ExperimentUtterances::syllabify(QPointer<Praaline::Core::CorpusCommunica
     IntervalTier *tier_phone = qobject_cast<IntervalTier *>
             (com->repository()->annotations()->getTier(annotationID, speakerID, "phone"));
     if (!tier_phone) return "No tier phone";
-    IntervalTier *tier_syll = SyllabifierEasy::syllabify(tier_phone);
+    SyllabifierEasy syllabifier;
+    IntervalTier *tier_syll = syllabifier.createSyllableTier(tier_phone);
     tier_syll->setName("syll");
     com->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
     return ret;

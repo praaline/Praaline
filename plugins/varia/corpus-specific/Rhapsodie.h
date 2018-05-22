@@ -11,19 +11,25 @@ class CorpusCommunication;
 }
 }
 
+struct RhapsodieData;
 
 class Rhapsodie
 {
 public:
     Rhapsodie();
+    ~Rhapsodie();
 
-    static QString updateSyllables(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString loadPitch(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString readProsodicConstituencyTree(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString noteProsodicBoundaryOnSyll(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString importMicrosyntaxCONLL(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString importMicrosyntaxTabular(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
+    QString prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString updateSyllables(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString loadPitch(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString readProsodicConstituencyTree(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString noteProsodicBoundaryOnSyll(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString importMicrosyntaxCONLL(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString importMicrosyntaxTabular(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
+
+private:
+    RhapsodieData *d;
 };
 
 #endif // RHAPSODIE_H

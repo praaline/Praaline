@@ -15,8 +15,8 @@ struct SphinxPronunciationDictionaryData {
     QSet<QString> phonemes;
 };
 
-SphinxPronunciationDictionary::SphinxPronunciationDictionary(QObject *parent) :
-    QObject(parent), d(new SphinxPronunciationDictionaryData)
+SphinxPronunciationDictionary::SphinxPronunciationDictionary() :
+    d(new SphinxPronunciationDictionaryData)
 {
 }
 
