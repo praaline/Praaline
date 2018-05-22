@@ -109,7 +109,7 @@ void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
-void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
+void readPerceoCorpus(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString filename = "D:/CORPORA/C-PERCEO/corpus_perceo_oral.txt";
     foreach (QPointer<CorpusCommunication> com, communications) {
@@ -120,6 +120,11 @@ void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<Corpu
         CorpusImporter::readPerceo(filename, tiers);
        com->repository()->annotations()->saveTiersAllSpeakers(com->ID(), tiers);
     }
+}
+
+void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
+{
+
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

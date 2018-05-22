@@ -59,10 +59,12 @@ HEADERS += \
     pluginsyntax_global.h \
     pluginsyntax.h \
     CoNLLUReader.h \
-    CorpusImporter.h
+    CorpusImporter.h \
+    CoNLLUToken.h
 
 SOURCES += \ 
     pluginsyntax.cpp \
     CoNLLUReader.cpp \
-    CorpusImporter.cpp
+    CorpusImporter.cpp \
+    CoNLLUToken.cpp
 
