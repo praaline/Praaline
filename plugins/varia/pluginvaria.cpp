@@ -449,7 +449,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //        m = Rhapsodie::readProsodicConstituencyTree(com);
 //        m = Rhapsodie::noteProsodicBoundaryOnSyll(com);
 //        m = LOCASF::noteProsodicBoundaryOnSyll(com);
-        m = r.prepareMultiSpeakerTextgrids(com);
+//        m = r.prepareMultiSpeakerTextgrids(com);
 
         // NCCFR nccfr;
         // m = nccfr.prepareTranscription(com);
@@ -469,7 +469,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     // m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    // printMessage(m);
+    m = r.findCONLLUCorrespondance(communications.first()->corpus());
+    printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

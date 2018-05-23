@@ -456,3 +456,36 @@ QString Rhapsodie::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core
     file.close();
     return "OK";
 }
+
+QString Rhapsodie::findCONLLUCorrespondance(QPointer<Praaline::Core::Corpus> corpus)
+{
+    QString ret;
+    QHash<QString, QString> tokminTexts;
+    if (!corpus) return "Error";
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+
+    foreach (QString annotationID, corpus->annotationIDs()) {
+        tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+            if (!tier_tok_min) continue;
+            QString text;
+            foreach (Interval *tok_min, tier_tok_min->intervals()) {
+                if (tok_min->isPauseSilent()) continue;
+                QString tok_min_text = tok_min->text();
+                if (tok_min_text.endsWith("/")) tok_min_text.replace("/", "~");
+                text.append(tok_min_text).append(" ");
+            }
+            if (!text.isEmpty()) text.chop(1);
+            tokminTexts.insert(speakerID, text);
+        }
+        qDeleteAll(tiersAll);
+    }
+    foreach (QString speakerID, tokminTexts.keys()) {
+        ret.append(speakerID).append("\t").append(tokminTexts.value(speakerID)).append("\n");
+    }
+    return ret;
+}
+
