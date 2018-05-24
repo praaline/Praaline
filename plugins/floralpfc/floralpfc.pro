@@ -64,7 +64,6 @@ HEADERS += \
     PFCPreprocessor.h \
     PFCPhonetiser.h \
     PFCAligner.h \
-    WordAlign.h \
     PluginFloralPFC.h \
     PluginFloralPFC_global.h \
     PFCReports.h
@@ -74,6 +73,5 @@ SOURCES += \
     PFCPreprocessor.cpp \
     PFCPhonetiser.cpp \
     PFCAligner.cpp \
-    WordAlign.cpp \
     PluginFloralPFC.cpp \
     PFCReports.cpp

@@ -19,11 +19,16 @@ using namespace Praaline::Core;
 #include "pnlib/asr/syllabifier/SyllabifierEasy.h"
 using namespace Praaline::ASR;
 
+#include "pncore/statistics/WordAlign.h"
+
 #include "ProsodicBoundaries.h"
 #include "Rhapsodie.h"
 
 struct RhapsodieData {
     DictionaryPhonetiser phonetiser;
+
+    QHash<QString, QStringList> tokminTexts;
+    QHash<QString, int> cursors;
 };
 
 Rhapsodie::Rhapsodie() : d(new RhapsodieData)
@@ -127,6 +132,10 @@ QString Rhapsodie::prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusC
                 tier_phone->fillEmptyWith("", "_"); tier_phone->mergeIdenticalAnnotations("_");
                 tier_syll->fillEmptyWith("", "_");  tier_syll->mergeIdenticalAnnotations("_");
                 tier_tok_min->fillEmptyWith("", "_"); tier_tok_min->mergeIdenticalAnnotations("_");
+                // Save to database
+                com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_phone);
+                com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
+                com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_min);
                 // User output
                 ret.append(speakerID).append("\t").append(utterance).append("\t").append(existing).append("\t")
                         .append(QString::number(tokens.count())).append("\t").append(phonetised).append("\t");
@@ -457,35 +466,94 @@ QString Rhapsodie::exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core
     return "OK";
 }
 
-QString Rhapsodie::findCONLLUCorrespondance(QPointer<Praaline::Core::Corpus> corpus)
+QString Rhapsodie::findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corpus> corpus)
 {
     QString ret;
-    QHash<QString, QString> tokminTexts;
     if (!corpus) return "Error";
     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
 
+    QStringList exclude;
+    exclude << "Rhap-M0003" << "Rhap-M0009" << "Rhap-M0014" << "Rhap-M2004" << "Rhap-M2005"
+            << "Rhap-M2006";
+    // Read tokens for all annotations from database
     foreach (QString annotationID, corpus->annotationIDs()) {
+        if (exclude.contains(annotationID)) continue;
         tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
             QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
             if (!tier_tok_min) continue;
-            QString text;
+            QStringList text;
             foreach (Interval *tok_min, tier_tok_min->intervals()) {
                 if (tok_min->isPauseSilent()) continue;
                 QString tok_min_text = tok_min->text();
                 if (tok_min_text.endsWith("/")) tok_min_text.replace("/", "~");
-                text.append(tok_min_text).append(" ");
+                text << tok_min_text;
             }
-            if (!text.isEmpty()) text.chop(1);
-            tokminTexts.insert(speakerID, text);
+            text << "*" << "*" << "*" << "*" << "*" << "*";
+            d->tokminTexts.insert(speakerID, text);
         }
         qDeleteAll(tiersAll);
     }
-    foreach (QString speakerID, tokminTexts.keys()) {
-        ret.append(speakerID).append("\t").append(tokminTexts.value(speakerID)).append("\n");
+    foreach (QString speakerID, d->tokminTexts.keys()) {
+        ret.append(speakerID).append("\t").append(d->tokminTexts.value(speakerID).join(" ")).append("\n");
     }
+    return ret;
+}
+
+QString Rhapsodie::findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus> corpus)
+{
+    QString ret;
+    // Read each sentence in the CONLLU file and attribute it to the correct annotation
+    QFile file(QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_UD/fr_spoken-ud-all.conllu");
+    if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return "Error opening CoNLLU file";
+    QTextStream stream(&file);
+    int sentID(0); QStringList sentText;
+
+    do {
+        QString line = stream.readLine().trimmed();
+        if (line.startsWith("# sent_id =")) {
+            sentID = line.remove("# sent_id =").toInt();
+        }
+        else if (line.startsWith("# text =")) {
+            sentText << line.remove("# text =").replace("-", "").replace("  ", " ").trimmed().split(" ");
+            if (sentText.count() > 0) {
+                // Find the annotation where this sentence fits best
+                double minimumWER = 100.0;
+                QString selectedSpeakerID;
+                foreach (QString speakerID, d->tokminTexts.keys()) {
+                    QStringList tokminText = d->tokminTexts.value(speakerID).mid(d->cursors[speakerID], sentText.length());
+                    WordAlign wa;
+                    wa.align(sentText, tokminText);
+                    if ((wa.WER() < minimumWER) && (wa.WER() < 80.0)) {
+                        selectedSpeakerID = speakerID;
+                        minimumWER = wa.WER();
+                    }
+                }
+                if (!selectedSpeakerID.isEmpty()) {
+                    QStringList tokminText = d->tokminTexts.value(selectedSpeakerID).mid(d->cursors[selectedSpeakerID], sentText.length() + 3);
+                    int i = 3;
+                    while ((!tokminText.isEmpty()) && (tokminText.last() != sentText.last()) && (i > 0)) {
+                        i--;
+                        tokminText = d->tokminTexts.value(selectedSpeakerID).mid(d->cursors[selectedSpeakerID], sentText.length() + i);
+                    }
+                    WordAlign wa;
+                    wa.align(sentText, tokminText);
+                    qDebug() << wa.alignmentText();
+                    int delta = sentText.length() + i;
+                    d->cursors.insert(selectedSpeakerID, d->cursors[selectedSpeakerID] + delta);
+                    ret.append(QString::number(sentID)).append("\t").append(sentText.join(" ")).append("\t").append(tokminText.join(" "))
+                            .append("\t").append(selectedSpeakerID).append("\t").append(QString::number(wa.WER())).append("\n");
+                }
+                else {
+                    ret.append(QString::number(sentID)).append("\t").append(sentText.join(" ")).append("\t\t").append(selectedSpeakerID).append("\n");
+                }
+                sentText.clear();
+            }
+        }
+    } while (!stream.atEnd());
+    file.close();
     return ret;
 }
 

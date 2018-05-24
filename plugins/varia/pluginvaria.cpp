@@ -469,7 +469,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     // m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    m = r.findCONLLUCorrespondance(communications.first()->corpus());
+    m = r.findCONLLUCorrespondancePrepare(communications.first()->corpus());
+    // printMessage(m);
+    m = r.findCONLLUCorrespondanceMatch(communications.first()->corpus());
     printMessage(m);
 
 //         SequencerSyntax s;

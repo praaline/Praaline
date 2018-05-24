@@ -27,7 +27,8 @@ public:
     QString importMicrosyntaxCONLL(QPointer<Praaline::Core::CorpusCommunication> com);
     QString importMicrosyntaxTabular(QPointer<Praaline::Core::CorpusCommunication> com);
     QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
-    QString findCONLLUCorrespondance(QPointer<Praaline::Core::Corpus> corpus);
+    QString findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corpus> corpus);
+    QString findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus> corpus);
 
 
 private:
