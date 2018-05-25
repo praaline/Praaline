@@ -454,6 +454,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // NCCFR nccfr;
         // m = nccfr.prepareTranscription(com);
         // m = nccfr.align(com);
+
+        m = r.importCONLLU(com);
         if (!m.isEmpty()) printMessage(m);
     }
     if (communications.isEmpty()) return;
@@ -469,10 +471,10 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     // m = LOCASF::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
     // m = Rhapsodie::exportProsodicBoundariesAnalysisTable(communications.first()->corpus());
-    m = r.findCONLLUCorrespondancePrepare(communications.first()->corpus());
+    // m = r.findCONLLUCorrespondancePrepare(communications.first()->corpus());
     // printMessage(m);
-    m = r.findCONLLUCorrespondanceMatch(communications.first()->corpus());
-    printMessage(m);
+    // m = r.findCONLLUCorrespondanceMatch(communications.first()->corpus());
+    // printMessage(m);
 
 //         SequencerSyntax s;
 //         m = s.checkGroupingAnnotation(com);

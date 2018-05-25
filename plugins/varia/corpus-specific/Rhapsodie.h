@@ -29,7 +29,7 @@ public:
     QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
     QString findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corpus> corpus);
     QString findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus> corpus);
-
+    QString importCONLLU(QPointer<Praaline::Core::CorpusCommunication> com);
 
 private:
     RhapsodieData *d;

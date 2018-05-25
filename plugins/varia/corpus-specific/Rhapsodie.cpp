@@ -557,3 +557,65 @@ QString Rhapsodie::findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus
     return ret;
 }
 
+QString Rhapsodie::importCONLLU(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return "Error";
+    if (!com->corpus()) return "Error";
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+
+    foreach (QString annotationID, com->annotationIDs()) {
+        tiersAll = com->corpus()->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            // Read each sentence in the CONLLU file
+            QFile file(QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_UD/" + QString(speakerID).replace("$", "") + ".txt");
+            if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return "Error opening CoNLLU file";
+            QTextStream stream(&file);
+            int sentID(0); int i(0);
+            QList<Interval *> token_intervals;
+            do {
+                QString line = stream.readLine().trimmed();
+                if (line.startsWith("# sent_id =")) {
+                    sentID = line.remove("# sent_id =").toInt();
+                    continue;
+                }
+                else if (line.startsWith("#") || line.trimmed().isEmpty())
+                    continue;
+                // else: insert token
+                QStringList fields = line.trimmed().split("\t");
+                Interval *token = new Interval(RealTime::fromSeconds(i), RealTime::fromSeconds(i + 1),
+                                               QString(fields.at(1)).replace("~", "/"));
+                token->setAttribute("ud_sentid", sentID);
+                token->setAttribute("ud_id",     QString(fields.at(0)).toInt());
+                token->setAttribute("ud_lemma",  fields.at(2));
+                token->setAttribute("ud_upos",   fields.at(3));
+                token->setAttribute("ud_xpos",   fields.at(4));
+                token->setAttribute("ud_feats",  fields.at(5));
+                token->setAttribute("ud_head",   QString(fields.at(6)).toInt());
+                token->setAttribute("ud_deprel", fields.at(7));
+                token->setAttribute("ud_deps",   fields.at(8));
+                token->setAttribute("ud_misc",   fields.at(9));
+                token_intervals << token;
+                i++;
+            } while (!stream.atEnd());
+            file.close();
+            IntervalTier *tier_ud = new IntervalTier("tok_ud", token_intervals);
+            com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_ud);
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret;
+}
+
+
+//ID: Word index, integer starting at 1 for each new sentence; may be a range for multiword tokens; may be a decimal number for empty nodes.
+//FORM: Word form or punctuation symbol.
+//LEMMA: Lemma or stem of word form.
+//UPOS: Universal part-of-speech tag.
+//XPOS: Language-specific part-of-speech tag; underscore if not available.
+//FEATS: List of morphological features from the universal feature inventory or from a defined language-specific extension; underscore if not available.
+//HEAD: Head of the current word, which is either a value of ID or zero (0).
+//DEPREL: Universal dependency relation to the HEAD (root iff HEAD = 0) or a defined language-specific subtype of one.
+//DEPS: Enhanced dependency graph in the form of a list of head-deprel pairs.
+//MISC: Any other annotation.
+
