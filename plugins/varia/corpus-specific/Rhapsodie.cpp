@@ -569,7 +569,10 @@ QString Rhapsodie::importCONLLU(QPointer<Praaline::Core::CorpusCommunication> co
         foreach (QString speakerID, tiersAll.keys()) {
             // Read each sentence in the CONLLU file
             QFile file(QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_UD/" + QString(speakerID).replace("$", "") + ".txt");
-            if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) return "Error opening CoNLLU file";
+            if (!file.open( QIODevice::ReadOnly | QIODevice::Text )) {
+                ret.append(annotationID).append("\t").append(speakerID).append("\tError opening CoNLLU file\n");
+                continue;
+            }
             QTextStream stream(&file);
             int sentID(0); int i(0);
             QList<Interval *> token_intervals;
@@ -601,9 +604,11 @@ QString Rhapsodie::importCONLLU(QPointer<Praaline::Core::CorpusCommunication> co
             file.close();
             IntervalTier *tier_ud = new IntervalTier("tok_ud", token_intervals);
             com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_ud);
+            ret.append(annotationID).append("\t").append(speakerID).append("\tImported OK\n");
         }
         qDeleteAll(tiersAll);
     }
+    if (!ret.isEmpty()) ret.chop(1);
     return ret;
 }
 

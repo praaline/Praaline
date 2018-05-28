@@ -47,10 +47,12 @@ bool SphinxPronunciationDictionary::readFromFile(const QString &filename)
             word = word_and_id.trimmed();
         QStringList phonetisation = line.section(" ", 1, -1).split(" ");
         d->phonemes.unite(phonetisation.toSet());
+        QString phonetisation_text = phonetisation.join(" ");
         if (!d->dictionary.contains(word)) {
-            d->dictionary.insert(word, QList<QString>() << phonetisation.join(" "));
+            d->dictionary.insert(word, QList<QString>() << phonetisation_text);
         } else {
-            d->dictionary[word].append(phonetisation.join(" "));
+            if (!d->dictionary[word].contains(phonetisation_text))
+                d->dictionary[word].append(phonetisation_text);
         }
     }
     fileDictIn.close();

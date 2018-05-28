@@ -206,6 +206,7 @@ QString formatSegment(QString input)
     while (ret.contains("  ")) ret = ret.replace("  ", " ");
     ret = ret.replace(" .", ".").replace(" ,", ",").replace(" ?", "?").replace(" !", "!");
     ret = ret.replace(".(", ". (").replace(",(", ", (").replace("?(", "? (").replace("!(", "! (");
+    ret = ret.replace("(", " (").replace(")", ") ");
     while (ret.contains("  ")) ret = ret.replace("  ", " ");
     ret = ret.replace(" _", "_").replace("_ ", "_");
     return ret.trimmed();
@@ -334,13 +335,14 @@ QList<QString> splitToken(QString input)
     if (input.startsWith("-"))
         input.remove(0, 1); // if a token begins with '-', the next rule would create a lonely dash token
     input = input.replace("-", "- ").replace("- _", "-_");
-    //
+
+    // Keep-together words
     input = input.replace("aujourd' hui", "aujourd'hui");
     input = input.replace("t- il", "t-il");
     input = input.replace("t- elle", "t-elle");
     input = input.replace("t- on", "t-on");
 
-    // break everything at spaces
+    // Break everything at spaces
     QList<QString> ret;
     QList<QString> result = input.trimmed().split(" ", QString::SkipEmptyParts);
     int i = 0;
@@ -383,6 +385,7 @@ QString PFCPreprocessor::tokenise(QPointer<CorpusCommunication> com)
                 int count = splitOrtho.count();
                 if (count != splitSchwa.count()) splitSchwa = splitOrtho;
                 if (count != splitLiaison.count()) splitLiaison = splitOrtho;
+                // Move
                 // Create intervals proportional to the length of each token in characters
                 QList<int> lengths;
                 for (int i = 0; i < count; ++i) lengths << splitOrtho.at(i).length();
@@ -404,6 +407,22 @@ QString PFCPreprocessor::tokenise(QPointer<CorpusCommunication> com)
             // Now fill pauses with the pause symbol for the schwa and liaison attributes
             tier_tok_min->fillEmptyWith("schwa", "_");
             tier_tok_min->fillEmptyWith("liaison", "_");
+            // Move non-speech comments to the previous token. Anything left on the tok_min tier must be actual
+            // articulated speech (something that can be phonetised).
+            for (int i = tier_tok_min->count() - 1; i >= 1; --i) {
+                QString token = tier_tok_min->at(i)->text();
+                if (!token.startsWith("(")) continue;
+                if (!token.endsWith(")")) continue;
+                // Exceptions: phonetisable paraverbals
+                if (token == "(X)" || token == "(XX)" || token == "(XXX)") continue;
+                QString prev_schwa = tier_tok_min->at(i - 1)->attribute("schwa").toString();
+                QString prev_liaison = tier_tok_min->at(i - 1)->attribute("liaison").toString();
+                tier_tok_min->at(i)->setText("");
+                Interval *intv = tier_tok_min->merge(i - 1, i);
+                intv->setAttribute("schwa", prev_schwa);
+                intv->setAttribute("liaison", prev_liaison);
+                intv->setAttribute("event", token);
+            }
             // Save the created tok_min tier into the database
             com->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_tok_min);
             delete tier_tok_min;

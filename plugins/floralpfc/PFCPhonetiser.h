@@ -19,16 +19,17 @@ public:
     PFCPhonetiser();
     ~PFCPhonetiser();
 
+    void reset();
     QString loadPhonetisationDictionary();
     QString phonetiseFromDictionary(QPointer<Praaline::Core::CorpusCommunication> com);
     QString writeListOfWordsOOV(const QString &filename);
     QString writeListOfWordsFalseStarts(const QString &filename);
-    QString applyPFCLiaison(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString applyPFCSchwa(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString convertPhonetisationsToStars(const QString &phonetisations);
+    void applyPFCLiaison(Praaline::Core::Interval *intv);
+    void applyPFCSchwa(Praaline::Core::Interval *intv);
 
 private:
     PFCPhonetiserData *d;
-    QString convertSphinxToSampa(const QString &);
 };
 
 #endif // PFCPHONETISER_H
