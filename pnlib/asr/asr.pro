@@ -70,7 +70,9 @@ HEADERS += \
     phonetiser/DictionaryPhonetiser.h \
     phonetiser/PhonemeTranslation.h \
     phonetiser/PhoneticDictionary.h \
-    phonetiser/RuleBasedPhonetiser.h
+    phonetiser/RuleBasedPhonetiser.h \
+    kaldi/KaldiForcedAligner.h \
+    kaldi/KaldiConfiguration.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -94,7 +96,9 @@ SOURCES += \
     syllabifier/SyllabifierEasy.cpp \
     phonetiser/DictionaryPhonetiser.cpp \
     phonetiser/PhonemeTranslation.cpp \
-    phonetiser/PhoneticDictionary.cpp
+    phonetiser/PhoneticDictionary.cpp \
+    kaldi/KaldiForcedAligner.cpp \
+    kaldi/KaldiConfiguration.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro
