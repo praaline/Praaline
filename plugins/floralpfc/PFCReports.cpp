@@ -13,7 +13,7 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
-#include "WordAlign.h"
+#include "pncore/statistics/WordAlign.h"
 #include "PFCReports.h"
 
 struct PFCReportsData {

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QHash>
 #include <QStringList>
 
 namespace Praaline {
@@ -135,7 +136,32 @@ public:
     double silence_weight;
 };
 
+// Class to store configuration information about MFCC generation
+// The ``config_dict`` currently stores one key ``'use-energy'`` which
+// defaults to False
+// Parameters
+// ----------
+// output_directory : str       Path to directory to save configuration files for Kaldi
+// kwargs : dict, optional      If specified, updates ``config_dict`` with this dictionary
+// Attributes
+// ----------
+// config_dict : dict           Dictionary of configuration parameters
 
+class MfccConfig : public KaldiConfiguration
+{
+    MfccConfig(const QString &output_directory, const QString &job = QString(),
+               QHash<QString, QString> config_dict = QHash<QString, QString>());
+    ~MfccConfig() {}
+
+    QString job;
+    QHash<QString, QString> config_dict;
+    QString output_directory;
+
+    void update(QHash<QString, QString> new_config_dict);
+    QString config_directory() const;
+    QString path() const;
+    bool write() const;
+};
 
 
 } // namespace ASR

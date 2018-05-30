@@ -1,3 +1,9 @@
+#include <QString>
+#include <QList>
+#include <QHash>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
 #include "KaldiConfiguration.h"
 
 namespace Praaline {
@@ -67,6 +73,56 @@ KaldiTriphoneFmllrConfig::KaldiTriphoneFmllrConfig(bool align_often) :
     fmllr_power = 0.2;
     silence_weight = 0.0;
 }
+
+
+MfccConfig::MfccConfig(const QString &output_directory, const QString &job,
+                       QHash<QString, QString> config_dict) :
+    output_directory(output_directory), job(job), config_dict(config_dict)
+{
+    if (!config_dict.contains("use-energy")) config_dict.insert("use-energy", "false");
+    if (!config_dict.contains("frame-shift")) config_dict.insert("frame-shift", "10");
+    write();
+}
+
+void MfccConfig::update(QHash<QString, QString> new_config_dict)
+{
+    foreach (QString key, new_config_dict.keys()) {
+        if (config_dict.contains(key))
+            config_dict[key] = new_config_dict[key];
+        else
+            config_dict.insert(key, new_config_dict[key]);
+    }
+}
+
+QString MfccConfig::config_directory() const
+{
+    QString config_path = output_directory + "/config";
+    QDir d;
+    d.mkpath(config_path);
+    return config_path;
+}
+
+QString MfccConfig::path() const
+{
+    if (job.isEmpty())
+        return config_directory() + "/mfcc.conf";
+    return config_directory() + QString("/mfcc.%1.conf").arg(job);
+}
+
+/// Write configuration dictionary to a file for use in Kaldi binaries
+bool MfccConfig::write() const
+{
+    QFile file(path());
+    if ( !file.open( QIODevice::ReadWrite | QIODevice::Text ) ) return false;
+    QTextStream out(&file);
+    out.setCodec("UTF-8");
+    out.setGenerateByteOrderMark(true);
+    foreach (QString key, config_dict.keys()) {
+        out << "--" << key << "=" << config_dict.value(key) << "\n";
+    }
+
+}
+
 
 } // namespace ASR
 } // namespace Praaline
