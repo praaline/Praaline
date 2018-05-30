@@ -3,6 +3,8 @@
 #include <QPointer>
 #include <QMap>
 #include <QRegularExpression>
+#include <QFile>
+#include <QTextStream>
 
 #include "pncore/corpus/CorpusCommunication.h"
 #include "pncore/annotation/AnnotationTierGroup.h"
@@ -17,11 +19,28 @@ using namespace Praaline::Core;
 
 struct PFCPreprocessorData {
     QStringList punctuationMarks;
+    QHash<QString, QString> replaceSegments;
 };
 
 PFCPreprocessor::PFCPreprocessor() : d(new PFCPreprocessorData())
 {
-    d->punctuationMarks << "." << "," << "?" << "!" << "-" << ":" << "\"";
+    d->punctuationMarks << "." << "," << "?" << "!" << "-" << ":" << "\"" << "\\";
+
+    QFile fileReplace("/mnt/hgfs/DATA/PFCALIGN/phonetisation/replace_segments.txt");
+    if ( !fileReplace.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
+    QTextStream replacein(&fileReplace);
+    replacein.setCodec("UTF-8");
+    while (!replacein.atEnd()) {
+        QString line = replacein.readLine();
+        if (!line.contains("\t")) continue;
+        while (line.contains("  ")) line = line.replace("  ", " ");
+        QString text_from = line.section("\t", 0, 0);
+        QString text_to   = line.section("\t", 1, 1);
+        if (text_from.isEmpty()) continue;
+        if (text_to.isEmpty()) continue;
+        d->replaceSegments.insert(text_from, text_to);
+    }
+    fileReplace.close();
 }
 
 PFCPreprocessor::~PFCPreprocessor()
@@ -184,9 +203,11 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
     return com->ID();
 }
 
-void mergeInsideParentheses(QString &input) {
-    // noises and paraverbal (make sure it's after the _ replace block!)
-    QRegExp rx("\\((.*)\\)");
+void mergeInsideParentheses(QString &input, const QString &open = "\\(", const QString &close = "\\)") {
+    // (make sure it's after the _ replace block!)
+    // noises and paraverbal: \\((.*)\\)
+    // phonetisation:         \\[(.*)\\]
+    QRegExp rx(QString("%1(.*)%2").arg(open).arg(close));
     rx.setMinimal(true);
     int s = -1;
     while ((s = rx.indexIn(input, s+1)) >= 0) {
@@ -196,11 +217,13 @@ void mergeInsideParentheses(QString &input) {
     }
 }
 
-QString formatSegment(QString input)
+QString PFCPreprocessor::formatSegment(const QString &input)
 {
     QString ret = input;
-    if (input.startsWith("'")) { ret = ret.remove(0, 1).prepend("\""); }
-    if (input.endsWith("'")) { ret.chop(1); ret = ret.append("\""); }
+    if (ret.startsWith("'")) { ret = ret.remove(0, 1).prepend("\""); }
+    if (ret.endsWith("'"))   { ret.chop(1); ret = ret.append("\""); }
+    if (ret.startsWith("/")) { ret = ret.remove(0, 1); }
+    ret = ret.replace("''", "'").replace(" /", "/").replace("-/", "/").replace("'/", "/");
     ret = ret.replace(" '", " \"").replace("' ", "\" ").replace("'.", "\".").replace("', ", "\", ").replace("\" ,", "\",").replace("\" .", "\".");
     ret = ret.replace("/", "/ ").replace("/ ,", "/,").replace("/ .", "/.").replace("/ )", "/)");
     while (ret.contains("  ")) ret = ret.replace("  ", " ");
@@ -230,9 +253,9 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
             QString ortho = intv->text();
             QString schwa = intv->attribute("schwa").toString();
             QString liaison = intv->attribute("liaison").toString();
-            mergeInsideParentheses(ortho);
-            mergeInsideParentheses(schwa);
-            mergeInsideParentheses(liaison);
+            mergeInsideParentheses(ortho);      mergeInsideParentheses(ortho, "\\[", "\\]");
+            mergeInsideParentheses(schwa);      mergeInsideParentheses(schwa, "\\[", "\\]");
+            mergeInsideParentheses(liaison);    mergeInsideParentheses(liaison , "\\[", "\\]");
             ortho = ortho.replace(" <", " |<").replace("> ", ">| ");
             schwa = schwa.replace(" <", " |<").replace("> ", ">| ");
             liaison = liaison.replace(" <", " |<").replace("> ", ">| ");
@@ -327,32 +350,52 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
     return com->ID();
 }
 
-QList<QString> splitToken(QString input)
+QList<QString> PFCPreprocessor::splitToken(const QString &input)
 {
-    input = input.replace("'", "' ").replace("' _", "'_");
-    input = input.replace("\u2019", "' ").replace("' _", "'_");
+    QString text = input;
+    // Initial
+    text = text.replace("'", "' ").replace("' _", "'_");
+    text = text.replace("\u2019", "' ").replace("' _", "'_");
+    // Numbers not transcribed
+    QList<QString> acc;
+    foreach (QString tok, text.trimmed().split(" ", QString::SkipEmptyParts)) {
+        if (d->replaceSegments.contains(tok)) {
+            acc << d->replaceSegments.value(tok);
+        } else {
+            acc << tok;
+        }
+    }
+    text = acc.join(" ");
     // Dashes
-    if (input.startsWith("-"))
-        input.remove(0, 1); // if a token begins with '-', the next rule would create a lonely dash token
-    input = input.replace("-", "- ").replace("- _", "-_");
-
+    if (text.startsWith("-"))
+        text.remove(0, 1); // if a token begins with '-', the next rule would create a lonely dash token
+    text = text.replace("-", "- ").replace("- _", "-_");
     // Keep-together words
-    input = input.replace("aujourd' hui", "aujourd'hui");
-    input = input.replace("t- il", "t-il");
-    input = input.replace("t- elle", "t-elle");
-    input = input.replace("t- on", "t-on");
+    text = text.replace("aujourd' hui", "aujourd'hui");
+    text = text.replace("t- il", "t-il");
+    text = text.replace("t- elle", "t-elle");
+    text = text.replace("t- on", "t-on");
 
     // Break everything at spaces
     QList<QString> ret;
-    QList<QString> result = input.trimmed().split(" ", QString::SkipEmptyParts);
+    QList<QString> result = text.trimmed().split(" ", QString::SkipEmptyParts);
     int i = 0;
     while (i < result.count()) {
-        if (result.at(i).startsWith("parce", Qt::CaseInsensitive)) {
+        if (result.at(i) == "parce" || result.at(i) == "Parce") {
+            // parce que et parce qu'
+            if ((i + 1 < result.count()) && (result.at(i+1) == "que" || result.at(i+1) == "qu'")) {
+                ret << QString("%1 %2").arg(result.at(i)).arg(result.at(i+1));
+                i++;
+            } else ret << result.at(i);
+        }
+        else if (result.at(i) == "/" || result.at(i) == "-") {
+            // Lone symbols, despite our best efforts
             if (i + 1 < result.count()) {
                 ret << QString("%1 %2").arg(result.at(i)).arg(result.at(i+1));
                 i++;
             } else ret << result.at(i);
-        } else {
+        }
+        else {
             ret << result.at(i);
         }
         i++;

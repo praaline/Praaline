@@ -47,6 +47,7 @@ QString PFCPhonetiser::loadPhonetisationDictionary()
 {
     d->phonetiser.readPhonemeTranslation("/mnt/hgfs/DATA/PFCALIGN/phonetisation/sphinx_to_sampa.json");
     d->phonetiser.readPhoneticDictionary("/mnt/hgfs/DATA/PFCALIGN/phonetisation/fr.dict");
+    d->phonetiser.readAdditionalPhoneticDictionary("/mnt/hgfs/DATA/PFCALIGN/phonetisation/extra_phonetisations_pfc.txt");
     // writePhonemeList("/mnt/hgfs/DATA/PFCALIGN/phonetisation/fr.phonemes");
     return "Phonetisation dictionary loaded";
 }

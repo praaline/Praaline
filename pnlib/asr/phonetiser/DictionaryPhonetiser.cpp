@@ -135,11 +135,14 @@ void DictionaryPhonetiser::clearState()
 
 QString DictionaryPhonetiser::phonetiseToken(const QString &token) const
 {
+    QString phonetisationsSphinx;
     // Additional dictionary overrides base dictionary
     if (d->additionalDictionary.contains(token))
-        return d->additionalDictionary.value(token);
-    // Check in Sphinx pronunciation dictionary
-    QString phonetisationsSphinx = d->sphinxDictionary.phonetise(QString(token).replace(" ", "_"));
+        phonetisationsSphinx = d->additionalDictionary.value(token);
+    else {
+        // Check in Sphinx pronunciation dictionary
+        phonetisationsSphinx = d->sphinxDictionary.phonetise(QString(token).replace(" ", "_"));
+    }
     // Not found: check if false start or OOV
     if (phonetisationsSphinx.isEmpty()) {
         if (token.endsWith(d->symbolFalseStart)) {

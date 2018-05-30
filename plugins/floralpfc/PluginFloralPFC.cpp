@@ -167,7 +167,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     }
     if (d->pfc_aligner_htk) {
         foreach (QPointer<CorpusCommunication> com, communications) {
-            if (!com->ID().endsWith("t")) continue;
+            if (com->ID().endsWith("m")) continue;
             QString m = aligner.align(com);
             if (!m.isEmpty()) printMessage(m);
         }

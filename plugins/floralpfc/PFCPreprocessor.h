@@ -31,6 +31,8 @@ public:
 private:
     PFCPreprocessorData *d;
 
+    QString formatSegment(const QString &input);
+    QList<QString> splitToken(const QString &input);
     bool startsWithPunctuation(const QString &text);
     bool endsWithPunctuation(const QString &text);
 };
