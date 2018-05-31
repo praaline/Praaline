@@ -1,11 +1,31 @@
 #ifndef MFAEXTERNAL_H
 #define MFAEXTERNAL_H
 
+#include <QObject>
+#include "ForcedAligner.h"
 
-class MFAExternal
+namespace Praaline {
+namespace ASR {
+
+struct MFAExternalData;
+
+class MFAExternal : public ForcedAligner
 {
+    Q_OBJECT
 public:
-    MFAExternal();
+    explicit MFAExternal(QObject *parent = 0);
+    ~MFAExternal();
+
+    bool alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,
+                     Praaline::Core::IntervalTier *tierTokens, int &indexFrom, int &indexTo,
+                     bool insertLeadingAndTrailingPauses,
+                     QList<Praaline::Core::Interval *> &outPhonesList, QString &outAlignerOutput) override;
+
+private:
+    MFAExternalData *d;
 };
+
+} // namespace ASR
+} // namespace Praaline
 
 #endif // MFAEXTERNAL_H

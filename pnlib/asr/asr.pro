@@ -73,7 +73,9 @@ HEADERS += \
     phonetiser/RuleBasedPhonetiser.h \
     kaldi/KaldiForcedAligner.h \
     kaldi/KaldiConfiguration.h \
-    kaldi/MFAExternal.h
+    kaldi/MFAExternal.h \
+    dummy/DummyForcedAligner.h \
+    dummy/SyllableDetectionForcedAligner.h
 
 SOURCES += \
     SpeechRecognitionRecipes.cpp \
@@ -100,7 +102,10 @@ SOURCES += \
     phonetiser/PhoneticDictionary.cpp \
     kaldi/KaldiForcedAligner.cpp \
     kaldi/KaldiConfiguration.cpp \
-    kaldi/MFAExternal.cpp
+    kaldi/MFAExternal.cpp \
+    dummy/DummyForcedAligner.cpp \
+    dummy/SyllableDetectionForcedAligner.cpp \
+    ForcedAligner.cpp
 
 SUBDIRS += \
     phonetiser/phonetiser.pro

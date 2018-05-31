@@ -4,11 +4,35 @@
 #include <QDir>
 #include <QProcess>
 
+#include "pncore/annotation/IntervalTier.h"
+using namespace Praaline::Core;
+
+#include "ForcedAligner.h"
 #include "KaldiForcedAligner.h"
 
-KaldiForcedAligner::KaldiForcedAligner()
-{
+namespace Praaline {
+namespace ASR {
 
+struct KaldiForcedAlignerData {
+    int i;
+};
+
+KaldiForcedAligner::KaldiForcedAligner(QObject *parent) :
+    ForcedAligner(parent), d(new KaldiForcedAlignerData())
+{
+}
+
+KaldiForcedAligner::~KaldiForcedAligner()
+{
+    delete d;
+}
+
+bool KaldiForcedAligner::alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,
+                                     IntervalTier *tierTokens, int &indexFrom, int &indexTo,
+                                     bool insertLeadingAndTrailingPauses,
+                                     QList<Interval *> &outPhonesList, QString &outAlignerOutput)
+{
+    return false;
 }
 
 void KaldiForcedAligner::mfcc_func(const QString &mfcc_directory, const QString &log_directory,
@@ -49,4 +73,6 @@ void KaldiForcedAligner::mfcc_func(const QString &mfcc_directory, const QString 
     //        copy_proc.wait()
 }
 
+} // namespace ASR
+} // namespace Praaline
 

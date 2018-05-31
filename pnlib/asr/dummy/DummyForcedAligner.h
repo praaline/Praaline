@@ -1,36 +1,30 @@
-#ifndef KALDIFORCEDALIGNER_H
-#define KALDIFORCEDALIGNER_H
+#ifndef DUMMYFORCEDALIGNER_H
+#define DUMMYFORCEDALIGNER_H
 
 #include <QObject>
-#include <QString>
 #include "ForcedAligner.h"
 
 namespace Praaline {
 namespace ASR {
 
-struct KaldiForcedAlignerData;
-
-class KaldiForcedAligner : public ForcedAligner
+class DummyForcedAligner : public ForcedAligner
 {
     Q_OBJECT
 public:
-    explicit KaldiForcedAligner(QObject *parent = nullptr);
-    ~KaldiForcedAligner();
+    explicit DummyForcedAligner(QObject *parent = nullptr);
+    ~DummyForcedAligner();
 
     bool alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,
                      Praaline::Core::IntervalTier *tierTokens, int &indexFrom, int &indexTo,
                      bool insertLeadingAndTrailingPauses,
                      QList<Praaline::Core::Interval *> &outPhonesList, QString &outAlignerOutput) override;
 
-private:
-    KaldiForcedAlignerData *d;
+signals:
 
-    void mfcc_func(const QString &mfcc_directory, const QString &log_directory,
-                   const QString &job_name, const QString &mfcc_config_path);
-
+public slots:
 };
 
 } // namespace ASR
 } // namespace Praaline
 
-#endif // KALDIFORCEDALIGNER_H
+#endif // DUMMYFORCEDALIGNER_H
