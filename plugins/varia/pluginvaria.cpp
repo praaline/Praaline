@@ -30,6 +30,7 @@
 #include "BratSyntaxAndDisfluencies.h"
 #include "ProsodicUnits.h"
 #include "SilentPauseManipulator.h"
+#include "PhonoSeesaw.h"
 
 #include "corpus-specific/CPROMDISS.h"
 #include "corpus-specific/Rhapsodie.h"
@@ -421,6 +422,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    QString m = b.test();
 //    if (!m.isEmpty()) printMessage(m);
 
+    PhonoSeesaw phonoSeesaw;
+
     Rhapsodie r;
 
     //merge_pauses(communications);
@@ -455,10 +458,19 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
         // m = nccfr.prepareTranscription(com);
         // m = nccfr.align(com);
 
-        m = r.importCONLLU(com);
+        // m = r.importCONLLU(com);
+
+        m = phonoSeesaw.accumulateRefDistribution(com);
+        phonoSeesaw.addUnitsToListOfAvailable(com);
+
         if (!m.isEmpty()) printMessage(m);
     }
-    if (communications.isEmpty()) return;
+    m = phonoSeesaw.calculateRefDistribution();
+    m = phonoSeesaw.makeBestSelection(40, 1000);
+    printMessage(m);
+
+    // if (communications.isEmpty()) return;
+
     // m = ExperimentUtterances::concatenate(communications.first());
     // m = ExperimentUtterances::rereadCorrectedTGs(communications.first());
     // m = ExperimentUtterances::createUnitTier(communications.first());

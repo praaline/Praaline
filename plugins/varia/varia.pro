@@ -89,7 +89,8 @@ HEADERS += \
     ProsodicBoundaries.h \
     CorpusCommunicationSplicer.h \
     corpus-specific/NCCFR.h \
-    experiments/PhonogenreDiscourseMarkers.h
+    experiments/PhonogenreDiscourseMarkers.h \
+    PhonoSeesaw.h
 
 
 SOURCES += \ 
@@ -128,4 +129,5 @@ SOURCES += \
     ProsodicBoundaries.cpp \
     CorpusCommunicationSplicer.cpp \
     corpus-specific/NCCFR.cpp \
-    experiments/PhonogenreDiscourseMarkers.cpp
+    experiments/PhonogenreDiscourseMarkers.cpp \
+    PhonoSeesaw.cpp

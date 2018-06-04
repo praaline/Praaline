@@ -19,6 +19,7 @@
 #include "PFCPreprocessor.h"
 #include "PFCPhonetiser.h"
 #include "PFCAligner.h"
+#include "PFCAlignmentEvaluation.h"
 #include "PFCReports.h"
 
 #include "valibelprocessor.h"
@@ -29,7 +30,9 @@ using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::FloralPFC::PluginFloralPFCPrivateData {
     PluginFloralPFCPrivateData() :
-        pfc_preprocessor_prepare(false), pfc_phonetiser_phonetise(false), pfc_aligner_htk(false),
+        pfc_preprocessor_prepare(false), pfc_phonetiser_phonetise(false),
+        pfc_aligner_htk(false), pfc_aligner_mfa_individual(false), pfc_aligner_mfa_regionstyle(false),
+        pfc_evaluate(false),
         pfc_reports_corpuscoverage(false)
     {}
 
@@ -37,6 +40,9 @@ struct Praaline::Plugins::FloralPFC::PluginFloralPFCPrivateData {
     bool pfc_preprocessor_prepare;
     bool pfc_phonetiser_phonetise;
     bool pfc_aligner_htk;
+    bool pfc_aligner_mfa_individual;
+    bool pfc_aligner_mfa_regionstyle;
+    bool pfc_evaluate;
     bool pfc_reports_corpuscoverage;
 
     QString command;
@@ -115,10 +121,13 @@ QString Praaline::Plugins::FloralPFC::PluginFloralPFC::pluginLicense() const {
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::FloralPFC::PluginFloralPFC::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
-    parameters << PluginParameter("pfc_preprocessor_prepare",   "PFC Pre-processor: Prepare transcription", QVariant::Bool, d->pfc_preprocessor_prepare);
-    parameters << PluginParameter("pfc_phonetiser_phonetise",   "PFC Phonetiser: Phonetise tok_min tier", QVariant::Bool, d->pfc_phonetiser_phonetise);
-    parameters << PluginParameter("pfc_aligner_htk",            "PFC Aligner: HTK basic alignment", QVariant::Bool, d->pfc_aligner_htk);
-    parameters << PluginParameter("pfc_reports_corpuscoverage", "PFC Reports: Corpus coverage", QVariant::Bool, d->pfc_reports_corpuscoverage);
+    parameters << PluginParameter("pfc_preprocessor_prepare",    "PFC Pre-processor: Prepare transcription", QVariant::Bool, d->pfc_preprocessor_prepare);
+    parameters << PluginParameter("pfc_phonetiser_phonetise",    "PFC Phonetiser: Phonetise tok_min tier", QVariant::Bool, d->pfc_phonetiser_phonetise);
+    parameters << PluginParameter("pfc_aligner_htk",             "PFC Aligner: HTK basic alignment", QVariant::Bool, d->pfc_aligner_htk);
+    parameters << PluginParameter("pfc_aligner_mfa_individual",  "PFC Aligner: MFA create alignment files - Individual", QVariant::Bool, d->pfc_aligner_mfa_individual);
+    parameters << PluginParameter("pfc_aligner_mfa_regionstyle", "PFC Aligner: MFA create alignment files - Region & Style", QVariant::Bool, d->pfc_aligner_mfa_regionstyle);
+    parameters << PluginParameter("pfc_evaluate",  "PFC Evaluate: Alignment MFA", QVariant::Bool, d->pfc_evaluate);
+    parameters << PluginParameter("pfc_reports_corpuscoverage",  "PFC Reports: Corpus coverage", QVariant::Bool, d->pfc_reports_corpuscoverage);
 
     parameters << PluginParameter("path", "Path to files", QVariant::String, d->path);
     parameters << PluginParameter("filename", "Filename", QVariant::String, d->filename);
@@ -130,6 +139,9 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(const QHash<QS
     if (parameters.contains("pfc_preprocessor_prepare")) d->pfc_preprocessor_prepare = parameters.value("pfc_preprocessor_prepare").toBool();
     if (parameters.contains("pfc_phonetiser_phonetise")) d->pfc_phonetiser_phonetise = parameters.value("pfc_phonetiser_phonetise").toBool();
     if (parameters.contains("pfc_aligner_htk")) d->pfc_aligner_htk = parameters.value("pfc_aligner_htk").toBool();
+    if (parameters.contains("pfc_aligner_mfa_individual")) d->pfc_aligner_mfa_individual = parameters.value("pfc_aligner_mfa_individual").toBool();
+    if (parameters.contains("pfc_aligner_mfa_regionstyle")) d->pfc_aligner_mfa_regionstyle = parameters.value("pfc_aligner_mfa_regionstyle").toBool();
+    if (parameters.contains("pfc_evaluate")) d->pfc_evaluate = parameters.value("pfc_evaluate").toBool();
     if (parameters.contains("pfc_reports_corpuscoverage")) d->pfc_reports_corpuscoverage = parameters.value("pfc_reports_corpuscoverage").toBool();
 
     if (parameters.contains("path")) d->path = parameters.value("path").toString();
@@ -141,6 +153,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     PFCPreprocessor preprocessor;
     PFCPhonetiser phonetiser;
     PFCAligner aligner;
+    PFCAlignmentEvaluation evaluation;
     PFCReports reports;
 
     if (d->pfc_preprocessor_prepare) {
@@ -168,7 +181,47 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     if (d->pfc_aligner_htk) {
         foreach (QPointer<CorpusCommunication> com, communications) {
             if (com->ID().endsWith("m")) continue;
-            QString m = aligner.align(com);
+            QString m = aligner.align(com, "htk");
+            if (!m.isEmpty()) printMessage(m);
+        }
+    }
+    if (d->pfc_aligner_mfa_individual) {
+        aligner.setOutputWaveFiles(false);
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (com->ID().endsWith("m")) continue;
+            QString m = aligner.align(com, "mfa_individual");
+            aligner.dictionaryMFAClose(com->ID());
+            if (!m.isEmpty()) printMessage(m);
+        }
+    }
+    if (d->pfc_aligner_mfa_regionstyle) {
+        aligner.setOutputWaveFiles(true);
+        QMap<QString, QList<QPointer<CorpusCommunication> > > groups;
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (com->ID().endsWith("m")) continue;
+            QString region = com->ID().left(3);
+            QString style = (com->ID().endsWith("t")) ? "text" : "conv";
+            groups[region + "_" + style].append(com);
+        }
+        foreach (QString groupID, groups.keys()) {
+            if (groupID != "11a_conv") continue;
+            foreach (QPointer<CorpusCommunication> com, groups.value(groupID)) {
+                aligner.align(com, "mfa_regionstyle");
+            }
+            aligner.dictionaryMFAClose(groupID);
+            QString command = QString("./mfa_train_and_align /mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1 "
+                                      "/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1/%1.dic "
+                                      "/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1/align_%1 "
+                                      "-o /mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1/model_%1 "
+                                      "-t /mnt/hgfs/DATA/PFCALIGN/MFA_temp_region_style -f -q -c").arg(groupID);
+            printMessage(command);
+        }
+    }
+    if (d->pfc_evaluate) {
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (com->ID().endsWith("m")) continue;
+            // QString m = evaluation.evaluate_Individual_RegionStyle(com);
+            QString m = evaluation.evaluate_RegionStyle_RegionStyle(com);
             if (!m.isEmpty()) printMessage(m);
         }
     }

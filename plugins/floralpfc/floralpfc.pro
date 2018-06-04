@@ -52,11 +52,13 @@ CONFIG( debug, debug|release ) {
 LIBS +=  \
         -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
         -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
+        -L../../pnlib/diff/$${COMPONENTSPATH} -lpraaline-diff \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
         ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
+        ../../pnlib/diff/$${COMPONENTSPATH}/libpraaline-diff.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
@@ -66,7 +68,8 @@ HEADERS += \
     PFCAligner.h \
     PluginFloralPFC.h \
     PluginFloralPFC_global.h \
-    PFCReports.h
+    PFCReports.h \
+    PFCAlignmentEvaluation.h
 	
 SOURCES += \ 
     valibelprocessor.cpp \
@@ -74,4 +77,5 @@ SOURCES += \
     PFCPhonetiser.cpp \
     PFCAligner.cpp \
     PluginFloralPFC.cpp \
-    PFCReports.cpp
+    PFCReports.cpp \
+    PFCAlignmentEvaluation.cpp

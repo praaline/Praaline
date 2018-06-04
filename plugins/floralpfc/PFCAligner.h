@@ -19,7 +19,10 @@ public:
     PFCAligner();
     ~PFCAligner();
 
-    QString align(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString align(QPointer<Praaline::Core::CorpusCommunication> com, const QString &method);
+    void dictionaryMFAClose(const QString &filename);
+    void setMFAPath(const QString &path);
+    void setOutputWaveFiles(bool);
 
 private:
     PFCAlignerData *d;
