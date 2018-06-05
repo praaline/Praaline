@@ -48,6 +48,19 @@ PFCPreprocessor::~PFCPreprocessor()
     delete d;
 }
 
+/// This function processes a collection of PFC TextGrids and ensures that there are three annotation tiers,
+/// (orthographic transcription, schwa coding, liaison coding) as per the PFC protocol, and optionally additional
+/// tiers for anonymisaiton, comments and prosody annotation. The function renames the tiers in the TextGrid
+/// according to the PFC standard (transcription, schwa, liaison, anonymisation) and saves the TextGrid in
+/// ISO 8859-1 encoding (Latin 1). It is also possible to have a TextGrid with only one tier (transcription)
+/// in cases where the schwa and liaison annotation has not yet been performed.
+///
+/// The function will perform the following verifications and operations:
+/// - If the file name indicates the word task (m, c, ms, ms2 and s suffix) and there is only one tier, then
+///   it is assumed that this is a transcription tier and it is renamed accordingly.
+/// - In all other cases, the number of tiers in the TextGrid is checked:
+///   - If there are 3 tiers,
+
 QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
 {
     QString ret;
