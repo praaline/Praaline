@@ -30,14 +30,16 @@ using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::FloralPFC::PluginFloralPFCPrivateData {
     PluginFloralPFCPrivateData() :
-        pfc_preprocessor_prepare(false), pfc_phonetiser_phonetise(false),
+        pfc_preprocessor_check_transcription_speakers(false), pfc_preprocessor_diarise_tokenise(false),
+        pfc_phonetiser_phonetise(false),
         pfc_aligner_htk(false), pfc_aligner_mfa_individual(false), pfc_aligner_mfa_regionstyle(false),
         pfc_evaluate(false),
         pfc_reports_corpuscoverage(false)
     {}
 
     // steps
-    bool pfc_preprocessor_prepare;
+    bool pfc_preprocessor_check_transcription_speakers;
+    bool pfc_preprocessor_diarise_tokenise;
     bool pfc_phonetiser_phonetise;
     bool pfc_aligner_htk;
     bool pfc_aligner_mfa_individual;
@@ -121,13 +123,22 @@ QString Praaline::Plugins::FloralPFC::PluginFloralPFC::pluginLicense() const {
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::FloralPFC::PluginFloralPFC::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
-    parameters << PluginParameter("pfc_preprocessor_prepare",    "PFC Pre-processor: Prepare transcription", QVariant::Bool, d->pfc_preprocessor_prepare);
-    parameters << PluginParameter("pfc_phonetiser_phonetise",    "PFC Phonetiser: Phonetise tok_min tier", QVariant::Bool, d->pfc_phonetiser_phonetise);
-    parameters << PluginParameter("pfc_aligner_htk",             "PFC Aligner: HTK basic alignment", QVariant::Bool, d->pfc_aligner_htk);
-    parameters << PluginParameter("pfc_aligner_mfa_individual",  "PFC Aligner: MFA create alignment files - Individual", QVariant::Bool, d->pfc_aligner_mfa_individual);
-    parameters << PluginParameter("pfc_aligner_mfa_regionstyle", "PFC Aligner: MFA create alignment files - Region & Style", QVariant::Bool, d->pfc_aligner_mfa_regionstyle);
-    parameters << PluginParameter("pfc_evaluate",  "PFC Evaluate: Alignment MFA", QVariant::Bool, d->pfc_evaluate);
-    parameters << PluginParameter("pfc_reports_corpuscoverage",  "PFC Reports: Corpus coverage", QVariant::Bool, d->pfc_reports_corpuscoverage);
+    parameters << PluginParameter("pfc_preprocessor_check_transcription_speakers",
+                                  "Pre-processor Step 1: Check transcription and num speakers", QVariant::Bool, d->pfc_preprocessor_check_transcription_speakers);
+    parameters << PluginParameter("pfc_preprocessor_diarise_tokenise",
+                                  "Pre-processor Step 2: Diarise and Tokenise", QVariant::Bool, d->pfc_preprocessor_diarise_tokenise);
+    parameters << PluginParameter("pfc_phonetiser_phonetise",
+                                  "Phonetiser: Phonetise tok_min tier", QVariant::Bool, d->pfc_phonetiser_phonetise);
+    parameters << PluginParameter("pfc_aligner_htk",
+                                  "Aligner: HTK basic alignment", QVariant::Bool, d->pfc_aligner_htk);
+    parameters << PluginParameter("pfc_aligner_mfa_individual",
+                                  "Aligner: MFA create alignment files - Individual", QVariant::Bool, d->pfc_aligner_mfa_individual);
+    parameters << PluginParameter("pfc_aligner_mfa_regionstyle",
+                                  "Aligner: MFA create alignment files - Region & Style", QVariant::Bool, d->pfc_aligner_mfa_regionstyle);
+    parameters << PluginParameter("pfc_evaluate",
+                                  "Evaluate: Alignment MFA", QVariant::Bool, d->pfc_evaluate);
+    parameters << PluginParameter("pfc_reports_corpuscoverage",
+                                  "Reports: Corpus coverage", QVariant::Bool, d->pfc_reports_corpuscoverage);
 
     parameters << PluginParameter("path", "Path to files", QVariant::String, d->path);
     parameters << PluginParameter("filename", "Filename", QVariant::String, d->filename);
@@ -136,7 +147,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::FloralPFC::PluginFl
 
 void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(const QHash<QString, QVariant> &parameters)
 {
-    if (parameters.contains("pfc_preprocessor_prepare")) d->pfc_preprocessor_prepare = parameters.value("pfc_preprocessor_prepare").toBool();
+    if (parameters.contains("pfc_preprocessor_check_transcription_speakers")) d->pfc_preprocessor_check_transcription_speakers = parameters.value("pfc_preprocessor_check_transcription_speakers").toBool();
+    if (parameters.contains("pfc_preprocessor_diarise_tokenise")) d->pfc_preprocessor_diarise_tokenise = parameters.value("pfc_preprocessor_diarise_tokenise").toBool();
     if (parameters.contains("pfc_phonetiser_phonetise")) d->pfc_phonetiser_phonetise = parameters.value("pfc_phonetiser_phonetise").toBool();
     if (parameters.contains("pfc_aligner_htk")) d->pfc_aligner_htk = parameters.value("pfc_aligner_htk").toBool();
     if (parameters.contains("pfc_aligner_mfa_individual")) d->pfc_aligner_mfa_individual = parameters.value("pfc_aligner_mfa_individual").toBool();
@@ -156,12 +168,14 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     PFCAlignmentEvaluation evaluation;
     PFCReports reports;
 
-    if (d->pfc_preprocessor_prepare) {
+    if (d->pfc_preprocessor_check_transcription_speakers) {
         foreach (QPointer<CorpusCommunication> com, communications) {
             QString m = preprocessor.prepareTranscription(com);
             m = m.append("\t").append(preprocessor.checkSpeakers(com));
             if (!m.isEmpty()) printMessage(m);
         }
+    }
+    if (d->pfc_preprocessor_diarise_tokenise) {
         foreach (QPointer<CorpusCommunication> com, communications) {
             QString m = preprocessor.separateSpeakers(com);
             m = m.append("\t").append(preprocessor.tokenise(com));

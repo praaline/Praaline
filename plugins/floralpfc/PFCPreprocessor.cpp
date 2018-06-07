@@ -59,8 +59,10 @@ PFCPreprocessor::~PFCPreprocessor()
 /// - If the file name indicates the word task (m, c, ms, ms2 and s suffix) and there is only one tier, then
 ///   it is assumed that this is a transcription tier and it is renamed accordingly.
 /// - In all other cases, the number of tiers in the TextGrid is checked:
-///   - If there are 3 tiers,
-
+///   - If there are 4 tiers and the fourth tier is an anonymisation tier, it is appropriately named and kept.
+///   - If there are 4 or 3 tiers, and the second/third contain the words liaison/schwa, then the first is considered to
+///     be the transcription. All tiers are appropriately named.
+/// In all other cases, the file is marked for manual verification and correction of its tier names.
 QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
 {
     QString ret;
@@ -131,6 +133,14 @@ QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
     return ret;
 }
 
+/// Pre-Processing Step 1.1
+/// This function is the first step in preparing the PFC transcriptions for pre-processing.
+/// Input: a CorpusCommunication with one transcription tier, having 2 attributes (liaison and schwa).
+/// The function applies basic typographic conventions on all intervals of the three tiers. It then calculates the
+/// number of words separated by whitespace in each of the three tiers (text + 2 attributes), for all intervals.
+/// If an interval does not have the exact same number of words accross the three tiers, it is marked to be checked manually.
+/// This is done by setting the attribute "tocheck" to "CHECK". In these cases, the word alignment between the orthographic
+/// transcription and the schwa tier is also calculated and stored in the database (it is used in the interactive editor).
 QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
 {
     if (!com) return "No Communication";
@@ -184,6 +194,10 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
     return QString(com->ID()).append((checkThisCom) ? "\t CHECK" : "");
 }
 
+/// Pre-Processing Step 1.2
+/// This function checks whether the same number of speakers is indicated in all three transcription tiers.
+/// If it is not the case, then it sets the "tocheck" attribute of the interval to "num loc".
+/// If the interval is a single-speaker interval, it is marked accordingly in the "single_speaker" attribute.
 QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
 {
     QStringList levels; levels << "transcription";
