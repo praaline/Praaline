@@ -1,5 +1,7 @@
+#include <QDebug>
 #include <QString>
 #include <QList>
+#include <QStringList>
 #include <QPointer>
 #include <QMap>
 #include <QRegularExpression>
@@ -194,6 +196,65 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
     return QString(com->ID()).append((checkThisCom) ? "\t CHECK" : "");
 }
 
+bool PFCPreprocessor::tryFixingSpeakers(Praaline::Core::Interval *intv)
+{
+    int o = intv->text().split(":").count() - 1;
+    int s = intv->attribute("schwa").toString().split(":").count() - 1;
+    int l = intv->attribute("liaison").toString().split(":").count() - 1;
+    if (o != s || o != l || s != l) return false;
+    if (o != 3) return false;
+
+    QStringList ortho = intv->text().split(" ", QString::SkipEmptyParts);
+    QStringList schwa = intv->attribute("schwa").toString().split(" ");
+    QStringList liaison = intv->attribute("liaison").toString().split(" ");
+    if (ortho.isEmpty() || schwa.isEmpty() || liaison.isEmpty()) return false;
+    if (!ortho.first().endsWith(":") || !schwa.first().endsWith(":") || !liaison.first().endsWith(":")) return false;
+    QString mainSpeaker = ortho.first();
+    if ((schwa.first() != mainSpeaker) || (liaison.first() != mainSpeaker)) return false;
+
+    bool inside(false);
+    for (int i = 1; i < ortho.count(); ++i) {
+        if (ortho.at(i) == mainSpeaker + ":") {
+            ortho[i].clear();
+        }
+        else if (!inside && ortho.at(i).endsWith(":") && !ortho.at(i).startsWith("<")) {
+            ortho[i].prepend("<"); inside = true;
+        }
+        else if (inside && ortho.at(i).endsWith(":") && !ortho.at(i - 1).endsWith(">")) {
+            ortho[i-1].append(">"); inside = false;
+        }
+    }
+    if (inside) { ortho[ortho.count() - 1].append(">"); inside = false; }
+    for (int i = 1; i < schwa.count(); ++i) {
+        if (schwa.at(i) == mainSpeaker + ":") {
+            schwa[i].clear();
+        }
+        else if (!inside && schwa.at(i).endsWith(":") && !schwa.at(i).startsWith("<")) {
+            schwa[i].prepend("<"); inside = true;
+        }
+        else if (inside && schwa.at(i).endsWith(":") && !schwa.at(i - 1).endsWith(">")) {
+            schwa[i-1].append(">"); inside = false;
+        }
+    }
+    if (inside) { schwa[schwa.count() - 1].append(">"); inside = false; }
+    for (int i = 1; i < liaison.count(); ++i) {
+        if (liaison.at(i) == mainSpeaker + ":") {
+            liaison[i].clear();
+        }
+        else if (!inside && liaison.at(i).endsWith(":") && !liaison.at(i).startsWith("<")) {
+            liaison[i].prepend("<"); inside = true;
+        }
+        else if (inside && liaison.at(i).endsWith(":") && !liaison.at(i - 1).endsWith(">")) {
+            liaison[i-1].append(">"); inside = false;
+        }
+    }
+    if (inside) { liaison[liaison.count() - 1].append(">"); inside = false; }
+    intv->setText(ortho.join(" "));
+    intv->setAttribute("schwa", schwa.join(" "));
+    intv->setAttribute("liaison", liaison.join(" "));
+    return true;
+}
+
 /// Pre-Processing Step 1.2
 /// This function checks whether the same number of speakers is indicated in all three transcription tiers.
 /// If it is not the case, then it sets the "tocheck" attribute of the interval to "num loc".
@@ -220,10 +281,19 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
             }
             // Check if error in the number of speakers given by the ":" symbol
             if (o != s || o != l || s != l) intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc a");
-            o = ortho.split("<").count();
-            s = schwa.split("<").count();
-            l = liaison.split("<").count();
-            if (o != s || o != l || s != l) intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc b");
+            // Check for embedded speakers
+            o = ortho.split("<").count() + ortho.split(">").count();
+            s = schwa.split("<").count() + schwa.split(">").count();
+            l = liaison.split("<").count() + liaison.split(">").count();
+            if (o != s || o != l || s != l) {
+                // tryFixingSpeakers(intv);
+                // o = ortho.split("<").count() + ortho.split(">").count();
+                // s = schwa.split("<").count() + schwa.split(">").count();
+                // l = liaison.split("<").count() + liaison.split(">").count();
+                // if (o != s || o != l || s != l) {
+                    intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc b");
+                // }
+            }
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }

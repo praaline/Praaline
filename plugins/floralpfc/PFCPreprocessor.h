@@ -35,6 +35,7 @@ private:
     QList<QString> splitToken(const QString &input);
     bool startsWithPunctuation(const QString &text);
     bool endsWithPunctuation(const QString &text);
+    bool tryFixingSpeakers(Praaline::Core::Interval *intv);
 };
 
 #endif // PFCPREPROCESSOR_H
