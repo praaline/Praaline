@@ -15,46 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="7" column="2">
-     <widget class="QLabel" name="labelTotalToCheck">
-      <property name="text">
-       <string>Total to check:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="8" column="2" colspan="2">
-     <spacer name="horizontalSpacer">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>601</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="3" column="1" colspan="4">
-     <widget class="QTableView" name="tableView"/>
-    </item>
-    <item row="7" column="1">
-     <widget class="QLabel" name="labelIndex">
-      <property name="text">
-       <string>Index:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="4">
-     <widget class="QPushButton" name="commandSave">
-      <property name="text">
-       <string>Save</string>
-      </property>
-      <property name="shortcut">
-       <string>Ctrl+S</string>
-      </property>
-     </widget>
-    </item>
     <item row="5" column="1" colspan="4">
      <layout class="QGridLayout" name="gridLayout">
       <item row="4" column="0">
@@ -100,24 +60,24 @@
      </layout>
     </item>
     <item row="8" column="4">
-     <widget class="QPushButton" name="commandNext">
+     <widget class="QPushButton" name="commandGoto">
       <property name="text">
-       <string>Next &gt;&gt;</string>
-      </property>
-      <property name="shortcut">
-       <string>PgDown</string>
+       <string>Goto</string>
       </property>
      </widget>
     </item>
-    <item row="8" column="1">
-     <widget class="QPushButton" name="commandPrevious">
+    <item row="2" column="4">
+     <widget class="QPushButton" name="commandSave">
       <property name="text">
-       <string>&lt;&lt; Previous</string>
+       <string>Save</string>
       </property>
       <property name="shortcut">
-       <string>PgUp</string>
+       <string>Ctrl+S</string>
       </property>
      </widget>
+    </item>
+    <item row="3" column="1" colspan="4">
+     <widget class="QTableView" name="tableView"/>
     </item>
     <item row="6" column="1" colspan="4">
      <widget class="QLabel" name="labelCheck">
@@ -132,6 +92,56 @@
        <string>AnnotationID :</string>
       </property>
      </widget>
+    </item>
+    <item row="10" column="4">
+     <widget class="QPushButton" name="commandNext">
+      <property name="text">
+       <string>Next &gt;&gt;</string>
+      </property>
+      <property name="shortcut">
+       <string>PgDown</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="2" colspan="2">
+     <spacer name="horizontalSpacer">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>601</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="10" column="1">
+     <widget class="QPushButton" name="commandPrevious">
+      <property name="text">
+       <string>&lt;&lt; Previous</string>
+      </property>
+      <property name="shortcut">
+       <string>PgUp</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1" colspan="4">
+     <widget class="QLabel" name="labelIndex">
+      <property name="text">
+       <string>Index:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QLabel" name="labelTotalToCheck">
+      <property name="text">
+       <string>Total to check:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="2">
+     <widget class="QLineEdit" name="editGoto"/>
     </item>
    </layout>
   </widget>

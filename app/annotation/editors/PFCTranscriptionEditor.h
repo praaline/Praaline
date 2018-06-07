@@ -33,6 +33,7 @@ private slots:
     void update();
     void save();
     void updateTableView();
+    void gotoIndex();
 
 private:
     PFCTranscriptionEditorData *d;

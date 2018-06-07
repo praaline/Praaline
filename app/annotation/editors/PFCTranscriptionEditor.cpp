@@ -33,6 +33,7 @@ PFCTranscriptionEditor::PFCTranscriptionEditor(QWidget *parent) :
     connect(ui->commandPrevious, SIGNAL(clicked(bool)), this, SLOT(previous()));
     connect(ui->commandNext, SIGNAL(clicked(bool)), this, SLOT(next()));
     connect(ui->commandSave, SIGNAL(clicked(bool)), this, SLOT(save()));
+    connect(ui->commandGoto, SIGNAL(clicked(bool)), this, SLOT(gotoIndex()));
 
     connect(ui->editTranscript, SIGNAL(textChanged(QString)), this, SLOT(updateTableView()));
     connect(ui->editSchwa, SIGNAL(textChanged(QString)), this, SLOT(updateTableView()));
@@ -125,6 +126,15 @@ void PFCTranscriptionEditor::update()
     d->elements.at(d->index)->setAttribute("liaison", ui->editLiaison->text());
     d->elements.at(d->index)->setAttribute("schwa", ui->editSchwa->text());
     d->elements.at(d->index)->setAttribute("comment", ui->editComment->text());
+}
+
+void PFCTranscriptionEditor::gotoIndex()
+{
+    int newIndex = ui->editGoto->text().toInt();
+    if (newIndex < 0) return;
+    if (newIndex >= d->elements.count()) return;
+    d->index = newIndex;
+    update();
 }
 
 void PFCTranscriptionEditor::save()
