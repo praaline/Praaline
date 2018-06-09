@@ -130,7 +130,7 @@ void PFCTranscriptionEditor::update()
 
 void PFCTranscriptionEditor::gotoIndex()
 {
-    int newIndex = ui->editGoto->text().toInt();
+    int newIndex = ui->editGoto->text().toInt() - 1;
     if (newIndex < 0) return;
     if (newIndex >= d->elements.count()) return;
     d->index = newIndex;
