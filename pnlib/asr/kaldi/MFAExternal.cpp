@@ -178,7 +178,7 @@ bool MFAExternal::alignTokens(const QString &waveFilepath, RealTime timeFrom, Re
         }
     }
     fileLAB.close();
-    return true;
+    return false;
 }
 
 bool MFAExternal::startDictionary()

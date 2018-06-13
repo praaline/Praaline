@@ -218,7 +218,6 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
             groups[region + "_" + style].append(com);
         }
         foreach (QString groupID, groups.keys()) {
-            if (groupID != "11a_conv") continue;
             foreach (QPointer<CorpusCommunication> com, groups.value(groupID)) {
                 aligner.align(com, "mfa_regionstyle");
             }

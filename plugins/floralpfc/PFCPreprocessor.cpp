@@ -136,18 +136,24 @@ QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
 }
 
 /// Pre-Processing Step 1.1
+///
 /// This function is the first step in preparing the PFC transcriptions for pre-processing.
+///
 /// Input: a CorpusCommunication with one transcription tier, having 2 attributes (liaison and schwa).
 /// The function applies basic typographic conventions on all intervals of the three tiers. It then calculates the
 /// number of words separated by whitespace in each of the three tiers (text + 2 attributes), for all intervals.
+///
 /// If an interval does not have the exact same number of words accross the three tiers, it is marked to be checked manually.
 /// This is done by setting the attribute "tocheck" to "CHECK". In these cases, the word alignment between the orthographic
 /// transcription and the schwa tier is also calculated and stored in the database (it is used in the interactive editor).
+///
+/// If there are transcription intervals to be checked, their number is saved in the transcriptionsToCheck attribute of
+/// the Communication
 QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
 {
     if (!com) return "No Communication";
     QStringList levels; levels << "transcription";
-    bool checkThisCom(false);
+    int transcriptionsToCheck(0);
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
@@ -179,7 +185,7 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
             QString tocheck;
             if (o != s || o != l || s != l) {
                 tocheck = "CHECK";
-                checkThisCom = true;
+                transcriptionsToCheck++;
             }
             intv->setText(ortho);
             intv->setAttribute("schwa", schwa);
@@ -193,7 +199,8 @@ QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }
-    return QString(com->ID()).append((checkThisCom) ? "\t CHECK" : "");
+    com->setProperty("transcriptionsToCheck", transcriptionsToCheck);
+    return QString(com->ID()).append("\t").append(QString::number(transcriptionsToCheck));
 }
 
 bool PFCPreprocessor::tryFixingSpeakers(Praaline::Core::Interval *intv)
@@ -263,6 +270,7 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
 {
     QStringList levels; levels << "transcription";
     if (!com) return "No Communication";
+    int transcriptionsToCheck(0);
     foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
@@ -294,10 +302,12 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
                     intv->setAttribute("tocheck", intv->attribute("tocheck").toString() + " num loc b");
                 // }
             }
+            if (!intv->attribute("tocheck").toString().isEmpty()) transcriptionsToCheck++;
         }
         com->repository()->annotations()->saveTier(annot->ID(), annot->ID(), transcription);
     }
-    return com->ID();
+    com->setProperty("transcriptionsToCheck", transcriptionsToCheck);
+    return QString(com->ID()).append("\t").append(QString::number(transcriptionsToCheck));
 }
 
 void mergeInsideParentheses(QString &input, const QString &open = "\\(", const QString &close = "\\)") {
