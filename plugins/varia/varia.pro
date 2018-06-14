@@ -90,7 +90,8 @@ HEADERS += \
     CorpusCommunicationSplicer.h \
     corpus-specific/NCCFR.h \
     experiments/PhonogenreDiscourseMarkers.h \
-    PhonoSeesaw.h
+    PhonoSeesaw.h \
+    JsonAlignedTranscription.h
 
 
 SOURCES += \ 
@@ -130,4 +131,5 @@ SOURCES += \
     CorpusCommunicationSplicer.cpp \
     corpus-specific/NCCFR.cpp \
     experiments/PhonogenreDiscourseMarkers.cpp \
-    PhonoSeesaw.cpp
+    PhonoSeesaw.cpp \
+    JsonAlignedTranscription.cpp

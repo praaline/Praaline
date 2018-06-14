@@ -412,11 +412,25 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
         printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (QPointer<CorpusRecording> rec, com->recordings()) {
             if (!rec) continue;
+
+            // The Automatic Segmentation from Syllables may need to create an Annotation if there is none.
+            if ((d->segmentationMethod == 0) && (com->annotations().isEmpty())) {
+                com->addAnnotation(new CorpusAnnotation(com->ID(), com->repository()));
+            }
+
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
                 if (d->segmentationMethod == 0) {
+                    // Segmentation Method: Automatic syllable detection
                     QString speakerID = annot->ID(); // default speaker ID - impossible to tell using automatic syllabification
-                    // check already
+                    // Add speaker to corpus, if it does not already exist. Add participation, if it does not already exist.
+                    if (com->corpus()) {
+                        if (!com->corpus()->hasSpeaker(speakerID))
+                            com->corpus()->addSpeaker(new CorpusSpeaker(speakerID));
+                        if (!com->corpus()->hasParticipation(com->ID(), speakerID))
+                            com->corpus()->addParticipation(com->ID(), speakerID);
+                    }
+                    // Check if the syllable level exists already
                     AnnotationTier *autosyll = com->repository()->annotations()->getTier(annot->ID(), speakerID, d->levelSyllable);
                     if (autosyll) {
                         QFileInfo info(rec->filePath());
@@ -432,6 +446,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
                     prosogram->runProsoGram(com->corpus(), rec, tiers, annot->ID(), speakerID);
                     delete tiers;
                 } else {
+                    // Other segmentation methods
                     QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                     foreach (QString speakerID, tiersAll.keys()) {
                         printMessage(QString("   speaker %1").arg(speakerID));
