@@ -402,10 +402,13 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
         segment->mergeIdenticalAnnotations("");
         segmentMain->mergeIdenticalAnnotations("");
 
+        // The main speaker ID from the sample's coding 11aal1 -> AL1
+        QString mainSpeakerID = annot->ID().mid(3, 3).toUpper();
+
         QHash<QString, QList<Interval *> > lists;
         foreach (Interval *seg, segment->intervals()) {
             if (seg->text().isEmpty()) continue;
-            QString spk = "X";
+            QString spk = mainSpeakerID;
             QString s = seg->text();
             s = s.replace(":", ": ").section(" ", 0, 0);;
             if (s.endsWith(":")) {
@@ -421,7 +424,7 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
         }
         foreach (Interval *seg, segmentMain->intervals()) {
             if (seg->text().isEmpty()) continue;
-            QString spk = "X";
+            QString spk = mainSpeakerID;
             QString s = seg->text();
             s = s.replace(":", ": ").section(" ", 0, 0);;
             if (s.endsWith(":")) {
@@ -598,6 +601,12 @@ bool PFCPreprocessor::endsWithPunctuation(const QString &text)
     return false;
 }
 
+bool PFCPreprocessor::isAcronym(const QString &text)
+{
+    QRegularExpression re(QString("^([A-Za-z]\\.)+$"));
+    return re.match(text).hasMatch();
+}
+
 QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
 {
     if (!com) return "No Communication";
@@ -613,12 +622,12 @@ QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
                 QString l = tok_min->attribute("liaison").toString();
                 // Remove all punctuation marks. Keep track of the marks removed (based on the token's text)
                 QString punctuation_before, punctuation_after;
-                while (startsWithPunctuation(t))    { punctuation_before.append(t.left(1));  t = t.remove(0, 1); }
-                while (endsWithPunctuation(t))      { punctuation_after.prepend(t.right(1)); t.chop(1);          }
-                while (startsWithPunctuation(s))    { s = s.remove(0, 1); }
-                while (endsWithPunctuation(s))      { s.chop(1); }
-                while (startsWithPunctuation(l))    { l = l.remove(0, 1); }
-                while (endsWithPunctuation(l))      { l.chop(1); }
+                while (startsWithPunctuation(t))                { punctuation_before.append(t.left(1));  t = t.remove(0, 1); }
+                while (endsWithPunctuation(t) && !isAcronym(t)) { punctuation_after.prepend(t.right(1)); t.chop(1);          }
+                while (startsWithPunctuation(s))                { s = s.remove(0, 1); }
+                while (endsWithPunctuation(s) && !isAcronym(s)) { s.chop(1); }
+                while (startsWithPunctuation(l))                { l = l.remove(0, 1); }
+                while (endsWithPunctuation(l) && !isAcronym(l)) { l.chop(1); }
                 // Update the token
                 tok_min->setText(t);
                 tok_min->setAttribute("schwa", s);

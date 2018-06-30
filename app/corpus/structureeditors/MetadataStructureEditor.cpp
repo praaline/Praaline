@@ -11,6 +11,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/structure/MetadataStructure.h"
+#include "pncore/serialisers/json/JSONSerialiserMetadataStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
 using namespace Praaline::Core;
 
@@ -309,10 +310,15 @@ void MetadataStructureEditor::importMetadataStructure()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Metadata Structure"), "",
-                                                    tr("XML File (*.xml);;All Files (*)"),
+                                                    tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-    MetadataStructure *structure = XMLSerialiserMetadataStructure::read(filename);
+    MetadataStructure *structure(0);
+    if (filename.toLower().endsWith(".json")) {
+        structure = JSONSerialiserMetadataStructure::read(filename);
+    } else {
+        structure = XMLSerialiserMetadataStructure::read(filename);
+    }
     if (!structure) return;
     repository->importMetadataStructure(structure);
     refreshMetadataStructureTreeView(repository->metadataStructure());
@@ -325,7 +331,13 @@ void MetadataStructureEditor::exportMetadataStructure()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getSaveFileName(this, tr("Export Metadata Structure"), "",
-                                                    tr("XML File (*.xml);;All Files (*)"), &selectedFilter, options);
+                                                    tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
+                                                    &selectedFilter, options);
     if (filename.isEmpty()) return;
-    XMLSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
+    if (filename.toLower().endsWith("json")) {
+        JSONSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
+    } else {
+        if (!filename.toLower().endsWith(".xml")) filename = filename.append(".xml");
+        XMLSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
+    }
 }

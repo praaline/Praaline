@@ -228,7 +228,8 @@ HEADERS += \
     widgets/StatusMessagesWidget.h \
     pngui/PraalineUserInterfaceOptions.h.h \
     model/annotation/PhonetisationTableModel.h \
-    model/annotation/TranscriptionTableModel.h
+    model/annotation/TranscriptionTableModel.h \
+    layer/ProZedLayer.h
 
 SOURCES += \
     model/visualiser/AnnotationGridModel.cpp \
@@ -381,7 +382,8 @@ SOURCES += \
     model/visualiser/RegionAverageModel.cpp \
     widgets/StatusMessagesWidget.cpp \
     model/annotation/PhonetisationTableModel.cpp \
-    model/annotation/TranscriptionTableModel.cpp
+    model/annotation/TranscriptionTableModel.cpp \
+    layer/ProZedLayer.cpp
 
 RESOURCES += \
     nodeeditor/resources/NodeEditorResources.qrc

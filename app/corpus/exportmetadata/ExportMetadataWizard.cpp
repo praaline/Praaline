@@ -198,7 +198,7 @@ bool ExportMetadataWizard::doExportText(CorpusObject::Type type, const QList<Cor
 {
     QString filename = ui->editFileFolder->text();
     if (filename.endsWith(".txt")) filename.chop(4);
-    filename = filename.append("_").append(CorpusObject::typeToString(type)).append(".txt");
+    filename = filename.append("_").append(CorpusObject::typeToFriendlyString(type)).append(".txt");
     QFile file(filename);
     if ( !file.open( QIODevice::ReadWrite | QIODevice::Text ) ) return false;
     QTextStream out(&file);

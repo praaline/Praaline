@@ -11,6 +11,7 @@
 #include "pncore/datastore/CorpusRepository.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/structure/AnnotationStructure.h"
+#include "pncore/serialisers/json/JSONSerialiserAnnotationStructure.h"
 #include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
@@ -293,9 +294,15 @@ void AnnotationStructureEditor::importAnnotationStructure()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Annotation Structure"), "",
-                                                    tr("XML File (*.xml);;All Files (*)"), &selectedFilter, options);
+                                                    tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
+                                                    &selectedFilter, options);
     if (filename.isEmpty()) return;
-    AnnotationStructure *structure = XMLSerialiserAnnotationStructure::read(filename);
+    AnnotationStructure *structure(0);
+    if (filename.toLower().endsWith(".json")) {
+        structure = JSONSerialiserAnnotationStructure::read(filename);
+    } else {
+        structure = XMLSerialiserAnnotationStructure::read(filename);
+    }
     if (!structure) return;
     repository->importAnnotationStructure(structure);
     refreshAnnotationStructureTreeView(repository->annotationStructure());
@@ -309,9 +316,15 @@ void AnnotationStructureEditor::exportAnnotationStructure()
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getSaveFileName(this, tr("Export Annotation Structure"), "",
-                                                    tr("XML File (*.xml);;All Files (*)"), &selectedFilter, options);
+                                                    tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
+                                                    &selectedFilter, options);
     if (filename.isEmpty()) return;
-    XMLSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
+    if (filename.toLower().endsWith("json")) {
+        JSONSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
+    } else {
+        if (!filename.toLower().endsWith(".xml")) filename = filename.append(".xml");
+        XMLSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
+    }
 }
 
 void AnnotationStructureEditor::renameAnnotationLevel(const QString &oldID, const QString &newID)

@@ -918,7 +918,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             item->setCheckable(true);
             item->setCheckState(Qt::Checked);
             modelDel->setItem(i, 0, item);
-            modelDel->setItem(i, 1, new QStandardItem(CorpusObject::typeToString(cobj->type())));
+            modelDel->setItem(i, 1, new QStandardItem(CorpusObject::typeToFriendlyString(cobj->type())));
             i++;
         }
         // Confirmations
