@@ -62,8 +62,8 @@ namespace Praaline {
                 void process(const QList<QPointer<CorpusCommunication> > &communications) override;
 
             signals:
-                void printMessage(const QString &message);
-                void madeProgress(int progress);
+                void printMessage(const QString &message) override;
+                void madeProgress(int progress) override;
 
             private slots:
                 void scriptSentMessage(const QString &message);
