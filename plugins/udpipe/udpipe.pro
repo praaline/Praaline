@@ -1,6 +1,6 @@
 # Praaline Plugin
-# Temporal variables for prosodic analysis
-# (c) George Christodoulides 2014-2015
+# Bindings to UDPipe
+# (c) George Christodoulides 2018
 
 ! include( ../../common.pri ) {
     error( Could not find the common.pri file! )
@@ -8,7 +8,7 @@
 
 CONFIG += plugin dll qt thread warn_on stl rtti exceptions c++11
 TEMPLATE = lib
-DEFINES += PLUGIN_SYNTAX_LIBRARY
+DEFINES += PLUGIN_UDPIPE_LIBRARY
 
 QT += gui sql
 greaterThan(QT_MAJOR_VERSION, 4) {
@@ -16,12 +16,12 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 
 CONFIG(debug, debug|release) {
-    TARGET = Syntaxd
+    TARGET = UDPiped
 } else {
-    TARGET = Syntax
+    TARGET = UDPipe
 }
 
-# put plugin in the same directory as Praaline, inside the plugins sub-directory
+# Put plugin in the same directory as Praaline, inside the plugins sub-directory
 win32 {
     DESTDIR += ../../../../../../app/build/plugins/
 }
@@ -56,17 +56,10 @@ PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
-    pluginsyntax_global.h \
-    pluginsyntax.h \
-    CoNLLUReader.h \
-    CorpusImporter.h \
-    CoNLLUToken.h \
-    DependenciesToLatex.h
+    PluginUDPipe_global.h \
+    PluginUDPipe.h \
+    DisMoUDPipeBridge.h
 
 SOURCES += \ 
-    pluginsyntax.cpp \
-    CoNLLUReader.cpp \
-    CorpusImporter.cpp \
-    CoNLLUToken.cpp \
-    DependenciesToLatex.cpp
-
+    PluginUDPipe.cpp \
+    DisMoUDPipeBridge.cpp

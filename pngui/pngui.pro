@@ -226,7 +226,7 @@ HEADERS += \
     layer/RegionAverageLayer.h \
     model/visualiser/RegionAverageModel.h \
     widgets/StatusMessagesWidget.h \
-    pngui/PraalineUserInterfaceOptions.h.h \
+    pngui/PraalineUserInterfaceOptions.h \
     model/annotation/PhonetisationTableModel.h \
     model/annotation/TranscriptionTableModel.h \
     layer/ProZedLayer.h

@@ -27,6 +27,7 @@ private slots:
     void showKeyReference();
     void showActivityLog();
     void showUnitConverter();
+    void showUpdater();
     void toggleColourPalette();
 
 private:
@@ -41,6 +42,7 @@ private:
     void setupAnnotationMenu();
     void setupVisualisationMenu();
     void setupPlaybackMenu();
+    void setupToolsMenu();
     void setupWindowMenu();
     void setupHelpMenu();
 };

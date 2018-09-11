@@ -15,6 +15,7 @@
 #include "svgui/widgets/UnitConverter.h"
 #include "svgui/widgets/IconLoader.h"
 #include "svgui/widgets/CommandHistory.h"
+#include "updater/UpdatePraalineDialog.h"
 
 #include "PraalineMainWindow.h"
 
@@ -48,10 +49,11 @@ struct PraalineMainWindowData {
     PraalineMainWindowData() : usingDarkPalette(false) {}
 
     QString shortcut_mapping_file;
-    ConfigurationWidget *configurationWidget;
-    ActivityLog         *activityLog;
-    UnitConverter       *unitConverter;
-    KeyReference        *keyReference;
+    ConfigurationWidget  *configurationWidget;
+    ActivityLog          *activityLog;
+    UnitConverter        *unitConverter;
+    KeyReference         *keyReference;
+    UpdatePraalineDialog *updaterDialog;
 
     ActionContainer *menubar;
     ActionContainer *menu_file;
@@ -61,6 +63,7 @@ struct PraalineMainWindowData {
     ActionContainer *menu_annotation;
     ActionContainer *menu_visualisation;
     ActionContainer *menu_playback;
+    ActionContainer *menu_tools;
     ActionContainer *menu_window;
     ActionContainer *menu_help;
 
@@ -74,6 +77,7 @@ PraalineMainWindow::PraalineMainWindow(QtilitiesMainWindow *mainWindow, QObject 
     d->activityLog = new ActivityLog();
     d->unitConverter = new UnitConverter();
     d->keyReference = new KeyReference();
+    d->updaterDialog = new UpdatePraalineDialog();
     d->unitConverter->hide();
 }
 
@@ -83,6 +87,7 @@ PraalineMainWindow::~PraalineMainWindow()
     delete d->keyReference;
     delete d->activityLog;
     delete d->unitConverter;
+    delete d->updaterDialog;
     delete d;
 }
 
@@ -179,6 +184,7 @@ void PraalineMainWindow::initialise()
     setupAnnotationMenu();
     setupVisualisationMenu();
     setupPlaybackMenu();
+    setupToolsMenu();
     setupHelpMenu();
 
     #ifdef QT_NO_DEBUG
@@ -428,6 +434,7 @@ void PraalineMainWindow::setupMenuBar()
     d->menu_annotation      = ACTION_MANAGER->createMenu(tr("&Annotation"), existed);
     d->menu_visualisation   = ACTION_MANAGER->createMenu(tr("V&isualisation"), existed);
     d->menu_playback        = ACTION_MANAGER->createMenu(tr("&Playback"), existed);
+    d->menu_tools           = ACTION_MANAGER->createMenu(tr("&Tools"), existed);
     d->menu_window          = ACTION_MANAGER->createMenu(tr("&Window"), existed);
     d->menu_help            = ACTION_MANAGER->createMenu(tr("&Help"), existed);
     d->menubar->addMenu(d->menu_file);
@@ -437,6 +444,7 @@ void PraalineMainWindow::setupMenuBar()
     d->menubar->addMenu(d->menu_annotation);
     d->menubar->addMenu(d->menu_visualisation);
     d->menubar->addMenu(d->menu_playback);
+    d->menubar->addMenu(d->menu_tools);
     d->menubar->addMenu(d->menu_window);
     d->menubar->addMenu(d->menu_help);
     d->menu_file->menu()->setTearOffEnabled(true);
@@ -446,6 +454,7 @@ void PraalineMainWindow::setupMenuBar()
     d->menu_annotation->menu()->setTearOffEnabled(true);
     d->menu_visualisation->menu()->setTearOffEnabled(true);
     d->menu_playback->menu()->setTearOffEnabled(true);
+    d->menu_tools->menu()->setTearOffEnabled(true);
     d->menu_window->menu()->setTearOffEnabled(true);
     d->menu_help->menu()->setTearOffEnabled(true);
 }
@@ -500,7 +509,7 @@ void PraalineMainWindow::setupEditMenu()
 void PraalineMainWindow::setupViewMenu()
 {
     // View menu
-    IconLoader il;
+    // IconLoader il;
     QAction *action;
     Command *command;
     QList<int> std_context;
@@ -632,6 +641,30 @@ void PraalineMainWindow::setupPlaybackMenu()
     d->menu_playback->addAction(command);
 }
 
+void PraalineMainWindow::setupToolsMenu()
+{
+    QAction *action;
+    Command *command;
+    QList<int> std_context;
+    std_context.push_front(CONTEXT_MANAGER->contextID(qti_def_CONTEXT_STANDARD));
+    // Unit converter
+    action = new QAction(tr("&Unit Converter"), this);
+    action->setStatusTip(tr("Open a window of pitch and timing conversion utilities"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showUnitConverter()));
+    command = ACTION_MANAGER->registerAction("Tools.UnitConverter", action, std_context);
+    command->setCategory(QtilitiesCategory(tr("Tools")));
+    d->menu_tools->addAction(command);
+    // Separator
+    d->menu_playback->addSeparator();
+    // Check for updates
+    action = new QAction(tr("&Check for Updates"), this);
+    action->setStatusTip(tr("Check over the Internet for updates to Praaline"));
+    connect(action, SIGNAL(triggered()), this, SLOT(showUpdater()));
+    command = ACTION_MANAGER->registerAction("Tools.CheckForUpdates", action, std_context);
+    command->setCategory(QtilitiesCategory(tr("Tools")));
+    d->menu_tools->addAction(command);
+}
+
 void PraalineMainWindow::setupWindowMenu()
 {
     QAction *action;
@@ -646,13 +679,7 @@ void PraalineMainWindow::setupWindowMenu()
     command = ACTION_MANAGER->registerAction("Window.Activity Log", action, std_context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     d->menu_window->addAction(command);
-    // Unit converter
-    action = new QAction(tr("&Unit Converter"), this);
-    action->setStatusTip(tr("Open a window of pitch and timing conversion utilities"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showUnitConverter()));
-    command = ACTION_MANAGER->registerAction("Window.UnitConverter", action, std_context);
-    command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
-    d->menu_window->addAction(command);
+
 }
 
 void PraalineMainWindow::setupHelpMenu()
@@ -697,6 +724,33 @@ void PraalineMainWindow::setupHelpMenu()
     command = ACTION_MANAGER->registerAction("Help.About", action, std_context);
     command->setCategory(QtilitiesCategory("Help"));
     d->menu_help->addAction(command);
+}
+
+// ==============================================================================================================================
+// TOOLS
+// ==============================================================================================================================
+
+void PraalineMainWindow::showUnitConverter()
+{
+    d->unitConverter->show();
+    d->unitConverter->raise();
+}
+
+void PraalineMainWindow::showUpdater()
+{
+    d->updaterDialog->show();
+    d->updaterDialog->raise();
+}
+
+// ==============================================================================================================================
+// WINDOW - ACTIVITY LOG
+// ==============================================================================================================================
+
+void PraalineMainWindow::showActivityLog()
+{
+    d->activityLog->show();
+    d->activityLog->raise();
+    d->activityLog->scrollToEnd();
 }
 
 // ==============================================================================================================================
@@ -751,18 +805,4 @@ void PraalineMainWindow::showKeyReference()
 {
     d->keyReference->show();
 }
-
-void PraalineMainWindow::showActivityLog()
-{
-    d->activityLog->show();
-    d->activityLog->raise();
-    d->activityLog->scrollToEnd();
-}
-
-void PraalineMainWindow::showUnitConverter()
-{
-    d->unitConverter->show();
-    d->unitConverter->raise();
-}
-
 

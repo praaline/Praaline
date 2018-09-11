@@ -20,12 +20,19 @@ using namespace Praaline::Core;
 
 struct PFCAlignmentEvaluationData {
     QStringList regionCodes;
+    QStringList styles;
+    QMap<QString, QMap<QString, PFCAlignmentEvaluation::EvaluationResults> > resultsPivot;
 };
 
 PFCAlignmentEvaluation::PFCAlignmentEvaluation() :
     d(new PFCAlignmentEvaluationData())
 {
-    d->regionCodes << "11a" << "12a" << "13a";
+    d->regionCodes << "11a" << "12a" << "13a" << "13b" << "21a" << "31a" << "38a" << "42a" << "44a" << "50a"
+                   << "54b" << "61a" << "64a" << "69a" << "75c" << "75x" << "81a" << "85a" << "92a" << "974"
+                   << "aba" << "aca" << "bfa" << "bga" << "bla" << "bta" << "caa" << "cia" << "cqa" << "cqb"
+                   << "cya" << "maa" << "rca" << "sca" << "sga" << "sna" << "sva";
+    d->styles << "conv" << "text";
+    pivotReset();
 }
 
 PFCAlignmentEvaluation::~PFCAlignmentEvaluation()
@@ -33,16 +40,36 @@ PFCAlignmentEvaluation::~PFCAlignmentEvaluation()
     delete d;
 }
 
-QString PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunication> com,
-                                         const QString &directoryTextGridA, const QString nameA,
-                                         const QString &directoryTextGridB, const QString nameB,
-                                         const QString &directoryTextgridCompare)
+QString PFCAlignmentEvaluation::EvaluationResults::toString() const
 {
     QString ret;
-    if (!com) return "No Communication";
-    if (com->recordings().isEmpty()) return QString("No Recordings for %1").arg(com->ID());
+    QString sep = "\t";
+    ret.append(ID).append(sep).append(groupID).append(sep);
+    ret.append(regionData).append(sep).append(regionModel).append(sep);
+    if (!speakerID.isEmpty()) ret.append(speakerID).append(sep);
+    ret.append(QString::number(insertions)).append(sep);
+    ret.append(QString::number(deletions)).append(sep);
+    ret.append(QString::number(phonemesLessThan20ms)).append(sep);
+    ret.append(QString::number(phonemesLessThan40ms)).append(sep);
+    ret.append(QString::number(phonemesTotal)).append(sep);
+    ret.append(QString::number(percentageLessThan20ms())).append(sep);
+    ret.append(QString::number(percentageLessThan40ms())).append(sep);
+    if (!filenameComparative.isEmpty()) ret.append(filenameComparative);
+    ret.append("\n");
+    return ret;
+}
+
+QList<PFCAlignmentEvaluation::EvaluationResults>
+PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunication> com,
+                                 const QString &directoryTextGridA, const QString nameA,
+                                 const QString &directoryTextGridB, const QString nameB,
+                                 const QString &directoryTextgridCompare)
+{
+    QList<EvaluationResults> results;
+    if (!com) return results; // No Communication
+    if (com->recordings().isEmpty()) return results; // QString("No Recordings for %1").arg(com->ID());
     QPointer<CorpusRecording> rec = com->recordings().first();
-    if (!rec) return "No Recording";
+    if (!rec) return results; // "No Recording";
     QString annotationID = com->ID();
     InterfaceTextFile::setDefaultEncoding("UTF-8");
     QString style = (com->ID().endsWith("t")) ? "text" : "conv";
@@ -128,23 +155,24 @@ QString PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunic
             else if (editType == dtl::SES_ADD) insertions++;
             else if (editType == dtl::SES_DELETE) deletions++;
         }
-        double percentageLessThan20ms = ((double) phonemesLessThan20ms) / ((double) phonemesTotal);
-        double percentageLessThan40ms = ((double) phonemesLessThan40ms) / ((double) phonemesTotal);
-        QString sep = "\t";
-        ret.append(com->ID()).append(sep).append(speakerID).append(sep);
-        ret.append(style).append(sep).append(nameA).append(sep).append(nameB).append(sep);
-        ret.append(QString::number(insertions)).append(sep);
-        ret.append(QString::number(deletions)).append(sep);
-        ret.append(QString::number(phonemesLessThan20ms)).append(sep);
-        ret.append(QString::number(phonemesLessThan40ms)).append(sep);
-        ret.append(QString::number(phonemesTotal)).append(sep);
-        ret.append(QString::number(percentageLessThan20ms)).append(sep);
-        ret.append(QString::number(percentageLessThan40ms)).append(sep);
-        ret.append(filenameTxgComparative).append("\n");
+        // Post result
+        EvaluationResults eval;
+        eval.ID = com->ID();
+        eval.groupID = style;
+        eval.speakerID = speakerID;
+        eval.regionData = nameA;
+        eval.regionModel = nameB;
+        eval.insertions = insertions;
+        eval.deletions = deletions;
+        eval.phonemesLessThan20ms = phonemesLessThan20ms;
+        eval.phonemesLessThan40ms = phonemesLessThan40ms;
+        eval.phonemesTotal = phonemesTotal;
+        eval.filenameComparative = filenameTxgComparative;
+        results << eval;
+        delete txg_comparative;
     }
     qDeleteAll(tiersAll);
-    if (!ret.isEmpty()) ret.chop(1);
-    return ret;
+    return results;
 }
 
 QString PFCAlignmentEvaluation::evaluate_Individual_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com)
@@ -160,7 +188,11 @@ QString PFCAlignmentEvaluation::evaluate_Individual_RegionStyle(QPointer<Praalin
     // Comparison results
     QString directoryCompare = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/%1_%2_indiv").arg(region).arg(style);
     // do it
-    return evaluate(com, directoryTxgIndiv, "indiv", directoryTxgRegSty, "regsty", directoryCompare);
+    QList<EvaluationResults> results = evaluate(com, directoryTxgIndiv, "indiv", directoryTxgRegSty, "regsty", directoryCompare);
+    QString ret;
+    foreach (EvaluationResults eval, results) { ret.append(eval.toString()).append("\n"); }
+    if (!ret.isEmpty()) ret.chop(1);
+    return ret;
 }
 
 QString PFCAlignmentEvaluation::evaluate_RegionStyle_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com)
@@ -172,16 +204,80 @@ QString PFCAlignmentEvaluation::evaluate_RegionStyle_RegionStyle(QPointer<Praali
 
     foreach (QString regionB, d->regionCodes) {
         if (regionA == regionB) continue;
-        // Region-Style: /mnt/hgfs/DATA/PFCALIGN/MFA_region_style/11a_text/align_11a_text/11aal1_X
-        QString directoryTxgRegionA = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1_%2/align_%1_%2").arg(regionA).arg(style);
-        QString directoryTxgRegionB = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1_%2/align_%1_%2_%3_%2").arg(regionA).arg(style).arg(regionB);
+        // Region-Style: /mnt/hgfs/DATA/PFCALIGN/MFA_region_style_align/11a_text_11a_text/{speakerID}/{textgrids}
+        QString directoryTxgRegionA = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style_align/%2_%1_%3_%1").arg(style).arg(regionA).arg(regionA);
+        QString directoryTxgRegionB = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style_align/%2_%1_%3_%1").arg(style).arg(regionA).arg(regionB);
         // Comparison results
-        QString directoryCompare = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/%1_%2_%3_%2").arg(regionA).arg(style).arg(regionB);
+        QString directoryCompare = QString("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/%2_%1_%3_%1").arg(style).arg(regionA).arg(regionB);
         QDir comparativeDir(directoryCompare);
         if (!comparativeDir.exists()) comparativeDir.mkpath(".");
-        ret.append(evaluate(com, directoryTxgRegionA, regionA, directoryTxgRegionB, regionB, directoryCompare)).append("\n");
+        // Evaluate
+        QList<EvaluationResults> results = evaluate(com, directoryTxgRegionA, regionA, directoryTxgRegionB, regionB, directoryCompare);
+        foreach (EvaluationResults eval, results) {
+            // User output
+            ret.append(eval.toString());
+            // Add to pivot
+            QString ID = QString("%1_%2_%3").arg(style).arg(regionA).arg(regionB);
+            d->resultsPivot[style][ID].insertions += eval.insertions;
+            d->resultsPivot[style][ID].deletions  += eval.deletions;
+            d->resultsPivot[style][ID].phonemesLessThan20ms += eval.phonemesLessThan20ms;
+            d->resultsPivot[style][ID].phonemesLessThan40ms += eval.phonemesLessThan40ms;
+            d->resultsPivot[style][ID].phonemesTotal        += eval.phonemesTotal;
+        }
     }
     if (!ret.isEmpty()) ret.chop(1);
     return ret;
 }
 
+void PFCAlignmentEvaluation::pivotReset()
+{
+    d->resultsPivot.clear();
+    foreach (QString regionA, d->regionCodes) {
+        foreach (QString regionB, d->regionCodes) {
+            if (regionA == regionB) continue;
+            foreach (QString style, d->styles) {
+                EvaluationResults eval;
+                eval.ID = QString("%1_%2_%3").arg(style).arg(regionA).arg(regionB);
+                eval.groupID = style;
+                eval.regionData = regionA;
+                eval.regionModel = regionB;
+                d->resultsPivot[style].insert(eval.ID, eval);
+            }
+        }
+    }
+}
+
+QStringList PFCAlignmentEvaluation::pivotList(const QString &style)
+{
+    if (!d->resultsPivot.contains(style)) return QStringList();
+    QStringList ret;
+    foreach (QString regionA, d->regionCodes) {
+        foreach (QString regionB, d->regionCodes) {
+            if (regionA == regionB) continue;
+            QString ID = QString("%1_%2_%3").arg(style).arg(regionA).arg(regionB);
+            ret << d->resultsPivot[style][ID].toString();
+        }
+    }
+    return ret;
+}
+
+QStringList PFCAlignmentEvaluation::pivotTable(const QString &style, int tolerance)
+{
+    if (!d->resultsPivot.contains(style)) return QStringList();
+    if ((tolerance != 20) && (tolerance != 40)) return QStringList();
+    QStringList ret;
+    foreach (QString regionA, d->regionCodes) {
+        QString line;
+        line.append(regionA);
+        foreach (QString regionB, d->regionCodes) {
+            if (regionA == regionB) { line.append("\t1.0"); continue; }
+            QString ID = QString("%1_%2_%3").arg(style).arg(regionA).arg(regionB);
+            double p = (tolerance == 20) ? d->resultsPivot[style][ID].percentageLessThan20ms() :
+                                           d->resultsPivot[style][ID].percentageLessThan40ms();
+            line.append("\t").append(QString::number(p));
+        }
+        line.append("\n");
+        ret << line;
+    }
+    return ret;
+}

@@ -13,6 +13,6 @@ SUBDIRS +=  dismo \
             syntax \
             dismo2 \
             mbrola \
-            metronome
-
+            metronome \
+            udpipe
 

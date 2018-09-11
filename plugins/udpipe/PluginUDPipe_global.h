@@ -1,0 +1,12 @@
+#ifndef PLUGIN_UDPIPE_GLOBAL_H
+#define PLUGIN_UDPIPE_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(PLUGIN_UDPIPE_LIBRARY)
+#  define PLUGIN_UDPIPE_SHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define PLUGIN_UDPIPE_SHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // PLUGIN_UDPIPE_GLOBAL_H

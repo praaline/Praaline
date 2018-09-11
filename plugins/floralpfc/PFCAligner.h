@@ -23,6 +23,8 @@ public:
     void dictionaryMFAClose(const QString &filename);
     void setMFAPath(const QString &path);
     void setOutputWaveFiles(bool);
+    QString scriptCrossAlignment();
+    QString combineDictionaries();
 
 private:
     PFCAlignerData *d;

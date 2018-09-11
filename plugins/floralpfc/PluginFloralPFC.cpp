@@ -33,6 +33,7 @@ struct Praaline::Plugins::FloralPFC::PluginFloralPFCPrivateData {
         pfc_preprocessor_check_transcription_speakers(false), pfc_preprocessor_diarise_tokenise(false),
         pfc_phonetiser_phonetise(false),
         pfc_aligner_htk(false), pfc_aligner_mfa_individual(false), pfc_aligner_mfa_regionstyle(false),
+        pfc_aligner_cross_text(false),
         pfc_evaluate(false),
         pfc_reports_corpuscoverage(false)
     {}
@@ -44,6 +45,7 @@ struct Praaline::Plugins::FloralPFC::PluginFloralPFCPrivateData {
     bool pfc_aligner_htk;
     bool pfc_aligner_mfa_individual;
     bool pfc_aligner_mfa_regionstyle;
+    bool pfc_aligner_cross_text;
     bool pfc_evaluate;
     bool pfc_reports_corpuscoverage;
 
@@ -135,6 +137,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::FloralPFC::PluginFl
                                   "Aligner: MFA create alignment files - Individual", QVariant::Bool, d->pfc_aligner_mfa_individual);
     parameters << PluginParameter("pfc_aligner_mfa_regionstyle",
                                   "Aligner: MFA create alignment files - Region & Style", QVariant::Bool, d->pfc_aligner_mfa_regionstyle);
+    parameters << PluginParameter("pfc_aligner_cross_text",
+                                  "Aligner: Cross align text", QVariant::Bool, d->pfc_aligner_cross_text);
     parameters << PluginParameter("pfc_evaluate",
                                   "Evaluate: Alignment MFA", QVariant::Bool, d->pfc_evaluate);
     parameters << PluginParameter("pfc_reports_corpuscoverage",
@@ -153,11 +157,26 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::setParameters(const QHash<QS
     if (parameters.contains("pfc_aligner_htk")) d->pfc_aligner_htk = parameters.value("pfc_aligner_htk").toBool();
     if (parameters.contains("pfc_aligner_mfa_individual")) d->pfc_aligner_mfa_individual = parameters.value("pfc_aligner_mfa_individual").toBool();
     if (parameters.contains("pfc_aligner_mfa_regionstyle")) d->pfc_aligner_mfa_regionstyle = parameters.value("pfc_aligner_mfa_regionstyle").toBool();
+    if (parameters.contains("pfc_aligner_cross_text")) d->pfc_aligner_cross_text = parameters.value("pfc_aligner_cross_text").toBool();
     if (parameters.contains("pfc_evaluate")) d->pfc_evaluate = parameters.value("pfc_evaluate").toBool();
     if (parameters.contains("pfc_reports_corpuscoverage")) d->pfc_reports_corpuscoverage = parameters.value("pfc_reports_corpuscoverage").toBool();
 
     if (parameters.contains("path")) d->path = parameters.value("path").toString();
     if (parameters.contains("filename")) d->filename = parameters.value("filename").toString();
+}
+
+bool writeStringListToFile(const QString &filename, const QStringList &strings)
+{
+    QFile fileOut(filename);
+    if ( !fileOut.open( QIODevice::WriteOnly | QIODevice::Text ) ) return false;
+    QTextStream out(&fileOut);
+    out.setCodec("UTF-8");
+    foreach (QString string, strings) {
+        out << string;
+        if (!string.endsWith("\n")) out << "\n";
+    }
+    fileOut.close();
+    return true;
 }
 
 void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer<CorpusCommunication> > &communications)
@@ -230,13 +249,25 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
             printMessage(command);
         }
     }
+    if (d->pfc_aligner_cross_text) {
+        QString cross = aligner.scriptCrossAlignment();
+        // QString cross = aligner.combineDictionaries();
+        printMessage(cross);
+    }
     if (d->pfc_evaluate) {
+        evaluation.pivotReset();
         foreach (QPointer<CorpusCommunication> com, communications) {
             if (com->ID().endsWith("m")) continue;
             // QString m = evaluation.evaluate_Individual_RegionStyle(com);
             QString m = evaluation.evaluate_RegionStyle_RegionStyle(com);
             if (!m.isEmpty()) printMessage(m);
         }
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_list_text.txt", evaluation.pivotList("text"));
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_list_conv.txt", evaluation.pivotList("conv"));
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_table_20ms_text.txt", evaluation.pivotTable("text", 20));
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_table_20ms_conv.txt", evaluation.pivotTable("conv", 20));
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_table_40ms_text.txt", evaluation.pivotTable("text", 40));
+        writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_table_40ms_conv.txt", evaluation.pivotTable("conv", 40));
     }
     if (d->pfc_reports_corpuscoverage) {
         QString m;

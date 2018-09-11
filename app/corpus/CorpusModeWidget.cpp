@@ -164,25 +164,25 @@ void CorpusModeWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
-    d->actionShowCorpusExplorer = new QAction(tr("Show Corpus Explorer"), this);
+    d->actionShowCorpusExplorer = new QAction(tr("Corpus Explorer (trees)"), this);
     connect(d->actionShowCorpusExplorer, SIGNAL(triggered()), SLOT(showCorpusExplorer()));
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorer", d->actionShowCorpusExplorer, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowCorpusExplorerTables = new QAction(tr("Show Corpus Explorer (tabular)"), this);
+    d->actionShowCorpusExplorerTables = new QAction(tr("Corpus Explorer (tabular)"), this);
     connect(d->actionShowCorpusExplorerTables, SIGNAL(triggered()), SLOT(showCorpusExplorerTables()));
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorerTables", d->actionShowCorpusExplorerTables, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowMetadataStructureEditor = new QAction(tr("Show Metadata Structure Editor"), this);
+    d->actionShowMetadataStructureEditor = new QAction(tr("Metadata Structure Editor"), this);
     connect(d->actionShowMetadataStructureEditor, SIGNAL(triggered()), SLOT(showMetadataStructureEditor()));
     command = ACTION_MANAGER->registerAction("Window.ShowMetadataStructureEditor", d->actionShowMetadataStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
-    d->actionShowAnnotationStructureEditor = new QAction(tr("Show Annotation Structure Editor"), this);
+    d->actionShowAnnotationStructureEditor = new QAction(tr("Annotation Structure Editor"), this);
     connect(d->actionShowAnnotationStructureEditor, SIGNAL(triggered()), SLOT(showAnnotationStructureEditor()));
     command = ACTION_MANAGER->registerAction("Window.ShowAnnotationStructureEditor", d->actionShowAnnotationStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));

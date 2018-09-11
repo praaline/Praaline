@@ -52,7 +52,7 @@ PFCPreprocessor::~PFCPreprocessor()
 
 /// This function processes a collection of PFC TextGrids and ensures that there are three annotation tiers,
 /// (orthographic transcription, schwa coding, liaison coding) as per the PFC protocol, and optionally additional
-/// tiers for anonymisaiton, comments and prosody annotation. The function renames the tiers in the TextGrid
+/// tiers for anonymisation, comments and prosody annotation. The function renames the tiers in the TextGrid
 /// according to the PFC standard (transcription, schwa, liaison, anonymisation) and saves the TextGrid in
 /// ISO 8859-1 encoding (Latin 1). It is also possible to have a TextGrid with only one tier (transcription)
 /// in cases where the schwa and liaison annotation has not yet been performed.
@@ -282,6 +282,8 @@ QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
             int o = ortho.split(":").count();
             int s = schwa.split(":").count();
             int l = liaison.split(":").count();
+            // Reset single-speaker indicator
+            intv->setAttribute("single_speaker", "");
             // Check for single speaker
             if ((o == s) && (o == l) && (o == 2)) {
                 // Single speaker intervals are formatted like that: LOC: text text ...
@@ -410,9 +412,11 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
             if (seg->text().isEmpty()) continue;
             QString spk = mainSpeakerID;
             QString s = seg->text();
-            s = s.replace(":", ": ").section(" ", 0, 0);;
+            s = s.replace(":", ": ").section(" ", 0, 0);
             if (s.endsWith(":")) {
-                s.chop(1); spk = s;
+                s.chop(1); spk = s.toUpper();
+                if (QString(s).append("1") == mainSpeakerID) spk = mainSpeakerID; // AL short-hand for AL1
+                if (QString(s).append("2") == mainSpeakerID) spk = mainSpeakerID; // AL short-hand for AL2
                 QString text = seg->text();
                 seg->setText(text.remove(0, spk.length() + 1).trimmed());
                 QString schwa = seg->attribute("schwa").toString();
@@ -426,9 +430,11 @@ QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
             if (seg->text().isEmpty()) continue;
             QString spk = mainSpeakerID;
             QString s = seg->text();
-            s = s.replace(":", ": ").section(" ", 0, 0);;
+            s = s.replace(":", ": ").section(" ", 0, 0);
             if (s.endsWith(":")) {
-                s.chop(1); spk = s;
+                s.chop(1); spk = s.toUpper();
+                if (QString(s).append("1") == mainSpeakerID) spk = mainSpeakerID; // AL short-hand for AL1
+                if (QString(s).append("2") == mainSpeakerID) spk = mainSpeakerID; // AL short-hand for AL2
                 seg->setText(seg->text().remove(0, spk.length() + 1).trimmed());
                 QString schwa = seg->attribute("schwa").toString();
                 if (schwa.startsWith(spk + ":")) seg->setAttribute("schwa", schwa.remove(0, spk.length() + 1).trimmed());

@@ -187,7 +187,7 @@ bool AudioSegmenter::resample(const QString &filenameIn, const QString &filename
     }
     if (newSamplingRate) {
         arguments << "rate" << QString::number(newSamplingRate);
-    }
+    }    
     sox.start(soxPath + "sox", arguments);
     if (!sox.waitForStarted(-1))    // sets current thread to sleep and waits for sox end
         return false;

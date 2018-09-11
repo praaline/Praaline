@@ -240,7 +240,8 @@ SOURCES += main.cpp \
     statistics/pca/PCAPlotWidget.cpp \ #\
     annotation/editors/PFCTranscriptionEditor.cpp \
     web/MetadataWebDesigner.cpp \
-    web/ConcordancerWebDesigner.cpp
+    web/ConcordancerWebDesigner.cpp \
+    updater/UpdatePraalineDialog.cpp
     #statistics/basic/AnalyserBasic.cpp
 
 HEADERS  += \
@@ -382,7 +383,8 @@ HEADERS  += \
     statistics/pca/PCAPlotWidget.h \ #\
     annotation/editors/PFCTranscriptionEditor.h \
     web/MetadataWebDesigner.h \
-    web/ConcordancerWebDesigner.h
+    web/ConcordancerWebDesigner.h \
+    updater/UpdatePraalineDialog.h
     #statistics/basic/AnalyserBasic.h
 
 FORMS    += \
@@ -461,7 +463,8 @@ FORMS    += \
     welcome/WelcomeModeWidget.ui \
     web/WebDesignerModeWidget.ui \
     statistics/pca/PCAPlotWidget.ui \
-    annotation/editors/PFCTranscriptionEditor.ui
+    annotation/editors/PFCTranscriptionEditor.ui \
+    updater/UpdatePraalineDialog.ui
 
 RESOURCES += \
     praaline.qrc \

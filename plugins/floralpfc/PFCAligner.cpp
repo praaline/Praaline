@@ -21,12 +21,17 @@ using namespace  Praaline::ASR;
 #include "PFCAligner.h"
 
 struct PFCAlignerData {
+    QStringList regions;
     HTKForcedAligner *htk;
     MFAExternal *mfa;
 };
 
 PFCAligner::PFCAligner() : d(new PFCAlignerData())
 {
+    d->regions << "11a" << "12a" << "13a" << "13b" << "21a" << "31a" << "38a" << "42a" << "44a" << "50a"
+               << "54b" << "61a" << "64a" << "69a" << "75c" << "75x" << "81a" << "85a" << "92a" << "974"
+               << "aba" << "aca" << "bfa" << "bga" << "bla" << "bta" << "caa" << "cia" << "cqa" << "cqb"
+               << "cya" << "maa" << "rca" << "sca" << "sga" << "sna" << "sva";
     d->htk = new HTKForcedAligner();
     d->mfa = new MFAExternal();
 }
@@ -126,4 +131,47 @@ void PFCAligner::setMFAPath(const QString &path)
 void PFCAligner::setOutputWaveFiles(bool out)
 {
     d->mfa->setOutputWaveFiles(out);
+}
+
+QString PFCAligner::scriptCrossAlignment()
+{
+    QString ret;
+    foreach (QString regionToAlign, d->regions) {
+        foreach (QString regionModel, d->regions) {
+            if (regionToAlign == regionModel) continue;
+            ret.append(QString("./mfa_align /home/george/pfc/%1_text /home/george/pfc/%1_text/%1_text.dic "
+                       "/home/george/rs_model/model_%2_text.zip /home/george/rs_align/%1_text_%2_text "
+                       "-t /home/george/rs_temp/%1_text_%2_text -c -j 7 -i\n").arg(regionToAlign).arg(regionModel));
+        }
+    }
+    return ret;
+}
+
+QString PFCAligner::combineDictionaries()
+{
+    QString ret = "OK";
+    QMap<QString, int> combined;
+    foreach (QString region, d->regions) {
+        QFile fileRegionDic(QString("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/text_dictionaries/%1_text.dic").arg(region));
+        if ( !fileRegionDic.open( QIODevice::ReadOnly | QIODevice::Text ) ) continue;
+        QTextStream dic(&fileRegionDic);
+        dic.setCodec("UTF-8");
+        while (!dic.atEnd()) {
+            QString line = dic.readLine();
+            if (line.isEmpty()) continue;
+            if (combined.contains(line)) continue;
+            combined.insert(line, 1);
+        }
+        fileRegionDic.close();
+    }
+    QFile fileOut("/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/text_dictionaries/all_text.dic");
+    if ( !fileOut.open( QIODevice::WriteOnly | QIODevice::Text ) ) return "Error";
+    QTextStream out(&fileOut);
+    out.setCodec("UTF-8");
+    foreach (QString string, combined.keys()) {
+        out << string;
+        if (!string.endsWith("\n")) out << "\n";
+    }
+    fileOut.close();
+    return ret;
 }
