@@ -33,7 +33,7 @@ addons:
       - libsord-dev
       - libxml2-utils
       - portaudio19-dev
-      - raptor-utils
+      - raptor2-utils
       - librubberband-dev
       - mlton
       - vamp-plugin-sdk
