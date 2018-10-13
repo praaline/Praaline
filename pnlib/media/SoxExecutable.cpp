@@ -1,3 +1,4 @@
+#include <QString>
 #include "SoxExecutable.h"
 
 SoxExecutable::SoxExecutable()
@@ -6,6 +7,5 @@ SoxExecutable::SoxExecutable()
 
 QString SoxExecutable::filePath()
 {
-
-
+    return QString();
 }
