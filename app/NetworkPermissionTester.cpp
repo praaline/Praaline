@@ -39,6 +39,7 @@ bool NetworkPermissionTester::havePermission()
     bool permish = false;
 
     if (settings.contains(tag)) {
+    // if (false) { // DEBUG
         permish = settings.value(tag, false).toBool();
     }
     else {
@@ -53,18 +54,19 @@ bool NetworkPermissionTester::havePermission()
         label->setText(QCoreApplication::translate
          ("NetworkPermissionTester",
           "<h2>Welcome to Praaline!</h2>"
-          "<p><img src=\":icons/qm-logo-smaller.png\" style=\"float:right\">Sonic Visualiser is a program for viewing and exploring audio data for semantic music analysis and annotation.</p>"
-          "<p>Developed in the Centre for Digital Music at Queen Mary, University of London, Sonic Visualiser is provided free as open source software under the GNU General Public License.</p>"
-              "<p><hr></p>"
+          "<p>Praaline is a program for managing, annotating, visualising and analysing spoken language corpora. "
+          "It provided free as open source software under the GNU General Public License.</p>"
+          "<p>The visualisation module of Praaline is based on Sonic Visualiser, a program for audio analysis developed in the Centre "
+          "for Digital Music at Queen Mary, University of London, and also provided under the GPL license.</p>"
           "<p><b>Before we go on...</b></p>"
-          "<p>Sonic Visualiser would like to make networking connections and open a network port.</p>"
+          "<p>Praaline would like to make networking connections and open a network port.</p>"
           "<p>This is to:</p>"
-          "<ul><li> Find information about available and installed plugins;</li>"
+          "<ul><li> Find information about available and installed plugins (Praaline and VAMP);</li>"
           "<li> Support the use of Open Sound Control, where configured; and</li>"
           "<li> Tell you when updates are available.</li>"
               "</ul>"
           "<p>No personal information will be sent, no tracking is carried out, and all requests happen in the background without interrupting your work.</p>"
-          "<p>We recommend that you allow this, because it makes Sonic Visualiser more useful. But if you do not wish to do so, please un-check the box below.<br></p>"));
+          "<p>We recommend that you allow this, because it makes Praaline more useful. But if you do not wish to do so, please un-check the box below.<br></p>"));
         layout->addWidget(label, 0, 0);
 
         QCheckBox *cb = new QCheckBox(QCoreApplication::translate("NetworkPermissionTester", "Allow this"));
@@ -85,6 +87,3 @@ bool NetworkPermissionTester::havePermission()
 
     return permish;
 }
-
-
-
