@@ -60,13 +60,23 @@ HEADERS += \
     pluginsyntax.h \
     CoNLLUReader.h \
     CorpusImporter.h \
-    CoNLLUToken.h \
-    DependenciesToLatex.h
+    DependenciesToLatex.h \
+    Sentence.h \
+    UDTokenBase.h \
+    UDToken.h \
+    UDTokenMultiWord.h \
+    UDEmptyNode.h \
+    UDSentence.h
 
 SOURCES += \ 
     pluginsyntax.cpp \
     CoNLLUReader.cpp \
     CorpusImporter.cpp \
-    CoNLLUToken.cpp \
-    DependenciesToLatex.cpp
+    DependenciesToLatex.cpp \
+    Sentence.cpp \
+    UDTokenBase.cpp \
+    UDToken.cpp \
+    UDTokenMultiWord.cpp \
+    UDEmptyNode.cpp \
+    UDSentence.cpp
 

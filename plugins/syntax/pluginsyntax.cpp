@@ -13,6 +13,7 @@
 
 #include "CoNLLUReader.h"
 #include "CorpusImporter.h"
+#include "Sentence.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -124,7 +125,12 @@ void readPerceoCorpus(const QList<QPointer<CorpusCommunication> > &communication
 
 void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
-
+    QString m;
+    Sentence s;
+    foreach (QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        printMessage(s.exportSentences(com));
+    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
