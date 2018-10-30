@@ -120,7 +120,6 @@ SOURCES += main.cpp \
     corpus/CorpusRepositoryCreateWizard.cpp \
     corpus/CorpusRepositoryPropertiesDialog.cpp \
     corpus/corpusexplorer/CorpusExplorerWidget.cpp \
-    corpus/corpusexplorer/CorpusExplorerTreeWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerTableWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.cpp \
     corpus/utilities/SplitCommunicationsDialog.cpp \
@@ -241,7 +240,9 @@ SOURCES += main.cpp \
     annotation/editors/PFCTranscriptionEditor.cpp \
     web/MetadataWebDesigner.cpp \
     web/ConcordancerWebDesigner.cpp \
-    updater/UpdatePraalineDialog.cpp
+    updater/UpdatePraalineDialog.cpp \
+    corpus/corpusexplorer/CreateCorpusCommunicationDialog.cpp \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.cpp
     #statistics/basic/AnalyserBasic.cpp
 
 HEADERS  += \
@@ -259,7 +260,6 @@ HEADERS  += \
     corpus/CorpusRepositoryCreateWizard.h \
     corpus/CorpusDatabaseConnectionDialog.h \
     corpus/corpusexplorer/CorpusExplorerWidget.h \
-    corpus/corpusexplorer/CorpusExplorerTreeWidget.h \
     corpus/corpusexplorer/CorpusExplorerTableWidget.h \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.h \
     corpus/structureeditors/MetadataStructureEditor.h \
@@ -384,7 +384,9 @@ HEADERS  += \
     annotation/editors/PFCTranscriptionEditor.h \
     web/MetadataWebDesigner.h \
     web/ConcordancerWebDesigner.h \
-    updater/UpdatePraalineDialog.h
+    updater/UpdatePraalineDialog.h \
+    corpus/corpusexplorer/CreateCorpusCommunicationDialog.h \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.h
     #statistics/basic/AnalyserBasic.h
 
 FORMS    += \
@@ -464,7 +466,9 @@ FORMS    += \
     web/WebDesignerModeWidget.ui \
     statistics/pca/PCAPlotWidget.ui \
     annotation/editors/PFCTranscriptionEditor.ui \
-    updater/UpdatePraalineDialog.ui
+    updater/UpdatePraalineDialog.ui \
+    corpus/corpusexplorer/CreateCorpusCommunicationDialog.ui \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.ui
 
 RESOURCES += \
     praaline.qrc \

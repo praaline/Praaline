@@ -3,15 +3,20 @@
 
 #include <QWidget>
 
+namespace Ui {
+class CorpusExplorerTreeWidget;
+}
+
 class CorpusExplorerTreeWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit CorpusExplorerTreeWidget(QWidget *parent = nullptr);
+    ~CorpusExplorerTreeWidget();
 
-signals:
-
-public slots:
+private:
+    Ui::CorpusExplorerTreeWidget *ui;
 };
 
 #endif // CORPUSEXPLORERTREEWIDGET_H
