@@ -49,3 +49,21 @@ QString Sentence::exportSentences(QPointer<Praaline::Core::CorpusCommunication> 
     }
     return ret.trimmed();
 }
+
+QString Sentence::importBreaks(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return ret;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret.trimmed();
+}

@@ -17,7 +17,7 @@ public:
     Sentence();
 
     QString exportSentences(QPointer<Praaline::Core::CorpusCommunication> com);
-
+    QString importBreaks(QPointer<Praaline::Core::CorpusCommunication> com);
 };
 
 #endif // SENTENCE_H
