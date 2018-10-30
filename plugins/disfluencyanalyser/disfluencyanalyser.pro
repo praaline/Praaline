@@ -56,16 +56,16 @@ PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
-    plugindisfluencyanalyser_global.h \
-    plugindisfluencyanalyser.h \ 
-    tokensequence.h \
-    disfluency.h \
-    disfluencyanalysertool.h \
-    disfluencypatterndetector.h
+    TokenSequence.h \
+    PluginDisfluencyAnalyser_global.h \
+    PluginDisfluencyAnalyser.h \
+    DisfluencyPatternDetector.h \
+    DisfluencyAnalyserTool.h \
+    Disfluency.h
 	
 SOURCES += \ 
-    plugindisfluencyanalyser.cpp \ 
-    tokensequence.cpp \
-    disfluency.cpp \
-    disfluencyanalysertool.cpp \
-    disfluencypatterndetector.cpp
+    TokenSequence.cpp \
+    PluginDisfluencyAnalyser.cpp \
+    DisfluencyPatternDetector.cpp \
+    DisfluencyAnalyserTool.cpp \
+    Disfluency.cpp

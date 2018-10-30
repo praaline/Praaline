@@ -58,8 +58,10 @@ PRE_TARGETDEPS += \
 HEADERS += \ 
     PluginUDPipe_global.h \
     PluginUDPipe.h \
-    DisMoUDPipeBridge.h
+    DisMoUDPipeBridge.h \
+    LaTexExporter.h
 
 SOURCES += \ 
     PluginUDPipe.cpp \
-    DisMoUDPipeBridge.cpp
+    DisMoUDPipeBridge.cpp \
+    LaTexExporter.cpp
