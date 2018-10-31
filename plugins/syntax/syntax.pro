@@ -61,22 +61,22 @@ HEADERS += \
     CoNLLUReader.h \
     CorpusImporter.h \
     DependenciesToLatex.h \
-    Sentence.h \
     UDTokenBase.h \
     UDToken.h \
     UDTokenMultiWord.h \
     UDEmptyNode.h \
-    UDSentence.h
+    UDSentence.h \
+    SentencesSplitter.h
 
 SOURCES += \ 
     pluginsyntax.cpp \
     CoNLLUReader.cpp \
     CorpusImporter.cpp \
     DependenciesToLatex.cpp \
-    Sentence.cpp \
     UDTokenBase.cpp \
     UDToken.cpp \
     UDTokenMultiWord.cpp \
     UDEmptyNode.cpp \
-    UDSentence.cpp
+    UDSentence.cpp \
+    SentencesSplitter.cpp
 

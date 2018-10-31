@@ -200,7 +200,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
         }
     }
     if (segmentationMethod == 5) {
-        if (tiers->getIntervalTierByName(levelSegmentation) == 0) {
+        if (tiers->getIntervalTierByName(levelSegmentation) == nullptr) {
             emit logOutput(QString("ERROR: annotation level for segmentation not found"));
             return;
         }

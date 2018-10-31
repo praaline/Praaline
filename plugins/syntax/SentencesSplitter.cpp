@@ -1,5 +1,11 @@
 #include <QString>
 #include <QPointer>
+#include <QList>
+#include <QMap>
+#include <QFile>
+#include <QFileInfo>
+#include <QTextStream>
+#include <QStringList>
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/IntervalTier.h"
@@ -9,14 +15,24 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
-#include "Sentence.h"
+#include "SentencesSplitter.h"
 
-Sentence::Sentence()
+struct SentencesSplitterData {
+    // Sentences {AnnotationID, SpeakerID, sentences}
+    QMap<QString, QMap<QString, QStringList> > sentences;
+};
+
+SentencesSplitter::SentencesSplitter() :
+    d(new SentencesSplitterData())
 {
-
 }
 
-QString Sentence::exportSentences(QPointer<Praaline::Core::CorpusCommunication> com)
+SentencesSplitter::~SentencesSplitter()
+{
+    delete d;
+}
+
+QString SentencesSplitter::exportSentences(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
     if (!com) return ret;
@@ -50,7 +66,35 @@ QString Sentence::exportSentences(QPointer<Praaline::Core::CorpusCommunication> 
     return ret.trimmed();
 }
 
-QString Sentence::importBreaks(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SentencesSplitter::readBreaksFile(const QString &filename)
+{
+    QFile file(filename);
+    if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) )
+        return QString("Error reading file %1").arg(filename);
+    QString line;
+    QTextStream stream(&file);
+    stream.setCodec("UTF-8");
+    d->sentences.clear();
+    QString annotationID, speakerID;
+    do {
+        line = stream.readLine().trimmed();
+        if (line.startsWith("#") && line.contains("\t")) {
+            annotationID = line.section("\t", 0, 0).remove("#").trimmed();
+            speakerID = line.section("\t", 1, 1).trimmed();
+        }
+        else if (!line.isEmpty()) {
+            if (!d->sentences.contains(annotationID))
+                d->sentences.insert(annotationID, QMap<QString, QStringList>());
+            if (!d->sentences[annotationID].contains(speakerID))
+                d->sentences[annotationID].insert(speakerID, QStringList());
+            d->sentences[annotationID][speakerID].append(line.trimmed());
+        }
+    } while (!stream.atEnd());
+    file.close();
+    return QString("Read sentences file");
+}
+
+QString SentencesSplitter::importBreaks(QPointer<Praaline::Core::CorpusCommunication> com)
 {
     QString ret;
     if (!com) return ret;

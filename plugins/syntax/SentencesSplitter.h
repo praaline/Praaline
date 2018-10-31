@@ -1,5 +1,5 @@
-#ifndef SENTENCE_H
-#define SENTENCE_H
+#ifndef SENTENCESSPLITTER_H
+#define SENTENCESSPLITTER_H
 
 #include <QString>
 #include <QList>
@@ -11,13 +11,20 @@ class CorpusCommunication;
 }
 }
 
-class Sentence
+struct SentencesSplitterData;
+
+class SentencesSplitter
 {
 public:
-    Sentence();
+    SentencesSplitter();
+    ~SentencesSplitter();
 
     QString exportSentences(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString readBreaksFile(const QString &filename);
     QString importBreaks(QPointer<Praaline::Core::CorpusCommunication> com);
+
+private:
+    SentencesSplitterData *d;
 };
 
-#endif // SENTENCE_H
+#endif // SENTENCESSPLITTER_H
