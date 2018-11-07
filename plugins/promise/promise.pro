@@ -63,7 +63,8 @@ HEADERS += \
     SyllableProminenceAnnotator.h \
     SpeechRateEstimator.h \
     PluginPromise.h \
-    PluginPromise_global.h
+    PluginPromise_global.h \
+    ProsodicUnitsAnnotator.h
 	
 SOURCES += \ 
     annotationpluginpraatscript.cpp \
@@ -72,5 +73,6 @@ SOURCES += \
     ProsodicBoundariesAnnotator.cpp \
     SyllableProminenceAnnotator.cpp \
     SpeechRateEstimator.cpp \
-    PluginPromise.cpp
+    PluginPromise.cpp \
+    ProsodicUnitsAnnotator.cpp
 	

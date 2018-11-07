@@ -18,6 +18,7 @@
 #include "ProsodicBoundariesAnnotator.h"
 #include "SyllableProminenceAnnotator.h"
 #include "SpeechRateEstimator.h"
+#include "ProsodicUnitsAnnotator.h"
 #include "PluginPromise.h"
 
 
@@ -139,7 +140,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Promise::PluginProm
     parameters << PluginParameter("command", "Function to apply", QVariant::Int, d->command, QStringList() <<
                                   "Annotate syllabic prominence" <<
                                   "Annotate prosodic boundaries" <<
-                                  "Speech rate estimator");
+                                  "Speech rate estimator" <<
+                                  "Create Prosodic Unit annotation");
     parameters << PluginParameter("createLevels", "Create annotation attributes when they do not exist?", QVariant::Bool, d->createLevels);
     parameters << PluginParameter("overwrite", "Overwrite existing annotations/values?", QVariant::Bool, d->overwrite);
     // Input attributes
@@ -489,11 +491,27 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     delete promise;
 }
 
+void Praaline::Plugins::Promise::PluginPromise::runProsodicUnitsAnnotator(const QList<QPointer<CorpusCommunication> > &communications)
+{
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Promise: Prosodic Units annotation");
+    ProsodicUnitsAnnotator units;
+    foreach(QPointer<CorpusCommunication> com, communications) {
+        if (!com) continue;
+        printMessage(units.createProsodicUnitsTierBoundaries(com, "B3", false));
+        QApplication::processEvents();
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+}
+
 void Praaline::Plugins::Promise::PluginPromise::process(const QList<QPointer<CorpusCommunication> > &communications)
 {    
     if      (d->command == 0) runSyllableProminenceAnnotator(communications);
     else if (d->command == 1) runProsodicBoundariesAnnotator(communications);
     else if (d->command == 2) runSpeechRateEstimator(communications);
+    else if (d->command == 3) runProsodicUnitsAnnotator(communications);
 
     madeProgress(100);
     printMessage("Promise plugin finished.");

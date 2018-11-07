@@ -66,7 +66,8 @@ HEADERS += \
     UDTokenMultiWord.h \
     UDEmptyNode.h \
     UDSentence.h \
-    SentencesSplitter.h
+    SentencesSplitter.h \
+    udpipelib/udpipe.h
 
 SOURCES += \ 
     pluginsyntax.cpp \
@@ -78,5 +79,6 @@ SOURCES += \
     UDTokenMultiWord.cpp \
     UDEmptyNode.cpp \
     UDSentence.cpp \
-    SentencesSplitter.cpp
+    SentencesSplitter.cpp \
+    udpipelib/udpipe.cpp
 

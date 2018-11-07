@@ -72,6 +72,7 @@ namespace Praaline {
                 void runSpeechRateEstimator(const QList<QPointer<CorpusCommunication> > &communications);
                 void runSyllableProminenceAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
                 void runProsodicBoundariesAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
+                void runProsodicUnitsAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
 
                 static void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
                                             const QString &ID, const QString &name = QString(), const QString &description = QString(),

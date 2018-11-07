@@ -19,7 +19,12 @@ using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::Syntax::PluginSyntaxPrivateData {
-    PluginSyntaxPrivateData() {}
+    PluginSyntaxPrivateData() :
+        operationExportSentenceBreakFile(false), operationImportSentenceBreakFile(false), operationCreateSentenceTier(false)
+    {}
+    bool operationExportSentenceBreakFile;
+    bool operationImportSentenceBreakFile;
+    bool operationCreateSentenceTier;
 };
 
 Praaline::Plugins::Syntax::PluginSyntax::PluginSyntax(QObject* parent) : QObject(parent)
@@ -90,11 +95,17 @@ QString Praaline::Plugins::Syntax::PluginSyntax::pluginLicense() const {
 QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Syntax::PluginSyntax::pluginParameters() const
 {
     QList<IAnnotationPlugin::PluginParameter> parameters;
+    parameters << PluginParameter("operationExportSentenceBreakFile", "Export Sentence Break File", QVariant::Bool, d->operationExportSentenceBreakFile);
+    parameters << PluginParameter("operationImportSentenceBreakFile", "Import Sentence Break File", QVariant::Bool, d->operationImportSentenceBreakFile);
+    parameters << PluginParameter("operationCreateSentenceTier", "Create Sentence Tier", QVariant::Bool, d->operationCreateSentenceTier);
     return parameters;
 }
 
 void Praaline::Plugins::Syntax::PluginSyntax::setParameters(const QHash<QString, QVariant> &parameters)
 {
+    if (parameters.contains("operationExportSentenceBreakFile")) d->operationExportSentenceBreakFile = parameters.value("operationExportSentenceBreakFile").toBool();
+    if (parameters.contains("operationImportSentenceBreakFile")) d->operationImportSentenceBreakFile = parameters.value("operationImportSentenceBreakFile").toBool();
+    if (parameters.contains("operationCreateSentenceTier")) d->operationCreateSentenceTier = parameters.value("operationCreateSentenceTier").toBool();
 }
 
 void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
@@ -126,11 +137,27 @@ void readPerceoCorpus(const QList<QPointer<CorpusCommunication> > &communication
 void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
 {
     QString m;
-    SentencesSplitter s;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        printMessage(s.exportSentences(com));
+    SentencesSplitter sentenceSplitter;
+    if (d->operationImportSentenceBreakFile) {
+        printMessage(sentenceSplitter.readBreaksFile("/mnt/hgfs/Dropbox/CORPORA/Phonogenre/phonogenre_sentences.txt"));
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (!com) continue;
+            printMessage(sentenceSplitter.importBreaks(com));
+        }
     }
+    if (d->operationExportSentenceBreakFile) {
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (!com) continue;
+            printMessage(sentenceSplitter.exportSentences(com));
+        }
+    }
+    if (d->operationCreateSentenceTier) {
+        foreach (QPointer<CorpusCommunication> com, communications) {
+            if (!com) continue;
+            printMessage(sentenceSplitter.createSentenceTier(com));
+        }
+    }
+
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
