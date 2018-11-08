@@ -91,7 +91,8 @@ HEADERS += \
     corpus-specific/NCCFR.h \
     experiments/PhonogenreDiscourseMarkers.h \
     PhonoSeesaw.h \
-    JsonAlignedTranscription.h
+    JsonAlignedTranscription.h \
+    IntervalTierCombinations.h
 
 
 SOURCES += \ 
@@ -132,4 +133,5 @@ SOURCES += \
     corpus-specific/NCCFR.cpp \
     experiments/PhonogenreDiscourseMarkers.cpp \
     PhonoSeesaw.cpp \
-    JsonAlignedTranscription.cpp
+    JsonAlignedTranscription.cpp \
+    IntervalTierCombinations.cpp

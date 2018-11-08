@@ -31,6 +31,7 @@
 #include "ProsodicUnits.h"
 #include "SilentPauseManipulator.h"
 #include "PhonoSeesaw.h"
+#include "IntervalTierCombinations.h"
 
 #include "corpus-specific/CPROMDISS.h"
 #include "corpus-specific/Rhapsodie.h"
@@ -423,13 +424,19 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    if (!m.isEmpty()) printMessage(m);
 
     PhonoSeesaw phonoSeesaw;
-
     Rhapsodie r;
+
+    IntervalTierCombinations combine;
+    combine.setIntervalsLevelA("sentence_unit");
+    combine.setIntervalsLevelB("prosodic_unit");
+    combine.setIntervalsLevelCombined("combined_unit");
 
     //merge_pauses(communications);
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
+        printMessage(combine.combineIntervalTiers(com));
+
 //        if (com->property("SubjectID").toString() != "SX2") continue;
 //        m = ExperimentUtterances::loadTranscriptions(com);
 //        PhonetiserExternal p;
@@ -460,14 +467,14 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
         // m = r.importCONLLU(com);
 
-        m = phonoSeesaw.accumulateRefDistribution(com);
-        phonoSeesaw.addUnitsToListOfAvailable(com);
+//        m = phonoSeesaw.accumulateRefDistribution(com);
+//        phonoSeesaw.addUnitsToListOfAvailable(com);
 
         if (!m.isEmpty()) printMessage(m);
     }
-    m = phonoSeesaw.calculateRefDistribution();
-    m = phonoSeesaw.makeBestSelection(40, 1000);
-    printMessage(m);
+//    m = phonoSeesaw.calculateRefDistribution();
+//    m = phonoSeesaw.makeBestSelection(40, 1000);
+//    printMessage(m);
 
     // if (communications.isEmpty()) return;
 
