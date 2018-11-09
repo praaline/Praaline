@@ -88,8 +88,8 @@ QString IntervalTierCombinations::combineIntervalTiers(QPointer<Praaline::Core::
                 endA << intv->tMax().toNanoseconds();
             }
             foreach (Interval *intv, tier_intervalsB->intervals()) {
-                startA << intv->tMin().toNanoseconds();
-                endA << intv->tMax().toNanoseconds();
+                startB << intv->tMin().toNanoseconds();
+                endB << intv->tMax().toNanoseconds();
             }
             startCommon = startA.intersect(startB).toList();
             qSort(startCommon);
@@ -110,14 +110,23 @@ QString IntervalTierCombinations::combineIntervalTiers(QPointer<Praaline::Core::
             IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_mwu");
             foreach (Interval *intv, intervals) {
                 // Sequence text               
-                intv->setAttribute(QString("sequence_%1").arg("tok_mwu"),
-                                   tier_tokens->getIntervalsTextContainedIn(intv));
+                intv->setText(tier_tokens->getIntervalsTextContainedIn(intv));
                 // Groups
                 int countUnitsA(0), countUnitsB(0);
-                countUnitsA = tier_intervalsA->getIntervalsContainedIn(intv).count();
-                countUnitsA = tier_intervalsB->getIntervalsContainedIn(intv).count();
+                foreach (Interval *intvA, tier_intervalsA->getIntervalsContainedIn(intv)) {
+                    if (!intvA->isPauseSilent()) countUnitsA++;
+                }
+                foreach (Interval *intvB, tier_intervalsB->getIntervalsContainedIn(intv)) {
+                    if (!intvB->isPauseSilent()) countUnitsB++;
+                }
                 intv->setAttribute(QString("count_%1").arg(d->intervalsLevelA), countUnitsA);
                 intv->setAttribute(QString("count_%1").arg(d->intervalsLevelB), countUnitsB);
+                QString type;
+                if      ((countUnitsA == 1) && (countUnitsB == 1))  type = "1:1";
+                else if ((countUnitsA > 1)  && (countUnitsB == 1))  type = "N:1";
+                else if ((countUnitsA == 1) && (countUnitsB > 1))   type = "1:M";
+                else if ((countUnitsA > 1)  && (countUnitsB > 1))   type = "N:M";
+                intv->setAttribute("type", type);
             }
 
             // Save combined units
