@@ -1,31 +1,30 @@
+#include <QDebug>
 #include <QString>
 #include <QList>
 #include <QFile>
 #include <QTextStream>
-#include <QDebug>
 #include "CoNLLUReader.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "UDSentence.h"
 
 CoNLLUReader::CoNLLUReader()
 {
 }
 
 // static
-bool CoNLLUReader::readCoNLLUtoIntervalTier(const QString &filename, AnnotationTierGroup *group)
+bool CoNLLUReader::readCoNLLU(const QString &filename, QList<UDSentence> &sentences)
 {
-    if (!group) return false;
-
-    QList<Interval *> intervals_sentences, intervals_words;
-
     // Read CoNLLU file
     QFile file(filename);
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return false;
+    // File opened ok
+    sentences.clear();
     QString line;
     QTextStream stream(&file);
     stream.setCodec("UTF-8");
     int lineNumber = 1;
     int rangeFrom = 0, rangeTo = 0;
+    // Current sentence
+    UDSentence sent;
     QString currentSentenceID;
     int sentenceFrom = 0, sentenceTo = 0;
 

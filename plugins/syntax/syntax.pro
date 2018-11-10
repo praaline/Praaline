@@ -67,7 +67,8 @@ HEADERS += \
     UDEmptyNode.h \
     UDSentence.h \
     SentencesSplitter.h \
-    udpipelib/udpipe.h
+    udpipelib/udpipe.h \
+    DictionaryBuilder.h
 
 SOURCES += \ 
     pluginsyntax.cpp \
@@ -80,5 +81,6 @@ SOURCES += \
     UDEmptyNode.cpp \
     UDSentence.cpp \
     SentencesSplitter.cpp \
-    udpipelib/udpipe.cpp
+    udpipelib/udpipe.cpp \
+    DictionaryBuilder.cpp
 

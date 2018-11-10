@@ -2,15 +2,14 @@
 #define CONLLUREADER_H
 
 #include <QString>
-
-#include "pncore/annotation/AnnotationTierGroup.h"
-using namespace Praaline::Core;
+#include "UDSentence.h"
 
 class CoNLLUReader
 {
 public:
-    static bool readCoNLLUtoIntervalTier(const QString &filename, AnnotationTierGroup *group);
+    static bool readCoNLLU(const QString &filename, QList<UDSentence> &sentences);
 
+private:
     CoNLLUReader();
 };
 
