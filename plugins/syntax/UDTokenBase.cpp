@@ -84,6 +84,11 @@ QString UDTokenBase::miscToString() const
     return attributesToString(m_misc);
 }
 
+void UDTokenBase::setMiscFromString(const QString &misc)
+{
+    m_misc = stringToAttributes(misc);
+}
+
 // ====================================================================================================================
 // CoNLL-U defined SpaceAfter=No feature
 // ====================================================================================================================

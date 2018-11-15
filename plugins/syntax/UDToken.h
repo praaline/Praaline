@@ -24,6 +24,7 @@ public:
     QString feat(const QString &key) const;
     void setFeat(const QString &key, const QString &value);
     QString featsToString() const;
+    void setFeatsFromString(const QString &feats);
     int head() const;
     void setHead(int head);
     QString depRel() const;
@@ -31,6 +32,7 @@ public:
     QList<QPair<int, QString> > &deps();
     void appendDep(int id, const QString &dep);
     void clearDeps();
+    void setDepsFromString(const QString &deps);
     QList<int> &children();
 
 protected:

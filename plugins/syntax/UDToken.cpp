@@ -77,6 +77,11 @@ QString UDToken::featsToString() const
     return attributesToString(m_feats);
 }
 
+void UDToken::setFeatsFromString(const QString &feats)
+{
+    m_feats = stringToAttributes(feats);
+}
+
 int UDToken::head() const
 {
     return m_head;
@@ -110,6 +115,17 @@ void UDToken::appendDep(int id, const QString &dep)
 void UDToken::clearDeps()
 {
     m_deps.clear();
+}
+
+void UDToken::setDepsFromString(const QString &deps)
+{
+    m_deps.clear();
+    foreach (QString depstring, deps.split("|")) {
+        if (!depstring.contains(",")) continue;
+        int id = depstring.section(",", 0, 0).toInt();
+        QString dep = depstring.section(",", 1, 1);
+        appendDep(id, dep);
+    }
 }
 
 QList<int> &UDToken::children()

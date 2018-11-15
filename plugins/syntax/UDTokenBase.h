@@ -20,6 +20,7 @@ public:
     QString misc(const QString &key) const;
     void setMisc(const QString &key, const QString &value);
     QString miscToString() const;
+    void setMiscFromString(const QString &misc);
 
     // CoNLL-U defined SpaceAfter=No feature
     bool getSpaceAfter() const;

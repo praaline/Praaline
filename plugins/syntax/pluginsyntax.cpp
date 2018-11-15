@@ -110,15 +110,15 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(const QHash<QString,
 
 void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
 {
-    QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
-        com->addAnnotation(annot);
-        AnnotationTierGroup *group = new AnnotationTierGroup();
-        CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
-        com->repository()->annotations()->saveTiers(com->ID(), "ud", group);
-    }
+//    QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
+//    foreach (QPointer<CorpusCommunication> com, communications) {
+//        if (!com) continue;
+//        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
+//        com->addAnnotation(annot);
+//        AnnotationTierGroup *group = new AnnotationTierGroup();
+//        CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
+//        com->repository()->annotations()->saveTiers(com->ID(), "ud", group);
+//    }
 }
 
 void readPerceoCorpus(const QList<QPointer<CorpusCommunication> > &communications)
