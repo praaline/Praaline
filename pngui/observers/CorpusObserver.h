@@ -54,7 +54,7 @@ public:
     CorpusExplorerTreeNodeCorpus(const QString &corpusID);
 
     QPointer<Praaline::Core::Corpus> corpus() const { return m_corpus; }
-    void setCorpus(QPointer<Praaline::Core::Corpus> corpus = 0);
+    void setCorpus(QPointer<Praaline::Core::Corpus> corpus = nullptr);
 
     TreeNode *nodeCommunications() const { return m_nodeCommunications; }
     TreeNode *nodeSpeakers() const { return m_nodeSpeakers; }

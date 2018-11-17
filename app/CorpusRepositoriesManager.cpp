@@ -147,9 +147,7 @@ QPointer<Corpus> CorpusRepositoriesManager::createCorpus(const QString &corpusID
     if (!repository) return Q_NULLPTR;
     QPointer<Corpus> corpus = new Corpus(corpusID, repository);
     CorpusObserver *obs = corpusObserverForRepository(repID);
-    if (obs) {
-        obs->addCorpus(corpus);
-    }
+    if (obs) obs->addCorpus(corpus);
     d->corpora.insert(corpusID, corpus);
     return corpus;
 }

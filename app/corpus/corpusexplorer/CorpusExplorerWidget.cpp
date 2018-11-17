@@ -183,9 +183,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     // Layout
     // Set proportions
     QList<int> sizes;
-    sizes << width() * 0.3 << width() * 0.7;
+    sizes << static_cast<int>(width() * 0.3) << static_cast<int>(width() * 0.7);
     ui->splitterMainVertical->setSizes(sizes);
-    sizes.clear(); sizes << height() * 0.7 << height() * 0.3;
+    sizes.clear();
+    sizes << static_cast<int>(height() * 0.7) << static_cast<int>(height() * 0.3);
     ui->splitterEditorsPreviewHorizontal->setSizes(sizes);
 }
 
@@ -561,8 +562,8 @@ void CorpusExplorerWidget::updateMetadataEditorsForCorpus(Corpus *corpus)
 void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QObject*> selected)
 {
     if (selected.isEmpty()) {
+        if (d->preview) d->preview->openCommunication(nullptr);
         return;
-        d->preview->openCommunication(Q_NULLPTR);
     }
     QObject *obj = selected.first();
     CorpusExplorerTreeNodeCorpus *nodeCorpus = qobject_cast<CorpusExplorerTreeNodeCorpus *>(obj);
@@ -687,7 +688,7 @@ void CorpusExplorerWidget::deleteCorpus()
         return;
     }
     d->corpusRepositoriesManager->removeCorpus(corpusID);
-    d->activeCorpus = 0;
+    d->activeCorpus = nullptr;
 }
 
 // =========================================================================================================================================
@@ -728,7 +729,7 @@ void CorpusExplorerWidget::addSpeaker()
 
 void CorpusExplorerWidget::addRecording()
 {
-    CorpusExplorerTreeNodeCommunication *nodeCom = 0;
+    CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
     if (d->corporaObserverWidget->selectedObjects().count() == 1) {
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
     }
@@ -758,7 +759,7 @@ void CorpusExplorerWidget::addRecording()
 
 void CorpusExplorerWidget::addAnnotation()
 {
-    CorpusExplorerTreeNodeCommunication *nodeCom = 0;
+    CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
     if (d->corporaObserverWidget->selectedObjects().count() == 1) {
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
     }
@@ -819,19 +820,19 @@ QList<CorpusObject *> CorpusExplorerWidget::selectedCorpusItems()
 {
     QList<CorpusObject *> selected;
     foreach (QObject *obj, d->corporaObserverWidget->selectedObjects()) {
-        CorpusExplorerTreeNodeCorpus *nodeCorpus = 0;
+        CorpusExplorerTreeNodeCorpus *nodeCorpus = nullptr;
         nodeCorpus = qobject_cast<CorpusExplorerTreeNodeCorpus *>(obj);
         if (nodeCorpus && nodeCorpus->corpus()) { selected << nodeCorpus->corpus(); continue; }
-        CorpusExplorerTreeNodeCommunication *nodeCom = 0;
+        CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
         if (nodeCom && nodeCom->communication) { selected << nodeCom->communication; continue; }
-        CorpusExplorerTreeNodeSpeaker *nodeSpk = 0;
+        CorpusExplorerTreeNodeSpeaker *nodeSpk = nullptr;
         nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(obj);
         if (nodeSpk && nodeSpk->speaker) { selected << nodeSpk->speaker; continue; }
-        CorpusExplorerTreeNodeRecording *nodeRec = 0;
+        CorpusExplorerTreeNodeRecording *nodeRec = nullptr;
         nodeRec = qobject_cast<CorpusExplorerTreeNodeRecording *>(obj);
         if (nodeRec && nodeRec->recording) { selected << nodeRec->recording; continue; }
-        CorpusExplorerTreeNodeAnnotation *nodeAnnot = 0;
+        CorpusExplorerTreeNodeAnnotation *nodeAnnot = nullptr;
         nodeAnnot = qobject_cast<CorpusExplorerTreeNodeAnnotation *>(obj);
         if (nodeAnnot && nodeAnnot->annotation) { selected << nodeAnnot->annotation; continue; }
     }
@@ -1038,6 +1039,8 @@ void CorpusExplorerWidget::addItemsFromFolder()
     d->corporaTopLevelNode->startTreeProcessingCycle();
     ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
     wizard->exec(); // MODAL!
+    CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
+    if (obj) obj->refresh();
     d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 

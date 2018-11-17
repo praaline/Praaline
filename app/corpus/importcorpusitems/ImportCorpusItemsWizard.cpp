@@ -16,8 +16,9 @@ using namespace Praaline::Core;
 
 struct ImportCorpusItemsWizardData {
     ImportCorpusItemsWizardData() :
-        pageSelection(0), pageProcessMedia(0), pageAnalyse(0), pageCorrespondances(0), pageFinal(0),
-        corpus(0)
+        pageSelection(nullptr), pageProcessMedia(nullptr), pageAnalyse(nullptr),
+        pageCorrespondances(nullptr), pageFinal(nullptr),
+        corpus(nullptr)
     {}
 
     // Pages

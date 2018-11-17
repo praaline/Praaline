@@ -229,7 +229,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
         ImportAnnotations::importBasic(d->corpus, com, annot, policy, "", inputTiers, correspondances);
     }
     else if ((policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) || (policy == ImportAnnotations::SpeakerPolicyIntervals)) {
-        IntervalTier *tierSpeaker = 0;
+        IntervalTier *tierSpeaker = nullptr;
         bool shouldDeleteSpeakerTier = false;
         if (policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) {
             QString tiernameSpeaker1 = annot->property("speakerPolicyData").toString().section(";", 0, 0);
@@ -245,8 +245,6 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
             // There is a speaker ID tier
             QString speakerTierName = annot->property("speakerPolicyData").toString();
             tierSpeaker = inputTiers->getIntervalTierByName(speakerTierName);
-            // Hack for CHumour
-            // tierSpeaker->replaceText("gap", "");
         }
         if (!tierSpeaker) {
             ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
