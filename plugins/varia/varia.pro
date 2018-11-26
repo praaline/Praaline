@@ -92,7 +92,8 @@ HEADERS += \
     experiments/PhonogenreDiscourseMarkers.h \
     PhonoSeesaw.h \
     JsonAlignedTranscription.h \
-    IntervalTierCombinations.h
+    IntervalTierCombinations.h \
+    corpus-specific/ORFEOReader.h
 
 
 SOURCES += \ 
@@ -134,4 +135,5 @@ SOURCES += \
     experiments/PhonogenreDiscourseMarkers.cpp \
     PhonoSeesaw.cpp \
     JsonAlignedTranscription.cpp \
-    IntervalTierCombinations.cpp
+    IntervalTierCombinations.cpp \
+    corpus-specific/ORFEOReader.cpp
