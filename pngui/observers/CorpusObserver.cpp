@@ -97,11 +97,11 @@ void CorpusObserver::refresh()
 // ==============================================================================================================================
 
 CorpusExplorerTreeNodeCorpus::CorpusExplorerTreeNodeCorpus(const QString &corpusID) :
-    TreeNode(corpusID), m_corpus(0)
+    TreeNode(corpusID), m_corpus(nullptr)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus.png"));
-    m_nodeCommunications = 0;
-    m_nodeSpeakers = 0;
+    m_nodeCommunications = nullptr;
+    m_nodeSpeakers = nullptr;
     this->setName(corpusID);
 }
 

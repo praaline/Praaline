@@ -17,7 +17,7 @@ class ImportCorpusItemsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizard(QPointer<Corpus> corpus, QWidget *parent = 0);
+    explicit ImportCorpusItemsWizard(QPointer<Corpus> corpus, QWidget *parent = nullptr);
     ~ImportCorpusItemsWizard();
 
 private:
