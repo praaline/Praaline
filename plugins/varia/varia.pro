@@ -93,7 +93,7 @@ HEADERS += \
     PhonoSeesaw.h \
     JsonAlignedTranscription.h \
     IntervalTierCombinations.h \
-    corpus-specific/ORFEOReader.h
+    corpus-specific/ORFEO.h
 
 
 SOURCES += \ 
@@ -136,4 +136,4 @@ SOURCES += \
     PhonoSeesaw.cpp \
     JsonAlignedTranscription.cpp \
     IntervalTierCombinations.cpp \
-    corpus-specific/ORFEOReader.cpp
+    corpus-specific/ORFEO.cpp

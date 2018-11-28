@@ -1,5 +1,5 @@
-#ifndef ORFEOREADER_H
-#define ORFEOREADER_H
+#ifndef ORFEO_H
+#define ORFEO_H
 
 #include <QString>
 #include <QPointer>
@@ -10,12 +10,14 @@ class CorpusCommunication;
 }
 }
 
-class ORFEOReader
+class ORFEO
 {
 public:
-    ORFEOReader();
+    ORFEO();
 
     QString readOrfeoFile(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> com);
+
 };
 
-#endif // ORFEOREADER_H
+#endif // ORFEO_H

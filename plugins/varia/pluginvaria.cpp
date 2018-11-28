@@ -36,6 +36,7 @@
 #include "corpus-specific/CPROMDISS.h"
 #include "corpus-specific/Rhapsodie.h"
 #include "corpus-specific/NCCFR.h"
+#include "corpus-specific/ORFEO.h"
 
 #include "experiments/DisfluenciesExperiments.h"
 #include "experiments/SpeechRateExperiments.h"
@@ -423,19 +424,23 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    QString m = b.test();
 //    if (!m.isEmpty()) printMessage(m);
 
-    PhonoSeesaw phonoSeesaw;
-    Rhapsodie r;
+//    PhonoSeesaw phonoSeesaw;
+//    Rhapsodie r;
 
-    IntervalTierCombinations combine;
-    combine.setIntervalsLevelA("sentence_unit");
-    combine.setIntervalsLevelB("prosodic_unit");
-    combine.setIntervalsLevelCombined("combined_unit");
+//    IntervalTierCombinations combine;
+//    combine.setIntervalsLevelA("sentence_unit");
+//    combine.setIntervalsLevelB("prosodic_unit");
+//    combine.setIntervalsLevelCombined("combined_unit");
+    ORFEO orfeo;
 
     //merge_pauses(communications);
     QString m;
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
-        printMessage(combine.combineIntervalTiers(com));
+        // printMessage(orfeo.readOrfeoFile(com));
+        printMessage(orfeo.mapTokensToDisMo(com));
+
+        // printMessage(combine.combineIntervalTiers(com));
 
 //        if (com->property("SubjectID").toString() != "SX2") continue;
 //        m = ExperimentUtterances::loadTranscriptions(com);
