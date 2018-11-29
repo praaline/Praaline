@@ -438,7 +438,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
     foreach (QPointer<CorpusCommunication> com, communications) {
         if (!com) continue;
         // printMessage(orfeo.readOrfeoFile(com));
-        printMessage(orfeo.mapTokensToDisMo(com));
+        // printMessage(orfeo.mapTokensToDisMo(com));
+        printMessage(orfeo.createSentenceUnits(com));
 
         // printMessage(combine.combineIntervalTiers(com));
 

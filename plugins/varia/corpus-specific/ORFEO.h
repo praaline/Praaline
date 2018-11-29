@@ -17,6 +17,7 @@ public:
 
     QString readOrfeoFile(QPointer<Praaline::Core::CorpusCommunication> com);
     QString mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString createSentenceUnits(QPointer<Praaline::Core::CorpusCommunication> com);
 
 };
 

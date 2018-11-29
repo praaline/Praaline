@@ -71,7 +71,8 @@ QStringList AnalyserTemporalItem::measureIDsForSpeaker()
             << "NumTokens" << "NumSyllables" << "NumSilentPauses" << "NumFilledPauses"
             << "SpeechRate" << "SilentPauseRate" << "FilledPauseRate" << "ArticulationRate"
             << "PauseDur_SIL_Median" << "PauseDur_SIL_Q1" << "PauseDur_SIL_Q3" << "PauseDur_FIL_Median" << "PauseDur_FIL_Q1" << "PauseDur_FIL_Q3"
-            << "TurnDuration_Time_Mean" << "TurnDuration_Syll_Mean" << "TurnDuration_Token_Mean";
+            << "TurnDuration_Time_Mean" << "TurnDuration_Syll_Mean" << "TurnDuration_Token_Mean"
+            << "IntersyllabicDuration_Mean" << "IntersyllabicDuration_StDev";
 }
 
 QStringList AnalyserTemporalItem::vectorMeasureIDsForCommunication()
@@ -81,7 +82,8 @@ QStringList AnalyserTemporalItem::vectorMeasureIDsForCommunication()
 
 QStringList AnalyserTemporalItem::vectorMeasureIDsForSpeaker()
 {
-    return QStringList() << "Pause_SIL_Durations" << "Pause_FIL_Durations" << "TurnDurations";
+    return QStringList() << "Pause_SIL_Durations" << "Pause_FIL_Durations" << "TurnDurations"
+                         << "IntersyllabicDurations";
 }
 
 StatisticalMeasureDefinition AnalyserTemporalItem::measureDefinition(const QString &measureID)
@@ -139,11 +141,14 @@ StatisticalMeasureDefinition AnalyserTemporalItem::measureDefinition(const QStri
     if (measureID == "TurnDuration_Time_Mean")  return StatisticalMeasureDefinition("TurnDuration_Time_Mean", "Turn duration (mean)", "s");
     if (measureID == "TurnDuration_Syll_Mean")  return StatisticalMeasureDefinition("TurnDuration_Syll_Mean", "Number of syllables in turn (mean)", "syll");
     if (measureID == "TurnDuration_Token_Mean") return StatisticalMeasureDefinition("TurnDuration_Token_Mean", "Number of tokens in turn (mean)", "tokens");
+    if (measureID == "IntersyllabicDuration_Mean") return StatisticalMeasureDefinition("IntersyllabicDuration_Mean", "Intersyllabic Duration (mean)", "sec");
+    if (measureID == "IntersyllabicDuration_StDev") return StatisticalMeasureDefinition("IntersyllabicDuration_StDev", "Intersyllabic Duration (std dev)", "sec");
     // Note: ArtRatio + SilRatio + FilRatio = 100%. Percentages calculated over the Speech time of current speaker)
     // Vectors per Speaker
     if (measureID == "Pause_SIL_Durations") return StatisticalMeasureDefinition("Pause_SIL_Durations", "Silent pause durations", "s", "Silent pause durations", QVariant::Double, true);
     if (measureID == "Pause_FIL_Durations") return StatisticalMeasureDefinition("Pause_SIL_Durations", "Filled pause durations", "s", "Filled pause durations", QVariant::Double, true);
     if (measureID == "TurnDurations")       return StatisticalMeasureDefinition("TurnDurations", "Turn durations", "s", "Durations of turns", QVariant::Double, true);
+    if (measureID == "IntersyllabicDurations")       return StatisticalMeasureDefinition("IntersyllabicDurations", "Intersyllabic durations", "s", "Durations between syllables", QVariant::Double, true);
     return StatisticalMeasureDefinition(measureID, measureID, "");
 }
 
@@ -228,6 +233,7 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
     RealTime timeSingleSpeaker, timeOverlap, timeGap;
     int turnChangesWithGap(0), turnChangesWithOverlap(0);
     QList<double> gapDurations, overlapDurations;
+
     foreach (Interval *intv, tier_timelineSpk->intervals()) {
         QString temporal = intv->attribute("temporal").toString();
         if (temporal == "X") continue;
@@ -285,6 +291,7 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
             QList<double> durationsPauseSIL, durationsPauseFIL;
             QList<double> durationsPauseSIL_rel1, durationsPauseSIL_rel2, durationsPauseSIL_rel3, durationsPauseSIL_rel4, durationsPauseSIL_rel5;
             QList<double> turnDurations, turnTokenCounts, turnArtSyllCounts;
+            QList<double> intersyllabicDurations;
             // Turn level
             QScopedPointer<IntervalTier> tier_turns(new IntervalTier(tier_timelineSpk.data()));
             foreach (Interval *intv, tier_turns->intervals()) {
@@ -312,6 +319,11 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
                     // foreach (Interval *token, tokens) qDebug() << token->text();
                     if (tokens.count() == 1 && d->filledPauseTokens.contains(tokens.first()->text())) {
                         syllCategory = "FIL"; // This syllable is a filled pause
+                    }
+                    // Inter-syllable times
+                    if ((syllIndex > 0) && (!tier_syll->at(syllIndex - 1)->isPauseSilent())) {
+                        double dur = (syll->tCenter() - tier_syll->at(syllIndex - 1)->tCenter()).toDouble();
+                        intersyllabicDurations << dur;
                     }
                     // Process sub-syllabic segments on the timeline
                     foreach (Interval *intv, tier_timelineSyll->getIntervalsContainedIn(syll)) {
@@ -380,11 +392,13 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
             measures.insert("ArticulationRate", numSyllablesArticulated / timeArticulation.toDouble());
             StatisticalSummary summaryDurationsPauseSIL, summaryDurationsPauseFIL;
             StatisticalSummary summaryTurnDurations, summaryTurnTokenCounts, summaryTurnArtSyllCounts;
+            StatisticalSummary summaryIntersyllabicDurations;
             summaryDurationsPauseSIL.calculate(durationsPauseSIL);
             summaryDurationsPauseFIL.calculate(durationsPauseFIL);
             summaryTurnDurations.calculate(turnDurations);
             summaryTurnTokenCounts.calculate(turnTokenCounts);
             summaryTurnArtSyllCounts.calculate(turnArtSyllCounts);
+            summaryIntersyllabicDurations.calculate(intersyllabicDurations);
             measures.insert("PauseDur_SIL_Median", summaryDurationsPauseSIL.median());
             measures.insert("PauseDur_SIL_Q1", summaryDurationsPauseSIL.firstQuartile());
             measures.insert("PauseDur_SIL_Q3", summaryDurationsPauseSIL.thirdQuartile());
@@ -394,12 +408,16 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
             measures.insert("TurnDuration_Time_Mean", summaryTurnDurations.mean());
             measures.insert("TurnDuration_Token_Mean", summaryTurnTokenCounts.mean());
             measures.insert("TurnDuration_Syll_Mean", summaryTurnArtSyllCounts.mean());
+            measures.insert("IntersyllabicDuration_Mean", summaryIntersyllabicDurations.mean());
+            measures.insert("IntersyllabicDuration_StDev", summaryIntersyllabicDurations.stDev());
             d->measuresSpk.insert(speakerID, measures);
             // Vector measures for current speaker
             QHash<QString, QList<double> > vectors;
             vectors.insert("Pause_SIL_Durations", durationsPauseSIL);
             vectors.insert("Pause_FIL_Durations", durationsPauseFIL);
             vectors.insert("TurnDurations", turnDurations);
+            vectors.insert("IntersyllabicDurations", intersyllabicDurations);
+
             d->vectorsSpk.insert(speakerID, vectors);
         }
         qDeleteAll(tiersAll);

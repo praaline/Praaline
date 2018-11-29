@@ -36,9 +36,9 @@ namespace StatisticsPluginTemporal {
 
 struct AnalyserTemporalWidgetData {
     AnalyserTemporalWidgetData() :
-        repository(0), analyser(0), gridviewResults(0), modelCom(0), modelSpk(0),
-        gridviewMeasureDefinitions(0), modelMeasureDefinitionsCom(0), modelMeasureDefinitionsSpk(0),
-        gridviewTimeline(0), modelTimeline(0)
+        repository(nullptr), analyser(nullptr), gridviewResults(nullptr), modelCom(nullptr), modelSpk(nullptr),
+        gridviewMeasureDefinitions(nullptr), modelMeasureDefinitionsCom(nullptr), modelMeasureDefinitionsSpk(nullptr),
+        gridviewTimeline(nullptr), modelTimeline(nullptr)
     {}
 
     CorpusRepository *repository;

@@ -146,6 +146,16 @@ QString ORFEO::mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> co
                 Interval *tok_min = tier_tok_min->at(i_tokmin);
                 if (tok_min->text() == orfeo->text()) {
                     tok_min->setAttribute("orfeo_pos", orfeo->attribute("orfeo_UPOS"));
+                    tok_min->setAttribute("orfeo_token_id", orfeo->attribute("orfeo_token_id"));
+                    tok_min->setAttribute("orfeo_sent_id", orfeo->attribute("orfeo_sent_id"));
+                    tok_min->setAttribute("orfeo_head", orfeo->attribute("orfeo_head"));
+                    tok_min->setAttribute("orfeo_deprel", orfeo->attribute("orfeo_deprel"));
+                    tok_min->setAttribute("orfeo_seg", orfeo->attribute("orfeo_seg"));
+                } else {
+                    if (tok_min->isPauseSilent())
+                        tok_min->setAttribute("orfeo_pos", "_");
+                    else
+                        tok_min->setAttribute("orfeo_pos", "***");
                 }
                 if (orfeo->tMax() > tok_min->tMax()) {
                     i_tokmin++;
@@ -156,6 +166,49 @@ QString ORFEO::mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> co
                 }
             }
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_min);
+            ret.append(annotationID).append("\t").append(speakerID).append("\n");
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret.trimmed();
+}
+
+QString ORFEO::createSentenceUnits(QPointer<Praaline::Core::CorpusCommunication> com)
+{
+    QString ret;
+    if (!com) return ret;
+    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_orfeo = tiers->getIntervalTierByName("orfeo_token");
+            if (!tier_orfeo) { ret.append("No ORFEO tier\n"); continue; }
+            QList<Interval *> intervals_sentences;
+            RealTime tMin, tMax;
+            foreach (Interval *token, tier_orfeo->intervals()) {
+                token->setText(token->text().trimmed());
+                if (token->attribute("orfeo_seg").toString().contains("[")) tMin = token->tMin();
+                if (token->attribute("orfeo_seg").toString().contains("]")) {
+                    tMax = token->tMax();
+                    if (tMin > tMax)
+                        qDebug() << "Error tMin-tMax";
+                    else {
+                        QString text = tier_orfeo->getIntervalsTextContainedIn(tMin, tMax);
+                        text = text.replace("  ", " ").replace("  ", " ");
+                        Interval *sentence;
+                        sentence = new Interval(tMin, tMax, text);
+                        sentence->setAttribute("sent_id", token->attribute("orfeo_sent_id").toInt());
+                        intervals_sentences << sentence;
+                    }
+                }
+            }
+            IntervalTier *tier_sentences = new IntervalTier("orfeo_sent", intervals_sentences);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_sentences);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_orfeo);
             ret.append(annotationID).append("\t").append(speakerID).append("\n");
         }
         qDeleteAll(tiersAll);

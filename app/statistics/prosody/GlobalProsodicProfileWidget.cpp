@@ -10,6 +10,7 @@
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/datastore/CorpusRepository.h"
+#include "pncore/structure/MetadataStructure.h"
 #include "pncore/datastore/MetadataDatastore.h"
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/annotation/AnnotationDataTable.h"
@@ -24,7 +25,7 @@ namespace StatisticsPluginProsody {
 
 struct GlobalProsodicProfileWidgetData {
     GlobalProsodicProfileWidgetData() :
-        repository(0), gridviewResults(0), modelResults(0)
+        repository(nullptr), gridviewResults(nullptr), modelResults(nullptr)
     {}
 
     CorpusRepository *repository;
@@ -42,6 +43,16 @@ GlobalProsodicProfileWidget::GlobalProsodicProfileWidget(CorpusRepository *repos
     d->repository = repository;
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
+    // Metadata attributes
+    int i = 0;
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Communication)){
+        ui->comboBoxMetadataCom->insertItem(i, attr->name(), false);
+        ++i;
+    }
+    foreach (MetadataStructureAttribute *attr, repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)){
+        ui->comboBoxMetadataSpk->insertItem(i, attr->name(), false);
+        ++i;
+    }
     // Command Analyse
     connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
     // Results grid view
@@ -146,7 +157,19 @@ void GlobalProsodicProfileWidget::analyse()
     // Headers
     QStringList headers;
     headers << "CommunicationID" << "RecordingID" << "SpeakerID";
-    foreach (QString measureID, measureIDs()) headers << measureDefinition(measureID).displayName();
+    for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+        if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        headers << attr->ID();
+    }
+    for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
+        if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
+        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        headers << attr->ID();
+    }
+    foreach (QString measureID, measureIDs()) {
+        headers << measureDefinition(measureID).displayName();
+    }
     model->setHorizontalHeaderLabels(headers);
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(corpus->communicationsCount());
@@ -159,6 +182,8 @@ void GlobalProsodicProfileWidget::analyse()
                 if (!annot) continue;
                 QStringList speakerIDs = d->repository->annotations()->getSpeakersInAnnotation(annot->ID());
                 foreach (QString speakerID, speakerIDs) {
+                    QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
+                    // Read prosogram global profile
                     QFileInfo info(rec->filePath());
                     QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
                     QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
@@ -173,6 +198,22 @@ void GlobalProsodicProfileWidget::analyse()
                         items.append(new QStandardItem(com->ID()));
                         items.append(new QStandardItem(rec->ID()));
                         items.append(new QStandardItem(speakerID));
+                        // selected metadata
+                        // selected metadata attributes (Com, then Spk)
+                        for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
+                            if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
+                            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+                            QStandardItem *item = new QStandardItem();
+                            item->setData(com->property(attr->ID()), Qt::DisplayRole); items << item;
+                        }
+                        for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
+                            if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
+                            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+                            QStandardItem *item = new QStandardItem();
+                            item->setData(spk->property(attr->ID()), Qt::DisplayRole);
+                            items << item;
+                        }
+                        // measures
                         foreach (QString attributeName, measureIDs()) {
                             QVariant value = table.getData(i, attributeName);
                             QStandardItem *item = new QStandardItem();
