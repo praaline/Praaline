@@ -109,7 +109,7 @@ void CorpusExplorerTreeNodeCorpus::setCorpus(QPointer<Praaline::Core::Corpus> co
 {
     if (m_corpus) {
         // disconnect all signals from the previous corpus to this object
-        disconnect(m_corpus, 0, this, 0);
+        disconnect(m_corpus, nullptr, this, nullptr);
     }
     m_corpus = corpus;
     buildTree();
@@ -167,12 +167,12 @@ void CorpusExplorerTreeNodeCorpus::clear()
         m_nodeCommunications->deleteAll();
         delete m_nodeCommunications;
     }
-    m_nodeCommunications = 0;
+    m_nodeCommunications = nullptr;
     if (m_nodeSpeakers) {
         m_nodeSpeakers->deleteAll();
         delete m_nodeSpeakers;
     }
-    m_nodeSpeakers = 0;
+    m_nodeSpeakers = nullptr;
 }
 
 void CorpusExplorerTreeNodeCorpus::refresh()

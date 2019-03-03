@@ -63,7 +63,7 @@ void CorpusRepositoryCreateWizard::populateTemplates()
     d->modelAnnotationTemplates = new QStandardItemModel(this);
     d->modelMetadataTemplates->setColumnCount(1);
     d->modelAnnotationTemplates->setColumnCount(1);
-    QStandardItem *item(0);
+    QStandardItem *item(nullptr);
     // Praaline searches in the directory "templates", under the application path, for subdirectories
     // "metadata" and "annotation" containing XML files of schema templates
     QDir dirinfo;

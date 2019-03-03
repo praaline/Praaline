@@ -1036,12 +1036,10 @@ bool CorpusExplorerWidget::checkForActiveCorpus()
 void CorpusExplorerWidget::addItemsFromFolder()
 {
     if (!checkForActiveCorpus()) return;
-    d->corporaTopLevelNode->startTreeProcessingCycle();
     ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
     wizard->exec(); // MODAL!
     CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     if (obj) obj->refresh();
-    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusExplorerWidget::importMetadata()

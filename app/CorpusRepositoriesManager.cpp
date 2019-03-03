@@ -1,3 +1,8 @@
+#include <QDebug>
+#include <QString>
+#include <QList>
+#include <QPointer>
+
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusObjectInfo.h"
 #include "pncore/datastore/CorpusRepository.h"
@@ -149,6 +154,7 @@ QPointer<Corpus> CorpusRepositoriesManager::createCorpus(const QString &corpusID
     CorpusObserver *obs = corpusObserverForRepository(repID);
     if (obs) obs->addCorpus(corpus);
     d->corpora.insert(corpusID, corpus);
+    qDebug() << "Created corpus" << corpus;
     return corpus;
 }
 
