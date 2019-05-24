@@ -233,7 +233,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
     else
         prosogramMode = "Prosogram and prosodic profile";
     QString prosogramSegmentationMethod;
-    if      (segmentationMethod == 0)   prosogramSegmentationMethod = "Automatic acoustic syllables";
+    if      (segmentationMethod == 0)   prosogramSegmentationMethod = "Automatic with acoustic syllables";
     else if (segmentationMethod == 1)   prosogramSegmentationMethod = "Nuclei in vowels in tier phon or tier 1";
     else if (segmentationMethod == 2)   prosogramSegmentationMethod = "Nuclei in rhyme from syll and vowels in phon";
     else if (segmentationMethod == 3)   prosogramSegmentationMethod = "Nuclei in syllables in syll and vowels in phon";
