@@ -114,6 +114,7 @@ SOURCES += main.cpp \
     NetworkPermissionTester.cpp \
     PraalineSplash.cpp \
     CorpusRepositoriesManager.cpp \
+    annotation/AnnotationBrowserWidget.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
@@ -190,7 +191,6 @@ SOURCES += main.cpp \
     query/ExtractSoundBitesWidget.cpp \
     query/QueryMode.cpp \
     query/QueryModeWidget.cpp \
-    query/AnnotationBrowserWidget.cpp \
     query/dataseteditor/DatasetEditorWidget.cpp \
     query/dataseteditor/AnnotationLevelDataModel.cpp \
     scripting/ScriptingMode.cpp \
@@ -252,6 +252,7 @@ HEADERS  += \
     PraalineSplash.h \
     Version.h \
     CorpusRepositoriesManager.h \
+    annotation/AnnotationBrowserWidget.h \
     interfaces/IAnnotationPlugin.h \
     interfaces/IStatisticsPlugin.h \
     corpus/CorpusMode.h \
@@ -331,7 +332,6 @@ HEADERS  += \
     query/ExtractSoundBitesWidget.h \
     query/QueryMode.h \
     query/QueryModeWidget.h \
-    query/AnnotationBrowserWidget.h \
     query/dataseteditor/DatasetEditorWidget.h \
     query/dataseteditor/DatasetEditorModels.h \
     query/dataseteditor/AnnotationLevelDataModel.h \

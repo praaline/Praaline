@@ -19,7 +19,7 @@ class AnnotationModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit AnnotationModeWidget(QWidget *parent = 0);
+    explicit AnnotationModeWidget(QWidget *parent = nullptr);
     ~AnnotationModeWidget();
 
 signals:
@@ -36,6 +36,7 @@ private slots:
     void showManualAnnotation();
     void showTranscriber();
     void showSpeechRecognition();
+    void showAnnotationBrowser();
     void showBatchEditor();
     void showCompareAnnotations();
 

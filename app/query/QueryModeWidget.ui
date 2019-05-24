@@ -32,7 +32,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="stackedWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="pageConcordancer">
       <layout class="QGridLayout" name="gridLayoutConcordancer">
@@ -52,22 +52,6 @@
      </widget>
      <widget class="QWidget" name="pageCreateDataset">
       <layout class="QGridLayout" name="gridLayoutCreateDataset">
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="pageAnnotationBrowser">
-      <layout class="QGridLayout" name="gridLayoutAnnotationBrowser">
        <property name="leftMargin">
         <number>0</number>
        </property>
@@ -170,48 +154,6 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </widget>
       </item>
-      <item row="1" column="4">
-       <widget class="QPushButton" name="commandAnnotationBrowser">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Annotation Browser</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QPushButton" name="commandAdvancedQueries">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Advanced Queries</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="7">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>642</width>
-          <height>17</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
       <item row="1" column="1">
        <widget class="QPushButton" name="commandCreateDataset">
         <property name="sizePolicy">
@@ -225,7 +167,33 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
         </property>
        </widget>
       </item>
+      <item row="1" column="4">
+       <widget class="QPushButton" name="commandAdvancedQueries">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Advanced Queries</string>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="6">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>642</width>
+          <height>17</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="5">
        <widget class="QPushButton" name="commandExtractSamples">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -245,7 +213,6 @@ radius: 1.35, stop: 0 #fff, stop: 1 #ddd);
  </widget>
  <tabstops>
   <tabstop>commandCreateDataset</tabstop>
-  <tabstop>commandAnnotationBrowser</tabstop>
   <tabstop>commandAdvancedQueries</tabstop>
   <tabstop>commandExtractSamples</tabstop>
   <tabstop>commandConcordancer</tabstop>

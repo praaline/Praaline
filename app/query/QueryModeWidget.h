@@ -14,7 +14,7 @@ class QueryModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit QueryModeWidget(QWidget *parent = 0);
+    explicit QueryModeWidget(QWidget *parent = nullptr);
     ~QueryModeWidget();
 
 signals:
@@ -23,7 +23,6 @@ signals:
 private slots:
     void showConcordancer();
     void showCreateDataset();
-    void showAnnotationBrowser();
     void showAdvancedQueries();
     void showExtractSamples();
 
