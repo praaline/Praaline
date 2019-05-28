@@ -120,6 +120,9 @@ SOURCES += main.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
     corpus/CorpusRepositoryCreateWizard.cpp \
     corpus/CorpusRepositoryPropertiesDialog.cpp \
+    corpus/corpusexplorer/AddCorpusAnnotationDialog.cpp \
+    corpus/corpusexplorer/AddCorpusCommunicationDialog.cpp \
+    corpus/corpusexplorer/AddCorpusRecordingDialog.cpp \
     corpus/corpusexplorer/CorpusExplorerWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerTableWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.cpp \
@@ -241,7 +244,6 @@ SOURCES += main.cpp \
     web/MetadataWebDesigner.cpp \
     web/ConcordancerWebDesigner.cpp \
     updater/UpdatePraalineDialog.cpp \
-    corpus/corpusexplorer/CreateCorpusCommunicationDialog.cpp \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.cpp
     #statistics/basic/AnalyserBasic.cpp
 
@@ -253,6 +255,9 @@ HEADERS  += \
     Version.h \
     CorpusRepositoriesManager.h \
     annotation/AnnotationBrowserWidget.h \
+    corpus/corpusexplorer/AddCorpusAnnotationDialog.h \
+    corpus/corpusexplorer/AddCorpusCommunicationDialog.h \
+    corpus/corpusexplorer/AddCorpusRecordingDialog.h \
     interfaces/IAnnotationPlugin.h \
     interfaces/IStatisticsPlugin.h \
     corpus/CorpusMode.h \
@@ -385,7 +390,6 @@ HEADERS  += \
     web/MetadataWebDesigner.h \
     web/ConcordancerWebDesigner.h \
     updater/UpdatePraalineDialog.h \
-    corpus/corpusexplorer/CreateCorpusCommunicationDialog.h \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.h
     #statistics/basic/AnalyserBasic.h
 
@@ -395,6 +399,9 @@ FORMS    += \
     corpus/CorpusDatabaseConnectionDialog.ui \
     corpus/CorpusRepositoryPropertiesDialog.ui \
     corpus/CorpusRepositoryCreateWizard.ui \
+    corpus/corpusexplorer/AddCorpusAnnotationDialog.ui \
+    corpus/corpusexplorer/AddCorpusCommunicationDialog.ui \
+    corpus/corpusexplorer/AddCorpusRecordingDialog.ui \
     corpus/corpusexplorer/CorpusExplorerWidget.ui \
     corpus/corpusexplorer/CorpusExplorerTableWidget.ui \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.ui \

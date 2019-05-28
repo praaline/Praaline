@@ -15,7 +15,7 @@ class CheckMediaFilesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CheckMediaFilesDialog(Corpus *corpus, QWidget *parent = 0);
+    explicit CheckMediaFilesDialog(Corpus *corpus, QWidget *parent = nullptr);
     ~CheckMediaFilesDialog();
 
 private:

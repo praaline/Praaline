@@ -39,14 +39,16 @@ using namespace QtilitiesProjectManagement;
 #include "../utilities/MergeCommunicationsDialog.h"
 #include "../utilities/DecodeFilenameToMetadataDialog.h"
 #include "../utilities/MergeCorporaDialog.h"
+#include "AddCorpusCommunicationDialog.h"
 
 #include "CorpusExplorerWidget.h"
 #include "ui_CorpusExplorerWidget.h"
 
 struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
-        widgetCorpusMode(0), projectItem(0), corpusRepositoriesManager(0), corporaTopLevelNode(0), corporaObserverWidget(0),
-        metadataEditorPrimary(0), metadataEditorSecondary(0), preview(0)
+        widgetCorpusMode(nullptr), projectItem(nullptr), corpusRepositoriesManager(nullptr),
+        corporaTopLevelNode(nullptr), corporaObserverWidget(nullptr),
+        metadataEditorPrimary(nullptr), metadataEditorSecondary(nullptr), preview(nullptr)
     { }
 
     CorpusModeWidget *widgetCorpusMode;
@@ -705,8 +707,11 @@ void CorpusExplorerWidget::addCommunication()
     }
     if (!d->activeCorpus->repository()) return;
     bool ok;
-    QString communicationID = QInputDialog::getText(this, tr("Add new Communication"),
-                                                    tr("Communication ID:"), QLineEdit::Normal, "", &ok);
+    AddCorpusCommunicationDialog *dialog = new AddCorpusCommunicationDialog();
+    dialog->exec();
+
+    QString communicationID; // = QInputDialog::getText(this, tr("Add new Communication"),
+                             //                       tr("Communication ID:"), QLineEdit::Normal, "", &ok);
     if (!ok || communicationID.isEmpty()) return;
     d->activeCorpus->addCommunication(new CorpusCommunication(communicationID, d->activeCorpus->repository(), d->activeCorpus));
 }

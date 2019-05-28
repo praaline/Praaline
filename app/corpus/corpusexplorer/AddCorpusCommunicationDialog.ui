@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateCorpusCommunicationDialog</class>
- <widget class="QDialog" name="CreateCorpusCommunicationDialog">
+ <class>AddCorpusCommunicationDialog</class>
+ <widget class="QDialog" name="AddCorpusCommunicationDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>556</width>
-    <height>351</height>
+    <width>590</width>
+    <height>387</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Create Corpus Communication</string>
+   <string>Dialog</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -119,16 +119,6 @@
    </item>
   </layout>
  </widget>
- <tabstops>
-  <tabstop>editCorpusID</tabstop>
-  <tabstop>editCommunicationID</tabstop>
-  <tabstop>listWidgetMediaFiles</tabstop>
-  <tabstop>commandAddMediaFile</tabstop>
-  <tabstop>commandRemoveMediaFile</tabstop>
-  <tabstop>listWidgetAnnotationFiles</tabstop>
-  <tabstop>commandAddAnnotationFile</tabstop>
-  <tabstop>commandRemoveAnnotationFile</tabstop>
- </tabstops>
  <resources/>
  <connections/>
 </ui>
