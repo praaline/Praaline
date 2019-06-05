@@ -246,11 +246,11 @@ void AnalyserTemporalWidget::buildModelForCom()
     Qt::Orientation orientation = Qt::Vertical;
     if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
     // Create new model
-    if (d->modelCom) delete d->modelCom;
-    d->modelCom = new QStandardItemModel(this);
+    if (!d->modelCom)  d->modelCom = new QStandardItemModel(this);
+    d->modelCom->clear();
     // Timeline model
-    if (d->modelTimeline) delete d->modelTimeline;
-    d->modelTimeline = new QStandardItemModel(this);
+    if (!d->modelTimeline) d->modelTimeline = new QStandardItemModel(this);
+    d->modelTimeline->clear();
     // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers
@@ -343,8 +343,8 @@ void AnalyserTemporalWidget::buildModelForSpk()
     Qt::Orientation orientation = Qt::Vertical;
     if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
     // Create new model
-    if (d->modelSpk) delete d->modelSpk;
-    d->modelSpk = new QStandardItemModel(this);
+    if (!d->modelSpk) d->modelSpk = new QStandardItemModel(this);
+    d->modelSpk->clear();
     // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers

@@ -36,9 +36,9 @@ namespace StatisticsPluginDisfluencies {
 
 struct AnalyserDisfluenciesWidgetData {
     AnalyserDisfluenciesWidgetData() :
-        repository(0), analyser(0), gridviewResults(0), modelCom(0), modelSpk(0),
-        gridviewMeasureDefinitions(0), modelMeasureDefinitionsCom(0), modelMeasureDefinitionsSpk(0),
-        gridviewTimeline(0), modelTimeline(0)
+        repository(nullptr), analyser(nullptr), gridviewResults(nullptr), modelCom(nullptr), modelSpk(nullptr),
+        gridviewMeasureDefinitions(nullptr), modelMeasureDefinitionsCom(nullptr), modelMeasureDefinitionsSpk(nullptr),
+        gridviewTimeline(nullptr), modelTimeline(nullptr)
     {}
 
     CorpusRepository *repository;
@@ -245,12 +245,12 @@ void AnalyserDisfluenciesWidget::buildModelForCom()
     // Select orientation
     Qt::Orientation orientation = Qt::Vertical;
     if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
-    // Create new model
-    if (d->modelCom) delete d->modelCom;
-    d->modelCom = new QStandardItemModel(this);
+    // Create new model if needed
+    if (!d->modelCom) d->modelCom = new QStandardItemModel(this);
+    d->modelCom->clear();
     // Timeline model
-    if (d->modelTimeline) delete d->modelTimeline;
-    d->modelTimeline = new QStandardItemModel(this);
+    if (!d->modelTimeline) d->modelTimeline = new QStandardItemModel(this);
+    d->modelTimeline->clear();
     // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers
@@ -316,8 +316,8 @@ void AnalyserDisfluenciesWidget::buildModelForSpk()
     Qt::Orientation orientation = Qt::Vertical;
     if (ui->optionOrientationHorizontal->isChecked()) orientation = Qt::Horizontal;
     // Create new model
-    if (d->modelSpk) delete d->modelSpk;
-    d->modelSpk = new QStandardItemModel(this);
+    if (!d->modelSpk) d->modelSpk = new QStandardItemModel(this);
+    d->modelSpk->clear();
     // Checks
     if (!d->analyser->corpus()) return;
     // Create model headers

@@ -26,7 +26,7 @@ namespace StatisticsPluginTemporal {
 
 struct PauseLengthDistributionWidgetData {
     PauseLengthDistributionWidgetData() :
-        repository(0), analyser(0), numberOfBins(0), minimumValue(0), maximumValue(0), maximumCount(10)
+        repository(nullptr), analyser(nullptr), numberOfBins(0), minimumValue(0), maximumValue(0), maximumCount(10)
     {}
 
     CorpusRepository *repository;
@@ -122,7 +122,8 @@ QChart *PauseLengthDistributionWidget::drawHistogram(const QString &title, QMap<
     QBarCategoryAxis *axis = new QBarCategoryAxis();
     axis->append(binLabels);
     chart->createDefaultAxes();
-    chart->setAxisX(axis, series);
+    chart->addAxis(axis, Qt::AlignBottom);
+    series->attachAxis(axis);
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);
     return chart;
@@ -167,7 +168,7 @@ void PauseLengthDistributionWidget::drawCharts()
 
     // Clear layout, delete chart view widgets
     QLayoutItem *item;
-    while ((item = ui->gridLayoutCharts->takeAt(0)) != 0) { delete item; }
+    while ((item = ui->gridLayoutCharts->takeAt(0)) != nullptr) { delete item; }
     QList<QChartView *> chartviews;
     chartviews = findChildren<QChartView *>();
     qDeleteAll(chartviews);

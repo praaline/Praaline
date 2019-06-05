@@ -25,7 +25,7 @@ class AnalyserDisfluenciesWidget : public QWidget
 
 public:
     explicit AnalyserDisfluenciesWidget(Core::CorpusRepository *repository, AnalyserDisfluencies *analyser,
-                                    QWidget *parent = 0);
+                                    QWidget *parent = nullptr);
     ~AnalyserDisfluenciesWidget();
 
 private slots:
