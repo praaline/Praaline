@@ -120,7 +120,7 @@ void LongSoundAlignerWidget::open(Corpus *corpus, CorpusCommunication *com, Corp
     Layer *waveform = m_document->createMainModelLayer(LayerFactory::Type("Waveform"));
     m_document->addLayerToView(pane, waveform);
 
-    ProsogramModel *model = new ProsogramModel(m_document->getMainModel()->getSampleRate(), rec);
+    ProsogramModel *model = new ProsogramModel(m_document->getMainModel()->getSampleRate(), rec, annot);
     pane = m_paneStack->addPane();
     Layer *newLayer = m_document->createImportedLayer(model);
     newLayer->setProperty("Show Vertical Lines", 0);

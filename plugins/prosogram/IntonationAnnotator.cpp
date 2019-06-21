@@ -356,8 +356,17 @@ void IntonationAnnotator::annotate(QPointer<CorpusCommunication> com)
         if (!rec) continue;
         foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
             if (!annot) continue;
+            // TODO : ANNOTATION CORRESPONDANCE !!!
+            // if (annot->ID() != rec->ID()) continue;
+
             QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
+
+                // check speaker-specific recording
+                if (!rec->property("speakerID").toString().isEmpty()) {
+                    if (rec->property("speakerID").toString() != speakerID) continue;
+                }
+
                 PitchRangeInfo pitchRange = d->pitchRanges.value(speakerID);
                 QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;

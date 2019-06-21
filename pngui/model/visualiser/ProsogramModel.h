@@ -17,6 +17,7 @@ namespace Praaline {
 namespace Core {
 class Corpus;
 class CorpusRecording;
+class CorpusAnnotation;
 }
 }
 
@@ -30,7 +31,8 @@ class ProsogramModel : public Model
 
 public:
     ProsogramModel(sv_samplerate_t sampleRate,
-                   QPointer<Praaline::Core::CorpusRecording> rec);
+                   QPointer<Praaline::Core::CorpusRecording> rec,
+                   QPointer<Praaline::Core::CorpusAnnotation> annot);
     virtual ~ProsogramModel();
 
     virtual std::string getType() const { return "ProsogramModel"; }

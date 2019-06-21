@@ -24,7 +24,7 @@ using namespace Praaline::Core;
 #include "Prosogram.h"
 
 ProsoGram::ProsoGram(QObject *parent) :
-    AnnotationPluginPraatScript(parent)
+    AnnotationPluginPraatScript(parent), timeRangeFrom(0.0)
 {
 }
 

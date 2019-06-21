@@ -420,6 +420,9 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
 
             foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
                 if (!annot) continue;
+                // TODO : ANNOTATION CORRESPONDANCE !!!
+                // if (annot->ID() != rec->ID()) continue;
+
                 if (d->segmentationMethod == 0) {
                     // Segmentation Method: Automatic syllable detection
                     QString speakerID = annot->ID(); // default speaker ID - impossible to tell using automatic syllabification
@@ -452,6 +455,11 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
                         printMessage(QString("   speaker %1").arg(speakerID));
                         QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
                         if (!tiers) continue;
+                        // check speaker-specific recording
+                        if (!rec->property("speakerID").toString().isEmpty()) {
+                            if (rec->property("speakerID").toString() != speakerID) continue;
+                        }
+
                         // execute prosogram script
                         prosogram->runProsoGram(com->corpus(), rec, tiers, annot->ID(), speakerID);
                     }

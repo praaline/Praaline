@@ -322,7 +322,12 @@ void TimelineVisualisationWidget::loadVisualisationAnnotationsProsogram()
     if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
         foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
-            d->visualiser->addProsogramPaneToSession(rec);
+            foreach (QPointer<CorpusAnnotation> annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
+                if (!annot) continue;
+                // TODO : ANNOTATION CORRESPONDANCE !!!
+                //if (annot->ID() != rec->ID()) continue;
+                d->visualiser->addProsogramPaneToSession(rec, annot);
+            }
         }
     }
 }
@@ -360,7 +365,12 @@ void TimelineVisualisationWidget::loadVisualisationMacroprosodyTITEUF(const QStr
     if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
         foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
-            d->visualiser->addProsogramPaneToSession(rec);
+            foreach (QPointer<CorpusAnnotation> annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
+                if (!annot) continue;
+                // TODO : ANNOTATION CORRESPONDANCE !!!
+                //if (annot->ID() != rec->ID()) continue;
+                d->visualiser->addProsogramPaneToSession(rec, annot);
+            }
         }
     }
 

@@ -26,7 +26,9 @@ using namespace Praaline::Core;
 
 struct ProsogramModelData {
     ProsogramModelData () :
-        sampleRate(0), segments(0), phones(0), sylls(0), tones(0), vuvregions(0), pitch(0), intensity(0),
+        sampleRate(0),
+        segments(nullptr), phones(nullptr), sylls(nullptr), tones(nullptr), vuvregions(nullptr),
+        pitch(nullptr), intensity(nullptr),
         pitchRangeBottomST(0.0), pitchRangeMedianST(0.0), pitchRangeTopST(0.0)
     {}
 
@@ -43,7 +45,9 @@ struct ProsogramModelData {
     double pitchRangeTopST;
 };
 
-ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecording> rec) :
+ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate,
+                               QPointer<CorpusRecording> rec,
+                               QPointer<Praaline::Core::CorpusAnnotation> annot) :
     d(new ProsogramModelData)
 {
     d->sampleRate = sampleRate;
@@ -75,13 +79,14 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate, QPointer<CorpusRecord
     } else {
         foreach (QPointer<CorpusParticipation> participation, participations) {
             if (!participation) continue;
+            if (!annot) continue;
             QString speakerID = participation->speakerID();
             readProsogramFiles(sampleRate, speakerID, d->segments,
                                prosoPath + QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(participation->speakerID()),
                                prosoPath + QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
                                prosoPath + QString("%1_%2.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
                                prosoPath + QString("%1_%2.IntensityTier").arg(rec->ID()).arg(participation->speakerID()),
-                               corpus, rec->ID());
+                               corpus, annot->ID());
             // Get pitch range
             QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
             if (spk) {

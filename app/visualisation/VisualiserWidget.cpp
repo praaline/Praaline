@@ -3405,10 +3405,10 @@ void VisualiserWidget::updateAnnotationPanes()
 
 }
 
-void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec)
+void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
 {
     if (!getMainModel()) return;
-    ProsogramModel *model = new ProsogramModel(getMainModel()->getSampleRate(), rec);
+    ProsogramModel *model = new ProsogramModel(getMainModel()->getSampleRate(), rec, annot);
     CommandHistory::getInstance()->startCompoundOperation("Add Prosogram pane", true);
     AddPaneCommand *command = new AddPaneCommand(this);
     CommandHistory::getInstance()->addCommand(command);

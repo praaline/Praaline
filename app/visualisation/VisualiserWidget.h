@@ -17,6 +17,7 @@ namespace Praaline {
 namespace Core {
 class CorpusCommunication;
 class CorpusRecording;
+class CorpusAnnotation;
 class AnnotationTier;
 class IntervalTier;
 class AnnotationTierGroup;
@@ -53,7 +54,7 @@ public slots:
     void setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
     void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);
     void addAnnotationPane(QVariantHash parameters);
-    void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec);
+    void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec, QPointer<Praaline::Core::CorpusAnnotation> annot);
     void addTappingDataPane(const QString &tappingTierName = "tappingAdj",
                             const QString &smoothTierName = "smooth",
                             const QString &boundaryAttributePrefix = "boundary");
