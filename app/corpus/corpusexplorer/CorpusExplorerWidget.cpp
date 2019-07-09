@@ -706,7 +706,7 @@ void CorpusExplorerWidget::addCommunication()
         return;
     }
     if (!d->activeCorpus->repository()) return;
-    bool ok;
+    bool ok(false);
     AddCorpusCommunicationDialog *dialog = new AddCorpusCommunicationDialog();
     dialog->exec();
 
@@ -725,7 +725,7 @@ void CorpusExplorerWidget::addSpeaker()
         return;
     }
     if (!d->activeCorpus->repository()) return;
-    bool ok;
+    bool ok(false);
     QString speakerID = QInputDialog::getText(this, tr("Add new Speaker"),
                                                     tr("Speaker ID:"), QLineEdit::Normal, "", &ok);
     if (!ok || speakerID.isEmpty()) return;
@@ -734,30 +734,44 @@ void CorpusExplorerWidget::addSpeaker()
 
 void CorpusExplorerWidget::addRecording()
 {
+    // Check that there is an active corpus
+    if (!d->activeCorpus) {
+        QMessageBox::warning(this, tr("Add Recording"),
+                             tr("Please select or create the Corpus to which the Recording(s) will be added."),
+                             QMessageBox::Ok);
+        return;
+    }
+    if (!d->activeCorpus->repository()) return;
+    // Check to see whether there is a selected Communication
     CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
     if (d->corporaObserverWidget->selectedObjects().count() == 1) {
         nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
     }
-    if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication))) {
-        QMessageBox::warning(this, tr("Add Recording to Communication"),
-                             tr("Please select the corpus Communication to which the Media Recordings will be added."),
-                             QMessageBox::Ok);
-        return;
-    }
-    Corpus *corpus = qobject_cast<Corpus *>(nodeCom->communication->parent());
-    if (!corpus) return;
+    // Get the filenames of the recordings to add
     QFileDialog::Options options;
     QString selectedFilter;
     QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Add Media Recordings to Corpus"),
-                            corpus->repository()->files()->basePath(), tr("Wave Files (*.wav);;MP3 Files (*.mp3);;All Files (*)"),
+                            d->activeCorpus->repository()->files()->basePath(),
+                            tr("Wave Files (*.wav);;MP3 Files (*.mp3);;All Files (*)"),
                             &selectedFilter, options);
     if (fileNames.count() == 0) return;
+    // Process files to add
     foreach(QString fileName, fileNames) {
         QFileInfo info(fileName);
         if (info.suffix() == "wav" || info.suffix() == "mp3") {
-            CorpusRecording *rec = new CorpusRecording(info.baseName(), corpus->repository(), nodeCom->communication);
-            rec->setFilename(corpus->repository()->files()->getRelativeToBasePath(fileName));
-            nodeCom->communication->addRecording(rec);
+            CorpusCommunication *com(nullptr);
+            // Without a selected Communication => create a Communication with the same name
+            if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication))) {
+                com = new CorpusCommunication(info.baseName(), d->activeCorpus->repository(), d->activeCorpus);
+                d->activeCorpus->addCommunication(com);
+            }
+            else {
+                // Otherwise, add the file to the selected Communication
+                com = nodeCom->communication;
+            }
+            CorpusRecording *rec = new CorpusRecording(info.baseName(), d->activeCorpus->repository(), com);
+            rec->setFilename(d->activeCorpus->repository()->files()->getRelativeToBasePath(fileName));
+            com->addRecording(rec);
         }
     }
 }

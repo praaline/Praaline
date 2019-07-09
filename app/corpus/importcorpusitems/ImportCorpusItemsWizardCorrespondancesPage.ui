@@ -97,6 +97,9 @@
         <property name="text">
          <string>Create Annotation Levels / Attributes if they do not already exist in the corpus annotation structure.</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
      </layout>
