@@ -23,29 +23,29 @@ void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annota
     IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
     IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
     IntervalTier *tier_ortho = tiers->getIntervalTierByName("segment");
-    if (tier_phone) txg->addTier(new IntervalTier(tier_phone));
+    if (tier_phone) txg->addTier(tier_phone->clone());
     if (tier_syll) {
         foreach (Interval *syll, tier_syll->intervals()) {
             syll->setText(syll->text().replace("\t", ""));
         }
-        txg->addTier(new IntervalTier(tier_syll));
-        IntervalTier *tier_promise = new IntervalTier(tier_syll, "promise");
+        txg->addTier(tier_syll->clone());
+        IntervalTier *tier_promise = tier_syll->clone("promise");
         foreach (Interval *intv, tier_promise->intervals()) intv->setText(intv->attribute("promise").toString());
         txg->addTier(tier_promise);
     }
     if (tier_tok_min) {
-        txg->addTier(new IntervalTier(tier_tok_min));
-        IntervalTier *tier_pos_min = new IntervalTier(tier_tok_min, "pos_min");
+        txg->addTier(tier_tok_min->clone());
+        IntervalTier *tier_pos_min = tier_tok_min->clone("pos_min");
         foreach (Interval *intv, tier_pos_min->intervals()) intv->setText(intv->attribute("pos_min").toString());
         txg->addTier(tier_pos_min);
     }
     if (tier_tok_mwu) {
-        txg->addTier(new IntervalTier(tier_tok_mwu));
-        IntervalTier *tier_pos_mwu = new IntervalTier(tier_tok_mwu, "pos_mwu");
+        txg->addTier(tier_tok_mwu->clone());
+        IntervalTier *tier_pos_mwu = tier_tok_mwu->clone("pos_mwu");
         foreach (Interval *intv, tier_pos_mwu->intervals()) intv->setText(intv->attribute("pos_mwu").toString());
         txg->addTier(tier_pos_mwu);
     }
-    if (tier_ortho) txg->addTier(new IntervalTier(tier_ortho, "ortho"));
+    if (tier_ortho) txg->addTier(tier_ortho->clone("ortho"));
     foreach (QString tierName, txg->tierNames()) {
         IntervalTier *tier = txg->getIntervalTierByName(tierName);
         if (!tier) continue;

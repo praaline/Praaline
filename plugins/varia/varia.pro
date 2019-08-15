@@ -52,14 +52,13 @@ PRE_TARGETDEPS += \
         ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
-HEADERS += \ 
+HEADERS += \
     pluginvaria_global.h \
     pluginvaria.h \
     crfannotator.h \
     chunkannotator.h \
     svbridge.h \
     InterraterAgreement.h \
-    ProsodyCourse.h \
     XMLTranscription.h \
     BratAnnotationExporter.h \
     PhonetiserExternal.h \
@@ -74,35 +73,21 @@ HEADERS += \
     LanguageDefinition.h \
     corpus-specific/CPROMDISS.h \
     corpus-specific/Rhapsodie.h \
-    corpus-specific/LOCASF.h \
-    experiments/SpeechRateExperiments.h \
-    experiments/TappingAnnotatorExperiment.h \
-    experiments/MyExperiments.h \
-    experiments/ProsodicBoundariesExperimentPreparation.h \
-    experiments/ProsodicBoundariesExperimentAnalysis.h \
-    experiments/DisfluenciesExperiments.h \
-    experiments/StutteredSpeechAlignmentExperiments.h \
-    experiments/MelissaExperiment.h \
-    experiments/MacroprosodyExperiment.h \
-    experiments/ExperimentUtterances.h \
-    experiments/AggregateProsody.h \
     ProsodicBoundaries.h \
     CorpusCommunicationSplicer.h \
     corpus-specific/NCCFR.h \
-    experiments/PhonogenreDiscourseMarkers.h \
     PhonoSeesaw.h \
     JsonAlignedTranscription.h \
     IntervalTierCombinations.h \
     corpus-specific/ORFEO.h
 
 
-SOURCES += \ 
+SOURCES += \
     pluginvaria.cpp \
     crfannotator.cpp \
     chunkannotator.cpp \
     svbridge.cpp \
     InterraterAgreement.cpp \
-    ProsodyCourse.cpp \
     XMLTranscription.cpp \
     BratAnnotationExporter.cpp \
     PhonetiserExternal.cpp \
@@ -117,22 +102,9 @@ SOURCES += \
     LanguageDefinition.cpp \
     corpus-specific/CPROMDISS.cpp \
     corpus-specific/Rhapsodie.cpp \
-    corpus-specific/LOCASF.cpp \
-    experiments/MyExperiments.cpp \
-    experiments/DisfluenciesExperiments.cpp \
-    experiments/SpeechRateExperiments.cpp \
-    experiments/TappingAnnotatorExperiment.cpp \
-    experiments/StutteredSpeechAlignmentExperiments.cpp \
-    experiments/ProsodicBoundariesExperimentPreparation.cpp \
-    experiments/ProsodicBoundariesExperimentAnalysis.cpp \
-    experiments/MelissaExperiment.cpp \
-    experiments/MacroprosodyExperiment.cpp \
-    experiments/ExperimentUtterances.cpp \
-    experiments/AggregateProsody.cpp \
     ProsodicBoundaries.cpp \
     CorpusCommunicationSplicer.cpp \
     corpus-specific/NCCFR.cpp \
-    experiments/PhonogenreDiscourseMarkers.cpp \
     PhonoSeesaw.cpp \
     JsonAlignedTranscription.cpp \
     IntervalTierCombinations.cpp \

@@ -250,8 +250,8 @@ bool SphinxRecogniser::readRecognitionResults(const QString &fileID, const QStri
         }
         QList<Interval *> uttSegments = segmentsHash.value(utteranceID);
         foreach (Interval *uttSegment, uttSegments) {
-            segmentation << new Interval(uttSegment->tMin() + utterances.at(i)->tMin(),
-                                         uttSegment->tMax() + utterances.at(i)->tMin(), uttSegment);
+            segmentation << uttSegment->cloneReposition(uttSegment->tMin() + utterances.at(i)->tMin(),
+                                                        uttSegment->tMax() + utterances.at(i)->tMin());
         }
         qDeleteAll(uttSegments);
     }

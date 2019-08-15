@@ -38,7 +38,7 @@ AnalyserSegmentDuration::~AnalyserSegmentDuration()
 IntervalTier *AnalyserSegmentDuration::categorizePhones(IntervalTier *tier_phone)
 {
     if (!tier_phone) return 0;
-    IntervalTier *tier_cv = new IntervalTier(tier_phone, "phone_cv", false);
+    IntervalTier *tier_cv = tier_phone->cloneWithoutAttributes("phone_cv");
     foreach (Interval *cvseg, tier_cv->intervals()) {
         cvseg->setText( d->vowels.contains(cvseg->text()) ? "V" : "C" );
     }

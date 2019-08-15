@@ -117,7 +117,7 @@ QString SilentPauseManipulator::process(QPointer<CorpusCommunication> com)
             // Textgrid corresponding to the manipulation operation
             AnnotationTierGroup *txg_trim = new AnnotationTierGroup();
 
-            IntervalTier *tier_tokens_new = new IntervalTier(tier_tokens);
+            IntervalTier *tier_tokens_new = tier_tokens->clone();
             QString soxTrimCommand = QString("sox %1 %2_trimmed.wav trim 0 ")
                     .arg(com->ID() + ".wav").arg(com->ID());
             for (int i = 0; i < tier_tokens->count(); ++i) {
@@ -135,8 +135,8 @@ QString SilentPauseManipulator::process(QPointer<CorpusCommunication> com)
             QString soxPadCommand = QString("sox %1_trimmed.wav %2.wav pad ")
                     .arg(com->ID()).arg(com->ID() + "_manip");
 
-            txg_trim->addTier(new IntervalTier(tier_tokens, "original"));
-            txg_trim->addTier(new IntervalTier(tier_tokens_new, "trimmed"));
+            txg_trim->addTier(tier_tokens->clone("original"));
+            txg_trim->addTier(tier_tokens_new->clone("trimmed"));
 
             for (int i = 0; i < tier_tokens_new->count(); ++i) {
                 Interval *token = tier_tokens_new->at(i);
@@ -158,7 +158,7 @@ QString SilentPauseManipulator::process(QPointer<CorpusCommunication> com)
                 i--;
             }
 
-            txg_trim->addTier(new IntervalTier(tier_tokens_new, "manipulated"));
+            txg_trim->addTier(tier_tokens_new->clone("manipulated"));
             PraatTextGrid::save("/home/george/Dropbox/2017 ICIQ3 Granada/Stimuli/test.textgrid", txg_trim);
             delete txg_trim;
 

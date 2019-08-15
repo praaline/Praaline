@@ -145,12 +145,12 @@ QString Rhapsodie::prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusC
         }
         // Output TGs
         foreach (QString speakerID, tiersAll.keys()) {
-            IntervalTier *tier_phone = new IntervalTier(tiersAll.value(speakerID)->getIntervalTierByName("phone"));
-            IntervalTier *tier_syll = new IntervalTier(tiersAll.value(speakerID)->getIntervalTierByName("syll"));
+            IntervalTier *tier_phone = tiersAll.value(speakerID)->getIntervalTierByName("phone")->clone();
+            IntervalTier *tier_syll = tiersAll.value(speakerID)->getIntervalTierByName("syll")->clone();
             IntervalTier *tier_syll_contour = tier_syll->getIntervalTierWithAttributeAsText("rh_contour");
             IntervalTier *tier_syll_hes = tier_syll->getIntervalTierWithAttributeAsText("rh_hes");
             IntervalTier *tier_syll_prom = tier_syll->getIntervalTierWithAttributeAsText("rh_prom");
-            IntervalTier *tier_tok_min = new IntervalTier(tiersAll.value(speakerID)->getIntervalTierByName("tok_min"));
+            IntervalTier *tier_tok_min = tiersAll.value(speakerID)->getIntervalTierByName("tok_min")->clone();
             AnnotationTierGroup *txgspk = new AnnotationTierGroup();
             txgspk->addTier(tier_phone);
             txgspk->addTier(tier_syll);
@@ -158,7 +158,7 @@ QString Rhapsodie::prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusC
             txgspk->addTier(tier_syll_hes);
             txgspk->addTier(tier_syll_prom);
             txgspk->addTier(tier_tok_min);
-            txgspk->addTier(new IntervalTier(rh_pivot));
+            txgspk->addTier(rh_pivot->clone());
             QString filename = QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_realign/" +
                     QString(speakerID).replace("$", "") + ".TextGrid";
             PraatTextGrid::save(filename, txgspk);

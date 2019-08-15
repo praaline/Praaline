@@ -38,3 +38,4 @@ mac {
     LIB_SUFFIX = dylib
 }
 
+DEFINES += USE_PRAALINE_CORE_NAMESPACE

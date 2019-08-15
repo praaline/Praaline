@@ -69,7 +69,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
 
     IntervalTier *tier_toAlign_ortho = new IntervalTier(m_tiernameTranscription, intervalsToAlign,
                                                         tier_ortho->tMin(), tier_ortho->tMax());
-    IntervalTier *tier_toAlign_phono = new IntervalTier(tier_toAlign_ortho);
+    IntervalTier *tier_toAlign_phono = tier_toAlign_ortho->clone();
     tier_toAlign_phono->setName(m_tiernamePhonetisation);
 
     QList<Interval *> intervalsWords;
@@ -99,7 +99,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
         if (utteranceOut.trimmed().isEmpty()) continue;
         qDebug() << utteranceOut;
         //
-        QList<Interval *> utt; utt << new Interval(intv_utteranceOrtho);
+        QList<Interval *> utt; utt << intv_utteranceOrtho->clone();
         utt.first()->setText(utteranceOut.replace("_", "").trimmed());
         QList<SpeechToken> atokens = ExternalPhonetiser::phonetiseList(utt);
         QList<QString> ls_words;
@@ -344,7 +344,7 @@ QString EasyAlignBasic::runAllEasyAlignSteps(CorpusCommunication *com)
             // Align all intervals
             QList<Interval *> intervalsToAlign;
             foreach (Interval *intv, tier_ortho->intervals()) {
-                intervalsToAlign << new Interval(intv);
+                intervalsToAlign << intv->clone();
             }
             // Create a textgrid with the same name as the recording
             QString filenameSound = recording->filePath();

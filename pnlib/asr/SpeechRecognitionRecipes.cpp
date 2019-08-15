@@ -163,7 +163,7 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
             if (!tiers) continue;
             IntervalTier *tier_transcription = tiers->getIntervalTierByName(tiernameTranscription);
             if (!tier_transcription) continue;
-            IntervalTier *tier_segment = new IntervalTier(tier_transcription, tiernameSegmentation);
+            IntervalTier *tier_segment = tier_transcription->clone(tiernameSegmentation);
             tier_segment->fillEmptyWith("", "_");
             tier_segment->mergeIdenticalAnnotations("_");
             foreach (Interval *intv, tier_segment->intervals()) {

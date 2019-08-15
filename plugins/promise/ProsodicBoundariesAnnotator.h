@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QList>
+#include <QTextStream>
 
 #include "pncore/base/RealValueList.h"
 #include "pncore/annotation/Interval.h"

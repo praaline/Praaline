@@ -19,7 +19,8 @@ using namespace Praaline::Core;
 #include "ui_CorpusRepositoryCreateWizard.h"
 
 struct CorpusRepositoryCreateWizardData {
-    CorpusRepositoryCreateWizardData() : newCorpusRepository(0), modelMetadataTemplates(0), modelAnnotationTemplates(0)
+    CorpusRepositoryCreateWizardData() :
+        newCorpusRepository(nullptr), modelMetadataTemplates(nullptr), modelAnnotationTemplates(nullptr)
     {}
 
     CorpusRepositoryDefinition newDefinition;
@@ -33,6 +34,8 @@ CorpusRepositoryCreateWizard::CorpusRepositoryCreateWizard(QWidget *parent) :
     QWizard(parent), ui(new Ui::CorpusRepositoryCreateWizard), d(new CorpusRepositoryCreateWizardData)
 {
     ui->setupUi(this);
+    // Default values
+    ui->editBaseFolder->setText(QDir::homePath());
     // XML files with metadata and annotation templates
     populateTemplates();
     // Connect signals for the wizard

@@ -137,7 +137,7 @@ QStringList SphinxLanguageModelBuilder::getNormalisedUtterances(QPointer<CorpusA
             }
             QString utteranceID = QString("%1_%2_%3").arg(annotationID).arg(speakerID).arg(i);
             // OK to proceed: add utterance to the list
-            Interval *utt = new Interval(intv);
+            Interval *utt = intv->clone();
             utt->setAttribute("utteranceID", utteranceID);
             list_utterances << utt;
             QString transcription;

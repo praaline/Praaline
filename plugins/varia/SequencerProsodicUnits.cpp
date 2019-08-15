@@ -96,8 +96,8 @@ QString SequencerProsodicUnits::createSequencesFromProsodicBoundaries(QPointer<C
                 // check to see if end of a sequence
                 QList<Interval *> syllables = tier_syll->getIntervalsOverlappingWith(token);
                 if (syllables.isEmpty()) continue;
-                Interval lastSyll = syllables.last();
-                if (lastSyll.attribute(d->attributeBoundary).toString() == boundaryLabel) {
+                Interval *lastSyll = syllables.last();
+                if (lastSyll->attribute(d->attributeBoundary).toString() == boundaryLabel) {
                     sequences << new Sequence(start, i, QString("PU_%1").arg(boundaryLabel));
                     start = -1;
                 }

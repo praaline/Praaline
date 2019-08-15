@@ -32,7 +32,7 @@ bool SyllabifierEasy::syllabify(IntervalTier *tier_phone, IntervalTier *tier_syl
     if (from > to) return false;
     QList<Interval *> phones;
     foreach (Interval *intv, tier_phone->getIntervalsContainedIn(from, to))
-        phones << new Interval(intv);
+        phones << intv->clone();
     if (phones.isEmpty()) return false;
     if (!tier_syll->patchIntervals(phones, from, to)) {
         qDeleteAll(phones);

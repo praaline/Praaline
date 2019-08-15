@@ -364,11 +364,11 @@ bool HTKForcedAligner::alignTokens(const QString &waveFilepath, RealTime timeFro
         // We must copy the phones because the AnnotationTierGroup will seize ownership of the pointers
         // and will delete them. If that happened, the output of this method would be a list of stale pointers.
         QList<Interval *> phones;
-        foreach (Interval *p, outPhonesList) phones << new Interval(p);
+        foreach (Interval *p, outPhonesList) phones << p->clone();
         IntervalTier *tierPhones = new IntervalTier("phone", phones);
         AnnotationTierGroup *txg = new AnnotationTierGroup();
         txg->addTier(tierPhones);
-        txg->addTier(new IntervalTier(tierTokens));
+        txg->addTier(tierTokens->clone());
         PraatTextGrid::save(waveResampledBase + ".TextGrid", txg);
         delete txg;
     }

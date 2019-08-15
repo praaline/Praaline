@@ -140,7 +140,7 @@ void SplitCommunicationsDialog::doSplit()
                 foreach (Interval *intv, intervals) {
                     QString label = (attributeID.isEmpty()) ? intv->text() : intv->attribute(attributeID).toString();
                     if (selectedSplitLabels.contains(label)) {
-                        Interval *segment = new Interval(intv);
+                        Interval *segment = intv->clone();
                         segment->setAttribute("splitCommunicationID", QString("%1_%2_%3")
                                               .arg(rec->ID()).arg(i, 2, 10, QChar('0')).arg(label));
                         segments << segment;

@@ -186,7 +186,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
             return;
         }
         if (tier_phones->name() != "phone") {
-            tiers->addTier(new IntervalTier(tier_phones, "phone"));
+            tiers->addTier(tier_phones->clone("phone"));
         }
     }
     if (segmentationMethod == 2 || segmentationMethod == 3 || segmentationMethod == 4) {
@@ -196,7 +196,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<Anno
             return;
         }
         if (tier_syll->name() != "syll") {
-            tiers->addTier(new IntervalTier(tier_syll, "syll"));
+            tiers->addTier(tier_syll->clone("syll"));
         }
     }
     if (segmentationMethod == 5) {

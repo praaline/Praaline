@@ -119,7 +119,7 @@ QList<SpeechToken> ForcedAligner::alignerTokensFromIntervalTier(bool insertLeadi
     if (indexTo >= tierTokens->count()) indexTo = tierTokens->count() - 1;
     if (indexTo < indexFrom) return alignerTokens;
 
-    QSharedPointer<IntervalTier> tierTokensCopy(new IntervalTier(tierTokens));
+    QSharedPointer<IntervalTier> tierTokensCopy(tierTokens->clone());
 
     // On the working copy: Insert silent pauses at the beginning and end, if authorised to do so.
     if (insertLeadingAndTrailingPauses) {

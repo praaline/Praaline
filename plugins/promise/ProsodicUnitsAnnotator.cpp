@@ -110,13 +110,13 @@ QString ProsodicUnitsAnnotator::createProsodicUnitsTierBoundaries(QPointer<Corpu
                 // Check if we have reached the end of a sequence
                 QList<Interval *> syllables = tier_syll->getIntervalsOverlappingWith(token);
                 if (syllables.isEmpty()) continue;
-                Interval lastSyll = syllables.last();
-                if (lastSyll.attribute(d->attributeBoundary).toString() == boundaryLabel) {
+                Interval *lastSyll = syllables.last();
+                if (lastSyll->attribute(d->attributeBoundary).toString() == boundaryLabel) {
                     QString text = QString("PU_%1").arg(boundaryLabel);
                     if (asSequences)
                         sequences << new Sequence(start, i, text);
                     else
-                        intervals << new Interval(start_t, lastSyll.tMax(), text);
+                        intervals << new Interval(start_t, lastSyll->tMax(), text);
                     start = -1;
                     start_t = RealTime(-1, 0);
                 }

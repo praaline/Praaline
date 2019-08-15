@@ -574,7 +574,7 @@ IntervalTier *SyllableProminenceAnnotator::annotateWithCRF(IntervalTier *tier_sy
                                                            QHash<QString, RealValueList> &features, bool withPOS,
                                                            const QString &filenameModel, const QString &tier_name)
 {
-    IntervalTier *promise = new IntervalTier(tier_syll, tier_name);
+    IntervalTier *promise = tier_syll->clone(tier_name);
     foreach (Interval *prom, promise->intervals()) {
         if (!prom->isPauseSilent()) prom->setText("x");
     }

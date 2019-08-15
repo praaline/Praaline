@@ -99,7 +99,7 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<CorpusComm
             QList<Interval *> longPauses;
             foreach (Interval *pause ,pauses) {
                 if (pause->duration().toDouble() > 0.300) {
-                    Interval *longPause = new Interval(pause);
+                    Interval *longPause = pause->clone();
                     longPause->setText("_");
                     longPauses << longPause;
                 }

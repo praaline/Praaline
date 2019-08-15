@@ -610,7 +610,7 @@ void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances
                 int i = 0;
                 foreach (Interval *intv, tier_segment->intervals()) {
                     if (intv->isPauseSilent()) { i++; continue; }
-                    Interval *utt = new Interval(intv);
+                    Interval *utt = intv->clone();
                     QString spk = speakerID.replace(annotationID, "");
                     if (spk.startsWith("_")) spk = spk.remove(0, 1);
                     QString utteranceID = QString("%1_%2_%3").arg(annotationID).arg(spk).arg(i);

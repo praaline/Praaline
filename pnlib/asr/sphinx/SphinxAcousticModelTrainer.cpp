@@ -160,7 +160,7 @@ bool SphinxAcousticModelTrainer::createFiles(
                         if ((!createSoundSegments) && (!QFile::exists(d->outputPath + "/wav/" + utteranceID + ".wav")))
                             continue;
                         // ok to proceed
-                        Interval *utt = new Interval(intv);
+                        Interval *utt = intv->clone();
                         utt->setAttribute("utteranceID", utteranceID);
                         list_utterances << utt;
                         QString transcriptionLine, utteranceLine;

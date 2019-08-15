@@ -27,7 +27,7 @@ using std::vector;
 
 struct CorpusModeWidgetData {
     CorpusModeWidgetData() :
-        recentFiles(0), recentFilesMenu(0)
+        recentFiles(nullptr), recentFilesMenu(nullptr)
     { }
 
     QAction *actionNewCorpusRepository;

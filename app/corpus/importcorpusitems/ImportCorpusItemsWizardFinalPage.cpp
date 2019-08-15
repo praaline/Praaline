@@ -237,7 +237,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
             IntervalTier *tierSpeaker1 = inputTiers->getIntervalTierByName(tiernameSpeaker1);
             IntervalTier *tierSpeaker2 = inputTiers->getIntervalTierByName(tiernameSpeaker2);
             if (tierSpeaker1 && tierSpeaker2) {
-                tierSpeaker = new IntervalTier("speaker", tierSpeaker1, tierSpeaker2, "S1", "S2", "S1");
+                tierSpeaker = IntervalTier::multiplex("speaker", tierSpeaker1, tierSpeaker2, "S1", "S2", "S1");
                 shouldDeleteSpeakerTier = true;
             }
         }
@@ -277,7 +277,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                         if (!spkLabel.split("+").contains(speakerID)) continue;
                         // if (spkLabel != speakerID) continue;
                         foreach (Interval *intv, qobject_cast<IntervalTier *>(tier)->getIntervalsContainedIn(ispk))
-                            intervalsTierSpk << new Interval(intv);
+                            intervalsTierSpk << intv->clone();
                     }
                     IntervalTier *tierSpk = new IntervalTier(tier->name(), intervalsTierSpk, tier->tMin(), tier->tMax(), tiersSpk);
                     tiersSpk->addTier(tierSpk);
@@ -289,7 +289,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication>
                         if (!spkLabel.split("+").contains(speakerID)) continue;
                         // if (ispk->text() != speakerID) continue;
                         foreach (Point *point, qobject_cast<PointTier *>(tier)->getPointsContainedIn(ispk))
-                            pointsTierSpk << new Point(point);
+                            pointsTierSpk << point->clone();
                     }
                     PointTier *tierSpk = new PointTier(tier->name(), pointsTierSpk, tier->tMin(), tier->tMax(), tiersSpk);
                     tiersSpk->addTier(tierSpk);

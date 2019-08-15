@@ -297,7 +297,7 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
             QList<double> turnDurations, turnTokenCounts, turnArtSyllCounts;
             QList<double> intersyllabicIntervals;
             // Turn level
-            QScopedPointer<IntervalTier> tier_turns(new IntervalTier(tier_timelineSpk.data()));
+            QScopedPointer<IntervalTier> tier_turns(tier_timelineSpk->clone());
             foreach (Interval *intv, tier_turns->intervals()) {
                 if (intv->text().contains(speakerID)) intv->setText(speakerID); else intv->setText("");
             }
