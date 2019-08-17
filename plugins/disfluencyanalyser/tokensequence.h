@@ -11,7 +11,7 @@ class TokenSequence : public QObject
 {
     Q_OBJECT
 public:
-    TokenSequence(IntervalTier *tierTokens, int start, int end, const QString &tag, QObject *parent = nullptr);
+    TokenSequence(IntervalTier *tierTokens, int start, int end, const QString &tag, QObject *parent = 0);
 
     int indexStart() const { return m_start; }
     int indexEnd() const { return m_end; }

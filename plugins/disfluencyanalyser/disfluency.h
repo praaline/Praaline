@@ -20,7 +20,7 @@ public:
 
     Disfluency(IntervalTier *tierTokens, int start, int end, const QString &globalTag,
                int interruptionPoint = -1, int reparansStart = -1,
-               int editTermStart = -1, int editTermEnd = -1, QObject *parent = nullptr);
+               int editTermStart = -1, int editTermEnd = -1, QObject *parent = 0);
 
     int indexInterruptionPoint() const { return m_interruptionPoint; }
     int indexReparansStart() const { return m_reparansStart; }

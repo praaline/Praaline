@@ -54,7 +54,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<CorpusCommunication *> &communications) override;
+                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -63,10 +63,10 @@ namespace Praaline {
             private:
                 PluginDisfluencyAnalyserPrivateData* d;
 
-                void concordances(const QList<CorpusCommunication *> &communications);
-                void patterns(const QList<CorpusCommunication *> &communications, const QStringList &codes);
-                void createSequences(const QList<CorpusCommunication *> &communications);
-                void exportMultiTierTextgrids(const QList<CorpusCommunication *> &communications);
+                void concordances(const QList<QPointer<CorpusCommunication> > &communications);
+                void patterns(const QList<QPointer<CorpusCommunication> > &communications, const QStringList &codes);
+                void createSequences(const QList<QPointer<CorpusCommunication> > &communications);
+                void exportMultiTierTextgrids(const QList<QPointer<CorpusCommunication> > &communications);
             };
         }
     }
