@@ -417,7 +417,7 @@ void DisfluencyPatternDetector::codeSubstitutions(QList<SubstitutionInfo> &subst
 }
 
 
-QPointer<CorpusBookmark> DisfluencyPatternDetector::createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+CorpusBookmark *DisfluencyPatternDetector::createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                                    const DisfluencyPatternDetector::PatternInfoBase &pattern)
 {
     if (!d->tierToken) return 0;
@@ -428,11 +428,11 @@ QPointer<CorpusBookmark> DisfluencyPatternDetector::createBookmark(const QString
     return new CorpusBookmark(corpusID, communicationID, annotationID, t, pattern.type(), pattern.text);
 }
 
-QList<QPointer<CorpusBookmark> >
+QList<CorpusBookmark *>
 DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                            QList<DisfluencyPatternDetector::RepetitionInfo> &repetitions)
 {
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
     if (!d->tierToken) return bookmarks;
     foreach (RepetitionInfo rep, repetitions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, rep);
@@ -440,11 +440,11 @@ DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QStrin
     return bookmarks;
 }
 
-QList<QPointer<CorpusBookmark> >
+QList<CorpusBookmark *>
 DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                            QList<DisfluencyPatternDetector::InsertionInfo> &insertions)
 {
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
     if (!d->tierToken) return bookmarks;
     foreach (InsertionInfo ins, insertions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, ins);
@@ -452,11 +452,11 @@ DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QStrin
     return bookmarks;
 }
 
-QList<QPointer<CorpusBookmark> >
+QList<CorpusBookmark *>
 DisfluencyPatternDetector::createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                            QList<DisfluencyPatternDetector::SubstitutionInfo> &substitutions)
 {
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
     if (!d->tierToken) return bookmarks;
     foreach (SubstitutionInfo sub, substitutions) {
         bookmarks << createBookmark(corpusID, communicationID, annotationID, sub);

@@ -13,7 +13,7 @@ class DisfluencyAnalyserTool : public QObject
 {
     Q_OBJECT
 public:
-    DisfluencyAnalyserTool(IntervalTier *tierTokens, QObject *parent = 0);
+    DisfluencyAnalyserTool(IntervalTier *tierTokens, QObject *parent = nullptr);
 
     Disfluency* disfluency(int index) const;
     QList<Disfluency *> disfluencies() const;
