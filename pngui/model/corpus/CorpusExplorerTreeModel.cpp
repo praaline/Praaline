@@ -9,11 +9,11 @@ using namespace Praaline::Core;
 #include "CorpusExplorerTreeModel.h"
 
 struct CorpusExplorerTreeModelData {
-    QList<QPointer<MetadataStructureAttribute> > attributes;
+    QList<MetadataStructureAttribute *> attributes;
 };
 
 
-CorpusExplorerTreeModel::CorpusExplorerTreeModel(QList<QPointer<MetadataStructureAttribute> > attributes, QObject *parent) :
+CorpusExplorerTreeModel::CorpusExplorerTreeModel(QList<MetadataStructureAttribute *> attributes, QObject *parent) :
     ObserverTreeModel(parent), d(new CorpusExplorerTreeModelData)
 {
     d->attributes = attributes;

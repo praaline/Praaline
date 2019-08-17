@@ -21,7 +21,7 @@ public:
                                            const QString &attributeID_A = QString(), const QString &attributeID_B = QString(),
                                            const QStringList &extraAttributeIDs_A = QStringList(),
                                            const QStringList &extraAttributeIDs_B = QStringList(),
-                                           QObject *parent = 0);
+                                           QObject *parent = nullptr);
     ~DiffSESforIntervalsTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

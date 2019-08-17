@@ -14,7 +14,7 @@ class AdvancedQueriesWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit AdvancedQueriesWidget(QWidget *parent = 0);
+    explicit AdvancedQueriesWidget(QWidget *parent = nullptr);
     ~AdvancedQueriesWidget();
 
 private slots:

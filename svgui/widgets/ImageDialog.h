@@ -32,7 +32,7 @@ public:
     ImageDialog(QString title,
                 QString image = "",
                 QString label = "",
-                QWidget *parent = 0);
+                QWidget *parent = nullptr);
     virtual ~ImageDialog();
 
     QString getImage();

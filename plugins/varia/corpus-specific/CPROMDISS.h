@@ -17,9 +17,9 @@ class CPROMDISS
 public:
     CPROMDISS();
 
-    static QString transferBasicTiers(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString combineTiers(QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString movePointAnnotationToInterval(QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString transferBasicTiers(Praaline::Core::CorpusCommunication *com);
+    static QString combineTiers(Praaline::Core::CorpusCommunication *com);
+    static QString movePointAnnotationToInterval(Praaline::Core::CorpusCommunication *com);
 };
 
 #endif // CPROMDISS_H

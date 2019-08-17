@@ -108,7 +108,7 @@ public:
     /**
       * Constructs a QGroupingProxyModel with the given @p parent.
       */
-    explicit QGroupingProxyModel(QObject *parent = 0);
+    explicit QGroupingProxyModel(QObject *parent = nullptr);
     /**
       * Destroys the QGroupingProxyModel object.
       */

@@ -28,7 +28,7 @@ class NotifyingCheckBox : public QCheckBox
     Q_OBJECT
 public:
 
-    NotifyingCheckBox(QWidget *parent = 0) :
+    NotifyingCheckBox(QWidget *parent = nullptr) :
         QCheckBox(parent) { }
 
     virtual ~NotifyingCheckBox();

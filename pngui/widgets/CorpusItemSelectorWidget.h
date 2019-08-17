@@ -34,7 +34,7 @@ class CorpusItemSelectorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit CorpusItemSelectorWidget(QWidget *parent = 0);
+    explicit CorpusItemSelectorWidget(QWidget *parent = nullptr);
     ~CorpusItemSelectorWidget();
 
 public slots:

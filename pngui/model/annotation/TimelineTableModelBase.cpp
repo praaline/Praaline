@@ -22,7 +22,7 @@ TimelineTableModelBase::~TimelineTableModelBase()
 {
 }
 
-void TimelineTableModelBase::calculateTimeline(QMap<QString, QPointer<AnnotationTierGroup> > &tiers, const QString &timelineTier)
+void TimelineTableModelBase::calculateTimeline(SpeakerAnnotationTierGroupMap &tiers, const QString &timelineTier)
 {
     QMultiMap<RealTime, TimelineData> timeline;
     int i = 0;

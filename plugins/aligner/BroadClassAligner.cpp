@@ -162,15 +162,15 @@ void BroadClassAligner::updateTokenTierWithBroadClasses(IntervalTier *tier_phone
     }
 }
 
-void BroadClassAligner::prepareTiers(QList<QPointer<CorpusCommunication> > communications)
+void BroadClassAligner::prepareTiers(QList<CorpusCommunication *> communications)
 {
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) return;
         if (!com->repository()) return;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_phone = tiers->getIntervalTierByName("cid_phoneme");
                 if (!tier_phone) continue;
@@ -188,7 +188,7 @@ void BroadClassAligner::prepareTiers(QList<QPointer<CorpusCommunication> > commu
     }
 }
 
-void BroadClassAligner::prepareBPCTrainingFromCommunications(QList<QPointer<CorpusCommunication> > communications,
+void BroadClassAligner::prepareBPCTrainingFromCommunications(QList<CorpusCommunication *> communications,
                                                              const QString &outputPath)
 {
     QScopedPointer<SphinxAcousticModelTrainer> trainer(new SphinxAcousticModelTrainer);

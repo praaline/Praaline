@@ -10,7 +10,7 @@ LanguageDefinition::LanguageDefinition()
 
 }
 
-QString LanguageDefinition::checkCharacters(QPointer<CorpusCommunication> com, const QString &levelID)
+QString LanguageDefinition::checkCharacters(CorpusCommunication *com, const QString &levelID)
 {
     QString ret;
     QStringList languageCharacters;

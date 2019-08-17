@@ -24,11 +24,11 @@ class ImportCorpusItemsWizardFinalPage : public QWizardPage
 
 public:
     explicit ImportCorpusItemsWizardFinalPage(QPointer<Corpus> corpus,
-                                              QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-                                              QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+                                              QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+                                              QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
                                               QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                               QSet<QString> &tierNamesCommon,
-                                              QWidget *parent = 0);
+                                              QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardFinalPage();
 
     void initializePage();
@@ -38,9 +38,9 @@ private:
     Ui::ImportCorpusItemsWizardFinalPage *ui;
     ImportCorpusItemsWizardFinalPageData *d;
 
-    void importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
-    void importTranscriber(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
-    void importSubRipTranscription(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, QList<TierCorrespondance> &correspondances);
+    void importPraat(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
+    void importTranscriber(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
+    void importSubRipTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
 };
 
 #endif // IMPORTCORPUSITEMSWIZARDFINALPAGE_H

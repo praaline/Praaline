@@ -43,7 +43,7 @@ public:
     /**
       * Constructs a QSingleColumnProxyModel with the given @p parent.
       */
-    explicit QSingleColumnProxyModel(QObject *parent = 0);
+    explicit QSingleColumnProxyModel(QObject *parent = nullptr);
     /**
       * Destoys the QSingleColumnProxyModel.
       */

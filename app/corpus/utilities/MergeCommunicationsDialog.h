@@ -18,7 +18,7 @@ class MergeCommunicationsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MergeCommunicationsDialog(Praaline::Core::Corpus *corpus, QWidget *parent = 0);
+    explicit MergeCommunicationsDialog(Praaline::Core::Corpus *corpus, QWidget *parent = nullptr);
     ~MergeCommunicationsDialog();
 
 private:

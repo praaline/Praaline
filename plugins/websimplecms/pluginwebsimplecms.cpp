@@ -130,7 +130,7 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeAttribute("version", "1.0");
 
     // Get annotation tiers
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+    SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
 
     // recording data
     xml.writeStartElement("sound");
@@ -356,18 +356,18 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     return true;
 }
 
-void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(const QList<CorpusCommunication *> &communications)
 {
     if (d->pathXML.isEmpty()) d->pathXML = ".";
     int countDone = 0;
     madeProgress(0);
     printMessage("XML file creator for Simple CMS v. 1.0");
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         printMessage(QString("Creating XML file for %1").arg(com->ID()));
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 outputXML(com, rec, annot, d->pathXML + "/" + annot->ID() + ".xml", d->includeSyllables);
             }

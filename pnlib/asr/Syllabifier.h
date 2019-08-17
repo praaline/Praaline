@@ -10,7 +10,7 @@ class Syllabifier : public QObject
 {
     Q_OBJECT
 public:
-    explicit Syllabifier(QObject *parent = 0);
+    explicit Syllabifier(QObject *parent = nullptr);
 
 signals:
 

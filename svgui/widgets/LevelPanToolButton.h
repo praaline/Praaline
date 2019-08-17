@@ -24,7 +24,7 @@ class LevelPanToolButton : public QToolButton
     Q_OBJECT
 
 public:
-    LevelPanToolButton(QWidget *parent = 0);
+    LevelPanToolButton(QWidget *parent = nullptr);
     ~LevelPanToolButton();
     
     /// Return level as a gain value in the range [0,1]

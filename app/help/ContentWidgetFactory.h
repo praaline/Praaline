@@ -33,7 +33,7 @@ class ContentWidgetFactory : public QObject, public ISideViewerWidget
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::ISideViewerWidget)
 
 public:
-    ContentWidgetFactory(QHelpEngine* help_engine, QObject *parent = 0);
+    ContentWidgetFactory(QHelpEngine* help_engine, QObject *parent = nullptr);
     ~ContentWidgetFactory();
 
     // --------------------------------

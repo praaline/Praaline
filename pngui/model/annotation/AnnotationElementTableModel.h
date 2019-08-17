@@ -13,7 +13,7 @@ class AnnotationElementTableModel : public QAbstractTableModel
 public:
     explicit AnnotationElementTableModel(Praaline::Core::AnnotationElement::ElementType elementType,
                                          QList<Praaline::Core::AnnotationElement *> elements,
-                                         QStringList attributeIDs, QObject *parent = 0);
+                                         QStringList attributeIDs, QObject *parent = nullptr);
     ~AnnotationElementTableModel();
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

@@ -12,7 +12,7 @@ class ImportMetadataWizardColumnsPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportMetadataWizardColumnsPage(QWidget *parent = 0);
+    explicit ImportMetadataWizardColumnsPage(QWidget *parent = nullptr);
     ~ImportMetadataWizardColumnsPage();
 
 private:

@@ -9,7 +9,7 @@ class AttributeNameTranslation : public QObject
 {
     Q_OBJECT
 public:
-    explicit AttributeNameTranslation(QObject *parent = 0);
+    explicit AttributeNameTranslation(QObject *parent = nullptr);
     bool readFromFile(const QString &filename);
     QString translate(const QString &attribute) const;
 

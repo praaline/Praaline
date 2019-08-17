@@ -15,7 +15,7 @@ class CorpusExplorerTableWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CorpusExplorerTableWidget(QWidget *parent = 0);
+    explicit CorpusExplorerTableWidget(QWidget *parent = nullptr);
     ~CorpusExplorerTableWidget();
 
 private slots:

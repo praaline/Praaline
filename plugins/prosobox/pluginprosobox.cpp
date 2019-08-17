@@ -155,18 +155,18 @@ QString temporalVariables(CorpusCommunication *com, QString annotationID, QStrin
     return result;
 }
 
-void Praaline::Plugins::Prosobox::PluginProsobox::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosobox::PluginProsobox::process(const QList<CorpusCommunication *> &communications)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID == "L2") continue;
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 // ProsoboxScript::createTextGrid(corpus->baseMediaPath(), corpus, annotationID, speakerID);
                 // QString t = temporalVariables(corpus, annotationID, speakerID);

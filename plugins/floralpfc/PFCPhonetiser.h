@@ -21,7 +21,7 @@ public:
 
     void reset();
     QString loadPhonetisationDictionary();
-    QString phonetiseFromDictionary(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString phonetiseFromDictionary(Praaline::Core::CorpusCommunication *com);
     QString writeListOfWordsOOV(const QString &filename);
     QString writeListOfWordsFalseStarts(const QString &filename);
     QString convertPhonetisationsToStars(const QString &phonetisations);

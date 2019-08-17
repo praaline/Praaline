@@ -27,7 +27,7 @@ class PauseLengthDistributionWidget : public QWidget
 
 public:
     explicit PauseLengthDistributionWidget(Core::CorpusRepository *repository, AnalyserTemporal *analyser,
-                                           QWidget *parent = 0);
+                                           QWidget *parent = nullptr);
     ~PauseLengthDistributionWidget();
 
 private slots:

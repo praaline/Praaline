@@ -19,11 +19,11 @@ NCCFR::NCCFR()
 
 }
 
-QString NCCFR::prepareTranscription(QPointer<CorpusCommunication> com)
+QString NCCFR::prepareTranscription(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -44,18 +44,18 @@ QString NCCFR::prepareTranscription(QPointer<CorpusCommunication> com)
 }
 
 
-QString NCCFR::align(QPointer<Praaline::Core::CorpusCommunication> com)
+QString NCCFR::align(Praaline::Core::CorpusCommunication *com)
 {
     QElapsedTimer timer;
 
     if (!com) return "No Communication";
     if (com->recordings().isEmpty()) return QString("No Recordings for %1").arg(com->ID());
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return "No Recording";
     QString annotationID = com->ID();
 
     timer.start();
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->
+    SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->
             getTiersAllSpeakers(annotationID, QStringList() << "transcription" << "tok_min" << "phone");
     foreach (QString speakerID, tiersAll.keys()) {
         AnnotationTierGroup *tiers = tiersAll.value(speakerID);

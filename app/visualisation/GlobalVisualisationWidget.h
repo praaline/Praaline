@@ -12,7 +12,7 @@ class GlobalVisualisationWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit GlobalVisualisationWidget(QWidget *parent = 0);
+    explicit GlobalVisualisationWidget(QWidget *parent = nullptr);
     ~GlobalVisualisationWidget();
 
 private:

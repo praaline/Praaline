@@ -21,7 +21,7 @@ class AnalyserSegmentDuration : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserSegmentDuration(QObject *parent = 0);
+    explicit AnalyserSegmentDuration(QObject *parent = nullptr);
     virtual ~AnalyserSegmentDuration();
 
     QList<QString> measureIDs(const QString &groupingLevel);

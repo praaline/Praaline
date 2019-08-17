@@ -10,7 +10,7 @@ class PseudoLanguage
 public:
     PseudoLanguage();
 
-    bool createListOfPossibleDiphones(const QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
+    bool createListOfPossibleDiphones(const QList<Praaline::Core::CorpusCommunication *> &communications,
                                       const QString &filename, int cutOffThreshold = 0);
     void substitutePhonemes(Praaline::Core::IntervalTier *tier_phones, const QString &attributeID);
 };

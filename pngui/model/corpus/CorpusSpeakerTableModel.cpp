@@ -12,12 +12,12 @@ using namespace Praaline::Core;
 
 struct CorpusSpeakerTableModelData {
     bool multiCorpus;
-    QList<QPointer<CorpusSpeaker> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;
+    QList<CorpusSpeaker *> items;
+    QList<MetadataStructureAttribute *> attributes;
 };
 
-CorpusSpeakerTableModel::CorpusSpeakerTableModel(QList<QPointer<CorpusSpeaker> > items,
-                                                 QList<QPointer<MetadataStructureAttribute> > attributes,
+CorpusSpeakerTableModel::CorpusSpeakerTableModel(QList<CorpusSpeaker *> items,
+                                                 QList<MetadataStructureAttribute *> attributes,
                                                  bool multiCorpus, QObject *parent)
     : QAbstractTableModel(parent), d(new CorpusSpeakerTableModelData)
 {
@@ -60,7 +60,7 @@ QVariant CorpusSpeakerTableModel::headerData(int section, Qt::Orientation orient
             else if (section == 1) return tr("Speaker ID");
             else if (section == 2) return tr("Name");
             else if ((section - 3) >= 0 && (section - 3) < d->attributes.count()) {
-                QPointer<MetadataStructureAttribute> attr = d->attributes.at(section - 3);
+                MetadataStructureAttribute *attr = d->attributes.at(section - 3);
                 return (attr) ? attr->name() : QVariant();
             } else
                 return QVariant();
@@ -75,9 +75,8 @@ QVariant CorpusSpeakerTableModel::headerData(int section, Qt::Orientation orient
     }
     else if (orientation == Qt::Vertical) {
         QString ret = QString::number(section + 1);
-        QPointer<CorpusSpeaker> item(0);
         if ((section >= 0) && (section < d->items.count())) {
-            item  = d->items.at(section);
+            CorpusSpeaker *item  = d->items.at(section);
             if (item->isNew()) return ret.append(" +");
             if (item->isDirty()) return ret.append(" #");
         }

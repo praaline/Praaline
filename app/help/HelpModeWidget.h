@@ -10,7 +10,7 @@ class HelpModeWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit HelpModeWidget(QWidget *parent = 0);
+    explicit HelpModeWidget(QWidget *parent = nullptr);
     ~HelpModeWidget();
 
     bool eventFilter(QObject *object, QEvent *event);

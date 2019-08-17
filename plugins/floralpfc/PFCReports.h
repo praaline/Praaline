@@ -20,7 +20,7 @@ public:
     ~PFCReports();
 
     QString corpusCoverageStatistics(QPointer<Praaline::Core::Corpus> corpus);
-    QString reportCorrections(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString reportCorrections(Praaline::Core::CorpusCommunication *com);
 
 private:
     PFCReportsData *d;

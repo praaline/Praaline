@@ -13,7 +13,7 @@ class CorpusDatabaseConnectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CorpusDatabaseConnectionDialog(QWidget *parent = 0);
+    explicit CorpusDatabaseConnectionDialog(QWidget *parent = nullptr);
     ~CorpusDatabaseConnectionDialog();
 
     Praaline::Core::CorpusRepositoryDefinition corpusDefinition();

@@ -11,7 +11,7 @@ class PraalineMainWindow : public QObject
 {
     Q_OBJECT
 public:
-    explicit PraalineMainWindow(QtilitiesMainWindow *mainWindow, QObject *parent = 0);
+    explicit PraalineMainWindow(QtilitiesMainWindow *mainWindow, QObject *parent = nullptr);
     ~PraalineMainWindow();
     void initialise();
     void finalise();

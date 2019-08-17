@@ -61,14 +61,14 @@ PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *r
     if (d->repository->metadataStructure()) {
         ui->comboBoxGroupByCom->addItem("", "");
         ui->comboBoxGroupByCom->addItem("Communication ID", "ID");
-        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
             ui->comboBoxGroupByCom->addItem(attr->name(), attr->ID());
         }
         ui->comboBoxGroupByCom->setCurrentText("");
         // speaker
         ui->comboBoxGroupBySpk->addItem("", "");
         ui->comboBoxGroupBySpk->addItem("Speaker ID", "ID");
-        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
             ui->comboBoxGroupBySpk->addItem(attr->name(), attr->ID());
         }
         ui->comboBoxGroupBySpk->setCurrentText("");

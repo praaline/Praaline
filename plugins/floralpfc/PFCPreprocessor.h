@@ -20,13 +20,13 @@ public:
     ~PFCPreprocessor();
 
     QString renameTextgridTiers(const QString& directory);
-    QString prepareTranscription(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString checkSpeakers(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString separateSpeakers(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString tokenise(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString tokmin_punctuation(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString liaisonCoding(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString checkCharacterSet(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString prepareTranscription(Praaline::Core::CorpusCommunication *com);
+    QString checkSpeakers(Praaline::Core::CorpusCommunication *com);
+    QString separateSpeakers(Praaline::Core::CorpusCommunication *com);
+    QString tokenise(Praaline::Core::CorpusCommunication *com);
+    QString tokmin_punctuation(Praaline::Core::CorpusCommunication *com);
+    QString liaisonCoding(Praaline::Core::CorpusCommunication *com);
+    QString checkCharacterSet(Praaline::Core::CorpusCommunication *com);
 
 private:
     PFCPreprocessorData *d;

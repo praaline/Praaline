@@ -29,7 +29,7 @@ class AnalyserDisfluenciesItem : public AnalyserItemBase
 {
     Q_OBJECT
 public:
-    explicit AnalyserDisfluenciesItem(QObject *parent = 0);
+    explicit AnalyserDisfluenciesItem(QObject *parent = nullptr);
     virtual ~AnalyserDisfluenciesItem();
 
     QString levelSyllables() const;
@@ -45,7 +45,7 @@ public:
     QList<double> vectorMeasureCom(const QString &measureID) const override;
     QList<double> vectorMeasureSpk(const QString &speakerID, const QString &measureID) const override;
 
-    void analyse(QPointer<Praaline::Core::CorpusCommunication> com) override;
+    void analyse(Praaline::Core::CorpusCommunication *com) override;
 
 private:
     AnalyserDisfluenciesItemData *d;

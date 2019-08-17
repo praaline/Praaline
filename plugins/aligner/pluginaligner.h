@@ -54,7 +54,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
+                void process(const QList<CorpusCommunication *> &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -67,11 +67,11 @@ namespace Praaline {
 
             private:
                 PluginAlignerPrivateData* d;
-                void addPhonetisationToTokens(const QList<QPointer<CorpusCommunication> > &communications);
-                void createFeatureFilesFromUtterances(const QList<QPointer<CorpusCommunication> > &communications);
-                void align(const QList<QPointer<CorpusCommunication> > &communications);
-                void createUtterancesFromProsogramAutosyll(const QList<QPointer<CorpusCommunication> > &communications);
-                void checks(const QList<QPointer<CorpusCommunication> > &communications);
+                void addPhonetisationToTokens(const QList<CorpusCommunication *> &communications);
+                void createFeatureFilesFromUtterances(const QList<CorpusCommunication *> &communications);
+                void align(const QList<CorpusCommunication *> &communications);
+                void createUtterancesFromProsogramAutosyll(const QList<CorpusCommunication *> &communications);
+                void checks(const QList<CorpusCommunication *> &communications);
             };
         }
     }

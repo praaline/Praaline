@@ -32,13 +32,13 @@ public:
     void updatePhoneTierWithBroadClasses(IntervalTier *tier, const QString &attributeBroadClass) const;
     void updateTokenTierWithBroadClasses(IntervalTier *tier_phone, const QString &attributeBroadClassPhone,
                                          IntervalTier *tier_token, const QString &attributeBroadClassToken) const;
-    void prepareBPCTrainingFromCommunications(QList<QPointer<CorpusCommunication> > communications,
+    void prepareBPCTrainingFromCommunications(QList<CorpusCommunication *> communications,
                                               const QString &outputPath);
 
 private:
     BroadClassAlignerData *d;
 
-    void prepareTiers(QList<QPointer<CorpusCommunication> > communications);
+    void prepareTiers(QList<CorpusCommunication *> communications);
 };
 
 #endif // BROADCLASSALIGNER_H

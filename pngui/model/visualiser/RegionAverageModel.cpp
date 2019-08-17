@@ -30,13 +30,13 @@ struct RegionAverageModelData {
     bool showLabel;
     bool skipSilentPausesGrouping;
     bool skipSilentPausesCounting;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;    // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;    // Speaker ID, corresponding tiers
     QMap<QString, QPointer<RegionModel> > regions;          // SpeakerID, calculated averages
     QList<QString> excludedSpeakerIDs;
 };
 
 RegionAverageModel::RegionAverageModel(sv_samplerate_t sampleRate,
-                                       QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                       SpeakerAnnotationTierGroupMap &tiers,
                                        const QString &levelID, const QString &attributeID,
                                        const QString &groupingLevelID) :
     d(new RegionAverageModelData)

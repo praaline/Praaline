@@ -23,7 +23,7 @@ ORFEO::ORFEO()
 
 }
 
-QString ORFEO::readOrfeoFile(QPointer<Praaline::Core::CorpusCommunication> com)
+QString ORFEO::readOrfeoFile(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error: No communication";
@@ -124,17 +124,17 @@ QString ORFEO::readOrfeoFile(QPointer<Praaline::Core::CorpusCommunication> com)
     return ret;
 }
 
-QString ORFEO::mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> com)
+QString ORFEO::mapTokensToDisMo(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_orfeo = tiers->getIntervalTierByName("orfeo_token");
             if (!tier_orfeo) { ret.append("No ORFEO tier\n"); continue; }
@@ -173,17 +173,17 @@ QString ORFEO::mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> co
     return ret.trimmed();
 }
 
-QString ORFEO::createSentenceUnits(QPointer<Praaline::Core::CorpusCommunication> com)
+QString ORFEO::createSentenceUnits(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_orfeo = tiers->getIntervalTierByName("orfeo_token");
             if (!tier_orfeo) { ret.append("No ORFEO tier\n"); continue; }

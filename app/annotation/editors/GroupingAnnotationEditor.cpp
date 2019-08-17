@@ -63,7 +63,7 @@ struct GroupingAnnotationEditorData {
     // Options
     bool autoSave;
     // State
-    QMap<QString, QPointer<AnnotationTierGroup> > currentTierGroups;
+    SpeakerAnnotationTierGroupMap currentTierGroups;
     QPointer<Corpus> currentCorpus;
     QString currentCommunicationID;
     QString currentRecordingID;

@@ -64,17 +64,17 @@ void IntervalTierCombinations::setIntervalsLevelCombined(const QString &levelID)
     d->intervalsLevelCombined = levelID;
 }
 
-QString IntervalTierCombinations::combineIntervalTiers(QPointer<Praaline::Core::CorpusCommunication> com)
+QString IntervalTierCombinations::combineIntervalTiers(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    AnnotationTierGroupPerSpeakerMap tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_intervalsA = tiers->getIntervalTierByName(d->intervalsLevelA);
             if (!tier_intervalsA) continue;
@@ -92,9 +92,9 @@ QString IntervalTierCombinations::combineIntervalTiers(QPointer<Praaline::Core::
                 endB << intv->tMax().toNanoseconds();
             }
             startCommon = startA.intersect(startB).toList();
-            qSort(startCommon);
+            std::sort(startCommon.begin(), startCommon.end());
             endCommon = endA.intersect(endB).toList();
-            qSort(endCommon);
+            std::sort(endCommon.begin(), endCommon.end());
 
             QList<Interval *> intervals;
             RealTime previousEnd(-1, 0);

@@ -45,7 +45,7 @@ public:
 	/**
 	 * Contructs a unqiue values model with the given @p parent.
 	 */
-    QUniqueValuesProxyModel(QObject *parent = 0);
+    QUniqueValuesProxyModel(QObject *parent = nullptr);
     /**
 	 * Destroys the unique values model.
 	 */

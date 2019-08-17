@@ -21,7 +21,7 @@ class MergeCorporaDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit MergeCorporaDialog(QWidget *parent = 0);
+    explicit MergeCorporaDialog(QWidget *parent = nullptr);
     ~MergeCorporaDialog();
 
 private slots:

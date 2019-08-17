@@ -27,7 +27,7 @@ class WindowShapePreview : public QFrame
     Q_OBJECT
     
 public:
-    WindowShapePreview(QWidget *parent = 0);
+    WindowShapePreview(QWidget *parent = nullptr);
     virtual ~WindowShapePreview();
 
 public slots:

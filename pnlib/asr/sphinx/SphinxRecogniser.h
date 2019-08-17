@@ -14,7 +14,7 @@ class SphinxRecogniser : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxRecogniser(QObject *parent = 0);
+    explicit SphinxRecogniser(QObject *parent = nullptr);
     ~SphinxRecogniser();
 
     // Configuration (global, user specified)
@@ -30,7 +30,7 @@ public:
                            const QString &attributenameMLLRMatrix);
 
     // Recipes
-    bool recogniseUtterances_MFC(QPointer<Praaline::Core::CorpusCommunication> com, QString recordingID,
+    bool recogniseUtterances_MFC(Praaline::Core::CorpusCommunication *com, QString recordingID,
                                  QList<Praaline::Core::Interval *> &utterances,
                                  QList<Praaline::Core::Interval *> &segmentation);
     bool readRecognitionResults(const QString &fileID, const QString &filenameHypotheses, const QString filenameSegmentation,

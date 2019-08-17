@@ -30,8 +30,8 @@ struct ImportCorpusItemsWizardData {
 
     // State
     QPointer<Corpus> corpus;
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > candidateRecordings;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > candidateAnnotations;
+    QMap<QPair<QString, QString>, CorpusRecording *> candidateRecordings;
+    QMap<QPair<QString, QString>, CorpusAnnotation *> candidateAnnotations;
     QMultiHash<QString, TierCorrespondance> tierCorrespondances;
     QSet<QString> tierNamesCommon;
 };

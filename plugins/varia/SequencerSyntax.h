@@ -18,8 +18,8 @@ public:
     SequencerSyntax();
     ~SequencerSyntax();
 
-    QString checkGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString createSequencesFromGroupingAnnotation(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString checkGroupingAnnotation(Praaline::Core::CorpusCommunication *com);
+    QString createSequencesFromGroupingAnnotation(Praaline::Core::CorpusCommunication *com);
 
 private:
     SequencerSyntaxData *d;

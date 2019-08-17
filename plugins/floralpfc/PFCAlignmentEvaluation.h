@@ -45,13 +45,13 @@ public:
     PFCAlignmentEvaluation();
     ~PFCAlignmentEvaluation();
 
-    QList<EvaluationResults> evaluate(QPointer<Praaline::Core::CorpusCommunication> com,
+    QList<EvaluationResults> evaluate(Praaline::Core::CorpusCommunication *com,
                                       const QString &directoryTextGridA, const QString nameA,
                                       const QString &directoryTextGridB, const QString nameB,
                                       const QString &directoryTextgridCompare);
 
-    QString evaluate_Individual_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString evaluate_RegionStyle_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString evaluate_Individual_RegionStyle(Praaline::Core::CorpusCommunication *com);
+    QString evaluate_RegionStyle_RegionStyle(Praaline::Core::CorpusCommunication *com);
 
     void pivotReset();
     QStringList pivotList(const QString &style);

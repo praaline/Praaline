@@ -14,7 +14,7 @@ class VisualisationModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit VisualisationModeWidget(QWidget *parent = 0);
+    explicit VisualisationModeWidget(QWidget *parent = nullptr);
     ~VisualisationModeWidget();
 
 signals:

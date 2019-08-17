@@ -19,7 +19,7 @@ class AnnotationTimeValueModel : public Model
     Q_OBJECT
 public:
     explicit AnnotationTimeValueModel(sv_samplerate_t sampleRate,
-                                      QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers);
+                                      Praaline::Core::SpeakerAnnotationTierGroupMap &tiers);
     virtual ~AnnotationTimeValueModel();
 
     // Model base class implementation

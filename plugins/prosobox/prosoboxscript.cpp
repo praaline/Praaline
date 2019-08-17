@@ -90,7 +90,7 @@ void ProsoboxScript::runCreateSyllTable(QString path, Corpus *corpus, QString an
 //    executePraatScript(script, scriptArguments);
 }
 
-void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID)
+void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID)
 {
     // Create a temporary directory
     QTemporaryDir dirTemp;
@@ -124,7 +124,7 @@ void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, QPointer
 
 
 
-void ProsoboxScript::runMakeIFtier(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID)
+void ProsoboxScript::runMakeIFtier(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID)
 {
 //    if (com->annotationsCount() == 0)
 //        return;

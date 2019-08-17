@@ -14,7 +14,7 @@ class ImportTableDataPreviewWizardPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportTableDataPreviewWizardPage(QWidget *parent = 0);
+    explicit ImportTableDataPreviewWizardPage(QWidget *parent = nullptr);
     ~ImportTableDataPreviewWizardPage();
 
 private:

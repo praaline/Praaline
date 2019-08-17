@@ -22,7 +22,7 @@ struct MiniTranscriptionWidgetData {
 
     bool skipPauses;
     QString transcriptionLevelID;
-    QPointer<CorpusAnnotation> annotation;
+    CorpusAnnotation *annotation;
     QTreeWidget *transcriptionView;
     QList<QTreeWidgetItem *> lines;
     QSharedPointer<QFutureWatcher<void> > watcher;
@@ -64,7 +64,7 @@ QString MiniTranscriptionWidget::transcriptionLevelID() const
     return d->transcriptionLevelID;
 }
 
-void MiniTranscriptionWidget::setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot)
+void MiniTranscriptionWidget::setAnnotation(Praaline::Core::CorpusAnnotation *annot)
 {
     if (d->annotation == annot) return;
     rebind(annot, d->transcriptionLevelID);
@@ -82,7 +82,7 @@ void MiniTranscriptionWidget::setSkipPauses(bool skip)
     rebind(d->annotation, d->transcriptionLevelID);
 }
 
-void MiniTranscriptionWidget::asyncCreateTranscript(QPointer<Praaline::Core::CorpusAnnotation> annot)
+void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnotation *annot)
 {
     static QMutex mutex;
     mutex.lock();
@@ -117,7 +117,7 @@ void MiniTranscriptionWidget::asyncCreateTranscriptFinished()
     d->transcriptionView->insertTopLevelItems(0, d->lines);
 }
 
-void MiniTranscriptionWidget::rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID)
+void MiniTranscriptionWidget::rebind(Praaline::Core::CorpusAnnotation *annot, const QString &levelID)
 {
     d->transcriptionView->clear();
     d->lines.clear();

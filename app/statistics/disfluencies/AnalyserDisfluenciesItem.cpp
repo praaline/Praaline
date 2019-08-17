@@ -267,7 +267,7 @@ QList<double> AnalyserDisfluenciesItem::vectorMeasureSpk(const QString &speakerI
     return d->vectorsSpk.value(speakerID).value(measureID);
 }
 
-void AnalyserDisfluenciesItem::analyse(QPointer<Praaline::Core::CorpusCommunication> com)
+void AnalyserDisfluenciesItem::analyse(Praaline::Core::CorpusCommunication *com)
 {
     if (!com) return;
     if (!com->repository()) return;
@@ -278,10 +278,10 @@ void AnalyserDisfluenciesItem::analyse(QPointer<Praaline::Core::CorpusCommunicat
     d->vectorsSpk.clear();
 
     foreach (QString annotationID, com->annotationIDs()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
+        SpeakerAnnotationTierGroupMap tiersAll =
                 com->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens << d->levelDisfluencySequences);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             // IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllables);
             IntervalTier *tier_tokmin = tiers->getIntervalTierByName(d->levelTokens);

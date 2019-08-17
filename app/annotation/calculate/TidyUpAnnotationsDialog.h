@@ -14,7 +14,7 @@ class TidyUpAnnotationsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit TidyUpAnnotationsDialog(QWidget *parent = 0);
+    explicit TidyUpAnnotationsDialog(QWidget *parent = nullptr);
     ~TidyUpAnnotationsDialog();
 
 private slots:

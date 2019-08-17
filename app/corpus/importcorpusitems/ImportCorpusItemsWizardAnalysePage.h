@@ -20,7 +20,7 @@ class ImportCorpusItemsDelegateSpeakerPolicy : public QStyledItemDelegate
 {
     Q_OBJECT
 public:
-    explicit ImportCorpusItemsDelegateSpeakerPolicy(QObject *parent = 0) : QStyledItemDelegate(parent) {}
+    explicit ImportCorpusItemsDelegateSpeakerPolicy(QObject *parent = nullptr) : QStyledItemDelegate(parent) {}
     ~ImportCorpusItemsDelegateSpeakerPolicy() {}
     virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     virtual void setEditorData(QWidget *editor, const QModelIndex &index) const;
@@ -32,10 +32,10 @@ class ImportCorpusItemsWizardAnalysePage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardAnalysePage(QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+    explicit ImportCorpusItemsWizardAnalysePage(QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
                                                 QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                 QSet<QString> &tierNamesCommon,
-                                                QWidget *parent = 0);
+                                                QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardAnalysePage();
 
     void initializePage();
@@ -50,7 +50,7 @@ private:
     Ui::ImportCorpusItemsWizardAnalysePage *ui;
     // State
     QStandardItemModel *m_modelAnnotations;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &m_candidateAnnotations;
+    QMap<QPair<QString, QString>, CorpusAnnotation *> &m_candidateAnnotations;
     QMultiHash<QString, TierCorrespondance> &m_tierCorrespondances;
     QSet<QString> &m_tierNamesCommon;
     bool m_stop;

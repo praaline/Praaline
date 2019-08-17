@@ -128,7 +128,7 @@ void addBratEntitiesForDisfluencies(BratAnnotationExporter::BratCollData &collDa
     collData.entityTypes << BratAnnotationExporter::BratEntityType("COM", "Complex disfluency", "COM", "#48a2af", "darken");
 }
 
-QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommunication> com)
+QString BratSyntaxAndDisfluencies::getHTML(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     QString html;
@@ -136,13 +136,13 @@ QString BratSyntaxAndDisfluencies::getHTML(QPointer<Praaline::Core::CorpusCommun
     addBratEntitiesForDisfluencies(collData);
 
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
 
             // Structure to hold brat annotations for this file

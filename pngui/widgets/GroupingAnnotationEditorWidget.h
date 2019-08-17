@@ -20,10 +20,10 @@ class GroupingAnnotationEditorWidget : public TimelineEditorWidgetBase
     Q_OBJECT
 
 public:
-    explicit GroupingAnnotationEditorWidget(QWidget *parent = 0);
+    explicit GroupingAnnotationEditorWidget(QWidget *parent = nullptr);
     ~GroupingAnnotationEditorWidget();
 
-    void setData(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups,
+    void setData(Praaline::Core::SpeakerAnnotationTierGroupMap &tierGroups,
                  const QString &tiernameGrouping, const QString &tiernameItems,
                  const QStringList &attributesGrouping = QStringList(),
                  const QStringList &attributesItems = QStringList());

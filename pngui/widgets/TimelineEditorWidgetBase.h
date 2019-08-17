@@ -26,12 +26,12 @@ class TimelineEditorWidgetBase : public QWidget
     Q_OBJECT
 
 public:
-    explicit TimelineEditorWidgetBase(QWidget *parent = 0);
+    explicit TimelineEditorWidgetBase(QWidget *parent = nullptr);
     ~TimelineEditorWidgetBase();
 
     virtual void addTierGroup(const QString &speakerID, QPointer<Praaline::Core::AnnotationTierGroup> tierGroup);
     virtual void removeTierGroup(const QString &speakerID);
-    virtual const QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups() const;
+    virtual const Praaline::Core::SpeakerAnnotationTierGroupMap &tierGroups() const;
 
     virtual void moveToTime(const RealTime &time) = 0;
     virtual void moveToTime(const RealTime &time, double &tMin_msec, double &tMax_msec) = 0;
@@ -56,7 +56,7 @@ protected:
     virtual void moveToRow(TimelineTableModelBase *model, int row);
     virtual void moveToColumn(TimelineTableModelBase *model, int column);
 
-    QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > m_tiers;
+    Praaline::Core::SpeakerAnnotationTierGroupMap m_tiers;
     GridViewWidget *m_view;
     QList<int> m_selectedRows;
 };

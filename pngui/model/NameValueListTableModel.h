@@ -18,7 +18,7 @@ class NameValueListTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit NameValueListTableModel(QPointer<Praaline::Core::NameValueList> nvl, QObject *parent = 0);
+    explicit NameValueListTableModel(QPointer<Praaline::Core::NameValueList> nvl, QObject *parent = nullptr);
     ~NameValueListTableModel();
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const Q_DECL_OVERRIDE;

@@ -32,7 +32,7 @@ class PluginParameterBox : public QFrame
     Q_OBJECT
     
 public:
-    PluginParameterBox(Vamp::PluginBase *, QWidget *parent = 0);
+    PluginParameterBox(Vamp::PluginBase *, QWidget *parent = nullptr);
     ~PluginParameterBox();
 
     Vamp::PluginBase *getPlugin() { return m_plugin; }

@@ -23,7 +23,7 @@ class Panner : public QWidget
     Q_OBJECT
 
 public:
-    Panner(QWidget *parent = 0);
+    Panner(QWidget *parent = nullptr);
     virtual ~Panner();
 
     void setDefaultRectCentre(float, float);

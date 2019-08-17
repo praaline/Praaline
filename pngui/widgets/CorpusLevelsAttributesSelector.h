@@ -10,7 +10,7 @@ class CorpusLevelsAttributesSelector : public QWidget
     Q_OBJECT
 
 public:
-    explicit CorpusLevelsAttributesSelector(QWidget *parent = 0);
+    explicit CorpusLevelsAttributesSelector(QWidget *parent = nullptr);
     ~CorpusLevelsAttributesSelector();
 
 private:

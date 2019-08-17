@@ -20,10 +20,10 @@ public:
     ~PhonoSeesaw();
 
     void resetDistributionCounts();
-    QString accumulateRefDistribution(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString accumulateRefDistribution(Praaline::Core::CorpusCommunication *com);
     QString calculateRefDistribution();
 
-    QString addUnitsToListOfAvailable(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString addUnitsToListOfAvailable(Praaline::Core::CorpusCommunication *com);
     void calculateDistributionFromPhonemeList(QStringList phonemes, QMap<QString, int> &distributionCounts,
                                               QMap<QString, double> &distributionFreqs);
     QString checkSelection(QList<int> selection, int &countRejects);

@@ -31,9 +31,9 @@ struct SphinxLongSoundAlignerData {
     SphinxOfflineRecogniser *recogniser;
 
     QPointer<Corpus> corpus;
-    QPointer<CorpusCommunication> communication;
-    QPointer<CorpusRecording> recording;
-    QPointer<CorpusAnnotation> annotation;
+    CorpusCommunication *communication;
+    CorpusRecording *recording;
+    CorpusAnnotation *annotation;
 
     QList<Interval *> tokens_transcription;
     QList<Interval *> tokens_recognised;

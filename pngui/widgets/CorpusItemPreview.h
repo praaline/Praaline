@@ -16,11 +16,11 @@ class CorpusItemPreview : public QWidget
 {
     Q_OBJECT
 public:
-    explicit CorpusItemPreview(QWidget *parent = 0);
+    explicit CorpusItemPreview(QWidget *parent = nullptr);
     virtual ~CorpusItemPreview();
 
     bool isPlayerAvailable() const;
-    void openCommunication(QPointer<Praaline::Core::CorpusCommunication> com);
+    void openCommunication(Praaline::Core::CorpusCommunication *com);
     void clear();
 
 signals:

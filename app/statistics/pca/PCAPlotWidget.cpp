@@ -31,7 +31,7 @@ struct PCAPlotWidgetData {
     {}
     CorpusRepository *repository;
     QCustomPlot *plot;
-    QMap<QString, QList<QPointer<CorpusCommunication> > > communications;
+    QMap<QString, QList<CorpusCommunication *> > communications;
 };
 
 PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
@@ -107,14 +107,14 @@ void PCAPlotWidget::replot()
 
     // Select communications and classify them
     d->communications.clear();
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+    foreach (CorpusCommunication *com, corpus->communications()) {
         if (!com) continue;
         // Filter
         if (com->property(filterAttributeID).toString() != filterAttributeValue ) continue;
         // Classify
         QString comClass = com->property(classificationAttributeID).toString();
         if (!d->communications.contains(comClass)) {
-            d->communications.insert(comClass, QList<QPointer<CorpusCommunication> >());
+            d->communications.insert(comClass, QList<CorpusCommunication *>());
         }
         d->communications[comClass] << com;
     }
@@ -130,7 +130,7 @@ void PCAPlotWidget::replot()
     ColourDatabase *cdb = ColourDatabase::getInstance();
     d->plot->clearGraphs();
     foreach (QString comClass, d->communications.keys()) {
-        QList<QPointer<CorpusCommunication> > communications = d->communications[comClass];
+        QList<CorpusCommunication *> communications = d->communications[comClass];
         // Generate data points
         QVector<double> x(communications.count()), y(communications.count());
         for (int i = 0; i < communications.count(); ++i) {
@@ -164,10 +164,10 @@ void PCAPlotWidget::replot()
 
 void PCAPlotWidget::plotItemClick(QCPAbstractPlottable *plottable, int index, QMouseEvent *event)
 {
-    QList<QPointer<CorpusCommunication> > communications = d->communications.value(plottable->name());
+    QList<CorpusCommunication *> communications = d->communications.value(plottable->name());
     if (index < 0) return;
     if (index >= communications.count()) return;
-    QPointer<CorpusCommunication> com = communications.at(index);
+    CorpusCommunication *com = communications.at(index);
     if (!com) return;
     QList<QTreeWidgetItem *> items;
     foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {

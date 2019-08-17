@@ -19,7 +19,7 @@ class IntervalSequenceEditor : public QWidget
 public:
     enum EditMode { Editable, ReadOnly };
 
-    IntervalSequenceEditor(QWidget *parent = 0);
+    IntervalSequenceEditor(QWidget *parent = nullptr);
     ~IntervalSequenceEditor();
 
     void setIntervals(const QList<Praaline::Core::Interval *> intervals);

@@ -30,7 +30,7 @@ public:
     QString levelProsodicUnit() const;
     void setLevelProsodicUnit(const QString &levelID);
 
-    QString createProsodicUnitsTierBoundaries(QPointer<Praaline::Core::CorpusCommunication> com, const QString &boundaryLabel,
+    QString createProsodicUnitsTierBoundaries(Praaline::Core::CorpusCommunication *com, const QString &boundaryLabel,
                                               bool asSequences = false);
 
 private:

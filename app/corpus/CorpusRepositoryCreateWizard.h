@@ -16,7 +16,7 @@ class CorpusRepositoryCreateWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit CorpusRepositoryCreateWizard(QWidget *parent = 0);
+    explicit CorpusRepositoryCreateWizard(QWidget *parent = nullptr);
     ~CorpusRepositoryCreateWizard();
 
     bool validateCurrentPage();

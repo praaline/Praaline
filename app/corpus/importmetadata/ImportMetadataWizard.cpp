@@ -210,7 +210,7 @@ void ImportMetadataWizard::objectTypeChanged()
         ui->comboAttribute->addItem("Role", "role");
         ui->labelMandatoryAttributes->setText(mandatory + "<b>Communication ID, Speaker ID</b>");
     }
-    foreach (QPointer<MetadataStructureAttribute> mattr, mstr->attributes(d->corpusObjectType)) {
+    foreach (MetadataStructureAttribute *mattr, mstr->attributes(d->corpusObjectType)) {
         if (!mattr) continue;
         d->columnCorrespondances.insert(mattr->ID(), ColumnCorrespondance(mattr->ID(), mattr->name(), mattr->datatypeString()));
         ui->comboAttribute->addItem(mattr->name(), mattr->ID());
@@ -493,7 +493,7 @@ void ImportMetadataWizard::previewImport()
         attributeList << "corpusID" << "communicationID" << "speakerID" << "role";
         headerList << "Corpus ID" << "Communication ID" << "Speaker ID" << "Role";
     }
-    foreach (QPointer<MetadataStructureAttribute> attribute, mstr->attributes(d->corpusObjectType)) {
+    foreach (MetadataStructureAttribute *attribute, mstr->attributes(d->corpusObjectType)) {
         if (attribute) attributeList << attribute->ID();
         headerList << attribute->name();
     }
@@ -648,7 +648,7 @@ void ImportMetadataWizard::doImport()
         else if (d->corpusObjectType == CorpusObject::Type_Participation) {
             communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
             speakerID = line.section(d->delimiter, d->columnCorrespondances["speakerID"].column, d->columnCorrespondances["speakerID"].column);
-            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            CorpusCommunication *com = corpus->communication(communicationID);
             QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
             if (!com || !spk) continue;
             if (ui->optionModeUpdate->isChecked())
@@ -660,7 +660,7 @@ void ImportMetadataWizard::doImport()
         else if (d->corpusObjectType == CorpusObject::Type_Recording) {
             recordingID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            CorpusCommunication *com = corpus->communication(communicationID);
             if (!com) continue; // skip this item when a corresponding communication does not exist
             if (ui->optionModeUpdate->isChecked())
                 item = com->recording(recordingID);
@@ -672,7 +672,7 @@ void ImportMetadataWizard::doImport()
         else if (d->corpusObjectType == CorpusObject::Type_Annotation) {
             annotationID = line.section(d->delimiter, d->columnCorrespondances["ID"].column, d->columnCorrespondances["ID"].column);
             communicationID = line.section(d->delimiter, d->columnCorrespondances["communicationID"].column, d->columnCorrespondances["communicationID"].column);
-            QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+            CorpusCommunication *com = corpus->communication(communicationID);
             if (!com) continue; // skip this item when a corresponding communication does not exist
             if (ui->optionModeUpdate->isChecked())
                 item = com->annotation(annotationID);

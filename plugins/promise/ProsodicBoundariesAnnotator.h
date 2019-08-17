@@ -16,7 +16,7 @@ class ProsodicBoundariesAnnotator : public QObject
 {
     Q_OBJECT
 public:
-    explicit ProsodicBoundariesAnnotator(QObject *parent = 0);
+    explicit ProsodicBoundariesAnnotator(QObject *parent = nullptr);
     ~ProsodicBoundariesAnnotator();
 
     // Statistical models

@@ -26,9 +26,9 @@ CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
     m_model = new QStandardItemModel(this);
     m_model->setColumnCount(4);
     int countRecordings = 0;
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+    foreach (CorpusCommunication *com, corpus->communications()) {
         if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             QList<QStandardItem *> items;
             items << new QStandardItem(rec->communicationID());
@@ -74,12 +74,12 @@ void CheckMediaFilesDialog::process()
         QString communicationID = m_model->data(m_model->index(i, 0)).toString();
         QString recordingID = m_model->data(m_model->index(i, 1)).toString();
         QString filename = m_model->data(m_model->index(i, 2)).toString();
-        QPointer<CorpusCommunication> com = m_corpus->communication(communicationID);
+        CorpusCommunication *com = m_corpus->communication(communicationID);
         if (!com) {
             m_model->setItem(i, 3, new QStandardItem(tr("Communication deleted")));
             continue;
         }
-        QPointer<CorpusRecording> rec = com->recording(recordingID);
+        CorpusRecording *rec = com->recording(recordingID);
         if (!rec) {
             m_model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
             continue;

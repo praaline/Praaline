@@ -16,7 +16,7 @@ class CorpusModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit CorpusModeWidget( QWidget *parent = 0);
+    explicit CorpusModeWidget( QWidget *parent = nullptr);
     ~CorpusModeWidget();
 
 signals:

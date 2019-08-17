@@ -18,14 +18,14 @@ class ProsoboxScript : public AnnotationPluginPraatScript
 {
     Q_OBJECT
 public:
-    explicit ProsoboxScript(QObject *parent = 0);
+    explicit ProsoboxScript(QObject *parent = nullptr);
     ~ProsoboxScript();
 
     static void createTextGrid(QString path, Corpus *corpus, QString annotationID, QString speakerID);
 
     void runCreateSyllTable(QString path, Corpus *corpus, QString annotationID, QString speakerID);
-    void runProsoProm(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID);
-    void runMakeIFtier(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID);
+    void runProsoProm(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID);
+    void runMakeIFtier(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID);
 
 signals:
 

@@ -18,7 +18,7 @@ class AnnotationControlsDisfluencies : public QWidget
     };
 
 public:
-    explicit AnnotationControlsDisfluencies(QWidget *parent = 0);
+    explicit AnnotationControlsDisfluencies(QWidget *parent = nullptr);
     ~AnnotationControlsDisfluencies();
 
     void setModel(AnnotationMultiTierTableModel *model, int columnToken, int columnDisfluency, int columnDiscourse);

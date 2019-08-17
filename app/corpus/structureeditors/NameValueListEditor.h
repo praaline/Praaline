@@ -16,7 +16,7 @@ class NameValueListEditor : public QWidget
 {
     Q_OBJECT
 public:
-    explicit NameValueListEditor(QWidget *parent = 0);
+    explicit NameValueListEditor(QWidget *parent = nullptr);
     ~NameValueListEditor();
 
 signals:

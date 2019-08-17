@@ -191,9 +191,9 @@ void addNodeToListRecursive(QList<QObject *> &list, ObserverTreeItem *treeItem) 
     }
 }
 
-QList<QPointer<CorpusCommunication> > AutomaticAnnotationWidget::selectedCommunications()
+QList<CorpusCommunication *> AutomaticAnnotationWidget::selectedCommunications()
 {
-    QList<QPointer<CorpusCommunication> > listCom;
+    QList<CorpusCommunication *> listCom;
     QModelIndexList listBranch;
     d->checkableProxyModelCorpusItems->checkedState().checkedBranchSourceModelIndexes(listBranch);
     QList<QObject *> nodesSelected;
@@ -225,7 +225,7 @@ QList<IAnnotationPlugin *> AutomaticAnnotationWidget::selectedPlugins()
 
 void AutomaticAnnotationWidget::actionAnnotate()
 {
-    QList<QPointer<CorpusCommunication> > communications = selectedCommunications();
+    QList<CorpusCommunication *> communications = selectedCommunications();
     QList<IAnnotationPlugin *> plugins = selectedPlugins();
 
     if (plugins.isEmpty()) {

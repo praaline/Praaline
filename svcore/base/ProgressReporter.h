@@ -24,7 +24,7 @@ class ProgressReporter : public QObject
     Q_OBJECT
     
 public:
-    ProgressReporter(QObject *parent = 0);
+    ProgressReporter(QObject *parent = nullptr);
     virtual ~ProgressReporter();
 
     virtual bool isDefinite() const = 0;

@@ -27,7 +27,9 @@ using namespace Praaline::Core;
 struct TimelineVisualisationWidgetData
 {
     TimelineVisualisationWidgetData() :
-        currentVisualisationIndex(0), corpusItemSelector(0), visualiser(0), currentCorpus(0) {}
+        currentVisualisationIndex(0),
+        corpusItemSelector(nullptr), timelineConfig(nullptr), visualiser(nullptr), annotationEditor(nullptr),
+        currentCorpus(nullptr), waitingSpinner(nullptr) {}
 
     // Visualisation selector
     QStringList visualisationNames;
@@ -44,7 +46,7 @@ struct TimelineVisualisationWidgetData
     QString currentCommunicationID;
     QString currentRecordingID;
     QString currentAnnotationID;
-    QMap<QString, QPointer<AnnotationTierGroup> > currentTierGroups;
+    SpeakerAnnotationTierGroupMap currentTierGroups;
 
     WaitingSpinnerWidget* waitingSpinner;
 };
@@ -136,8 +138,8 @@ TimelineVisualisationWidget::~TimelineVisualisationWidget()
 
 void TimelineVisualisationWidget::selectedCorpusCommunication(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusRecording> rec(nullptr);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (com->recordingsCount() >= 1) rec = com->recordings().first();
@@ -148,7 +150,7 @@ void TimelineVisualisationWidget::selectedCorpusCommunication(QPointer<Corpus> c
 void TimelineVisualisationWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                           QPointer<CorpusRecording> rec)
 {
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!rec) return;
@@ -163,7 +165,7 @@ void TimelineVisualisationWidget::selectedCorpusRecording(QPointer<Corpus> corpu
 void TimelineVisualisationWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                            QPointer<CorpusAnnotation> annot)
 {
-    QPointer<CorpusRecording> rec(0);
+    QPointer<CorpusRecording> rec(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!annot) return;
@@ -209,7 +211,8 @@ void TimelineVisualisationWidget::corpusItemSelectionChanged(QPointer<Corpus> co
     d->waitingSpinner->stop();
 }
 
-void TimelineVisualisationWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, RealTime time)
+void TimelineVisualisationWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+                                                       QPointer<CorpusAnnotation> annot, RealTime time)
 {
     if (!corpus) return;
     if (!com) return;
@@ -320,9 +323,9 @@ void TimelineVisualisationWidget::loadVisualisationAnnotationsProsogram()
 
     // Create a prosogram pane for each recording
     if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
-        foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
+        foreach (CorpusRecording *rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
+            foreach (CorpusAnnotation *annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
                 if (!annot) continue;
                 // TODO : ANNOTATION CORRESPONDANCE !!!
                 //if (annot->ID() != rec->ID()) continue;
@@ -363,9 +366,9 @@ void TimelineVisualisationWidget::loadVisualisationMacroprosodyTITEUF(const QStr
 
     // Create a prosogram pane for each recording
     if ((d->currentCorpus) && (d->currentCorpus->communication(d->currentCommunicationID))) {
-        foreach (QPointer<CorpusRecording> rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
+        foreach (CorpusRecording *rec, d->currentCorpus->communication(d->currentCommunicationID)->recordings()) {
             if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
+            foreach (CorpusAnnotation *annot, d->currentCorpus->communication(d->currentCommunicationID)->annotations()) {
                 if (!annot) continue;
                 // TODO : ANNOTATION CORRESPONDANCE !!!
                 //if (annot->ID() != rec->ID()) continue;
@@ -432,7 +435,7 @@ void TimelineVisualisationWidget::loadVisualisationMacroprosodyTITEUF(const QStr
 
 //    // Create a prosogram pane for each recording
 //    if (corpus->communication(d->currentCommunicationID)) {
-//        foreach (QPointer<CorpusRecording> rec, corpus->communication(d->currentCommunicationID)->recordings()) {
+//        foreach (CorpusRecording *rec, corpus->communication(d->currentCommunicationID)->recordings()) {
 //            if (!rec) continue;
 //            d->visualiser->addProsogramPaneToSession(rec);
 //        }

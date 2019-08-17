@@ -17,7 +17,7 @@ class ExportAnnotationsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ExportAnnotationsWizard(QWidget *parent = 0);
+    explicit ExportAnnotationsWizard(QWidget *parent = nullptr);
     ~ExportAnnotationsWizard();
 
     int nextId() const override;

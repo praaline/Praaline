@@ -180,17 +180,17 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
     labels << measureIDs("");
     d->model->setHorizontalHeaderLabels(labels);
     // Process data
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
     tiersAll = corpus->repository()->annotations()
             ->getTiersAllSpeakers(annotationID, QStringList() << d->levelPhones << d->levelSyllables << d->levelTokens);
     foreach (QString speakerID, tiersAll.keys()) {
         if ((!speakerIDfilter.isEmpty()) && (speakerIDfilter != speakerID)) continue;
         // Get metadata objects
-        QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+        CorpusCommunication *com = corpus->communication(communicationID);
         QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);
-        QPointer<CorpusAnnotation> annot = (com) ? com->annotation(annotationID) : 0;
+        CorpusAnnotation *annot = (com) ? com->annotation(annotationID) : 0;
         // Get tiers for this speaker
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
         IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllables);
         IntervalTier *tier_tokmin = tiers->getIntervalTierByName(d->levelTokens);
@@ -402,7 +402,7 @@ QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, const QString &
     return QString();
 }
 
-QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
+QString AnalyserMacroprosody::calculate(QPointer<Corpus> corpus, CorpusCommunication *com)
 {
     if (!corpus || !com) return "Error";
     foreach (QString annotationID, com->annotationIDs()) {

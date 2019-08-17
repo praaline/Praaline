@@ -114,7 +114,7 @@ public:
     /**
       * Constructs a QConditionalDecorationProxyModel with the given @p parent.
       */
-    explicit QConditionalDecorationProxyModel(QObject *parent = 0);
+    explicit QConditionalDecorationProxyModel(QObject *parent = nullptr);
     /**
       * Destroys the QConditionalDecorationProxyModel object.
       */

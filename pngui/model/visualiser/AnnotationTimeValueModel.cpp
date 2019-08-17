@@ -11,11 +11,11 @@
 
 struct AnnotationTimeValueModelData {
     sv_samplerate_t sampleRate;
-    QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > tiers;
+    Praaline::Core::SpeakerAnnotationTierGroupMap tiers;
 };
 
 AnnotationTimeValueModel::AnnotationTimeValueModel(sv_samplerate_t sampleRate,
-                                                   QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers) :
+                                                   Praaline::Core::SpeakerAnnotationTierGroupMap &tiers) :
     d(new AnnotationTimeValueModelData)
 {
     d->sampleRate = sampleRate;

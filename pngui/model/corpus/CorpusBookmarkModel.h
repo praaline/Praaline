@@ -18,7 +18,7 @@ class CorpusBookmarkModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    CorpusBookmarkModel(QList<QPointer<Praaline::Core::CorpusBookmark> > bookmarks, QObject *parent = 0);
+    CorpusBookmarkModel(QList<Praaline::Core::CorpusBookmark *> bookmarks, QObject *parent = nullptr);
     ~CorpusBookmarkModel();
 
     int rowCount(const QModelIndex &parent) const;

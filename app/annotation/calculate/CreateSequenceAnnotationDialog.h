@@ -14,7 +14,7 @@ class CreateSequenceAnnotationDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CreateSequenceAnnotationDialog(QWidget *parent = 0);
+    explicit CreateSequenceAnnotationDialog(QWidget *parent = nullptr);
     ~CreateSequenceAnnotationDialog();
 
 private slots:

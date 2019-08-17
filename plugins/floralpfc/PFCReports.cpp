@@ -46,7 +46,7 @@ QString PFCReports::corpusCoverageStatistics(QPointer<Corpus> corpus)
     outPerCom.append("DurationSegmentsSingleSpk").append(sep).append("PercentSingleSpk").append(sep);
     outPerCom.append("DurationSegmentsOverlap").append(sep).append("PercentOverlap").append(sep);
     outPerCom.append("CountSpeakers").append(sep).append("Speakers").append("\n");
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+    foreach (CorpusCommunication *com, corpus->communications()) {
         // Communication-Level properties: ID, region, Task
         QString ID = com->ID();
         QString region = ID.left(3);
@@ -60,7 +60,7 @@ QString PFCReports::corpusCoverageStatistics(QPointer<Corpus> corpus)
         // Total duration of all recordings (normally there is only one associated with each com)
         RealTime totalRecordingDuration;
         int countRecordings = com->recordingIDs().count();
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             totalRecordingDuration = totalRecordingDuration + rec->duration();
         }
         // Number of annotations associated with this com (one or zero)
@@ -71,7 +71,7 @@ QString PFCReports::corpusCoverageStatistics(QPointer<Corpus> corpus)
         RealTime durationOverlaps, durationSingleSpk;
         int countSegmentsSingleSpk(0), countSegmentsOverlaps(0);
         // Statistics on interval durations
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), QStringList() << "transcription");
             IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
             if (!transcription) continue;
@@ -151,11 +151,11 @@ QString PFCReports::corpusCoverageStatistics(QPointer<Corpus> corpus)
     return outPivot;
 }
 
-QString PFCReports::reportCorrections(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PFCReports::reportCorrections(Praaline::Core::CorpusCommunication *com)
 {
     if (!com) return "No Communication";
     QString ret;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->
                 getTiers(annot->ID(), annot->ID(), QStringList() << "transcription" << "transcription_original");
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");

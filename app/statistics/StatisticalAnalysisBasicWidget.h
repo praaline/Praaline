@@ -12,7 +12,7 @@ class StatisticalAnalysisBasicWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit StatisticalAnalysisBasicWidget(QWidget *parent = 0);
+    explicit StatisticalAnalysisBasicWidget(QWidget *parent = nullptr);
     ~StatisticalAnalysisBasicWidget();
 
 private:

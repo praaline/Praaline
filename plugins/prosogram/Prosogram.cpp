@@ -137,7 +137,7 @@ bool ProsoGram::updateTonalSegmentsAndVUV(const QString &filenameNuclei, const Q
     QMap<RealTime, double> pitchStylised;
     if (!PraatPointTierFile::load(filenameStylPitchTier, pitchStylised))
         return false;
-    QPointer<AnnotationTierGroup> tiers_nuclei = new AnnotationTierGroup();
+    AnnotationTierGroup *tiers_nuclei = new AnnotationTierGroup();
     if (!PraatTextGrid::load(filenameNuclei, tiers_nuclei)) {
         delete tiers_nuclei; return false;
     }
@@ -162,7 +162,7 @@ bool ProsoGram::updateTonalSegmentsAndVUV(const QString &filenameNuclei, const Q
     return true;
 }
 
-void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers,
+void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers,
                              QString annotationID, QString speakerID)
 {
     if (!corpus) return;

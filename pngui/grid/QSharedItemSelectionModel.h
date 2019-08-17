@@ -34,7 +34,7 @@ public:
 	/**
 	 * Constructs a QSharedItemSelectionModel.
 	 */
-    QSharedItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel* shared, QObject *parent = 0);
+    QSharedItemSelectionModel(QAbstractItemModel* model, QItemSelectionModel* shared, QObject *parent = nullptr);
 	/**
 	 * Destroys the QSharedItemSelectionModel.
 	 */

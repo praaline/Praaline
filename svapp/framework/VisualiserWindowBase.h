@@ -76,7 +76,7 @@ class VisualiserWindowBase : public QMainWindow, public FrameTimer
     Q_OBJECT
 
 public:
-    VisualiserWindowBase(bool withAudioOutput, bool withMIDIInput, QWidget *parent = 0);
+    VisualiserWindowBase(bool withAudioOutput, bool withMIDIInput, QWidget *parent = nullptr);
     virtual ~VisualiserWindowBase();
     
     enum AudioFileOpenMode {

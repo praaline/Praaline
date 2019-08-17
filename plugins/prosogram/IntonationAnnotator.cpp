@@ -348,18 +348,18 @@ void IntonationAnnotator::pitchLevelForPlateaus(const PitchRangeInfo &pitchRange
 // Pitch level assignment:
 // Global levels (relative to the speaker's pitch range) : T top, B bottom
 // Local levels   (relative to the context)              : L low, M mid, H high
-void IntonationAnnotator::annotate(QPointer<CorpusCommunication> com)
+void IntonationAnnotator::annotate(CorpusCommunication *com)
 {
     if (!com) return;
     if (!com->repository()) return;
-    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+    foreach (CorpusRecording *rec, com->recordings()) {
         if (!rec) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             // TODO : ANNOTATION CORRESPONDANCE !!!
             // if (annot->ID() != rec->ID()) continue;
 
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
 
                 // check speaker-specific recording
@@ -368,7 +368,7 @@ void IntonationAnnotator::annotate(QPointer<CorpusCommunication> com)
                 }
 
                 PitchRangeInfo pitchRange = d->pitchRanges.value(speakerID);
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 // Annotate pitch movements inside syllables (tonal segments)
                 IntervalTier *tier_tonal_segments = tiers->getIntervalTierByName("prosogram_tonal_segments");

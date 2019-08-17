@@ -29,7 +29,7 @@ public:
     QString sequencesLevelCombined() const;
     void setSequencesLevelCombined(const QString &levelID);
 
-    QString createSequences(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString createSequences(Praaline::Core::CorpusCommunication *com);
 
 private:
     SequencerCombineUnitsData *d;

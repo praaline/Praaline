@@ -19,7 +19,7 @@ class ASRModuleWidgetBase : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ASRModuleWidgetBase(QWidget *parent = 0);
+    explicit ASRModuleWidgetBase(QWidget *parent = nullptr);
     virtual ~ASRModuleWidgetBase();
 
 public slots:

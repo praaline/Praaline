@@ -26,7 +26,7 @@ class TranscriberWidget : public SimpleVisualiserWidget
     Q_OBJECT
 
 public:
-    explicit TranscriberWidget(QWidget *parent = 0);
+    explicit TranscriberWidget(QWidget *parent = nullptr);
     ~TranscriberWidget();
 
 protected slots:

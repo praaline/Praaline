@@ -10,7 +10,7 @@ class AcousticModelTrainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit AcousticModelTrainer(QObject *parent = 0) : QObject(parent) {}
+    explicit AcousticModelTrainer(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~AcousticModelTrainer() {}
 
 signals:

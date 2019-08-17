@@ -20,7 +20,7 @@ class AnnotationStructureTreeModel : public QAbstractItemModel
 public:
     explicit AnnotationStructureTreeModel(Praaline::Core::AnnotationStructure *structure,
                                           bool readOnly = false, bool checkboxes = false,
-                                          QObject *parent = 0);
+                                          QObject *parent = nullptr);
     ~AnnotationStructureTreeModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

@@ -10,7 +10,7 @@ class LanguageModelTrainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit LanguageModelTrainer(QObject *parent = 0) : QObject(parent) {}
+    explicit LanguageModelTrainer(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~LanguageModelTrainer() {}
 
 signals:

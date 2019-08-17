@@ -18,7 +18,7 @@ class TimelineEditorConfigWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit TimelineEditorConfigWidget(QWidget *parent = 0);
+    explicit TimelineEditorConfigWidget(QWidget *parent = nullptr);
     ~TimelineEditorConfigWidget();
 
     QList<QPair<QString, QString> > selectedLevelsAttributes() const;

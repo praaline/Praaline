@@ -23,7 +23,7 @@ class NotifyingTabBar : public QTabBar
     Q_OBJECT
 
 public:
-    NotifyingTabBar(QWidget *parent = 0);
+    NotifyingTabBar(QWidget *parent = nullptr);
     virtual ~NotifyingTabBar();
     
 signals:

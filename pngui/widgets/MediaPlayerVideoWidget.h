@@ -8,7 +8,7 @@ class MediaPlayerVideoWidget : public QVideoWidget
     Q_OBJECT
 
 public:
-    MediaPlayerVideoWidget(QWidget *parent = 0);
+    MediaPlayerVideoWidget(QWidget *parent = nullptr);
 
 protected:
     void keyPressEvent(QKeyEvent *event);

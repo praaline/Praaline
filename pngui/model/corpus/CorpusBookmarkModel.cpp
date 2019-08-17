@@ -4,10 +4,10 @@ using namespace Praaline::Core;
 #include "CorpusBookmarkModel.h"
 
 struct CorpusBookmarkModelData {
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
 };
 
-CorpusBookmarkModel::CorpusBookmarkModel(QList<QPointer<CorpusBookmark> > bookmarks, QObject *parent) :
+CorpusBookmarkModel::CorpusBookmarkModel(QList<CorpusBookmark *> bookmarks, QObject *parent) :
     QAbstractTableModel(parent), d(new CorpusBookmarkModelData)
 {
     d->bookmarks = bookmarks;
@@ -54,7 +54,7 @@ QVariant CorpusBookmarkModel::data(const QModelIndex &index, int role) const
     if (index.row() >= d->bookmarks.count() || index.row() < 0) return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        QPointer<CorpusBookmark> bookmark = d->bookmarks.at(index.row());
+        CorpusBookmark *bookmark = d->bookmarks.at(index.row());
         if (!bookmark) return QVariant();
         switch (index.column()) {
         case 0: return bookmark->corpusID(); break;
@@ -83,7 +83,7 @@ bool CorpusBookmarkModel::setData(const QModelIndex &index, const QVariant &valu
     if (!index.isValid()) return false;
     if (role != Qt::EditRole) return false;
     if (index.row() >= d->bookmarks.count() || index.row() < 0) return false;
-    QPointer<CorpusBookmark> bookmark = d->bookmarks.at(index.row());
+    CorpusBookmark *bookmark = d->bookmarks.at(index.row());
     if (!bookmark) return false;
     if (index.column() == 4) {
         bookmark->setName(value.toString());

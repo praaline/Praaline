@@ -11,12 +11,12 @@ struct CorpusCommunicationTableModelData {
     CorpusCommunicationTableModelData() : multiCorpus(true) {}
 
     bool multiCorpus;
-    QList<QPointer<CorpusCommunication> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;    
+    QList<CorpusCommunication *> items;
+    QList<MetadataStructureAttribute *> attributes;    
 };
 
-CorpusCommunicationTableModel::CorpusCommunicationTableModel(QList<QPointer<CorpusCommunication> > items,
-                                                             QList<QPointer<MetadataStructureAttribute> > attributes,
+CorpusCommunicationTableModel::CorpusCommunicationTableModel(QList<CorpusCommunication *> items,
+                                                             QList<MetadataStructureAttribute *> attributes,
                                                              bool multiCorpus, QObject *parent) :
     QAbstractTableModel(parent), d(new CorpusCommunicationTableModelData)
 {
@@ -60,7 +60,7 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
             else if (section == 2) return tr("Name");
             else if (section == 3) return tr("Duration");
             else if ((section - 4) >= 0 && (section - 4) < d->attributes.count()) {
-                QPointer<MetadataStructureAttribute> attr = d->attributes.at(section - 4);
+                MetadataStructureAttribute *attr = d->attributes.at(section - 4);
                 if (attr) return attr->name(); else return QVariant();
             }
             else
@@ -70,7 +70,7 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
             else if (section == 1) return tr("Name");
             else if (section == 2) return tr("Duration");
             else if ((section - 3) >= 0 && (section - 3) < d->attributes.count()) {
-                QPointer<MetadataStructureAttribute> attr = d->attributes.at(section - 3);
+                MetadataStructureAttribute *attr = d->attributes.at(section - 3);
                 if (attr) return attr->name(); else return QVariant();
             }
             else
@@ -79,7 +79,7 @@ QVariant CorpusCommunicationTableModel::headerData(int section, Qt::Orientation 
     }
     else if (orientation == Qt::Vertical) {
         QString ret = QString::number(section + 1);
-        QPointer<CorpusCommunication> item(0);
+        CorpusCommunication *item(0);
         if ((section >= 0) && (section < d->items.count())) {
             item  = d->items.at(section);
             if (item->isNew()) return ret.append(" +");
@@ -98,7 +98,7 @@ QVariant CorpusCommunicationTableModel::data(const QModelIndex &index, int role)
         return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        QPointer<CorpusCommunication> com = d->items.at(index.row());
+        CorpusCommunication *com = d->items.at(index.row());
         if (!com) return QVariant();
         if (d->multiCorpus) {
             if (index.column() == 0) return com->property("corpusID");
@@ -138,7 +138,7 @@ bool CorpusCommunicationTableModel::setData(const QModelIndex &index, const QVar
         return false;
 
     if (role == Qt::EditRole) {
-        QPointer<CorpusCommunication> com = d->items.at(index.row());
+        CorpusCommunication *com = d->items.at(index.row());
         if (!com) return false;
         if (d->multiCorpus) {
             if      (index.column() == 0) return com->setProperty("corpusID", value);

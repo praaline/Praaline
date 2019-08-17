@@ -16,8 +16,8 @@ class NCCFR
 public:
     NCCFR();
 
-    QString prepareTranscription(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString align(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString prepareTranscription(Praaline::Core::CorpusCommunication *com);
+    QString align(Praaline::Core::CorpusCommunication *com);
 };
 
 #endif // NCCFR_H

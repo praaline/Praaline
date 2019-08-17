@@ -27,7 +27,7 @@ public:
     explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<Corpus> corpus,
                                                         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                         QSet<QString> &tierNamesCommon,
-                                                        QWidget *parent = 0);
+                                                        QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardCorrespondancesPage();
     void initializePage();
     bool validatePage();

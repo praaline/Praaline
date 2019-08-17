@@ -15,7 +15,7 @@ class LanguageDefinition
 public:
     LanguageDefinition();
 
-    static QString checkCharacters(QPointer<Praaline::Core::CorpusCommunication> com, const QString &levelID);
+    static QString checkCharacters(Praaline::Core::CorpusCommunication *com, const QString &levelID);
 
 };
 

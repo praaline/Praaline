@@ -19,7 +19,7 @@ class OpenSmileVAD : public QObject
 {
     Q_OBJECT
 public:
-    explicit OpenSmileVAD(QObject *parent = 0);
+    explicit OpenSmileVAD(QObject *parent = nullptr);
 
     static bool
     runVAD(const QString &filenameInputWave, QList<QPair<double, double> > &resultVADActivations);

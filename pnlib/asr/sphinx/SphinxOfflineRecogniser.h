@@ -18,7 +18,7 @@ class SphinxOfflineRecogniser : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxOfflineRecogniser(QObject *parent = 0);
+    explicit SphinxOfflineRecogniser(QObject *parent = nullptr);
     virtual ~SphinxOfflineRecogniser();
 
     SphinxConfiguration config() const;

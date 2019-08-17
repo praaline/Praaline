@@ -8,7 +8,7 @@ class CorporaTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit CorporaTableModel(QObject *parent = 0);
+    explicit CorporaTableModel(QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;

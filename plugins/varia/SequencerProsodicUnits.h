@@ -27,7 +27,7 @@ public:
     QString attributeBoundary() const;
     void setAttributeBoundary(const QString &attributeID);
 
-    QString createSequencesFromProsodicBoundaries(QPointer<Praaline::Core::CorpusCommunication> com, const QString &boundaryLabel);
+    QString createSequencesFromProsodicBoundaries(Praaline::Core::CorpusCommunication *com, const QString &boundaryLabel);
 
 private:
     SequencerProsodicUnitsData *d;

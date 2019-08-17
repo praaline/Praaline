@@ -10,7 +10,7 @@ class SoxExternal : public QObject
 {
     Q_OBJECT
 public:
-    explicit SoxExternal(QObject *parent = 0);
+    explicit SoxExternal(QObject *parent = nullptr);
 
 signals:
     void error(QString msg);

@@ -121,10 +121,10 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::scriptFinished(int exitcode)
 
 // ====================================================================================================================
 
-void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<CorpusCommunication *> &communications)
 {
     QString m;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         QString dir = "/Users/george/Documents/resynth";
         // dir = "/home/george/resynth";
@@ -145,16 +145,16 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<QPointer<Corpu
 
 //    PseudoLanguage *pseudo = new PseudoLanguage();
 
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
-//        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//        foreach (CorpusRecording *rec, com->recordings()) {
 //            if (!rec) continue;
-//            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//            foreach (CorpusAnnotation *annot, com->annotations()) {
 //                if (!annot) continue;
 
-//                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+//                SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
 //                foreach (QString speakerID, tiersAll.keys()) {
-//                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                    AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 
 //                    IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
 //                    if (!tier_phones) continue;

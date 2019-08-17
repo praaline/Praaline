@@ -19,9 +19,9 @@ class CorpusCommunicationTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    CorpusCommunicationTableModel(QList<QPointer<Praaline::Core::CorpusCommunication> > items,
-                                  QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                                  bool multiCorpus = true, QObject *parent = 0);
+    CorpusCommunicationTableModel(QList<Praaline::Core::CorpusCommunication *> items,
+                                  QList<Praaline::Core::MetadataStructureAttribute *> attributes,
+                                  bool multiCorpus = true, QObject *parent = nullptr);
     ~CorpusCommunicationTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

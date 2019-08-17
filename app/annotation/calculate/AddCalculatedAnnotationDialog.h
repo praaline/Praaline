@@ -14,7 +14,7 @@ class AddCalculatedAnnotationDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddCalculatedAnnotationDialog(QWidget *parent = 0);
+    explicit AddCalculatedAnnotationDialog(QWidget *parent = nullptr);
     ~AddCalculatedAnnotationDialog();
 
 private slots:

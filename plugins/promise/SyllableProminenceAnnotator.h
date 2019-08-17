@@ -18,7 +18,7 @@ class SyllableProminenceAnnotator : public QObject
 {
     Q_OBJECT
 public:
-    explicit SyllableProminenceAnnotator(QObject *parent = 0);
+    explicit SyllableProminenceAnnotator(QObject *parent = nullptr);
     ~SyllableProminenceAnnotator();
 
     // Statistical models

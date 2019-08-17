@@ -24,7 +24,7 @@ class GlobalProsodicProfileWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit GlobalProsodicProfileWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit GlobalProsodicProfileWidget(Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~GlobalProsodicProfileWidget();
 
     static QStringList measureIDs();

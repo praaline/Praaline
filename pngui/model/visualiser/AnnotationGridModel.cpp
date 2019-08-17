@@ -21,14 +21,14 @@ struct AnnotationGridModelData {
     sv_samplerate_t sampleRate;
     sv_frame_t startFrame;
     sv_frame_t endFrame;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;            // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;            // Speaker ID, corresponding tiers
     QList<QPair<QString, QString> > attributes;                     // Level ID, Attribute ID
     QMap<QString, QPointer<AnnotationGridPointModel> > boundaries;  // Level ID, corresponding points (all speakers)
     QList<QString> excludedSpeakerIDs;
 };
 
 AnnotationGridModel::AnnotationGridModel(sv_samplerate_t sampleRate,
-                                         QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                         SpeakerAnnotationTierGroupMap &tiers,
                                          const QList<QPair<QString, QString> > &attributes) :
     d(new AnnotationGridModelData)
 {
@@ -198,7 +198,7 @@ QVariant AnnotationGridModel::data(const AnnotationGridPointModel::Point &bounda
 QVariant AnnotationGridModel::data(const QString &speakerID, const QString &levelID, const sv_frame_t frame, const QString &attributeID) const
 {
     if (!d->tiers.contains(speakerID)) return QVariant();
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(speakerID);
     if (!tiers_spk) return QVariant();
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(levelID);
     if (tier_intv) {
@@ -223,7 +223,7 @@ bool AnnotationGridModel::setData(const AnnotationGridPointModel::Point &boundar
 bool AnnotationGridModel::setData(const QString &speakerID, const QString &levelID, const sv_frame_t frame, const QString &attributeID, const QVariant &value)
 {
     if (!d->tiers.contains(speakerID)) return false;
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(speakerID);
     if (!tiers_spk) return false;
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(levelID);
     if (tier_intv) {
@@ -251,7 +251,7 @@ bool AnnotationGridModel::setData(const QString &speakerID, const QString &level
 RealTime AnnotationGridModel::elementDuration(const AnnotationGridPointModel::Point &boundary) const
 {
     if (!d->tiers.contains(boundary.speakerID)) return RealTime();
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(boundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(boundary.speakerID);
     if (!tiers_spk) return RealTime();
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(boundary.levelID);
     if (tier_intv) {
@@ -267,7 +267,7 @@ RealTime AnnotationGridModel::elementDuration(const AnnotationGridPointModel::Po
 sv_frame_t AnnotationGridModel::elementMoveLimitFrameLeft(const AnnotationGridPointModel::Point &boundary) const
 {
     if (!d->tiers.contains(boundary.speakerID)) return this->getStartFrame();
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(boundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(boundary.speakerID);
     if (!tiers_spk) return this->getStartFrame();
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(boundary.levelID);
     if (tier_intv) {
@@ -283,7 +283,7 @@ sv_frame_t AnnotationGridModel::elementMoveLimitFrameLeft(const AnnotationGridPo
 sv_frame_t AnnotationGridModel::elementMoveLimitFrameRight(const AnnotationGridPointModel::Point &boundary) const
 {
     if (!d->tiers.contains(boundary.speakerID)) return this->getEndFrame();
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(boundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(boundary.speakerID);
     if (!tiers_spk) return this->getEndFrame();
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(boundary.levelID);
     if (tier_intv) {
@@ -303,7 +303,7 @@ sv_frame_t AnnotationGridModel::elementMoveLimitFrameRight(const AnnotationGridP
 bool AnnotationGridModel::addBoundary(const AnnotationGridPointModel::Point &boundary)
 {
     if (!d->tiers.contains(boundary.speakerID)) return false;
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(boundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(boundary.speakerID);
     if (!tiers_spk) return false;
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(boundary.levelID);
     if (tier_intv) {
@@ -323,7 +323,7 @@ bool AnnotationGridModel::addBoundary(const AnnotationGridPointModel::Point &bou
 bool AnnotationGridModel::deleteBoundary(const AnnotationGridPointModel::Point &boundary)
 {
     if (!d->tiers.contains(boundary.speakerID)) return false;
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(boundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(boundary.speakerID);
     if (!tiers_spk) return false;
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(boundary.levelID);
     if (tier_intv) {
@@ -346,7 +346,7 @@ bool AnnotationGridModel::moveBoundary(const AnnotationGridPointModel::Point &ol
 {
     if ((oldBoundary.levelID != newBoundary.levelID) || (oldBoundary.speakerID != newBoundary.speakerID)) return false;
     if (!d->tiers.contains(oldBoundary.speakerID)) return false;
-    QPointer<AnnotationTierGroup> tiers_spk = d->tiers.value(oldBoundary.speakerID);
+    AnnotationTierGroup *tiers_spk = d->tiers.value(oldBoundary.speakerID);
     if (!tiers_spk) return false;
     IntervalTier *tier_intv = tiers_spk->getIntervalTierByName(oldBoundary.levelID);
     if (tier_intv) {

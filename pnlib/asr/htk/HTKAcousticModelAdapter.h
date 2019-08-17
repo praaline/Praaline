@@ -11,7 +11,7 @@ class HTKAcousticModelAdapter : public AcousticModelAdapter
 {
     Q_OBJECT
 public:
-    explicit HTKAcousticModelAdapter(QObject *parent = 0);
+    explicit HTKAcousticModelAdapter(QObject *parent = nullptr);
     ~HTKAcousticModelAdapter();
 
 signals:

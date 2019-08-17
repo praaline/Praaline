@@ -298,21 +298,21 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramDataStructure
 }
 
 
-void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllables(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage("Creating utterance segmentation from automatically detected syllables");
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
 
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_autosyll = tiers->getIntervalTierByName(d->levelSyllable);
                 if (!tier_autosyll) {
@@ -360,7 +360,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
     printMessage("Finished");
 }
 
-void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<CorpusCommunication *> &communications)
 {
     ProsoGram *prosogram = new ProsoGram(this);
     connect(prosogram, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
@@ -392,7 +392,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
     madeProgress(0);
     printMessage("ProsoGram v.2.9m running");
 
-    foreach(QPointer<CorpusCommunication> com, communications) {
+    foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
         // Create segmentation level if it does not exist
@@ -410,7 +410,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
         }
 
         printMessage(QString("Annotating %1").arg(com->ID()));
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
 
             // The Automatic Segmentation from Syllables may need to create an Annotation if there is none.
@@ -418,7 +418,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
                 com->addAnnotation(new CorpusAnnotation(com->ID(), com->repository()));
             }
 
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 // TODO : ANNOTATION CORRESPONDANCE !!!
                 // if (annot->ID() != rec->ID()) continue;
@@ -443,17 +443,17 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
                         printMessage("Autosyll already OK, updated globalsheet");
                         continue;
                     }
-                    QPointer<AnnotationTierGroup> tiers = new AnnotationTierGroup();
+                    AnnotationTierGroup *tiers = new AnnotationTierGroup();
                     if (!tiers) continue;
                     // execute prosogram script
                     prosogram->runProsoGram(com->corpus(), rec, tiers, annot->ID(), speakerID);
                     delete tiers;
                 } else {
                     // Other segmentation methods
-                    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+                    SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                     foreach (QString speakerID, tiersAll.keys()) {
                         printMessage(QString("   speaker %1").arg(speakerID));
-                        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                         if (!tiers) continue;
                         // check speaker-specific recording
                         if (!rec->property("speakerID").toString().isEmpty()) {
@@ -478,7 +478,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<QPo
     printMessage("ProsoGram finished.");
 }
 
-void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(const QList<CorpusCommunication *> &communications)
 {
     if (communications.isEmpty()) {
         printMessage("No Communications selected.");
@@ -492,7 +492,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(cons
     printMessage("Pitch range estimation...");
     annotator.estimatePitchRange(corpus);
     printMessage("Annotation...");
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         printMessage(QString("Annotating %1").arg(com->ID()));
         annotator.annotate(com);
         QApplication::processEvents();
@@ -503,7 +503,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(cons
     printMessage("Automatic Annotation of Intonation finished.");
 }
 
-void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<CorpusCommunication *> &communications)
 {
     d->levelPhone = d->levelPhone.trimmed();
     d->levelSegmentation = d->levelSegmentation.trimmed();
@@ -511,7 +511,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<QPointer
 
     // Create data structures if needed
     QList<QPointer<CorpusRepository> > repositoriesWithDataStructures;
-    foreach(QPointer<CorpusCommunication> com, communications) {
+    foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
         if (d->createLevels && !repositoriesWithDataStructures.contains(com->repository())) {

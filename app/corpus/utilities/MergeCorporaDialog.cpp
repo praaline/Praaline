@@ -1,4 +1,5 @@
 #include <QString>
+#include <QPointer>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QInputDialog>

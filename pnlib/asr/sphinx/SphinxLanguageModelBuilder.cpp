@@ -104,7 +104,7 @@ void SphinxLanguageModelBuilder::setMinimumNumberOfTokensInUtteranceFilter(int m
     d->minimumNumberOfTokensInUtteranceFilter = min;
 }
 
-QStringList SphinxLanguageModelBuilder::getNormalisedUtterances(QPointer<CorpusAnnotation> annotation)
+QStringList SphinxLanguageModelBuilder::getNormalisedUtterances(CorpusAnnotation *annotation)
 {
     QStringList normalisedUtterances;
     // Sanity checks
@@ -113,12 +113,12 @@ QStringList SphinxLanguageModelBuilder::getNormalisedUtterances(QPointer<CorpusA
     if (!annotation->repository()->annotations()) return normalisedUtterances;
     // Process annotation
     QString annotationID = annotation->ID();
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = annotation->repository()->annotations()->getTiersAllSpeakers(annotationID);
+    SpeakerAnnotationTierGroupMap tiersAll = annotation->repository()->annotations()->getTiersAllSpeakers(annotationID);
     foreach (QString speakerID, tiersAll.keys()) {
         // Process all speakers based on the inclusion/exclusion filters
         if ((!d->speakersInclude.isEmpty()) && (!d->speakersInclude.contains(speakerID))) continue;
         if ((!d->speakersExclude.isEmpty()) && (d->speakersExclude.contains(speakerID))) continue;
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
         // Get tiers: an utterance tier is necessary, a token tier is optional
         IntervalTier *tier_utterance = tiers->getIntervalTierByName(d->levelUtterances);

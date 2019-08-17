@@ -28,7 +28,7 @@ class Thumbwheel : public QWidget
     Q_OBJECT
 
 public:
-    Thumbwheel(Qt::Orientation orientation, QWidget *parent = 0);
+    Thumbwheel(Qt::Orientation orientation, QWidget *parent = nullptr);
     virtual ~Thumbwheel();
 
     int getMinimumValue() const;

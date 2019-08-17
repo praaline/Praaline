@@ -17,7 +17,7 @@ class SpeechRecognitionWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit SpeechRecognitionWidget(QWidget *parent = 0);
+    explicit SpeechRecognitionWidget(QWidget *parent = nullptr);
     ~SpeechRecognitionWidget();
 
 protected slots:

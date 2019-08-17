@@ -9,7 +9,7 @@ class AnnotationBrowserWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AnnotationBrowserWidget(QWidget *parent = 0);
+    explicit AnnotationBrowserWidget(QWidget *parent = nullptr);
     ~AnnotationBrowserWidget();
 
 signals:

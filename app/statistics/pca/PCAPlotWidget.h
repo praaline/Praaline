@@ -24,7 +24,7 @@ class PCAPlotWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit PCAPlotWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit PCAPlotWidget(Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~PCAPlotWidget();
 
 private slots:

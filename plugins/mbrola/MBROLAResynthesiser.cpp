@@ -27,7 +27,7 @@ MBROLAResynthesiser::MBROLAResynthesiser(QObject *parent) : QObject(parent)
 
 }
 
-QString MBROLAResynthesiser::createPhoFile(const QString &filenamePho, QPointer<Praaline::Core::CorpusCommunication> com)
+QString MBROLAResynthesiser::createPhoFile(const QString &filenamePho, Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
 
@@ -36,7 +36,7 @@ QString MBROLAResynthesiser::createPhoFile(const QString &filenamePho, QPointer<
 
     if (!com) return "Error";
     ret = com->ID();
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return "Error";
     QString annotationID = rec->ID();
     QString speakerID = com->property("SubjectID").toString();
@@ -77,12 +77,12 @@ QString MBROLAResynthesiser::createPhoFile(const QString &filenamePho, QPointer<
     return ret;
 }
 
-QString MBROLAResynthesiser::resynthesise(const QString &directory, QPointer<Praaline::Core::CorpusCommunication> com)
+QString MBROLAResynthesiser::resynthesise(const QString &directory, Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     ret = com->ID();
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return "Error";
     QString speakerID = com->property("SubjectID").toString();
     QPointer<CorpusSpeaker> spk = com->corpus()->speaker(speakerID);

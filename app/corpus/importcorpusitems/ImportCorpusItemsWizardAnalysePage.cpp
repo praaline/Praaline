@@ -60,7 +60,7 @@ void ImportCorpusItemsDelegateSpeakerPolicy::setModelData(QWidget *editor, QAbst
 // --------------------------------------------------------------------------------------------------------------------
 
 ImportCorpusItemsWizardAnalysePage::ImportCorpusItemsWizardAnalysePage(
-        QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+        QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
@@ -93,7 +93,7 @@ void ImportCorpusItemsWizardAnalysePage::initializePage()
     QPair<QString, QString> key;
     foreach (key, m_candidateAnnotations.keys()) {
         QString communicationID = key.first;
-        QPointer<CorpusAnnotation> annot = m_candidateAnnotations.value(key);
+        CorpusAnnotation *annot = m_candidateAnnotations.value(key);
         m_modelAnnotations->setItem(i, 0, new QStandardItem(communicationID));
         m_modelAnnotations->setItem(i, 1, new QStandardItem(annot->filename()));
         m_modelAnnotations->setItem(i, 2, new QStandardItem(annot->ID()));
@@ -140,7 +140,7 @@ void ImportCorpusItemsWizardAnalysePage::updateSpeakerIDTier()
     int i = 0;
     QPair<QString, QString> key;
     foreach (key, m_candidateAnnotations.keys()) {
-        QPointer<CorpusAnnotation> annot = m_candidateAnnotations.value(key);
+        CorpusAnnotation *annot = m_candidateAnnotations.value(key);
         annot->setProperty("speakerPolicyData", newSpeakerIDTier);
         m_modelAnnotations->setItem(i, 4, new QStandardItem(annot->property("speakerPolicyData").toString()));
         i++;
@@ -159,7 +159,7 @@ bool ImportCorpusItemsWizardAnalysePage::loadTextgrids()
     ui->progressBarFiles->setMaximum(m_candidateAnnotations.count());
     m_tierCorrespondances.clear();
     int i = 1;
-    foreach (QPointer<CorpusAnnotation> annot, m_candidateAnnotations.values()) {
+    foreach (CorpusAnnotation *annot, m_candidateAnnotations.values()) {
         if (!annot) continue;
         QString filename = annot->filename();
         if (m_stop) return false;

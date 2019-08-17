@@ -65,12 +65,12 @@ void PhonoSeesaw::resetDistributionCounts()
     d->distributionFreqs.clear();
 }
 
-QString PhonoSeesaw::accumulateRefDistribution(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PhonoSeesaw::accumulateRefDistribution(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->
                 getTiersAllSpeakers(annot->ID(), QStringList() << d->levelPhones << d->levelTokens);
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
@@ -114,12 +114,12 @@ QString PhonoSeesaw::calculateRefDistribution()
 
 // ====================================================================================================================
 
-QString PhonoSeesaw::addUnitsToListOfAvailable(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PhonoSeesaw::addUnitsToListOfAvailable(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->
                 getTiersAllSpeakers(annot->ID(), QStringList() << d->levelPhones << d->levelTokens);
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);

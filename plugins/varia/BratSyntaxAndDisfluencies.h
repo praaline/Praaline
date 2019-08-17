@@ -22,7 +22,7 @@ public:
     QString sentenceTier() const;
     void setSentenceTier(const QString &tiername);
 
-    QString getHTML(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString getHTML(Praaline::Core::CorpusCommunication *com);
 
 private:
     BratSyntaxAndDisfluenciesData *d;

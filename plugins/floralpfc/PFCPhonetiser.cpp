@@ -59,11 +59,11 @@ void PFCPhonetiser::reset()
     d->errorsSchwa.clear();
 }
 
-QString PFCPhonetiser::phonetiseFromDictionary(QPointer<CorpusCommunication> com)
+QString PFCPhonetiser::phonetiseFromDictionary(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");

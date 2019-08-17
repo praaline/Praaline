@@ -15,7 +15,7 @@ using namespace Praaline::Core;
 
 struct SpeechRecognitionWidgetData {
     SpeechRecognitionWidgetData() :
-        corpusItemSelector(0)
+        corpusItemSelector(nullptr)
     {}
 
     // Corpus item selector
@@ -66,8 +66,8 @@ SpeechRecognitionWidget::~SpeechRecognitionWidget()
 
 void SpeechRecognitionWidget::selectedCorpusCommunication(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    CorpusRecording *rec(nullptr);
+    CorpusAnnotation *annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (com->recordingsCount() >= 1) rec = com->recordings().first();
@@ -76,9 +76,9 @@ void SpeechRecognitionWidget::selectedCorpusCommunication(QPointer<Corpus> corpu
 }
 
 void SpeechRecognitionWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                                                     QPointer<CorpusRecording> rec)
+                                                      QPointer<CorpusRecording> rec)
 {
-    QPointer<CorpusAnnotation> annot(0);
+    CorpusAnnotation *annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!rec) return;
@@ -91,9 +91,9 @@ void SpeechRecognitionWidget::selectedCorpusRecording(QPointer<Corpus> corpus, Q
 }
 
 void SpeechRecognitionWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                                                      QPointer<CorpusAnnotation> annot)
+                                                       QPointer<CorpusAnnotation> annot)
 {
-    QPointer<CorpusRecording> rec(0);
+    CorpusRecording *rec(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!annot) return;
@@ -106,7 +106,7 @@ void SpeechRecognitionWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, 
 }
 
 void SpeechRecognitionWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                                              QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
+                                               QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
 {
     int index = ui->tabWidgetModules->currentIndex();
     if (index < 0 || index >= d->openModules.count()) return;
@@ -117,7 +117,7 @@ void SpeechRecognitionWidget::selectionChanged(QPointer<Corpus> corpus, QPointer
 
 void SpeechRecognitionWidget::moduleTabNew()
 {
-    ASRModuleWidgetBase *module(0);
+    ASRModuleWidgetBase *module(nullptr);
     QString moduleName = ui->comboBoxModuleSelection->currentData().toString();
     if      (moduleName == "AutomaticTranscription") {
         module = new AutomaticTranscriptionWidget(this);

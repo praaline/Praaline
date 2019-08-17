@@ -399,22 +399,22 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
 
                 QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
                 if (tier_phone) {
-                    txg->addTier(tier_phone->cloneWithoutAttributes());
+                    txg->addTier(new IntervalTier(tier_phone));
                 }
                 if (tier_syll) {
-                    txg->addTier(tier_syll->cloneWithoutAttributes());
-                    tier_delivery = tier_syll->cloneWithoutAttributes("delivery");
+                    txg->addTier(new IntervalTier(tier_syll));
+                    tier_delivery = new IntervalTier(tier_syll, "delivery");
                     foreach (Interval *intv, tier_delivery->intervals())
                         if (intv->isPauseSilent()) intv->setText("_"); else intv->setText("");
                     txg->addTier(tier_delivery);
                 }
                 if (tier_tok_min) {\
-                    txg->addTier(tier_tok_min->cloneWithoutAttributes("tok-min"));
-                    IntervalTier *tier_pos_min = tier_tok_min->clone("pos-min");
+                    txg->addTier(new IntervalTier(tier_tok_min, "tok-min"));
+                    IntervalTier *tier_pos_min = new IntervalTier(tier_tok_min, "pos-min");
                     foreach (Interval *intv, tier_pos_min->intervals())
                         intv->setText(intv->attribute("pos_min").toString());
                     txg->addTier(tier_pos_min);
-                    IntervalTier *tier_disfluencyL1 = tier_tok_min->clone("disfluency-lex");
+                    IntervalTier *tier_disfluencyL1 = new IntervalTier(tier_tok_min, "disfluency-lex");
                     foreach (Interval *intv, tier_disfluencyL1->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d == "LEN" || d == "FST" || d == "FIL" || d == "WDP")
@@ -429,7 +429,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                         }
                     }
                     txg->addTier(tier_disfluencyL1);
-                    IntervalTier *tier_disfluencyL2 = tier_tok_min->clone("disfluency-rep");
+                    IntervalTier *tier_disfluencyL2 = new IntervalTier(tier_tok_min, "disfluency-rep");
                     foreach (Interval *intv, tier_disfluencyL2->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d.contains("REP"))
@@ -438,7 +438,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                             intv->setText("");
                     }
                     txg->addTier(tier_disfluencyL2);
-                    IntervalTier *tier_disfluencyL3 = tier_tok_min->clone("disfluency-struct");
+                    IntervalTier *tier_disfluencyL3 = new IntervalTier(tier_tok_min, "disfluency-struct");
                     foreach (Interval *intv, tier_disfluencyL3->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d.contains("INS") || d.contains("SUB") || d.contains("DEL") || d.contains("COM"))
@@ -449,14 +449,14 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                     txg->addTier(tier_disfluencyL3);
                 }
                 if (tier_tok_mwu) {
-                    txg->addTier(tier_tok_mwu->clone("tok-mwu"));
-                    IntervalTier *tier_pos_mwu = tier_tok_mwu->clone("pos-mwu");
+                    txg->addTier(new IntervalTier(tier_tok_mwu, "tok-mwu"));
+                    IntervalTier *tier_pos_mwu = new IntervalTier(tier_tok_mwu, "pos-mwu");
                     foreach (Interval *intv, tier_pos_mwu->intervals())
                         intv->setText(intv->attribute("pos_mwu").toString());
                     txg->addTier(tier_pos_mwu);
                 }
                 if (tier_ortho) {
-                    txg->addTier(tier_ortho->clone());
+                    txg->addTier(new IntervalTier(tier_ortho));
                 }
                 if (txg->tiersCount() > 0) {
                     if (tier_phone) {
@@ -469,9 +469,9 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                     // add rest of tiers (not aligned to phones)
                     foreach (AnnotationTier *atier, restOfTiers) {
                         if (atier->tierType() == AnnotationTier::TierType_Points)
-                            txg->addTier(qobject_cast<PointTier *>(atier)->clone());
+                            txg->addTier(new PointTier(qobject_cast<PointTier *>(atier)));
                         else if (atier->tierType() == AnnotationTier::TierType_Intervals)
-                            txg->addTier(qobject_cast<IntervalTier *>(atier)->clone());
+                            txg->addTier(new IntervalTier(qobject_cast<IntervalTier *>(atier)));
                     }
                     // exclude tiers
                     foreach (QString name, tierNamesToExclude) {

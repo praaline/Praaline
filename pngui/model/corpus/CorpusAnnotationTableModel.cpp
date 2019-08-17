@@ -12,12 +12,12 @@ using namespace Praaline::Core;
 
 struct CorpusAnnotationTableModelData {
     bool multiCommunication;
-    QList<QPointer<CorpusAnnotation> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;
+    QList<CorpusAnnotation *> items;
+    QList<MetadataStructureAttribute *> attributes;
 };
 
-CorpusAnnotationTableModel::CorpusAnnotationTableModel(QList<QPointer<CorpusAnnotation> > items,
-                                                       QList<QPointer<MetadataStructureAttribute> > attributes,
+CorpusAnnotationTableModel::CorpusAnnotationTableModel(QList<CorpusAnnotation *> items,
+                                                       QList<MetadataStructureAttribute *> attributes,
                                                        bool multiCommunication, QObject *parent) :
     QAbstractTableModel(parent), d(new CorpusAnnotationTableModelData)
 {
@@ -66,7 +66,7 @@ QVariant CorpusAnnotationTableModel::headerData(int section, Qt::Orientation ori
     }
     else if (orientation == Qt::Vertical) {
         QString ret = QString::number(section + 1);
-        QPointer<CorpusAnnotation> item(0);
+        CorpusAnnotation *item(0);
         if ((section >= 0) && (section < d->items.count())) {
             item  = d->items.at(section);
             if (item->isNew()) return ret.append(" +");
@@ -85,7 +85,7 @@ QVariant CorpusAnnotationTableModel::data(const QModelIndex &index, int role) co
         return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        QPointer<CorpusAnnotation> annot = d->items.at(index.row());
+        CorpusAnnotation *annot = d->items.at(index.row());
         if (!annot) return QVariant();
         if      (index.column() == 0) return annot->property("corpusID");
         else if (index.column() == 1) return annot->property("communicationID");
@@ -116,7 +116,7 @@ bool CorpusAnnotationTableModel::setData(const QModelIndex &index, const QVarian
         return false;
 
     if (role == Qt::EditRole) {
-        QPointer<CorpusAnnotation> annot = d->items.at(index.row());
+        CorpusAnnotation *annot = d->items.at(index.row());
         if (!annot) return false;
         // corpusID, communicationID is read-only
         if      (index.column() == 2) return annot->setProperty("ID", value);

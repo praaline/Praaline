@@ -13,14 +13,14 @@ using namespace Praaline::Core;
 #include "AnnotationGroupingTierTableModel.h"
 
 struct AnnotationGroupingTierTableModelData {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;  // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;  // Speaker ID, corresponding tiers
     QString tiernameGrouping;
     QString tiernameItems;
     QStringList attributesGrouping;
     QStringList attributesItems;
 };
 
-AnnotationGroupingTierTableModel::AnnotationGroupingTierTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+AnnotationGroupingTierTableModel::AnnotationGroupingTierTableModel(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                                                                    const QString &tiernameGrouping, const QString &tiernameItems,
                                                                    const QStringList &attributesGrouping, const QStringList &attributesItems,
                                                                    QObject *parent) :
@@ -106,7 +106,7 @@ QVariant AnnotationGroupingTierTableModel::data(const QModelIndex &index, int ro
     int attributeIndex = index.column() - 5;
 
     // Get grouping interval
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return QVariant();
     IntervalTier *tier_grouping = spk_tiers->getIntervalTierByName(d->tiernameGrouping);
     if (!tier_grouping) return QVariant();
@@ -155,7 +155,7 @@ bool AnnotationGroupingTierTableModel::setData(const QModelIndex &index, const Q
     int attributeIndex = index.column() - 5;
 
     // Get grouping interval
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return false;
     IntervalTier *tier_grouping = spk_tiers->getIntervalTierByName(d->tiernameGrouping);
     if (!tier_grouping) return false;

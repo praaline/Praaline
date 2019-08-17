@@ -40,7 +40,7 @@ public:
     int minimumNumberOfTokensInUtteranceFilter() const;
     void setMinimumNumberOfTokensInUtteranceFilter(int min);
 
-    QStringList getNormalisedUtterances(QPointer<Praaline::Core::CorpusAnnotation> annotation);
+    QStringList getNormalisedUtterances(Praaline::Core::CorpusAnnotation *annotation);
 
 signals:
 

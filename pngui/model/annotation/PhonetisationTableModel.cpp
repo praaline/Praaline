@@ -11,7 +11,7 @@ struct PhonetisationTableModelData {
         indexStart(-1), indexEnd(-1)
     {}
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
+    SpeakerAnnotationTierGroupMap tiers;
     QString tiernameTokens;
     QString attributeOrthographic;
     QString attributePhonetisation;
@@ -20,7 +20,7 @@ struct PhonetisationTableModelData {
     int indexEnd;
 };
 
-PhonetisationTableModel::PhonetisationTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+PhonetisationTableModel::PhonetisationTableModel(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                                                  const QString &tiernameTokens,
                                                  const QString &attributeOrthographic, const QString &attributePhonetisation,
                                                  QObject *parent) :
@@ -77,7 +77,7 @@ QVariant PhonetisationTableModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(d->speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(d->speakerID, 0);
     if (!spk_tiers) return QVariant();
     IntervalTier *tier_tokens = spk_tiers->getIntervalTierByName(d->tiernameTokens);
     if (!tier_tokens) return QVariant();
@@ -104,7 +104,7 @@ bool PhonetisationTableModel::setData(const QModelIndex &index, const QVariant &
     if (index.column() < 0 || index.column() >= columnCount()) return false;
     if (data(index, role) == value) return false;
 
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(d->speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(d->speakerID, 0);
     if (!spk_tiers) return false;
     IntervalTier *tier_tokens = spk_tiers->getIntervalTierByName(d->tiernameTokens);
     if (!tier_tokens) return false;
@@ -140,7 +140,7 @@ Qt::ItemFlags PhonetisationTableModel::flags(const QModelIndex &index) const
 
 bool PhonetisationTableModel::setUtterance(const QString &speakerID, int indexStart, int indexEnd)
 {
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(speakerID, 0);
     if (!spk_tiers) return false;
     IntervalTier *tier_tokens = spk_tiers->getIntervalTierByName(d->tiernameTokens);
     if (!tier_tokens) return false;

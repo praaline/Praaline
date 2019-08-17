@@ -16,8 +16,8 @@ class ImportCorpusItemsWizardProcessMediaPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardProcessMediaPage(QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-                                                     QWidget *parent = 0);
+    explicit ImportCorpusItemsWizardProcessMediaPage(QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+                                                     QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardProcessMediaPage();
 
     void initializePage();
@@ -29,7 +29,7 @@ private slots:
 private:
     Ui::ImportCorpusItemsWizardProcessMediaPage *ui;
 
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &m_candidateRecordings;
+    QMap<QPair<QString, QString>, CorpusRecording *> &m_candidateRecordings;
     QStandardItemModel *m_model;
     bool m_stop;
 

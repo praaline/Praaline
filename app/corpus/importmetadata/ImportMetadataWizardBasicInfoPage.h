@@ -12,7 +12,7 @@ class ImportMetadataWizardBasicInfoPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportMetadataWizardBasicInfoPage(QWidget *parent = 0);
+    explicit ImportMetadataWizardBasicInfoPage(QWidget *parent = nullptr);
     ~ImportMetadataWizardBasicInfoPage();
 
 private:

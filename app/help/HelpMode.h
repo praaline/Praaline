@@ -19,7 +19,7 @@ class HelpMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    HelpMode(QObject *parent = 0);
+    HelpMode(QObject *parent = nullptr);
     ~HelpMode();
 
     // IObjectBase Implementation

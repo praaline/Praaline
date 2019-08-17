@@ -10,7 +10,7 @@ class AcousticModelAdapter : public QObject
 {
     Q_OBJECT
 public:
-    explicit AcousticModelAdapter(QObject *parent = 0) : QObject(parent) {}
+    explicit AcousticModelAdapter(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~AcousticModelAdapter() {}
 
 signals:

@@ -19,7 +19,7 @@ class ExportAnnotationsWizardPraatPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ExportAnnotationsWizardPraatPage(QWidget *parent = 0);
+    explicit ExportAnnotationsWizardPraatPage(QWidget *parent = nullptr);
     ~ExportAnnotationsWizardPraatPage();
 
     void setRepository(CorpusRepository *repository);

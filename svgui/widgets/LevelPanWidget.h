@@ -26,7 +26,7 @@ class LevelPanWidget : public QWidget
     Q_OBJECT
 
 public:
-    LevelPanWidget(QWidget *parent = 0);
+    LevelPanWidget(QWidget *parent = nullptr);
     ~LevelPanWidget();
     
     /// Return level as a gain value in the range [0,1]

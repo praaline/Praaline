@@ -149,12 +149,12 @@ QString PFCPreprocessor::renameTextgridTiers(const QString& directory)
 ///
 /// If there are transcription intervals to be checked, their number is saved in the transcriptionsToCheck attribute of
 /// the Communication
-QString PFCPreprocessor::prepareTranscription(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::prepareTranscription(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
     QStringList levels; levels << "transcription";
     int transcriptionsToCheck(0);
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
         if (!transcription) continue;
@@ -266,12 +266,12 @@ bool PFCPreprocessor::tryFixingSpeakers(Praaline::Core::Interval *intv)
 /// This function checks whether the same number of speakers is indicated in all three transcription tiers.
 /// If it is not the case, then it sets the "tocheck" attribute of the interval to "num loc".
 /// If the interval is a single-speaker interval, it is marked accordingly in the "single_speaker" attribute.
-QString PFCPreprocessor::checkSpeakers(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::checkSpeakers(CorpusCommunication *com)
 {
     QStringList levels; levels << "transcription";
     if (!com) return "No Communication";
     int transcriptionsToCheck(0);
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
         if (!transcription) continue;
@@ -344,11 +344,11 @@ QString PFCPreprocessor::formatSegment(const QString &input)
     return ret.trimmed();
 }
 
-QString PFCPreprocessor::separateSpeakers(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::separateSpeakers(CorpusCommunication *com)
 {
     QStringList levels; levels << "transcription";
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         AnnotationTierGroup *tiers = com->repository()->annotations()->getTiers(annot->ID(), annot->ID(), levels);
         IntervalTier *transcription = tiers->getIntervalTierByName("transcription");
         if (!transcription) continue;
@@ -519,11 +519,11 @@ QList<QString> PFCPreprocessor::splitToken(const QString &input)
     return ret;
 }
 
-QString PFCPreprocessor::tokenise(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::tokenise(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -613,11 +613,11 @@ bool PFCPreprocessor::isAcronym(const QString &text)
     return re.match(text).hasMatch();
 }
 
-QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::tokmin_punctuation(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -648,11 +648,11 @@ QString PFCPreprocessor::tokmin_punctuation(QPointer<CorpusCommunication> com)
     return com->ID();
 }
 
-QString PFCPreprocessor::liaisonCoding(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::liaisonCoding(CorpusCommunication *com)
 {
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -684,14 +684,14 @@ QString PFCPreprocessor::liaisonCoding(QPointer<CorpusCommunication> com)
     return com->ID();
 }
 
-QString PFCPreprocessor::checkCharacterSet(QPointer<CorpusCommunication> com)
+QString PFCPreprocessor::checkCharacterSet(CorpusCommunication *com)
 {
     QString ret;
     QRegularExpression regex("^[a-zA-Z\u00C9\u00E9\u00C0\u00E0\u00C8\u00E8\u00D9\u00F9\u00C2\u00E2\u00CA\u00EA\u00CE\u00EE\u00D4\u00F4\u00DB\u00FB\u00CB\u00EB\u00CF\u00EF\u00DC\u00FC\u0178\u00FF\u00C7\u00E7\u0152\u0153\u00C6\u00E6]");
     regex.optimize();
     if (!com) return "No Communication";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");

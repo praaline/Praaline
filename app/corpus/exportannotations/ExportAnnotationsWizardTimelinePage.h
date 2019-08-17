@@ -19,7 +19,7 @@ class ExportAnnotationsWizardTimelinePage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ExportAnnotationsWizardTimelinePage(QWidget *parent = 0);
+    explicit ExportAnnotationsWizardTimelinePage(QWidget *parent = nullptr);
     ~ExportAnnotationsWizardTimelinePage();
 
     void setExportPath(const QString &path);

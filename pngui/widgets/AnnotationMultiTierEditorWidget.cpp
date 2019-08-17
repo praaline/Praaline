@@ -94,7 +94,7 @@ void AnnotationMultiTierEditorWidget::removeSorting()
     m_view->tableView()->sortByColumn(-1, Qt::AscendingOrder);
 }
 
-void AnnotationMultiTierEditorWidget::setData(QMap<QString, QPointer<AnnotationTierGroup> > &tierGroups,
+void AnnotationMultiTierEditorWidget::setData(SpeakerAnnotationTierGroupMap &tierGroups,
                                               const QList<QPair<QString, QString> > &columns)
 {
     if (d->model) { delete d->model; d->model = 0; }

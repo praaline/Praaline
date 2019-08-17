@@ -12,7 +12,7 @@ class GroupingAnnotationEditor : public QMainWindow, public AnnotationEditorBase
     Q_OBJECT
 
 public:
-    GroupingAnnotationEditor(QWidget *parent = 0);
+    GroupingAnnotationEditor(QWidget *parent = nullptr);
     virtual ~GroupingAnnotationEditor();
     QWidget *editorWidget() override { return this; }
 

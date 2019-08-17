@@ -61,7 +61,7 @@ void TimelineEditorWidgetBase::removeTierGroup(const QString &speakerID)
     initModel();
 }
 
-const QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &TimelineEditorWidgetBase::tierGroups() const
+const Praaline::Core::SpeakerAnnotationTierGroupMap &TimelineEditorWidgetBase::tierGroups() const
 {
     return m_tiers;
 }

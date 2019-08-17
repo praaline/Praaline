@@ -16,7 +16,7 @@ class CorpusRepositoryPropertiesDialog : public QDialog
 
 public:
     explicit CorpusRepositoryPropertiesDialog(const Praaline::Core::CorpusRepositoryDefinition &repositoryDef,
-                                              QWidget *parent = 0);
+                                              QWidget *parent = nullptr);
     ~CorpusRepositoryPropertiesDialog();
 
     Praaline::Core::CorpusRepositoryDefinition &repositoryDef() const;

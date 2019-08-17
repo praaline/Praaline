@@ -125,7 +125,7 @@ void CorpusExplorerTreeNodeCorpus::setCorpus(QPointer<Praaline::Core::Corpus> co
     }
 }
 
-void CorpusExplorerTreeNodeCorpus::communicationAdded(QPointer<CorpusCommunication> communication)
+void CorpusExplorerTreeNodeCorpus::communicationAdded(CorpusCommunication *communication)
 {
     if (!communication) return;
     if (!m_nodeCommunications) return;
@@ -195,7 +195,7 @@ void CorpusExplorerTreeNodeCorpus::buildTree()
     this->setName(m_corpus->ID());
 
     m_nodeCommunications->startProcessingCycle();
-    foreach(QPointer<CorpusCommunication> com, m_corpus->communications()) {
+    foreach(CorpusCommunication *com, m_corpus->communications()) {
         if (!com) continue;
         CorpusExplorerTreeNodeCommunication *nodeCom = new CorpusExplorerTreeNodeCommunication(com);
         nodeCom->startProcessingCycle();
@@ -270,7 +270,7 @@ void CorpusExplorerTreeNodeCorpus::setSpeakersGrouping(QStringList groupAttribut
 // Communication tree node
 // ==============================================================================================================================
 
-CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointer<CorpusCommunication> com) :
+CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(CorpusCommunication *com) :
     TreeNode(com->ID()), communication(com)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus_communication.png"));
@@ -284,7 +284,7 @@ CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(QPointe
             this, SLOT(annotationDeleted(QString,QString)));
 }
 
-void CorpusExplorerTreeNodeCommunication::recordingAdded(QPointer<CorpusRecording> recording)
+void CorpusExplorerTreeNodeCommunication::recordingAdded(CorpusRecording *recording)
 {
     if (!recording) return;
     startProcessingCycle();
@@ -299,7 +299,7 @@ void CorpusExplorerTreeNodeCommunication::recordingDeleted(QString communication
     removeItem(recordingID);
 }
 
-void CorpusExplorerTreeNodeCommunication::annotationAdded(QPointer<CorpusAnnotation> annotation)
+void CorpusExplorerTreeNodeCommunication::annotationAdded(CorpusAnnotation *annotation)
 {
     if (!annotation) return;
     startProcessingCycle();
@@ -324,13 +324,13 @@ CorpusExplorerTreeNodeSpeaker::CorpusExplorerTreeNodeSpeaker(QPointer<CorpusSpea
     setIcon(QIcon(":/icons/corpusexplorer/corpus_speaker.png"));
 }
 
-CorpusExplorerTreeNodeRecording::CorpusExplorerTreeNodeRecording(QPointer<CorpusRecording> rec) :
+CorpusExplorerTreeNodeRecording::CorpusExplorerTreeNodeRecording(CorpusRecording *rec) :
     TreeNode(rec->ID()), recording(rec)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus_recording.png"));
 }
 
-CorpusExplorerTreeNodeAnnotation::CorpusExplorerTreeNodeAnnotation(QPointer<CorpusAnnotation> annot) :
+CorpusExplorerTreeNodeAnnotation::CorpusExplorerTreeNodeAnnotation(CorpusAnnotation *annot) :
     TreeNode(annot->ID()), annotation(annot)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus_annotation.png"));

@@ -33,7 +33,7 @@ class ModelMetadataModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    ModelMetadataModel(PaneStack *stack, bool waveModelsOnly, QObject *parent = 0);
+    ModelMetadataModel(PaneStack *stack, bool waveModelsOnly, QObject *parent = nullptr);
     virtual ~ModelMetadataModel();
 
     QVariant data(const QModelIndex &index, int role) const;
@@ -81,7 +81,7 @@ class LayerTreeModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    LayerTreeModel(PaneStack *stack, QObject *parent = 0);
+    LayerTreeModel(PaneStack *stack, QObject *parent = nullptr);
     virtual ~LayerTreeModel();
 
     QVariant data(const QModelIndex &index, int role) const;

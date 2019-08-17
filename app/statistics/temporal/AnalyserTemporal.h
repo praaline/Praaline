@@ -21,7 +21,7 @@ class AnalyserTemporal : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserTemporal(QObject *parent = 0);
+    explicit AnalyserTemporal(QObject *parent = nullptr);
     ~AnalyserTemporal();
 
     Praaline::Core::Corpus *corpus() const;

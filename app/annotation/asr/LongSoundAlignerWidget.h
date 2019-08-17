@@ -17,7 +17,7 @@ class LongSoundAlignerWidget : public ASRModuleVisualiserWidgetBase
     Q_OBJECT
 
 public:
-    explicit LongSoundAlignerWidget(QWidget *parent = 0);
+    explicit LongSoundAlignerWidget(QWidget *parent = nullptr);
     ~LongSoundAlignerWidget();
 
 public slots:

@@ -77,7 +77,7 @@ void GroupingAnnotationEditorWidget::initModel()
 
 // Get and Set model properties
 
-void GroupingAnnotationEditorWidget::setData(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups,
+void GroupingAnnotationEditorWidget::setData(Praaline::Core::SpeakerAnnotationTierGroupMap &tierGroups,
                                              const QString &tiernameGrouping, const QString &tiernameItems,
                                              const QStringList &attributesGrouping, const QStringList &attributesItems)
 {

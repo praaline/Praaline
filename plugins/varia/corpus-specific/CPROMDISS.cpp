@@ -23,18 +23,18 @@ CPROMDISS::CPROMDISS()
 }
 
 // static
-QString CPROMDISS::transferBasicTiers(QPointer<CorpusCommunication> com)
+QString CPROMDISS::transferBasicTiers(CorpusCommunication *com)
 {
     QString ret;
     // return "Disactivated"; // DISACTIVATED
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_phone = tiers->getIntervalTierByName("phone");
             // if (!tier_phone && !annotationID.startsWith("int")) {
@@ -59,7 +59,7 @@ QString CPROMDISS::transferBasicTiers(QPointer<CorpusCommunication> com)
 }
 
 // static
-QString CPROMDISS::combineTiers(QPointer<CorpusCommunication> com)
+QString CPROMDISS::combineTiers(CorpusCommunication *com)
 {
     QString tiernameBase;
     QStringList tiernamesToAssociate;
@@ -69,13 +69,13 @@ QString CPROMDISS::combineTiers(QPointer<CorpusCommunication> com)
     QString ret;
     // return "Disactivated"; // DISACTIVATED
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_base = tiers->getIntervalTierByName(tiernameBase);
             if (!tier_base) continue;
@@ -97,7 +97,7 @@ QString CPROMDISS::combineTiers(QPointer<CorpusCommunication> com)
 }
 
 // static
-QString CPROMDISS::movePointAnnotationToInterval(QPointer<CorpusCommunication> com)
+QString CPROMDISS::movePointAnnotationToInterval(CorpusCommunication *com)
 {
     QString tiernamePoints;
     QString tiernameIntervals;
@@ -109,13 +109,13 @@ QString CPROMDISS::movePointAnnotationToInterval(QPointer<CorpusCommunication> c
     QString ret;
     return "Disactivated"; // DISACTIVATED
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             PointTier *tier_points = tiers->getPointTierByName(tiernamePoints);
             if (!tier_points) continue;

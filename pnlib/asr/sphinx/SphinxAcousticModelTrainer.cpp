@@ -78,7 +78,7 @@ void SphinxAcousticModelTrainer::setSpeakersExcludeFilter(const QStringList &spe
 }
 
 bool SphinxAcousticModelTrainer::createFiles(
-        QList<QPointer<CorpusCommunication> > &communications,
+        QList<CorpusCommunication *> &communications,
         QStringList &outUnknownWordsList, bool splitTrainTest, bool createSoundSegments)
 {
     // Default path
@@ -124,22 +124,22 @@ bool SphinxAcousticModelTrainer::createFiles(
         outUtterancesTest.setCodec("UTF-8");
     }
     // Process corpus
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         if (!com->repository()) continue;
         if (!com->repository()->annotations()) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 // Process recording-annotation pair, only if this annotation corresponds to the recording
                 if ((!annot->recordingID().isEmpty()) && (annot->recordingID() != rec->ID())) continue;
                 QString annotationID = annot->ID();
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+                SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
                 foreach (QString speakerID, tiersAll.keys()) {
                     if ((!d->speakersInclude.isEmpty()) && (!d->speakersInclude.contains(speakerID))) continue;
                     if ((!d->speakersExclude.isEmpty()) && (d->speakersExclude.contains(speakerID))) continue;
-                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                    AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                     if (!tiers) continue;
                     IntervalTier *tier_utterance = tiers->getIntervalTierByName(d->levelUtterances);
                     if (!tier_utterance) continue;

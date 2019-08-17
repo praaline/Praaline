@@ -10,6 +10,7 @@
 #include <QColor>
 #include <QAbstractTableModel>
 #include "pncore/base/RealTime.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 
 namespace Praaline {
 namespace Core {
@@ -31,7 +32,7 @@ protected:
     };
 
 public:
-    explicit TimelineTableModelBase(QObject *parent = 0);
+    explicit TimelineTableModelBase(QObject *parent = nullptr);
     virtual ~TimelineTableModelBase();
 
     virtual int timelineIndexAtTime(const RealTime &time) const;
@@ -50,7 +51,7 @@ protected:
     QList<TimelineData> m_timeline;
     QHash<QString, QColor> m_speakerBackgroundColors;
 
-    void calculateTimeline(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers, const QString &timelineTier);
+    void calculateTimeline(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers, const QString &timelineTier);
 };
 
 #endif // TIMELINETABLEMODELBASE_H

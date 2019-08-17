@@ -14,7 +14,7 @@ class UpdatePraalineDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UpdatePraalineDialog(QWidget *parent = 0);
+    explicit UpdatePraalineDialog(QWidget *parent = nullptr);
     ~UpdatePraalineDialog();
 
 

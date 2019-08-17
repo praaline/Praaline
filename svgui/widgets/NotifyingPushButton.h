@@ -28,7 +28,7 @@ class NotifyingPushButton : public QPushButton
     Q_OBJECT
 public:
 
-    NotifyingPushButton(QWidget *parent = 0) :
+    NotifyingPushButton(QWidget *parent = nullptr) :
         QPushButton(parent) { }
 
     virtual ~NotifyingPushButton();

@@ -94,9 +94,9 @@ void CreateSequenceAnnotationDialog::createSequences()
     ui->progressBar->setMaximum(list.count());
     foreach (CorpusObjectInfo annotation, list) {
         QString annotationID = annotation.attribute("annotationID").toString();
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << baseLevelID << derivedLevelID);
+        SpeakerAnnotationTierGroupMap tiersAll = repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << baseLevelID << derivedLevelID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             AnnotationTier *tier_base = tiers->tier(baseLevelID);
             if (!tier_base) continue;
             SequenceTier *tier_sequences = qobject_cast<SequenceTier *>(tiers->tier(derivedLevelID));

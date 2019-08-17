@@ -23,7 +23,7 @@ class ProgressPrinter : public ProgressReporter
     Q_OBJECT
     
 public:
-    ProgressPrinter(QString message, QObject *parent = 0);
+    ProgressPrinter(QString message, QObject *parent = nullptr);
     virtual ~ProgressPrinter();
     
     virtual bool isDefinite() const;

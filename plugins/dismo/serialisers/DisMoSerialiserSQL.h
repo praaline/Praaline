@@ -11,7 +11,7 @@ class DisMoSerialiserSql : public QObject
 {
     Q_OBJECT
 public:
-    explicit DisMoSerialiserSql(QObject *parent = 0);
+    explicit DisMoSerialiserSql(QObject *parent = nullptr);
     static void serializeToDatabase(TokenList &TL, QSqlDatabase &db, const QString &annotationID, const QString &speakerID);
 
 signals:

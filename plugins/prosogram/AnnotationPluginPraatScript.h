@@ -10,7 +10,7 @@ class AnnotationPluginPraatScript : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnnotationPluginPraatScript(QObject *parent = 0);
+    explicit AnnotationPluginPraatScript(QObject *parent = nullptr);
     virtual ~AnnotationPluginPraatScript();
 
 signals:

@@ -13,7 +13,7 @@ class MFAExternal : public ForcedAligner
 {
     Q_OBJECT
 public:
-    explicit MFAExternal(QObject *parent = 0);
+    explicit MFAExternal(QObject *parent = nullptr);
     ~MFAExternal();
 
     bool alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,

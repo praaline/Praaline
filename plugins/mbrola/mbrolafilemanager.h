@@ -13,7 +13,7 @@ class MBROLAFileManager : public AnnotationPluginPraatScript
 public:
     MBROLAFileManager();
 
-    void extractPhoParameters(QPointer<Praaline::Core::CorpusRecording> rec, QPointer<Praaline::Core::CorpusAnnotation> annot,
+    void extractPhoParameters(Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot,
                               const QString &attributeForPhoneme);
     bool updatePhoneTierFromPhoFile(const QString &filenamePho, Praaline::Core::IntervalTier *tier,
                                     const QString &attributeForPhoneme, bool updatePhone = false, bool updatePitch = false);

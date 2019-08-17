@@ -14,7 +14,7 @@ using namespace Praaline::Media;
 #include "ui_ImportCorpusItemsWizardProcessMediaPage.h"
 
 ImportCorpusItemsWizardProcessMediaPage::ImportCorpusItemsWizardProcessMediaPage(
-        QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
+        QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardProcessMediaPage),
     m_candidateRecordings(candidateRecordings), m_stop(false)
@@ -38,7 +38,7 @@ void ImportCorpusItemsWizardProcessMediaPage::initializePage()
     m_model = new QStandardItemModel(this);
     m_model->setColumnCount(4);
 
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> >::iterator i;
+    QMap<QPair<QString, QString>, CorpusRecording *>::iterator i;
     for (i = m_candidateRecordings.begin(); i != m_candidateRecordings.end(); ++i) {
         if (!i.value()) continue;
         QList<QStandardItem *> items;
@@ -75,7 +75,7 @@ bool ImportCorpusItemsWizardProcessMediaPage::validatePage()
         QString recordingID = m_model->data(m_model->index(i, 1)).toString();
         QString filename = m_model->data(m_model->index(i, 2)).toString();
 
-        QPointer<CorpusRecording> rec = m_candidateRecordings.value(QPair<QString, QString>(communicationID, recordingID));
+        CorpusRecording *rec = m_candidateRecordings.value(QPair<QString, QString>(communicationID, recordingID));
         if (!rec) {
             m_model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
             continue;

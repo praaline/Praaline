@@ -12,7 +12,7 @@ class ImportMetadataWizardFinalPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportMetadataWizardFinalPage(QWidget *parent = 0);
+    explicit ImportMetadataWizardFinalPage(QWidget *parent = nullptr);
     ~ImportMetadataWizardFinalPage();
 
 private:

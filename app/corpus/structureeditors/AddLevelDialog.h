@@ -15,7 +15,7 @@ class AddLevelDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddLevelDialog(AnnotationStructure *structure, QWidget *parent = 0);
+    explicit AddLevelDialog(AnnotationStructure *structure, QWidget *parent = nullptr);
     ~AddLevelDialog();
 
     QString levelID() const;

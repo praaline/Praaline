@@ -96,7 +96,7 @@ QStandardItemModel *ExportMetadataWizard::createAttributeModel(CorpusObject::Typ
         model->setItem(i, item);
     }
     // user-defined attributes
-    foreach (QPointer<MetadataStructureAttribute> attribute,
+    foreach (MetadataStructureAttribute *attribute,
              d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)->metadataStructure()->attributes(type)) {
         if (!attribute) continue;
         QStandardItem *item = new QStandardItem(attribute->name());

@@ -17,7 +17,7 @@ class LanguageModelBuilderWidget : public ASRModuleWidgetBase
     Q_OBJECT
 
 public:
-    explicit LanguageModelBuilderWidget(QWidget *parent = 0);
+    explicit LanguageModelBuilderWidget(QWidget *parent = nullptr);
     ~LanguageModelBuilderWidget();
 
 public slots:

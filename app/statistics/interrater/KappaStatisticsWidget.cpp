@@ -1,3 +1,5 @@
+#include <QPointer>
+
 #include "KappaStatisticsWidget.h"
 #include "ui_KappaStatisticsWidget.h"
 
@@ -129,15 +131,15 @@ void KappaStatisticsWidget::analyseCohenKappa()
     ui->progressBar->setMaximum(corpus->communicationsCount());
     // Prepare Cohen Kappa calculator
     defineClassesForCohenKappa();
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, corpus->communications()) {
 //        if (!com) continue;
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
 //            QString annotationID = annot->ID();
 //            tiersAll = d->repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << levelID);
 //            foreach (QString speakerID, tiersAll.keys()) {
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //                if (!tiers) continue;
 //                IntervalTier *tier = tiers->getIntervalTierByName(levelID);
 //                d->calculator.getCohenKappa()

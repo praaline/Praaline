@@ -1,3 +1,4 @@
+#include <QPointer>
 #include <QMap>
 #include <QFile>
 #include <QTemporaryDir>
@@ -93,14 +94,14 @@ bool MBROLAFileManager::updatePhoneTierFromPhoFile(const QString &filenamePho, I
 }
 
 
-void MBROLAFileManager::extractPhoParameters(QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot,
+void MBROLAFileManager::extractPhoParameters(CorpusRecording *rec, CorpusAnnotation *annot,
                                              const QString &attributeForPhoneme)
 {
     if (!rec) return;
     if (!annot) return;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = annot->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+    SpeakerAnnotationTierGroupMap tiersAll = annot->repository()->annotations()->getTiersAllSpeakers(annot->ID());
     foreach (QString speakerID, tiersAll.keys()) {
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 
         IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
         if (!tier_phones) continue;
@@ -123,7 +124,7 @@ void MBROLAFileManager::extractPhoParameters(QPointer<CorpusRecording> rec, QPoi
         QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
         // Prepare the annotation (phones only)
         QString filenameTempAnnot = QString("%1_%2.TextGrid").arg(rec->ID()).arg(speakerID);
-        QPointer<AnnotationTierGroup> tiersOnlyPhones = new AnnotationTierGroup();
+        AnnotationTierGroup *tiersOnlyPhones = new AnnotationTierGroup();
         tiersOnlyPhones->addTier(tier_phones);
         PraatTextGrid::save(tempDirectory + filenameTempAnnot, tiersOnlyPhones);
         // Call script

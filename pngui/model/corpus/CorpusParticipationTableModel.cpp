@@ -9,13 +9,13 @@ struct CorpusParticipationTableModelData {
     CorpusParticipationTableModelData() : multiCorpus(true) {}
 
     bool multiCorpus;
-    QList<QPointer<CorpusParticipation> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;
+    QList<CorpusParticipation *> items;
+    QList<MetadataStructureAttribute *> attributes;
 };
 
 
-CorpusParticipationTableModel::CorpusParticipationTableModel(QList<QPointer<CorpusParticipation> > items,
-                                                             QList<QPointer<MetadataStructureAttribute> > attributes,
+CorpusParticipationTableModel::CorpusParticipationTableModel(QList<CorpusParticipation *> items,
+                                                             QList<MetadataStructureAttribute *> attributes,
                                                              bool multiCorpus, QObject *parent) :
     QAbstractTableModel(parent), d(new CorpusParticipationTableModelData)
 {
@@ -74,7 +74,7 @@ QVariant CorpusParticipationTableModel::headerData(int section, Qt::Orientation 
     }
     else if (orientation == Qt::Vertical) {
         QString ret = QString::number(section + 1);
-        QPointer<CorpusParticipation> item(0);
+        CorpusParticipation *item(0);
         if ((section >= 0) && (section < d->items.count())) {
             item  = d->items.at(section);
             if (item->isNew()) return ret.append(" +");
@@ -93,7 +93,7 @@ QVariant CorpusParticipationTableModel::data(const QModelIndex &index, int role)
         return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        QPointer<CorpusParticipation> part = d->items.at(index.row());
+        CorpusParticipation *part = d->items.at(index.row());
         if (!part) return QVariant();
         if (d->multiCorpus) {
             if (index.column() == 0) return part->property("corpusID");
@@ -133,7 +133,7 @@ bool CorpusParticipationTableModel::setData(const QModelIndex &index, const QVar
         return false;
 
     if (role == Qt::EditRole) {
-        QPointer<CorpusParticipation> part = d->items.at(index.row());
+        CorpusParticipation *part = d->items.at(index.row());
         if (!part) return false;
         if (d->multiCorpus) {
             if      (index.column() == 0) return part->setProperty("corpusID", value);

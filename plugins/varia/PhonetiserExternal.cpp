@@ -65,17 +65,17 @@ void PhonetiserExternal::setAttributePhonetisationOfTokens(const QString &attrib
     d->attributePhonetisationOfTokens = attributeID;
 }
 
-QString PhonetiserExternal::exportToPhonetiser(QPointer<CorpusCommunication> com)
+QString PhonetiserExternal::exportToPhonetiser(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->levelTokens);
             if (!tier_tokens) continue;
@@ -118,17 +118,17 @@ QString PhonetiserExternal::exportToPhonetiser(QPointer<CorpusCommunication> com
     return ret;
 }
 
-QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> com, bool fromTranscriptionTier)
+QString PhonetiserExternal::importFromPhonetiser(CorpusCommunication *com, bool fromTranscriptionTier)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->levelTokens);
             if (!tier_tokens) continue;
@@ -305,17 +305,17 @@ QString PhonetiserExternal::importFromPhonetiser(QPointer<CorpusCommunication> c
     return ret;
 }
 
-QString PhonetiserExternal::correctPhonemeChains(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PhonetiserExternal::correctPhonemeChains(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error: no Communication";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->levelTokens);
             if (!tier_tokens) continue;

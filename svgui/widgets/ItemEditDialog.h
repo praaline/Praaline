@@ -38,7 +38,7 @@ public:
     };
 
     ItemEditDialog(sv_samplerate_t sampleRate, int options, QString valueUnits = "",
-                   QWidget *parent = 0);
+                   QWidget *parent = nullptr);
 
     void setFrameTime(sv_frame_t frame);
     sv_frame_t getFrameTime() const;

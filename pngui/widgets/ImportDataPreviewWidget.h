@@ -14,7 +14,7 @@ class ImportDataPreviewWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit ImportDataPreviewWidget(QWidget *parent = 0);
+    explicit ImportDataPreviewWidget(QWidget *parent = nullptr);
     ~ImportDataPreviewWidget();
 
 private slots:

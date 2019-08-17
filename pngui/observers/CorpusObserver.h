@@ -29,7 +29,7 @@ class CorpusObserver : public QObject
 {
     Q_OBJECT
 public:
-    CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent = 0);
+    CorpusObserver(QPointer<Praaline::Core::CorpusRepository> repository, QObject *parent = nullptr);
     ~CorpusObserver();
 
     QPointer<Praaline::Core::CorpusRepository> repository() const;
@@ -67,7 +67,7 @@ public:
     void setSpeakersGrouping(QStringList groupAttributeIDs);
 
 private slots:
-    void communicationAdded(QPointer<Praaline::Core::CorpusCommunication> communication);
+    void communicationAdded(Praaline::Core::CorpusCommunication *communication);
     void communicationDeleted(QString communicationID);
     void speakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
     void speakerDeleted(QString speakerID);
@@ -89,12 +89,12 @@ class CorpusExplorerTreeNodeCommunication : public TreeNode
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeNodeCommunication(QPointer<Praaline::Core::CorpusCommunication> com);
-    QPointer<Praaline::Core::CorpusCommunication> communication;
+    CorpusExplorerTreeNodeCommunication(Praaline::Core::CorpusCommunication *com);
+    Praaline::Core::CorpusCommunication *communication;
 private slots:
-    void recordingAdded(QPointer<Praaline::Core::CorpusRecording> recording);
+    void recordingAdded(Praaline::Core::CorpusRecording *recording);
     void recordingDeleted(QString communicationID, QString recordingID);
-    void annotationAdded(QPointer<Praaline::Core::CorpusAnnotation> annotation);
+    void annotationAdded(Praaline::Core::CorpusAnnotation *annotation);
     void annotationDeleted(QString communicationID, QString annotationID);
 };
 
@@ -110,16 +110,16 @@ class CorpusExplorerTreeNodeRecording : public TreeNode
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeNodeRecording(QPointer<Praaline::Core::CorpusRecording> rec);
-    QPointer<Praaline::Core::CorpusRecording> recording;
+    CorpusExplorerTreeNodeRecording(Praaline::Core::CorpusRecording *rec);
+    Praaline::Core::CorpusRecording *recording;
 };
 
 class CorpusExplorerTreeNodeAnnotation : public TreeNode
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeNodeAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
-    QPointer<Praaline::Core::CorpusAnnotation> annotation;
+    CorpusExplorerTreeNodeAnnotation(Praaline::Core::CorpusAnnotation *annot);
+    Praaline::Core::CorpusAnnotation *annotation;
 };
 
 

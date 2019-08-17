@@ -22,8 +22,8 @@ class ExportVisualisationDialog : public QDialog
 
 public:
     explicit ExportVisualisationDialog(Document *document, PaneStack *paneStack, ViewManager *viewManager,
-                                       QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
-                                       QWidget *parent = 0);
+                                       SpeakerAnnotationTierGroupMap &tiers,
+                                       QWidget *parent = nullptr);
     ~ExportVisualisationDialog();
 
 private slots:

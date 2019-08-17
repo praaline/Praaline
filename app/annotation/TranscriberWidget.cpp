@@ -31,7 +31,7 @@ using namespace Praaline::Core;
 
 struct TranscriberWidgetData {
     TranscriberWidgetData() :
-        corpusItemSelector(0), annotationEditor(0), currentCorpus(0) {}
+        corpusItemSelector(nullptr), annotationEditor(nullptr), currentCorpus(nullptr) {}
 
     CorpusItemSelectorWidget *corpusItemSelector;   // Corpus items selector
     AnnotationMultiTierEditorWidget *annotationEditor;     // Annotation timeline editor
@@ -123,8 +123,8 @@ void TranscriberWidget::newSession()
 
 void TranscriberWidget::selectedCorpusCommunication(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusRecording> rec(nullptr);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (com->recordingsCount() >= 1) rec = com->recordings().first();
@@ -135,7 +135,7 @@ void TranscriberWidget::selectedCorpusCommunication(QPointer<Corpus> corpus, QPo
 void TranscriberWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                 QPointer<CorpusRecording> rec)
 {
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!rec) return;
@@ -150,7 +150,7 @@ void TranscriberWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QPointe
 void TranscriberWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                  QPointer<CorpusAnnotation> annot)
 {
-    QPointer<CorpusRecording> rec(0);
+    QPointer<CorpusRecording> rec(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!annot) return;
@@ -163,7 +163,7 @@ void TranscriberWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, QPoint
 }
 
 void TranscriberWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
-                                              QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
+                                         QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
 {
 //    if (d->autoSave) {
 //        saveAnnotations();
@@ -193,7 +193,8 @@ void TranscriberWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<Corpu
     }
 }
 
-void TranscriberWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot, RealTime time)
+void TranscriberWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
+                                             QPointer<CorpusAnnotation> annot, RealTime time)
 {
 //    if (!corpus) return;
 //    if (!com) return;

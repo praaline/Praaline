@@ -33,7 +33,7 @@ class Overview : public View
     Q_OBJECT
 
 public:
-    Overview(QWidget *parent = 0);
+    Overview(QWidget *parent = nullptr);
 
     void registerView(View *view);
     void unregisterView(View *view);

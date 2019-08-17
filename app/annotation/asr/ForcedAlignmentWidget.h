@@ -17,7 +17,7 @@ class ForcedAlignmentWidget : public ASRModuleVisualiserWidgetBase
     Q_OBJECT
 
 public:
-    explicit ForcedAlignmentWidget(QWidget *parent = 0);
+    explicit ForcedAlignmentWidget(QWidget *parent = nullptr);
     ~ForcedAlignmentWidget();
 
 public slots:

@@ -43,7 +43,7 @@ struct CorpusItemPreviewData {
     QString statusInfo;
     qint64 duration;
 
-    QPointer<CorpusCommunication> communication;
+    CorpusCommunication *communication;
     QStringList recordingsIDs;
     QStringList annotationIDs;
     QStringList levelIDs;
@@ -179,7 +179,7 @@ void CorpusItemPreview::clear()
     d->transcriptionWidget->clear();
 }
 
-void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
+void CorpusItemPreview::openCommunication(CorpusCommunication *com)
 {
     if (d->communication == com) return;
     // Clear state
@@ -194,14 +194,14 @@ void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
     // Populate combo boxes (recording/annotation names) and internal state (recording/annotation IDs)
     d->communication = com;
     QStringList names;
-    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+    foreach (CorpusRecording *rec, com->recordings()) {
         if (!rec) continue;
         d->recordingsIDs.append(rec->ID());
         names.append(rec->name());
     }
     d->recordingsComboBox->insertItems(0, names);
     names.clear();
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         d->annotationIDs.append(annot->ID());
         names.append(annot->name());
@@ -223,7 +223,7 @@ void CorpusItemPreview::openCommunication(QPointer<CorpusCommunication> com)
 void CorpusItemPreview::recordingChanged(const QString &recordingID)
 {
     if (!d->communication) { d->player->setMedia(QUrl()); return; }
-    QPointer<CorpusRecording> rec = d->communication->recording(recordingID);
+    CorpusRecording *rec = d->communication->recording(recordingID);
     if (!rec) { d->player->setMedia(QUrl()); return; }
     d->player->setMedia(rec->mediaUrl());
 }
@@ -231,7 +231,7 @@ void CorpusItemPreview::recordingChanged(const QString &recordingID)
 void CorpusItemPreview::annotationChanged(const QString &annotationID)
 {
     if (!d->communication) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
-    QPointer<CorpusAnnotation> annot = d->communication->annotation(annotationID);
+    CorpusAnnotation *annot = d->communication->annotation(annotationID);
     if (!annot) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
     d->transcriptionWidget->setAnnotation(annot);
 }

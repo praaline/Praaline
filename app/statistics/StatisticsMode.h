@@ -18,7 +18,7 @@ class StatisticsMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    StatisticsMode(QObject *parent = 0);
+    StatisticsMode(QObject *parent = nullptr);
     ~StatisticsMode();
 
     // IObjectBase Implementation

@@ -19,7 +19,7 @@ class CorpusRepositoriesManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit CorpusRepositoriesManager(QObject *parent = 0);
+    explicit CorpusRepositoriesManager(QObject *parent = nullptr);
     ~CorpusRepositoriesManager();
 
     // Corpus Repositories

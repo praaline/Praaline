@@ -26,22 +26,22 @@ public:
     };
 
     SpeechRecognitionRecipes();
-    static bool downsampleWaveFile(QPointer<Praaline::Core::CorpusRecording> rec, QString outputDirectory = QString());
+    static bool downsampleWaveFile(Praaline::Core::CorpusRecording *rec, QString outputDirectory = QString());
 
-    static bool createSphinxFeatureFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications, Configuration config);
+    static bool createSphinxFeatureFiles(QList<Praaline::Core::CorpusCommunication *> &communications, Configuration config);
     static bool createSphinxFeatureFiles(QStringList filenames, SpeechRecognitionRecipes::Configuration config);
-    static bool createSphinxFeatureFile(QPointer<Praaline::Core::CorpusRecording> rec, Configuration config);
+    static bool createSphinxFeatureFile(Praaline::Core::CorpusRecording *rec, Configuration config);
 
-    static bool transcribeUtterancesWithSphinx(QPointer<Praaline::Core::CorpusCommunication> com,
-                                               QPointer<Praaline::Core::CorpusRecording> rec, const QString &annotationID,
+    static bool transcribeUtterancesWithSphinx(Praaline::Core::CorpusCommunication *com,
+                                               Praaline::Core::CorpusRecording *rec, const QString &annotationID,
                                                const QString &tiernameSegmentation, const QString &tiernameTranscription,
                                                const QString &pathAcousticModel, const QString &filenameLanguageModel,
                                                const QString &filenamePronunciationDictionary, const QString &filenameMLLRMatrix);
-    static bool updateSegmentationFromTranscription(QPointer<Praaline::Core::CorpusCommunication> com,
+    static bool updateSegmentationFromTranscription(Praaline::Core::CorpusCommunication *com,
                                                     const QString &tiernameSegmentation, const QString &tiernameTranscription);
 
     // Adaptation
-    static bool preapareAdapationData(QPointer<Praaline::Core::CorpusCommunication> com,
+    static bool preapareAdapationData(Praaline::Core::CorpusCommunication *com,
                                       const QString &levelTranscription, const QString &attributeIncludeInAdaptation,
                                       const QStringList &speakerIDs,
                                       const QString &pathAcousticModel, const QString &filenamePronunciationDictionary,

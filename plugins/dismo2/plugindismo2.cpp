@@ -123,7 +123,7 @@ void Praaline::Plugins::DisMo2::PluginDisMo2::setParameters(const QHash<QString,
     if (parameters.contains("attributePrefix")) d->attributePrefix = parameters.value("attributePrefix").toString();
 }
 
-void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<CorpusCommunication *> &communications)
 {
 //    DisMoAnnotator::DismoAnnotator *DISMO = new DisMoAnnotator::DismoAnnotator("fr");
 //    QPointer<IntervalTier> tier_tok_min;
@@ -132,15 +132,15 @@ void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<QPointer<Corpu
 //    int countDone = 0;
 //    madeProgress(0);
 //    printMessage("DisMo Annotator ver. 1.0 running");
-//    foreach(QPointer<CorpusCommunication> com, communications) {
+//    foreach(CorpusCommunication *com, communications) {
 //        if (!com) continue;
 //        printMessage(QString("Annotating %1").arg(com->ID()));
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
-//            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
+//            SpeakerAnnotationTierGroupMap tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID());
 //            foreach (QString speakerID, tiersAll.keys()) {
 //                printMessage(QString("   speaker %1").arg(speakerID));
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //                if (!tiers) continue;
 //                if (!d->alreadyTokenised) {
 //                    QPointer<IntervalTier> tier_input = tiers->getIntervalTierByName(d->levelToAnnotate);

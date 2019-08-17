@@ -29,7 +29,7 @@ class LayerTreeDialog : public QDialog
     Q_OBJECT
     
 public:
-    LayerTreeDialog(PaneStack *stack, QWidget *parent = 0);
+    LayerTreeDialog(PaneStack *stack, QWidget *parent = nullptr);
     ~LayerTreeDialog();
 
 protected:

@@ -13,7 +13,7 @@ class SphinxSegmentation : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxSegmentation(QObject *parent = 0);
+    explicit SphinxSegmentation(QObject *parent = nullptr);
     ~SphinxSegmentation();
 
     static bool readSegmentationHypothesisFile(const QString &filename, QHash<QString, QList<Core::Interval *> > &utterances);

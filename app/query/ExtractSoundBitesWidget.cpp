@@ -176,9 +176,9 @@ void ExtractSoundBitesWidget::extractSoundBites()
         if (stimulusName.isEmpty())
             stimulusName = QString("%1_%2_%3").arg(communicationID).arg(timeStartSec).arg(timeEndSec);
 
-        QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+        CorpusCommunication *com = corpus->communication(communicationID);
         if (!com) continue;
-        QPointer<CorpusRecording> rec = com->recording(recordingID);
+        CorpusRecording *rec = com->recording(recordingID);
         if (!rec) continue;
         QString originalMediaFile = rec->filePath();
 
@@ -193,21 +193,21 @@ void ExtractSoundBitesWidget::extractSoundBites()
         // Add to copy-over corpus and add annotations, if needed
         if (ui->checkCreateCorpus && d->corpusDestination) {
             // Create Communication
-            QPointer<CorpusCommunication> stimCom = d->corpusDestination->communication(stimulusName);
+            CorpusCommunication *stimCom = d->corpusDestination->communication(stimulusName);
             if (!stimCom) {
                 stimCom = new CorpusCommunication(stimulusName);
                 stimCom->setName(stimulusName);
                 d->corpusDestination->addCommunication(stimCom);
             }
             // Carry over participations and speakers
-            foreach (QPointer<CorpusParticipation> participation, corpus->participationsForCommunication(communicationID)) {
+            foreach (CorpusParticipation *participation, corpus->participationsForCommunication(communicationID)) {
                 if (!d->corpusDestination->hasSpeaker(participation->speakerID())) {
                     d->corpusDestination->addSpeaker(new CorpusSpeaker(participation->speakerID()));
                 }
                 d->corpusDestination->addParticipation(stimCom->ID(), participation->speakerID(), participation->role());
             }
             // Update recording
-            QPointer<CorpusRecording> stimRec = stimCom->recording(stimulusName);
+            CorpusRecording *stimRec = stimCom->recording(stimulusName);
             if (!stimRec) {
                 stimRec = new CorpusRecording(stimulusName);
                 stimRec->setName(stimulusName);
@@ -227,9 +227,9 @@ void ExtractSoundBitesWidget::extractSoundBites()
                 stimCom->addRecording(stimRec);
             }
             // Carry over annotations
-            foreach (QPointer<CorpusAnnotation> annotSource, com->annotations()) {
+            foreach (CorpusAnnotation *annotSource, com->annotations()) {
                 if (!annotSource) continue;
-                QPointer<CorpusAnnotation> stimAnnot = stimCom->annotation(annotSource->ID());
+                CorpusAnnotation *stimAnnot = stimCom->annotation(annotSource->ID());
                 if (!stimAnnot) {
                     stimAnnot = new CorpusAnnotation(stimulusName);
                     stimAnnot->setName(stimulusName);
@@ -288,15 +288,15 @@ void ExtractSoundBitesWidget::prepareCopyOverCorpus(QPointer<CorpusRepository> r
 }
 
 void ExtractSoundBitesWidget::carryOverAnnotations(QPointer<CorpusRepository> repositorySource,
-                                                   QPointer<CorpusAnnotation> annotSource, QPointer<CorpusAnnotation> annotDestination,
+                                                   CorpusAnnotation *annotSource, CorpusAnnotation *annotDestination,
                                                    RealTime start, RealTime end)
 {
     if (!d->repositoryDestination) return;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
+    SpeakerAnnotationTierGroupMap tiersSourceAll = repositorySource->annotations()->getTiersAllSpeakers(annotSource->ID());
     foreach (QString speakerID, tiersSourceAll.keys()) {
-        QPointer<AnnotationTierGroup> tiersSource = tiersSourceAll.value(speakerID);
+        AnnotationTierGroup *tiersSource = tiersSourceAll.value(speakerID);
         if (!tiersSource) continue;
-        QPointer<AnnotationTierGroup> tiersDest = new AnnotationTierGroup();
+        AnnotationTierGroup *tiersDest = new AnnotationTierGroup();
         for (int i = 0; i < ui->comboBoxLevelsToCopy->count(); ++i) {
             if (ui->comboBoxLevelsToCopy->itemData(i).toBool() == true) {
                 AnnotationStructureLevel *level = repositorySource->annotationStructure()->levels().at(i);

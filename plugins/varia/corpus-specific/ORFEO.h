@@ -15,9 +15,9 @@ class ORFEO
 public:
     ORFEO();
 
-    QString readOrfeoFile(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString mapTokensToDisMo(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString createSentenceUnits(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString readOrfeoFile(Praaline::Core::CorpusCommunication *com);
+    QString mapTokensToDisMo(Praaline::Core::CorpusCommunication *com);
+    QString createSentenceUnits(Praaline::Core::CorpusCommunication *com);
 
 };
 

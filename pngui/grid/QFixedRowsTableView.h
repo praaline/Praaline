@@ -113,7 +113,7 @@ public:
 	/**
 	 * Constructs a fixed rows filter proxy model with the given @p parent.
 	 */
-    QFixedRowsFilterProxyModel(QObject *parent = 0);
+    QFixedRowsFilterProxyModel(QObject *parent = nullptr);
 	/**
 	 * Destroys the fixed rows proxy model.
 	 */

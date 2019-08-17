@@ -7,15 +7,15 @@
 
 struct ImportCorpusItemsWizardSelectionPageData {
     ImportCorpusItemsWizardSelectionPageData(QPointer<Corpus> corpus,
-                                             QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-                                             QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations) :
+                                             QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+                                             QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations) :
         corpus(corpus), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
         abort(false)
     {}
 
     QPointer<Corpus> corpus;
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations;
+    QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings;
+    QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations;
     QPointer<QStandardItemModel> modelFormatsRecording;
     QPointer<QStandardItemModel> modelFormatsAnnotation;
     bool abort;
@@ -23,8 +23,8 @@ struct ImportCorpusItemsWizardSelectionPageData {
 
 ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
         QPointer<Corpus> corpus,
-        QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-        QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+        QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+        QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardSelectionPage),
     d(new ImportCorpusItemsWizardSelectionPageData(corpus, candidateRecordings, candidateAnnotations))

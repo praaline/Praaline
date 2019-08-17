@@ -17,7 +17,7 @@ class TranscriptAnnotationEditor : public QMainWindow, public AnnotationEditorBa
 {
     Q_OBJECT
 public:
-    TranscriptAnnotationEditor(QWidget *parent = 0);
+    TranscriptAnnotationEditor(QWidget *parent = nullptr);
     virtual ~TranscriptAnnotationEditor();
     QWidget *editorWidget() override { return this; }
 

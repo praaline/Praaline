@@ -21,7 +21,7 @@ class AnalyserDisfluencies : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserDisfluencies(QObject *parent = 0);
+    explicit AnalyserDisfluencies(QObject *parent = nullptr);
     ~AnalyserDisfluencies();
 
     Praaline::Core::Corpus *corpus() const;

@@ -38,7 +38,7 @@ SpeechRecognitionRecipes::SpeechRecognitionRecipes()
 //}
 
 
-bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<CorpusRecording> rec, QString outputDirectory)
+bool SpeechRecognitionRecipes::downsampleWaveFile(CorpusRecording *rec, QString outputDirectory)
 {
     if (!rec) return false;
     if (!rec->repository()) return false;
@@ -50,13 +50,13 @@ bool SpeechRecognitionRecipes::downsampleWaveFile(QPointer<CorpusRecording> rec,
     return ret;
 }
 
-bool SpeechRecognitionRecipes::createSphinxFeatureFiles(QList<QPointer<CorpusCommunication> > &communications,
+bool SpeechRecognitionRecipes::createSphinxFeatureFiles(QList<CorpusCommunication *> &communications,
                                                         SpeechRecognitionRecipes::Configuration config)
 {
     QStringList filenames;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             filenames << QString(rec->filePath()).replace(".wav", ".16k.wav");
         }
@@ -81,7 +81,7 @@ bool SpeechRecognitionRecipes::createSphinxFeatureFiles(QStringList filenames,
     return true;
 }
 
-bool SpeechRecognitionRecipes::createSphinxFeatureFile(QPointer<CorpusRecording> rec,
+bool SpeechRecognitionRecipes::createSphinxFeatureFile(CorpusRecording *rec,
                                                        SpeechRecognitionRecipes::Configuration config)
 {
     if (!rec) return false;
@@ -98,8 +98,8 @@ bool SpeechRecognitionRecipes::createSphinxFeatureFile(QPointer<CorpusRecording>
     return ret;
 }
 
-bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<CorpusCommunication> com,
-                                                              QPointer<CorpusRecording> rec, const QString &annotationID,
+bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(CorpusCommunication *com,
+                                                              CorpusRecording *rec, const QString &annotationID,
                                                               const QString &tiernameSegmentation, const QString &tiernameTranscription,
                                                               const QString &pathAcousticModel, const QString &filenameLanguageModel,
                                                               const QString &filenamePronunciationDictionary, const QString &filenameMLLRMatrix)
@@ -114,12 +114,12 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<CorpusCom
     sphinx->setPronunciationDictionary(filenamePronunciationDictionary);
     sphinx->setMLLRMatrix(filenameMLLRMatrix);
     // Transcribe
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
     mutex.lock();
     tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
     mutex.unlock();
     foreach (QString speakerID, tiersAll.keys()) {
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
         if (!tiers) continue;
         IntervalTier *tier_segment = tiers->getIntervalTierByName(tiernameSegmentation);
         if (!tier_segment) continue;
@@ -145,21 +145,21 @@ bool SpeechRecognitionRecipes::transcribeUtterancesWithSphinx(QPointer<CorpusCom
     return true;
 }
 
-bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<CorpusCommunication> com,
+bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(CorpusCommunication *com,
                                                                    const QString &tiernameSegmentation, const QString &tiernameTranscription)
 {
     static QMutex mutex;
     if (!com) return false;
     if (!com->repository()) return false;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         mutex.lock();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_transcription = tiers->getIntervalTierByName(tiernameTranscription);
             if (!tier_transcription) continue;
@@ -189,7 +189,7 @@ bool SpeechRecognitionRecipes::updateSegmentationFromTranscription(QPointer<Corp
 }
 
 
-bool SpeechRecognitionRecipes::preapareAdapationData(QPointer<CorpusCommunication> com,
+bool SpeechRecognitionRecipes::preapareAdapationData(CorpusCommunication *com,
                                                      const QString &levelTranscription, const QString &attributeIncludeInAdaptation,
                                                      const QStringList &speakerIDs,
                                                      const QString &pathAcousticModel, const QString &filenamePronunciationDictionary,

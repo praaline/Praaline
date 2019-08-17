@@ -23,7 +23,7 @@ class StatisticsPluginBasicWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit StatisticsPluginBasicWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit StatisticsPluginBasicWidget(Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~StatisticsPluginBasicWidget();
 
 private slots:

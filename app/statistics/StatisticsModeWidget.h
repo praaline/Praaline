@@ -14,7 +14,7 @@ class StatisticsModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit StatisticsModeWidget(QWidget *parent = 0);
+    explicit StatisticsModeWidget(QWidget *parent = nullptr);
     ~StatisticsModeWidget();
 
 signals:

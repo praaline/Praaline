@@ -34,7 +34,7 @@ QString translate(QString attribute) {
 }
 
 bool updateTierFromAnnotationTable(QString filenameSpreadsheet, QString tMinAttribute, QString tMaxAttribute,
-                                   QPointer<IntervalTier> tier)
+                                   IntervalTier *tier)
 {
     if (!tier) return false;
     // Read annotation table

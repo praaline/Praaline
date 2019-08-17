@@ -106,7 +106,7 @@ void SphinxRecogniser::setAttributeNames(const QString &attributenameAcousticMod
 
 // ==============================================================================================================================
 
-bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com, QString recordingID,
+bool SphinxRecogniser::recogniseUtterances_MFC(CorpusCommunication *com, QString recordingID,
                                                QList<Interval *> &utterances, QList<Interval *> &segmentation)
 {
     // Batch recognition of utterances given a pre-segmented tier and a corresponding recording to which
@@ -114,7 +114,7 @@ bool SphinxRecogniser::recogniseUtterances_MFC(QPointer<CorpusCommunication> com
 
     if (!com) return false;
     if (utterances.isEmpty()) return true;
-    QPointer<CorpusRecording> rec = com->recording(recordingID);
+    CorpusRecording *rec = com->recording(recordingID);
     if (!rec) return false;
 
     // File names

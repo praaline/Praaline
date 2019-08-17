@@ -108,12 +108,12 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(const QHash<QString,
     if (parameters.contains("operationCreateSentenceTier")) d->operationCreateSentenceTier = parameters.value("operationCreateSentenceTier").toBool();
 }
 
-void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
+void readUDCorpus(const QList<CorpusCommunication *> &communications)
 {
 //    QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
-//        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
+//        CorpusAnnotation *annot = new CorpusAnnotation(com->ID());
 //        com->addAnnotation(annot);
 //        AnnotationTierGroup *group = new AnnotationTierGroup();
 //        CoNLLUReader::readCoNLLUtoIntervalTier(filename, group);
@@ -121,38 +121,38 @@ void readUDCorpus(const QList<QPointer<CorpusCommunication> > &communications)
 //    }
 }
 
-void readPerceoCorpus(const QList<QPointer<CorpusCommunication> > &communications)
+void readPerceoCorpus(const QList<CorpusCommunication *> &communications)
 {
     QString filename = "D:/CORPORA/C-PERCEO/corpus_perceo_oral.txt";
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        QPointer<CorpusAnnotation> annot = new CorpusAnnotation(com->ID());
+        CorpusAnnotation *annot = new CorpusAnnotation(com->ID());
         com->addAnnotation(annot);
-        QMap<QString, QPointer<AnnotationTierGroup> > tiers;
+        SpeakerAnnotationTierGroupMap tiers;
         CorpusImporter::readPerceo(filename, tiers);
        com->repository()->annotations()->saveTiersAllSpeakers(com->ID(), tiers);
     }
 }
 
-void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<CorpusCommunication *> &communications)
 {
     QString m;
     SentencesSplitter sentenceSplitter;
     if (d->operationImportSentenceBreakFile) {
         printMessage(sentenceSplitter.readBreaksFile("/mnt/hgfs/Dropbox/CORPORA/Phonogenre/phonogenre_sentences.txt"));
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
             printMessage(sentenceSplitter.importBreaks(com));
         }
     }
     if (d->operationExportSentenceBreakFile) {
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
             printMessage(sentenceSplitter.exportSentences(com));
         }
     }
     if (d->operationCreateSentenceTier) {
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
             printMessage(sentenceSplitter.createSentenceTier(com));
         }

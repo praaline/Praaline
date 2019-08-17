@@ -14,7 +14,7 @@ class ScriptingModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit ScriptingModeWidget(QWidget *parent = 0);
+    explicit ScriptingModeWidget(QWidget *parent = nullptr);
     ~ScriptingModeWidget();
 
 signals:

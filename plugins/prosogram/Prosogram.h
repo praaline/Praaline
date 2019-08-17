@@ -15,9 +15,9 @@ class ProsoGram : public AnnotationPluginPraatScript
 {
     Q_OBJECT
 public:
-    explicit ProsoGram(QObject *parent = 0);
+    explicit ProsoGram(QObject *parent = nullptr);
 
-    void runProsoGram(Corpus *corpus, CorpusRecording *rec, QPointer<AnnotationTierGroup> tiers, QString annotationID, QString speakerID);
+    void runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID);
     static bool updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet);
 
     double timeRangeFrom;

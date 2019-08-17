@@ -17,7 +17,7 @@ class MetadataStructureTreeModelCategory : public QObject {
     Q_PROPERTY(QString ID READ getID)
 public:
     MetadataStructureTreeModelCategory(QString ID, Praaline::Core::CorpusObject::Type type,
-                                       QString defaultSectionName, QObject *parent = 0) :
+                                       QString defaultSectionName, QObject *parent = nullptr) :
         QObject(parent), ID(ID), type(type), defaultSectionName(defaultSectionName) {}
     QString ID;
     Praaline::Core::CorpusObject::Type type;
@@ -31,7 +31,7 @@ class MetadataStructureTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    MetadataStructureTreeModel(Praaline::Core::MetadataStructure *structure, QObject *parent = 0);
+    MetadataStructureTreeModel(Praaline::Core::MetadataStructure *structure, QObject *parent = nullptr);
     ~MetadataStructureTreeModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

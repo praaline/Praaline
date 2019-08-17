@@ -26,7 +26,7 @@ class ProgressDialog : public ProgressReporter
     
 public:
     ProgressDialog(QString message, bool cancellable,
-                   int timeBeforeShow = 0, QWidget *parent = 0);
+                   int timeBeforeShow = 0, QWidget *parent = nullptr);
     virtual ~ProgressDialog();
 
     virtual bool isDefinite() const;

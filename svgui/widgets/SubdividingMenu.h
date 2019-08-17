@@ -40,9 +40,9 @@ class SubdividingMenu : public QMenu
 
 public:
     SubdividingMenu(int lowerLimit = 0, int upperLimit = 0,
-                    QWidget *parent = 0);
+                    QWidget *parent = nullptr);
     SubdividingMenu(const QString &title, int lowerLimit = 0,
-                    int upperLimit = 0, QWidget *parent = 0);
+                    int upperLimit = 0, QWidget *parent = nullptr);
     virtual ~SubdividingMenu();
 
     void setEntries(const std::set<QString> &entries);

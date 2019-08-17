@@ -22,7 +22,7 @@ class CorpusExplorerWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, QWidget *parent = 0);
+    explicit CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, QWidget *parent = nullptr);
     ~CorpusExplorerWidget();
 
 private slots:

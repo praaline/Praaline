@@ -18,7 +18,7 @@ class ManualAnnotationWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ManualAnnotationWidget(QWidget *parent = 0);
+    explicit ManualAnnotationWidget(QWidget *parent = nullptr);
     ~ManualAnnotationWidget();
 
 protected slots:

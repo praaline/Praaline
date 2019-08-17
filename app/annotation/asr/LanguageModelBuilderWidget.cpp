@@ -21,9 +21,9 @@ struct LanguageModelBuilderWidgetData {
 
     QPointer<CorpusRepository> repository;
     QPointer<Corpus> corpus;
-    QPointer<CorpusCommunication> communication;
-    QPointer<CorpusRecording> recording;
-    QPointer<CorpusAnnotation> annotation;
+    CorpusCommunication *communication;
+    CorpusRecording *recording;
+    CorpusAnnotation *annotation;
 
     SphinxLanguageModelBuilder *languageModelBuilder;
 };
@@ -110,7 +110,7 @@ void LanguageModelBuilderWidget::createLanguageModel()
     d->languageModelBuilder->setTokensTier(ui->comboBoxTokensLevel->currentData().toString(),
                                            ui->comboBoxTokensAttribute->currentData().toString());
     QStringList normalisedUtterances;
-    foreach (QPointer<CorpusAnnotation> annot, d->communication->annotations()) {
+    foreach (CorpusAnnotation *annot, d->communication->annotations()) {
          normalisedUtterances << d->languageModelBuilder->getNormalisedUtterances(annot);
     }
     foreach (QString utt, normalisedUtterances) {

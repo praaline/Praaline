@@ -179,7 +179,7 @@ bool writeStringListToFile(const QString &filename, const QStringList &strings)
     return true;
 }
 
-void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCommunication *> &communications)
 {
     PFCPreprocessor preprocessor;
     PFCPhonetiser phonetiser;
@@ -188,14 +188,14 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     PFCReports reports;
 
     if (d->pfc_preprocessor_check_transcription_speakers) {
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             QString m = preprocessor.prepareTranscription(com);
             m = m.append("\t").append(preprocessor.checkSpeakers(com));
             if (!m.isEmpty()) printMessage(m);
         }
     }
     if (d->pfc_preprocessor_diarise_tokenise) {
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             QString m = preprocessor.separateSpeakers(com);
             m = m.append("\t").append(preprocessor.tokenise(com));
             m = m.append("\t").append(preprocessor.tokmin_punctuation(com));
@@ -204,7 +204,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     }
     if (d->pfc_phonetiser_phonetise) {
         phonetiser.loadPhonetisationDictionary();
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             QString m = phonetiser.phonetiseFromDictionary(com);
             if (!m.isEmpty()) printMessage(m);
         }
@@ -212,7 +212,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
         printMessage(phonetiser.writeListOfWordsFalseStarts("/mnt/hgfs/DATA/PFCALIGN/phonetisation/falsestarts.txt"));
     }
     if (d->pfc_aligner_htk) {
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (com->ID().endsWith("m")) continue;
             QString m = aligner.align(com, "htk");
             if (!m.isEmpty()) printMessage(m);
@@ -220,7 +220,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     }
     if (d->pfc_aligner_mfa_individual) {
         aligner.setOutputWaveFiles(false);
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (com->ID().endsWith("m")) continue;
             QString m = aligner.align(com, "mfa_individual");
             aligner.dictionaryMFAClose(com->ID());
@@ -229,15 +229,15 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     }
     if (d->pfc_aligner_mfa_regionstyle) {
         aligner.setOutputWaveFiles(true);
-        QMap<QString, QList<QPointer<CorpusCommunication> > > groups;
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        QMap<QString, QList<CorpusCommunication *> > groups;
+        foreach (CorpusCommunication *com, communications) {
             if (com->ID().endsWith("m")) continue;
             QString region = com->ID().left(3);
             QString style = (com->ID().endsWith("t")) ? "text" : "conv";
             groups[region + "_" + style].append(com);
         }
         foreach (QString groupID, groups.keys()) {
-            foreach (QPointer<CorpusCommunication> com, groups.value(groupID)) {
+            foreach (CorpusCommunication *com, groups.value(groupID)) {
                 aligner.align(com, "mfa_regionstyle");
             }
             aligner.dictionaryMFAClose(groupID);
@@ -256,7 +256,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
     }
     if (d->pfc_evaluate) {
         evaluation.pivotReset();
-        foreach (QPointer<CorpusCommunication> com, communications) {
+        foreach (CorpusCommunication *com, communications) {
             if (com->ID().endsWith("m")) continue;
             // QString m = evaluation.evaluate_Individual_RegionStyle(com);
             QString m = evaluation.evaluate_RegionStyle_RegionStyle(com);
@@ -283,7 +283,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<QPointer
 
 //    QString m = report.corpusCoverageStatistics(communications.first()->corpus());
 //    if (!m.isEmpty()) printMessage(m);
-//        foreach (QPointer<CorpusCommunication> com, communications) {
+//        foreach (CorpusCommunication *com, communications) {
 //            QString m = report.reportCorrections(com);
 //            if (!m.isEmpty()) printMessage(m);
 //        }

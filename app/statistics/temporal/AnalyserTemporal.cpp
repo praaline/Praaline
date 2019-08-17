@@ -68,7 +68,7 @@ void AnalyserTemporal::analyse()
 {
     if (!d->corpus) return;
     int i = 0;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         QSharedPointer<AnalyserTemporalItem> item(new AnalyserTemporalItem());
         item->setLevelIDSyllables(d->levelSyllables);
         item->setLevelIDTokens(d->levelTokens);
@@ -89,7 +89,7 @@ QMap<QString, QList<double> > AnalyserTemporal::aggregateMeasureCom(
 {
     QMap<QString, QList<double> > aggregates;
     if (!d->corpus) return aggregates;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         if (!com) continue;
         AnalyserTemporalItem *theItem = item(com->ID());
         if (!theItem) continue;
@@ -117,7 +117,7 @@ QMap<QString, QList<double> > AnalyserTemporal::aggregateMeasureSpk(
 {
     QMap<QString, QList<double> > aggregates;
     if (!d->corpus) return aggregates;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         if (!com) continue;
         AnalyserTemporalItem *theItem = item(com->ID());
         if (!theItem) continue;

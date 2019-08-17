@@ -19,7 +19,7 @@ class ExportMetadataWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ExportMetadataWizard(QWidget *parent = 0);
+    explicit ExportMetadataWizard(QWidget *parent = nullptr);
     ~ExportMetadataWizard();
 
 private slots:

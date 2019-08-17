@@ -64,7 +64,7 @@ class AudioDial : public QDial
     Q_PROPERTY( bool mouseDial READ getMouseDial WRITE setMouseDial )
 
 public:
-    AudioDial(QWidget *parent = 0);
+    AudioDial(QWidget *parent = nullptr);
     ~AudioDial();
 
     const QColor& getKnobColor()  const { return m_knobColor;  }

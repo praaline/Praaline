@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QPair>
 #include <QPointer>
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "SimpleVisualiserWidget.h"
 
 class LayerTreeDialog;
@@ -51,10 +52,10 @@ public slots:
     void goFullScreen();
     void endFullScreen();
 
-    void setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
+    void setAnnotationTiers(SpeakerAnnotationTierGroupMap &tiers);
     void setAnnotationLevelAttributeSelection(const QList<QPair<QString, QString> > &annotationSelection);
     void addAnnotationPane(QVariantHash parameters);
-    void addProsogramPaneToSession(QPointer<Praaline::Core::CorpusRecording> rec, QPointer<Praaline::Core::CorpusAnnotation> annot);
+    void addProsogramPaneToSession(Praaline::Core::CorpusRecording *rec, Praaline::Core::CorpusAnnotation *annot);
     void addTappingDataPane(const QString &tappingTierName = "tappingAdj",
                             const QString &smoothTierName = "smooth",
                             const QString &boundaryAttributePrefix = "boundary");
@@ -128,7 +129,7 @@ protected slots:
     virtual void updateAnnotationPanes();
 
 protected:
-    QMap<QString, QPointer<AnnotationTierGroup> > m_tiers;
+    SpeakerAnnotationTierGroupMap m_tiers;
     QList<QPair<QString, QString> > m_annotationSelection;
     QList<QString> m_excludedSpeakers;
 

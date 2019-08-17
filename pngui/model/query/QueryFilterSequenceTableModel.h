@@ -11,7 +11,7 @@ class QueryFilterSequenceTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit QueryFilterSequenceTableModel(Praaline::Core::QueryFilterSequence &filterSequence, QObject *parent = 0);
+    explicit QueryFilterSequenceTableModel(Praaline::Core::QueryFilterSequence &filterSequence, QObject *parent = nullptr);
     ~QueryFilterSequenceTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

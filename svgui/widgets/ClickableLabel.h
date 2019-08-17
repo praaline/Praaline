@@ -22,9 +22,9 @@ class ClickableLabel : public QLabel
     Q_OBJECT
 
 public:
-    ClickableLabel(const QString &text, QWidget *parent = 0) :
+    ClickableLabel(const QString &text, QWidget *parent = nullptr) :
         QLabel(text, parent) { }
-    ClickableLabel(QWidget *parent = 0) : QLabel(parent) { }
+    ClickableLabel(QWidget *parent = nullptr) : QLabel(parent) { }
     ~ClickableLabel() { }
 
 signals:

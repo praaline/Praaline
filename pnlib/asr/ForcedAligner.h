@@ -19,7 +19,7 @@ class ForcedAligner : public QObject
 {
     Q_OBJECT
 public:
-    explicit ForcedAligner(QObject *parent = 0);
+    explicit ForcedAligner(QObject *parent = nullptr);
     virtual ~ForcedAligner();
 
     QStringList phonemeset() const;

@@ -18,7 +18,7 @@ class VisualisationMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    VisualisationMode(QObject *parent = 0);
+    VisualisationMode(QObject *parent = nullptr);
     ~VisualisationMode();
 
     // IObjectBase Implementation

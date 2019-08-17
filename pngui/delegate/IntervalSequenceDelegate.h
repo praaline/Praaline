@@ -11,7 +11,7 @@ class IntervalSequenceDelegate : public QStyledItemDelegate
     Q_OBJECT
 
 public:
-    explicit IntervalSequenceDelegate(QWidget *parent = 0);
+    explicit IntervalSequenceDelegate(QWidget *parent = nullptr);
     virtual ~IntervalSequenceDelegate();
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;

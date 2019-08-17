@@ -12,7 +12,7 @@ class SelectionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SelectionDialog(const QString &title, QAbstractItemModel *model, QWidget *parent = 0);
+    explicit SelectionDialog(const QString &title, QAbstractItemModel *model, QWidget *parent = nullptr);
     ~SelectionDialog();
 
 private:

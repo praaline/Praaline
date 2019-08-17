@@ -3331,11 +3331,11 @@ void VisualiserWidget::showLayerTree()
 // ====================================================================================================================
 
 // public slot
-//void VisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunication> com)
+//void VisualiserWidget::newSessionWithCommunication(CorpusCommunication *com)
 //{
 //    if (!com) return;
 //    bool first = false;
-//    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//    foreach (CorpusRecording *rec, com->recordings()) {
 //        if (!first) {
 //            // Main audio
 //            QString path = rec->corpus()->baseMediaPath() + "/" + rec->filename();
@@ -3359,7 +3359,7 @@ void VisualiserWidget::showLayerTree()
 //    }
 //}
 
-void VisualiserWidget::setAnnotationTiers(QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
+void VisualiserWidget::setAnnotationTiers(SpeakerAnnotationTierGroupMap &tiers)
 {
     m_tiers = tiers;
     updateAnnotationPanes();
@@ -3405,7 +3405,7 @@ void VisualiserWidget::updateAnnotationPanes()
 
 }
 
-void VisualiserWidget::addProsogramPaneToSession(QPointer<CorpusRecording> rec, QPointer<CorpusAnnotation> annot)
+void VisualiserWidget::addProsogramPaneToSession(CorpusRecording *rec, CorpusAnnotation *annot)
 {
     if (!getMainModel()) return;
     ProsogramModel *model = new ProsogramModel(getMainModel()->getSampleRate(), rec, annot);
@@ -3521,7 +3521,7 @@ void VisualiserWidget::addTappingDataPane(const QString &tappingTierName,
     sv_samplerate_t sampleRate = modelInstants->getSampleRate();
 
     foreach (QString subjectID, m_tiers.keys()) {
-        QPointer<AnnotationTierGroup> tiersSubj = m_tiers.value(subjectID);
+        AnnotationTierGroup *tiersSubj = m_tiers.value(subjectID);
         // Instants model
         IntervalTier *tier_tapping = tiersSubj->getIntervalTierByName(tappingTierName);
         if (tier_tapping) {

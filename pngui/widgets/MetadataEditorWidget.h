@@ -32,7 +32,7 @@ public:
         ButtonStyle
     };
 
-    MetadataEditorWidget(MetadataEditorWidgetStyle style = MetadataEditorWidget::TreeStyle, QWidget *parent = 0);
+    MetadataEditorWidget(MetadataEditorWidgetStyle style = MetadataEditorWidget::TreeStyle, QWidget *parent = nullptr);
     ~MetadataEditorWidget();
 
     void setEditorStyle(MetadataEditorWidgetStyle style);

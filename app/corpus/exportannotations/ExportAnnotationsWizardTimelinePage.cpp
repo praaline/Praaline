@@ -157,7 +157,7 @@ QString ExportAnnotationsWizardTimelinePage::interpretFilenameTemplate(const QSt
 void ExportAnnotationsWizardTimelinePage::doExport(const QList<CorpusObjectInfo> &annotations)
 {
     if (annotations.isEmpty()) return;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
     AnnotationMultiTierTableModel *model(0);
     QList<QPair<QString, QString> > selectedLevelsAttributes;
     // Tier correspondances

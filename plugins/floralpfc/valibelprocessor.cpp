@@ -170,12 +170,12 @@ QList<QString> ValibelProcessor::splitToken(QString input)
     return ret;
 }
 
-void ValibelProcessor::tokenise(const QList<QPointer<CorpusCommunication> > &communications)
+void ValibelProcessor::tokenise(const QList<CorpusCommunication *> &communications)
 {
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "segment");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -232,12 +232,12 @@ void ValibelProcessor::tokenise(const QList<QPointer<CorpusCommunication> > &com
     }
 }
 
-void ValibelProcessor::tokmin_punctuation(const QList<QPointer<CorpusCommunication> > &communications)
+void ValibelProcessor::tokmin_punctuation(const QList<CorpusCommunication *> &communications)
 {
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -272,12 +272,12 @@ void ValibelProcessor::tokmin_punctuation(const QList<QPointer<CorpusCommunicati
 }
 
 
-void ValibelProcessor::pauses(const QList<QPointer<CorpusCommunication> > &communications)
+void ValibelProcessor::pauses(const QList<CorpusCommunication *> &communications)
 {
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
+        foreach (CorpusAnnotation *annot, com->annotations()) {
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "tok_min");
             foreach (QString speakerID, tiersAll.keys()) {
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");

@@ -19,17 +19,17 @@ public:
     Rhapsodie();
     ~Rhapsodie();
 
-    QString prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString updateSyllables(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString loadPitch(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString readProsodicConstituencyTree(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString noteProsodicBoundaryOnSyll(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString importMicrosyntaxCONLL(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString importMicrosyntaxTabular(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString prepareMultiSpeakerTextgrids(Praaline::Core::CorpusCommunication *com);
+    QString updateSyllables(Praaline::Core::CorpusCommunication *com);
+    QString loadPitch(Praaline::Core::CorpusCommunication *com);
+    QString readProsodicConstituencyTree(Praaline::Core::CorpusCommunication *com);
+    QString noteProsodicBoundaryOnSyll(Praaline::Core::CorpusCommunication *com);
+    QString importMicrosyntaxCONLL(Praaline::Core::CorpusCommunication *com);
+    QString importMicrosyntaxTabular(Praaline::Core::CorpusCommunication *com);
     QString exportProsodicBoundariesAnalysisTable(QPointer<Praaline::Core::Corpus> corpus);
     QString findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corpus> corpus);
     QString findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus> corpus);
-    QString importCONLLU(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString importCONLLU(Praaline::Core::CorpusCommunication *com);
 
 private:
     RhapsodieData *d;

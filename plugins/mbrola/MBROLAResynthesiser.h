@@ -16,8 +16,8 @@ class MBROLAResynthesiser : public QObject
     Q_OBJECT
 public:
     explicit MBROLAResynthesiser(QObject *parent = nullptr);
-    static QString createPhoFile(const QString &filenamePho, QPointer<Praaline::Core::CorpusCommunication> com);
-    static QString resynthesise(const QString &directory, QPointer<Praaline::Core::CorpusCommunication> com);
+    static QString createPhoFile(const QString &filenamePho, Praaline::Core::CorpusCommunication *com);
+    static QString resynthesise(const QString &directory, Praaline::Core::CorpusCommunication *com);
 
 signals:
 

@@ -56,9 +56,9 @@ struct ForcedAlignmentWidgetData {
 
     QPointer<CorpusRepository> repository;
     QPointer<Corpus> corpus;
-    QPointer<CorpusCommunication> communication;
-    QPointer<CorpusRecording> recording;
-    QPointer<CorpusAnnotation> annotation;
+    CorpusCommunication *communication;
+    CorpusRecording *recording;
+    CorpusAnnotation *annotation;
     // Visualiser
     Pane *paneWave;
     Pane *paneAnnotation;
@@ -75,7 +75,7 @@ struct ForcedAlignmentWidgetData {
     // Status messages
     StatusMessagesWidget *statusMessages;
     // Annotation tiers
-    QMap<QString, QPointer<AnnotationTierGroup> > currentTierGroups;
+    SpeakerAnnotationTierGroupMap currentTierGroups;
     AnnotationMultiTierTableModel *tierModel;
 };
 
@@ -212,7 +212,7 @@ void ForcedAlignmentWidget::stepAlignAll()
     }
     QString annotationID = d->annotation->ID();
     foreach (QString speakerID, d->currentTierGroups.keys()) {
-        QPointer<AnnotationTierGroup> tiers = d->currentTierGroups.value(speakerID);
+        AnnotationTierGroup *tiers = d->currentTierGroups.value(speakerID);
         if (!tiers) continue;
         IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_min");
         if (!tier_tokens) continue;

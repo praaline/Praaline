@@ -520,14 +520,14 @@ void CorpusExplorerWidget::updateMetadataEditorsForCom(CorpusCommunication *comm
     // Secondary Editor: Participations + Speaker
     QList<QPointer<CorpusObject> > itemsMain;
     itemsMain << static_cast<CorpusObject *>(communication);
-    foreach(QPointer<CorpusRecording> rec, communication->recordings())
+    foreach(CorpusRecording *rec, communication->recordings())
         if (rec) itemsMain << static_cast<CorpusObject *>(rec);
-    foreach(QPointer<CorpusAnnotation> annot, communication->annotations())
+    foreach(CorpusAnnotation *annot, communication->annotations())
         if (annot) itemsMain << static_cast<CorpusObject *>(annot);
     d->metadataEditorPrimary->rebind(communication->repository()->metadataStructure(), itemsMain);
     // Speakers participating in Communication
     QList<QPointer<CorpusObject> > itemsSecondary;
-    foreach (QPointer<CorpusParticipation> part, communication->corpus()->participationsForCommunication(communication->ID()))
+    foreach (CorpusParticipation *part, communication->corpus()->participationsForCommunication(communication->ID()))
         if (part) itemsSecondary << static_cast<CorpusObject *>(part);
     d->metadataEditorSecondary->rebind(communication->repository()->metadataStructure(), itemsSecondary, true, false);
 }
@@ -544,7 +544,7 @@ void CorpusExplorerWidget::updateMetadataEditorsForSpk(CorpusSpeaker *speaker)
     d->metadataEditorPrimary->rebind(speaker->repository()->metadataStructure(), itemsMain);
     // Communication where Speaker participates
     QList<QPointer<CorpusObject> > itemsSecondary;
-    foreach (QPointer<CorpusParticipation> part, speaker->corpus()->participationsForSpeaker(speaker->ID()))
+    foreach (CorpusParticipation *part, speaker->corpus()->participationsForSpeaker(speaker->ID()))
         if (part) itemsSecondary << static_cast<CorpusObject *>(part);
     d->metadataEditorSecondary->rebind(speaker->repository()->metadataStructure(), itemsSecondary, false, true);
 }
@@ -677,9 +677,9 @@ void CorpusExplorerWidget::deleteCorpus()
         alsoDeleteData = true;
     }
     if (alsoDeleteData) {
-        foreach (QPointer<CorpusCommunication> com, d->activeCorpus->communications()) {
+        foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
             if (!com) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 d->activeCorpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
             }
@@ -877,7 +877,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                 alsoDeleteData = true;
             }
             if (alsoDeleteData) {
-                foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+                foreach (CorpusAnnotation *annot, com->annotations()) {
                     if (!annot) continue;
                     corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
                 }
@@ -964,7 +964,7 @@ void CorpusExplorerWidget::removeCorpusItems()
                         if (alsoDeleteData) {
                             CorpusCommunication *com = qobject_cast<CorpusCommunication *>(cobj);
                             if (com) {
-                                foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+                                foreach (CorpusAnnotation *annot, com->annotations()) {
                                     if (annot) corpus->repository()->annotations()->deleteAllTiersAllSpeakers(annot->ID());
                                 }
                             }
@@ -1018,7 +1018,7 @@ void CorpusExplorerWidget::relinkCorpusItem()
     foreach (CorpusObject *cobj, selected) {
         if (cobj->type() == CorpusObject::Type_Recording) {
             CorpusRecording *rec = qobject_cast<CorpusRecording *>(cobj);
-            QPointer<CorpusCommunication> com = d->activeCorpus->communication(rec->communicationID());
+            CorpusCommunication *com = d->activeCorpus->communication(rec->communicationID());
             if (!com) return;
 //            com->unlinkRecording(rec->ID());
 //            com = corpus->communication(communicationID);
@@ -1026,7 +1026,7 @@ void CorpusExplorerWidget::relinkCorpusItem()
         }
         else if (cobj->type() == CorpusObject::Type_Annotation) {
             CorpusAnnotation *annot = qobject_cast<CorpusAnnotation *>(cobj);
-            QPointer<CorpusCommunication> com = d->activeCorpus->communication(annot->communicationID());
+            CorpusCommunication *com = d->activeCorpus->communication(annot->communicationID());
             if (!com) return;
 //            com->unlinkAnnotation(annot->ID());
 //            com = corpus->communication(communicationID);
@@ -1181,7 +1181,7 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
         }
         allActiveSpeakerIDs.unite(QSet<QString>::fromList(activeSpeakerIDs));
         QStringList inactiveSpeakerIDs;
-        foreach (QPointer<CorpusParticipation> participation, d->activeCorpus->participationsForCommunication(com->ID())) {
+        foreach (CorpusParticipation *participation, d->activeCorpus->participationsForCommunication(com->ID())) {
             if (!participation) continue;
             if (!activeSpeakerIDs.contains(participation->speakerID()))
                 if (!inactiveSpeakerIDs.contains(participation->speakerID()))

@@ -64,17 +64,17 @@ void SequencerCombineUnits::setSequencesLevelCombined(const QString &levelID)
     d->sequencesLevelCombined = levelID;
 }
 
-QString SequencerCombineUnits::createSequences(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SequencerCombineUnits::createSequences(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    AnnotationTierGroupPerSpeakerMap tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             SequenceTier *tier_sequencesA = tiers->getSequenceTierByName(d->sequencesLevelA);
             if (!tier_sequencesA) continue;
@@ -98,9 +98,9 @@ QString SequencerCombineUnits::createSequences(QPointer<Praaline::Core::CorpusCo
                 }
             }
             startCommon = startA.intersect(startB).toList();
-            qSort(startCommon);
+            std::sort(startCommon.begin(), startCommon.end());
             endCommon = endA.intersect(endB).toList();
-            qSort(endCommon);
+            std::sort(endCommon.begin(), endCommon.end());
 
             QList<Sequence *> sequences;
             int previousEnd(-1);

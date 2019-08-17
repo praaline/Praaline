@@ -33,7 +33,7 @@ class IndexWidgetFactory : public QObject, public ISideViewerWidget
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::ISideViewerWidget)
 
 public:
-    IndexWidgetFactory(QHelpEngine* help_engine, QObject *parent = 0);
+    IndexWidgetFactory(QHelpEngine* help_engine, QObject *parent = nullptr);
 
     // --------------------------------
     // IObjectBase Implementation

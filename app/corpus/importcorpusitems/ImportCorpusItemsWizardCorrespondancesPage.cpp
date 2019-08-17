@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPointer>
 #include <QHash>
 #include <QPair>
 #include <QHash>

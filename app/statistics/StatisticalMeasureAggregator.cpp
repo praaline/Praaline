@@ -10,7 +10,7 @@ QMap<QString, QList<double> > StatisticalMeasureAggregator::aggregateMeasureCom(
 {
     QMap<QString, QList<double> > aggregates;
 //    if (!d->corpus) return aggregates;
-//    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+//    foreach (CorpusCommunication *com, d->corpus->communications()) {
 //        if (!com) continue;
 //        AnalyserTemporalItem *theItem = item(com->ID());
 //        if (!theItem) continue;
@@ -38,7 +38,7 @@ QMap<QString, QList<double> > StatisticalMeasureAggregator::aggregateMeasureSpk(
 {
     QMap<QString, QList<double> > aggregates;
 //    if (!d->corpus) return aggregates;
-//    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+//    foreach (CorpusCommunication *com, d->corpus->communications()) {
 //        if (!com) continue;
 //        AnalyserTemporalItem *theItem = item(com->ID());
 //        if (!theItem) continue;

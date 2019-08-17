@@ -19,9 +19,9 @@ class CorpusRecordingTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit CorpusRecordingTableModel(QList<QPointer<Praaline::Core::CorpusRecording> > items,
-                                       QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                                       bool multiCommunication = true, QObject *parent = 0);
+    explicit CorpusRecordingTableModel(QList<Praaline::Core::CorpusRecording *> items,
+                                       QList<Praaline::Core::MetadataStructureAttribute *> attributes,
+                                       bool multiCommunication = true, QObject *parent = nullptr);
     ~CorpusRecordingTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

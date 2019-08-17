@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPointer>
 #include <QApplication>
 #include <QProgressBar>
 #include <QStandardItemModel>
@@ -159,12 +160,12 @@ void GlobalProsodicProfileWidget::analyse()
     headers << "CommunicationID" << "RecordingID" << "SpeakerID";
     for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
         if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         headers << attr->ID();
     }
     for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
         if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
         headers << attr->ID();
     }
     foreach (QString measureID, measureIDs()) {
@@ -174,11 +175,11 @@ void GlobalProsodicProfileWidget::analyse()
     ui->progressBar->setValue(0);
     ui->progressBar->setMaximum(corpus->communicationsCount());
     int i = 0;
-    foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+    foreach (CorpusCommunication *com, corpus->communications()) {
         if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 QStringList speakerIDs = d->repository->annotations()->getSpeakersInAnnotation(annot->ID());
                 foreach (QString speakerID, speakerIDs) {
@@ -202,13 +203,13 @@ void GlobalProsodicProfileWidget::analyse()
                         // selected metadata attributes (Com, then Spk)
                         for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
                             if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-                            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+                            MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
                             QStandardItem *item = new QStandardItem();
                             item->setData(com->property(attr->ID()), Qt::DisplayRole); items << item;
                         }
                         for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
                             if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
-                            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+                            MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
                             QStandardItem *item = new QStandardItem();
                             item->setData(spk->property(attr->ID()), Qt::DisplayRole);
                             items << item;

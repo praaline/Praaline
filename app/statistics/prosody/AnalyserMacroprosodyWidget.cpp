@@ -153,21 +153,21 @@ void AnalyserMacroprosodyWidget::analyse()
     QStringList attributeIDs;
     for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
         if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (attr) attributeIDs << attr->ID();
     }
     analyser->setMetadataAttributesCommunication(attributeIDs);
     attributeIDs.clear();
     for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
         if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
         if (attr) attributeIDs << attr->ID();
     }
     analyser->setMetadataAttributesSpeaker(attributeIDs);
     attributeIDs.clear();
     for (int i = 0; i < ui->comboBoxMetadataAnnot->count(); ++i) {
         if (!ui->comboBoxMetadataAnnot->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Annotation).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Annotation).at(i);
         if (attr) attributeIDs << attr->ID();
     }
     analyser->setMetadataAttributesSpeaker(attributeIDs);
@@ -177,13 +177,13 @@ void AnalyserMacroprosodyWidget::analyse()
     if (ui->optionMULIstFromTier->isChecked()) {
         QString tierNameMacroUnits = ui->comboBoxMUTier->currentText();
         analyser->setMacroUnitsLevel(tierNameMacroUnits);
-        foreach (QPointer<CorpusCommunication> com, corpus->communications()) {
+        foreach (CorpusCommunication *com, corpus->communications()) {
             if (!com) continue;
             foreach (QString annotationID, com->annotationIDs()) {
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
+                SpeakerAnnotationTierGroupMap tiersAll =
                         d->repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << tierNameMacroUnits);
                 foreach (QString speakerID, tiersAll.keys()) {
-                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                    AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                     if (!tiers) continue;
                     IntervalTier *tier_macroUnit = tiers->getIntervalTierByName(tierNameMacroUnits);
                     QList<AnalyserMacroprosodyUnit> units;

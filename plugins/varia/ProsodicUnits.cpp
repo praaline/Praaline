@@ -67,9 +67,9 @@ QString ProsodicUnits::createProsodicUnits(CorpusCommunication *com)
     QString ret;
     if (!com) return "Error: no communication";
     if (!com->repository()) return "Error: communication not yet saved. Cannot find corpus repository for annotations";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers = com->repository()->annotations()->getTiersAllSpeakers(com->ID());
+    SpeakerAnnotationTierGroupMap tiers = com->repository()->annotations()->getTiersAllSpeakers(com->ID());
     foreach (QString speakerID, tiers.keys()) {
-        QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+        AnnotationTierGroup *tiersSpk = tiers.value(speakerID);
         IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName(d->levelTokens);
         if (!tier_tok_mwu) continue;
         bool inside = false;
@@ -118,9 +118,9 @@ QString ProsodicUnits::transcriptionInProsodicUnits(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers = com->repository()->annotations()->getTiersAllSpeakers(com->ID());
+    SpeakerAnnotationTierGroupMap tiers = com->repository()->annotations()->getTiersAllSpeakers(com->ID());
     foreach (QString speakerID, tiers.keys()) {
-        QPointer<AnnotationTierGroup> tiersSpk = tiers.value(speakerID);
+        AnnotationTierGroup *tiersSpk = tiers.value(speakerID);
         IntervalTier *tier_tok_mwu = tiersSpk->getIntervalTierByName(d->levelTokens);
         if (!tier_tok_mwu) continue;
         IntervalTier *tier_units = tiersSpk->getIntervalTierByName(d->levelProsodicUnits);

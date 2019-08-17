@@ -13,7 +13,7 @@ class CorpusImporter
 public:
     CorpusImporter();
 
-    static bool readPerceo(const QString &filename, QMap<QString, QPointer<AnnotationTierGroup> > &tiers);
+    static bool readPerceo(const QString &filename, SpeakerAnnotationTierGroupMap &tiers);
 };
 
 #endif // CORPUSIMPORTER_H

@@ -12,7 +12,7 @@ class WelcomeModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit WelcomeModeWidget(QWidget *parent = 0);
+    explicit WelcomeModeWidget(QWidget *parent = nullptr);
     ~WelcomeModeWidget();
 
 private:

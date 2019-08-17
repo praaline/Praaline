@@ -9,7 +9,7 @@ class QueryDefinitionTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    explicit QueryDefinitionTreeModel(Praaline::Core::QueryDefinition &definition, QObject *parent = 0);
+    explicit QueryDefinitionTreeModel(Praaline::Core::QueryDefinition &definition, QObject *parent = nullptr);
     ~QueryDefinitionTreeModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

@@ -42,9 +42,9 @@ struct LongSoundAlignerWidgetData {
     {}
 
     QPointer<Corpus> corpus;
-    QPointer<CorpusCommunication> communication;
-    QPointer<CorpusRecording> recording;
-    QPointer<CorpusAnnotation> annotation;
+    CorpusCommunication *communication;
+    CorpusRecording *recording;
+    CorpusAnnotation *annotation;
 
     // Diff UI elements
     GridViewWidget *gridviewResults;
@@ -90,7 +90,7 @@ void LongSoundAlignerWidget::open(Corpus *corpus, CorpusCommunication *com, Corp
 
     // Open each recording in the communication and add a corresponding audio panel
     bool first = false;
-    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+    foreach (CorpusRecording *rec, com->recordings()) {
         if (!first) {
             // Main audio
             VisualiserWindowBase::FileOpenStatus status = openPath(rec->filePath());

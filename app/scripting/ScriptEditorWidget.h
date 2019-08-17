@@ -12,7 +12,7 @@ class ScriptEditorWidget : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit ScriptEditorWidget(QWidget *parent = 0);
+    explicit ScriptEditorWidget(QWidget *parent = nullptr);
     ~ScriptEditorWidget();
 
 protected:

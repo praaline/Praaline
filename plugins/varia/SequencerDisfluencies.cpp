@@ -135,18 +135,18 @@ void SequencerDisfluencies::setSequencesLevel(const QString &levelID)
     d->sequencesLevel = levelID;
 }
 
-QString SequencerDisfluencies::getAllDistinctSequences(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SequencerDisfluencies::getAllDistinctSequences(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     QHash<QString, int> sequences;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
             if (!tier_tokens) continue;
@@ -210,18 +210,18 @@ void SequencerDisfluencies::createDisfluencySequenceAnnotationLevel(CorpusReposi
     createAttribute(repository, level_seq, "", "indexReparans", "Index of Reparans start", "", DataType::Integer);
 }
 
-QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SequencerDisfluencies::checkAnnotation(Praaline::Core::CorpusCommunication *com)
 {
     bool createSequences(true);
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
             if (!tier_tokens) continue;
@@ -376,7 +376,7 @@ QString SequencerDisfluencies::checkAnnotation(QPointer<Praaline::Core::CorpusCo
 }
 
 
-void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences, QPointer<AnnotationTierGroup> tiers)
+void SequencerDisfluencies::addExtraDataToSequences(QList<Sequence *> sequences, AnnotationTierGroup *tiers)
 {
     IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->annotationLevel);
     if (!tier_tokens) return;

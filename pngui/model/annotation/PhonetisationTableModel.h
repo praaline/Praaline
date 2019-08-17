@@ -15,7 +15,7 @@ class PhonetisationTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit PhonetisationTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+    explicit PhonetisationTableModel(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                                      const QString &tiernameTokens,
                                      const QString &attributeOrthographic, const QString &attributePhonetisation,
                                      QObject *parent = nullptr);

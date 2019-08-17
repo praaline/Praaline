@@ -20,7 +20,7 @@ namespace Praaline {
 
             virtual QStringList analyserIDs() = 0;
             virtual QString analyserName(const QString &analyserID) = 0;
-            virtual QWidget *analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent = 0) = 0;
+            virtual QWidget *analyser(const QString &analyserID, CorpusRepository *repository, QWidget *parent = nullptr) = 0;
 
         signals:
 

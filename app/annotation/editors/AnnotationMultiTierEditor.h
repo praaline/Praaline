@@ -12,7 +12,7 @@ class AnnotationMultiTierEditor : public QMainWindow, public AnnotationEditorBas
     Q_OBJECT
 
 public:
-    AnnotationMultiTierEditor(QWidget *parent = 0);
+    AnnotationMultiTierEditor(QWidget *parent = nullptr);
     virtual ~AnnotationMultiTierEditor();
     QWidget *editorWidget() override { return this; }
 

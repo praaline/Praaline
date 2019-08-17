@@ -9,7 +9,7 @@ class SelectReorderItemsWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit SelectReorderItemsWidget(QWidget *parent = 0);
+    explicit SelectReorderItemsWidget(QWidget *parent = nullptr);
     ~SelectReorderItemsWidget();
 
 signals:

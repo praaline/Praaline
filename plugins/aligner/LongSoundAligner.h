@@ -13,12 +13,12 @@ class LongSoundAligner : public QObject
 {
     Q_OBJECT
 public:
-    explicit LongSoundAligner(QObject *parent = 0);
+    explicit LongSoundAligner(QObject *parent = nullptr);
     ~LongSoundAligner();
 
     bool createRecognitionLevel(Praaline::Core::CorpusRepository *repository, int recognitionStep);
-    bool createUtterancesFromProsogramAutosyll(QPointer<Praaline::Core::CorpusCommunication> com);
-    bool recognise(QPointer<Praaline::Core::CorpusCommunication> com, int recognitionStep);
+    bool createUtterancesFromProsogramAutosyll(Praaline::Core::CorpusCommunication *com);
+    bool recognise(Praaline::Core::CorpusCommunication *com, int recognitionStep);
 
 private:
     LongSoundAlignerData *d;

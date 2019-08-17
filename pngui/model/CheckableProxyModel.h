@@ -37,7 +37,7 @@ class CheckableProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    explicit CheckableProxyModel(QObject *parent = 0);
+    explicit CheckableProxyModel(QObject *parent = nullptr);
 
     virtual void setSourceModel(QAbstractItemModel *sourceModel);
     virtual QVariant data(const QModelIndex &index, int role) const;

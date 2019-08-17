@@ -66,17 +66,17 @@ void SequencerProsodicUnits::setAttributeBoundary(const QString &attributeID)
     d->attributeBoundary = attributeID;
 }
 
-QString SequencerProsodicUnits::createSequencesFromProsodicBoundaries(QPointer<CorpusCommunication> com, const QString &boundaryLabel)
+QString SequencerProsodicUnits::createSequencesFromProsodicBoundaries(CorpusCommunication *com, const QString &boundaryLabel)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->levelTokens);
             if (!tier_tokens) continue;

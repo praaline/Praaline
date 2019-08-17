@@ -25,7 +25,7 @@ class AnalyserTemporalWidget : public QWidget
 
 public:
     explicit AnalyserTemporalWidget(Core::CorpusRepository *repository, AnalyserTemporal *analyser,
-                                    QWidget *parent = 0);
+                                    QWidget *parent = nullptr);
     ~AnalyserTemporalWidget();
 
 private slots:

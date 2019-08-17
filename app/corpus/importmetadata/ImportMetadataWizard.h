@@ -34,7 +34,7 @@ public:
         QString formatString;
     };
 
-    ImportMetadataWizard(const QString &filename, QWidget *parent = 0);
+    ImportMetadataWizard(const QString &filename, QWidget *parent = nullptr);
     ~ImportMetadataWizard();
 
 private:

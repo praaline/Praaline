@@ -33,7 +33,7 @@ class SearchWidgetFactory : public QObject, public ISideViewerWidget
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::ISideViewerWidget)
 
 public:
-    SearchWidgetFactory(QHelpSearchEngine* help_search_engine, QObject *parent = 0);
+    SearchWidgetFactory(QHelpSearchEngine* help_search_engine, QObject *parent = nullptr);
 
     // --------------------------------
     // IObjectBase Implementation

@@ -27,7 +27,7 @@ public:
     explicit QueryOccurrenceTableModel(Praaline::Core::CorpusRepository *repository,
                                        Praaline::Core::QueryDefinition *queryDefinition,
                                        QList<Praaline::Core::QueryOccurrencePointer *> &pointers,
-                                       bool multiline = false, QObject *parent = 0);
+                                       bool multiline = false, QObject *parent = nullptr);
     ~QueryOccurrenceTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

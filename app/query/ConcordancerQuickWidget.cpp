@@ -418,7 +418,7 @@ void ConcordancerQuickWidget::resultsCreateBookmarks()
     }
     if (filename.isEmpty()) return;
 
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
     foreach (QueryOccurrencePointer *pointer, d->resultsPointers) {
         bookmarks << new CorpusBookmark(pointer->corpusID, pointer->communicationID, pointer->annotationID,
                                         RealTime::fromNanoseconds(pointer->tMin_nsec), "", "");

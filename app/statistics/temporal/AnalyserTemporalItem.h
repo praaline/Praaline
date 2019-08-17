@@ -19,7 +19,7 @@ class AnalyserTemporalItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserTemporalItem(QObject *parent = 0);
+    explicit AnalyserTemporalItem(QObject *parent = nullptr);
     virtual ~AnalyserTemporalItem();
 
     static QStringList measureIDsForCommunication();
@@ -42,7 +42,7 @@ public:
     QPointer<Praaline::Core::IntervalTier> timelineSyll() const;
     QPointer<Praaline::Core::IntervalTier> timelineSpeaker() const;
 
-    void analyse(QPointer<Praaline::Core::CorpusCommunication> com);
+    void analyse(Praaline::Core::CorpusCommunication *com);
 
 signals:
 

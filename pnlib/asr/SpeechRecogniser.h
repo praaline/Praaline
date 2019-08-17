@@ -10,7 +10,7 @@ class SpeechRecogniser : public QObject
 {
     Q_OBJECT
 public:
-    explicit SpeechRecogniser(QObject *parent = 0) {}
+    explicit SpeechRecogniser(QObject *parent = nullptr) {}
     virtual ~SpeechRecogniser() {}
 
 signals:

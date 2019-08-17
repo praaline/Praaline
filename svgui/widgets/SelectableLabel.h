@@ -23,7 +23,7 @@ class SelectableLabel : public QLabel
     Q_OBJECT
 
 public:
-    SelectableLabel(QWidget *parent = 0);
+    SelectableLabel(QWidget *parent = nullptr);
     virtual ~SelectableLabel();
 
     void setSelectedText(QString);

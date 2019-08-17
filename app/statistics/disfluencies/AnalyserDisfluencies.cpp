@@ -81,7 +81,7 @@ void AnalyserDisfluencies::analyse()
 {
     if (!d->corpus) return;
     int i = 0;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         QSharedPointer<AnalyserDisfluenciesItem> item(new AnalyserDisfluenciesItem());
         item->setLevelSyllables(d->levelSyllables);
         item->setLevelTokens(d->levelTokens);
@@ -103,7 +103,7 @@ QMap<QString, QList<double> > AnalyserDisfluencies::aggregateMeasureCom(
 {
     QMap<QString, QList<double> > aggregates;
     if (!d->corpus) return aggregates;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         if (!com) continue;
         AnalyserDisfluenciesItem *theItem = item(com->ID());
         if (!theItem) continue;
@@ -131,7 +131,7 @@ QMap<QString, QList<double> > AnalyserDisfluencies::aggregateMeasureSpk(
 {
     QMap<QString, QList<double> > aggregates;
     if (!d->corpus) return aggregates;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         if (!com) continue;
         AnalyserDisfluenciesItem *theItem = item(com->ID());
         if (!theItem) continue;

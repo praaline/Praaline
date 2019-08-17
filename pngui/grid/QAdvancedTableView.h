@@ -186,7 +186,7 @@ public:
 	/**
 	 * Constructs a filter table view with a @p parent to represent the data.
 	 */
-    explicit QAdvancedTableView(QWidget *parent = 0);
+    explicit QAdvancedTableView(QWidget *parent = nullptr);
 	/**
 	 * Destroys the filter table view.
 	 */

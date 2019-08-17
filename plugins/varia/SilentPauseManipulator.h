@@ -18,7 +18,7 @@ public:
     SilentPauseManipulator();
     ~SilentPauseManipulator();
 
-    QString process(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString process(Praaline::Core::CorpusCommunication *com);
 private:
     SilentPauseManipulatorData *d;
 };

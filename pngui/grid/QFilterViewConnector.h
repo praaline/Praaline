@@ -35,8 +35,8 @@ class QAIVLIBSHARED_EXPORT QFilterViewConnector : public QObject
     Q_OBJECT
 public:
     explicit QFilterViewConnector(QFilterView* filterView);
-    explicit QFilterViewConnector(QFilterView* filterView, QTableView* tableView, QObject *parent = 0);
-    explicit QFilterViewConnector(QFilterView* filterView, QTreeView* treeView, QObject *parent = 0);
+    explicit QFilterViewConnector(QFilterView* filterView, QTableView* tableView, QObject *parent = nullptr);
+    explicit QFilterViewConnector(QFilterView* filterView, QTreeView* treeView, QObject *parent = nullptr);
 
     void setDataView(QTableView* view);
     void setDataView(QTreeView* view);

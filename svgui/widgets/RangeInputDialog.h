@@ -27,7 +27,7 @@ class RangeInputDialog : public QDialog
 
 public:
     RangeInputDialog(QString title, QString message, QString unit,
-                     double min, double max, QWidget *parent = 0);
+                     double min, double max, QWidget *parent = nullptr);
     virtual ~RangeInputDialog();
 
     void getRange(double &start, double &end);

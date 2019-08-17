@@ -28,7 +28,7 @@ Q_OBJECT
 public:
     enum Type { RTThread, NonRTThread };
 
-    Thread(Type type = NonRTThread, QObject *parent = 0);
+    Thread(Type type = NonRTThread, QObject *parent = nullptr);
 
 public slots:
     void start();

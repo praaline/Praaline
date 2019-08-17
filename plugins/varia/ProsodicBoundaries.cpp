@@ -252,9 +252,9 @@ void ProsodicBoundaries::analyseBoundaryListToStream(QTextStream &out, Corpus *c
 QStringList ProsodicBoundaries::analyseAnnotationToStrings(Corpus *corpus, const QString &annotationID)
 {
     QStringList results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
+    SpeakerAnnotationTierGroupMap tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
     foreach (QString speakerID, tiersAll.keys()) {
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
         // Create a list of all syllables excluding pauses
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;
@@ -281,9 +281,9 @@ QStringList ProsodicBoundaries::analyseLastSyllOfSequenceToStrings(Corpus *corpu
                                                                    const QString &sequenceLevelID)
 {
     QStringList results;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
+    SpeakerAnnotationTierGroupMap tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
     foreach (QString speakerID, tiersAll.keys()) {
-        QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+        AnnotationTierGroup *tiers = tiersAll.value(speakerID);
         // Create a list of all syllables at the end of sequences, excluding pauses
         IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
         if (!tier_syll) continue;

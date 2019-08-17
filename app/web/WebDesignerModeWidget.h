@@ -12,7 +12,7 @@ class WebDesignerModeWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit WebDesignerModeWidget(QWidget *parent = 0);
+    explicit WebDesignerModeWidget(QWidget *parent = nullptr);
     ~WebDesignerModeWidget();
 
 private:

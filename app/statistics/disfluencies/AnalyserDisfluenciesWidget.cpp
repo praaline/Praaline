@@ -118,14 +118,14 @@ AnalyserDisfluenciesWidget::AnalyserDisfluenciesWidget(CorpusRepository *reposit
     if (d->repository->metadataStructure()) {
         ui->comboBoxGroupByCom->addItem("", "");
         ui->comboBoxGroupByCom->addItem("Communication ID", "ID");
-        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
+        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
             ui->comboBoxGroupByCom->addItem(attr->name(), attr->ID());
         }
         ui->comboBoxGroupByCom->setCurrentText("");
         // speaker
         ui->comboBoxGroupBySpk->addItem("", "");
         ui->comboBoxGroupBySpk->addItem("Speaker ID", "ID");
-        foreach (QPointer<MetadataStructureAttribute> attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
+        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
             ui->comboBoxGroupBySpk->addItem(attr->name(), attr->ID());
         }
         ui->comboBoxGroupBySpk->setCurrentText("");
@@ -259,7 +259,7 @@ void AnalyserDisfluenciesWidget::buildModelForCom()
     labelsTimeline << "CommunicationID";
     for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
         if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
         labelsTimeline << attr->ID();
     }
@@ -279,7 +279,7 @@ void AnalyserDisfluenciesWidget::buildModelForCom()
     d->modelTimeline->setHorizontalHeaderLabels(labelsTimeline);
     // Data
     QStringList horizontalHeader; horizontalHeader << "Measure";
-    foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
+    foreach (CorpusCommunication *com, d->analyser->corpus()->communications()) {
         if (!com) continue;
         if (!d->analyser->item(com->ID())) continue;
 
@@ -293,7 +293,7 @@ void AnalyserDisfluenciesWidget::buildModelForCom()
         // selected metadata attributes
         for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
             if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-            QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+            MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
             item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsCom << item;
         }
         // measures
@@ -325,12 +325,12 @@ void AnalyserDisfluenciesWidget::buildModelForSpk()
     labels << "CommunicationID" << "SpeakerID";
     for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
         if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
     }
     for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
         if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
-        QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+        MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
         if (orientation == Qt::Vertical) labels << attr->ID(); else labels << attr->name();
     }
     foreach (QString measureID, AnalyserDisfluenciesDefinitions::measureIDsForSpeaker()) {
@@ -346,7 +346,7 @@ void AnalyserDisfluenciesWidget::buildModelForSpk()
         d->modelSpk->appendColumn(itemsHeader);
     }
     // Data
-    foreach (QPointer<CorpusCommunication> com, d->analyser->corpus()->communications()) {
+    foreach (CorpusCommunication *com, d->analyser->corpus()->communications()) {
         if (!com) continue;
         if (!d->analyser->item(com->ID())) continue;
         foreach (QString speakerID, d->analyser->item(com->ID())->speakerIDs()) {
@@ -358,12 +358,12 @@ void AnalyserDisfluenciesWidget::buildModelForSpk()
             // selected metadata attributes (Com, then Spk)
             for (int i = 0; i < ui->comboBoxMetadataCom->count(); ++i) {
                 if (!ui->comboBoxMetadataCom->itemData(i).toBool()) continue;
-                QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
+                MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication).at(i);
                 item = new QStandardItem(); item->setData(com->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
             }
             for (int i = 0; i < ui->comboBoxMetadataSpk->count(); ++i) {
                 if (!ui->comboBoxMetadataSpk->itemData(i).toBool()) continue;
-                QPointer<MetadataStructureAttribute> attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
+                MetadataStructureAttribute *attr = d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker).at(i);
                 item = new QStandardItem(); item->setData(spk->property(attr->ID()), Qt::DisplayRole); itemsSpk << item;
             }
             // measures

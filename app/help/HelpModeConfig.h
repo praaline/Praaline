@@ -37,7 +37,7 @@ class HelpModeConfig : public QWidget, public IConfigPage {
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IConfigPage)
 
 public:
-    HelpModeConfig(QWidget *parent = 0);
+    HelpModeConfig(QWidget *parent = nullptr);
     ~HelpModeConfig();
 
     // --------------------------------

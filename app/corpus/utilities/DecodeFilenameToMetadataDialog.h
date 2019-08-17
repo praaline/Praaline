@@ -21,7 +21,7 @@ class DecodeFilenameToMetadataDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit DecodeFilenameToMetadataDialog(Praaline::Core::Corpus *corpus, QWidget *parent = 0);
+    explicit DecodeFilenameToMetadataDialog(Praaline::Core::Corpus *corpus, QWidget *parent = nullptr);
     ~DecodeFilenameToMetadataDialog();
 
 private slots:

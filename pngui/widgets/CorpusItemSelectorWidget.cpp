@@ -1,5 +1,5 @@
-//#include <QPointer>
 #include <QString>
+#include <QPointer>
 #include <QList>
 #include <QMessageBox>
 #include <QMap>
@@ -20,9 +20,9 @@ using namespace Praaline::Core;
 
 struct CorpusItemSelectorWidgetData {
     CorpusItemSelectorWidgetData() :
-        corporaTopLevelNode(0), observerWidgetCorpusItems(0),
-        innerwindowBookmarks(0), toolbarBookmarks(0), actionOpenBookmarks(0), actionSaveBookmarks(0),
-        treeviewBookmarks(0), modelBookmarks(0)
+        corporaTopLevelNode(nullptr), observerWidgetCorpusItems(nullptr),
+        innerwindowBookmarks(nullptr), toolbarBookmarks(nullptr), actionOpenBookmarks(nullptr), actionSaveBookmarks(nullptr),
+        treeviewBookmarks(nullptr), modelBookmarks(nullptr)
     {}
 
     // Corpus
@@ -35,7 +35,7 @@ struct CorpusItemSelectorWidgetData {
     QAction *actionOpenBookmarks;
     QAction *actionSaveBookmarks;
     QTreeView *treeviewBookmarks;
-    QList<QPointer<CorpusBookmark> > bookmarks;
+    QList<CorpusBookmark *> bookmarks;
     CorpusBookmarkModel *modelBookmarks;
     QString bookmarksFilename;
 };
@@ -128,15 +128,17 @@ Corpus *CorpusItemSelectorWidget::findCorpus(QString corpusID)
             }
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void CorpusItemSelectorWidget::doubleClickRequest(QObject* object, Observer* parent_observer)
 {
-    QPointer<Corpus> corpus(0);
-    QPointer<CorpusCommunication> com(0);
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    Q_UNUSED(parent_observer)
+
+    QPointer<Corpus> corpus(nullptr);
+    QPointer<CorpusCommunication> com(nullptr);
+    QPointer<CorpusRecording> rec(nullptr);
+    QPointer<CorpusAnnotation> annot(nullptr);
 
     qDebug() << object;
     CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(object);
@@ -174,10 +176,10 @@ void CorpusItemSelectorWidget::doubleClickRequest(QObject* object, Observer* par
 
 void CorpusItemSelectorWidget::selectionChanged(QList<QObject*> selected)
 {
-    QPointer<Corpus> corpus(0);
-    QPointer<CorpusCommunication> com(0);
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<Corpus> corpus(nullptr);
+    QPointer<CorpusCommunication> com(nullptr);
+    QPointer<CorpusRecording> rec(nullptr);
+    QPointer<CorpusAnnotation> annot(nullptr);
 
     if (selected.isEmpty()) return;
 
@@ -222,7 +224,7 @@ void CorpusItemSelectorWidget::openBookmarks()
                                                     tr("Praaline Bookmarks file (*.xml);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-    QList<QPointer<CorpusBookmark> > newBookmarks;
+    QList<CorpusBookmark *> newBookmarks;
     bool result = XMLSerialiserCorpusBookmark::loadCorpusBookmarks(newBookmarks, filename);
     if (!result) {
         QMessageBox::warning(this, "Cannot open Bookmarks",
@@ -268,9 +270,9 @@ void CorpusItemSelectorWidget::bookmarkSelected(QModelIndex index)
 
     QPointer<Corpus> corpus = findCorpus(corpusID);
     if (!corpus) return;
-    QPointer<CorpusCommunication> com = corpus->communication(communicationID);
+    CorpusCommunication *com = corpus->communication(communicationID);
     if (!com) return;
-    QPointer<CorpusAnnotation> annot = com->annotation(annotationID);
+    CorpusAnnotation *annot = com->annotation(annotationID);
     if (!annot) return;
 
     emit moveToAnnotationTime(corpus, com, annot, time);

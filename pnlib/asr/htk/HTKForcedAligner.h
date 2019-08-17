@@ -15,7 +15,7 @@ class HTKForcedAligner : public ForcedAligner
 {
     Q_OBJECT
 public:
-    explicit HTKForcedAligner(QObject *parent = 0);
+    explicit HTKForcedAligner(QObject *parent = nullptr);
     ~HTKForcedAligner();
 
     bool alignTokens(const QString &waveFilepath, RealTime timeFrom, RealTime timeTo,

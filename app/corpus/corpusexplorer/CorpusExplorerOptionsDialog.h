@@ -19,7 +19,7 @@ class CorpusExplorerOptionsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CorpusExplorerOptionsDialog(MetadataStructure *mstructure, QWidget *parent = 0);
+    explicit CorpusExplorerOptionsDialog(MetadataStructure *mstructure, QWidget *parent = nullptr);
     ~CorpusExplorerOptionsDialog();
 
     QStringList groupAttributesForCommunications() const;

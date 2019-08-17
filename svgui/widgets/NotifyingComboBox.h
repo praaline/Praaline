@@ -28,7 +28,7 @@ class NotifyingComboBox : public QComboBox
     Q_OBJECT
 public:
 
-    NotifyingComboBox(QWidget *parent = 0) :
+    NotifyingComboBox(QWidget *parent = nullptr) :
         QComboBox(parent) { }
 
     virtual ~NotifyingComboBox();

@@ -59,7 +59,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
+                void process(const QList<CorpusCommunication *> &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -73,9 +73,9 @@ namespace Praaline {
                 PluginProsogramPrivateData* d;
 
                 void createProsogramDataStructures(CorpusRepository *repository);
-                void createSegmentsFromAutoSyllables(const QList<QPointer<CorpusCommunication> > &communications);
-                void runProsogram(const QList<QPointer<CorpusCommunication> > &communications);
-                void runIntonationAnnotation(const QList<QPointer<CorpusCommunication> > &communications);
+                void createSegmentsFromAutoSyllables(const QList<CorpusCommunication *> &communications);
+                void runProsogram(const QList<CorpusCommunication *> &communications);
+                void runIntonationAnnotation(const QList<CorpusCommunication *> &communications);
             };
         }
     }

@@ -8,6 +8,7 @@
 #include <QStringList>
 
 #include "pncore/base/RealTime.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/Model.h"
 #include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
@@ -36,7 +37,7 @@ public:
     };
 
     AnnotationGridModel(sv_samplerate_t sampleRate,
-                        QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+                        Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                         const QList<QPair<QString, QString> > &attributes);
     virtual ~AnnotationGridModel();
 

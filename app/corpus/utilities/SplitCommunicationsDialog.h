@@ -20,7 +20,7 @@ class SplitCommunicationsDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit SplitCommunicationsDialog(Praaline::Core::Corpus *corpus, QWidget *parent = 0);
+    explicit SplitCommunicationsDialog(Praaline::Core::Corpus *corpus, QWidget *parent = nullptr);
     ~SplitCommunicationsDialog();
 
 private:

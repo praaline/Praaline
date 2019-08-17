@@ -25,7 +25,7 @@ class ExtractSoundBitesWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ExtractSoundBitesWidget(QWidget *parent = 0);
+    explicit ExtractSoundBitesWidget(QWidget *parent = nullptr);
     ~ExtractSoundBitesWidget();
 
 private slots:
@@ -40,8 +40,8 @@ private:
 
     void prepareCopyOverCorpus(QPointer<Praaline::Core::CorpusRepository> repositorySource, const QString &outputPath);
     void carryOverAnnotations(QPointer<Praaline::Core::CorpusRepository> repositorySource,
-                              QPointer<Praaline::Core::CorpusAnnotation> annotSource,
-                              QPointer<Praaline::Core::CorpusAnnotation> annotDestination,
+                              Praaline::Core::CorpusAnnotation *annotSource,
+                              Praaline::Core::CorpusAnnotation *annotDestination,
                               RealTime start, RealTime end);
 };
 

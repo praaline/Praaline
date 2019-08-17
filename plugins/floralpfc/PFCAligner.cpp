@@ -43,18 +43,18 @@ PFCAligner::~PFCAligner()
     delete d;
 }
 
-QString PFCAligner::align(QPointer<Praaline::Core::CorpusCommunication> com, const QString &method)
+QString PFCAligner::align(Praaline::Core::CorpusCommunication *com, const QString &method)
 {
     QElapsedTimer timer;
 
     if (!com) return "No Communication";
     if (com->recordings().isEmpty()) return QString("No Recordings for %1").arg(com->ID());
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return "No Recording";
     QString annotationID = com->ID();
 
     timer.start();
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->
+    SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->
             getTiersAllSpeakers(annotationID, QStringList() << "segment" << "tok_min" << "phone");
     foreach (QString speakerID, tiersAll.keys()) {
         AnnotationTierGroup *tiers = tiersAll.value(speakerID);

@@ -10,7 +10,7 @@ class DatasetEditorWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit DatasetEditorWidget(QWidget *parent = 0);
+    explicit DatasetEditorWidget(QWidget *parent = nullptr);
     ~DatasetEditorWidget();
 
     static std::shared_ptr<DataModelRegistry> registerDataModels();

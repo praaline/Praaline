@@ -22,7 +22,7 @@ class MetadataStructureEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MetadataStructureEditor(QWidget *parent = 0);
+    explicit MetadataStructureEditor(QWidget *parent = nullptr);
     ~MetadataStructureEditor();
 
 private slots:

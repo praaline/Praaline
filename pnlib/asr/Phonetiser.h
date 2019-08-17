@@ -16,7 +16,7 @@ class Phonetiser : public QObject
 {
     Q_OBJECT
 public:
-    explicit Phonetiser(QObject *parent = 0) : QObject(parent) {}
+    explicit Phonetiser(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~Phonetiser() {}
 
     virtual QString phonetiseWord(const QString &word) = 0;

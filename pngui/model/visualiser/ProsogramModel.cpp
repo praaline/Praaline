@@ -46,8 +46,8 @@ struct ProsogramModelData {
 };
 
 ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate,
-                               QPointer<CorpusRecording> rec,
-                               QPointer<Praaline::Core::CorpusAnnotation> annot) :
+                               CorpusRecording *rec,
+                               Praaline::Core::CorpusAnnotation *annot) :
     d(new ProsogramModelData)
 {
     d->sampleRate = sampleRate;
@@ -67,7 +67,7 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate,
         QFileInfo info(rec->filePath());
         prosoPath = info.absolutePath() + "/prosogram/";
     }
-    QList<QPointer<CorpusParticipation> > participations = corpus->participationsForCommunication(rec->communicationID());
+    QList<CorpusParticipation *> participations = corpus->participationsForCommunication(rec->communicationID());
     if (participations.isEmpty()) {
         readProsogramFiles(sampleRate, "", d->segments,
                            prosoPath + QString("%1_nucl.TextGrid").arg(rec->ID()),
@@ -77,7 +77,7 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate,
                            corpus, rec->ID());
 
     } else {
-        foreach (QPointer<CorpusParticipation> participation, participations) {
+        foreach (CorpusParticipation *participation, participations) {
             if (!participation) continue;
             if (!annot) continue;
             QString speakerID = participation->speakerID();

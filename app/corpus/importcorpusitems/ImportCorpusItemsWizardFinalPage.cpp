@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPointer>
 #include <QDir>
 #include <QFileInfo>
 #include "ImportCorpusItemsWizardFinalPage.h"
@@ -14,8 +15,8 @@
 
 struct ImportCorpusItemsWizardFinalPageData {
     ImportCorpusItemsWizardFinalPageData(QPointer<Corpus> corpus,
-                                         QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-                                         QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+                                         QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+                                         QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
                                          QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                          QSet<QString> &tierNamesCommon) :
         corpus(corpus), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
@@ -23,16 +24,16 @@ struct ImportCorpusItemsWizardFinalPageData {
     {}
 
     QPointer<Corpus> corpus;
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations;
+    QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings;
+    QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations;
     QMultiHash<QString, TierCorrespondance> &tierCorrespondances;
     QSet<QString> &tierNamesCommon;
 };
 
 ImportCorpusItemsWizardFinalPage::ImportCorpusItemsWizardFinalPage(
         QPointer<Corpus> corpus,
-        QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-        QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
+        QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+        QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
@@ -56,8 +57,8 @@ void ImportCorpusItemsWizardFinalPage::initializePage()
 
 bool ImportCorpusItemsWizardFinalPage::validatePage()
 {
-    QMap<QPair<QString, QString>, QPointer<CorpusRecording> >::iterator i;
-    QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> >::iterator j;
+    QMap<QPair<QString, QString>, CorpusRecording *>::iterator i;
+    QMap<QPair<QString, QString>, CorpusAnnotation *>::iterator j;
 
     if (!d->corpus) return false;
     if (!d->corpus->repository()) return false;
@@ -70,9 +71,9 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
     int counter = 0;
     for (i = d->candidateRecordings.begin(); i != d->candidateRecordings.end(); ++i) {
         QString communicationID = i.key().first;
-        QPointer<CorpusRecording> rec = i.value();
+        CorpusRecording *rec = i.value();
         if (!rec) continue;
-        QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = d->corpus->communication(communicationID);
         if (!com) {
             com = new CorpusCommunication(communicationID);
             com->setName(communicationID);
@@ -93,9 +94,9 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
     // Add annotations
     for (j = d->candidateAnnotations.begin(); j != d->candidateAnnotations.end(); ++j) {
         QString communicationID = j.key().first;
-        QPointer<CorpusAnnotation> annot = j.value();
+        CorpusAnnotation *annot = j.value();
         if (!annot) continue;
-        QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = d->corpus->communication(communicationID);
         if (!com) {
             com = new CorpusCommunication(communicationID);
             com->setName(communicationID);
@@ -114,9 +115,9 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
     int count = 0;
     for (j = d->candidateAnnotations.begin(); j != d->candidateAnnotations.end(); ++j) {
         QString communicationID = j.key().first;
-        QPointer<CorpusAnnotation> annot = j.value();
+        CorpusAnnotation *annot = j.value();
         if (!annot) continue;
-        QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = d->corpus->communication(communicationID);
         if (!com) continue;
         QList<TierCorrespondance> correspondances;
         // First: level correspondances then attribute correspondances
@@ -147,7 +148,7 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
 // Import modules
 // ==============================================================================================================================
 
-void ImportCorpusItemsWizardFinalPage::importTranscriber(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,
+void ImportCorpusItemsWizardFinalPage::importTranscriber(CorpusCommunication *com, CorpusAnnotation *annot,
                                                          QList<TierCorrespondance> &correspondances)
 {
     Q_UNUSED(correspondances)
@@ -157,8 +158,8 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(QPointer<CorpusCommunic
 
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    QList<QPointer<CorpusSpeaker> > speakers;
+    SpeakerAnnotationTierGroupMap tiersAll;
+    QList<CorpusSpeaker *> speakers;
     bool result = TranscriberAnnotationGraph::load(annot->filename(), speakers, tiersAll);
     if (!result) {
         return;
@@ -179,7 +180,7 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(QPointer<CorpusCommunic
     qDeleteAll(tiersAll);
 }
 
-void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,
+void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunication *com, CorpusAnnotation *annot,
                                                                  QList<TierCorrespondance> &correspondances)
 {
     Q_UNUSED(correspondances)
@@ -205,7 +206,7 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(QPointer<Corpus
 }
 
 
-void ImportCorpusItemsWizardFinalPage::importPraat(QPointer<CorpusCommunication> com, QPointer<CorpusAnnotation> annot,
+void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, CorpusAnnotation *annot,
                                                    QList<TierCorrespondance> &correspondances)
 {
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));

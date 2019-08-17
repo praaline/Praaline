@@ -18,7 +18,7 @@ class ScriptingMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    ScriptingMode(QObject *parent = 0);
+    ScriptingMode(QObject *parent = nullptr);
     ~ScriptingMode();
 
     // IObjectBase Implementation

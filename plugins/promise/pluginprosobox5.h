@@ -15,7 +15,7 @@ class PluginProsobox5 : public AnnotationPluginPraatScript
 {
     Q_OBJECT
 public:
-    explicit PluginProsobox5(QObject *parent = 0);
+    explicit PluginProsobox5(QObject *parent = nullptr);
 
     void ProsoGram(Corpus *corpus, CorpusRecording *rec, CorpusAnnotation *annot);
     void CreateSyllTable(CorpusCommunication *com);

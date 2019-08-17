@@ -23,7 +23,7 @@ class AnalyserMacroprosodyWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit AnalyserMacroprosodyWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit AnalyserMacroprosodyWidget(Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~AnalyserMacroprosodyWidget();
 
 private slots:

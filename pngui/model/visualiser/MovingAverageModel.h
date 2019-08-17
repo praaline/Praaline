@@ -8,6 +8,7 @@
 #include <QStringList>
 
 #include "pncore/base/RealTime.h"
+#include "pncore/annotation/AnnotationTierGroup.h"
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/Model.h"
 
@@ -26,7 +27,7 @@ class MovingAverageModel : public Model
     Q_OBJECT
 public:
     MovingAverageModel(sv_samplerate_t sampleRate,
-                       QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+                       Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                        const QString &levelID, const QString &attributeID);
     virtual ~MovingAverageModel();
 

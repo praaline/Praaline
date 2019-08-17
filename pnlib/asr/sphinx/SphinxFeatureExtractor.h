@@ -11,7 +11,7 @@ class SphinxFeatureExtractor : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxFeatureExtractor(QObject *parent = 0);
+    explicit SphinxFeatureExtractor(QObject *parent = nullptr);
     ~SphinxFeatureExtractor();
 
     void setFeatureParametersFile(const QString &filename);

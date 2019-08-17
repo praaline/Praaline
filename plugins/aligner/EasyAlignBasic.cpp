@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPointer>
 #include <QString>
 #include <QList>
 #include <QFile>
@@ -319,14 +320,14 @@ QString EasyAlignBasic::runAllEasyAlignSteps(CorpusCommunication *com)
     QPointer<EasyAlignBasic> EA = new EasyAlignBasic();
 
     foreach (QString annotationID, com->annotationIDs()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+        SpeakerAnnotationTierGroupMap tiersAll;
         mutex.lock();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             // Find corresponding recording
-            QPointer<CorpusRecording> recording(0);
-            foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+            CorpusRecording *recording(0);
+            foreach (CorpusRecording *rec, com->recordings()) {
                 if (rec->property("speakerID").toString() == speakerID) {
                     recording = rec;
                     break;
@@ -334,7 +335,7 @@ QString EasyAlignBasic::runAllEasyAlignSteps(CorpusCommunication *com)
             }
             if (!recording) continue;
 
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_ortho = tiers->getIntervalTierByName("transcription");
             if (!tier_ortho) continue;

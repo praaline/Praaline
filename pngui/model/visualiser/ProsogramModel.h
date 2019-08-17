@@ -31,8 +31,8 @@ class ProsogramModel : public Model
 
 public:
     ProsogramModel(sv_samplerate_t sampleRate,
-                   QPointer<Praaline::Core::CorpusRecording> rec,
-                   QPointer<Praaline::Core::CorpusAnnotation> annot);
+                   Praaline::Core::CorpusRecording *rec,
+                   Praaline::Core::CorpusAnnotation *annot);
     virtual ~ProsogramModel();
 
     virtual std::string getType() const { return "ProsogramModel"; }

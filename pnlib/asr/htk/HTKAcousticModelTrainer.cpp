@@ -37,7 +37,7 @@ HTKAcousticModelTrainer::~HTKAcousticModelTrainer()
 }
 
 bool HTKAcousticModelTrainer::createMLF(
-        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &filename, QList<CorpusCommunication *> trainingCommunications,
         const QString &levelSegment, const QString &levelToken, const QString &levelPhone, const QString &attributePhonetisation)
 {
     // Create master label file
@@ -47,18 +47,18 @@ bool HTKAcousticModelTrainer::createMLF(
     mlf.setCodec("ISO 8859-1");
     mlf << "#!MLF!#\n";
     // Process training corpus
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, trainingCommunications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, trainingCommunications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         if (!com->repository()) continue;
         if (!com->repository()->annotations()) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_segment = tiers->getIntervalTierByName(levelSegment);
                 if (!tier_segment) continue;
@@ -66,7 +66,7 @@ bool HTKAcousticModelTrainer::createMLF(
                 if (!tier_token) continue;
                 IntervalTier *tier_phone = 0;
                 if (!levelPhone.isEmpty()) {
-                    tiers->getIntervalTierByName(levelPhone);
+                    tier_phone = tiers->getIntervalTierByName(levelPhone);
                     if (!tier_phone) continue;
                 }
                 // Create list of utterances to process
@@ -144,14 +144,14 @@ bool HTKAcousticModelTrainer::createMLF(
 }
 
 bool HTKAcousticModelTrainer::createMasterLabelFileFromTokens(
-        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &filename, QList<CorpusCommunication *> trainingCommunications,
         const QString &levelSegment, const QString &levelToken, const QString &attributePhonetisation)
 {
     return createMLF(filename, trainingCommunications, levelSegment, levelToken, "", attributePhonetisation);
 }
 
 bool HTKAcousticModelTrainer::createMasterLabelFileFromTokensAndPhones(
-        const QString &filename, QList<QPointer<CorpusCommunication> > trainingCommunications,
+        const QString &filename, QList<CorpusCommunication *> trainingCommunications,
         const QString &levelSegment, const QString &levelToken, const QString &levelPhone)
 {
     return createMLF(filename, trainingCommunications, levelSegment, levelToken, levelPhone, "");

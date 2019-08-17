@@ -162,7 +162,7 @@ void Praaline::Plugins::Metronome::PluginMetronome::createMetronomeAnnotationStr
     createAttribute(repository, level_rhythm, "", "delta_duration_percent", "Delta duration %", "", DataType(DataType::Double));
 }
 
-void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(const QList<CorpusCommunication *> &communications)
 {
     QList<QPointer<CorpusRepository> > repositoriesWithMetronomeAnnotationStructure;
     int countDone = 0;
@@ -178,10 +178,10 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
     vowels << "i" << "e" << "E" << "a" << "A" << "o" << "O" << "y" << "2" << "9";
     vowels << "e~" << "a~" << "o~" << "9~" << "@";
 
-    QList<QPointer<CorpusBookmark> > listBookmarks;
+    QList<CorpusBookmark *> listBookmarks;
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (d->createMetronomeAnnotationStructure && !repositoriesWithMetronomeAnnotationStructure.contains(com->repository())) {
             createMetronomeAnnotationStructure(com->repository());
@@ -190,13 +190,13 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
         }
         // QString path = com->repository()->files()->basePath();
         printMessage(QString("Annotating %1").arg(com->ID()));
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 // Find necessary tiers: syllables and phones
                 IntervalTier *tier_phone = tiers->getIntervalTierByName(d->levelPhone);
@@ -290,7 +290,7 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
     qDeleteAll(listBookmarks);
 }
 
-void Praaline::Plugins::Metronome::PluginMetronome::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Metronome::PluginMetronome::process(const QList<CorpusCommunication *> &communications)
 {
     if (d->commandAnnotateRhythmicPatterns) {
         annotateRhythmicPatterns(communications);

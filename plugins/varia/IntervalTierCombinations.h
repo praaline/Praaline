@@ -28,7 +28,7 @@ public:
     QString intervalsLevelCombined() const;
     void setIntervalsLevelCombined(const QString &levelID);
 
-    QString combineIntervalTiers(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString combineIntervalTiers(Praaline::Core::CorpusCommunication *com);
 
 private:
     IntervalTierCombinationsData *d;

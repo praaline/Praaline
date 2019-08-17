@@ -389,16 +389,16 @@ void CompareAnnotationsWidget::compareCorpora()
                 QSet<QString>::fromList(corpus_right->communicationIDs())).toList();
     qSort(communicationIDs_common);
     foreach (QString communicationID, communicationIDs_common) {
-        QPointer<CorpusCommunication> com_left = corpus_left->communication(communicationID);
+        CorpusCommunication *com_left = corpus_left->communication(communicationID);
         if (!com_left) continue;
-        QPointer<CorpusCommunication> com_right = corpus_right->communication(communicationID);
+        CorpusCommunication *com_right = corpus_right->communication(communicationID);
         if (!com_right) continue;
         // Loop through annotationIDs existing in both communications
         QList<QString> annotationIDs_common = QSet<QString>::fromList(com_left->annotationIDs()).intersect(
                     QSet<QString>::fromList(com_right->annotationIDs())).toList();
         qSort(annotationIDs_common);
         foreach (QString annotationID, annotationIDs_common) {
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll_left, tiersAll_right;
+            SpeakerAnnotationTierGroupMap tiersAll_left, tiersAll_right;
             tiersAll_left = repository_left->annotations()->getTiersAllSpeakers(annotationID);
             tiersAll_right = repository_right->annotations()->getTiersAllSpeakers(annotationID);
             // Find common speakerIDs

@@ -15,12 +15,12 @@ struct AnnotationTierModelData {
     AnnotationTierModelData() : orientation(Qt::Vertical) {}
 
     Qt::Orientation orientation;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;  // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;  // Speaker ID, corresponding tiers
     QString tiernameMinimal;
     QList<QPair<QString, QString> > attributes;           // Level ID, Attribute ID
 };
 
-AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(SpeakerAnnotationTierGroupMap &tiers,
                                                              const QString &tiernameMinimal, const QList<QPair<QString, QString> > &attributes,
                                                              Qt::Orientation orientation, QObject *parent) :
     TimelineTableModelBase(parent), d(new AnnotationTierModelData)
@@ -105,7 +105,7 @@ QVariant AnnotationMultiTierTableModel::headerData(int section, Qt::Orientation 
 }
 
 // Private
-QVariant AnnotationMultiTierTableModel::dataCell(QPointer<AnnotationTierGroup> spk_tiers, TimelineData &td,
+QVariant AnnotationMultiTierTableModel::dataCell(AnnotationTierGroup *spk_tiers, TimelineData &td,
                                                  const QString &levelID, const QString &attributeID) const
 {
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
@@ -174,7 +174,7 @@ QVariant AnnotationMultiTierTableModel::data(const QModelIndex &index, int role)
     }
     int attributeIndex = dataCellIndex - 3;
 
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return QVariant();
     IntervalTier *tier_min = spk_tiers->getIntervalTierByName(d->tiernameMinimal);
     if (!tier_min) return QVariant();
@@ -213,7 +213,7 @@ AnnotationMultiTierTableModel::dataBlock(const RealTime &from, const RealTime &t
     int timelineIndexTo = timelineIndexAtTime(to);
     for (int timelineIndex = timelineIndexFrom; timelineIndex <= timelineIndexTo; ++timelineIndex) {
         TimelineData td = m_timeline.at(timelineIndex);
-        QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+        AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
         if (!spk_tiers) continue;
         foreach (int attributeIndex, attributeIndices) {
             QString levelID = d->attributes.at(attributeIndex).first;
@@ -261,7 +261,7 @@ bool AnnotationMultiTierTableModel::setData(const QModelIndex &index, const QVar
     }
     int attributeIndex = dataCellIndex - 3;
 
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return false;
 
     if (dataCellIndex == 1) {
@@ -373,7 +373,7 @@ bool AnnotationMultiTierTableModel::splitAnnotations(int timelineIndex, int data
     if (timelineIndex < 0 || timelineIndex >= m_timeline.size()) return false;
     TimelineData td = m_timeline.at(timelineIndex);
     QString speakerID = td.speakerID;
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(td.speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(td.speakerID, 0);
     if (!spk_tiers) return false;
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
     if (!tier) return false;
@@ -474,7 +474,7 @@ bool AnnotationMultiTierTableModel::mergeAnnotations(int dataIndex, const QList<
     }
     TimelineData tdLast = m_timeline.at(timelineIndices.last());
     // Get the set of tiers for this speaker
-    QPointer<AnnotationTierGroup> spk_tiers = d->tiers.value(speakerID, 0);
+    AnnotationTierGroup *spk_tiers = d->tiers.value(speakerID, 0);
     if (!spk_tiers) return false;
     // Get the interval tier on which we are merging
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);

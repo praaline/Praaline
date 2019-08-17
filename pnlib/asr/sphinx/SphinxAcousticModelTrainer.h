@@ -22,7 +22,7 @@ class SphinxAcousticModelTrainer : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxAcousticModelTrainer(QObject *parent = 0);
+    explicit SphinxAcousticModelTrainer(QObject *parent = nullptr);
     virtual ~SphinxAcousticModelTrainer();
 
     void setTierUtterances(const QString &levelID, const QString &attributeID);
@@ -32,7 +32,7 @@ public:
     void setSpeakersIncludeFilter(const QStringList &speakerIDs);
     void setSpeakersExcludeFilter(const QStringList &speakerIDs);
 
-    bool createFiles(QList<QPointer<Praaline::Core::CorpusCommunication> > &communications,
+    bool createFiles(QList<Praaline::Core::CorpusCommunication *> &communications,
                      QStringList &outUnknownWordsList, bool splitTrainTest = false, bool createSoundSegments = false);
 
 signals:

@@ -18,7 +18,7 @@ class CorpusMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    CorpusMode(QObject *parent = 0);
+    CorpusMode(QObject *parent = nullptr);
     ~CorpusMode();
 
     // IObjectBase Implementation

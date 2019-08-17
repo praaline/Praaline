@@ -43,17 +43,17 @@ Rhapsodie::~Rhapsodie()
     delete d;
 }
 
-QString Rhapsodie::prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusCommunication> com)
+QString Rhapsodie::prepareMultiSpeakerTextgrids(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
     if (!com->ID().contains("Rhap-D")) return ret;
     InterfaceTextFile::setDefaultEncoding("UTF-8");
 
 
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Open textgrid
@@ -174,14 +174,14 @@ QString Rhapsodie::prepareMultiSpeakerTextgrids(QPointer<Praaline::Core::CorpusC
 
 
 
-QString Rhapsodie::updateSyllables(QPointer<Praaline::Core::CorpusCommunication> com)
+QString Rhapsodie::updateSyllables(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
 
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Open textgrid
@@ -218,7 +218,7 @@ QString Rhapsodie::updateSyllables(QPointer<Praaline::Core::CorpusCommunication>
         tiersAll = com->corpus()->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << "syll");
         foreach (QString speakerID, tiersAll.keys()) {
             bool OK = true;
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
             if (!tier_syll) continue;
@@ -256,12 +256,12 @@ QString Rhapsodie::updateSyllables(QPointer<Praaline::Core::CorpusCommunication>
     return ret;
 }
 
-QString Rhapsodie::loadPitch(QPointer<CorpusCommunication> com)
+QString Rhapsodie::loadPitch(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Load pitch file
@@ -288,7 +288,7 @@ QString Rhapsodie::loadPitch(QPointer<CorpusCommunication> com)
     return ret;
 }
 
-void processConstNode(const QDomNode& node, QPointer<CorpusCommunication> com)
+void processConstNode(const QDomNode& node, CorpusCommunication *com)
 {
     QDomNode domNode = node.firstChild();
     QDomElement domElement;
@@ -326,14 +326,14 @@ void processConstNode(const QDomNode& node, QPointer<CorpusCommunication> com)
     }
 }
 
-QString Rhapsodie::readProsodicConstituencyTree(QPointer<CorpusCommunication> com)
+QString Rhapsodie::readProsodicConstituencyTree(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
 
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Open XML file
@@ -361,19 +361,19 @@ QString Rhapsodie::readProsodicConstituencyTree(QPointer<CorpusCommunication> co
     return ret;
 }
 
-QString Rhapsodie::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
+QString Rhapsodie::noteProsodicBoundaryOnSyll(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
 
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->corpus()->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
             if (!tier_syll) continue;
@@ -406,12 +406,12 @@ QString Rhapsodie::noteProsodicBoundaryOnSyll(QPointer<CorpusCommunication> com)
     return ret;
 }
 
-QString Rhapsodie::importMicrosyntaxCONLL(QPointer<CorpusCommunication> com)
+QString Rhapsodie::importMicrosyntaxCONLL(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Load pitch file
@@ -426,12 +426,12 @@ QString Rhapsodie::importMicrosyntaxCONLL(QPointer<CorpusCommunication> com)
     return ret;
 }
 
-QString Rhapsodie::importMicrosyntaxTabular(QPointer<CorpusCommunication> com)
+QString Rhapsodie::importMicrosyntaxTabular(CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         // Load pitch file
@@ -470,7 +470,7 @@ QString Rhapsodie::findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corp
 {
     QString ret;
     if (!corpus) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
 
     QStringList exclude;
     exclude << "Rhap-M0003" << "Rhap-M0009" << "Rhap-M0014" << "Rhap-M2004" << "Rhap-M2005"
@@ -480,7 +480,7 @@ QString Rhapsodie::findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corp
         if (exclude.contains(annotationID)) continue;
         tiersAll = corpus->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
             if (!tier_tok_min) continue;
@@ -557,12 +557,12 @@ QString Rhapsodie::findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus
     return ret;
 }
 
-QString Rhapsodie::importCONLLU(QPointer<Praaline::Core::CorpusCommunication> com)
+QString Rhapsodie::importCONLLU(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return "Error";
     if (!com->corpus()) return "Error";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
 
     foreach (QString annotationID, com->annotationIDs()) {
         tiersAll = com->corpus()->repository()->annotations()->getTiersAllSpeakers(annotationID);

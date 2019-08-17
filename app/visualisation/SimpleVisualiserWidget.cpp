@@ -959,13 +959,13 @@ void SimpleVisualiserWidget::exportAudio(bool asData)
 
 }
 
-void SimpleVisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunication> com)
+void SimpleVisualiserWidget::newSessionWithCommunication(CorpusCommunication *com)
 {
     // The default implementation will create a Waveform pane for each of the Recordings
     // contained in the Communication
     if (!com) return;
     bool first = false;
-    foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+    foreach (CorpusRecording *rec, com->recordings()) {
         if (!first) {
             // Main audio
             FileOpenStatus status = openPath(rec->filePath(), ReplaceSession);
@@ -989,7 +989,7 @@ void SimpleVisualiserWidget::newSessionWithCommunication(QPointer<CorpusCommunic
     }
 }
 
-void SimpleVisualiserWidget::addRecordingToSession(QPointer<CorpusRecording> rec)
+void SimpleVisualiserWidget::addRecordingToSession(CorpusRecording *rec)
 {
     if (!rec) return;
     FileOpenStatus status = openAudio(rec->filePath(), CreateAdditionalModel);

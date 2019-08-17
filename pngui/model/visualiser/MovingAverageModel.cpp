@@ -33,13 +33,13 @@ struct MovingAverageModelData {
     QString levelID;
     QString attributeID;
     bool skipSilentPausesCounting;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;    // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;    // Speaker ID, corresponding tiers
     QMap<QString, QPointer<SparseTimeValueModel> > smooth;  // speakerID, smoothed data points
     QList<QString> excludedSpeakerIDs;
 };
 
 MovingAverageModel::MovingAverageModel(sv_samplerate_t sampleRate,
-                                       QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                       SpeakerAnnotationTierGroupMap &tiers,
                                        const QString &levelID, const QString &attributeID) :
     d(new MovingAverageModelData)
 {

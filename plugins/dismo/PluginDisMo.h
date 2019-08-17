@@ -55,7 +55,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
+                void process(const QList<CorpusCommunication *> &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -65,7 +65,7 @@ namespace Praaline {
                 PluginDisMoPrivateData* d;
 
                 void createDisMoAnnotationStructure(CorpusRepository *corpus);
-                void addMWUindications(QList<QPointer<CorpusCommunication> > communications);
+                void addMWUindications(QList<CorpusCommunication *> communications);
             };
         }
     }

@@ -16,7 +16,7 @@ class MiniTranscriptionWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MiniTranscriptionWidget(QWidget *parent = 0);
+    explicit MiniTranscriptionWidget(QWidget *parent = nullptr);
     virtual ~MiniTranscriptionWidget();
 
     void setTranscriptionLevelID(const QString &levelID);
@@ -25,13 +25,13 @@ public:
     void setSkipPauses(bool skip);
     bool skipPauses() const;
 
-    void setAnnotation(QPointer<Praaline::Core::CorpusAnnotation> annot);
+    void setAnnotation(Praaline::Core::CorpusAnnotation *annot);
     void clear();
 
 private:
     MiniTranscriptionWidgetData *d;
-    void rebind(QPointer<Praaline::Core::CorpusAnnotation> annot, const QString &levelID);
-    void asyncCreateTranscript(QPointer<Praaline::Core::CorpusAnnotation> annot);
+    void rebind(Praaline::Core::CorpusAnnotation *annot, const QString &levelID);
+    void asyncCreateTranscript(Praaline::Core::CorpusAnnotation *annot);
 
 private slots:
     void asyncCreateTranscriptFinished();

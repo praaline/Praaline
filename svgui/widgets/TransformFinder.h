@@ -35,7 +35,7 @@ class TransformFinder : public QDialog
     Q_OBJECT
 
 public:
-    TransformFinder(QWidget *parent = 0);
+    TransformFinder(QWidget *parent = nullptr);
     ~TransformFinder();
 
     TransformId getTransform() const;

@@ -53,7 +53,7 @@ QPointer<QStandardItemModel> CorpusExplorerOptionsDialog::createAttributeModel(C
     QPointer<QStandardItemModel> model = new QStandardItemModel(this);
     model->setColumnCount(1);
     int i = 0;
-    foreach (QPointer<MetadataStructureAttribute> attribute, d->structure->attributes(type)) {
+    foreach (MetadataStructureAttribute *attribute, d->structure->attributes(type)) {
         if (!attribute) continue;
         QStandardItem *item = new QStandardItem(attribute->name());
         item->setData(attribute->ID());

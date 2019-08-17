@@ -262,7 +262,7 @@ QString evaluateCRFfile(const QString &filename, double &precision, double &prec
 }
 
 
-void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<CorpusCommunication *> &communications)
 {
 //    addMWUindications(corpus, communications);
 //    return;
@@ -289,7 +289,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusC
     int countDone = 0;
     madeProgress(0);
     printMessage("DisMo Annotator ver. 1.0 running");
-    foreach(QPointer<CorpusCommunication> com, communications) {
+    foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) {
             emit printMessage(QString("DisMo: no corpus repository available for %1").arg(com->ID()));
@@ -301,12 +301,12 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusC
             emit printMessage("Created annotation levels and attributes to store DisMo annotations");
         }
         printMessage(QString("Annotating %1").arg(com->ID()));
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 if (!d->alreadyTokenised) {
                     QPointer<IntervalTier> tier_input = tiers->getIntervalTierByName(d->levelToAnnotate);
@@ -355,7 +355,7 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<QPointer<CorpusC
     printMessage("DisMo finished.");
 }
 
-void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<QPointer<CorpusCommunication> > communications)
+void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<CorpusCommunication *> communications)
 {
     QPointer<IntervalTier> tier_tok_min;
     QPointer<IntervalTier> tier_tok_mwu;
@@ -363,19 +363,19 @@ void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<QPointer<Cor
     int countDone = 0;
     madeProgress(0);
     printMessage("DisMo Annotator ver. 1.0 running");
-    foreach(QPointer<CorpusCommunication> com, communications) {
+    foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) {
             emit printMessage(QString("DisMo: no corpus repository available for %1").arg(com->ID()));
             continue;
         }
         printMessage(QString("Annotating %1").arg(com->ID()));
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
-            QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+            SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
                 if (!tier_tok_min) { qDebug() << "tier not found tok_min" << annot->ID(); continue; }

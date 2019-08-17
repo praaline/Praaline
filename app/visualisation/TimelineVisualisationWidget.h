@@ -27,7 +27,7 @@ class TimelineVisualisationWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit TimelineVisualisationWidget(QWidget *parent = 0);
+    explicit TimelineVisualisationWidget(QWidget *parent = nullptr);
     ~TimelineVisualisationWidget();
 
 protected slots:

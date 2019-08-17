@@ -54,7 +54,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
+                void process(const QList<CorpusCommunication *> &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -63,7 +63,7 @@ namespace Praaline {
             private:
                 PluginUDPipePrivateData* d;
 
-                // void concordances(const QList<QPointer<CorpusCommunication> > &communications);
+                // void concordances(const QList<CorpusCommunication *> &communications);
             };
         }
     }

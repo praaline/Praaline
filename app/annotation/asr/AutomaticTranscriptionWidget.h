@@ -17,7 +17,7 @@ class AutomaticTranscriptionWidget : public ASRModuleVisualiserWidgetBase
     Q_OBJECT
 
 public:
-    explicit AutomaticTranscriptionWidget(QWidget *parent = 0);
+    explicit AutomaticTranscriptionWidget(QWidget *parent = nullptr);
     ~AutomaticTranscriptionWidget();
 
 public slots:

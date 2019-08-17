@@ -176,13 +176,13 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(const QHash<QStrin
     if (parameters.contains("sphinxMLLRAdaptationPath")) d->sphinxMLLRAdaptationPath = parameters.value("sphinxMLLRAdaptationPath").toString();
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(const QList<CorpusCommunication *> &communications)
 {
     printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
     QPointer<LongSoundAligner> LSA = new LongSoundAligner();
     madeProgress(0);
     int countDone = 0;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         LSA->createUtterancesFromProsogramAutosyll(com);
@@ -231,7 +231,7 @@ struct LSAStep
     LSAStep() { }
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         QPointer<LongSoundAligner> LSA = new LongSoundAligner();
         QElapsedTimer timer;
@@ -258,10 +258,10 @@ struct DownsampleWaveFileStep
     DownsampleWaveFileStep() {}
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             SpeechRecognitionRecipes::downsampleWaveFile(rec);
         }
         return QString("%1\tdownsampled %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
@@ -274,10 +274,10 @@ struct SphinxFeatureExtractionStep
         m_config(config) {}
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             SpeechRecognitionRecipes::createSphinxFeatureFile(rec, m_config);
         }
         return QString("%1\textracted feature files for %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
@@ -290,11 +290,11 @@ struct OpenSmileVADSegmentationStep
     OpenSmileVADSegmentationStep() {}
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         static QMutex mutex;
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             int id = rec->ID().left(3).right(2).toInt();
             if (id > 10) return QString("%1 ok").arg(id);
             if (!rec->ID().contains("PASSENGER")) continue;
@@ -323,10 +323,10 @@ struct SphinxAutomaticTranscriptionStep
           m_sphinxPronunciationDictionary(sphinxPronunciationDictionary), m_sphinxMLLRMatrix(sphinxMLLRMatrix) { }
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             int id = rec->ID().left(3).right(2).toInt();
             if (id > 10) return QString("%1 ok").arg(id);
 
@@ -352,10 +352,10 @@ struct CreateMLLRAdaptationStep
     CreateMLLRAdaptationStep() {}
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             SpeechRecognitionRecipes::downsampleWaveFile(rec);
         }
         return QString("%1\t %2 recordings.").arg(com->ID()).arg(com->recordingsCount());
@@ -368,7 +368,7 @@ struct RunEasyAlignStep
     RunEasyAlignStep() {}
     typedef QString result_type;
 
-    QString operator() (const QPointer<CorpusCommunication> &com)
+    QString operator() (CorpusCommunication *com)
     {
         if (!com) return QString("%1\tis empty.").arg(com->ID());
         return EasyAlignBasic::runAllEasyAlignSteps(com);
@@ -377,7 +377,7 @@ struct RunEasyAlignStep
 
 // ====================================================================================================================
 
-void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::process(const QList<CorpusCommunication *> &communications)
 {
     madeProgress(0);
     printMessage("Starting");
@@ -446,9 +446,9 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
 //        config.setFilenameLanguageModel(sphinxPath + "model/lm/french_f0/french3g62K.lm.bin");
 //        config.setFilenamePronunciationDictionary(sphinxPath + "model/lm/french_f0/frenchWords62K.dic");
 //        sphinx.initialize(config);
-//        foreach (QPointer<CorpusCommunication> com, communications) {
+//        foreach (CorpusCommunication *com, communications) {
 //            if (!com) continue;
-//            foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+//            foreach (CorpusRecording *rec, com->recordings()) {
 //                QString filenameMFCC = QString(rec->baseMediaPath() + "/" + rec->filename()).replace(".wav", ".16k.mfc");
 //                sphinx.openFeatureFile(filenameMFCC);
 //                QScopedPointer<IntervalTier> autoseg(qobject_cast<IntervalTier *>(corpus->datastoreAnnotations()->getTier(rec->ID(), "", "auto_segment")));
@@ -470,14 +470,14 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
 //    checks(corpus, communications);
 //    return;
 
-//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    SpeakerAnnotationTierGroupMap tiersAll;
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
 //            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annot->ID(), QStringList() << "auto_syll" << "auto_transcribe" << "segment");
 //            foreach (QString speakerID, tiersAll.keys()) {
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //                if (!tiers) continue;
 //                QString id = QString("%1/%2_%3.TextGrid").arg(corpus->basePath()).arg(annot->ID()).arg(speakerID);
 //                printMessage(id);
@@ -493,9 +493,9 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
 //        }
 //    }
 
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
 //            QString speakerID = com->ID().left(13);
 //            AnnotationTier *tier = corpus->datastoreAnnotations()->getTier(annot->ID(), speakerID, "segment");
@@ -505,7 +505,7 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
 //                IntervalTier *seg = new IntervalTier("segment", RealTime(0, 0), rec->duration());
 //                corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, seg);
 //                delete seg;
-//                QList<QPointer<CorpusCommunication> > onlythis; onlythis << com;
+//                QList<CorpusCommunication *> onlythis; onlythis << com;
 //                autoTranscribePresegmented(corpus, onlythis);
 //                createSegments(corpus, onlythis);
 //            }
@@ -555,21 +555,21 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<QPointer<Cor
 //                QFileInfo info(filenameRec);
 //                QString filename = info.absolutePath() + QString("/%1_phone.svl").arg(speakerID);
 
-void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage("Adding phonetisation to tokens");
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (com->hasRecordings()) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_token = tiers->getIntervalTierByName("tok_min");
                 if (!tier_token) continue;
@@ -587,21 +587,21 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const Q
     printMessage("Finished");
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(const QList<CorpusCommunication *> &communications)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         CorpusRecording *rec = com->recordings().first();
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID.startsWith("(")) continue;
 
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -636,21 +636,21 @@ void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances
     }
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::align(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::align(const QList<CorpusCommunication *> &communications)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         CorpusRecording *rec = com->recordings().first();
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 if (speakerID.startsWith("(")) continue;
 
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
@@ -663,20 +663,20 @@ void Praaline::Plugins::Aligner::PluginAligner::align(const QList<QPointer<Corpu
     //printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
 }
 
-void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage("Checking...");
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
                 if (!tier_tok_min) continue;

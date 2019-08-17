@@ -25,7 +25,7 @@ class MIDIFileImportDialog : public QObject,
     Q_OBJECT
 
 public:
-    MIDIFileImportDialog(QWidget *parent = 0);
+    MIDIFileImportDialog(QWidget *parent = nullptr);
 
     virtual TrackPreference getTrackImportPreference
     (QStringList trackNames, bool haveSomePercussion,

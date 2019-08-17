@@ -24,8 +24,8 @@ class CorpusExplorerTreeModel : public ObserverTreeModel
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeModel(QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                            QObject *parent = 0);
+    CorpusExplorerTreeModel(QList<Praaline::Core::MetadataStructureAttribute *> attributes,
+                            QObject *parent = nullptr);
     ~CorpusExplorerTreeModel();
 
     // ObserverTableModel virtual method overrides

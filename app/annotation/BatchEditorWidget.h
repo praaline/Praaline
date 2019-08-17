@@ -14,7 +14,7 @@ class BatchEditorWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit BatchEditorWidget(QWidget *parent = 0);
+    explicit BatchEditorWidget(QWidget *parent = nullptr);
     ~BatchEditorWidget();
 
 

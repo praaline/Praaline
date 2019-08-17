@@ -29,7 +29,7 @@ class UnitConverter : public QDialog
     Q_OBJECT
 
 public:
-    UnitConverter(QWidget *parent = 0);
+    UnitConverter(QWidget *parent = nullptr);
     virtual ~UnitConverter();
 
 private slots:

@@ -20,7 +20,6 @@
 #include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
 
 #include "InterraterAgreement.h"
-#include "ProsodyCourse.h"
 #include "SequencerSyntax.h"
 #include "SequencerDisfluencies.h"
 #include "SequencerProsodicUnits.h"
@@ -37,17 +36,6 @@
 #include "corpus-specific/Rhapsodie.h"
 #include "corpus-specific/NCCFR.h"
 #include "corpus-specific/ORFEO.h"
-
-#include "experiments/DisfluenciesExperiments.h"
-#include "experiments/SpeechRateExperiments.h"
-#include "experiments/TappingAnnotatorExperiment.h"
-#include "experiments/MelissaExperiment.h"
-#include "experiments/MacroprosodyExperiment.h"
-#include "experiments/ProsodicBoundariesExperimentAnalysis.h"
-#include "experiments/MyExperiments.h"
-#include "experiments/ExperimentUtterances.h"
-#include "experiments/AggregateProsody.h"
-#include "experiments/PhonogenreDiscourseMarkers.h"
 
 #include "pluginvaria.h"
 
@@ -135,16 +123,16 @@ void Praaline::Plugins::Varia::PluginVaria::setParameters(const QHash<QString, Q
     Q_UNUSED(parameters)
 }
 
-void chunk(QList<QPointer<CorpusCommunication> > communications) {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+void chunk(QList<CorpusCommunication *> communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_mwu");
                 if (!tier_tokens) continue;
@@ -164,13 +152,13 @@ void chunk(QList<QPointer<CorpusCommunication> > communications) {
     }
 }
 
-QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &communications)
+QString valibelTranscription(const QList<CorpusCommunication *> &communications)
 {
     QString ret;
     // Creates a transcription
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             QString transcription;
@@ -202,166 +190,18 @@ QString valibelTranscription(const QList<QPointer<CorpusCommunication> > &commun
     return ret;
 }
 
-void expeHesitation(const QList<QPointer<CorpusCommunication> > &communications)
+
+void merge_pauses(const QList<CorpusCommunication *> &communications)
 {
-    if (communications.isEmpty()) return;
-    QPointer<CorpusRepository> repository = communications.first()->repository();
-    QString corpusID = communications.first()->corpusID();
-
-    TappingAnnotatorExperiment texp;
-    QString path = "/home/george/Dropbox/2017_Perception_of_hesitation_expe/result_raw_files";
-    QDirIterator iterator(path, QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
-    while (iterator.hasNext()) {
-        QString filename = iterator.next();
-        texp.readResultsFile(repository, corpusID, filename);
-        // printMessage(filename);
-    }
-}
-
-#include "XMLTranscription.h"
-void importJohannaFiles(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QString path = "/home/george/Dropbox/Annotation allemand/";
-    if (communications.isEmpty()) return;
-    QPointer<CorpusRepository> repository = communications.first()->repository();
-    QPointer<Corpus> corpus = communications.first()->corpus();
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        XMLTranscription xml;
-        xml.load(path + com->ID() + ".xml");
-        QHash<QString, QList<Interval *> > allIntervals;
-        foreach (QString speakerID, xml.speakerIDs()) {
-            if (!corpus->hasSpeaker(speakerID)) {
-                CorpusSpeaker *spk = new CorpusSpeaker(speakerID);
-                spk->setName(speakerID);
-                corpus->addSpeaker(spk);
-                corpus->save();
-            }
-            allIntervals.insert(speakerID, QList<Interval *>());
-        }
-        int i = 0;
-        foreach (XMLTranscription::ParagraphInfo para, xml.paragraphs) {
-            foreach (XMLTranscription::TurnInfo turn, para.turns) {
-                allIntervals[turn.speakerID] << new Interval(RealTime::fromSeconds(i), RealTime::fromSeconds(i + 1),
-                                                             turn.transcription);
-                i++;
-            }
-        }
-        foreach (QString speakerID, xml.speakerIDs()) {
-            IntervalTier *tier_transcription = new IntervalTier("transcription", allIntervals[speakerID]);
-            repository->annotations()->saveTier(com->ID(), speakerID, tier_transcription);
-
-        }
-    }
-
-}
-
-void cuttingStimuli(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QString path = "/home/george/Dropbox/Annotation allemand/";
-    if (communications.isEmpty()) return;
-    QPointer<CorpusRepository> repository = communications.first()->repository();
-    QPointer<Corpus> corpus = communications.first()->corpus();
-    foreach (QPointer<CorpusCommunication> com, communications) {
-
-    }
-
-}
-
-void expeProsodicBoundariesExperts(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    if (communications.isEmpty()) return;
-    QPointer<CorpusRepository> repository = communications.first()->repository();
-    QString corpusID = communications.first()->corpusID();
-
-    TappingAnnotatorExperiment texp;
-    QString path = "/home/george/Dropbox/2015-10 SP8 - Prosodic boundaries perception experiment/RESULTS_EXPERTS";
-    QDirIterator iterator(path, QStringList() << "*.xml", QDir::Files, QDirIterator::Subdirectories);
-    while (iterator.hasNext()) {
-        QString filename = iterator.next();
-        texp.readResultsFile(repository, corpusID, filename);
-        // printMessage(filename);
-    }
-}
-
-void expeEmilie(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    if (communications.isEmpty()) return;
-    QPointer<Corpus> corpus = communications.first()->corpus();
-
-    QString path = "/home/george/Dropbox/2017 Experience perceptive disfluence Emilie/Annotation2";
-    QDir dirinfo(path);
-    QFileInfoList list;
-    list << dirinfo.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs);
-    dirinfo.setNameFilters(QStringList() << "conv-*.txt");
-    list << dirinfo.entryInfoList();
-
-    foreach (QFileInfo info, list) {
-        if (!info.isDir()) {
-            DisfluenciesExperiments::resultsReadTapping("2", info.canonicalFilePath(), corpus);
-            qDebug() << info.baseName();
-            // printMessage(QString("Read data from %1").arg(info.baseName()));
-        }
-    }
-    corpus->save();
-}
-
-
-
-void preprocess_zeinab_transcriptions(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
-                if (!tiers) continue;
-                IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
-                foreach (Interval *intv, tier_transcription->intervals()) {
-                    if (intv->text().trimmed() == "-") intv->setText("_");
-                }
-                int i = tier_transcription->count() - 1;
-                while (i >= 2) {
-                    if (tier_transcription->interval(i - 2)->text().trimmed().endsWith("/") && tier_transcription->interval(i)->text().trimmed().startsWith("+") &&
-                        tier_transcription->interval(i - 1)->isPauseSilent() && tier_transcription->interval(i - 1)->duration().toDouble() < 0.400)
-                    {
-                        QString s = tier_transcription->interval(i - 2)->text().trimmed();
-                        s.chop(1);
-                        tier_transcription->interval(i - 2)->setText(s);
-                        tier_transcription->interval(i - 1)->setText("");
-                        tier_transcription->interval(i)->setText(tier_transcription->interval(i)->text().remove(0, 1));
-                        tier_transcription->merge(i - 2, i, "");
-                    }
-                    else if (tier_transcription->interval(i - 1)->isPauseSilent() && tier_transcription->interval(i - 1)->duration().toDouble() < 0.180) {
-                        tier_transcription->interval(i-1)->setText("");
-                        tier_transcription->merge(i - 2, i, " ");
-                    }
-                    --i;
-                }
-                tier_transcription->replace("", "  ", " ");
-                tier_transcription->replace("", "_", "");
-                com->repository()->annotations()->saveTier(annotationID, speakerID, tier_transcription);
-            }
-            qDeleteAll(tiersAll);
-            // printMessage(com->ID());
-        }
-    }
-}
-
-void merge_pauses(const QList<QPointer<CorpusCommunication> > &communications)
-{
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
-        if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
-            if (!annot) continue;
-            QString annotationID = annot->ID();
-            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
-            foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_transcription = tiers->getIntervalTierByName("transcription");
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -386,17 +226,17 @@ void merge_pauses(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
-void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
+void fix_boundaries(const QList<CorpusCommunication *> &communications)
 {
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
                 if (!tier_phones) continue;
@@ -414,10 +254,7 @@ void fix_boundaries(const QList<QPointer<CorpusCommunication> > &communications)
     }
 }
 
-
-#include "corpus-specific/LOCASF.h"
-
-void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunication *> &communications)
 {
 
 //    BratAnnotationExporter b;
@@ -435,7 +272,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
     //merge_pauses(communications);
     QString m;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         // printMessage(orfeo.readOrfeoFile(com));
         // printMessage(orfeo.mapTokensToDisMo(com));
@@ -648,7 +485,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
 //    int countDone = 0;
 //    madeProgress(0);
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
 //        // MyExperiments::createTextgridsFromAutosyll(corpus, com);
 //        // MyExperiments::updateTranscriptionMode(corpus, com);
@@ -659,15 +496,15 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //    int countDone = 0;
 //    madeProgress(0);
 //    printMessage(QString("Inter-rater agreement"));
-//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    SpeakerAnnotationTierGroupMap tiersAll;
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
 //            QString annotationID = annot->ID();
 //            tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
 //            foreach (QString speakerID, tiersAll.keys()) {
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //                if (!tiers) continue;
 
 //                IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
@@ -748,7 +585,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 
 
 //    QString path = "C:/Users/George/Downloads/Rhap_meta";
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    foreach (CorpusCommunication *com, communications) {
 //        bool result = AnvilMetadataTranscript::load(QString("%1/%2-meta.xml").arg(path).arg(com->ID()), corpus);
 //        printMessage(QString("%1 %2").arg(com->ID()).arg((result) ? "OK" : "Error"));
 //    }
@@ -789,15 +626,15 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<QPointer<CorpusC
 //SVBridge::saveSVTimeInstantsLayer(filename, rec->sampleRate(), tier_phone);
 
 
-//QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-//foreach (QPointer<CorpusCommunication> com, communications) {
+//SpeakerAnnotationTierGroupMap tiersAll;
+//foreach (CorpusCommunication *com, communications) {
 //    if (!com) continue;
-//    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//    foreach (CorpusAnnotation *annot, com->annotations()) {
 //        if (!annot) continue;
 //        QString annotationID = annot->ID();
 //        tiersAll = corpus->datastoreAnnotations()->getTiersAllSpeakers(annotationID);
 //        foreach (QStringprepareStimuliCorpus speakerID, tiersAll.keys()) {
-//            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //            if (!tiers) continue;
 
 //            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");

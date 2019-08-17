@@ -12,7 +12,7 @@ class GridViewFindDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit GridViewFindDialog(QWidget *parent = 0);
+    explicit GridViewFindDialog(QWidget *parent = nullptr);
     ~GridViewFindDialog();
 
     enum SearchScope {

@@ -143,10 +143,10 @@ void DecodeFilenameToMetadataDialog::updateMetadata()
     ui->progressBar->setMaximum(d->corpus->communicationsCount());
     ui->progressBar->setValue(0);
     int i = 0;
-    foreach (QPointer<CorpusCommunication> com, d->corpus->communications()) {
+    foreach (CorpusCommunication *com, d->corpus->communications()) {
         if (!com) continue;
         if (com->recordingsCount() == 0) continue;
-        QPointer<CorpusRecording> rec = com->recordings().first();
+        CorpusRecording *rec = com->recordings().first();
         if (!rec) continue;
         QString filename = QFileInfo(rec->filename()).baseName();
         foreach (DecodeFilenameOp op, d->operations) {

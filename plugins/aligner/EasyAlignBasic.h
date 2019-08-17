@@ -14,7 +14,7 @@ class EasyAlignBasic : public AnnotationPluginPraatScript
 {
     Q_OBJECT
 public:
-    explicit EasyAlignBasic(QObject *parent = 0);
+    explicit EasyAlignBasic(QObject *parent = nullptr);
     ~EasyAlignBasic();
 
     // Parameters

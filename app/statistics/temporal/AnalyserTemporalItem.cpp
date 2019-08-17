@@ -212,7 +212,7 @@ QPointer<IntervalTier> AnalyserTemporalItem::timelineSpeaker() const
 }
 
 
-void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
+void AnalyserTemporalItem::analyse(CorpusCommunication *com)
 {
     if (!com) return;
     if (!com->repository()) return;
@@ -280,10 +280,10 @@ void AnalyserTemporalItem::analyse(QPointer<CorpusCommunication> com)
     excludedSyllTextForISI << "_" << "" << "N" << "D";
 
     foreach (QString annotationID, com->annotationIDs()) {
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll =
+        SpeakerAnnotationTierGroupMap tiersAll =
                 com->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllables);
             IntervalTier *tier_tokmin = tiers->getIntervalTierByName(d->levelTokens);

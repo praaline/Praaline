@@ -12,7 +12,7 @@ class ComposeTranscriptionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ComposeTranscriptionDialog(QWidget *parent = 0);
+    explicit ComposeTranscriptionDialog(QWidget *parent = nullptr);
     ~ComposeTranscriptionDialog();
 
 private:

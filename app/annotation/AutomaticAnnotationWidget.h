@@ -17,7 +17,7 @@ class AutomaticAnnotationWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit AutomaticAnnotationWidget(QWidget *parent = 0);
+    explicit AutomaticAnnotationWidget(QWidget *parent = nullptr);
     ~AutomaticAnnotationWidget();
 
 private slots:
@@ -36,7 +36,7 @@ private:
 
     void setupActions();
 
-    QList<QPointer<CorpusCommunication> > selectedCommunications();
+    QList<CorpusCommunication *> selectedCommunications();
     QList<IAnnotationPlugin *> selectedPlugins();
 };
 

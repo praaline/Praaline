@@ -18,7 +18,7 @@ class GridViewWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit GridViewWidget(QWidget *parent = 0);
+    explicit GridViewWidget(QWidget *parent = nullptr);
     ~GridViewWidget();
 
     QAdvancedTableView *tableView();

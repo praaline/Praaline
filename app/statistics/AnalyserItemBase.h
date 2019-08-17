@@ -36,7 +36,7 @@ class AnalyserItemBase : public QObject
 {
     Q_OBJECT
 public:
-    explicit AnalyserItemBase(QObject *parent = 0) : QObject(parent) {}
+    explicit AnalyserItemBase(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~AnalyserItemBase() {}
 
     virtual QStringList speakerIDs() const = 0;
@@ -45,7 +45,7 @@ public:
     virtual QList<double> vectorMeasureCom(const QString &measureID) const = 0;
     virtual QList<double> vectorMeasureSpk(const QString &speakerID, const QString &measureID) const = 0;
 
-    virtual void analyse(QPointer<Praaline::Core::CorpusCommunication> com) = 0;
+    virtual void analyse(Praaline::Core::CorpusCommunication *com) = 0;
 };
 
 #endif // ANALYSERITEMBASE_H

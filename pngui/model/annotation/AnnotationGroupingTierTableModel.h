@@ -17,11 +17,11 @@ class AnnotationGroupingTierTableModel : public TimelineTableModelBase
     Q_OBJECT
 
 public:
-    explicit AnnotationGroupingTierTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+    explicit AnnotationGroupingTierTableModel(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                                               const QString &tiernameGrouping, const QString &tiernameItems,
                                               const QStringList &attributesGrouping = QStringList(),
                                               const QStringList &attributesItems = QStringList(),
-                                              QObject *parent = 0);
+                                              QObject *parent = nullptr);
     ~AnnotationGroupingTierTableModel();
 
     QModelIndex parent(const QModelIndex &index) const override;

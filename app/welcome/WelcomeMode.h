@@ -18,7 +18,7 @@ class WelcomeMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    WelcomeMode(QObject *parent = 0);
+    WelcomeMode(QObject *parent = nullptr);
     ~WelcomeMode();
 
     // IObjectBase Implementation

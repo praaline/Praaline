@@ -87,9 +87,9 @@ void TidyUpAnnotationsDialog::applyChanges()
     ui->progressBar->setMaximum(list.count());
     foreach (CorpusObjectInfo annotation, list) {
         QString annotationID = annotation.attribute("annotationID").toString();
-        QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << levelID);
+        SpeakerAnnotationTierGroupMap tiersAll = repository->annotations()->getTiersAllSpeakers(annotationID, QStringList() << levelID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (ui->optionMergeContiguousPauses->isChecked()) {
                 IntervalTier *tier = tiers->getIntervalTierByName(levelID);
                 if (!tier) continue;

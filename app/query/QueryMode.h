@@ -18,7 +18,7 @@ class QueryMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    QueryMode(QObject *parent = 0);
+    QueryMode(QObject *parent = nullptr);
     ~QueryMode();
 
     // IObjectBase Implementation

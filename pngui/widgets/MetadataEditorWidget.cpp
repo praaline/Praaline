@@ -230,7 +230,7 @@ QtProperty *MetadataEditorWidget::addProperties(QPointer<MetadataStructure> mstr
         MetadataStructureSection *sec = mstructure->section(item->type(), i);
         if (!sec) continue;
         if (i != 0) group = d->groupManager->addProperty(sec->name());
-        foreach (QPointer<MetadataStructureAttribute> attr, sec->attributes()) {
+        foreach (MetadataStructureAttribute *attr, sec->attributes()) {
             if (!attr) continue;
             // Select correct manager based on attribute type (string, bool, int, double, enum)
             if (!attr->nameValueList().isEmpty()) {

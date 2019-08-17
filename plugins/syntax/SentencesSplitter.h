@@ -19,10 +19,10 @@ public:
     SentencesSplitter();
     ~SentencesSplitter();
 
-    QString exportSentences(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString exportSentences(Praaline::Core::CorpusCommunication *com);
     QString readBreaksFile(const QString &filename);
-    QString importBreaks(QPointer<Praaline::Core::CorpusCommunication> com);
-    QString createSentenceTier(QPointer<Praaline::Core::CorpusCommunication> com);
+    QString importBreaks(Praaline::Core::CorpusCommunication *com);
+    QString createSentenceTier(Praaline::Core::CorpusCommunication *com);
 
 private:
     SentencesSplitterData *d;

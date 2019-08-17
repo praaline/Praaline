@@ -59,7 +59,7 @@ namespace Praaline {
                 // IAnnotationPlugin implementation
                 QList<PluginParameter> pluginParameters() const override;
                 void setParameters(const QHash<QString, QVariant> &parameters) override;
-                void process(const QList<QPointer<CorpusCommunication> > &communications) override;
+                void process(const QList<CorpusCommunication *> &communications) override;
 
             signals:
                 void printMessage(const QString &message) override;
@@ -69,10 +69,10 @@ namespace Praaline {
                 PluginPromisePrivateData* d;
 
                 void createPromiseSyllableInfoStructure(CorpusRepository *repository);
-                void runSpeechRateEstimator(const QList<QPointer<CorpusCommunication> > &communications);
-                void runSyllableProminenceAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
-                void runProsodicBoundariesAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
-                void runProsodicUnitsAnnotator(const QList<QPointer<CorpusCommunication> > &communications);
+                void runSpeechRateEstimator(const QList<CorpusCommunication *> &communications);
+                void runSyllableProminenceAnnotator(const QList<CorpusCommunication *> &communications);
+                void runProsodicBoundariesAnnotator(const QList<CorpusCommunication *> &communications);
+                void runProsodicUnitsAnnotator(const QList<CorpusCommunication *> &communications);
 
                 static void createAttribute(CorpusRepository *repository, AnnotationStructureLevel *level, const QString &prefix,
                                             const QString &ID, const QString &name = QString(), const QString &description = QString(),

@@ -16,7 +16,7 @@ class PFCTranscriptionEditor : public QMainWindow, public AnnotationEditorBase
     Q_OBJECT
 
 public:
-    explicit PFCTranscriptionEditor(QWidget *parent = 0);
+    explicit PFCTranscriptionEditor(QWidget *parent = nullptr);
     virtual ~PFCTranscriptionEditor();
     QWidget *editorWidget() override { return this; }
 

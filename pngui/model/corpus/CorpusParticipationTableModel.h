@@ -19,9 +19,9 @@ class CorpusParticipationTableModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit CorpusParticipationTableModel(QList<QPointer<Praaline::Core::CorpusParticipation> > items,
-                                           QList<QPointer<Praaline::Core::MetadataStructureAttribute> > attributes,
-                                           bool multiCorpus = false, QObject *parent = 0);
+    explicit CorpusParticipationTableModel(QList<Praaline::Core::CorpusParticipation *> items,
+                                           QList<Praaline::Core::MetadataStructureAttribute *> attributes,
+                                           bool multiCorpus = false, QObject *parent = nullptr);
     ~CorpusParticipationTableModel();
 
     QModelIndex parent(const QModelIndex &index) const;

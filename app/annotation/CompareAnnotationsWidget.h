@@ -18,7 +18,7 @@ class CompareAnnotationsWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CompareAnnotationsWidget(QWidget *parent = 0);
+    explicit CompareAnnotationsWidget(QWidget *parent = nullptr);
     ~CompareAnnotationsWidget();
 
 private:

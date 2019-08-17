@@ -20,13 +20,13 @@ class AnnotationMultiTierEditorWidget : public TimelineEditorWidgetBase
     Q_OBJECT
 
 public:
-    explicit AnnotationMultiTierEditorWidget(QWidget *parent = 0);
+    explicit AnnotationMultiTierEditorWidget(QWidget *parent = nullptr);
     ~AnnotationMultiTierEditorWidget();
 
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
 
-    void setData(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tierGroups,
+    void setData(Praaline::Core::SpeakerAnnotationTierGroupMap &tierGroups,
                  const QList<QPair<QString, QString> > &columns);
 
     void setColumns(const QList<QPair<QString, QString> > &columns);

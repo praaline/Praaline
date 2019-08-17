@@ -43,7 +43,7 @@ class PluginParameterDialog : public QDialog
     Q_OBJECT
     
 public:
-    PluginParameterDialog(Vamp::PluginBase *, QWidget *parent = 0);
+    PluginParameterDialog(Vamp::PluginBase *, QWidget *parent = nullptr);
     ~PluginParameterDialog();
 
     void setChannelArrangement(int sourceChannels,

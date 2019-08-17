@@ -44,7 +44,7 @@ public:
     PitchRangeInfo pitchRangeInfo(const QString &speakerID) const;
 
     void estimatePitchRange(QPointer<Praaline::Core::Corpus> corpus, const QStringList &speakerIDs = QStringList());
-    void annotate(QPointer<Praaline::Core::CorpusCommunication> com);
+    void annotate(Praaline::Core::CorpusCommunication *com);
 
 private:
     QString classifyPitchInterval(const PitchRangeInfo &pitchRange, double fromHz, double toHz);

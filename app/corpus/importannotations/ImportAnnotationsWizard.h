@@ -14,7 +14,7 @@ class ImportAnnotationsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ImportAnnotationsWizard(QWidget *parent = 0);
+    explicit ImportAnnotationsWizard(QWidget *parent = nullptr);
     ~ImportAnnotationsWizard();
 
 private:

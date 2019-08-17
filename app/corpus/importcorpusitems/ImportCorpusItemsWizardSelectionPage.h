@@ -25,9 +25,9 @@ class ImportCorpusItemsWizardSelectionPage : public QWizardPage
 
 public:
     explicit ImportCorpusItemsWizardSelectionPage(QPointer<Corpus> corpus,
-                                                  QMap<QPair<QString, QString>, QPointer<CorpusRecording> > &candidateRecordings,
-                                                  QMap<QPair<QString, QString>, QPointer<CorpusAnnotation> > &candidateAnnotations,
-                                                  QWidget *parent = 0);
+                                                  QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
+                                                  QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
+                                                  QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardSelectionPage();
 
     bool validatePage ();

@@ -10,7 +10,7 @@ class AcousticFeatureExtractor : public QObject
 {
     Q_OBJECT
 public:
-    explicit AcousticFeatureExtractor(QObject *parent = 0) : QObject(parent) {}
+    explicit AcousticFeatureExtractor(QObject *parent = nullptr) : QObject(parent) {}
     virtual ~AcousticFeatureExtractor() {}
 
 signals:

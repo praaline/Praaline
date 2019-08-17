@@ -22,7 +22,7 @@ PseudoLanguage::PseudoLanguage()
 }
 
 // "D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/possible_diphones.txt"
-bool PseudoLanguage::createListOfPossibleDiphones(const QList<QPointer<CorpusCommunication> > &communications,
+bool PseudoLanguage::createListOfPossibleDiphones(const QList<CorpusCommunication *> &communications,
                                                   const QString &filename, int cutOffThreshold)
 {
     QFile fileOut(filename);
@@ -32,16 +32,16 @@ bool PseudoLanguage::createListOfPossibleDiphones(const QList<QPointer<CorpusCom
 
     QHash<QString, int> possible_diphones;
 
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
 
-                QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+                SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                 foreach (QString speakerID, tiersAll.keys()) {
-                    QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                    AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 
                     IntervalTier *tier_phones = tiers->getIntervalTierByName("phone");
                     if (!tier_phones) continue;

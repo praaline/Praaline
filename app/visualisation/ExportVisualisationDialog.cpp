@@ -34,18 +34,18 @@ using namespace Praaline::Core;
 
 struct ExportVisualisationDialogData
 {
-    ExportVisualisationDialogData(Document *d, PaneStack *ps, ViewManager *vm, QMap<QString, QPointer<AnnotationTierGroup> > &tiers) :
+    ExportVisualisationDialogData(Document *d, PaneStack *ps, ViewManager *vm, SpeakerAnnotationTierGroupMap &tiers) :
         document(d), paneStack(ps), viewManager(vm), tiers(tiers)
     {}
 
     Document    *document;
     PaneStack   *paneStack;
     ViewManager *viewManager;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiers;
+    SpeakerAnnotationTierGroupMap tiers;
 };
 
 ExportVisualisationDialog::ExportVisualisationDialog(Document *document, PaneStack *paneStack, ViewManager *viewManager,
-                                                     QMap<QString, QPointer<AnnotationTierGroup> > &tiers,
+                                                     SpeakerAnnotationTierGroupMap &tiers,
                                                      QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ExportVisualisationDialog),

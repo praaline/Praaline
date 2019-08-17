@@ -14,7 +14,7 @@ class ConcordancerQuickWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ConcordancerQuickWidget(QWidget *parent = 0);
+    explicit ConcordancerQuickWidget(QWidget *parent = nullptr);
     ~ConcordancerQuickWidget();
 
 private slots:

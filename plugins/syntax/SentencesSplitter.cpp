@@ -33,17 +33,17 @@ SentencesSplitter::~SentencesSplitter()
     delete d;
 }
 
-QString SentencesSplitter::exportSentences(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SentencesSplitter::exportSentences(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
 
             IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
@@ -95,12 +95,12 @@ QString SentencesSplitter::readBreaksFile(const QString &filename)
     return QString("Read sentences file");
 }
 
-QString SentencesSplitter::importBreaks(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SentencesSplitter::importBreaks(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         if (!d->sentences.contains(annotationID)) {
@@ -114,7 +114,7 @@ QString SentencesSplitter::importBreaks(QPointer<Praaline::Core::CorpusCommunica
                 continue;
             }
 
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
             if (!tier_tok_mwu) continue;
@@ -150,17 +150,17 @@ QString SentencesSplitter::importBreaks(QPointer<Praaline::Core::CorpusCommunica
     return ret.trimmed();
 }
 
-QString SentencesSplitter::createSentenceTier(QPointer<Praaline::Core::CorpusCommunication> com)
+QString SentencesSplitter::createSentenceTier(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     if (!com) return ret;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tok_mwu = tiers->getIntervalTierByName("tok_mwu");
             if (!tier_tok_mwu) continue;

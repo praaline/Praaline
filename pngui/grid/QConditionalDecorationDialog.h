@@ -60,7 +60,7 @@ public:
     /**
       * Constructs a conditional decoration dialog for the given @p index and with the given @p parent.
       */
-    explicit QConditionalDecorationDialog(const QModelIndex & index, QWidget *parent = 0);
+    explicit QConditionalDecorationDialog(const QModelIndex & index, QWidget *parent = nullptr);
     /**
       * Destroys the QConditionalDecorationDialog.
       */

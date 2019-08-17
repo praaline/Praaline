@@ -15,7 +15,7 @@ CorpusImporter::CorpusImporter()
 
 }
 
-bool CorpusImporter::readPerceo(const QString &filename, QMap<QString, QPointer<AnnotationTierGroup> > &tiers)
+bool CorpusImporter::readPerceo(const QString &filename, SpeakerAnnotationTierGroupMap &tiers)
 {
     QHash<QString, QList<Interval *> > words_collector;
 
@@ -54,7 +54,7 @@ bool CorpusImporter::readPerceo(const QString &filename, QMap<QString, QPointer<
     while (!stream.atEnd());
     file.close();
     foreach (QString speakerID, words_collector.keys()) {
-        QPointer<AnnotationTierGroup> tiersForSpeaker = new AnnotationTierGroup();
+        AnnotationTierGroup *tiersForSpeaker = new AnnotationTierGroup();
         IntervalTier *tier_words = new IntervalTier("words");
         tier_words->replaceAllIntervals(words_collector[speakerID]);
         tiersForSpeaker->addTierReplacing(tier_words);

@@ -12,12 +12,12 @@ using namespace Praaline::Core;
 
 struct CorpusRecordingTableModelData {
     bool multiCommunication;
-    QList<QPointer<CorpusRecording> > items;
-    QList<QPointer<MetadataStructureAttribute> > attributes;
+    QList<CorpusRecording *> items;
+    QList<MetadataStructureAttribute *> attributes;
 };
 
-CorpusRecordingTableModel::CorpusRecordingTableModel(QList<QPointer<CorpusRecording> > items,
-                                                     QList<QPointer<MetadataStructureAttribute> > attributes,
+CorpusRecordingTableModel::CorpusRecordingTableModel(QList<CorpusRecording *> items,
+                                                     QList<MetadataStructureAttribute *> attributes,
                                                      bool multiCommunication, QObject *parent)
     : QAbstractTableModel(parent), d(new CorpusRecordingTableModelData)
 {
@@ -74,7 +74,7 @@ QVariant CorpusRecordingTableModel::headerData(int section, Qt::Orientation orie
     }
     else if (orientation == Qt::Vertical) {
         QString ret = QString::number(section + 1);
-        QPointer<CorpusRecording> item(0);
+        CorpusRecording *item(0);
         if ((section >= 0) && (section < d->items.count())) {
             item  = d->items.at(section);
             if (item->isNew()) return ret.append(" +");
@@ -93,7 +93,7 @@ QVariant CorpusRecordingTableModel::data(const QModelIndex &index, int role) con
         return QVariant();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        QPointer<CorpusRecording> rec = d->items.at(index.row());
+        CorpusRecording *rec = d->items.at(index.row());
         if (!rec) return QVariant();
         if      (index.column() == 0) return rec->property("communicationID");
         else if (index.column() == 1) return rec->property("ID");
@@ -131,7 +131,7 @@ bool CorpusRecordingTableModel::setData(const QModelIndex &index, const QVariant
         return false;
 
     if (role == Qt::EditRole) {
-        QPointer<CorpusRecording> rec = d->items.at(index.row());
+        CorpusRecording *rec = d->items.at(index.row());
         if (!rec) return false;
         // communicationID is read-only
         if      (index.column() == 1) return rec->setProperty("ID", value);

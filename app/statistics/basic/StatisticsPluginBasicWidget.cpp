@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QPointer>
 #include <QApplication>
 #include <QProgressBar>
 #include <QStandardItemModel>

@@ -27,20 +27,20 @@ public:
         QVariant value;
     };
 
-    explicit AnnotationMultiTierTableModel(QMap<QString, QPointer<Praaline::Core::AnnotationTierGroup> > &tiers,
+    explicit AnnotationMultiTierTableModel(Praaline::Core::SpeakerAnnotationTierGroupMap &tiers,
                                            const QString &tiernameMinimal,
                                            const QList<QPair<QString, QString> > &attributes,
                                            Qt::Orientation orientation,
-                                           QObject *parent = 0);
-    ~AnnotationMultiTierTableModel();
+                                           QObject *parent = nullptr);
+    ~AnnotationMultiTierTableModel() override;
 
-    QModelIndex parent(const QModelIndex &index) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    QVariant data(const QModelIndex &index, int role) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole);
+    QModelIndex parent(const QModelIndex &index) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole) override;
 
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
@@ -61,7 +61,7 @@ public slots:
 private:
     AnnotationTierModelData *d;
 
-    QVariant dataCell(QPointer<Praaline::Core::AnnotationTierGroup> spk_tiers, TimelineData &td,
+    QVariant dataCell(Praaline::Core::AnnotationTierGroup *spk_tiers, TimelineData &td,
                       const QString &levelID, const QString &attributeID) const;
 };
 

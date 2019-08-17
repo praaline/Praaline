@@ -16,7 +16,7 @@ class ExternalPhonetiser : public Phonetiser
 {
     Q_OBJECT
 public:
-    explicit ExternalPhonetiser(QObject *parent = 0);
+    explicit ExternalPhonetiser(QObject *parent = nullptr);
     ~ExternalPhonetiser();
 
     QString phonetiseWord(const QString &word) override {}

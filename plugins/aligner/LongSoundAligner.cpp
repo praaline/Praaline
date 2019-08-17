@@ -67,18 +67,18 @@ bool LongSoundAligner::createRecognitionLevel(CorpusRepository *repository, int 
 }
 
 // Long sound alignment steps
-bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<CorpusCommunication> com)
+bool LongSoundAligner::createUtterancesFromProsogramAutosyll(CorpusCommunication *com)
 {
     if (!com) return false;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         // Normally, there should be one speaker (with a speaker ID equal to the communication ID), created by
         // running Prosogram in automatic segmentation mode.
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_auto_syll = tiers->getIntervalTierByName(d->tiername_auto_syll);
             if (!tier_auto_syll) continue;
@@ -116,7 +116,7 @@ bool LongSoundAligner::createUtterancesFromProsogramAutosyll(QPointer<CorpusComm
     return true;
 }
 
-bool LongSoundAligner::recognise(QPointer<CorpusCommunication> com, int recognitionStep)
+bool LongSoundAligner::recognise(CorpusCommunication *com, int recognitionStep)
 {
     static QMutex mutex;
 
@@ -129,23 +129,23 @@ bool LongSoundAligner::recognise(QPointer<CorpusCommunication> com, int recognit
         sphinx->setUseMLLRMatrixFromAttribute(true);
         sphinx->setUseLanguageModelFromAttribute(true);
     }
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
+    SpeakerAnnotationTierGroupMap tiersAll;
     if (!com) return false;
     if (!com->repository()) return false;
     if (!com->hasRecordings()) {
         com->setProperty("LSA_status", "NoRecordings");
         return false;
     }
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return false;
-    foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+    foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
         mutex.lock();
         tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
         mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
-            QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_auto_utterance = tiers->getIntervalTierByName(d->tiername_auto_utterance);
             if (!tier_auto_utterance) continue;

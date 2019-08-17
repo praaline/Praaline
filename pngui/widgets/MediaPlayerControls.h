@@ -16,7 +16,7 @@ class MediaPlayerControls : public QWidget
 {
     Q_OBJECT
 public:
-    explicit MediaPlayerControls(QWidget *parent = 0);
+    explicit MediaPlayerControls(QWidget *parent = nullptr);
     virtual ~MediaPlayerControls();
 
     QMediaPlayer::State state() const;

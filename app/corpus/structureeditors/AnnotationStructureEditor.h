@@ -22,7 +22,7 @@ class AnnotationStructureEditor : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit AnnotationStructureEditor(QWidget *parent = 0);
+    explicit AnnotationStructureEditor(QWidget *parent = nullptr);
     ~AnnotationStructureEditor();
 
 private slots:

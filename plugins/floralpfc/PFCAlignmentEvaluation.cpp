@@ -60,7 +60,7 @@ QString PFCAlignmentEvaluation::EvaluationResults::toString() const
 }
 
 QList<PFCAlignmentEvaluation::EvaluationResults>
-PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunication> com,
+PFCAlignmentEvaluation::evaluate(Praaline::Core::CorpusCommunication *com,
                                  const QString &directoryTextGridA, const QString nameA,
                                  const QString &directoryTextGridB, const QString nameB,
                                  const QString &directoryTextgridCompare)
@@ -68,12 +68,12 @@ PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunication> c
     QList<EvaluationResults> results;
     if (!com) return results; // No Communication
     if (com->recordings().isEmpty()) return results; // QString("No Recordings for %1").arg(com->ID());
-    QPointer<CorpusRecording> rec = com->recordings().first();
+    CorpusRecording *rec = com->recordings().first();
     if (!rec) return results; // "No Recording";
     QString annotationID = com->ID();
     InterfaceTextFile::setDefaultEncoding("UTF-8");
     QString style = (com->ID().endsWith("t")) ? "text" : "conv";
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll = com->repository()->annotations()->
+    SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->
             getTiersAllSpeakers(annotationID, QStringList() << "segment" << "tok_min");
     // For each speaker
     foreach (QString speakerID, tiersAll.keys()) {
@@ -175,7 +175,7 @@ PFCAlignmentEvaluation::evaluate(QPointer<Praaline::Core::CorpusCommunication> c
     return results;
 }
 
-QString PFCAlignmentEvaluation::evaluate_Individual_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PFCAlignmentEvaluation::evaluate_Individual_RegionStyle(Praaline::Core::CorpusCommunication *com)
 {
     // Communication information
     QString region = com->ID().left(3);
@@ -195,7 +195,7 @@ QString PFCAlignmentEvaluation::evaluate_Individual_RegionStyle(QPointer<Praalin
     return ret;
 }
 
-QString PFCAlignmentEvaluation::evaluate_RegionStyle_RegionStyle(QPointer<Praaline::Core::CorpusCommunication> com)
+QString PFCAlignmentEvaluation::evaluate_RegionStyle_RegionStyle(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
     // Communication information

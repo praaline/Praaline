@@ -104,23 +104,23 @@ void Praaline::Plugins::UDPipe::PluginUDPipe::setParameters(const QHash<QString,
 
 
 //void Praaline::Plugins::UDPipe::PluginUDPipe::patterns(
-//        const QList<QPointer<CorpusCommunication> > &communications, const QStringList &codes)
+//        const QList<CorpusCommunication *> &communications, const QStringList &codes)
 //{
 //    int countDone = 0;
 //    madeProgress(0);
 //    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: %1 patterns").arg(codes.join(", ")));
-//    QList<QPointer<CorpusBookmark> > bookmarks;
-//    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-//    foreach (QPointer<CorpusCommunication> com, communications) {
+//    QList<CorpusBookmark *> bookmarks;
+//    SpeakerAnnotationTierGroupMap tiersAll;
+//    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;
 //        printMessage(QString("Annotating %1").arg(com->ID()));
-//        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+//        foreach (CorpusAnnotation *annot, com->annotations()) {
 //            if (!annot) continue;
 //            QString annotationID = annot->ID();
 //            tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
 //            foreach (QString speakerID, tiersAll.keys()) {
 //                printMessage(QString("   speaker %1").arg(speakerID));
-//                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+//                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
 //                if (!tiers) continue;
 
 //                IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -153,7 +153,7 @@ void Praaline::Plugins::UDPipe::PluginUDPipe::setParameters(const QHash<QString,
 //    }
 //}
 
-void Praaline::Plugins::UDPipe::PluginUDPipe::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::UDPipe::PluginUDPipe::process(const QList<CorpusCommunication *> &communications)
 {
     QStringList patternsToAnnotate;
     if (d->commandPatternsREP)

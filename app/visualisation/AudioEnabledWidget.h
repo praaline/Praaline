@@ -12,7 +12,7 @@ class AudioEnabledWidget : public QWidget
 {
     Q_OBJECT
 public:
-    explicit AudioEnabledWidget(QWidget *parent = 0);
+    explicit AudioEnabledWidget(QWidget *parent = nullptr);
     ~AudioEnabledWidget();
 
     enum FileOpenStatus {

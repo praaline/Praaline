@@ -51,8 +51,8 @@ public slots:
     virtual void baseGlobalCentreFrameChanged(sv_frame_t);
     virtual void basePlaybackFrameChanged(sv_frame_t);
 
-    virtual void newSessionWithCommunication(QPointer<CorpusCommunication> com);
-    virtual void addRecordingToSession(QPointer<CorpusRecording> rec);
+    virtual void newSessionWithCommunication(CorpusCommunication *com);
+    virtual void addRecordingToSession(CorpusRecording *rec);
 
 protected slots:
     virtual void importAudio();

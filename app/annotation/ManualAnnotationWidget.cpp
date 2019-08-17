@@ -28,7 +28,7 @@
 
 struct ManualAnnotationWidgetData {
     ManualAnnotationWidgetData() :
-        corpusItemSelector(0)
+        corpusItemSelector(nullptr), corpus(nullptr), com(nullptr), rec(nullptr), annot(nullptr)
     { }
 
     // Corpus
@@ -88,8 +88,8 @@ ManualAnnotationWidget::~ManualAnnotationWidget()
 
 void ManualAnnotationWidget::selectedCorpusCommunication(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com)
 {
-    QPointer<CorpusRecording> rec(0);
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusRecording> rec(nullptr);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (com->recordingsCount() >= 1) rec = com->recordings().first();
@@ -100,7 +100,7 @@ void ManualAnnotationWidget::selectedCorpusCommunication(QPointer<Corpus> corpus
 void ManualAnnotationWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                      QPointer<CorpusRecording> rec)
 {
-    QPointer<CorpusAnnotation> annot(0);
+    QPointer<CorpusAnnotation> annot(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!rec) return;
@@ -115,7 +115,7 @@ void ManualAnnotationWidget::selectedCorpusRecording(QPointer<Corpus> corpus, QP
 void ManualAnnotationWidget::selectedCorpusAnnotation(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,
                                                       QPointer<CorpusAnnotation> annot)
 {
-    QPointer<CorpusRecording> rec(0);
+    QPointer<CorpusRecording> rec(nullptr);
     if (!corpus) return;
     if (!com) return;
     if (!annot) return;
@@ -148,7 +148,7 @@ void ManualAnnotationWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPoin
 
 void ManualAnnotationWidget::editorTabNew()
 {
-    AnnotationEditorBase *editor(0);
+    AnnotationEditorBase *editor(nullptr);
     QString editorType = ui->comboBoxEditorSelection->currentData().toString();
     if      (editorType == "AnnotationMultiTierEditor") {
         editor = new AnnotationMultiTierEditor(this);

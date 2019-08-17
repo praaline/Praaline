@@ -14,7 +14,7 @@ class CreateDatasetWidget : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit CreateDatasetWidget(QWidget *parent = 0);
+    explicit CreateDatasetWidget(QWidget *parent = nullptr);
     ~CreateDatasetWidget();
 
 private:

@@ -124,14 +124,14 @@ void SplitCommunicationsDialog::doSplit()
     int progress = 0;
     foreach (QString communicationID, d->corpus->communicationIDs()) {
         if (!selectedCommunicationIDs.contains(communicationID)) continue;
-        QPointer<CorpusCommunication> com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = d->corpus->communication(communicationID);
         if (!com) continue;
-        foreach (QPointer<CorpusRecording> rec, com->recordings()) {
+        foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             QString originalFilename = rec->filePath();
             QString originalPath = QFileInfo(originalFilename).canonicalPath();
             QDir dirMedia = QDir(rec->basePath());
-            foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+            foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
                 QList<Interval *> segments;
                 int i = 1;

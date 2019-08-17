@@ -18,7 +18,7 @@ class AnnotationMode : public QObject, public IMode {
     Q_OBJECT
     Q_INTERFACES(Qtilities::CoreGui::Interfaces::IMode)
 public:
-    AnnotationMode(QObject *parent = 0);
+    AnnotationMode(QObject *parent = nullptr);
     ~AnnotationMode();
 
     // IObjectBase Implementation

@@ -14,7 +14,7 @@ class SphinxAcousticModelAdapter : public QObject
 {
     Q_OBJECT
 public:
-    explicit SphinxAcousticModelAdapter(QObject *parent = 0);
+    explicit SphinxAcousticModelAdapter(QObject *parent = nullptr);
     ~SphinxAcousticModelAdapter();
 
 signals:

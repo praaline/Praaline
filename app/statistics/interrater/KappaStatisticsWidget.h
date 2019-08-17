@@ -23,7 +23,7 @@ class KappaStatisticsWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit KappaStatisticsWidget(Core::CorpusRepository *repository, QWidget *parent = 0);
+    explicit KappaStatisticsWidget(Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~KappaStatisticsWidget();
 
 private slots:
