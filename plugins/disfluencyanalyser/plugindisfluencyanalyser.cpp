@@ -122,20 +122,20 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::setParamet
     if (parameters.contains("commandCreateSequences")) d->commandCreateSequences = parameters.value("commandCreateSequences").toBool();
 }
 
-void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordances(const QList<CorpusCommunication *> &communications)
 {
     bool withSyllData = true;
     int countDone = 0;
     madeProgress(0);
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 QString result;
@@ -274,21 +274,21 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequences
-    (const QList<QPointer<CorpusCommunication> > &communications)
+    (const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Creating sequences in database"));
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -311,23 +311,23 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
-        const QList<QPointer<CorpusCommunication> > &communications, const QStringList &codes)
+        const QList<CorpusCommunication *> &communications, const QStringList &codes)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: %1 patterns").arg(codes.join(", ")));
-    QList<QPointer<CorpusBookmark> > bookmarks;
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    QList<CorpusBookmark *> bookmarks;
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         printMessage(QString("Annotating %1").arg(com->ID()));
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
@@ -361,24 +361,24 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
 }
 
 void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMultiTierTextgrids(
-        const QList<QPointer<CorpusCommunication> > &communications)
+        const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
     madeProgress(0);
     printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Exporting multi-tier textgrid"));
 
-    QMap<QString, QPointer<AnnotationTierGroup> > tiersAll;
-    foreach (QPointer<CorpusCommunication> com, communications) {
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         QString path = com->repository()->files()->basePath();
         printMessage(QString("Exporting %1").arg(com->ID()));
-        foreach (QPointer<CorpusAnnotation> annot, com->annotations()) {
+        foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
                 printMessage(QString("   speaker %1").arg(speakerID));
-                QPointer<AnnotationTierGroup> tiers = tiersAll.value(speakerID);
+                AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 IntervalTier *tier_phone = 0, *tier_syll = 0, *tier_delivery = 0;
@@ -397,24 +397,24 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                     }
                 }
 
-                QPointer<AnnotationTierGroup> txg = new AnnotationTierGroup();
+                AnnotationTierGroup *txg = new AnnotationTierGroup();
                 if (tier_phone) {
-                    txg->addTier(new IntervalTier(tier_phone));
+                    txg->addTier(tier_phone->cloneWithoutAttributes());
                 }
                 if (tier_syll) {
-                    txg->addTier(new IntervalTier(tier_syll));
-                    tier_delivery = new IntervalTier(tier_syll, "delivery");
+                    txg->addTier(tier_syll->cloneWithoutAttributes());
+                    tier_delivery = tier_syll->cloneWithoutAttributes("delivery");
                     foreach (Interval *intv, tier_delivery->intervals())
                         if (intv->isPauseSilent()) intv->setText("_"); else intv->setText("");
                     txg->addTier(tier_delivery);
                 }
                 if (tier_tok_min) {\
-                    txg->addTier(new IntervalTier(tier_tok_min, "tok-min"));
-                    IntervalTier *tier_pos_min = new IntervalTier(tier_tok_min, "pos-min");
+                    txg->addTier(tier_tok_min->cloneWithoutAttributes("tok-min"));
+                    IntervalTier *tier_pos_min = tier_tok_min->clone("pos-min");
                     foreach (Interval *intv, tier_pos_min->intervals())
                         intv->setText(intv->attribute("pos_min").toString());
                     txg->addTier(tier_pos_min);
-                    IntervalTier *tier_disfluencyL1 = new IntervalTier(tier_tok_min, "disfluency-lex");
+                    IntervalTier *tier_disfluencyL1 = tier_tok_min->clone("disfluency-lex");
                     foreach (Interval *intv, tier_disfluencyL1->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d == "LEN" || d == "FST" || d == "FIL" || d == "WDP")
@@ -429,7 +429,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                         }
                     }
                     txg->addTier(tier_disfluencyL1);
-                    IntervalTier *tier_disfluencyL2 = new IntervalTier(tier_tok_min, "disfluency-rep");
+                    IntervalTier *tier_disfluencyL2 = tier_tok_min->clone("disfluency-rep");
                     foreach (Interval *intv, tier_disfluencyL2->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d.contains("REP"))
@@ -438,7 +438,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                             intv->setText("");
                     }
                     txg->addTier(tier_disfluencyL2);
-                    IntervalTier *tier_disfluencyL3 = new IntervalTier(tier_tok_min, "disfluency-struct");
+                    IntervalTier *tier_disfluencyL3 = tier_tok_min->clone("disfluency-struct");
                     foreach (Interval *intv, tier_disfluencyL3->intervals()) {
                         QString d = intv->attribute("disfluency").toString();
                         if (d.contains("INS") || d.contains("SUB") || d.contains("DEL") || d.contains("COM"))
@@ -449,14 +449,14 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                     txg->addTier(tier_disfluencyL3);
                 }
                 if (tier_tok_mwu) {
-                    txg->addTier(new IntervalTier(tier_tok_mwu, "tok-mwu"));
-                    IntervalTier *tier_pos_mwu = new IntervalTier(tier_tok_mwu, "pos-mwu");
+                    txg->addTier(tier_tok_mwu->clone("tok-mwu"));
+                    IntervalTier *tier_pos_mwu = tier_tok_mwu->clone("pos-mwu");
                     foreach (Interval *intv, tier_pos_mwu->intervals())
                         intv->setText(intv->attribute("pos_mwu").toString());
                     txg->addTier(tier_pos_mwu);
                 }
                 if (tier_ortho) {
-                    txg->addTier(new IntervalTier(tier_ortho));
+                    txg->addTier(tier_ortho->clone());
                 }
                 if (txg->tiersCount() > 0) {
                     if (tier_phone) {
@@ -469,9 +469,9 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
                     // add rest of tiers (not aligned to phones)
                     foreach (AnnotationTier *atier, restOfTiers) {
                         if (atier->tierType() == AnnotationTier::TierType_Points)
-                            txg->addTier(new PointTier(qobject_cast<PointTier *>(atier)));
+                            txg->addTier(qobject_cast<PointTier *>(atier)->clone());
                         else if (atier->tierType() == AnnotationTier::TierType_Intervals)
-                            txg->addTier(new IntervalTier(qobject_cast<IntervalTier *>(atier)));
+                            txg->addTier(qobject_cast<IntervalTier *>(atier)->clone());
                     }
                     // exclude tiers
                     foreach (QString name, tierNamesToExclude) {
@@ -487,7 +487,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
     }
 }
 
-void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(const QList<QPointer<CorpusCommunication> > &communications)
+void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(const QList<CorpusCommunication *> &communications)
 {
     QStringList patternsToAnnotate;
     if (d->commandPatternsREP) patternsToAnnotate << "REP";

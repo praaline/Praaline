@@ -70,11 +70,11 @@ public:
     QList<SubstitutionInfo> detectSubstitutionPatterns();
     void codeSubstitutions(QList<SubstitutionInfo> &substitutions);
 
-    QList<CorpusBookmark *> createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+    QList<QPointer<CorpusBookmark> > createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                      QList<RepetitionInfo> &repetitions);
-    QList<CorpusBookmark *> createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+    QList<QPointer<CorpusBookmark> > createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                      QList<InsertionInfo> &insertions);
-    QList<CorpusBookmark *> createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+    QList<QPointer<CorpusBookmark> > createBookmarks(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                                      QList<SubstitutionInfo> &substitutions);
 private:
     DisfluencyPatternDetectorData *d;
@@ -88,7 +88,7 @@ private:
 
     void codeRepetitions(QList<RepetitionInfo> &repetitions, bool withDM);
 
-    CorpusBookmark *createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
+    QPointer<CorpusBookmark> createBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                             const PatternInfoBase &pattern);
 };
 
