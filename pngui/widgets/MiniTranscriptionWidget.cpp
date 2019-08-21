@@ -98,7 +98,7 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
         fields << QString::fromStdString(intv->tMin().toText())
                << intv->attribute("speakerID").toString()
                << intv->text();
-        lines.append(new QTreeWidgetItem((QTreeWidget*)0, fields));
+        lines.append(new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), fields));
     }
     mutex.lock();
     if (d) d->lines.append(lines);
