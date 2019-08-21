@@ -7,7 +7,7 @@
 #include <QList>
 
 #include "SphinxConfiguration.h"
-#include "pnlib/diff/diffintervals.h"
+#include "pncore/diff/DiffIntervals.h"
 
 namespace Praaline {
 

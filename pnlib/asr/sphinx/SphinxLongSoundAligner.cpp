@@ -7,10 +7,8 @@
 using namespace Praaline::Core;
 
 // Includes for diff functionality
-using namespace std;
-#include "pnlib/diff/dtl.h"
-using namespace dtl;
-#include "pnlib/diff/diffintervals.h"
+#include "pncore/diff/dtl/dtl.h"
+#include "pncore/diff/DiffIntervals.h"
 
 // Includes for other Sphinx modules
 #include "SphinxConfiguration.h"
@@ -140,11 +138,11 @@ bool SphinxLongSoundAligner::stepFindAnchors()
 {
     if (d->sesSequence.size() == 0) return false;
 
-    int i = 0;
+    size_t i = 0;
     while (i < d->sesSequence.size()) {
         dtl::Ses<Interval *>::sesElem elem = d->sesSequence[i];
-        Interval *intv_trn = (elem.second.beforeIdx > 0) ? d->tokens_transcription.at(elem.second.beforeIdx - 1) : 0;
-        Interval *intv_rec = (elem.second.afterIdx > 0) ? d->tokens_recognised.at(elem.second.afterIdx - 1) : 0;
+        Interval *intv_trn = (elem.second.beforeIdx > 0) ? d->tokens_transcription.at(elem.second.beforeIdx - 1) : nullptr;
+        Interval *intv_rec = (elem.second.afterIdx > 0) ? d->tokens_recognised.at(elem.second.afterIdx - 1) : nullptr;
         dtl::edit_t editType = elem.second.type;
 
     }

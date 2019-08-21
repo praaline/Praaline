@@ -11,6 +11,7 @@
 #include "pncore/datastore/AnnotationDatastore.h"
 #include "pncore/structure/AnnotationStructure.h"
 #include "pncore/annotation/IntervalTier.h"
+#include "pncore/diff/DiffIntervals.h"
 using namespace Praaline::Core;
 
 #include "svcore/data/model/WaveFileModel.h"
@@ -26,7 +27,6 @@ using namespace Praaline::Core;
 #include "pngui/widgets/CorpusItemSelectorWidget.h"
 #include "pngui/model/visualiser/ProsogramModel.h"
 
-#include "pnlib/diff/diffintervals.h"
 #include "pngui/model/diff/DiffSESForIntervalsTableModel.h"
 #include "pngui/widgets/GridViewWidget.h"
 

@@ -4,10 +4,8 @@
 #include <QAbstractTableModel>
 #include "pncore/annotation/Interval.h"
 using namespace Praaline::Core;
-using namespace std;
-#include "pnlib/diff/dtl.h"
-using namespace dtl;
-#include "pnlib/diff/diffintervals.h"
+#include "pncore/diff/dtl/dtl.h"
+#include "pncore/diff/DiffIntervals.h"
 
 #include "DiffSESForIntervalsTableModel.h"
 

@@ -14,7 +14,7 @@
 #include "pncore/interfaces/praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
-#include "pnlib/diff/diffintervals.h"
+#include "pncore/diff/DiffIntervals.h"
 
 #include "PFCAlignmentEvaluation.h"
 
@@ -141,8 +141,8 @@ PFCAlignmentEvaluation::evaluate(Praaline::Core::CorpusCommunication *com,
         int phonemesLessThan20ms(0), phonemesLessThan40ms(0), phonemesTotal(0);
         for (size_t i = 0; i < sesSequence.size(); ++i) {
             dtl::Ses<Interval *>::sesElem elem = sesSequence[i];
-            Interval *phoneA = (elem.second.beforeIdx > 0) ? tier_phone_A->intervals().at(elem.second.beforeIdx - 1) : 0;
-            Interval *phoneB = (elem.second.afterIdx > 0) ? tier_phone_B->intervals().at(elem.second.afterIdx - 1) : 0;
+            Interval *phoneA = (elem.second.beforeIdx > 0) ? tier_phone_A->intervals().at(elem.second.beforeIdx - 1) : nullptr;
+            Interval *phoneB = (elem.second.afterIdx > 0) ? tier_phone_B->intervals().at(elem.second.afterIdx - 1) : nullptr;
             dtl::edit_t editType = elem.second.type;
             if (editType == dtl::SES_COMMON) {
                 // qDebug() << editType << phoneA->tMin().toDouble() << phoneA->text() << phoneB->tMin().toDouble() << phoneB->text();
