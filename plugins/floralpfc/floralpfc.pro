@@ -52,13 +52,11 @@ CONFIG( debug, debug|release ) {
 LIBS +=  \
         -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
         -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
-        -L../../pnlib/diff/$${COMPONENTSPATH} -lpraaline-diff \
         -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
         ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
-        ../../pnlib/diff/$${COMPONENTSPATH}/libpraaline-diff.a \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
