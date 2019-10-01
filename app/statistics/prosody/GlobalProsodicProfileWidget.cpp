@@ -26,7 +26,7 @@ namespace StatisticsPluginProsody {
 
 struct GlobalProsodicProfileWidgetData {
     GlobalProsodicProfileWidgetData() :
-        repository(nullptr), gridviewResults(nullptr), modelResults(nullptr)
+        repository(nullptr), gridviewResults(nullptr), modelResults(nullptr), gridviewMeasureDefinitions(nullptr), modelMeasureDefinitions(nullptr)
     {}
 
     CorpusRepository *repository;
