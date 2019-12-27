@@ -36,6 +36,8 @@
 #include "corpus-specific/Rhapsodie.h"
 #include "corpus-specific/NCCFR.h"
 #include "corpus-specific/ORFEO.h"
+#include "YizhiScripts.h"
+
 
 #include "pluginvaria.h"
 
@@ -268,15 +270,20 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
 //    combine.setIntervalsLevelA("sentence_unit");
 //    combine.setIntervalsLevelB("prosodic_unit");
 //    combine.setIntervalsLevelCombined("combined_unit");
-    ORFEO orfeo;
+//    ORFEO orfeo;
+    YizhiScripts yizhi;
 
+    printMessage(yizhi.readPhonetisationFile());
     //merge_pauses(communications);
     QString m;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         // printMessage(orfeo.readOrfeoFile(com));
         // printMessage(orfeo.mapTokensToDisMo(com));
-        printMessage(orfeo.createSentenceUnits(com));
+        // printMessage(orfeo.createSentenceUnits(com));
+
+        QString m = yizhi.createAnnotation(com);
+        if (!m.isEmpty()) printMessage(m);
 
         // printMessage(combine.combineIntervalTiers(com));
 

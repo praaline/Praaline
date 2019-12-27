@@ -84,7 +84,7 @@ QString SilentPauseManipulator::process(CorpusCommunication *com)
                     for (int i = start; i <= end; ++i) {
                         Interval *token = tier_tokens->at(i);
                         if (token->attribute(d->attributeAddPauseAfter).toInt() > 0) {
-                            int new_pause_ms = token->attribute(d->attributeAddPauseAfter).toInt() - reduceBy.toDouble() * 1000;
+                            int new_pause_ms = token->attribute(d->attributeAddPauseAfter).toInt() - static_cast<int>(reduceBy.toDouble() * 1000);
                             if (new_pause_ms < 0) new_pause_ms = 10;
                             token->setAttribute(d->attributeAddPauseAfter, new_pause_ms);
                             timePausesToAdd = timePausesToAdd + RealTime::fromMilliseconds(new_pause_ms);

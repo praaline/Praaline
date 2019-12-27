@@ -53,6 +53,7 @@ PRE_TARGETDEPS += \
         ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \
+    YizhiScripts.h \
     pluginvaria_global.h \
     pluginvaria.h \
     crfannotator.h \
@@ -83,6 +84,7 @@ HEADERS += \
 
 
 SOURCES += \
+    YizhiScripts.cpp \
     pluginvaria.cpp \
     crfannotator.cpp \
     chunkannotator.cpp \
