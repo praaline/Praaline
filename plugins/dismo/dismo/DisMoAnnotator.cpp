@@ -76,7 +76,7 @@ bool DismoAnnotator::annotate(IntervalTier *tier_input,
     POSTAG.tagTokens(m_modelFilename_POSFin);
     POSTPRO.process(true); // will merge tokens
 
-    TL.writeToTiers(tier_tok_min, 0, tier_tok_mwu, 0, 0, 0, 0);
+    TL.writeToTiers(tier_tok_min, nullptr, tier_tok_mwu, nullptr, nullptr, nullptr, nullptr);
     return true;
 }
 

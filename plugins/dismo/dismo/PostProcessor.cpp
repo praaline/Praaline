@@ -30,15 +30,79 @@ void Postprocessor::process(bool canMergeTokens)
     finalCoherence();
 }
 
+void Postprocessor::specialPOStags()
+{
+    foreach(Token *tok, m_tokens) {
+        foreach(TokenUnit *tu, tok->getTokenUnits()) {
+            // Correct out-of-dictionary words interpreted as disfluencies
+            if ((tu->getTagDisfluency() == "FST") && (!tu->text().endsWith("/"))) {
+                tu->setTagDisfluency("", 1);
+                tu->setLemma(tu->text());
+                tu->setTagPOS("NOM:pro", "", 1);
+            }
+            if (tu->getTagDisfluency() == "FST") {
+                tu->setTagPOS("0", "", 1);
+            }
+            if (tu->isPause()) {
+                tu->setTagPOS("_", "", 1);
+            }
+        }
+        if (tok->getTagPOS().startsWith("CON"))
+            tok->setTagDiscourse("CON", 1.0);
+        if (tok->getTagDiscourse() == "PNC")
+            tok->setTagPOS("PNC", "", 1.0);
+
+        QRegExp re("\\d*");  // a digit (\d), zero or more times (*)
+        if (re.exactMatch(tok->text())) {
+            tok->setTagPOS("NUM:crd", "", 1.0);
+        }
+    }
+}
+
+void Postprocessor::mergeSpecialTokens()
+{
+    int i = 0;
+    while (i < m_tokens.count()) {
+        QString mwuPOStag = "", mwuPOStagext;
+        int j = i + 1;
+        if (j < m_tokens.count() - 1 && m_tokens[i]->text() == "Saint" && m_tokens[j]->getTagPOS().left(3) == "NOM") {
+            mwuPOStag = "NOM:pro";
+            mwuPOStagext = m_tokens[j]->getTagPOSext();
+            j++;
+        }
+        else if (m_tokens[i]->getTagPOS().startsWith("NUM")) {
+            while (j < m_tokens.count() && m_tokens[j]->getTagPOS().startsWith("NUM")) {
+                mwuPOStag = m_tokens[j]->getTagPOS();
+                mwuPOStagext = m_tokens[j]->getTagPOSext();
+                j++;
+            }
+        }
+        else if (m_tokens[i]->getTagPOS() == "NOM:pro") {
+            while (j < m_tokens.count() && m_tokens[j]->getTagPOS() == "NOM:pro") {
+                j++;
+            }
+        }
+        if (j > i + 1) {
+            m_tokens.mergeTokens(i, j - 1);
+            m_tokens[i]->setText(m_tokens[i]->text().replace("- ", "-"));
+            if (!mwuPOStag.isEmpty()) m_tokens[i]->setTagPOS(mwuPOStag, mwuPOStagext, 1.0);
+            i = j;
+        }
+        else
+            i++;
+    }
+}
+
 void Postprocessor::auxiliaryVerbs()
 {
 
     // etre ou avoir + VER:ppas ==> etre ou avoir auxiliaire
     // etre/VER:pres + (possibly ADV*) + ADJ:adj ==> etre/VER:pres:pred
 
-    int i = 0, j = 0, k = 0;
+    int i = 0;
     while (i < m_tokens.count()) {
-        j = i + 1; k = i + 2;
+        int j = i + 1;
+        int k = i + 2;
         if (j >= m_tokens.count()) j = i;
         if (k >= m_tokens.count()) k = j;
         if ((m_tokens[i]->getLemma() == "avoir" || m_tokens[i]->getLemma() == "\u00EAtre") &&
@@ -68,60 +132,8 @@ void Postprocessor::auxiliaryVerbs()
     }
 }
 
-void Postprocessor::mergeSpecialTokens()
-{
-    int i = 0, j = 0;
-    while (i < m_tokens.count()) {
-        QString mwuPOStag = "", mwuPOStagext;
-        j = i + 1;
-        if (j < m_tokens.count() - 1 && m_tokens[i]->text() == "Saint" && m_tokens[j]->getTagPOS().left(3) == "NOM") {
-            mwuPOStag = "NOM:pro";
-            mwuPOStagext = m_tokens[j]->getTagPOSext();
-            j++;
-        }
-        else if (m_tokens[i]->getTagPOS().startsWith("NUM")) {
-            while (j < m_tokens.count() && m_tokens[j]->getTagPOS().startsWith("NUM")) {
-                mwuPOStag = m_tokens[j]->getTagPOS();
-                mwuPOStagext = m_tokens[j]->getTagPOSext();
-                j++;
-            }
-        }
-        else if (m_tokens[i]->getTagPOS() == "NOM:pro") {
-            while (j < m_tokens.count() && m_tokens[j]->getTagPOS() == "NOM:pro") {
-                j++;
-            }
-        }
-        if (j > i + 1) {
-            m_tokens.mergeTokens(i, j - 1);
-            m_tokens[i]->setText(m_tokens[i]->text().replace("- ", "-"));
-            if (!mwuPOStag.isEmpty()) m_tokens[i]->setTagPOS(mwuPOStag, mwuPOStagext, 1.0);
-            i = j;
-        }
-        else
-            i++;
-    }
-}
 
-void Postprocessor::specialPOStags()
-{
-    foreach(Token *tok, m_tokens) {
-        foreach(TokenUnit *tu, tok->getTokenUnits()) {
-            if (tu->getTagDisfluency() == "FST")
-                tu->setTagPOS("0", "", 1);
-            if (tu->isPause())
-                tu->setTagPOS("_", "", 1);
-        }
-        if (tok->getTagPOS().startsWith("CON"))
-            tok->setTagDiscourse("CON", 1.0);
-        if (tok->getTagDiscourse() == "PNC")
-            tok->setTagPOS("PNC", "", 1.0);
 
-        QRegExp re("\\d*");  // a digit (\d), zero or more times (*)
-        if (re.exactMatch(tok->text())) {
-            tok->setTagPOS("NUM:crd", "", 1.0);
-        }
-    }
-}
 
 void Postprocessor::fixPOSofRepetitions()
 {

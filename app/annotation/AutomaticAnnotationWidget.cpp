@@ -109,6 +109,12 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
     d->treeviewAnnotationPlugins->setModel(d->checkableProxyModelAnnotationPlugins);
     ui->gridLayoutAnnotationPlugins->addWidget(d->treeviewAnnotationPlugins);
     connect(d->checkableProxyModelAnnotationPlugins, SIGNAL(checkedNodesChanged()), this, SLOT(pluginSelectionChanged()));
+
+    // Layout
+    // Set proportions
+    QList<int> sizes;
+    sizes << static_cast<int>(width() * 0.3) << static_cast<int>(width() * 0.3) << static_cast<int>(width() * 0.3);
+    ui->splitterLR->setSizes(sizes);
 }
 
 AutomaticAnnotationWidget::~AutomaticAnnotationWidget()

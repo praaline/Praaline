@@ -90,7 +90,7 @@ bool createTierFromAnnotationTable(QString filenameSpreadsheet, QString tMinAttr
 
 
 //parameters << PluginParameter("segmentationMethod", "Segmentation Method", QVariant::String, d->segmentationMethod, QStringList() <<
-//                            0  "Automatic with acoustic syllables" <<
+//                            0  "Automatic acoustic syllables" <<
 //                            1  "Nuclei in vowels in phones annotation" <<
 //                            2  "Nuclei in rhyme from phones and syllables annotation" <<
 //                            3  "Nuclei in syllables from phones and syllables annotation" <<
@@ -148,7 +148,7 @@ bool ProsoGram::updateTonalSegmentsAndVUV(const QString &filenameNuclei, const Q
         foreach (Interval *intv, tier_tonal_segments->intervals()) {
             bool ok = false;
             int index = intv->text().toInt(&ok);
-            Q_UNUSED(index);
+            Q_UNUSED(index)
             if (!ok) continue;
             intv->setAttribute("f0_start", pitchStylised.value(intv->tMin()));
             intv->setAttribute("f0_end", pitchStylised.value(intv->tMax()));
@@ -175,7 +175,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     QString tempDirectory = dirTemp.path(); // returns the unique directory path
     if (!tempDirectory.endsWith("/")) tempDirectory.append("/");
     // Copy the recording file into temp+.wav
-    QString filenameTempRec = QString("%1_%2.wav").arg(rec->ID()).arg(speakerID);
+    QString filenameTempRec = QString("%1.wav").arg(rec->ID());
     QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
 
     // Check that the needed tiers are present
@@ -206,14 +206,8 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
         }
     }
     if (segmentationMethod != 0) {
-        PraatTextGrid::save(tempDirectory + QString("%1_%2.TextGrid").arg(rec->ID()).arg(speakerID), tiers);
+        PraatTextGrid::save(tempDirectory + QString("%1.TextGrid").arg(rec->ID()), tiers);
     }
-
-    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
-    QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
-    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
 
     // Execute ProsoGram
     QString script = QDir::homePath() + "/Praaline/plugins/prosogram/praaline_prosogram.praat";
@@ -233,7 +227,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     else
         prosogramMode = "Prosogram and prosodic profile";
     QString prosogramSegmentationMethod;
-    if      (segmentationMethod == 0)   prosogramSegmentationMethod = "Automatic with acoustic syllables";
+    if      (segmentationMethod == 0)   prosogramSegmentationMethod = "Automatic acoustic syllables";
     else if (segmentationMethod == 1)   prosogramSegmentationMethod = "Nuclei in vowels in tier phon or tier 1";
     else if (segmentationMethod == 2)   prosogramSegmentationMethod = "Nuclei in rhyme from syll and vowels in phon";
     else if (segmentationMethod == 3)   prosogramSegmentationMethod = "Nuclei in syllables in syll and vowels in phon";
@@ -268,6 +262,18 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     // Run Praat script
     executePraatScript(script, scriptArguments);
 
+    // Update filenames to include speaker
+    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
+    QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
+    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+
+    fileMoveReplacingDestination(tempDirectory + QString("%1_nucl.TextGrid").arg(rec->ID()), tempDirectory + filenameNuclei);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_profile.TextGrid").arg(rec->ID()), tempDirectory + filenameProfile);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_spreadsheet.TextGrid").arg(rec->ID()), tempDirectory + filenameData);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_styl.PitchTier").arg(rec->ID()), tempDirectory + filenameStylisedPitchTier);
+
     // Update global profile on Communication
     CorpusCommunication *com = qobject_cast<CorpusCommunication *>(rec->parent());
     if (com) {
@@ -276,7 +282,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
 
     // Update syllable tier
     IntervalTier *tier_syll = tiers->getIntervalTierByName(levelSyllable);
-    AnnotationTierGroup *txgNuclei = 0;
+    AnnotationTierGroup *txgNuclei(nullptr);
     if ((!tier_syll) || (segmentationMethod == 0)) {
         // Automatic syllables
         txgNuclei = new AnnotationTierGroup();

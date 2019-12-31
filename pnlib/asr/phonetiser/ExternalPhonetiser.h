@@ -20,7 +20,7 @@ public:
     ~ExternalPhonetiser();
 
     QString phonetiseWord(const QString &word) override {}
-    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override {}
+    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override { return QList<Core::Interval *>(); }
 
     static QList<SpeechToken> phonetiseList(QList<Praaline::Core::Interval *> tokens, const QString &attributeID = QString());
     static QList<SpeechToken> phonetiseTier(Praaline::Core::IntervalTier *tier_tokens, const QString &attributeID = QString());

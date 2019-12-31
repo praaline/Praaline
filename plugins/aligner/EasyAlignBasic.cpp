@@ -60,7 +60,7 @@ QString temp()
 //    }
 //    QString filename = com->basePath() + "/" + com->recordings().first()->filename();
 //    filename = filename.replace(".wav", m_alignerOutputFilenameSuffix + ".TextGrid");
-
+    return QString();
 }
 
 QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAlign, IntervalTier *tier_ortho, QString filenameTextGrid)

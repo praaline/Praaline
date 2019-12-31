@@ -271,7 +271,7 @@ void MetadataStructureEditor::removeMetadataStructureItem()
         if (QMessageBox::warning(this, "Remove metadata section?",
                                  QString("Do you want to delete all the metadata stored under Section '%1'? "
                                          "This action cannot be reversed!").arg(section->name()),
-                                 "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
+                                 "&Yes", "&No", QString(), 1, 1) == QMessageBox::No) return;
         CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
         foreach (MetadataStructureAttribute *attribute, section->attributes())
             repository->metadata()->deleteMetadataAttribute(type, attribute->ID());
@@ -284,7 +284,7 @@ void MetadataStructureEditor::removeMetadataStructureItem()
         if (QMessageBox::warning(this, "Remove metadata attribute?",
                                  QString("Do you want to delete all the metadata stored for Attribute '%1'? "
                                          "This action cannot be reversed!").arg(attribute->name()),
-                                 "&Yes", "&No", QString::null, 1, 1) == QMessageBox::No) return;
+                                 "&Yes", "&No", QString(), 1, 1) == QMessageBox::No) return;
         CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
         repository->metadata()->deleteMetadataAttribute(type, attribute->ID());
         section->removeAttributeByID(attribute->ID());

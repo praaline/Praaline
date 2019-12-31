@@ -270,20 +270,29 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
 //    combine.setIntervalsLevelA("sentence_unit");
 //    combine.setIntervalsLevelB("prosodic_unit");
 //    combine.setIntervalsLevelCombined("combined_unit");
-//    ORFEO orfeo;
-    YizhiScripts yizhi;
+    ORFEO orfeo;
+//    YizhiScripts yizhi;
 
-    printMessage(yizhi.readPhonetisationFile());
+//    printMessage(yizhi.readPhonetisationFile());
     //merge_pauses(communications);
     QString m;
+    int countDone = 0;
+    madeProgress(0);
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
+        // printMessage(orfeo.updateSoundFiles(com));
         // printMessage(orfeo.readOrfeoFile(com));
         // printMessage(orfeo.mapTokensToDisMo(com));
+        // printMessage(orfeo.phonetise(com));
+        // printMessage(orfeo.createUtterances(com));
+        printMessage(orfeo.align(com));
         // printMessage(orfeo.createSentenceUnits(com));
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
 
-        QString m = yizhi.createAnnotation(com);
-        if (!m.isEmpty()) printMessage(m);
+
+        // QString m = yizhi.createAnnotation(com);
+        // if (!m.isEmpty()) printMessage(m);
 
         // printMessage(combine.combineIntervalTiers(com));
 
@@ -322,6 +331,9 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
 
         if (!m.isEmpty()) printMessage(m);
     }
+
+    orfeo.phonetiseOOV();
+
 //    m = phonoSeesaw.calculateRefDistribution();
 //    m = phonoSeesaw.makeBestSelection(40, 1000);
 //    printMessage(m);

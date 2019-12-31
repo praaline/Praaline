@@ -51,7 +51,7 @@ class CorpusExplorerTreeNodeCorpus : public TreeNode
 {
     Q_OBJECT
 public:
-    CorpusExplorerTreeNodeCorpus(const QString &corpusID);
+    explicit CorpusExplorerTreeNodeCorpus(const QString &corpusID);
 
     QPointer<Praaline::Core::Corpus> corpus() const { return m_corpus; }
     void setCorpus(QPointer<Praaline::Core::Corpus> corpus = nullptr);
@@ -69,7 +69,7 @@ public:
 private slots:
     void communicationAdded(Praaline::Core::CorpusCommunication *communication);
     void communicationDeleted(QString communicationID);
-    void speakerAdded(QPointer<Praaline::Core::CorpusSpeaker> speaker);
+    void speakerAdded(Praaline::Core::CorpusSpeaker *speaker);
     void speakerDeleted(QString speakerID);
 
 private:

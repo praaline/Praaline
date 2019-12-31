@@ -114,12 +114,12 @@ void CorpusExplorerTreeNodeCorpus::setCorpus(QPointer<Praaline::Core::Corpus> co
     m_corpus = corpus;
     buildTree();
     if (m_corpus) {
-        connect(m_corpus, SIGNAL(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)),
-                this, SLOT(communicationAdded(QPointer<Praaline::Core::CorpusCommunication>)));
+        connect(m_corpus, SIGNAL(communicationAdded(Praaline::Core::CorpusCommunication *)),
+                this, SLOT(communicationAdded(Praaline::Core::CorpusCommunication *)));
         connect(m_corpus, SIGNAL(communicationDeleted(QString)),
                 this, SLOT(communicationDeleted(QString)));
-        connect(m_corpus, SIGNAL(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)),
-                this, SLOT(speakerAdded(QPointer<Praaline::Core::CorpusSpeaker>)));
+        connect(m_corpus, SIGNAL(speakerAdded(Praaline::Core::CorpusSpeaker *)),
+                this, SLOT(speakerAdded(Praaline::Core::CorpusSpeaker *)));
         connect(m_corpus, SIGNAL(speakerDeleted(QString)),
                 this, SLOT(speakerDeleted(QString)));
     }
@@ -147,7 +147,7 @@ void CorpusExplorerTreeNodeCorpus::communicationDeleted(QString communicationID)
     m_nodeCommunications->removeItem(communicationID);
 }
 
-void CorpusExplorerTreeNodeCorpus::speakerAdded(QPointer<CorpusSpeaker> speaker)
+void CorpusExplorerTreeNodeCorpus::speakerAdded(CorpusSpeaker *speaker)
 {
     if (!speaker) return;
     if (!m_nodeSpeakers) return;
@@ -274,12 +274,12 @@ CorpusExplorerTreeNodeCommunication::CorpusExplorerTreeNodeCommunication(CorpusC
     TreeNode(com->ID()), communication(com)
 {
     setIcon(QIcon(":/icons/corpusexplorer/corpus_communication.png"));
-    connect(communication, SIGNAL(corpusRecordingAdded(QPointer<Praaline::Core::CorpusRecording>)),
-            this, SLOT(recordingAdded(QPointer<Praaline::Core::CorpusRecording>)));
+    connect(communication, SIGNAL(corpusRecordingAdded(Praaline::Core::CorpusRecording *)),
+            this, SLOT(recordingAdded(Praaline::Core::CorpusRecording *)));
     connect(communication, SIGNAL(corpusRecordingDeleted(QString, QString)),
             this, SLOT(recordingDeleted(QString,QString)));
-    connect(communication, SIGNAL(corpusAnnotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)),
-            this, SLOT(annotationAdded(QPointer<Praaline::Core::CorpusAnnotation>)));
+    connect(communication, SIGNAL(corpusAnnotationAdded(Praaline::Core::CorpusAnnotation *)),
+            this, SLOT(annotationAdded(Praaline::Core::CorpusAnnotation *)));
     connect(communication, SIGNAL(corpusAnnotationDeleted(QString, QString)),
             this, SLOT(annotationDeleted(QString,QString)));
 }

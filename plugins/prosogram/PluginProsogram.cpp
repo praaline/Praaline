@@ -153,7 +153,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
     parameters << PluginParameter("f0DetectionMax", "F0 detection range (Hz) Max", QVariant::Double, d->f0DetectionMax);
     parameters << PluginParameter("framePeriod", "Frame period (s)", QVariant::Double, d->framePeriod);
     parameters << PluginParameter("segmentationMethod", "Segmentation Method", QVariant::Int, d->segmentationMethod, QStringList() <<
-                                  "Automatic with acoustic syllables" <<
+                                  "Automatic acoustic syllables" <<
                                   "Nuclei in vowels in phones annotation" <<
                                   "Nuclei in rhyme from phones and syllables annotation" <<
                                   "Nuclei in syllables from phones and syllables annotation" <<

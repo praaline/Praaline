@@ -24,8 +24,8 @@ namespace Praaline {
 namespace ASR {
 
 struct HTKForcedAlignerData {
-    HTKForcedAlignerData() {}
-
+    HTKForcedAlignerData() : sampleRateAM(16000), beamThreshold(500)
+    {}
     QString filenameCFG;
     QString filenameHMM;
     QString filenamePhoneList;
@@ -202,8 +202,11 @@ bool HTKForcedAligner::runAligner(const QString &filenameBase, QList<SpeechToken
     }
     alignerOutput = QString(hvite.readAllStandardOutput());
 
+    // Read HTK results from the rec file
     QFile fileREC(filenameBase + ".rec");
-    if ( !fileREC.open( QIODevice::ReadOnly | QIODevice::Truncate | QIODevice::Text ) ) return false;
+    if ( !fileREC.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
+        return false;
+    }
     QTextStream rec(&fileREC);
     rec.setCodec("ISO 8859-1");
     long long start = 0, end = 0;

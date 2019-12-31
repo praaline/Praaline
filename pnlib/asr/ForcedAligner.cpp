@@ -18,15 +18,16 @@ namespace ASR {
 
 struct ForcedAlignerData {
     ForcedAlignerData() :
-        usePronunciationVariants(true)
+        usePronunciationVariants(true), returnDummyAlignmentOnFailure(true)
     {}
 
     QStringList phonemeset;
     QRegExp regexMatchPhoneme;
-    bool usePronunciationVariants;
     QString tokenPhonetisationAttributeID;
     QString phonetisationSeparatorForVariants;
     QString phonetisationSeparatorForPhonemes;
+    bool usePronunciationVariants;
+    bool returnDummyAlignmentOnFailure;
 };
 
 ForcedAligner::ForcedAligner(QObject *parent) :
@@ -37,6 +38,7 @@ ForcedAligner::ForcedAligner(QObject *parent) :
     d->phonetisationSeparatorForVariants = "|";
     d->phonetisationSeparatorForPhonemes = " ";
     d->usePronunciationVariants = true;
+    d->returnDummyAlignmentOnFailure = true;
     // Phoneme set. The order is important. Start with the longest phonemes.
     QStringList phonemeset;
     phonemeset << "9~" << "a~" << "e~" << "o~"
@@ -229,13 +231,15 @@ bool ForcedAligner::alignUtterance(const QString &waveFilepath,
     QPair<int, int> tokenIndices = tierTokens->getIntervalIndexesContainedIn(tierUtterances->at(indexUtteranceToAlign));
     int tokenIndexFrom = tokenIndices.first;
     int tokenIndexTo = tokenIndices.second;
+    if ((tokenIndexFrom < 0) || (tokenIndexTo < 0)) return false;
+
     QList<Interval *> phonesList;
 
     bool ok = alignTokens(waveFilepath, timeFrom, timeTo, tierTokens, tokenIndexFrom, tokenIndexTo,
                           insertLeadingAndTrailingPauses, phonesList, outAlignerOutput);
+
     if (ok) {
-        int i(-1);
-        i = tokenIndexFrom;
+        int i(tokenIndexFrom);
         while ((i < tierTokens->count()) && (tierTokens->at(i)->isPauseSilent())) i++;
         if ((i < tierTokens->count()) && (tierTokens->at(i)->tMin() != utterance->tMin())) {
             tierUtterances->split(indexUtteranceToAlign, tierTokens->at(i)->tMin(), true);
@@ -250,6 +254,28 @@ bool ForcedAligner::alignUtterance(const QString &waveFilepath,
         }
         tierPhones->patchIntervals(phonesList, timeFrom, timeTo);
     }
+
+    if ((!ok) && d->returnDummyAlignmentOnFailure) {
+        QList<Interval *> dummyPhonesList;
+        for (int i = tokenIndexFrom; i <= tokenIndexTo; ++i) {
+
+            Interval *token = tierTokens->at(i);
+            QString phonetisationAttributeText = token->attribute(d->tokenPhonetisationAttributeID).toString();
+            QString phonetisation = phonetisationAttributeText.split(d->phonetisationSeparatorForVariants).first();
+            QStringList dummyPhones = phonetisation.split(d->phonetisationSeparatorForPhonemes);
+            RealTime step = (token->tMax() - token->tMin()) / dummyPhones.count();
+            RealTime dummyPhone_tMin = token->tMin();
+            for (int j = 0; j < dummyPhones.count(); ++j) {
+                RealTime dummyPhone_tMax = dummyPhone_tMin + step;
+                if (j == dummyPhones.count() - 1) dummyPhone_tMax = token->tMax();
+                dummyPhonesList << new Interval(dummyPhone_tMin, dummyPhone_tMax, dummyPhones.at(j));
+                dummyPhone_tMin = dummyPhone_tMax;
+            }
+            token->setAttribute("dummy_align", true);
+        }
+        tierPhones->patchIntervals(dummyPhonesList, timeFrom, timeTo);
+    }
+
     return ok;
 }
 
@@ -268,7 +294,7 @@ bool ForcedAligner::alignAllUtterances(const QString &waveFilepath,
         bool result(false);
         result = alignUtterance(waveFilepath, tierUtterances, indexUtterance, tierTokens, tierPhones,
                                 alignerOutput, insertLeadingAndTrailingPauses);
-        if (!result) qDebug() << result << tierUtterances->at(indexUtterance)->text() << alignerOutput;
+        // if (!result) qDebug() << result << tierUtterances->at(indexUtterance)->text() << alignerOutput;
         alignerMessage(alignerOutput);
         indexUtterance--;
     }

@@ -83,9 +83,9 @@ void IntonationAnnotator::estimatePitchRange(QPointer<Corpus> corpus, const QStr
             f0_maxima  << syll->attribute("f0_max").toDouble();
             f0_median  << syll->attribute("f0_median").toDouble();
         }
-        qSort(f0_mininma);
-        qSort(f0_median);
-        qSort(f0_maxima);
+        std::sort(f0_mininma.begin(), f0_mininma.end());
+        std::sort(f0_median.begin(), f0_median.end());
+        std::sort(f0_maxima.begin(), f0_maxima.end());
         PitchRangeInfo pitchRange;
         pitchRange.medianHz = calculatePercentile(f0_median, 50);
         // Remove outliers

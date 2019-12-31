@@ -56,8 +56,8 @@
           </property>
           <widget class="QDockWidget" name="dockCorpusExplorer">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>1</horstretch>
              <verstretch>6</verstretch>
             </sizepolicy>
            </property>
@@ -92,8 +92,8 @@
           </widget>
           <widget class="QDockWidget" name="dockAnnotationPlugins">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>1</horstretch>
              <verstretch>6</verstretch>
             </sizepolicy>
            </property>
@@ -125,8 +125,8 @@
           </widget>
           <widget class="QDockWidget" name="dockPluginParameters">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>1</horstretch>
              <verstretch>6</verstretch>
             </sizepolicy>
            </property>
@@ -188,7 +188,7 @@
       </widget>
       <widget class="QDockWidget" name="dockWidgetOutput">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>

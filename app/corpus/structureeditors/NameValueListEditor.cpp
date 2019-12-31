@@ -238,7 +238,7 @@ void NameValueListEditor::deleteList()
     if (QMessageBox::warning(this, tr("Delete name-value list?"),
                              QString(tr("Do you want to delete the currently selected Name-Value List ('%1')? "
                                         "This action cannot be reversed!")).arg(d->currentList->name()),
-                             tr("&Yes"), tr("&No"), QString::null, 1, 1) == QMessageBox::No) return;
+                             tr("&Yes"), tr("&No"), QString(), 1, 1) == QMessageBox::No) return;
     QString listID = d->currentList->ID();
     if (d->datastore->deleteNameValueList(listID)) {
         d->comboboxLists->removeItem(d->comboboxLists->findText(listID));
