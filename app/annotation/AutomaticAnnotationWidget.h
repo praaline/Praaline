@@ -1,6 +1,8 @@
 #ifndef AUTOMATICANNOTATIONWIDGET_H
 #define AUTOMATICANNOTATIONWIDGET_H
 
+#include <QList>
+#include <QMap>
 #include <QMainWindow>
 #include "pncore/corpus/Corpus.h"
 #include "app/interfaces/IAnnotationPlugin.h"

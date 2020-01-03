@@ -1,6 +1,14 @@
 #include <QDebug>
 #include <QMap>
 #include <QSharedPointer>
+// Asynchronous execution
+#include <QApplication>
+#include <QtConcurrent>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QMutex>
+#include <QThreadPool>
+
 #include "pncore/corpus/Corpus.h"
 using namespace Praaline::Core;
 
@@ -12,7 +20,7 @@ namespace StatisticsPluginTemporal {
 
 struct AnalyserTemporalData {
     AnalyserTemporalData() :
-        corpus(0)
+        corpus(nullptr)
     {
         levelSyllables = "syll";
         levelTokens = "tok_min";
@@ -21,17 +29,27 @@ struct AnalyserTemporalData {
     QString levelSyllables;
     QString levelTokens;
     QMap<QString, QSharedPointer<AnalyserTemporalItem> > items;
+    // Asynchronous execution
+    QFuture<QString> future;
+    QFutureWatcher<QString> watcher;
 };
 
 AnalyserTemporal::AnalyserTemporal(QObject *parent) :
     QObject(parent), d(new AnalyserTemporalData)
 {
+    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
+    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
+    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
 }
 
 AnalyserTemporal::~AnalyserTemporal()
 {
     delete d;
 }
+
+// ====================================================================================================================
+// Properties
+// ====================================================================================================================
 
 Corpus *AnalyserTemporal::corpus() const
 {
@@ -64,19 +82,91 @@ void AnalyserTemporal::setLevelIDTokens(const QString &levelID)
     d->levelTokens = levelID;
 }
 
+
+// ====================================================================================================================
+// Asynchronous execution: basic event handling
+// ====================================================================================================================
+
+void AnalyserTemporal::futureResultReadyAt(int index)
+{
+    QString result = d->watcher.resultAt(index);
+    qDebug() << d->watcher.progressValue() << result;
+    emit printMessage(result);
+    if (d->watcher.progressMaximum() > 0)
+        emit madeProgress(d->watcher.progressValue() * 100 / d->watcher.progressMaximum());
+    else
+        emit madeProgress(100);
+}
+
+void AnalyserTemporal::futureProgressValueChanged(int progressValue)
+{
+    qDebug() << progressValue;
+    if (d->watcher.progressMaximum() > 0)
+        emit madeProgress(progressValue * 100 / d->watcher.progressMaximum());
+    else
+        emit madeProgress(100);
+}
+
+void AnalyserTemporal::futureFinished()
+{
+    emit madeProgress(100);
+    emit printMessage("Finished");
+    qDebug() << "Finished";
+}
+
+// ====================================================================================================================
+// Asynchronous execution step
+// ====================================================================================================================
+
+struct RunAnalysisStep
+{
+    QString levelSyllables;
+    QString levelTokens;
+    QMap<QString, QSharedPointer<AnalyserTemporalItem> > &items;
+
+    RunAnalysisStep(const QString &levelSyllables, const QString &levelTokens,
+                    QMap<QString, QSharedPointer<AnalyserTemporalItem> > &items) :
+        levelSyllables(levelSyllables), levelTokens(levelTokens), items(items)
+    {}
+    typedef QString result_type;
+
+    QString operator() (CorpusCommunication *com)
+    {
+        if (!com) return QString("%1\tis empty.").arg(com->ID());
+        QSharedPointer<AnalyserTemporalItem> item(new AnalyserTemporalItem());
+        item->setLevelIDSyllables(levelSyllables);
+        item->setLevelIDTokens(levelTokens);
+        item->analyse(com);
+        items.insert(com->ID(), item);
+        return com->ID();
+    }
+};
+
+
+
 void AnalyserTemporal::analyse()
 {
     if (!d->corpus) return;
-    int i = 0;
-    foreach (CorpusCommunication *com, d->corpus->communications()) {
-        QSharedPointer<AnalyserTemporalItem> item(new AnalyserTemporalItem());
-        item->setLevelIDSyllables(d->levelSyllables);
-        item->setLevelIDTokens(d->levelTokens);
-        item->analyse(com);
-        d->items.insert(com->ID(), item);
-        i++;
-        emit madeProgress(i);
-    }
+    madeProgress(0);
+    printMessage("Starting");
+    QElapsedTimer timer;
+
+    QThreadPool::globalInstance()->setMaxThreadCount(64);
+    timer.start();
+
+    d->future = QtConcurrent::mapped(d->corpus->communications(),
+                                     RunAnalysisStep(d->levelSyllables, d->levelTokens, d->items));
+    d->watcher.setFuture(d->future);
+    while (d->watcher.isRunning()) QApplication::processEvents();
+
+    printMessage(QString("Time: %1 seconds").arg(static_cast<double>(timer.elapsed()) / 1000.0));
+    madeProgress(100);
+
+//    int i = 0;
+//    foreach (CorpusCommunication *com, d->corpus->communications()) {
+//        i++;
+//        emit madeProgress(i);
+//    }
 }
 
 AnalyserTemporalItem *AnalyserTemporal::item(const QString communicationID)

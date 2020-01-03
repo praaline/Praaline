@@ -10,7 +10,7 @@
 AnnotationPluginPraatScript::AnnotationPluginPraatScript(QObject *parent) :
     QObject(parent)
 {
-    m_process = 0;
+    m_process = nullptr;
 }
 
 AnnotationPluginPraatScript::~AnnotationPluginPraatScript()
@@ -57,7 +57,7 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     if (m_process) {
         m_process->close();
         delete m_process;
-        m_process = 0;
+        m_process = nullptr;
     }
 }
 

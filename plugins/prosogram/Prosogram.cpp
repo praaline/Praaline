@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QCoreApplication>
 #include <QTemporaryDir>
+#include <QScopedPointer>
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/corpus/CorpusCommunication.h"
@@ -262,7 +263,7 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     // Run Praat script
     executePraatScript(script, scriptArguments);
 
-    // Update filenames to include speaker
+    // Update file names to include speakerID
     QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
     QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
     QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
@@ -280,43 +281,8 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
         updateGlobal(com, tempDirectory + "globalsheet.txt");
     }
 
-    // Update syllable tier
-    IntervalTier *tier_syll = tiers->getIntervalTierByName(levelSyllable);
-    AnnotationTierGroup *txgNuclei(nullptr);
-    if ((!tier_syll) || (segmentationMethod == 0)) {
-        // Automatic syllables
-        txgNuclei = new AnnotationTierGroup();
-        PraatTextGrid::load(tempDirectory + filenameNuclei, txgNuclei);
-        if (!txgNuclei) return;
-        tier_syll = txgNuclei->getIntervalTierByName("syll");
-        if (!tier_syll) return;
-        tier_syll->setName(levelSyllable);
-    }
-    updateTierFromAnnotationTable(tempDirectory + filenameData, "nucl_t1", "nucl_t2", tier_syll);
-
-    // Update tonal segments and VUV regions
-    IntervalTier *tier_tonal_segments = tiers->getIntervalTierByName(levelTonalSegments);
-    if (!tier_tonal_segments) tier_tonal_segments = new IntervalTier(levelTonalSegments);
-    IntervalTier *tier_vuv = tiers->getIntervalTierByName(levelVUV);
-    if (!tier_vuv) tier_vuv = new IntervalTier(levelVUV);
-    updateTonalSegmentsAndVUV(tempDirectory + filenameNuclei, tempDirectory + filenameStylisedPitchTier,
-                              tier_tonal_segments, tier_vuv);
-
-    // Save tiers
-    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll)) {
-        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " syll count " << tier_syll->count();
-    }
-    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_tonal_segments)) {
-        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " tonal segments count " << tier_tonal_segments->count();
-    }
-    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_vuv)) {
-        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " VUV regions count " << tier_vuv->count();
-    }
-
-    if (txgNuclei)
-        delete txgNuclei;
-    else
-        delete tier_syll;
+    // Import results into the database
+    importResultFiles(corpus, rec, tiers, annotationID, speakerID, tempDirectory);
 
     // Move Prosogram files to storage, if needed
     if (keepIntermediateFiles) {
@@ -328,3 +294,56 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     }
 }
 
+void ProsoGram::importResultFiles(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID,
+                                  QString prosoPath)
+{
+    if (prosoPath.isEmpty()) {
+        QFileInfo info(rec->filePath());
+        prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
+    }
+
+    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
+    QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
+    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+
+    // Update syllable tier
+    IntervalTier *tier_syll = tiers->getIntervalTierByName(levelSyllable);
+    AnnotationTierGroup *txgNuclei(nullptr);
+    if ((!tier_syll) || (segmentationMethod == 0)) {
+        // Automatic syllables
+        txgNuclei = new AnnotationTierGroup();
+        PraatTextGrid::load(prosoPath + filenameNuclei, txgNuclei);
+        if (!txgNuclei) return;
+        tier_syll = txgNuclei->getIntervalTierByName("syll");
+        if (!tier_syll) return;
+        tier_syll->setName(levelSyllable);
+    }
+    updateTierFromAnnotationTable(prosoPath + filenameData, "nucl_t1", "nucl_t2", tier_syll);
+
+    // Update tonal segments and VUV regions
+    QScopedPointer<IntervalTier> tier_tonal_segments(tiers->getIntervalTierByName(levelTonalSegments));
+    if (!tier_tonal_segments) tier_tonal_segments.reset(new IntervalTier(levelTonalSegments));
+    QScopedPointer<IntervalTier> tier_vuv(tiers->getIntervalTierByName(levelVUV));
+    if (!tier_vuv) tier_vuv.reset(new IntervalTier(levelVUV));
+    updateTonalSegmentsAndVUV(prosoPath + filenameNuclei, prosoPath + filenameStylisedPitchTier,
+                              tier_tonal_segments.data(), tier_vuv.data());
+
+    // Save tiers
+    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll)) {
+        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " syll count " << tier_syll->count();
+    }
+    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_tonal_segments.data())) {
+        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " tonal segments count " << tier_tonal_segments->count();
+    }
+    if (!corpus->repository()->annotations()->saveTier(annotationID, speakerID, tier_vuv.data())) {
+        qDebug() << "Error in saving " << annotationID << " speaker " << speakerID << " VUV regions count " << tier_vuv->count();
+    }
+
+    if (txgNuclei)
+        delete txgNuclei;
+    else
+        delete tier_syll;
+
+}

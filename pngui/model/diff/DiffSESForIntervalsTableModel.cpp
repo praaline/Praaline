@@ -95,8 +95,8 @@ QVariant DiffSESforIntervalsTableModel::data(const QModelIndex &index, int role)
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         dtl::Ses<Interval *>::sesElem elem = m_sesElemVec[index.row()];
-        Interval *intv_A = (elem.second.beforeIdx > 0) ? m_intervals_A.at(elem.second.beforeIdx - 1) : 0;
-        Interval *intv_B = (elem.second.afterIdx > 0) ? m_intervals_B.at(elem.second.afterIdx - 1) : 0;
+        Interval *intv_A = (elem.second.beforeIdx > 0) ? m_intervals_A.at(elem.second.beforeIdx - 1) : nullptr;
+        Interval *intv_B = (elem.second.afterIdx > 0) ? m_intervals_B.at(elem.second.afterIdx - 1) : nullptr;
         dtl::edit_t editType = elem.second.type;
 
         if (index.column() == 0) {

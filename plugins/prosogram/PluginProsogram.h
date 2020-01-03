@@ -35,8 +35,8 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginProsogram(QObject* parent = 0);
-                virtual ~PluginProsogram();
+                PluginProsogram(QObject* parent = nullptr);
+                virtual ~PluginProsogram() override;
 
                 // IObjectBase implementation
                 QObject* objectBase() override { return this; }
@@ -76,6 +76,7 @@ namespace Praaline {
                 void createSegmentsFromAutoSyllables(const QList<CorpusCommunication *> &communications);
                 void runProsogram(const QList<CorpusCommunication *> &communications);
                 void runIntonationAnnotation(const QList<CorpusCommunication *> &communications);
+                void runProsogramImportFiles(const QList<CorpusCommunication *> &communications);
             };
         }
     }

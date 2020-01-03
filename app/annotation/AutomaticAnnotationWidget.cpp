@@ -186,13 +186,13 @@ void AutomaticAnnotationWidget::pluginMadeProgress(int percentage)
     QCoreApplication::processEvents();
 }
 
-void addNodeToListRecursive(QList<QObject *> &list, ObserverTreeItem *treeItem) {
+void addNodeToListRecursive(QMap<QString, QObject *> &map, ObserverTreeItem *treeItem, QString category = QString()) {
     if (!treeItem) return;
-    list << treeItem->getObject();
+    map.insertMulti(category, treeItem->getObject());
     if ((treeItem->itemType() == ObserverTreeItem::TreeNode) || (treeItem->itemType() == ObserverTreeItem::CategoryItem)) {
         foreach (QPointer<ObserverTreeItem> childItem, treeItem->childItemReferences()) {
             if (!childItem) continue;
-            addNodeToListRecursive(list, childItem);
+            addNodeToListRecursive(map, childItem, treeItem->category().toString());
         }
     }
 }
@@ -202,15 +202,20 @@ QList<CorpusCommunication *> AutomaticAnnotationWidget::selectedCommunications()
     QList<CorpusCommunication *> listCom;
     QModelIndexList listBranch;
     d->checkableProxyModelCorpusItems->checkedState().checkedBranchSourceModelIndexes(listBranch);
-    QList<QObject *> nodesSelected;
+    QMap<QString, QObject *> nodesSelected;
     foreach (QModelIndex index, listBranch) {
         ObserverTreeItem *treeItem = d->observerWidgetCorpusItems->treeModel()->getItem(index);
         addNodeToListRecursive(nodesSelected, treeItem);
     }
-
-    foreach (QObject *obj, nodesSelected) {
-        CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
-        if (nodeCom && nodeCom->communication) listCom << nodeCom->communication;
+    // The list returned should be sorted by category and then by communication name
+    foreach (QString category, nodesSelected.uniqueKeys()) {
+        QMap<QString, CorpusCommunication *> mapComForCategory;
+        foreach (QObject *obj, nodesSelected.values(category)) {
+            CorpusExplorerTreeNodeCommunication *nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(obj);
+            if (nodeCom && nodeCom->communication)
+                mapComForCategory.insert(nodeCom->getName(), nodeCom->communication);
+        }
+        listCom.append(mapComForCategory.values());
     }
     return listCom;
 }

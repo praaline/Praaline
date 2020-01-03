@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QFile>
 #include <QTextStream>
+#include <QMutex>
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/IntervalTier.h"
@@ -49,6 +50,7 @@ AnalyserTemporalItem::~AnalyserTemporalItem()
     delete d;
 }
 
+// static
 QStringList AnalyserTemporalItem::measureIDsForCommunication()
 {
     return QStringList()
@@ -59,6 +61,7 @@ QStringList AnalyserTemporalItem::measureIDsForCommunication()
             << "TurnChangesRate" << "TurnChangesRate_Gap" << "TurnChangesRate_Overlap";
 }
 
+// static
 QStringList AnalyserTemporalItem::measureIDsForSpeaker()
 {
     return QStringList()
@@ -75,17 +78,20 @@ QStringList AnalyserTemporalItem::measureIDsForSpeaker()
             << "IntersyllabicInterval_Mean" << "IntersyllabicInterval_StDev";
 }
 
+// static
 QStringList AnalyserTemporalItem::vectorMeasureIDsForCommunication()
 {
     return QStringList() << "OverlapDurations" << "GapDurations";
 }
 
+// static
 QStringList AnalyserTemporalItem::vectorMeasureIDsForSpeaker()
 {
     return QStringList() << "Pause_SIL_Durations" << "Pause_FIL_Durations" << "TurnDurations"
                          << "IntersyllabicIntervals";
 }
 
+// static
 StatisticalMeasureDefinition AnalyserTemporalItem::measureDefinition(const QString &measureID)
 {
     // Measures per Communication
@@ -202,29 +208,35 @@ QStringList AnalyserTemporalItem::speakerIDs() const
 QPointer<IntervalTier> AnalyserTemporalItem::timelineSyll() const
 {
     if (d->timeline) return d->timeline->timelineDetailed();
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 QPointer<IntervalTier> AnalyserTemporalItem::timelineSpeaker() const
 {
     if (d->timeline) return d->timeline->timelineCoarse();
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 
 void AnalyserTemporalItem::analyse(CorpusCommunication *com)
 {
+    static QMutex mutex;
     if (!com) return;
     if (!com->repository()) return;
+
+    qDebug() << "Analysing temporal variables for " << com->ID();
 
     d->measuresCom.clear();
     d->measuresSpk.clear();
     d->vectorsCom.clear();
     d->vectorsSpk.clear();
 
+    // Lock mutex because SpeakerTimeline::calculate will be accessing the database
+    mutex.lock();
     if (d->timeline) delete d->timeline;
     d->timeline = new SpeakerTimeline(this);
     d->timeline->calculate(com, d->levelSyllables);
+    mutex.unlock();
     QPointer<IntervalTier> tier_timelineSyll(d->timeline->timelineDetailed());
     QPointer<IntervalTier> tier_timelineSpk(d->timeline->timelineCoarse());
     if ((!tier_timelineSyll) || (!tier_timelineSpk)) return;
@@ -280,8 +292,10 @@ void AnalyserTemporalItem::analyse(CorpusCommunication *com)
     excludedSyllTextForISI << "_" << "" << "N" << "D";
 
     foreach (QString annotationID, com->annotationIDs()) {
+        mutex.lock();
         SpeakerAnnotationTierGroupMap tiersAll =
                 com->repository()->annotations()->getTiersAllSpeakers(annotationID, QStringList() << d->levelSyllables << d->levelTokens);
+        mutex.unlock();
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
@@ -304,6 +318,7 @@ void AnalyserTemporalItem::analyse(CorpusCommunication *com)
             tier_turns->mergeIdenticalAnnotations();
             foreach (Interval *turn, tier_turns->intervals()) {
                 if (!turn->text().contains(speakerID)) continue;
+                // qDebug() << com->ID() << speakerID;
                 turnDurations << turn->duration().toDouble();
                 timeSpeech = timeSpeech + turn->duration();
                 // Count non-pause, non-filled pause tokens in the turn

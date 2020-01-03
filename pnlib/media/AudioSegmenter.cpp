@@ -68,8 +68,8 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &pathOut, 
             return false;
         QString output(sox.readAllStandardOutput());
         QString errors(sox.readAllStandardError());
-        qDebug() << output;
-        qDebug() << errors;
+        // qDebug() << output;
+        // qDebug() << errors;
     }
     return true;
 }
@@ -104,8 +104,8 @@ bool AudioSegmenter::segment(const QString &filenameIn, const QString &filenameO
         return false;
     QString output(sox.readAllStandardOutput());
     QString errors(sox.readAllStandardError());
-    qDebug() << output;
-    qDebug() << errors;
+    // qDebug() << output;
+    // qDebug() << errors;
     return true;
 }
 
@@ -123,8 +123,8 @@ bool AudioSegmenter::runSoxCommand(const QString &command)
         return false;
     QString output(sox.readAllStandardOutput());
     QString errors(sox.readAllStandardError());
-    qDebug() << output;
-    qDebug() << errors;
+    // qDebug() << output;
+    // qDebug() << errors;
     return true;
 }
 
@@ -158,7 +158,7 @@ bool AudioSegmenter::bookmarkCutting(const QString &filenameIn, const QString &f
                   << QString("=%1").arg(QString::number(iter.value()->tMin().toDouble(), 'g', 6))
                   << QString("=%1").arg(QString::number(iter.value()->tMax().toDouble(), 'g', 6));
         // run sox for this interval
-        qDebug() << soxPath + "sox" << arguments;
+        // qDebug() << soxPath + "sox" << arguments;
 //        sox.start(soxPath + "sox", arguments);
 //        if (!sox.waitForFinished(-1)) // sets current thread to sleep and waits for sox end
 //            return false;

@@ -18,6 +18,8 @@ public:
     explicit ProsoGram(QObject *parent = nullptr);
 
     void runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID);
+    void importResultFiles(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID,
+                           QString prosoPath = QString());
     static bool updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet);
 
     double timeRangeFrom;

@@ -18,10 +18,13 @@ using namespace Praaline::Core;
 
 #include "IntervalTierCombinations.h"
 
+#include "pncore/interfaces/praat/PraatTextGrid.h"
+
 struct IntervalTierCombinationsData {
     QString intervalsLevelA;
     QString intervalsLevelB;
     QString intervalsLevelCombined;
+    QStringList thirdLevelsToCount;
 };
 
 IntervalTierCombinations::IntervalTierCombinations() :
@@ -63,6 +66,18 @@ void IntervalTierCombinations::setIntervalsLevelCombined(const QString &levelID)
 {
     d->intervalsLevelCombined = levelID;
 }
+
+QStringList IntervalTierCombinations::thirdLevelsToCount() const
+{
+    return d->thirdLevelsToCount;
+}
+
+void IntervalTierCombinations::setThirdLevelsToCount(const QStringList &levelIDs)
+{
+    d->thirdLevelsToCount = levelIDs;
+}
+
+// ===============================================================================================================
 
 QString IntervalTierCombinations::combineIntervalTiers(Praaline::Core::CorpusCommunication *com)
 {
@@ -107,7 +122,7 @@ QString IntervalTierCombinations::combineIntervalTiers(Praaline::Core::CorpusCom
                 previousEnd = end;
             }
 
-            IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_mwu");
+            IntervalTier *tier_tokens = tiers->getIntervalTierByName("tok_min");
             foreach (Interval *intv, intervals) {
                 // Sequence text               
                 intv->setText(tier_tokens->getIntervalsTextContainedIn(intv));
@@ -126,7 +141,7 @@ QString IntervalTierCombinations::combineIntervalTiers(Praaline::Core::CorpusCom
                 else if ((countUnitsA > 1)  && (countUnitsB == 1))  type = "N:1";
                 else if ((countUnitsA == 1) && (countUnitsB > 1))   type = "1:M";
                 else if ((countUnitsA > 1)  && (countUnitsB > 1))   type = "N:M";
-                intv->setAttribute("type", type);
+                intv->setAttribute("unit_type", type);
             }
 
             // Save combined units

@@ -10,7 +10,7 @@ CONFIG += plugin dll qt thread warn_on stl rtti exceptions c++11
 TEMPLATE = lib
 DEFINES += PLUGIN_VARIA_LIBRARY
 
-QT += gui sql xml
+QT += gui sql xml concurrent
 greaterThan(QT_MAJOR_VERSION, 4) {
     QT += widgets
 }

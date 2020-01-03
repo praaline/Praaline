@@ -28,6 +28,8 @@ public:
     QString align(Praaline::Core::CorpusCommunication *com);
 
     QString createSentenceUnits(Praaline::Core::CorpusCommunication *com);
+    QString createMajorProsodicUnits(Praaline::Core::CorpusCommunication *com);
+    QString createCombinedUnits(Praaline::Core::CorpusCommunication *com);
 
 private:
     ORFEOData *d;

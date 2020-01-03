@@ -142,7 +142,8 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosogram::PluginPr
     parameters << PluginParameter("command", "Function to apply", QVariant::Int, d->command, QStringList() <<
                                   "ProsoGram v. 2.9" <<
                                   "Create utterance segmentation from auto syllables" <<
-                                  "Automatic Intonation Annotation");
+                                  "Automatic Intonation Annotation" <<
+                                  "Import ProsoGram result files into database");
     parameters << PluginParameter("createLevels", "Create annotation levels when they do not exist?", QVariant::Bool, d->createLevels);
     parameters << PluginParameter("overwrite", "Overwrite existing annotations/values?", QVariant::Bool, d->overwrite);
     parameters << PluginParameter("autosyllablePauseThreshold", "Autosyllable pause threshold (sec)", QVariant::Double, d->autosyllablePauseThreshold);
@@ -478,6 +479,57 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
     printMessage("ProsoGram finished.");
 }
 
+void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(const QList<CorpusCommunication *> &communications)
+{
+    if (communications.isEmpty()) {
+        printMessage("No Communications selected.");
+        return;
+    }
+    int countDone = 0;
+    madeProgress(0);
+    printMessage("Importing Prosogram result files into database");
+    ProsoGram *prosogram = new ProsoGram(this);
+    // Pass parameters to prosogram
+    prosogram->segmentationMethod = d->segmentationMethod;
+    prosogram->levelPhone = d->levelPhone;
+    prosogram->levelSyllable = d->levelSyllable;
+    prosogram->levelSegmentation = d->levelSegmentation;
+    prosogram->levelTonalSegments = d->levelTonalSegments;
+    prosogram->levelVUV = d->levelVUV;
+    // Process communications
+    foreach(CorpusCommunication *com, communications) {
+        if (!com) continue;
+        if (!com->repository()) continue;
+        printMessage(QString("Importing %1").arg(com->ID()));
+        foreach (CorpusRecording *rec, com->recordings()) {
+            if (!rec) continue;
+            foreach (CorpusAnnotation *annot, com->annotations()) {
+                if (!annot) continue;
+                // TODO : ANNOTATION CORRESPONDANCE !!!
+                SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
+                foreach (QString speakerID, tiersAll.keys()) {
+                    printMessage(QString("   speaker %1").arg(speakerID));
+                    AnnotationTierGroup *tiers = tiersAll.value(speakerID);
+                    if (!tiers) continue;
+                    // check speaker-specific recording
+                    if (!rec->property("speakerID").toString().isEmpty()) {
+                        if (rec->property("speakerID").toString() != speakerID) continue;
+                    }
+                    // import prosogram results files
+                    prosogram->importResultFiles(com->corpus(), rec, tiers, annot->ID(), speakerID);
+                }
+                qDeleteAll(tiersAll);
+            }
+            QApplication::processEvents();
+        }
+        countDone++;
+        madeProgress(countDone * 100 / communications.count());
+    }
+    delete prosogram;
+    madeProgress(100);
+    printMessage("Import of Prosogram result files into the database finished.");
+}
+
 void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(const QList<CorpusCommunication *> &communications)
 {
     if (communications.isEmpty()) {
@@ -530,6 +582,9 @@ void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<CorpusCo
     }
     else if (d->command == 2) {
         runIntonationAnnotation(communications);
+    }
+    else if (d->command == 3) {
+        runProsogramImportFiles(communications);
     }
 }
 

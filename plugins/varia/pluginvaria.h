@@ -30,8 +30,8 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginVaria(QObject* parent = 0);
-                ~PluginVaria();
+                PluginVaria(QObject* parent = nullptr);
+                ~PluginVaria() override;
 
                 // IObjectBase implementation
                 QObject* objectBase() override { return this; }
@@ -59,6 +59,11 @@ namespace Praaline {
             signals:
                 void printMessage(const QString &message) override;
                 void madeProgress(int progress) override;
+
+            protected slots:
+                void futureResultReadyAt(int index);
+                void futureProgressValueChanged(int progressValue);
+                void futureFinished();
 
             private:
                 PluginVariaPrivateData* d;

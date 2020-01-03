@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include <QStringList>
 #include <QPointer>
 
 namespace Praaline {
@@ -27,6 +28,9 @@ public:
 
     QString intervalsLevelCombined() const;
     void setIntervalsLevelCombined(const QString &levelID);
+
+    QStringList thirdLevelsToCount() const;
+    void setThirdLevelsToCount(const QStringList &levelIDs);
 
     QString combineIntervalTiers(Praaline::Core::CorpusCommunication *com);
 

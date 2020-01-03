@@ -39,9 +39,13 @@ public:
     QMap<QString, QList<double> > aggregateMeasureSpk(
             const QString &measureID, const QStringList &groupAttributeIDsCom, const QStringList &groupAttributeIDsSpk);
 signals:
-    void madeProgress(int);
+    void printMessage(const QString &message);
+    void madeProgress(int progress);
 
-public slots:
+protected slots:
+    void futureResultReadyAt(int index);
+    void futureProgressValueChanged(int progressValue);
+    void futureFinished();
 
 private:
     AnalyserTemporalData *d;

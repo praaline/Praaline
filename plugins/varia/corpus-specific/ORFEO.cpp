@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QElapsedTimer>
+#include <QMutex>
 
 #include "pncore/corpus/Corpus.h"
 #include "pncore/annotation/PointTier.h"
@@ -163,6 +164,8 @@ QString ORFEO::readOrfeoFile(Praaline::Core::CorpusCommunication *com)
     return ret.trimmed();
 }
 
+#include "pncore/diff/DiffIntervals.h"
+
 QString ORFEO::mapTokensToDisMo(Praaline::Core::CorpusCommunication *com)
 {
     QString ret;
@@ -179,62 +182,97 @@ QString ORFEO::mapTokensToDisMo(Praaline::Core::CorpusCommunication *com)
             if (!tier_orfeo) { ret.append("No ORFEO tier\n"); continue; }
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
             if (!tier_tok_min) { ret.append("No tok_min tier\n"); continue; }
-            // Merge pauses
+
             tier_orfeo->fillEmptyWith("", "_");
-            tier_orfeo->mergeIdenticalAnnotations("_");
-            tier_tok_min->fillEmptyWith("", "_");
-            tier_tok_min->mergeIdenticalAnnotations("_");
+
+            foreach (Interval *tok_min, tier_tok_min->intervals()) {
+                tok_min->setAttribute("orfeo_token_id", "");
+                tok_min->setAttribute("orfeo_lemma", "");
+                tok_min->setAttribute("orfeo_UPOS", "");
+                tok_min->setAttribute("orfeo_XPOS", "");
+                tok_min->setAttribute("orfeo_feats", "");
+                tok_min->setAttribute("orfeo_head", "");
+                tok_min->setAttribute("orfeo_deprel", "");
+                tok_min->setAttribute("orfeo_deps", "");
+                tok_min->setAttribute("orfeo_misc", "");
+                tok_min->setAttribute("orfeo_sent_id", "");
+                tok_min->setAttribute("orfeo_seg", "");
+                tok_min->setAttribute("orfeo_tMin", "");
+                tok_min->setAttribute("orfeo_tMax", "");
+                tok_min->setAttribute("orfeo_timecode_error", "");
+            }
+
+            dtl::Ses<Interval *>::sesElemVec sesSequence = DiffIntervals::intervalDiff(
+                        tier_orfeo->intervals(), tier_tok_min->intervals(), false, "", "").getSes().getSequence();
+            dtl::Ses<Interval *>::sesElem elem;
+
             // Update tok_min from orfeo_token
             int i_orfeo(0), i_tokmin(0);
-            while ((i_orfeo < tier_orfeo->count()) && (i_tokmin < tier_tok_min->count())) {
+            bool firstADD(true);
+            foreach (elem, sesSequence) {
+                if (i_orfeo >= tier_orfeo->count()) break;
+                if (i_tokmin >= tier_tok_min->count()) break;
                 Interval *orfeo = tier_orfeo->at(i_orfeo);
                 Interval *tok_min = tier_tok_min->at(i_tokmin);
-                if (tok_min->tMin() == orfeo->tMin()) {
-                    tok_min->setAttribute("orfeo_token_id", orfeo->attribute("orfeo_token_id"));
-                    tok_min->setAttribute("orfeo_lemma", orfeo->attribute("orfeo_lemma"));
-                    tok_min->setAttribute("orfeo_UPOS", orfeo->attribute("orfeo_UPOS"));
-                    tok_min->setAttribute("orfeo_XPOS", orfeo->attribute("orfeo_XPOS"));
-                    tok_min->setAttribute("orfeo_feats", orfeo->attribute("orfeo_feats"));
-                    tok_min->setAttribute("orfeo_head", orfeo->attribute("orfeo_head"));
-                    tok_min->setAttribute("orfeo_deprel", orfeo->attribute("orfeo_deprel"));
-                    tok_min->setAttribute("orfeo_deps", orfeo->attribute("orfeo_deps"));
-                    tok_min->setAttribute("orfeo_misc", orfeo->attribute("orfeo_misc"));
-                    tok_min->setAttribute("orfeo_sent_id", orfeo->attribute("orfeo_sent_id"));                    
-                    tok_min->setAttribute("orfeo_seg", "");
-                    // Segmentation needs special treatment
-                    if (tok_min->text() != orfeo->text()) {
-                        // Open segmentation in ORFEO token split into multiple DisMo tokens
-                        if (orfeo->attribute("orfeo_seg").toString().contains("[")) {
-                            tok_min->setAttribute("orfeo_seg", "[");
+                if ((elem.second.type == dtl::SES_COMMON) || ((elem.second.type == dtl::SES_ADD) && firstADD)) {
+                    if (!tok_min->isPauseSilent()) {
+                        tok_min->setAttribute("orfeo_token_id", orfeo->attribute("orfeo_token_id"));
+                        tok_min->setAttribute("orfeo_lemma", orfeo->attribute("orfeo_lemma"));
+                        tok_min->setAttribute("orfeo_UPOS", orfeo->attribute("orfeo_UPOS"));
+                        tok_min->setAttribute("orfeo_XPOS", orfeo->attribute("orfeo_XPOS"));
+                        tok_min->setAttribute("orfeo_feats", orfeo->attribute("orfeo_feats"));
+                        tok_min->setAttribute("orfeo_head", orfeo->attribute("orfeo_head"));
+                        tok_min->setAttribute("orfeo_deprel", orfeo->attribute("orfeo_deprel"));
+                        tok_min->setAttribute("orfeo_deps", orfeo->attribute("orfeo_deps"));
+                        tok_min->setAttribute("orfeo_misc", orfeo->attribute("orfeo_misc"));
+                        tok_min->setAttribute("orfeo_sent_id", orfeo->attribute("orfeo_sent_id"));
+                        tok_min->setAttribute("orfeo_seg", "");
+                        // Segmentation needs special treatment
+                        if (tok_min->text() != orfeo->text()) {
+                            // Open segmentation in ORFEO token split into multiple DisMo tokens
+                            if (orfeo->attribute("orfeo_seg").toString().contains("[")) {
+                                tok_min->setAttribute("orfeo_seg", "[");
+                            }
+                        } else {
+                            // Normal copy (ORFEO token == DisMo token)
+                            tok_min->setAttribute("orfeo_seg", orfeo->attribute("orfeo_seg"));
                         }
+                        tok_min->setAttribute("orfeo_tMin", QString("%1").arg(orfeo->tMin().toNanoseconds()));
+                        tok_min->setAttribute("orfeo_tMax", QString("%1").arg(orfeo->tMax().toNanoseconds()));
+                        tok_min->setAttribute("orfeo_timecode_error", orfeo->attribute("orfeo_timecode_error"));
                     } else {
-                        // Normal copy (ORFEO token == DisMo token)
-                        tok_min->setAttribute("orfeo_seg", orfeo->attribute("orfeo_seg"));
+                        tok_min->setAttribute("orfeo_UPOS", "_");
                     }
-                    tok_min->setAttribute("orfeo_tMin", QString("%1").arg(orfeo->tMin().toNanoseconds()));
-                    tok_min->setAttribute("orfeo_tMax", QString("%1").arg(orfeo->tMax().toNanoseconds()));
-                    tok_min->setAttribute("orfeo_timecode_error", orfeo->attribute("orfeo_timecode_error"));
-                } else {
-                    if (tok_min->isPauseSilent())
-                        tok_min->setAttribute("orfeo_pos", "_");
-                    else {
+                    // advance
+                    if (elem.second.type == dtl::SES_COMMON) {
+                        i_orfeo++;
+                        i_tokmin++;
+                        firstADD = true;
+                    }
+                    else if (elem.second.type == dtl::SES_ADD) {
+                        i_tokmin++;
+                        firstADD = false;
+                    }
+                }
+                else if ((elem.second.type == dtl::SES_ADD) && (!firstADD)) {
+                    if (tok_min->isPauseSilent()) {
+                        tok_min->setAttribute("orfeo_UPOS", "_");
+                    } else {
                         tok_min->setAttribute("orfeo_UPOS", "***");
                         tok_min->setAttribute("orfeo_sent_id", orfeo->attribute("orfeo_sent_id"));
                         // Close segmentation in ORFEO token split into multiple DisMo tokens
-                        if (orfeo->tMax() == tok_min->tMax()) {
+                        if (orfeo->text().endsWith(tok_min->text())) {
                             if (orfeo->attribute("orfeo_seg").toString().contains("]"))
                                 tok_min->setAttribute("orfeo_seg", "]");
                         }
                     }
-                }
-                if (orfeo->tMax() > tok_min->tMax()) {
                     i_tokmin++;
                 }
-                else {
+                else if (elem.second.type == dtl::SES_DELETE) {
                     i_orfeo++;
-                    i_tokmin++;
                 }
             }
+
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_min);
             ret.append(annotationID).append("\t").append(speakerID).append("\n");
         }
@@ -310,6 +348,7 @@ QString ORFEO::createUtterances(Praaline::Core::CorpusCommunication *com)
 
 QString ORFEO::align(Praaline::Core::CorpusCommunication *com)
 {
+    static QMutex mutex;
     QElapsedTimer timer;
     QString ret;
     if (!com) return "Error: No communication";
@@ -319,12 +358,18 @@ QString ORFEO::align(Praaline::Core::CorpusCommunication *com)
     foreach (CorpusAnnotation *annot, com->annotations()) {
         if (!annot) continue;
         QString annotationID = annot->ID();
+        mutex.lock();
         tiersAll = com->repository()->annotations()->
                 getTiersAllSpeakers(com->ID(), QStringList() << "utterance" << "tok_min" << "phone" << "syll");
+        mutex.unlock();
         int numberOfUtterances(0);
         timer.start();
         // Praat textgrid for the results
         foreach (QString speakerID, tiersAll.keys()) {
+            // Check if already aligned
+            QString filenameTextGrid = QString(com->recordings().first()->filePath()).replace(".wav", "_align_%1.TextGrid").arg(speakerID);
+            if (QFile::exists(filenameTextGrid)) continue;
+
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_utterance = tiers->getIntervalTierByName("utterance");
@@ -367,18 +412,19 @@ QString ORFEO::align(Praaline::Core::CorpusCommunication *com)
             d->syllabifier.syllabify(tier_phone, tier_syll, tier_utterance->tMin(), tier_utterance->tMax());
             tier_syll->fillEmptyWith("", "_");  tier_syll->mergeIdenticalAnnotations("_");
             // Save to database
+            mutex.lock();
             com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_phone);
             com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_syll);
             com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_tok_min);
             // com->corpus()->repository()->annotations()->saveTier(annotationID, speakerID, tier_utterance);
+            mutex.unlock();
             // Save Praat TextGrid
             AnnotationTierGroup *txg = new AnnotationTierGroup();
             txg->addTier(tier_phone);
             txg->addTier(tier_syll);
             txg->addTier(tier_tok_min);
             txg->addTier(tier_utterance);
-            QString filenameTextGrid = QString(com->recordings().first()->filePath()).replace(".wav", "_align_%1.TextGrid");
-            PraatTextGrid::save(QString(filenameTextGrid).arg(speakerID) , txg);
+            PraatTextGrid::save(filenameTextGrid, txg);
             delete txg;
         }
         // User output
@@ -409,25 +455,49 @@ QString ORFEO::createSentenceUnits(Praaline::Core::CorpusCommunication *com)
             if (!tiers) continue;
             IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
             if (!tier_tok_min) { ret.append("No tok_min tier\n"); continue; }
+            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+            if (!tier_syll) { ret.append("No syll tier\n"); continue; }
+
             QList<Interval *> intervals_sentences;
             RealTime tMin, tMax;
-            foreach (Interval *tok_min, tier_tok_min->intervals()) {
-                if (tok_min->attribute("orfeo_seg").toString().contains("[")) tMin = tok_min->tMin();
-                if (tok_min->attribute("orfeo_seg").toString().contains("]")) {
-                    tMax = tok_min->tMax();
-                    if (tMin > tMax)
-                        qDebug() << "Error tMin-tMax";
-                    else {
-                        QString text = tier_tok_min->getIntervalsTextContainedIn(tMin, tMax);
-                        text = text.replace("  ", " ").replace("  ", " ");
-                        Interval *sentence;
-                        sentence = new Interval(tMin, tMax, text);
-                        sentence->setAttribute("sent_id", tok_min->attribute("orfeo_sent_id").toInt());
-                        intervals_sentences << sentence;
+            int start(-1);
+            for (int i = 0; i < tier_tok_min->count(); ++i) {
+                Interval *token = tier_tok_min->at(i);
+                if (token->isPauseSilent()) continue;
+                if (token->text().startsWith("(") || token->text().endsWith(")")) continue;
+                // otherwise
+                if (start < 0) start = i;
+                int current_sent_id(tier_tok_min->at(i)->attribute("orfeo_sent_id").toInt());
+                int next_sent_id(current_sent_id);
+                int j = i + 1;
+                while (j < tier_tok_min->count()) {
+                    if (tier_tok_min->at(j)->attribute("orfeo_sent_id").toInt() != 0) {
+                        next_sent_id = tier_tok_min->at(j)->attribute("orfeo_sent_id").toInt();
+                        break;
                     }
+                    j++;
+                }
+                if ((i == tier_tok_min->count() - 1) || (current_sent_id != next_sent_id)) {
+                    tMin = tier_tok_min->at(start)->tMin();
+                    tMax = tier_tok_min->at(i)->tMax();
+                    QString text = tier_tok_min->getIntervalsTextContainedIn(tMin, tMax);
+                    text = text.replace("  ", " ").replace("  ", " ");
+                    Interval *sentence_unit(new Interval(tMin, tMax, text));
+                    sentence_unit->setAttribute("orfeo_sent_id", token->attribute("orfeo_sent_id").toInt());
+                    // count syllables inside sentence
+                    int countSyll(0), countPauses(0);
+                    foreach (Interval *syll, tier_syll->getIntervalsOverlappingWith(sentence_unit)) {
+                        if (syll->isPauseSilent()) countPauses++; else countSyll++;
+                    }
+                    sentence_unit->setAttribute("count_sil_pauses", countPauses);
+                    sentence_unit->setAttribute("count_syllables", countSyll);
+                    // Add sentence
+                    intervals_sentences << sentence_unit;
+                    // Next
+                    start = -1;
                 }
             }
-            IntervalTier *tier_sentences = new IntervalTier("sentence_units", intervals_sentences);
+            IntervalTier *tier_sentences = new IntervalTier("sentence_unit", intervals_sentences);
             com->repository()->annotations()->saveTier(annotationID, speakerID, tier_sentences);
             ret.append(annotationID).append("\t").append(speakerID).append("\n");
         }
@@ -435,6 +505,80 @@ QString ORFEO::createSentenceUnits(Praaline::Core::CorpusCommunication *com)
     }
     return ret.trimmed();
 }
+
+QString ORFEO::createMajorProsodicUnits(Praaline::Core::CorpusCommunication *com)
+{
+    QString ret;
+    if (!com) return "Error: No communication";
+    SpeakerAnnotationTierGroupMap tiersAll;
+    foreach (CorpusAnnotation *annot, com->annotations()) {
+        if (!annot) continue;
+        QString annotationID = annot->ID();
+        tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
+        foreach (QString speakerID, tiersAll.keys()) {
+            AnnotationTierGroup *tiers = tiersAll.value(speakerID);
+            if (!tiers) continue;
+            IntervalTier *tier_tok_min = tiers->getIntervalTierByName("tok_min");
+            if (!tier_tok_min) { ret.append("No tok_min tier\n"); continue; }
+            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+            if (!tier_syll) { ret.append("No syll tier\n"); continue; }
+
+            QList<Interval *> intervals_prosodic_units;
+            RealTime tMin, tMax;
+            int start(-1);
+            for (int i = 0; i < tier_tok_min->count(); ++i) {
+                Interval *token = tier_tok_min->at(i);
+                if (token->isPauseSilent()) continue;
+                if (token->text().startsWith("(") || token->text().endsWith(")")) continue;
+                if (token->text() == "ts" || token->text() == "ps") continue;
+                // otherwise
+                if (start < 0) start = i;
+                // check to see if end of a sequence
+                QList<Interval *> syllables = tier_syll->getIntervalsOverlappingWith(token);
+                if (syllables.isEmpty()) continue;
+                Interval *lastSyll = syllables.last();
+                if (lastSyll->attribute("promise_boundary").toString() == "B3") {
+                    tMin = tier_tok_min->at(start)->tMin();
+                    tMax = tier_tok_min->at(i)->tMax();
+                    QString text = tier_tok_min->getIntervalsTextContainedIn(tMin, tMax);
+                    text = text.replace("  ", " ").replace("  ", " ");
+                    Interval *prosodic_unit(new Interval(tMin, tMax, text));
+                    // count syllables inside prosodic unit
+                    int countSyll(0), countPauses(0);
+                    foreach (Interval *syll, tier_syll->getIntervalsOverlappingWith(prosodic_unit)) {
+                        if (syll->isPauseSilent()) countPauses++; else countSyll++;
+                    }
+                    prosodic_unit->setAttribute("count_sil_pauses", countPauses);
+                    prosodic_unit->setAttribute("count_syllables", countSyll);
+                    // Add prosodic unit
+                    intervals_prosodic_units << prosodic_unit;
+                    // Next
+                    start = -1;
+                }
+            }
+
+            IntervalTier *tier_prosodic_units = new IntervalTier("prosodic_unit", intervals_prosodic_units);
+            com->repository()->annotations()->saveTier(annotationID, speakerID, tier_prosodic_units);
+            ret.append(annotationID).append("\t").append(speakerID).append("\n");
+        }
+        qDeleteAll(tiersAll);
+    }
+    return ret.trimmed();
+}
+
+#include "IntervalTierCombinations.h"
+
+QString ORFEO::createCombinedUnits(Praaline::Core::CorpusCommunication *com)
+{
+    IntervalTierCombinations combine;
+    combine.setIntervalsLevelA("prosodic_unit");
+    combine.setIntervalsLevelB("sentence_unit");
+    combine.setIntervalsLevelCombined("prosody_syntax");
+    return combine.combineIntervalTiers(com);
+}
+
+
+
 
 QString ORFEO::readMetadata(Praaline::Core::CorpusCommunication *com)
 {
