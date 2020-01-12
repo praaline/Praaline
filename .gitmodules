@@ -1,6 +1,6 @@
 [submodule "dependencies"]
 	path = dependencies
 	url = https://github.com/praaline/praaline-dependencies.git
-[submodule "pncore"]
-	path = pncore
+[submodule "praaline-core"]
+	path = praaline-core
 	url = https://github.com/praaline/praaline-core.git
