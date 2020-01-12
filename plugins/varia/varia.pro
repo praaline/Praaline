@@ -54,6 +54,7 @@ PRE_TARGETDEPS += \
 
 HEADERS += \
     YizhiScripts.h \
+    corpus-specific/ESLOMD.h \
     pluginvaria_global.h \
     pluginvaria.h \
     crfannotator.h \
@@ -85,6 +86,7 @@ HEADERS += \
 
 SOURCES += \
     YizhiScripts.cpp \
+    corpus-specific/ESLOMD.cpp \
     pluginvaria.cpp \
     crfannotator.cpp \
     chunkannotator.cpp \

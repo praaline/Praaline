@@ -92,8 +92,8 @@ void AnalyserTemporal::futureResultReadyAt(int index)
     QString result = d->watcher.resultAt(index);
     qDebug() << d->watcher.progressValue() << result;
     emit printMessage(result);
-    if (d->watcher.progressMaximum() > 0)
-        emit madeProgress(d->watcher.progressValue() * 100 / d->watcher.progressMaximum());
+    if (d->corpus->communicationsCount() > 0)
+        emit madeProgress(d->items.count() * 100 / d->corpus->communicationsCount());
     else
         emit madeProgress(100);
 }
@@ -101,8 +101,8 @@ void AnalyserTemporal::futureResultReadyAt(int index)
 void AnalyserTemporal::futureProgressValueChanged(int progressValue)
 {
     qDebug() << progressValue;
-    if (d->watcher.progressMaximum() > 0)
-        emit madeProgress(progressValue * 100 / d->watcher.progressMaximum());
+    if (d->corpus->communicationsCount() > 0)
+        emit madeProgress(d->items.count() * 100 / d->corpus->communicationsCount());
     else
         emit madeProgress(100);
 }
