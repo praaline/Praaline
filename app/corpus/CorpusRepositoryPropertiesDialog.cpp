@@ -1,7 +1,7 @@
 #include <QFileDialog>
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
 using namespace Praaline::Core;
 
 #include "CorpusRepositoryPropertiesDialog.h"

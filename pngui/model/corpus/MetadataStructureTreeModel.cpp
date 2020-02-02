@@ -1,6 +1,6 @@
 #include <QDebug>
 
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "MetadataStructureTreeModel.h"

@@ -6,8 +6,8 @@
 #include <QMap>
 #include <QPointer>
 #include <QAbstractTableModel>
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "TimelineTableModelBase.h"
 
 struct AnnotationGroupingTierTableModelData;

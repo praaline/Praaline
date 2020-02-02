@@ -23,7 +23,7 @@
 #include "base/PropertyContainer.h"
 #include "ViewManager.h"
 #include "base/XmlExportable.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 // #define DEBUG_VIEW_WIDGET_PAINT 1
 

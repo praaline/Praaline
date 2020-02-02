@@ -18,11 +18,10 @@
 
 #include "chunkannotator.h"
 #include "svbridge.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
-
-#include "pncore/interfaces/anvil/AnvilMetadataTranscript.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Anvil/AnvilMetadataTranscript.h"
 
 #include "InterraterAgreement.h"
 #include "SequencerSyntax.h"

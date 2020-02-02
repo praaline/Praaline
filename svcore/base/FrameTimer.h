@@ -16,7 +16,7 @@
 #ifndef _FRAME_TIMER_H_
 #define _FRAME_TIMER_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 /**
  * A trivial interface for things that permit retrieving "the current

@@ -4,14 +4,14 @@
 #include <QStandardItemModel>
 #include "math.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
-#include "pncore/statistics/StatisticalSummary.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
 
 #include "AnalyserMacroprosody.h"

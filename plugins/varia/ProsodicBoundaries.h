@@ -5,8 +5,8 @@
 #include <QPair>
 #include <QTextStream>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 
 struct ProsodicBoundariesData;
 

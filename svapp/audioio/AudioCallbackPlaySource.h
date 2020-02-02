@@ -26,7 +26,7 @@
 #include <QWaitCondition>
 
 #include "base/Thread.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <samplerate.h>
 

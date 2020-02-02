@@ -3,10 +3,10 @@
 #include <QStandardItemModel>
 #include <QProgressDialog>
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/interfaces/praat/AnnotationInterfacePraat.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Interfaces/Praat/AnnotationInterfacePraat.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/CheckableProxyModel.h"

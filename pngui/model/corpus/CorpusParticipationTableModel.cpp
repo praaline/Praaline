@@ -1,6 +1,6 @@
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusParticipation.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusParticipation.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "CorpusParticipationTableModel.h"

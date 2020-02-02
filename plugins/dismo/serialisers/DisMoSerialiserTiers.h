@@ -2,7 +2,7 @@
 #define DISMOSERIALISERTIERS_H
 
 #include <QObject>
-#include "annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 #include "dismo/TokenList.h"
 
 namespace DisMoAnnotator {

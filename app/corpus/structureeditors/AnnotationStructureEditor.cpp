@@ -8,11 +8,11 @@
 #include "AnnotationStructureEditor.h"
 #include "ui_AnnotationStructureEditor.h"
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/serialisers/json/JSONSerialiserAnnotationStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Serialisers/JSON/JSONSerialiserAnnotationStructure.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/AnnotationStructureTreeModel.h"

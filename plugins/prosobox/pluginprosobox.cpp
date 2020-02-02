@@ -5,10 +5,10 @@
 #include <QApplication>
 #include <ExtensionSystemConstants>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 #include "pluginprosobox.h"
 #include "prosoboxscript.h"
 

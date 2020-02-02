@@ -3,7 +3,7 @@
 #include <QFileDialog>
 #include "CorpusDatabaseConnectionDialog.h"
 #include "ui_CorpusDatabaseConnectionDialog.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
 using namespace Praaline::Core;
 
 CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) :

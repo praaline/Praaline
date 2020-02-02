@@ -18,7 +18,7 @@
 #include "svgui/widgets/CommandHistory.h"
 #include "svapp/framework/Document.h"
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"

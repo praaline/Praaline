@@ -6,10 +6,10 @@
 #include <ExtensionSystemConstants>
 
 #include "pluginsyntax.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 #include "CoNLLUReader.h"
 #include "CorpusImporter.h"

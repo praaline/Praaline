@@ -2,7 +2,7 @@
 #define METADATASTRUCTUREEDITOR_H
 
 #include <QMainWindow>
-#include "pncore/corpus/CorpusObject.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
 #include "pngui/observers/CorpusObserver.h"
 
 namespace Ui {

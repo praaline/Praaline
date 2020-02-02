@@ -7,8 +7,8 @@
 #include <QtProperty>
 #include <QPair>
 #include <QMap>
-#include "pncore/corpus/CorpusObject.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 
 struct MetadataEditorWidgetData;
 

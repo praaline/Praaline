@@ -2,11 +2,11 @@
 #include <QString>
 #include <QPair>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/PointTier.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/statistics/Measures.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/PointTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Statistics/Measures.h"
 using namespace Praaline::Core;
 
 #include "SpeechRateEstimator.h"

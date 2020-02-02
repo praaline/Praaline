@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QPointer>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Praaline {
 namespace Core {

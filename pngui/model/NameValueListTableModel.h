@@ -3,7 +3,7 @@
 
 #include <QPointer>
 #include <QAbstractTableModel>
-#include "pncore/structure/NameValueList.h"
+#include "PraalineCore/Structure/NameValueList.h"
 
 namespace Praaline {
 namespace Core {

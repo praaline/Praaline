@@ -7,7 +7,7 @@
 #include <QPair>
 #include <QStringList>
 
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/Model.h"
 #include "AnnotationGridPointModel.h"

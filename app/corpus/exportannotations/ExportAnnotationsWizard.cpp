@@ -5,9 +5,9 @@
 #include <QDir>
 #include <QFileDialog>
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/CorpusAnnotationTableModel.h"

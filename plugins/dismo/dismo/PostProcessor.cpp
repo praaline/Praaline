@@ -14,7 +14,9 @@
 
 #include <QString>
 #include <QStringList>
-#include "annotation/IntervalTier.h"
+
+#include "PraalineCore/Annotation/IntervalTier.h"
+
 #include "Token.h"
 #include "TokenList.h"
 #include "PostProcessor.h"

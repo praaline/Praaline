@@ -16,7 +16,7 @@
 #ifndef _AUDIO_PLAY_SOURCE_H_
 #define _AUDIO_PLAY_SOURCE_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 struct Auditionable {
     virtual ~Auditionable() { }

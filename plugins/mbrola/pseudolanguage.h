@@ -2,8 +2,8 @@
 #define PSEUDOLANGUAGE_H
 
 #include <QPointer>
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 
 class PseudoLanguage
 {

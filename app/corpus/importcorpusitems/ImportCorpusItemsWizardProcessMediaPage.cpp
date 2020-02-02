@@ -4,10 +4,10 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
-#include "pnlib/media/SoundInfo.h"
+#include "PraalineMedia/SoundInfo.h"
 using namespace Praaline::Media;
 
 #include "ImportCorpusItemsWizardProcessMediaPage.h"

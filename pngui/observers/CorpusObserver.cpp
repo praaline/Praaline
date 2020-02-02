@@ -1,14 +1,14 @@
 #include <QString>
 #include <QVariant>
 #include <QHash>
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusRecording.h"
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/corpus/CorpusSpeaker.h"
-#include "pncore/corpus/CorpusObjectInfo.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusRecording.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
+#include "PraalineCore/Corpus/CorpusSpeaker.h"
+#include "PraalineCore/Corpus/CorpusObjectInfo.h"
 using namespace Praaline::Core;
 
 #include "CorpusObserver.h"

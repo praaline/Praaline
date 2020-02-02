@@ -11,11 +11,11 @@
 #include "pluginmbrola.h"
 
 
-#include "pncore/base/RealValueList.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Base/RealValueList.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 #include "mbrolafilemanager.h"
 #include "pseudolanguage.h"
 #include "MBROLAResynthesiser.h"

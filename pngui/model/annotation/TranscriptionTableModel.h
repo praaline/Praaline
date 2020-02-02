@@ -5,8 +5,8 @@
 #include <QPointer>
 #include <QMap>
 #include <QAbstractTableModel>
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 
 struct TranscriptionTableModelData;
 

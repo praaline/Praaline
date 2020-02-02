@@ -15,7 +15,7 @@
 #ifndef CONTINUOUS_SYNTH_H
 #define CONTINUOUS_SYNTH_H
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 /**
  * Mix into a target buffer a signal synthesised so as to sound at a

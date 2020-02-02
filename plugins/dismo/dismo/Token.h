@@ -19,8 +19,8 @@
 #include <QList>
 #include <QStringList>
 // Praaline.Core
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/Interval.h"
 // DisMo
 #include "TokenUnit.h"
 

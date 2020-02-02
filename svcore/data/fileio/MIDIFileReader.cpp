@@ -32,7 +32,7 @@
 
 #include "model/Model.h"
 #include "base/Pitch.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "model/NoteModel.h"
 
 #include <QString>

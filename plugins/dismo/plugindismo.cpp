@@ -11,10 +11,10 @@
 #include "dismo/DisMoAnnotator.h"
 #include "dismo/DisMoTrainer.h"
 #include "serialisers/DisMoSerialiserSQL.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Core;

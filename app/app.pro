@@ -1,5 +1,5 @@
 # Praaline
-# (c) George Christodoulides 2012-2017
+# (c) George Christodoulides 2012-2020
 
 ! include( ../common.pri ) {
     error( Could not find the common.pri file! )
@@ -28,8 +28,23 @@ macx* {
     ICON = praaline.icns
 }
 
-DEPENDPATH += . ../pncore ../pnlib ../pngui
-INCLUDEPATH += . .. ../.. ../pncore ../pnlib ../pngui
+DEPENDPATH += . ../pnlib ../pngui
+INCLUDEPATH += . .. ../.. ../pnlib ../pngui
+
+# Dependency: Praaline Core
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+INCLUDEPATH += ../praaline-core/include
+DEPENDPATH += ../praaline-core
+
+# Dependency: Praaline Media
+DEFINES += USE_NAMESPACE_PRAALINE_MEDIA
+INCLUDEPATH += ../praaline-media/include
+DEPENDPATH += ../praaline-media
+
+# Dependency: Praaline ASR
+DEFINES += USE_NAMESPACE_PRAALINE_ASR
+INCLUDEPATH += ../praaline-asr/include
+DEPENDPATH += ../praaline-asr
 
 # Sonic Visualiser libraries
 include (svinclude.pri)
@@ -92,19 +107,19 @@ unix {
 # Application components
 LIBS +=  \
         -L../pngui/$${COMPONENTSPATH} -lpngui \
-        -L../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
         -L../pnlib/crf/$${COMPONENTSPATH} -lpraaline-crf \
         -L../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
-        -L../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
-        -L../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
+        -L../praaline-asr/$${COMPONENTSPATH} -lpraaline-asr$${PRAALINE_LIB_POSTFIX} \
+        -L../praaline-media/$${COMPONENTSPATH} -lpraaline-media$${PRAALINE_LIB_POSTFIX} \
+        -L../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../pngui/$${COMPONENTSPATH}/libpngui.a \
-        ../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
         ../pnlib/crf/$${COMPONENTSPATH}/libpraaline-crf.a \
         ../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a \
-        ../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
-        ../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../praaline-asr/$${COMPONENTSPATH}/libpraaline-asr$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../praaline-media/$${COMPONENTSPATH}/libpraaline-media$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 SOURCES += main.cpp \
     #visualisation/pitchanalyser.cpp \

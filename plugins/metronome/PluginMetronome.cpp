@@ -7,15 +7,15 @@
 #include <QStringList>
 
 #include "PluginMetronome.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusBookmark.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserCorpusBookmark.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 using namespace Qtilities::ExtensionSystem;

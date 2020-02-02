@@ -7,12 +7,12 @@
 #include "CheckMediaFilesDialog.h"
 #include "ui_CheckMediaFilesDialog.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/FileDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
 using namespace Praaline::Core;
 
-#include "pnlib/media/SoundInfo.h"
+#include "PraalineMedia/SoundInfo.h"
 using namespace Praaline::Media;
 
 CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :

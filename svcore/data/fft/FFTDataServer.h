@@ -16,7 +16,7 @@
 #ifndef _FFT_DATA_SERVER_H_
 #define _FFT_DATA_SERVER_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "base/Window.h"
 #include "base/Thread.h"
 #include "base/StorageAdviser.h"

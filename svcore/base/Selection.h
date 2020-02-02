@@ -20,7 +20,7 @@
 #include <set>
 
 #include "XmlExportable.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 /**
  * A selection object simply represents a range in time, via start and

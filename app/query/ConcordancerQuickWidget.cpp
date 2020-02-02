@@ -6,13 +6,13 @@
 #include "ConcordancerQuickWidget.h"
 #include "ui_ConcordancerQuickWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/query/QueryDefinition.h"
-#include "pncore/query/QueryOccurrence.h"
-#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryOccurrence.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"

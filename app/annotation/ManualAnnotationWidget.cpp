@@ -10,8 +10,8 @@
 #include "ManualAnnotationWidget.h"
 #include "ui_ManualAnnotationWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
 
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/CheckableProxyModel.h"

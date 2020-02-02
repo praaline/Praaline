@@ -19,7 +19,7 @@
 #include <QDialog>
 #include <QString>
 
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 class QSpinBox;
 class QDoubleSpinBox;

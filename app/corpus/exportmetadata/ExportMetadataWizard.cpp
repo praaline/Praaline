@@ -7,12 +7,12 @@
 #include "ExportMetadataWizard.h"
 #include "ui_ExportMetadataWizard.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusObject.h"
-#include "pncore/corpus/CorpusObjectInfo.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
+#include "PraalineCore/Corpus/CorpusObjectInfo.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 #include "CorpusRepositoriesManager.h"
 using namespace Praaline::Core;
 

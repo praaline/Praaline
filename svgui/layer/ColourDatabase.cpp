@@ -13,7 +13,7 @@
     COPYING included with this distribution for more information.
 */
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "ColourDatabase.h"
 #include "base/XmlExportable.h"
 

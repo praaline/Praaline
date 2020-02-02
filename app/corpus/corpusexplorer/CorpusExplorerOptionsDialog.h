@@ -5,7 +5,7 @@
 #include <QPointer>
 #include <QStringList>
 #include <QStandardItemModel>
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 namespace Ui {

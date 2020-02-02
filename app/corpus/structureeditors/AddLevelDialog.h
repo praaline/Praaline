@@ -2,8 +2,8 @@
 #define ADDLEVELDIALOG_H
 
 #include <QDialog>
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/structure/AnnotationStructureLevel.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Structure/AnnotationStructureLevel.h"
 using namespace Praaline::Core;
 
 namespace Ui {

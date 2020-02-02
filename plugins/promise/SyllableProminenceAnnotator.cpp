@@ -11,9 +11,9 @@
 #include <QDebug>
 #include <QDir>
 
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/statistics/Measures.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Statistics/Measures.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
 #include "SyllableProminenceAnnotator.h"

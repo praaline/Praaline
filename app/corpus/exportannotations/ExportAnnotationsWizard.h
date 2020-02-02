@@ -3,7 +3,7 @@
 
 #include <QPointer>
 #include <QWizard>
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 namespace Ui {

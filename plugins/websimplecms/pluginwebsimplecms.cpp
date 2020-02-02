@@ -9,12 +9,12 @@
 #include <QTextStream>
 
 #include "pluginwebsimplecms.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;

@@ -18,12 +18,12 @@
 #include "grid/QTextFilter.h"
 #include "grid/QValueFilter.h"
 
-#include "pncore/corpus/CorpusObject.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/CorpusCommunicationTableModel.h"

@@ -7,14 +7,14 @@
 #include <QFileInfo>
 #include <QStandardItemModel>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 
-#include "pnlib/media/AudioSegmenter.h"
+#include "PraalineMedia/AudioSegmenter.h"
 using namespace Praaline::Media;
 
 #include "SplitCommunicationsDialog.h"

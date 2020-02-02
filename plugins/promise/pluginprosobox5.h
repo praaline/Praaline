@@ -5,8 +5,8 @@
 #include <QString>
 #include <QStringList>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusAnnotation.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
 using namespace Praaline::Core;
 
 #include "annotationpluginpraatscript.h"

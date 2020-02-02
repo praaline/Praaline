@@ -2,7 +2,7 @@
 #define TRANSCRIBERWIDGET_H
 
 #include <QMainWindow>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "visualisation/SimpleVisualiserWidget.h"
 
 namespace Ui {

@@ -17,7 +17,7 @@
 #define _INTERVAL_MODEL_H_
 
 #include "SparseValueModel.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 /**
  * Model containing sparse data (points with some properties) of which

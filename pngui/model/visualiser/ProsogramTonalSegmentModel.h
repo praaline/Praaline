@@ -1,7 +1,7 @@
 #ifndef PROSOGRAMTONALSEGMENTMODEL_H
 #define PROSOGRAMTONALSEGMENTMODEL_H
 
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "svcore/system/System.h"
 #include "svcore/base/XmlExportable.h"
 #include "svcore/data/model/SparseModel.h"

@@ -23,8 +23,9 @@
 #include <QPointer>
 #include <QDebug>
 
-#include "annotation/Interval.h"
-#include "annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/Interval.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+
 #include "Token.h"
 #include "TokenUnit.h"
 #include "Tokenizer.h"

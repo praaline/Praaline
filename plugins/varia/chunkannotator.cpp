@@ -1,11 +1,11 @@
 #include <QObject>
 #include <QString>
 #include <QList>
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 
 #include "chunkannotator.h"
 

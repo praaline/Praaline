@@ -19,7 +19,7 @@
 #include <QString>
 #include <vector>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 /**
  * Mix in synthetic notes produced by resampling a prerecorded

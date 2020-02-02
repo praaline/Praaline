@@ -18,7 +18,7 @@
 #include <QString>
 #include <QList>
 // Praaline.Core
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 // DisMo
 #include "DictionaryEntry.h"

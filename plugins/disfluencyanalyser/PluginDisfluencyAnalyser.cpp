@@ -6,13 +6,15 @@
 #include <ExtensionSystemConstants>
 
 #include "PluginDisfluencyAnalyser.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusBookmark.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserCorpusBookmark.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+using namespace Praaline::Core;
 
 #include "Disfluency.h"
 #include "DisfluencyAnalyserTool.h"

@@ -12,15 +12,15 @@
 #include <QtCharts/QBarCategoryAxis>
 QT_CHARTS_USE_NAMESPACE
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusSpeaker.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/statistics/StatisticalSummary.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusSpeaker.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Statistics/StatisticalSummary.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"

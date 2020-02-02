@@ -4,7 +4,7 @@
 #include <QString>
 #include <QList>
 #include <QPointer>
-#include "pncore/base/DataType.h"
+#include "PraalineCore/Base/DataType.h"
 
 namespace Praaline {
 namespace Core {

@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <QList>
-#include "pncore/base/RealTime.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
 
 namespace Praaline {
 namespace Core {

@@ -7,8 +7,8 @@
 
 CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11
 
-INCLUDEPATH += . .. ../.. ../../pncore
-DEPENDPATH += . .. ../.. ../../pncore
+INCLUDEPATH += . .. ../.. ../../praaline-core/include
+DEPENDPATH += . .. ../.. ../../praaline-core
 
 TARGET = praaline-crf
 

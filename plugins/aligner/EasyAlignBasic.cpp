@@ -9,18 +9,18 @@
 #include <QMutex>
 #include <QCoreApplication>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/Interval.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/Interval.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
+#include "PraalineASR/Phonetiser/ExternalPhonetiser.h"
 using namespace Praaline::ASR;
 
 #include "EasyAlignBasic.h"

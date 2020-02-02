@@ -13,9 +13,9 @@ using namespace QtilitiesCoreGui;
 #include "structureeditors/MetadataStructureEditor.h"
 #include "structureeditors/AnnotationStructureEditor.h"
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
-#include "pncore/datastore/FileDatastore.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
 using namespace Praaline::Core;
 
 #include "svcore/base/RecentFiles.h"

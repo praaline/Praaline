@@ -1,13 +1,13 @@
 #include "CreateSequenceAnnotationDialog.h"
 #include "ui_CreateSequenceAnnotationDialog.h"
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "annotation/AnnotationTier.h"
-#include "annotation/SequenceTier.h"
-#include "annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Annotation/AnnotationTier.h"
+#include "PraalineCore/Annotation/SequenceTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
 #include "CorpusRepositoriesManager.h"

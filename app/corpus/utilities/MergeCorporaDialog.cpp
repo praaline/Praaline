@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QInputDialog>
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 #include "MergeCorporaDialog.h"

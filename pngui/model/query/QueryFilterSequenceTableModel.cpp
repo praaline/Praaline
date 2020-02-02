@@ -1,5 +1,5 @@
-#include "pncore/query/QueryDefinition.h"
-#include "pncore/query/QueryFilterSequence.h"
+#include "PraalineCore/Query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryFilterSequence.h"
 using namespace Praaline::Core;
 
 #include "QueryFilterSequenceTableModel.h"

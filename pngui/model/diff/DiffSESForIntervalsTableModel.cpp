@@ -2,10 +2,10 @@
 #include <QObject>
 #include <QList>
 #include <QAbstractTableModel>
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
-#include "pncore/diff/dtl/dtl.h"
-#include "pncore/diff/DiffIntervals.h"
+#include "PraalineCore/Diff/dtl/dtl.h"
+#include "PraalineCore/Diff/DiffIntervals.h"
 
 #include "DiffSESForIntervalsTableModel.h"
 

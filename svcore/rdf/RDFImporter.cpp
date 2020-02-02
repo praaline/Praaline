@@ -22,7 +22,7 @@
 #include <cmath>
 
 #include "base/ProgressReporter.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include "data/model/SparseOneDimensionalModel.h"
 #include "data/model/SparseTimeValueModel.h"

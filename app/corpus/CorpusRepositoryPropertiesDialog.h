@@ -2,7 +2,7 @@
 #define CORPUSREPOSITORYPROPERTIESDIALOG_H
 
 #include <QDialog>
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
 
 namespace Ui {
 class CorpusRepositoryPropertiesDialog;

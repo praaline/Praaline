@@ -9,14 +9,14 @@
 #include "CompareAnnotationsWidget.h"
 #include "ui_CompareAnnotationsWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/diff/DiffIntervals.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Diff/DiffIntervals.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/diff/DiffSESForIntervalsTableModel.h"

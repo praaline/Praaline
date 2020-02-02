@@ -8,8 +8,8 @@
 #include <QMap>
 #include <QMessageBox>
 
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
 #include "data/model/Model.h"
@@ -19,7 +19,7 @@ using namespace Praaline::Core;
 #include "view/PaneStack.h"
 #include "view/ViewManager.h"
 
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
 #include <QMap>

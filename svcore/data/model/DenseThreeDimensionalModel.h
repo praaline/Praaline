@@ -19,7 +19,7 @@
 #include "Model.h"
 #include "TabularModel.h"
 #include "base/ZoomConstraint.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <QMutex>
 #include <QVector>

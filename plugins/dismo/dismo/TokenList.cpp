@@ -18,8 +18,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QFileInfo>
-#include "annotation/IntervalTier.h"
-#include "annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "TokenList.h"
 using namespace DisMoAnnotator;
 

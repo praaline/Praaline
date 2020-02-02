@@ -9,7 +9,7 @@
 #include <QFont>
 #include <QFontMetrics>
 
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 
 #include "IntervalSequenceEditor.h"

@@ -9,8 +9,8 @@
 #include <QMap>
 #include <QColor>
 #include <QAbstractTableModel>
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 
 namespace Praaline {
 namespace Core {

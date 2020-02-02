@@ -1,7 +1,7 @@
 #include <QDebug>
 #include <QMap>
 #include <QSharedPointer>
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 #include "AnalyserDisfluencies.h"

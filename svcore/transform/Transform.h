@@ -16,10 +16,10 @@
 #ifndef _TRANSFORM_H_
 #define _TRANSFORM_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "base/XmlExportable.h"
 #include "base/Window.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <vamp-hostsdk/PluginBase.h>
 

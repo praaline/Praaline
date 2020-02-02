@@ -23,8 +23,8 @@
 #ifndef _MIDI_FILE_WRITER_H_
 #define _MIDI_FILE_WRITER_H_
 
-#include "base/RealTime.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 #include <QString>
 

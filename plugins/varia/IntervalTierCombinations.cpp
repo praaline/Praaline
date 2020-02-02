@@ -8,17 +8,17 @@
 #include <QPointer>
 #include <QTextStream>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/SequenceTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/SequenceTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "IntervalTierCombinations.h"
 
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 struct IntervalTierCombinationsData {
     QString intervalsLevelA;

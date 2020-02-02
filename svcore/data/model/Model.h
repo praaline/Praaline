@@ -20,7 +20,7 @@
 #include <string>
 #include <QObject>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "base/XmlExportable.h"
 #include "base/Playable.h"
 #include "base/DataExportOptions.h"

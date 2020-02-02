@@ -4,14 +4,14 @@
 #include <QProgressBar>
 #include <QStandardItemModel>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusSpeaker.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusSpeaker.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"

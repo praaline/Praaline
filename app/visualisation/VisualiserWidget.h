@@ -5,7 +5,7 @@
 #include <QMap>
 #include <QPair>
 #include <QPointer>
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "SimpleVisualiserWidget.h"
 
 class LayerTreeDialog;

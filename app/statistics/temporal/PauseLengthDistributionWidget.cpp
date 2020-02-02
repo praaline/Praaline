@@ -7,10 +7,10 @@
 #include <QtCharts/QBarCategoryAxis>
 QT_CHARTS_USE_NAMESPACE
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/statistics/HistogramCalculator.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Statistics/HistogramCalculator.h"
 using namespace Praaline::Core;
 
 #include "pngui/FlowLayout.h"

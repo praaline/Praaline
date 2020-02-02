@@ -2,8 +2,8 @@
 #define NEWCORPUSREPOSITORYWIZARD_H
 
 #include <QWizard>
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
-#include "pncore/datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
 
 namespace Ui {
 class CorpusRepositoryCreateWizard;

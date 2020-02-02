@@ -9,19 +9,18 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Statistics/WordAlign.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/phonetiser/DictionaryPhonetiser.h"
-#include "pnlib/asr/phonetiser/PhonemeTranslation.h"
-#include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
+#include "PraalineASR/Phonetiser/DictionaryPhonetiser.h"
+#include "PraalineASR/Phonetiser/PhonemeTranslation.h"
+#include "PraalineASR/Sphinx/SphinxPronunciationDictionary.h"
 using namespace Praaline::ASR;
-
-#include "pncore/statistics/WordAlign.h"
 
 #include "PFCPhonetiser.h"
 

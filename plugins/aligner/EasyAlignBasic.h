@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QString>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 
 #include "annotationpluginpraatscript.h"
 

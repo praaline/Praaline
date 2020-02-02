@@ -1,6 +1,6 @@
 #include <QString>
 
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "LaTexTranscriptionBuilder.h"

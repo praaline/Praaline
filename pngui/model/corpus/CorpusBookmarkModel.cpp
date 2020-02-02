@@ -1,4 +1,4 @@
-#include "pncore/corpus/CorpusBookmark.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
 using namespace Praaline::Core;
 
 #include "CorpusBookmarkModel.h"

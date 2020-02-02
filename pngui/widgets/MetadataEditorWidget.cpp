@@ -6,13 +6,13 @@
 #include <QGridLayout>
 #include <QScrollArea>
 
-#include "pncore/corpus/CorpusParticipation.h"
-#include "pncore/corpus/CorpusObject.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/structure/NameValueList.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/NameValueListDatastore.h"
+#include "PraalineCore/Corpus/CorpusParticipation.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Structure/NameValueList.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/NameValueListDatastore.h"
 using namespace Praaline::Core;
 
 // Qt property browser

@@ -6,8 +6,8 @@
 #include <QMap>
 #include <QHash>
 #include <QDebug>
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "CorpusImporter.h"
 
 CorpusImporter::CorpusImporter()

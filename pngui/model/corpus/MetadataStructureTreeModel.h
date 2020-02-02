@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QStandardItem>
 #include <QAbstractItemModel>
-#include "pncore/corpus/CorpusObject.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
 
 namespace Praaline {
 namespace Core {

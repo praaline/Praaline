@@ -8,7 +8,7 @@
 #include <QItemSelection>
 #include <QIdentityProxyModel>
 #include <QModelIndex>
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "model/annotation/AnnotationMultiTierTableModel.h"
 #include "TimelineEditorWidgetBase.h"
 #include "SelectionListDataProviderProxy.h"

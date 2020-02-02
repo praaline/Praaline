@@ -8,12 +8,12 @@
 #include <QFileInfo>
 #include <QDir>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusParticipation.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusParticipation.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "svcore/data/model/SparseTimeValueModel.h"
@@ -21,8 +21,8 @@ using namespace Praaline::Core;
 #include "ProsogramTonalSegmentModel.h"
 #include "ProsogramModel.h"
 
-#include "pncore/interfaces/praat/PraatPointTierFile.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Praat/PraatPointTierFile.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 struct ProsogramModelData {
     ProsogramModelData () :

@@ -8,7 +8,7 @@
 #include <QDebug>
 #include <QApplication>
 #include <QDir>
-#include "pncore/corpus/CorpusBookmark.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
 
 #include "DisfluencyPatternDetector.h"
 

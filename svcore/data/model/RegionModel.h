@@ -17,7 +17,7 @@
 #define _REGION_MODEL_H_
 
 #include "IntervalModel.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 /**
  * RegionModel -- a concrete IntervalModel for intervals associated

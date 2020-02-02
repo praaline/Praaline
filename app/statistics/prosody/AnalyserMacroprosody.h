@@ -6,7 +6,7 @@
 #include <QString>
 #include <QList>
 #include <QStandardItemModel>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Praaline {
 namespace Core {

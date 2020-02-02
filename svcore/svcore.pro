@@ -44,8 +44,10 @@ QT -= gui
 
 TARGET = svcore
 
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+
 DEPENDPATH += . data plugin plugin/api/alsa
-INCLUDEPATH += . data plugin plugin/api/alsa ../dataquay ../pncore
+INCLUDEPATH += . data plugin plugin/api/alsa ../dataquay ../praaline-core/include
 OBJECTS_DIR = o
 MOC_DIR = o
 

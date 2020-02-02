@@ -4,12 +4,12 @@
 #include <QMap>
 #include <QMessageBox>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 // Praaline GUI widgets
@@ -37,8 +37,8 @@ using namespace Praaline::Core;
 #include "qtvariantproperty.h"
 #include "qttreepropertybrowser.h"
 
-#include "pnlib/asr/htk/HTKForcedAligner.h"
-#include "pnlib/asr/syllabifier/SyllabifierEasy.h"
+#include "PraalineASR/HTK/HTKForcedAligner.h"
+#include "PraalineASR/Syllabifier/SyllabifierEasy.h"
 using namespace Praaline::ASR;
 
 #include "ForcedAlignmentWidget.h"

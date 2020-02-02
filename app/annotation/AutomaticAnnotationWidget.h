@@ -4,7 +4,7 @@
 #include <QList>
 #include <QMap>
 #include <QMainWindow>
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 #include "app/interfaces/IAnnotationPlugin.h"
 using namespace Praaline::Plugins;
 

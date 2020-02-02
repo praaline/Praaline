@@ -21,7 +21,7 @@
 #ifndef _RESAMPLER_H_
 #define _RESAMPLER_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 #include <sys/types.h>
 

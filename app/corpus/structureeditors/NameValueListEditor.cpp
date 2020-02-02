@@ -14,8 +14,8 @@
 #include <QFormLayout>
 #include <QMessageBox>
 
-#include "pncore/structure/NameValueList.h"
-#include "pncore/datastore/NameValueListDatastore.h"
+#include "PraalineCore/Structure/NameValueList.h"
+#include "PraalineCore/Datastore/NameValueListDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/NameValueListTableModel.h"

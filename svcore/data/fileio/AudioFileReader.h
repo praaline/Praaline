@@ -18,7 +18,7 @@
 
 #include <QString>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "FileSource.h"
 
 #include <vector>

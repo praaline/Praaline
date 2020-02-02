@@ -2,10 +2,10 @@
 #include <QString>
 #include <QColor>
 
-#include "pncore/query/QueryDefinition.h"
-#include "pncore/query/QueryOccurrence.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryOccurrence.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "QueryOccurrenceTableModel.h"

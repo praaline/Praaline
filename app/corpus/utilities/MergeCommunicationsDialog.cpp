@@ -1,7 +1,7 @@
 #include "MergeCommunicationsDialog.h"
 #include "ui_MergeCommunicationsDialog.h"
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 MergeCommunicationsDialog::MergeCommunicationsDialog(Corpus *corpus, QWidget *parent) :

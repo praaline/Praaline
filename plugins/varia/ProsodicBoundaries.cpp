@@ -1,12 +1,12 @@
 #include "math.h"
 #include <QPointer>
 #include <QDebug>
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/base/RealValueList.h"
-#include "pncore/statistics/Measures.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Base/RealValueList.h"
+#include "PraalineCore/Statistics/Measures.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "ProsodicBoundaries.h"

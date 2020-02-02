@@ -9,20 +9,20 @@
 #include <QElapsedTimer>
 #include <QMutex>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/PointTier.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/SequenceTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/interfaces/tei/TEIHeader.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/PointTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/SequenceTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/TEI/TEIHeader.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/phonetiser/DictionaryPhonetiser.h"
-#include "pnlib/asr/htk/HTKForcedAligner.h"
-#include "pnlib/asr/syllabifier/SyllabifierEasy.h"
+#include "PraalineASR/Phonetiser/DictionaryPhonetiser.h"
+#include "PraalineASR/HTK/HTKForcedAligner.h"
+#include "PraalineASR/Syllabifier/SyllabifierEasy.h"
 using namespace Praaline::ASR;
 
 #include "ORFEO.h"
@@ -164,7 +164,7 @@ QString ORFEO::readOrfeoFile(Praaline::Core::CorpusCommunication *com)
     return ret.trimmed();
 }
 
-#include "pncore/diff/DiffIntervals.h"
+#include "PraalineCore/Diff/DiffIntervals.h"
 
 QString ORFEO::mapTokensToDisMo(Praaline::Core::CorpusCommunication *com)
 {

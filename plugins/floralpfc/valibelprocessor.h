@@ -2,7 +2,7 @@
 #define VALIBELPROCESSOR_H
 
 #include <QString>
-#include "pncore/corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
 using namespace Praaline::Core;
 
 class ValibelProcessor

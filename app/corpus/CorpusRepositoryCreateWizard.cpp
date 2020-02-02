@@ -7,12 +7,12 @@
 #include <QStandardItemModel>
 #include <QDebug>
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserAnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserMetadataStructure.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "CorpusRepositoryCreateWizard.h"

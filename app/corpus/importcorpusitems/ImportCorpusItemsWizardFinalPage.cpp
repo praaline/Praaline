@@ -5,13 +5,13 @@
 #include "ImportCorpusItemsWizardFinalPage.h"
 #include "ui_ImportCorpusItemsWizardFinalPage.h"
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 
-#include "pncore/interfaces/praat/PraatTextGrid.h"
-#include "pncore/interfaces/transcriber/TranscriberAnnotationGraph.h"
-#include "pncore/interfaces/subtitles/SubtitlesFile.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Transcriber/TranscriberAnnotationGraph.h"
+#include "PraalineCore/Interfaces/Subtitles/SubtitlesFile.h"
 
 struct ImportCorpusItemsWizardFinalPageData {
     ImportCorpusItemsWizardFinalPageData(QPointer<Corpus> corpus,

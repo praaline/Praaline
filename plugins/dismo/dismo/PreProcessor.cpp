@@ -19,7 +19,9 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
-#include "annotation/IntervalTier.h"
+
+#include "PraalineCore/Annotation/IntervalTier.h"
+
 #include "TokenList.h"
 #include "Tokenizer.h"
 #include "DictionaryEntry.h"

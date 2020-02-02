@@ -23,8 +23,8 @@
 #define _MIDI_FILE_READER_H_
 
 #include "DataFileReader.h"
-#include "base/BaseTypes.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/BaseTypes.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <map>
 #include <set>

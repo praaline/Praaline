@@ -19,7 +19,7 @@
 #include "SparseModel.h"
 #include "NoteData.h"
 #include "base/PlayParameterRepository.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <QStringList>
 

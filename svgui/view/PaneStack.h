@@ -20,7 +20,7 @@
 
 #include <map>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class QWidget;
 class QLabel;

@@ -6,12 +6,12 @@
 #include <QTextStream>
 #include <QTime>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
-#include "pncore/interfaces/praat/PraatPitchFile.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Praat/PraatPitchFile.h"
 using namespace Praaline::Core;
 
 #include "math.h"

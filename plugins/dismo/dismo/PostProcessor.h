@@ -17,7 +17,7 @@
 
 #include <QString>
 // Praaline.Core
-#include "annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 // DisMo
 #include "TokenList.h"
 

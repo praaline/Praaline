@@ -1,7 +1,7 @@
 #include "ProsogramLayer.h"
 
-#include "pncore/base/RealTime.h"
-#include "pncore/language/PhoneticAlphabet.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Language/PhoneticAlphabet.h"
 using namespace Praaline::Core;
 
 #include "svcore/data/model/Model.h"

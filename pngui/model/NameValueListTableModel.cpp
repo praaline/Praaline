@@ -1,5 +1,5 @@
 #include <QPointer>
-#include "pncore/structure/NameValueList.h"
+#include "PraalineCore/Structure/NameValueList.h"
 using namespace Praaline::Core;
 #include "NameValueListTableModel.h"
 

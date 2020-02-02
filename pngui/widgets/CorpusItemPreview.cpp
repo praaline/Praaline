@@ -13,10 +13,10 @@
 #include <QTreeWidget>
 #include <QtWidgets>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/AnnotationStructure.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
 struct CorpusItemPreviewData {

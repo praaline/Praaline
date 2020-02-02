@@ -2,10 +2,10 @@
 #include <QHash>
 #include <qmath.h>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
-#include "pncore/statistics/StatisticalSummary.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalSummary.h"
 
 #include "AnalyserSegmentDuration.h"
 

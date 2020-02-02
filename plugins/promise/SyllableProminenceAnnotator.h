@@ -7,10 +7,10 @@
 #include <QHash>
 #include <QPair>
 #include <QTextStream>
-#include "pncore/base/RealValueList.h"
-#include "pncore/annotation/Interval.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Base/RealValueList.h"
+#include "PraalineCore/Annotation/Interval.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 
 struct SyllableProminenceAnnotatorData;
 

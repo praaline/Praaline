@@ -5,9 +5,9 @@
 #include <QString>
 #include <QList>
 
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/corpus/CorpusBookmark.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
 using namespace Praaline::Core;
 
 struct DisfluencyPatternDetectorData;

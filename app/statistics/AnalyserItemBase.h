@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QPointer>
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
 
 namespace Praaline {
 namespace Core {

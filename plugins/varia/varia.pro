@@ -29,8 +29,23 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces ../../svcore
-DEPENDPATH += . .. ../.. ../../pncore ../../app/interfaces ../../svcore
+INCLUDEPATH += . .. ../.. ../../app/interfaces ../../svcore
+DEPENDPATH += . .. ../.. ../../app/interfaces ../../svcore
+
+# Dependency: Praaline Core
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+INCLUDEPATH += ../../praaline-core/include
+DEPENDPATH += ../../praaline-core
+
+# Dependency: Praaline Media
+DEFINES += USE_NAMESPACE_PRAALINE_MEDIA
+INCLUDEPATH += ../../praaline-media/include
+DEPENDPATH += ../../praaline-media
+
+# Dependency: Praaline ASR
+DEFINES += USE_NAMESPACE_PRAALINE_ASR
+INCLUDEPATH += ../../praaline-asr/include
+DEPENDPATH += ../../praaline-asr
 
 # Qtilities include for plugin interfaces
 QTILITIES += extension_system
@@ -42,15 +57,15 @@ include(../../dependencies/qtilities/src/Qtilities.pri)
 # Application components
 LIBS +=  \
         -L../../svcore/$${COMPONENTSPATH} -lsvcore \
-        -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr \
-        -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
-        -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
+        -L../../praaline-asr/$${COMPONENTSPATH} -lpraaline-asr$${PRAALINE_LIB_POSTFIX} \
+        -L../../praaline-media/$${COMPONENTSPATH} -lpraaline-media$${PRAALINE_LIB_POSTFIX} \
+        -L../../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
         ../../svcore/$${COMPONENTSPATH}/libsvcore.a \
-        ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a \
-        ../../pnlib/media/$${COMPONENTSPATH}/libpraaline-media.a \
-        ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-asr/$${COMPONENTSPATH}/libpraaline-asr$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-media/$${COMPONENTSPATH}/libpraaline-media$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \
     YizhiScripts.h \

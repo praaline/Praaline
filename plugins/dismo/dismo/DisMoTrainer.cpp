@@ -19,8 +19,10 @@
 #include <QFile>
 #include <QTextStream>
 #include <QCoreApplication>
-#include "interfaces/praat/PraatTextGrid.h"
-#include "annotation/AnnotationTierGroup.h"
+
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+
 #include "TokenList.h"
 #include "PreProcessor.h"
 #include "POSTagger.h"

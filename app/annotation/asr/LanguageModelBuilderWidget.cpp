@@ -6,12 +6,12 @@
 #include "LanguageModelBuilderWidget.h"
 #include "ui_LanguageModelBuilderWidget.h"
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/AnnotationStructure.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/sphinx/SphinxLanguageModelBuilder.h"
+#include "PraalineASR/Sphinx/SphinxLanguageModelBuilder.h"
 using namespace Praaline::ASR;
 
 struct LanguageModelBuilderWidgetData {

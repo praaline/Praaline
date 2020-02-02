@@ -17,9 +17,9 @@
 #include "svapp/audioio/PlaySpeedRangeMapper.h"
 #include "svapp/framework/Document.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusRecording.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusRecording.h"
 using namespace Praaline::Core;
 
 #include "SimpleVisualiserWidget.h"

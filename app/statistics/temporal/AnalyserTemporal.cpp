@@ -9,7 +9,7 @@
 #include <QMutex>
 #include <QThreadPool>
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 #include "AnalyserTemporal.h"

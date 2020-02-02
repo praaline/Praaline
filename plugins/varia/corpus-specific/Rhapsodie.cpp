@@ -5,21 +5,20 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDomDocument>
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/PointTier.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
-#include "pncore/interfaces/praat/PraatPitchFile.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/PointTier.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Praat/PraatPitchFile.h"
+#include "PraalineCore/Statistics/WordAlign.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/phonetiser/DictionaryPhonetiser.h"
-#include "pnlib/asr/htk/HTKForcedAligner.h"
-#include "pnlib/asr/syllabifier/SyllabifierEasy.h"
+#include "PraalineASR/Phonetiser/DictionaryPhonetiser.h"
+#include "PraalineASR/HTK/HTKForcedAligner.h"
+#include "PraalineASR/Syllabifier/SyllabifierEasy.h"
 using namespace Praaline::ASR;
-
-#include "pncore/statistics/WordAlign.h"
 
 #include "ProsodicBoundaries.h"
 #include "Rhapsodie.h"

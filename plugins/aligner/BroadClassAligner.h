@@ -7,8 +7,8 @@
 #include <QList>
 #include <QHash>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 struct BroadClassAlignerData;

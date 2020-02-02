@@ -11,8 +11,8 @@
 #include "CorpusItemSelectorWidget.h"
 #include "ui_CorpusItemSelectorWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserCorpusBookmark.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"

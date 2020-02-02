@@ -7,7 +7,7 @@
 #include <QPair>
 #include <QList>
 #include <QHash>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Praaline {
 namespace Core {

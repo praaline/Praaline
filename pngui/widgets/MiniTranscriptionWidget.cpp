@@ -9,10 +9,10 @@
 #include <QMutex>
 #include "MiniTranscriptionWidget.h"
 
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 struct MiniTranscriptionWidgetData {

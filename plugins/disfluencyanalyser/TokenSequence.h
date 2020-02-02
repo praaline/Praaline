@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QString>
-#include "annotation/IntervalTier.h"
-#include "annotation/Interval.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 
 class TokenSequence : public QObject

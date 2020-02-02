@@ -7,8 +7,8 @@
 #include "ImportCorpusItemsWizardCorrespondancesPage.h"
 #include "ImportCorpusItemsWizardFinalPage.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/interfaces/ImportAnnotations.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Interfaces/ImportAnnotations.h"
 using namespace Praaline::Core;
 
 #include "ImportCorpusItemsWizard.h"

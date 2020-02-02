@@ -3,7 +3,7 @@
 #include "nodeeditor/NodeDataModel.h"
 #include <memory>
 
-#include "pncore/structure/AnnotationStructure.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
 using namespace Praaline::Core;
 
 #include "AnnotationAttributeNodeData.h"

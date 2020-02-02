@@ -3,9 +3,9 @@
 #include <QString>
 #include <QList>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusRecording.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusRecording.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "CorpusRecordingTableModel.h"

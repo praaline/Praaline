@@ -4,7 +4,7 @@
 #include <QString>
 #include <QMainWindow>
 #include <QModelIndex>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Ui {
 class TimelineVisualisationWidget;

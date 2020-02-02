@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class Model;
 class RDFImporterImpl;

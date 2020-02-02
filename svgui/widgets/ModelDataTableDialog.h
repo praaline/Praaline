@@ -18,7 +18,7 @@
 
 #include <QMainWindow>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class TabularModel;
 class ModelDataTableModel;

@@ -20,7 +20,7 @@
 
 #include <sndfile.h>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class DenseTimeValueModel;
 class MultiSelection;

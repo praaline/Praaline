@@ -19,7 +19,7 @@
 #include <QString>
 
 #include "FileSource.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class AudioFileReader;
 class ProgressReporter;

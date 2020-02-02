@@ -18,7 +18,7 @@
 
 #include "Model.h"
 #include "PathModel.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include <QString>
 #include <QStringList>

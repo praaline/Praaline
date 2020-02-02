@@ -29,8 +29,13 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../app/interfaces
-DEPENDPATH += . .. ../.. ../../pncore
+INCLUDEPATH += . .. ../.. ../../app/interfaces
+DEPENDPATH += . .. ../..
+
+# Dependency: PraalineCore
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+INCLUDEPATH += ../../praaline-core/include
+DEPENDPATH += ../../praaline-core
 
 # Qtilities include for plugin interfaces
 QTILITIES += extension_system
@@ -38,7 +43,6 @@ QTILITIES_SOURCE_BASE  = $$PWD/../../dependencies/qtilities
 QTILITIES_BUILD_BASE   = $$OUT_PWD/../../dependencies/qtilities
 QTILITIES_DEPENDENCIES = $$OUT_PWD/../../dependencies
 include(../../dependencies/qtilities/src/Qtilities.pri)
-
 
 # Build folder organisation
 CONFIG( debug, debug|release ) {
@@ -48,12 +52,13 @@ CONFIG( debug, debug|release ) {
     # release
     COMPONENTSPATH = build/release
 }
+
 # Application components
 LIBS +=  \
-        -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX} \
+        -L../../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
-        ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
     pluginprosobox_global.h \

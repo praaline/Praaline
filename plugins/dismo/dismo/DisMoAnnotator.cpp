@@ -14,7 +14,9 @@
 
 #include <QString>
 #include <QCoreApplication>
-#include "annotation/AnnotationTierGroup.h"
+
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+
 #include "PreProcessor.h"
 #include "BoundaryDetector.h"
 #include "DisfluencyDetector.h"

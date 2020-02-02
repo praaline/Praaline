@@ -2,8 +2,8 @@
 #define CORPUSMODEWIDGET_H
 
 #include <QWidget>
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
 
 namespace Ui {
 class CorpusModeWidget;

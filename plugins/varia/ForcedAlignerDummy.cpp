@@ -2,7 +2,7 @@
 #include <QList>
 #include <QStringList>
 
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "ForcedAlignerDummy.h"

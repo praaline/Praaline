@@ -1,4 +1,4 @@
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 
 #include "KappaStatisticsCalculator.h"

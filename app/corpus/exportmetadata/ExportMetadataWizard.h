@@ -2,8 +2,8 @@
 #define EXPORTMETADATAWIZARD_H
 
 #include <QWizard>
-#include "pncore/corpus/CorpusObject.h"
-#include "pncore/corpus/CorpusObjectInfo.h"
+#include "PraalineCore/Corpus/CorpusObject.h"
+#include "PraalineCore/Corpus/CorpusObjectInfo.h"
 using namespace Praaline::Core;
 
 namespace Ui {

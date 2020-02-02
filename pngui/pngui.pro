@@ -14,8 +14,10 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 
 TARGET = pngui
 
-INCLUDEPATH += . .. ../pncore ../svcore ../svgui
-DEPENDPATH += . .. ../pncore ../svcore ../svgui
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+
+INCLUDEPATH += . .. ../praaline-core/include ../svcore ../svgui
+DEPENDPATH += . .. ../praaline-core ../svcore ../svgui
 
 # Qtilities configuration
 QTILITIES += logging

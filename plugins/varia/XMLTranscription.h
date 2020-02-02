@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QXmlStreamReader>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 class XMLTranscription
 {

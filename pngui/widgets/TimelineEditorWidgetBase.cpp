@@ -7,7 +7,7 @@
 #include <QItemSelection>
 #include <QGridLayout>
 #include <QWidget>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 #include "grid/QTextFilter.h"
 #include "grid/QFilterModel.h"

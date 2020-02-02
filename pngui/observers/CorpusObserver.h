@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QPointer>
 
-#include "pncore/datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
 namespace Praaline {
 namespace Core {
 class Corpus;

@@ -1,6 +1,6 @@
 # Praaline Plugin
 # Forced Alignment
-# (c) George Christodoulides 2014-2015
+# (c) George Christodoulides 2014-2020
 
 ! include( ../../common.pri ) {
     error( Could not find the common.pri file! )
@@ -29,8 +29,23 @@ else {
     DESTDIR = ../../app/build/plugins/
 }
 
-INCLUDEPATH += . .. ../.. ../../pncore ../../pnlib ../../app/interfaces
-DEPENDPATH += . .. ../.. ../../pncore ../../pnlib
+INCLUDEPATH += . .. ../.. ../../app/interfaces ../../pnlib
+DEPENDPATH += . .. ../..
+
+# Dependency: Praaline Core
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+INCLUDEPATH += ../../praaline-core/include
+DEPENDPATH += ../../praaline-core
+
+# Dependency: Praaline Media
+DEFINES += USE_NAMESPACE_PRAALINE_MEDIA
+INCLUDEPATH += ../../praaline-media/include
+DEPENDPATH += ../../praaline-media
+
+# Dependency: Praaline ASR
+DEFINES += USE_NAMESPACE_PRAALINE_ASR
+INCLUDEPATH += ../../praaline-asr/include
+DEPENDPATH += ../../praaline-asr
 
 # Qtilities include for plugin interfaces
 QTILITIES += extension_system
@@ -64,19 +79,19 @@ CONFIG( debug, debug|release ) {
 }
 # Application components
 win32 {
-    LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
+    LIBS += -L../../praaline-asr/$${COMPONENTSPATH} -lpraaline-asr$${PRAALINE_LIB_POSTFIX} -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase -liconv
 }
 unix {
-    LIBS += -L../../pnlib/asr/$${COMPONENTSPATH} -lpraaline-asr -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
+    LIBS += -L../../praaline-asr/$${COMPONENTSPATH} -lpraaline-asr$${PRAALINE_LIB_POSTFIX} -L$${POCKETSPHINX_BASE_PATH}/lib -lpocketsphinx -lsphinxbase
 }
-LIBS += -L../../pnlib/media/$${COMPONENTSPATH} -lpraaline-media \
-        -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
-        -L../../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX}
+LIBS += -L../../pnlib/featextract/$${COMPONENTSPATH} -lpraaline-featextract \
+        -L../../praaline-media/$${COMPONENTSPATH} -lpraaline-media$${PRAALINE_LIB_POSTFIX} \
+        -L../../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX}
 PRE_TARGETDEPS += \
-        ../../pnlib/asr/$${COMPONENTSPATH}/libpraaline-asr.a
-        ../../pnlib/mediautil/$${COMPONENTSPATH}/libpraaline-media.a
         ../../pnlib/featextract/$${COMPONENTSPATH}/libpraaline-featextract.a
-        ../../pncore/$${COMPONENTSPATH}/libpncore$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-asr/$${COMPONENTSPATH}/libpraaline-asr$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-media/$${COMPONENTSPATH}/libpraaline-media$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
     pluginaligner_global.h \

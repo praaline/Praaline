@@ -8,10 +8,10 @@
 #include "ImportMetadataWizard.h"
 #include "ui_ImportMetadataWizard.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
 
 #include "pngui/model/corpus/CorpusCommunicationTableModel.h"
 #include "pngui/model/corpus/CorpusSpeakerTableModel.h"

@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QString>
 #include <QMainWindow>
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Ui {
 class ExtractSoundBitesWidget;

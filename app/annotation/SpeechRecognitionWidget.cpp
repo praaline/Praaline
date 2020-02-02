@@ -1,7 +1,7 @@
 #include "SpeechRecognitionWidget.h"
 #include "ui_SpeechRecognitionWidget.h"
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/CorpusBookmarkModel.h"

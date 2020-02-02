@@ -5,7 +5,7 @@
 #include <QString>
 #include <QPointer>
 
-#include "pncore/corpus/Corpus.h"
+#include "PraalineCore/Corpus/Corpus.h"
 
 struct LongSoundAlignerData;
 

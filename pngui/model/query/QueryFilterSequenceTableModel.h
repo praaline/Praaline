@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QPointer>
 #include <QAbstractTableModel>
-#include "pncore/query/QueryDefinition.h"
-#include "pncore/query/QueryFilterSequence.h"
+#include "PraalineCore/Query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryFilterSequence.h"
 
 class QueryFilterSequenceTableModel : public QAbstractTableModel
 {

@@ -9,11 +9,11 @@
 #include <QTreeView>
 #include <QProgressDialog>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"

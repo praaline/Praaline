@@ -1,6 +1,6 @@
 #include <QDebug>
 #include "AnnotationElementTableModel.h"
-#include "pncore/annotation/AnnotationElement.h"
+#include "PraalineCore/Annotation/AnnotationElement.h"
 using namespace Praaline::Core;
 
 struct AnnotationTableModelData {

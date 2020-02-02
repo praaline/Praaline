@@ -4,8 +4,8 @@
 #include <QPointer>
 #include <QWizardPage>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
 using namespace Praaline::Core;
 
 namespace Ui {

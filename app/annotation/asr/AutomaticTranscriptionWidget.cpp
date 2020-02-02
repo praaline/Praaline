@@ -4,14 +4,14 @@
 #include <QTabWidget>
 #include <QMessageBox>
 
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/sphinx/SphinxConfiguration.h"
-#include "pnlib/asr/sphinx/SphinxAutoTranscriber.h"
+#include "PraalineASR/Sphinx/SphinxConfiguration.h"
+#include "PraalineASR/Sphinx/SphinxAutoTranscriber.h"
 using namespace Praaline::ASR;
 
 #include "pngui/widgets/CorpusItemSelectorWidget.h"

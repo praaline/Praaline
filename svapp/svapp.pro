@@ -47,8 +47,10 @@ QT += network xml gui widgets
 
 TARGET = svapp
 
-DEPENDPATH += . ../pncore ../svcore ../svgui
-INCLUDEPATH += . ../pncore ../svcore ../svgui
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+
+DEPENDPATH += . ../praaline-core ../svcore ../svgui
+INCLUDEPATH += . ../praaline-core/include ../svcore ../svgui
 OBJECTS_DIR = o
 MOC_DIR = o
 

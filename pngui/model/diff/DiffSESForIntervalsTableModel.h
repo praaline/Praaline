@@ -5,9 +5,9 @@
 #include <QList>
 #include <QColor>
 #include <QAbstractTableModel>
-#include "pncore/annotation/Interval.h"
-#include "pncore/diff/dtl/dtl.h"
-#include "pncore/diff/DiffIntervals.h"
+#include "PraalineCore/Annotation/Interval.h"
+#include "PraalineCore/Diff/dtl/dtl.h"
+#include "PraalineCore/Diff/DiffIntervals.h"
 
 class DiffSESforIntervalsTableModel : public QAbstractTableModel
 {

@@ -16,7 +16,7 @@
 #ifndef _PREFERENCES_H_
 #define _PREFERENCES_H_
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 #include "PropertyContainer.h"
 
 #include "Window.h"

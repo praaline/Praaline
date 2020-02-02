@@ -4,7 +4,7 @@
 #include <QString>
 #include <QWidget>
 #include <QMainWindow>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Praaline {
 namespace Core {

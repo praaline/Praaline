@@ -7,13 +7,13 @@
 #include <QTextStream>
 #include <ExtensionSystemConstants>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusBookmark.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserCorpusBookmark.h"
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusBookmark.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserCorpusBookmark.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 #include "ProsodicBoundariesAnnotator.h"
 #include "SyllableProminenceAnnotator.h"

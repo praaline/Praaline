@@ -3,10 +3,10 @@
 #include <QStandardItemModel>
 #include <QFileInfo>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/datastore/MetadataDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
 using namespace Praaline::Core;
 
 #include "DecodeFilenameToMetadataDialog.h"

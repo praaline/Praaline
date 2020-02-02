@@ -1,4 +1,4 @@
-#include "pncore/query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryDefinition.h"
 using namespace Praaline::Core;
 
 #include "QueryDefinitionTreeModel.h"

@@ -8,7 +8,7 @@ namespace Ui {
 class ExportVisualisationDialog;
 }
 
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
 struct ExportVisualisationDialogData;

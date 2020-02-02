@@ -2,7 +2,7 @@
 #define ANNOTATIONTABLEMODEL_H
 
 #include <QAbstractTableModel>
-#include "pncore/annotation/AnnotationElement.h"
+#include "PraalineCore/Annotation/AnnotationElement.h"
 
 struct AnnotationTableModelData;
 

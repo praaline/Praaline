@@ -3,11 +3,11 @@
 #include <QList>
 #include <QPointer>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusObjectInfo.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
-#include "pncore/datastore/MetadataDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusObjectInfo.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"

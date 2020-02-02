@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/Interval.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/Interval.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 #include "Disfluency.h"
 
 class DisfluencyAnalyserTool : public QObject

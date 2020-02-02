@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QAbstractItemModel>
-#include "pncore/query/QueryDefinition.h"
+#include "PraalineCore/Query/QueryDefinition.h"
 
 class QueryDefinitionTreeModel : public QAbstractItemModel
 {

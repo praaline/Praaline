@@ -5,9 +5,9 @@
 #include <QPointer>
 #include <QString>
 #include <QStringList>
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusAnnotation.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusAnnotation.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 #include "AnnotationPluginPraatScript.h"
 

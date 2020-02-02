@@ -18,7 +18,7 @@
 
 #include "SparseValueModel.h"
 #include "base/PlayParameterRepository.h"
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 /**
  * Time/value point type for use in a SparseModel or SparseValueModel.

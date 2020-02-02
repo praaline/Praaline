@@ -26,7 +26,7 @@
 #include "base/Selection.h"
 #include "base/Command.h"
 #include "base/Clipboard.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class AudioPlaySource;
 class Model;

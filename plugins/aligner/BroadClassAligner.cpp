@@ -5,15 +5,15 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
-#include "pnlib/asr/sphinx/SphinxAcousticModelTrainer.h"
-#include "pnlib/asr/sphinx/SphinxPronunciationDictionary.h"
+#include "PraalineASR/Sphinx/SphinxAcousticModelTrainer.h"
+#include "PraalineASR/Sphinx/SphinxPronunciationDictionary.h"
 using namespace Praaline::ASR;
 
 #include "BroadClassAligner.h"

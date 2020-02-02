@@ -9,13 +9,13 @@
 #include "GlobalProsodicProfileWidget.h"
 #include "ui_GlobalProsodicProfileWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/annotation/AnnotationDataTable.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Annotation/AnnotationDataTable.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
 using namespace Praaline::Core;
 
 #include "pngui/widgets/GridViewWidget.h"

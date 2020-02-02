@@ -4,7 +4,7 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 
-#include "pncore/annotation/Interval.h"
+#include "PraalineCore/Annotation/Interval.h"
 using namespace Praaline::Core;
 
 #include "IntervalSequenceEditor.h"

@@ -6,10 +6,10 @@
 #include <QMap>
 #include <QColor>
 #include <QAbstractTableModel>
-#include "pncore/base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "TimelineTableModelBase.h"

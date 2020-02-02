@@ -2,7 +2,7 @@
 #define PRAALINE_PLUGINS_STATISTICSPLUGINPROSODY_GLOBALPROSODICPROFILEWIDGET_H
 
 #include <QWidget>
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
 
 namespace Praaline {
 

@@ -8,18 +8,18 @@
 #include <QTextStream>
 #include <QMutex>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/statistics/Measures.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
-#include "pncore/statistics/StatisticalSummary.h"
-#include "pncore/statistics/SpeakerTimeline.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Statistics/Measures.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalSummary.h"
+#include "PraalineCore/Statistics/SpeakerTimeline.h"
 using namespace Praaline::Core;
 
-#include "pncore/interfaces/praat/PraatTextGrid.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
 #include "AnalyserTemporalItem.h"
 

@@ -5,11 +5,11 @@
 #include "BatchEditorWidget.h"
 #include "ui_BatchEditorWidget.h"
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/AnnotationTier.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/AnnotationTier.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"

@@ -7,8 +7,8 @@
 #include <QPointer>
 #include <IPlugin>
 using namespace Qtilities::ExtensionSystem::Interfaces;
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
 using namespace Praaline::Core;
 
 namespace Praaline {

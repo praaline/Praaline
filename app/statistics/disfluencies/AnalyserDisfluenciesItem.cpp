@@ -7,16 +7,16 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/SequenceTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/statistics/Measures.h"
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
-#include "pncore/statistics/StatisticalSummary.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/SequenceTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Statistics/Measures.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalSummary.h"
 using namespace Praaline::Core;
 
 #include "AnalyserDisfluenciesItem.h"

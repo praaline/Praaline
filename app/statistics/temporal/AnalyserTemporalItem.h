@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QTextStream>
-#include "pncore/statistics/StatisticalMeasureDefinition.h"
+#include "PraalineCore/Statistics/StatisticalMeasureDefinition.h"
 
 struct AnalyserTemporalItemData;
 

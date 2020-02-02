@@ -23,7 +23,7 @@
 
 #include <vamp-hostsdk/PluginBase.h>
 
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 #include "base/AudioPlaySource.h"
 
 #include <QString>

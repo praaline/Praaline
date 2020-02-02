@@ -8,11 +8,11 @@
 #include "MetadataStructureEditor.h"
 #include "ui_MetadataStructureEditor.h"
 
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/serialisers/json/JSONSerialiserMetadataStructure.h"
-#include "pncore/serialisers/xml/XMLSerialiserMetadataStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Serialisers/JSON/JSONSerialiserMetadataStructure.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserMetadataStructure.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/corpus/MetadataStructureTreeModel.h"

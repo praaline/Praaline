@@ -10,8 +10,8 @@
 #include <QHash>
 #include <QColor>
 #include <QMultiMap>
-#include "pncore/base/RealTime.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "TimelineTableModelBase.h"
 
 struct AnnotationTierModelData;

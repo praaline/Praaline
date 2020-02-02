@@ -5,8 +5,8 @@
 #include <QList>
 
 #include "annotationpluginpraatscript.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 
 class MBROLAFileManager : public AnnotationPluginPraatScript
 {

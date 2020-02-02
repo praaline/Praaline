@@ -8,22 +8,22 @@
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-#include "pncore/corpus/Corpus.h"
-#include "pncore/corpus/CorpusCommunication.h"
-#include "pncore/corpus/CorpusRecording.h"
-#include "pncore/structure/AnnotationStructure.h"
-#include "pncore/structure/MetadataStructure.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/CorpusRepositoryDefinition.h"
-#include "pncore/datastore/FileDatastore.h"
-#include "pncore/datastore/AnnotationDatastore.h"
-#include "pncore/datastore/MetadataDatastore.h"
-#include "pncore/annotation/IntervalTier.h"
-#include "pncore/annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Corpus/CorpusCommunication.h"
+#include "PraalineCore/Corpus/CorpusRecording.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Structure/MetadataStructure.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
-#include "pnlib/media/AudioSegmenter.h"
-#include "pnlib/media/SoundInfo.h"
+#include "PraalineMedia/AudioSegmenter.h"
+#include "PraalineMedia/SoundInfo.h"
 using namespace Praaline::Media;
 
 #include "pngui/widgets/GridViewWidget.h"

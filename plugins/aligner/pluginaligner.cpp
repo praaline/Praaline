@@ -13,20 +13,22 @@
 #include <QMutex>
 
 #include "pluginaligner.h"
-#include "pncore/corpus/Corpus.h"
-#include "pncore/datastore/CorpusRepository.h"
-#include "pncore/datastore/AnnotationDatastore.h"
+#include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Datastore/CorpusRepository.h"
+#include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
+using namespace Praaline::Core;
 
-#include "pnlib/asr/sphinx/SphinxAcousticModelAdapter.h"
-#include "pnlib/asr/sphinx/SphinxFeatureExtractor.h"
-#include "pnlib/asr/sphinx/SphinxRecogniser.h"
-#include "pnlib/asr/sphinx/SphinxSegmentation.h"
-#include "pnlib/asr/phonetiser/ExternalPhonetiser.h"
-#include "pnlib/asr/SpeechRecognitionRecipes.h"
-#include "pnlib/asr/sphinx/SphinxOfflineRecogniser.h"
+#include "PraalineASR/Sphinx/SphinxAcousticModelAdapter.h"
+#include "PraalineASR/Sphinx/SphinxFeatureExtractor.h"
+#include "PraalineASR/Sphinx/SphinxRecogniser.h"
+#include "PraalineASR/Sphinx/SphinxSegmentation.h"
+#include "PraalineASR/Phonetiser/ExternalPhonetiser.h"
+#include "PraalineASR/SpeechRecognitionRecipes.h"
+#include "PraalineASR/Sphinx/SphinxOfflineRecogniser.h"
 using namespace Praaline::ASR;
 
-#include "pnlib/media/AudioSegmenter.h"
+#include "PraalineMedia/AudioSegmenter.h"
 using namespace Praaline::Media;
 
 #include "phonemedatabase.h"
@@ -35,8 +37,6 @@ using namespace Praaline::Media;
 #include "BroadClassAligner.h"
 
 #include "pnlib/featextract/OpenSmileVAD.h"
-
-#include "pncore/interfaces/praat/PraatTextGrid.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;

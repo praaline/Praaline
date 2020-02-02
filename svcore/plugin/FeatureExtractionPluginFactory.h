@@ -23,7 +23,7 @@
 #include <vamp-hostsdk/Plugin.h>
 
 #include "base/Debug.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class FeatureExtractionPluginFactory
 {

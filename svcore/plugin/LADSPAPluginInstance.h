@@ -27,7 +27,7 @@
 
 #include "api/ladspa.h"
 #include "RealTimePluginInstance.h"
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 // LADSPA plugin instance.  LADSPA is a variable block size API, but
 // for one reason and another it's more convenient to use a fixed

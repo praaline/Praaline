@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QWidget>
 #include <QModelIndex>
-#include "base/RealTime.h"
+#include "PraalineCore/Base/RealTime.h"
 
 namespace Ui {
 class CorpusItemSelectorWidget;

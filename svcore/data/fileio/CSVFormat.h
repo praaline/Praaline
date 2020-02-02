@@ -19,7 +19,7 @@
 #include <QString>
 #include <QStringList>
 
-#include "base/BaseTypes.h"
+#include "PraalineCore/Base/BaseTypes.h"
 
 class CSVFormat
 {
