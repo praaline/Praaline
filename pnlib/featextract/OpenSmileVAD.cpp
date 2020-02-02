@@ -8,9 +8,9 @@
 #include <QFile>
 #include <QTemporaryFile>
 
-#include "pncore/base/RealTime.h"
-#include "pncore/corpus/CorpusRecording.h"
-#include "pncore/annotation/IntervalTier.h"
+#include "PraalineCore/Base/RealTime.h"
+#include "PraalineCore/Corpus/CorpusRecording.h"
+#include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
 #include "OpenSmileVAD.h"

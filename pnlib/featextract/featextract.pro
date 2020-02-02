@@ -7,11 +7,12 @@
 
 CONFIG += staticlib qt thread warn_on stl rtti exceptions c++11
 
-INCLUDEPATH += . .. ../.. ../../pncore
-DEPENDPATH += . .. ../.. ../../pncore
+DEFINES += USE_NAMESPACE_PRAALINE_CORE
+
+INCLUDEPATH += . .. ../.. ../../praaline-core/include
+DEPENDPATH += . .. ../.. ../../praaline-core
 
 TARGET = praaline-featextract
-
 
 HEADERS += \
     OpenSmileVAD.h

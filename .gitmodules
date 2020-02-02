@@ -4,3 +4,9 @@
 [submodule "praaline-core"]
 	path = praaline-core
 	url = https://github.com/praaline/praaline-core.git
+[submodule "praaline-media"]
+	path = praaline-media
+	url = https://github.com/praaline/praaline-media
+[submodule "praaline-asr"]
+	path = praaline-asr
+	url = https://github.com/praaline/praaline-asr

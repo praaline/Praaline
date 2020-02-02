@@ -1,5 +1,5 @@
 # Praaline
-# (c) George Christodoulides 2012-2017
+# (c) George Christodoulides 2012-2020
 
 TEMPLATE = subdirs
 CONFIG += ordered
@@ -8,7 +8,7 @@ CONFIG += ordered
 SUBDIRS += dependencies/praaline-dependencies.pro
 
 # Praaline
-SUBDIRS += pncore pnlib pngui
+SUBDIRS += praaline-core praaline-media praaline-asr pnlib pngui
 SUBDIRS += sub_dataquay svcore svgui svapp
 # SUBDIRS += libpraat
 SUBDIRS += plugins
@@ -17,11 +17,11 @@ SUBDIRS += app
 
 sub_dataquay.file = dataquay/libdataquay.pro
 
-pnlib.depends = pncore
-pngui.depends = pncore
-plugins.depends = pncore
+pnlib.depends = praaline-core
+pngui.depends = praaline-core
+plugins.depends = praaline-core
 
 svgui.depends = svcore
 svapp.depends = svcore svgui
 
-app.depends = pncore pnlib pngui sub_dataquay svcore svgui svapp
+app.depends = praaline-core pnlib pngui sub_dataquay svcore svgui svapp

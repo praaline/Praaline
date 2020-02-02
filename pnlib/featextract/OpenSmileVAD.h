@@ -5,7 +5,7 @@
 #include <QString>
 #include <QList>
 #include <QPair>
-#include "pncore/base/RealTime.h"
+#include "base/RealTime.h"
 
 namespace Praaline {
 namespace Core {
