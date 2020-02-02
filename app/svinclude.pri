@@ -47,17 +47,17 @@ contains(DEFINES, BUILD_STATIC):LIBS -= -ljack
 linux* {
 SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay
 SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay $$SV_LIBS
-SV_LIBS = -Wl,-Bstatic $$SV_LIBS -Wl,-Bdynamic -L../pncore/$${COMPONENTSPATH} -lpncore$${PRAALINE_LIB_POSTFIX}
+SV_LIBS = -Wl,-Bstatic $$SV_LIBS -Wl,-Bdynamic -L../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX}
 }
 
 win* {
-SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay -lpncore$${PRAALINE_LIB_POSTFIX}
-SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay/release -L../pncore/$${COMPONENTSPATH} $$SV_LIBS
+SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay -lpraaline-core$${PRAALINE_LIB_POSTFIX}
+SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay/release -L../praaline-core/$${COMPONENTSPATH} $$SV_LIBS
 }
 
 macx* {
-SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay -lpncore$${PRAALINE_LIB_POSTFIX}
-SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay -L../pncore/$${COMPONENTSPATH} $$SV_LIBS
+SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay -lpraaline-core$${PRAALINE_LIB_POSTFIX}
+SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay -L../praaline-core/$${COMPONENTSPATH} $$SV_LIBS
 }
 
 LIBS = $$SV_LIBS $$LIBS
