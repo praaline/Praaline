@@ -62,11 +62,11 @@ CONFIG( debug, debug|release ) {
 LIBS +=  \
         -L../../praaline-asr/$${COMPONENTSPATH} -lpraaline-asr$${PRAALINE_LIB_POSTFIX} \
         -L../../praaline-media/$${COMPONENTSPATH} -lpraaline-media$${PRAALINE_LIB_POSTFIX} \
-        -L../../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX}
+        -L../../praaline-core/$${COMPONENTSPATH} -lpraaline-core$${PRAALINE_LIB_POSTFIX} \
         $$LIBS
 PRE_TARGETDEPS += \
-        ../../praaline-asr/$${COMPONENTSPATH}/libpraaline-asr$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
-        ../../praaline-media/$${COMPONENTSPATH}/libpraaline-media$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
+        ../../praaline-asr/$${COMPONENTSPATH}/libpraaline-asr$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX} \
+        ../../praaline-media/$${COMPONENTSPATH}/libpraaline-media$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX} \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \ 
