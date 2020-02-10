@@ -460,8 +460,7 @@ QString PFCPreprocessor::separateSpeakers(CorpusCommunication *com)
 
         delete segment;
         delete segmentMain;
-        //qDeleteAll(tiersAll);
-        //tiersAll.clear();
+        // qDeleteAll(tiersAll);
     }
     return com->ID();
 }
