@@ -204,18 +204,19 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
     madeProgress(0);
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        printMessage(sophie.importPhonAnnotation(com));
+        // printMessage(sophie.importPhonAnnotation(com));
 
 //        // printMessage(orfeo.updateSoundFiles(com));
 //        // printMessage(orfeo.readOrfeoFile(com));
 //        // printMessage(orfeo.mapTokensToDisMo(com));
-//          printMessage(orfeo.phonetise(com));
+          // printMessage(orfeo.phonetise(com));
 //        // printMessage(orfeo.createUtterances(com));
 //        // printMessage(orfeo.align(com));
 //        printMessage(com->ID());
+         // Prosogram + Promise
 
         // printMessage(orfeo.createSentenceUnits(com));
-        // printMessage(orfeo.createMajorProsodicUnits(com));
+        printMessage(orfeo.createMajorProsodicUnits(com));
         // printMessage(orfeo.createCombinedUnits(com));
 
         countDone++;
