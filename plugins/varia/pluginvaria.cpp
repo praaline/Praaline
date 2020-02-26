@@ -42,6 +42,7 @@
 #include "corpus-specific/ORFEO.h"
 #include "YizhiScripts.h"
 #include "SophieScripts.h"
+#include "ExperimentCL.h"
 
 #include "pluginvaria.h"
 
@@ -197,6 +198,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
 //    return;
 
     SophieScripts sophie;
+    ExperimentCL expecl;
 
     ORFEO orfeo;
     QString m;
@@ -216,8 +218,11 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
          // Prosogram + Promise
 
         // printMessage(orfeo.createSentenceUnits(com));
-        printMessage(orfeo.createMajorProsodicUnits(com));
+        // printMessage(orfeo.createMajorProsodicUnits(com));
         // printMessage(orfeo.createCombinedUnits(com));
+
+        // printMessage(expecl.extractTimingIntervals(com));
+        printMessage(expecl.readDTMF(com));
 
         countDone++;
         madeProgress(countDone * 100 / communications.count());

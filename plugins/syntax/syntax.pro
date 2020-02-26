@@ -61,6 +61,7 @@ PRE_TARGETDEPS += \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \
+    ParseScore.h \
     pluginsyntax_global.h \
     pluginsyntax.h \
     CoNLLUReader.h \
@@ -77,6 +78,7 @@ HEADERS += \
     LatexTikzDependencyExporter.h
 
 SOURCES += \
+    ParseScore.cpp \
     pluginsyntax.cpp \
     CoNLLUReader.cpp \
     CorpusImporter.cpp \
