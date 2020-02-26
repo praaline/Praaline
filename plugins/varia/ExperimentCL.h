@@ -19,7 +19,7 @@ public:
 
     QString extractTimingIntervals(Praaline::Core::CorpusCommunication *com);
     QString readDTMF(Praaline::Core::CorpusCommunication *com);
-    QString createExpePhases(Praaline::Core::CorpusCommunication *com);
+    QString createExpeBlocks(Praaline::Core::CorpusCommunication *com);
 
 private:
     ExperimentCLData *d;
