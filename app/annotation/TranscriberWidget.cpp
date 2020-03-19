@@ -168,29 +168,29 @@ void TranscriberWidget::selectionChanged(QPointer<Corpus> corpus, QPointer<Corpu
 //    if (d->autoSave) {
 //        saveAnnotations();
 //    }
-    if (!com) {
-        d->currentCommunicationID.clear();
-        d->currentRecordingID.clear();
-        d->currentAnnotationID.clear();
-        return;
-    }
-    d->currentCommunicationID = com->ID();
-    closeSession();
-    newSessionWithCommunication(com);
-    if ((rec) && (d->currentRecordingID != rec->ID())) {
-        d->currentRecordingID = rec->ID();
-    }
-    else {
-        closeSession();
-        d->currentRecordingID.clear();
-    }
-    if ((annot) && (d->currentAnnotationID != annot->ID())) {
-        // openForEditing(corpus, annot->ID());
-        d->currentAnnotationID = annot->ID();
-    }
-    else {
-        d->currentAnnotationID.clear();
-    }
+//    if (!com) {
+//        d->currentCommunicationID.clear();
+//        d->currentRecordingID.clear();
+//        d->currentAnnotationID.clear();
+//        return;
+//    }
+//    d->currentCommunicationID = com->ID();
+//    closeSession();
+//    newSessionWithCommunication(com);
+//    if ((rec) && (d->currentRecordingID != rec->ID())) {
+//        d->currentRecordingID = rec->ID();
+//    }
+//    else {
+//        closeSession();
+//        d->currentRecordingID.clear();
+//    }
+//    if ((annot) && (d->currentAnnotationID != annot->ID())) {
+//        // openForEditing(corpus, annot->ID());
+//        d->currentAnnotationID = annot->ID();
+//    }
+//    else {
+//        d->currentAnnotationID.clear();
+//    }
 }
 
 void TranscriberWidget::moveToAnnotationTime(QPointer<Corpus> corpus, QPointer<CorpusCommunication> com,

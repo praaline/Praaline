@@ -970,13 +970,13 @@ void SimpleVisualiserWidget::newSessionWithCommunication(CorpusCommunication *co
             // Main audio
             FileOpenStatus status = openPath(rec->filePath(), ReplaceSession);
             if (status == FileOpenFailed) {
-                QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(rec->filePath()));
+//                QMessageBox::critical(this, tr("Failed to open file"),
+//                                      tr("<b>File open failed</b><p>File \"%1\" could not be opened").arg(rec->filePath()));
                 return;
             } else if (status == FileOpenWrongMode) {
-                QMessageBox::critical(this, tr("Failed to open file"),
-                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>"
-                                         "Please load at least one audio file before importing annotations.").arg(rec->filePath()));
+//                QMessageBox::critical(this, tr("Failed to open file"),
+//                                      tr("<b>Audio required</b><p>Unable to load layer data from \"%1\" without an audio file.<br>"
+//                                         "Please load at least one audio file before importing annotations.").arg(rec->filePath()));
                 return;
             }
             addPane(LayerConfiguration(LayerFactory::Type("Waveform"), getMainModel()), "Main Waveform");

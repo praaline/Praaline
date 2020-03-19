@@ -222,7 +222,8 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
         // printMessage(orfeo.createCombinedUnits(com));
 
         // printMessage(expecl.extractTimingIntervals(com));
-        printMessage(expecl.readDTMF(com));
+        // printMessage(expecl.readDTMF(com));
+        printMessage(expecl.createExpeBlocks(com));
 
         countDone++;
         madeProgress(countDone * 100 / communications.count());

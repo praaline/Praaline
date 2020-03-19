@@ -151,7 +151,8 @@ void SplitCommunicationsDialog::doSplit()
                 // Add communications
                 foreach (Interval *segment, segments) {
                     QString ID = segment->attribute("splitCommunicationID").toString();
-                    CorpusCommunication *segmentCom = new CorpusCommunication(ID);
+                    CorpusCommunication *segmentCom = d->corpus->communication(ID);
+                    if (!segmentCom) segmentCom = new CorpusCommunication(ID);
                     CorpusRecording *segmentRec = new CorpusRecording(ID);
                     segmentRec->setName(ID);
                     segmentRec->setFilename(dirMedia.relativeFilePath(originalPath + "/" + ID + ".wav"));
