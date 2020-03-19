@@ -86,6 +86,7 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
 {
     static QMutex mutex;
     mutex.lock();
+    if (!annot) return;
     QList<Interval *> intervals = annot->repository()->annotations()->getIntervals(
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
     mutex.unlock();

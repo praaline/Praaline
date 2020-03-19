@@ -22,10 +22,11 @@ LatexTikzDependencyExporter::LatexTikzDependencyExporter(QObject *parent) :
     QObject(parent), d(new LatexTikzDependencyExporterData())
 {
     d->tierNameTokens = "tok_ud";
+    d->attributeNameSentenceID = "ud_sentid";
+    d->attributeNameTokenID = "ud_id";
     d->attributeNamePOS = "ud_upos";
     d->attributeNameDepHead = "ud_head";
     d->attributeNameDepRel = "ud_deprel";
-    d->attributeNameTokenID = "ud_id";
     d->tagDepRelForRoot = "root";
 }
 
@@ -80,16 +81,32 @@ QString LatexTikzDependencyExporter::process(Praaline::Core::CorpusCommunication
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
             IntervalTier *tier_tokens = tiers->getIntervalTierByName(d->tierNameTokens);
-            if (!tier_tokens) { ret.append("No tier for tokens\n"); continue; }
+            if (!tier_tokens) {
+                ret.append("No tier for tokens ").append(d->tierNameTokens).append(" speakerID ").append(speakerID).append("\n");
+                continue;
+            }
 
-
-
-            ret.append("Processed ").append(annotationID).append("\t").append(speakerID).append("\n");
+            int tokenStart(-1), tokenEnd(-1), sentenceID(-1);
+            for (int i = 0; i < tier_tokens->count() - 1; ++i) {
+                Interval *token = tier_tokens->at(i);
+                Interval *next_token = tier_tokens->at(i + 1);
+                int sentID = token->attribute(d->attributeNameSentenceID).toInt();
+                int nextSentID = next_token->attribute(d->attributeNameSentenceID).toInt();
+                if ((sentenceID < 0) && (sentID > 0)) {
+                    tokenStart = i;
+                    tokenEnd   = i;
+                    sentenceID = sentID;
+                }
+                if (sentID != nextSentID) {
+                    tokenEnd = i;
+                    sentenceID = -1;
+                    ret.append(codeTikzDependencyForSentence(tier_tokens, tokenStart, tokenEnd));
+                    tokenStart = -1;
+                }
+            }
+            // ret.append("Processed ").append(annotationID).append("\t").append(speakerID).append("\n");
         }
         qDeleteAll(tiersAll);
     }
     return ret.trimmed();
-
-
-    return ret;
 }

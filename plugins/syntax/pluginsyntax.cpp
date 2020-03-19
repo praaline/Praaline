@@ -14,6 +14,7 @@
 #include "CoNLLUReader.h"
 #include "CorpusImporter.h"
 #include "SentencesSplitter.h"
+#include "LatexTikzDependencyExporter.h"
 
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
@@ -137,6 +138,16 @@ void readPerceoCorpus(const QList<CorpusCommunication *> &communications)
 void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<CorpusCommunication *> &communications)
 {
     QString m;
+
+    LatexTikzDependencyExporter latex;
+    foreach (CorpusCommunication *com, communications) {
+        if (!com) continue;
+        m = latex.process(com);
+        if (!m.isEmpty()) printMessage(m);
+    }
+    return;
+
+
     SentencesSplitter sentenceSplitter;
     if (d->operationImportSentenceBreakFile) {
         printMessage(sentenceSplitter.readBreaksFile("/mnt/hgfs/Dropbox/CORPORA/Phonogenre/phonogenre_sentences.txt"));
