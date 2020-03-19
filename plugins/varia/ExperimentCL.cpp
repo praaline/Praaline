@@ -38,48 +38,48 @@ struct ExperimentCLData {
 ExperimentCL::ExperimentCL() :
     d(new ExperimentCLData())
 {
-    d->blocks.insert("920", ExpBlock("STROOP_CONG_SLOW_SING_TRAIN", "920", "520"));
-    d->blocks.insert("920", ExpBlock("STROOP_CONG_SLOW_SING_TRAIN", "920", "520"));
-    d->blocks.insert("921", ExpBlock("STROOP_CONG_SLOW_SING_TEST1", "921", "521"));
-    d->blocks.insert("922", ExpBlock("STROOP_CONG_SLOW_SING_TEST2", "922", "522"));
-    d->blocks.insert("923", ExpBlock("STROOP_CONG_SLOW_SING_TEST3", "923", "523"));
-    d->blocks.insert("924", ExpBlock("STROOP_CONG_SLOW_SING_TEST4", "924", "524"));
-    d->blocks.insert("925", ExpBlock("STROOP_CONG_SLOW_SING_TEST5", "925", "525"));
-    d->blocks.insert("930", ExpBlock("STROOP_INCG_SLOW_SING_TRAIN", "930", "530"));
-    d->blocks.insert("931", ExpBlock("STROOP_INCG_SLOW_SING_TEST1", "931", "531"));
-    d->blocks.insert("932", ExpBlock("STROOP_INCG_SLOW_SING_TEST2", "932", "532"));
-    d->blocks.insert("933", ExpBlock("STROOP_INCG_SLOW_SING_TEST3", "933", "533"));
-    d->blocks.insert("934", ExpBlock("STROOP_INCG_SLOW_SING_TEST4", "934", "534"));
-    d->blocks.insert("935", ExpBlock("STROOP_INCG_SLOW_SING_TEST5", "935", "535"));
-    d->blocks.insert("940", ExpBlock("STROOP_INCG_FAST_SING_TRAIN", "940", "540"));
-    d->blocks.insert("941", ExpBlock("STROOP_INCG_FAST_SING_TEST1", "941", "541"));
-    d->blocks.insert("942", ExpBlock("STROOP_INCG_FAST_SING_TEST2", "942", "542"));
-    d->blocks.insert("943", ExpBlock("STROOP_INCG_FAST_SING_TEST3", "943", "543"));
-    d->blocks.insert("944", ExpBlock("STROOP_INCG_FAST_SING_TEST4", "944", "544"));
-    d->blocks.insert("945", ExpBlock("STROOP_INCG_FAST_SING_TEST5", "945", "545"));
+    d->blocks.insert("920", ExpBlock("STROOP_SING_CONG_SLOW_TRAIN", "920", "520"));
+    d->blocks.insert("920", ExpBlock("STROOP_SING_CONG_SLOW_TRAIN", "920", "520"));
+    d->blocks.insert("921", ExpBlock("STROOP_SING_CONG_SLOW_TEST1", "921", "521"));
+    d->blocks.insert("922", ExpBlock("STROOP_SING_CONG_SLOW_TEST2", "922", "522"));
+    d->blocks.insert("923", ExpBlock("STROOP_SING_CONG_SLOW_TEST3", "923", "523"));
+    d->blocks.insert("924", ExpBlock("STROOP_SING_CONG_SLOW_TEST4", "924", "524"));
+    d->blocks.insert("925", ExpBlock("STROOP_SING_CONG_SLOW_TEST5", "925", "525"));
+    d->blocks.insert("930", ExpBlock("STROOP_SING_INCG_SLOW_TRAIN", "930", "530"));
+    d->blocks.insert("931", ExpBlock("STROOP_SING_INCG_SLOW_TEST1", "931", "531"));
+    d->blocks.insert("932", ExpBlock("STROOP_SING_INCG_SLOW_TEST2", "932", "532"));
+    d->blocks.insert("933", ExpBlock("STROOP_SING_INCG_SLOW_TEST3", "933", "533"));
+    d->blocks.insert("934", ExpBlock("STROOP_SING_INCG_SLOW_TEST4", "934", "534"));
+    d->blocks.insert("935", ExpBlock("STROOP_SING_INCG_SLOW_TEST5", "935", "535"));
+    d->blocks.insert("940", ExpBlock("STROOP_SING_INCG_FAST_TRAIN", "940", "540"));
+    d->blocks.insert("941", ExpBlock("STROOP_SING_INCG_FAST_TEST1", "941", "541"));
+    d->blocks.insert("942", ExpBlock("STROOP_SING_INCG_FAST_TEST2", "942", "542"));
+    d->blocks.insert("943", ExpBlock("STROOP_SING_INCG_FAST_TEST3", "943", "543"));
+    d->blocks.insert("944", ExpBlock("STROOP_SING_INCG_FAST_TEST4", "944", "544"));
+    d->blocks.insert("945", ExpBlock("STROOP_SING_INCG_FAST_TEST5", "945", "545"));
     d->blocks.insert("950", ExpBlock("RSPAN_TRAIN",  "950", ""));
     d->blocks.insert("953", ExpBlock("RSPAN_LEVEL3", "953", ""));
     d->blocks.insert("954", ExpBlock("RSPAN_LEVEL4", "954", ""));
     d->blocks.insert("955", ExpBlock("RSPAN_LEVEL5", "955", ""));
     d->blocks.insert("956", ExpBlock("RSPAN_LEVEL6", "956", ""));
-    d->blocks.insert("960", ExpBlock("STROOP_CONG_SLOW_DUAL_TRAIN", "960", "560"));
-    d->blocks.insert("961", ExpBlock("STROOP_CONG_SLOW_DUAL_TEST1", "961", "561"));
-    d->blocks.insert("962", ExpBlock("STROOP_CONG_SLOW_DUAL_TEST2", "962", "562"));
-    d->blocks.insert("963", ExpBlock("STROOP_CONG_SLOW_DUAL_TEST3", "963", "563"));
-    d->blocks.insert("964", ExpBlock("STROOP_CONG_SLOW_DUAL_TEST4", "964", "564"));
-    d->blocks.insert("965", ExpBlock("STROOP_CONG_SLOW_DUAL_TEST5", "965", "565"));
-    d->blocks.insert("970", ExpBlock("STROOP_INCG_SLOW_DUAL_TRAIN", "970", "570"));
-    d->blocks.insert("971", ExpBlock("STROOP_INCG_SLOW_DUAL_TEST1", "971", "571"));
-    d->blocks.insert("972", ExpBlock("STROOP_INCG_SLOW_DUAL_TEST2", "972", "572"));
-    d->blocks.insert("973", ExpBlock("STROOP_INCG_SLOW_DUAL_TEST3", "973", "573"));
-    d->blocks.insert("974", ExpBlock("STROOP_INCG_SLOW_DUAL_TEST4", "974", "574"));
-    d->blocks.insert("975", ExpBlock("STROOP_INCG_SLOW_DUAL_TEST5", "975", "575"));
-    d->blocks.insert("980", ExpBlock("STROOP_INCG_FAST_DUAL_TRAIN", "980", "580"));
-    d->blocks.insert("981", ExpBlock("STROOP_INCG_FAST_DUAL_TEST1", "981", "581"));
-    d->blocks.insert("982", ExpBlock("STROOP_INCG_FAST_DUAL_TEST2", "982", "582"));
-    d->blocks.insert("983", ExpBlock("STROOP_INCG_FAST_DUAL_TEST3", "983", "583"));
-    d->blocks.insert("984", ExpBlock("STROOP_INCG_FAST_DUAL_TEST4", "984", "584"));
-    d->blocks.insert("985", ExpBlock("STROOP_INCG_FAST_DUAL_TEST5", "985", "585"));
+    d->blocks.insert("960", ExpBlock("STROOP_DUAL_CONG_SLOW_TRAIN", "960", "560"));
+    d->blocks.insert("961", ExpBlock("STROOP_DUAL_CONG_SLOW_TEST1", "961", "561"));
+    d->blocks.insert("962", ExpBlock("STROOP_DUAL_CONG_SLOW_TEST2", "962", "562"));
+    d->blocks.insert("963", ExpBlock("STROOP_DUAL_CONG_SLOW_TEST3", "963", "563"));
+    d->blocks.insert("964", ExpBlock("STROOP_DUAL_CONG_SLOW_TEST4", "964", "564"));
+    d->blocks.insert("965", ExpBlock("STROOP_DUAL_CONG_SLOW_TEST5", "965", "565"));
+    d->blocks.insert("970", ExpBlock("STROOP_DUAL_INCG_SLOW_TRAIN", "970", "570"));
+    d->blocks.insert("971", ExpBlock("STROOP_DUAL_INCG_SLOW_TEST1", "971", "571"));
+    d->blocks.insert("972", ExpBlock("STROOP_DUAL_INCG_SLOW_TEST2", "972", "572"));
+    d->blocks.insert("973", ExpBlock("STROOP_DUAL_INCG_SLOW_TEST3", "973", "573"));
+    d->blocks.insert("974", ExpBlock("STROOP_DUAL_INCG_SLOW_TEST4", "974", "574"));
+    d->blocks.insert("975", ExpBlock("STROOP_DUAL_INCG_SLOW_TEST5", "975", "575"));
+    d->blocks.insert("980", ExpBlock("STROOP_DUAL_INCG_FAST_TRAIN", "980", "580"));
+    d->blocks.insert("981", ExpBlock("STROOP_DUAL_INCG_FAST_TEST1", "981", "581"));
+    d->blocks.insert("982", ExpBlock("STROOP_DUAL_INCG_FAST_TEST2", "982", "582"));
+    d->blocks.insert("983", ExpBlock("STROOP_DUAL_INCG_FAST_TEST3", "983", "583"));
+    d->blocks.insert("984", ExpBlock("STROOP_DUAL_INCG_FAST_TEST4", "984", "584"));
+    d->blocks.insert("985", ExpBlock("STROOP_DUAL_INCG_FAST_TEST5", "985", "585"));
 }
 
 ExperimentCL::~ExperimentCL()
@@ -164,7 +164,9 @@ QString ExperimentCL::readDTMF(Praaline::Core::CorpusCommunication *com)
                 if (intv->text() != "x") continue;
                 if (intv->duration() < RealTime::fromMilliseconds(200)) continue;
                 if (intv->duration() > RealTime::fromMilliseconds(400)) continue;
-                // QString path = "/mnt/hgfs/CORPORA/CLETU/RECORDINGS/dtmf/";
+
+                QString path = "/mnt/hgfs/CORPORA/CLETU/RECORDINGS/dtmf/";
+
                 QString path = "/Volumes/Samsung USB/CLETU/RECORDINGS/dtmf/";
                 QString filename = path + QString("%1_%2.wav.txt").arg(annotationID).arg(i);
                 QFile file(filename);
