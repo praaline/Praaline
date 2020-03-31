@@ -92,8 +92,8 @@ QString makesafe(const QString &in) {
 QString MFAExternal::encodeEntities(const QString &src, const QString &force)
 {
     QString tmp(src);
-    uint len = tmp.length();
-    uint i = 0;
+    int len = tmp.length();
+    int i = 0;
     while (i < len) {
         if (tmp[i].unicode() > 128 || force.contains(tmp[i])) {
             QString rp = QString("&#%1;").arg(tmp[i].unicode());
@@ -116,7 +116,7 @@ QString MFAExternal::decodeEntities(const QString &src)
     re.setMinimal(true);
     int pos = 0;
     while ((pos = re.indexIn(src, pos)) != -1) {
-        ret = ret.replace(re.cap(0), QChar(re.cap(1).toInt(0, 10)));
+        ret = ret.replace(re.cap(0), QChar(re.cap(1).toInt(nullptr, 10)));
         pos += re.matchedLength();
     }
     return ret;

@@ -35,9 +35,9 @@ struct ORFEOData {
 
 ORFEO::ORFEO() : d(new ORFEOData())
 {
-    d->phonetiser.readPhoneticDictionary("/mnt/hgfs/DATA/PFCALIGN/phonetisation/fr.dict");
-    d->phonetiser.readPhonemeTranslation("/mnt/hgfs/DATA/PFCALIGN/phonetisation/sphinx_to_sampa.json");
-    d->phonetiser.readAdditionalPhoneticDictionary(QDir::homePath() + "/Dropbox/CORPORA/cefc_extra_phon.txt");
+    d->phonetiser.readPhoneticDictionary("/mnt/hgfs/CORPORA/Phonetisation/fr.dict");
+    d->phonetiser.readPhonemeTranslation("/mnt/hgfs/CORPORA/Phonetisation/sphinx_to_sampa.json");
+    d->phonetiser.readAdditionalPhoneticDictionary(QDir::homePath() + "/Dropbox/CORPORA/extra_phon_out.txt");
 }
 
 ORFEO::~ORFEO()
@@ -317,9 +317,14 @@ QString ORFEO::phonetise(Praaline::Core::CorpusCommunication *com)
 
 QString ORFEO::phonetiseOOV()
 {
-    d->phonetiser.writeTokensOutOfVocabulary(QDir::homePath() + "/Dropbox/CORPORA/cefc_extra_phon_in.txt");
-    return "OK";
+    if (d->phonetiser.writeTokensOutOfVocabulary(QDir::homePath() + "/Dropbox/CORPORA/extra_phon_in.txt"))
+        return "Wrote OOV words OK";
+    return "Error writing OOV words";
 }
+
+// Then go to /Develop/Phonetisaurus and run
+// phonetisaurus-apply --model model_fr/model.fst --word_list /mnt/hgfs/Dropbox/CORPORA/extra_phon_in.txt > /mnt/hgfs/Dropbox/CORPORA/extra_phon_out.txt
+
 
 QString ORFEO::createUtterances(Praaline::Core::CorpusCommunication *com)
 {

@@ -8,10 +8,13 @@
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/FileDatastore.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Structure/AnnotationStructure.h"
 
 #include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 #include "PraalineCore/Interfaces/Transcriber/TranscriberAnnotationGraph.h"
 #include "PraalineCore/Interfaces/Subtitles/SubtitlesFile.h"
+#include "PraalineCore/Interfaces/Phon/PhonTranscription.h"
+
 
 struct ImportCorpusItemsWizardFinalPageData {
     ImportCorpusItemsWizardFinalPageData(QPointer<Corpus> corpus,
@@ -136,6 +139,9 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         else if (annot->filename().toLower().endsWith("srt")) {
             importSubRipTranscription(com, annot, correspondances);
         }
+        else if (annot->filename().toLower().endsWith("xml")) {
+            importPhonTranscription(com, annot, correspondances);
+        }
         count++;
         ui->progressBarFiles->setValue(count);
         QApplication::processEvents();
@@ -178,6 +184,59 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(CorpusCommunication *co
     }
     d->corpus->repository()->annotations()->saveTiersAllSpeakers(annot->ID(), tiersAll);
     qDeleteAll(tiersAll);
+}
+
+void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances)
+{
+    Q_UNUSED(correspondances)
+    if (!d->corpus) return;
+    if (!d->corpus->repository()) return;
+    if (!d->corpus->repository()->annotations()) return;
+
+    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
+
+    SpeakerAnnotationTierGroupMap tiersAll;
+    QList<CorpusSpeaker *> speakers;
+
+    PhonTranscription phonFile;
+    if (!phonFile.load(annot->filename())) return;
+
+    // Create segment level
+    AnnotationStructureLevel *level_segment = d->corpus->repository()->annotationStructure()->level("segment");
+    if (!level_segment) {
+        level_segment = new AnnotationStructureLevel("segment", AnnotationStructureLevel::IndependentIntervalsLevel, "Segments", "");
+        if (!d->corpus->repository()->annotations()->createAnnotationLevel(level_segment)) return;
+        d->corpus->repository()->annotationStructure()->addLevel(level_segment);
+    }
+
+    QStringList participantIDs = phonFile.participantIDs();
+    participantIDs << com->ID(); // default speaker for segements not having one
+
+    foreach (QString speakerID, participantIDs) {
+        if (speakerID.isEmpty()) continue;
+        // Add speaker if necessary
+        if (!d->corpus->hasSpeaker(speakerID)) {
+            d->corpus->addSpeaker(new CorpusSpeaker(speakerID));
+        }
+        // Add participation if necessary
+        if (!d->corpus->hasParticipation(com->ID(), speakerID)) {
+            d->corpus->addParticipation(com->ID(), speakerID, tr("Participant"));
+        }
+    }
+
+    QHash<QString, QList<Interval *>> speaker_segment_intervals;
+    foreach (QString speakerID, participantIDs) speaker_segment_intervals.insert(speakerID, QList<Interval *>());
+    foreach (PhonTranscription::Segment seg, phonFile.segments()) {
+        if (seg.speakerID.isEmpty()) seg.speakerID = com->ID();
+        if (!speaker_segment_intervals.contains(seg.speakerID)) continue;
+        QString text = seg.orthography.join(" ").trimmed();
+        speaker_segment_intervals[seg.speakerID] << new Interval(seg.startTime, seg.startTime + seg.duration, text);
+    }
+    foreach (QString speakerID, speaker_segment_intervals.keys()) {
+        IntervalTier *tier_transcription = new IntervalTier("segment", speaker_segment_intervals[speakerID]);
+        d->corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_transcription);
+        delete tier_transcription;
+    }
 }
 
 void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunication *com, CorpusAnnotation *annot,

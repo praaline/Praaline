@@ -41,6 +41,7 @@ private:
     void importPraat(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
     void importTranscriber(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
     void importSubRipTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
+    void importPhonTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
 };
 
 #endif // IMPORTCORPUSITEMSWIZARDFINALPAGE_H

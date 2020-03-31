@@ -187,7 +187,7 @@ void GlobalProsodicProfileWidget::analyse()
                     // Read prosogram global profile
                     QFileInfo info(rec->filePath());
                     QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
-                    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+                    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(info.baseName()).arg(speakerID);
                     AnnotationDataTable table;
                     if (!(table.readFromFile(prosoPath + filenameGlobalsheet))) {
                         qDebug() << "Error reading: " << filenameGlobalsheet;

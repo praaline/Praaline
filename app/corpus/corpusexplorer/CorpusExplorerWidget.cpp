@@ -1055,10 +1055,17 @@ bool CorpusExplorerWidget::checkForActiveCorpus()
 void CorpusExplorerWidget::addItemsFromFolder()
 {
     if (!checkForActiveCorpus()) return;
+    d->corporaTopLevelNode->startTreeProcessingCycle();
     ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
     wizard->exec(); // MODAL!
+    d->corporaTopLevelNode->endTreeProcessingCycle();
     CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     if (obj) obj->refresh();
+    // fix update
+    QString filenameDef = d->corpusRepositoriesManager->activeCorpusRepository()->definition().filenameDefinition;
+    d->widgetCorpusMode->saveCorpusRepository();
+    d->widgetCorpusMode->closeCorpusRepository();
+    d->widgetCorpusMode->openCorpusRepositoryFromDefinition(filenameDef);
 }
 
 void CorpusExplorerWidget::importMetadata()

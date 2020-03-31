@@ -62,6 +62,9 @@ ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
     item = new QStandardItem("SubRip subtitle files (.srt)");  item->setData("srt");
     item->setCheckable(true);   item->setCheckState(Qt::Checked);
     d->modelFormatsAnnotation->setItem(2, 0, item);
+    item = new QStandardItem("Phon transcription files (.xml)");  item->setData("xml");
+    item->setCheckable(true);   item->setCheckState(Qt::Checked);
+    d->modelFormatsAnnotation->setItem(3, 0, item);
 
     ui->treeviewAnnotationsFormat->setModel(d->modelFormatsAnnotation);
     ui->treeviewAnnotationsFormat->setHeaderHidden(true);

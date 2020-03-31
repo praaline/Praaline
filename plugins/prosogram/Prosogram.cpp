@@ -175,8 +175,17 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     if (!dirTemp.isValid()) return;
     QString tempDirectory = dirTemp.path(); // returns the unique directory path
     if (!tempDirectory.endsWith("/")) tempDirectory.append("/");
+
+    // Create prosogram directory if it does not exist in the folder
+    QFileInfo info(rec->filePath());
+    QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
+    if (keepIntermediateFiles) {
+        info.absoluteDir().mkpath("prosogram");
+    }
+    QString filenameBase = info.baseName();
+
     // Copy the recording file into temp+.wav
-    QString filenameTempRec = QString("%1.wav").arg(rec->ID());
+    QString filenameTempRec = QString("%1.wav").arg(filenameBase);
     QFile::copy(rec->filePath(), tempDirectory + filenameTempRec);
 
     // Check that the needed tiers are present
@@ -213,13 +222,6 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     // Execute ProsoGram
     QString script = QDir::homePath() + "/Praaline/plugins/prosogram/praaline_prosogram.praat";
     QStringList scriptArguments;
-
-    // Create prosogram directory if it does not exist in the folder
-    QFileInfo info(rec->filePath());
-    QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
-    if (keepIntermediateFiles) {
-        info.absoluteDir().mkpath("prosogram");
-    }
 
     // Add parameters
     QString prosogramMode;
@@ -264,16 +266,16 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
     executePraatScript(script, scriptArguments);
 
     // Update file names to include speakerID
-    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
-    QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
-    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(filenameBase).arg(speakerID);
+    QString filenameProfile = QString("%1_%2_profile.txt").arg(filenameBase).arg(speakerID);
+    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(filenameBase).arg(speakerID);
+    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(filenameBase).arg(speakerID);
+    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(filenameBase).arg(speakerID);
 
-    fileMoveReplacingDestination(tempDirectory + QString("%1_nucl.TextGrid").arg(rec->ID()), tempDirectory + filenameNuclei);
-    fileMoveReplacingDestination(tempDirectory + QString("%1_profile.TextGrid").arg(rec->ID()), tempDirectory + filenameProfile);
-    fileMoveReplacingDestination(tempDirectory + QString("%1_spreadsheet.TextGrid").arg(rec->ID()), tempDirectory + filenameData);
-    fileMoveReplacingDestination(tempDirectory + QString("%1_styl.PitchTier").arg(rec->ID()), tempDirectory + filenameStylisedPitchTier);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_nucl.TextGrid").arg(filenameBase), tempDirectory + filenameNuclei);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_profile.TextGrid").arg(filenameBase), tempDirectory + filenameProfile);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_spreadsheet.TextGrid").arg(filenameBase), tempDirectory + filenameData);
+    fileMoveReplacingDestination(tempDirectory + QString("%1_styl.PitchTier").arg(filenameBase), tempDirectory + filenameStylisedPitchTier);
 
     // Update global profile on Communication
     CorpusCommunication *com = qobject_cast<CorpusCommunication *>(rec->parent());
@@ -297,16 +299,17 @@ void ProsoGram::runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTie
 void ProsoGram::importResultFiles(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID,
                                   QString prosoPath)
 {
+    QFileInfo info(rec->filePath());
     if (prosoPath.isEmpty()) {
-        QFileInfo info(rec->filePath());
         prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
     }
+    QString filenameBase = info.baseName();
 
-    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(speakerID);
-    QString filenameProfile = QString("%1_%2_profile.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(rec->ID()).arg(speakerID);
-    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(speakerID);
-    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
+    QString filenameNuclei = QString("%1_%2_nucl.TextGrid").arg(filenameBase).arg(speakerID);
+    QString filenameProfile = QString("%1_%2_profile.txt").arg(filenameBase).arg(speakerID);
+    QString filenameData = QString("%1_%2_spreadsheet.txt").arg(filenameBase).arg(speakerID);
+    QString filenameStylisedPitchTier = QString("%1_%2_styl.PitchTier").arg(filenameBase).arg(speakerID);
+    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(filenameBase).arg(speakerID);
 
     // Update syllable tier
     IntervalTier *tier_syll = tiers->getIntervalTierByName(levelSyllable);

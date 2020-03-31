@@ -68,6 +68,9 @@ PRE_TARGETDEPS += \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 HEADERS += \
+    ExperimentCL.h \
+    ExperimentCL_ImportFiles.h \
+    SophieScripts.h \
     YizhiScripts.h \
     corpus-specific/ESLOMD.h \
     pluginvaria_global.h \
@@ -100,6 +103,9 @@ HEADERS += \
 
 
 SOURCES += \
+    ExperimentCL.cpp \
+    ExperimentCL_ImportFiles.cpp \
+    SophieScripts.cpp \
     YizhiScripts.cpp \
     corpus-specific/ESLOMD.cpp \
     pluginvaria.cpp \

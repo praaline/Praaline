@@ -60,7 +60,8 @@ LIBS +=  \
 PRE_TARGETDEPS += \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
-HEADERS += \ 
+HEADERS += \
+    ParseScore.h \
     pluginsyntax_global.h \
     pluginsyntax.h \
     CoNLLUReader.h \
@@ -73,9 +74,11 @@ HEADERS += \
     UDSentence.h \
     SentencesSplitter.h \
     udpipelib/udpipe.h \
-    DictionaryBuilder.h
+    DictionaryBuilder.h \
+    LatexTikzDependencyExporter.h
 
-SOURCES += \ 
+SOURCES += \
+    ParseScore.cpp \
     pluginsyntax.cpp \
     CoNLLUReader.cpp \
     CorpusImporter.cpp \
@@ -87,5 +90,6 @@ SOURCES += \
     UDSentence.cpp \
     SentencesSplitter.cpp \
     udpipelib/udpipe.cpp \
-    DictionaryBuilder.cpp
+    DictionaryBuilder.cpp \
+    LatexTikzDependencyExporter.cpp
 
