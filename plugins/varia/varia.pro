@@ -69,6 +69,7 @@ PRE_TARGETDEPS += \
 
 HEADERS += \
     ExperimentCL.h \
+    ExperimentCL_ImportFiles.h \
     SophieScripts.h \
     YizhiScripts.h \
     corpus-specific/ESLOMD.h \
@@ -103,6 +104,7 @@ HEADERS += \
 
 SOURCES += \
     ExperimentCL.cpp \
+    ExperimentCL_ImportFiles.cpp \
     SophieScripts.cpp \
     YizhiScripts.cpp \
     corpus-specific/ESLOMD.cpp \

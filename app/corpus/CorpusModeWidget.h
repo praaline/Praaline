@@ -31,6 +31,8 @@ public slots:
     void saveCorpusRepository();
     void saveCorpusRepositoryAs();
 
+    void openCorpusRepositoryFromDefinition(const QString &filename);
+
 private slots:
     void showCorpusExplorer();
     void showCorpusExplorerTables();
@@ -44,7 +46,6 @@ private:
     void setupActions();
     void setupRecentFilesMenu();
 
-    void openCorpusRepositoryFromDefinition(const QString &filename);
     Praaline::Core::CorpusRepository *openCorpusRepository(const QString &filename, Praaline::Core::CorpusRepositoryDefinition &definition);
     void activateNextCorpusRepository();
 };
