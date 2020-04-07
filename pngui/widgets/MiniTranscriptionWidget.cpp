@@ -17,7 +17,7 @@ using namespace Praaline::Core;
 
 struct MiniTranscriptionWidgetData {
     MiniTranscriptionWidgetData() :
-        skipPauses(true), transcriptionView(0), watcher(0)
+        skipPauses(true), annotation(nullptr), transcriptionView(nullptr), watcher(nullptr)
     {}
 
     bool skipPauses;
@@ -49,7 +49,7 @@ MiniTranscriptionWidget::MiniTranscriptionWidget(QWidget *parent) :
 
 MiniTranscriptionWidget::~MiniTranscriptionWidget()
 {
-    qDeleteAll(d->lines);
+    // qDeleteAll(d->lines);
     delete d;
 }
 
@@ -84,6 +84,9 @@ void MiniTranscriptionWidget::setSkipPauses(bool skip)
 
 void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnotation *annot)
 {
+    if (!annot) return;
+    if (!annot->repository()) return;
+    if (!annot->repository()->annotations()) return;
     static QMutex mutex;
     mutex.lock();
     if (!annot) return;
@@ -108,7 +111,7 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
 
 void MiniTranscriptionWidget::clear()
 {
-    d->transcriptionView->clear();
+    if (d->transcriptionView) d->transcriptionView->clear();
     if (d->watcher) d->watcher->cancel();
 }
 
@@ -120,6 +123,7 @@ void MiniTranscriptionWidget::asyncCreateTranscriptFinished()
 
 void MiniTranscriptionWidget::rebind(Praaline::Core::CorpusAnnotation *annot, const QString &levelID)
 {
+    if (!d->transcriptionView) return;
     d->transcriptionView->clear();
     d->lines.clear();
     if (!annot) return;

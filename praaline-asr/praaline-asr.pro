@@ -33,10 +33,10 @@ INCLUDEPATH += ../praaline-media/include
 
 # Linking dynamically with PocketSphinx
 win32-g++ {
-    POCKETSPHINX_BASE_PATH = $$PWD/../../dependency-builds/pn/win32-mingw
+    POCKETSPHINX_BASE_PATH = $$PWD/../dependency-builds/pn/win32-mingw
 }
 win32-msvc* {
-    POCKETSPHINX_BASE_PATH = $$PWD/../../dependency-builds/pn/win32-msvc
+    POCKETSPHINX_BASE_PATH = $$PWD/../dependency-builds/pn/win32-msvc
 }
 unix {
     POCKETSPHINX_BASE_PATH = /usr/local

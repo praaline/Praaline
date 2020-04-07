@@ -783,9 +783,9 @@ void PraalineMainWindow::showAbout()
         .arg(QT_VERSION_STR);
 
     aboutText +=
-        "<p>Copyright &copy; 2012&ndash;2015 George Christodoulides</p>"
-        "<p>Additional copyright notices go here</p>"
-        "<p>Copyright &copy; 2005&ndash;2014 Chris Cannam, Queen Mary University of London</p>"
+        "<p>Copyright &copy; 2012&ndash;2020 George Christodoulides</p>"
+        "<p>Additional copyright notices:</p>"
+        "<p>Sonic Visualiser. Copyright &copy; 2005&ndash;2014 Chris Cannam, Queen Mary University of London</p>"
         "<p>This program is free software; you can redistribute it and/or "
         "modify it under the terms of the GNU General Public License as "
         "published by the Free Software Foundation; either version 2 of the "
