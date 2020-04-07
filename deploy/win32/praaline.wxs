@@ -1,0 +1,216 @@
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <Product
+      Name="Praaline" 
+      Id="*"
+      Language="1033"
+      Codepage="1252" 
+      Version="0.9.1"
+      UpgradeCode="4576AC0E-2478-46A0-8C4F-E13EADAD09E8"
+      Manufacturer="praaline.org">
+    
+    <Package
+        Id="*"
+        Keywords="Installer"
+        Description="Praaline 32-bit Installer" 
+        Comments="Copyright (c) 2012-2020 George Christodoulides and others."
+        Manufacturer="praaline.org" 
+        InstallerVersion="100" 
+        Languages="1033" 
+        Compressed="yes" 
+        SummaryCodepage="1252"/>
+
+    <MajorUpgrade DowngradeErrorMessage="A later version of Praaline is already installed. Setup will now exit."/>
+
+    <Media Id="1" Cabinet="Praaline.cab" EmbedCab="yes" DiskPrompt="CD-ROM #1"/>
+    <Property Id="DiskPrompt" Value="Praaline Installation [1]"/>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+
+      <Directory Id="ProgramFilesFolder" Name="PFiles">
+        <Directory Id="APPLICATIONFOLDER" Name="Praaline">
+
+		<Component
+		  Id="MainExecutable"
+		  Guid="91954386-49A9-46F1-A70A-82CB86D13C92">
+			<File
+				Id="PraalineExecutable"
+				Name="Praaline.exe"
+				Source="release\Praaline.exe"
+				KeyPath="yes">
+			  <Shortcut Id="PraalineStartEntry" Directory="ProgramMenuDir" Name="Praaline" WorkingDirectory="APPLICATIONFOLDER" Icon="winicon.ico" IconIndex="0" Advertise="yes"/>
+			  <Shortcut Id="PraalineDesktop" Directory="DesktopFolder" Name="Praaline" WorkingDirectory="APPLICATIONFOLDER" Icon="winicon.ico" IconIndex="0" Advertise="yes"/>
+			</File>
+			<File Id="COPYING" Name="COPYING.txt" Source="..\..\LICENCE"/>
+			<File Id="README" Name="README.txt" Source="..\..\README.md"/>
+			<File Id="CHANGELOG" Name="CHANGELOG.txt" Source="..\..\CHANGELOG.txt"/>
+			<File Id="winicon.ico" Name="praaline-winicon.ico" Source="..\..\icons\praaline-winicon.ico"/>
+		</Component>
+
+		<Component 
+		  Id="PraalineLibraries" 
+		  Guid="2D84348D-EAC4-4553-85FF-C424622C2035">
+			<File Id="PraalineCore"			Name="praaline-core.dll"		Source="release\praaline-core.dll" 	KeyPath="yes"/>
+			<File Id="PraalineMedia"		Name="praaline-media.dll"		Source="release\praaline-media.dll"/>
+			<File Id="PraalineASR"			Name="praaline-asr.dll"			Source="release\praaline-asr.dll"/>
+		</Component>
+		
+		<Component 
+		  Id="ApplicationLibraries" 
+		  Guid="3B3AA903-2D61-419C-A4B9-B44856DCB80B">
+			<File Id="qscintilla2_qt5"		Name="qscintilla2_qt5.dll"		Source="release\qscintilla2_qt5.dll" 	KeyPath="yes"/>
+			<File Id="qtpropertybrowser"	Name="qtpropertybrowser.dll"	Source="release\qtpropertybrowser.dll"/>
+			<File Id="QtilitiesCore"		Name="QtilitiesCore-1.5.dll"	Source="release\QtilitiesCore-1.5.dll"/>
+			<File Id="QtilitiesCoreGui"		Name="QtilitiesCoreGui-1.5.dll"	Source="release\QtilitiesCoreGui-1.5.dll"/>
+			<File Id="QtilitiesExtensionSystem" Name="QtilitiesExtensionSystem-1.5.dll" Source="release\QtilitiesExtensionSystem-1.5.dll"/>
+			<File Id="QtilitiesLogging"		Name="QtilitiesLogging-1.5.dll"	Source="release\QtilitiesLogging-1.5.dll"/>
+			<File Id="QtilitiesProjectManagement" Name="QtilitiesProjectManagement-1.5.dll"	Source="release\QtilitiesProjectManagement-1.5.dll"/>
+		</Component>
+				
+		<Component
+		  Id="Qt5"
+		  Guid="3EC89536-7F4D-4D18-800C-7757B49AD303">
+			<File Id="QtCore"				Name="Qt5Core.dll"				Source="release\Qt5Core.dll" KeyPath="yes"/>
+			<File Id="QtGui"        		Name="Qt5Gui.dll"				Source="release\Qt5Gui.dll"/>
+			<File Id="QtNetwork"    		Name="Qt5Network.dll" 			Source="release\Qt5Network.dll"/>
+			<File Id="QtWidgets" 			Name="Qt5Widgets.dll" 			Source="release\Qt5Widgets.dll"/>
+			<File Id="QtXml" 				Name="Qt5Xml.dll" 				Source="release\Qt5Xml.dll"/>
+			<File Id="QtSql" 				Name="Qt5Sql.dll" 				Source="release\Qt5Sql.dll"/>
+			<File Id="QtSvg"				Name="Qt5Svg.dll" 				Source="release\Qt5Svg.dll"/>
+			<File Id="QtConcurrent"			Name="Qt5Concurrent.dll" 		Source="release\Qt5Concurrent.dll"/>
+			<File Id="QtCharts"				Name="Qt5Charts.dll" 			Source="release\Qt5Charts.dll"/>
+			<File Id="QtMultimedia"			Name="Qt5Multimedia.dll" 		Source="release\Qt5Multimedia.dll"/>
+			<File Id="QtMultimediaWidgets"	Name="Qt5MultimediaWidgets.dll" Source="release\Qt5MultimediaWidgets.dll"/>
+			<File Id="QtHelp"				Name="Qt5Help.dll" 				Source="release\Qt5Help.dll"/>
+			<File Id="QtOpenGL"				Name="Qt5OpenGL.dll" 			Source="release\Qt5OpenGL.dll"/>
+			<File Id="QtPrintSupport"		Name="Qt5PrintSupport.dll" 		Source="release\Qt5PrintSupport.dll"/>
+			<File Id="libgcc" 				Name="libgcc_s_dw2-1.dll"		Source="release\libgcc_s_dw2-1.dll"/>
+			<File Id="libstdcplusplus" 		Name="libstdc++-6.dll" 			Source="release\libstdc++-6.dll"/>
+			<File Id="libwinpthread" 		Name="libwinpthread-1.dll" 		Source="release\libwinpthread-1.dll"/>
+			<File Id="d3dcompiler" 			Name="d3dcompiler_47.dll" 		Source="release\d3dcompiler_47.dll"/>
+			<File Id="libEGL" 				Name="libEGL.dll" 				Source="release\libEGL.dll"/>
+			<File Id="libGLES" 				Name="libGLESv2.dll" 			Source="release\libGLESv2.dll"/>
+			<File Id="opengl32sw" 			Name="opengl32sw.dll" 			Source="release\opengl32sw.dll"/>
+		</Component>
+
+		<Directory Id="Audio" Name="audio">
+			<Component Id="Qt5AudioPlugins" Guid="1568535A-DF9E-4B83-83E8-8E8AFFF781E0">
+				<File Id="qtaudio_windows" Name="qtaudio_windows.dll" Source="release\audio\qtaudio_windows.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="IconEngines" Name="iconengines">
+			<Component Id="Qt5IconEnginePlugins" Guid="3FAB85EC-583B-4EA6-9529-994B5AB18F56">
+				<File Id="qsvgicon" Name="qsvgicon.dll" Source="release\iconengines\qsvgicon.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="ImageFormats" Name="imageformats">
+			<Component Id="Qt5ImageFormatPlugins" Guid="01780135-069B-4FFD-B5AC-2C1E766B2E02">
+				<File Id="qgif"  Name="qgif.dll"  Source="release\imageformats\qgif.dll"/>
+				<File Id="qicns" Name="qicns.dll" Source="release\imageformats\qicns.dll"/>
+				<File Id="qico"  Name="qico.dll"  Source="release\imageformats\qico.dll"/>
+				<File Id="qjpeg" Name="qjpeg.dll" Source="release\imageformats\qjpeg.dll"/>
+				<File Id="qsvg"  Name="qsvg.dll"  Source="release\imageformats\qsvg.dll"/>
+				<File Id="qtga"  Name="qtga.dll"  Source="release\imageformats\qtga.dll"/>
+				<File Id="qtiff" Name="qtiff.dll" Source="release\imageformats\qtiff.dll"/>
+				<File Id="qwbmp" Name="qwbmp.dll" Source="release\imageformats\qwbmp.dll"/>
+				<File Id="qwebp" Name="qwebp.dll" Source="release\imageformats\qwebp.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="MediaService" Name="mediaservice">
+			<Component Id="Qt5MediaServicePlugins" Guid="585E1E59-8AF7-4846-A941-60AC7F18F5E7">
+				<File Id="dsengine" Name="dsengine.dll" Source="release\mediaservice\dsengine.dll"/>
+				<File Id="qtmedia_audioengine" Name="qtmedia_audioengine.dll" Source="release\mediaservice\qtmedia_audioengine.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="Platforms" Name="platforms">
+			<Component Id="Qt5PlatformPlugins" Guid="041F4102-A2A6-4AA5-B7C4-FE9BFABE7C2A">
+				<File Id="qdirect2d"  Name="qdirect2d.dll"  Source="release\platforms\qdirect2d.dll"/>
+				<File Id="qminimal"   Name="qminimal.dll"   Source="release\platforms\qminimal.dll"/>
+				<File Id="qoffscreen" Name="qoffscreen.dll" Source="release\platforms\qoffscreen.dll"/>
+				<File Id="qwebgl"     Name="qwebgl.dll"     Source="release\platforms\qwebgl.dll"/>
+				<File Id="qwindows"   Name="qwindows.dll"   Source="release\platforms\qwindows.dll"/>
+			</Component>
+		</Directory>
+		<Directory Id="PlaylistFormats" Name="playlistformats">
+			<Component Id="Qt5PlaylistFormatPlugins" Guid="624A54EB-5282-4018-93C2-3BE70598C15B">
+				<File Id="qtmultimedia_m3u" Name="qtmultimedia_m3u.dll" Source="release\playlistformats\qtmultimedia_m3u.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="PrintSupport" Name="printsupport">
+			<Component Id="Qt5PrintSupportPlugins" Guid="F914CD12-776A-4270-89AF-B375EEE177EC">
+				<File Id="windowsprintersupport" Name="windowsprintersupport.dll" Source="release\printsupport\windowsprintersupport.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="SQLDrivers" Name="sqldrivers">
+			<Component Id="Qt5SQLDriverPlugins" Guid="D3517D50-4E38-4CB8-97D0-474BE9BC9260">
+				<File Id="qsqlite" Name="qsqlite.dll" Source="release\sqldrivers\qsqlite.dll"/>
+				<File Id="qsqlodbc" Name="qsqlodbc.dll" Source="release\sqldrivers\qsqlodbc.dll"/>
+				<File Id="qsqlpsql" Name="qsqlpsql.dll" Source="release\sqldrivers\qsqlpsql.dll"/>
+            </Component>
+		</Directory>
+		<Directory Id="Styles" Name="styles">
+            <Component Id="Qt5StylePlugins" Guid="02F95735-F3C2-4FE0-9652-91024DC00394">
+				<File Id="qwindowsvistastyle" Name="qwindowsvistastyle.dll" Source="release\styles\qwindowsvistastyle.dll"/>
+            </Component>
+		</Directory>
+
+		</Directory> <!-- Praaline --> 
+      </Directory> <!-- Program Files -->
+      
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="Praaline">
+          <Component Id="ProgramMenuDir" Guid="5086B43C-3B54-43AF-ACED-62D91EE33924">
+            <RemoveFolder Id="ProgramMenuDir" On="uninstall"/>
+            <RegistryValue Root="HKMU" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="" KeyPath="yes"/>
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop"/>
+
+    </Directory>
+
+    <Feature 
+        Id="Complete"
+        Title="Required files"
+        Description="Installs the required files for running Praaline."
+        AllowAdvertise="no"
+        Absent="disallow"
+        ConfigurableDirectory="APPLICATIONFOLDER"
+        Level="1">
+      <ComponentRef Id="MainExecutable"/>
+      <ComponentRef Id="PraalineLibraries"/>
+      <ComponentRef Id="ApplicationLibraries"/> 
+      <ComponentRef Id="Qt5"/>
+	  <ComponentRef Id="Qt5AudioPlugins"/>
+	  <ComponentRef Id="Qt5IconEnginePlugins"/>
+	  <ComponentRef Id="Qt5ImageFormatPlugins"/>
+	  <ComponentRef Id="Qt5MediaServicePlugins"/>
+	  <ComponentRef Id="Qt5PlatformPlugins"/>
+      <ComponentRef Id="Qt5PlaylistFormatPlugins"/>
+      <ComponentRef Id="Qt5PrintSupportPlugins"/>
+      <ComponentRef Id="Qt5SQLDriverPlugins"/>
+      <ComponentRef Id="Qt5StylePlugins"/>
+      <ComponentRef Id="ProgramMenuDir"/>
+    </Feature>
+
+    <UI>
+      <UIRef Id="WixUI_InstallDir" />
+      <UIRef Id="WixUI_ErrorProgressText" />
+    </UI>
+
+    <Property Id="WIXUI_INSTALLDIR" Value="APPLICATIONFOLDER" />
+    <Property Id="WIXUI_DONTVALIDATEPATH" Value="1" />
+    <Property Id="ApplicationFolderName" Value="Praaline" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <WixVariable Id="WixUILicenseRtf" Value="..\..\deploy\win32\License.rtf" />
+    
+    <Icon Id="winicon.ico" SourceFile="..\..\icons\praaline-winicon.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="winicon.ico" />
+
+    <WixVariable Id="WixUIBannerBmp" Value="..\..\deploy\win32\top.bmp"/>
+    <WixVariable Id="WixUIDialogBmp" Value="..\..\deploy\win32\main.bmp"/>
+
+  </Product>
+</Wix>
+
