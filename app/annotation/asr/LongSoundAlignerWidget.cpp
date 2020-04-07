@@ -38,7 +38,8 @@ using namespace Praaline::ASR;
 
 struct LongSoundAlignerWidgetData {
     LongSoundAlignerWidgetData() :
-        gridviewResults(0), modelResults(0)
+        communication(nullptr), recording(nullptr), annotation(nullptr),
+        gridviewResults(nullptr), modelResults(nullptr)
     {}
 
     QPointer<Corpus> corpus;

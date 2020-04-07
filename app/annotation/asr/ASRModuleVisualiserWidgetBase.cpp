@@ -21,12 +21,12 @@
 
 ASRModuleVisualiserWidgetBase::ASRModuleVisualiserWidgetBase(QWidget *parent) :
     ASRModuleWidgetBase(parent),
-    m_visualiserScroll(0), m_document(0), m_paneStack(0), m_viewManager(0), m_timeRulerLayer(0),
-    m_audioOutput(false), m_playSource(0), m_playTarget(0)
+    m_visualiserScroll(nullptr), m_document(nullptr), m_paneStack(nullptr), m_viewManager(nullptr), m_timeRulerLayer(nullptr),
+    m_audioOutput(false), m_playSource(nullptr), m_playTarget(nullptr)
 {
     m_document = new Document();
     m_viewManager = new ViewManager();
-    m_paneStack = new PaneStack(0, m_viewManager);
+    m_paneStack = new PaneStack(nullptr, m_viewManager);
     m_paneStack->setLayoutStyle(PaneStack::NoPropertyStacks);
 
     m_playSource = new AudioCallbackPlaySource(m_viewManager, QApplication::applicationName());
@@ -59,7 +59,7 @@ VisualiserWindowBase::FileOpenStatus ASRModuleVisualiserWidgetBase::openPath(con
     }
     source.waitForData();
     sv_samplerate_t rate = 0;
-    if (Preferences::getInstance()->getFixedSampleRate() != 0) {
+    if (Preferences::getInstance()->getFixedSampleRate() > 0) {
         rate = Preferences::getInstance()->getFixedSampleRate();
     } else if (Preferences::getInstance()->getResampleOnLoad()) {
         rate = m_playSource->getSourceSampleRate();
@@ -73,7 +73,7 @@ VisualiserWindowBase::FileOpenStatus ASRModuleVisualiserWidgetBase::openPath(con
             return VisualiserWindowBase::FileOpenFailed;
         }
     }
-    Model *prevMain = (m_document) ? m_document->getMainModel() : 0;
+    Model *prevMain = (m_document) ? m_document->getMainModel() : nullptr;
     if (prevMain) {
         m_playSource->removeModel(prevMain);
         PlayParameterRepository::getInstance()->removePlayable(prevMain);
@@ -101,18 +101,18 @@ void ASRModuleVisualiserWidgetBase::close()
     }
     delete m_document;
     m_viewManager->clearSelections();
-    m_timeRulerLayer = 0; // document owned this
+    m_timeRulerLayer = nullptr; // document owned this
     m_document = new Document();
 }
 
 WaveFileModel * ASRModuleVisualiserWidgetBase::getMainModel()
 {
-    if (!m_document) return 0;
+    if (!m_document) return nullptr;
     return m_document->getMainModel();
 }
 
 const WaveFileModel * ASRModuleVisualiserWidgetBase::getMainModel() const
 {
-    if (!m_document) return 0;
+    if (!m_document) return nullptr;
     return m_document->getMainModel();
 }

@@ -128,6 +128,7 @@ SOURCES += main.cpp \
     PraalineSplash.cpp \
     CorpusRepositoriesManager.cpp \
     annotation/AnnotationBrowserWidget.cpp \
+    annotation/asr/PhonetiserWidget.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
@@ -268,6 +269,7 @@ HEADERS  += \
     Version.h \
     CorpusRepositoriesManager.h \
     annotation/AnnotationBrowserWidget.h \
+    annotation/asr/PhonetiserWidget.h \
     corpus/corpusexplorer/AddCorpusAnnotationDialog.h \
     corpus/corpusexplorer/AddCorpusCommunicationDialog.h \
     corpus/corpusexplorer/AddCorpusRecordingDialog.h \
