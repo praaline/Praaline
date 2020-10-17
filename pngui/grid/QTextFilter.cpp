@@ -136,6 +136,7 @@ QTextFilter::QTextFilter(int row, int column) :
 
 QWidget* QTextFilter::createEditor(QFilterViewItemDelegate* delegate, QWidget* parent, const QStyleOptionViewItem & option, const QModelIndex & index ) const
 {
+    Q_UNUSED(delegate)
     Q_UNUSED(option);
     Q_UNUSED(index);
     return new QTextFilterEditor(parent);
@@ -238,6 +239,7 @@ void QTextFilter::setModelData(QWidget* editor, QAbstractItemModel* model, const
 
 void QTextFilter::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem & option, const QModelIndex & index)
 {
+    Q_UNUSED(index)
 	editor->setGeometry(option.rect);
 }
 

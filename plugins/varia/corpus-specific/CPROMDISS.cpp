@@ -36,7 +36,7 @@ QString CPROMDISS::transferBasicTiers(CorpusCommunication *com)
         foreach (QString speakerID, tiersAll.keys()) {
             AnnotationTierGroup *tiers = tiersAll.value(speakerID);
             if (!tiers) continue;
-            IntervalTier *tier_phone = tiers->getIntervalTierByName("phone");
+            // IntervalTier *tier_phone = tiers->getIntervalTierByName("phone");
             // if (!tier_phone && !annotationID.startsWith("int")) {
             if (annotationID.startsWith("iti") || annotationID.startsWith("lec")) {
                 IntervalTier *tier_cphone = tiers->getIntervalTierByName("cprom_phones");
@@ -44,7 +44,7 @@ QString CPROMDISS::transferBasicTiers(CorpusCommunication *com)
                 com->repository()->annotations()->saveTier(annotationID, speakerID, tier_cphone);
                 ret.append(annotationID + " phone\n");
             }
-            IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
+            // IntervalTier *tier_syll = tiers->getIntervalTierByName("syll");
             // if (!tier_syll && !annotationID.startsWith("int")) {
             if (annotationID.startsWith("iti") || annotationID.startsWith("lec")) {
                 IntervalTier *tier_csyll = tiers->getIntervalTierByName("cprom_syll");

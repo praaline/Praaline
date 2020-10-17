@@ -32,12 +32,23 @@ bool KaldiForcedAligner::alignTokens(const QString &waveFilepath, RealTime timeF
                                      bool insertLeadingAndTrailingPauses,
                                      QList<Interval *> &outPhonesList, QString &outAlignerOutput)
 {
+    Q_UNUSED(waveFilepath)
+    Q_UNUSED(timeFrom)
+    Q_UNUSED(timeTo)
+    Q_UNUSED(tierTokens)
+    Q_UNUSED(indexFrom)
+    Q_UNUSED(indexTo)
+    Q_UNUSED(insertLeadingAndTrailingPauses)
+    Q_UNUSED(outPhonesList)
+    Q_UNUSED(outAlignerOutput)
     return false;
 }
 
 void KaldiForcedAligner::mfcc_func(const QString &mfcc_directory, const QString &log_directory,
                               const QString &job_name, const QString &mfcc_config_path)
 {
+    Q_UNUSED(mfcc_config_path)
+
     QString raw_mfcc_path = mfcc_directory + QString("/raw_mfcc.%1.ark").arg(job_name);
     QString raw_scp_path = mfcc_directory + QString("raw_mfcc.%1.scp").arg(job_name);
     QString log_path = log_directory + QString("/make_mfcc.%1.log").arg(job_name);

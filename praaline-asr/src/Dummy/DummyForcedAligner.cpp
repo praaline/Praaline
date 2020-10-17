@@ -22,6 +22,15 @@ bool DummyForcedAligner::alignTokens(const QString &waveFilepath, RealTime timeF
                                      bool insertLeadingAndTrailingPauses,
                                      QList<Interval *> &outPhonesList, QString &outAlignerOutput)
 {
+    Q_UNUSED(waveFilepath)
+    Q_UNUSED(timeFrom)
+    Q_UNUSED(timeTo)
+    Q_UNUSED(tierTokens)
+    Q_UNUSED(indexFrom)
+    Q_UNUSED(indexTo)
+    Q_UNUSED(insertLeadingAndTrailingPauses)
+    Q_UNUSED(outPhonesList)
+    Q_UNUSED(outAlignerOutput)
     return false;
 }
 

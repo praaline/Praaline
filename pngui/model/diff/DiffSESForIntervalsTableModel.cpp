@@ -87,7 +87,7 @@ QVariant DiffSESforIntervalsTableModel::data(const QModelIndex &index, int role)
         return QVariant();
     if (index.row() >= rowCount() || index.row() < 0)
         return QVariant();
-    if (index.row() >= m_sesElemVec.size())
+    if ((unsigned long)index.row() >= m_sesElemVec.size())
         return QVariant();
 
     int indexInA = index.column() - 7;

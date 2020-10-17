@@ -162,11 +162,17 @@ bool CorpusCommunicationTableModel::setData(const QModelIndex &index, const QVar
 
 bool CorpusCommunicationTableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 
 bool CorpusCommunicationTableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 

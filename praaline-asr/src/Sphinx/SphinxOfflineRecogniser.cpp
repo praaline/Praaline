@@ -227,6 +227,7 @@ QString SphinxOfflineRecogniser::getUtteranceText() const
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &bestscore);
 #else
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx);
+    Q_UNUSED(bestscore)
 #endif
 
     lscr = 0; ascr = 0;
@@ -255,6 +256,7 @@ QList<Interval *> SphinxOfflineRecogniser::getSegmentation() const
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx, &bestscore);
 #else
     ps_seg_t *itor = ps_seg_iter(d->pocketSphinx);
+    Q_UNUSED(bestscore)
 #endif
 
     lscr = 0; ascr = 0;

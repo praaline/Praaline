@@ -39,6 +39,8 @@ bool CoNLLUReader::readCoNLLU(const QString &filename, QList<UDSentence> &senten
         else if (line.isEmpty()) {
             sentenceTo = lineNumber - 1;
             //intervals_sentences << new Interval(RealTime(sentenceFrom, 0), RealTime(sentenceTo, 0), currentSentenceID);
+            Q_UNUSED(sentenceFrom)
+            Q_UNUSED(sentenceTo)
             rangeFrom = rangeTo = 0;
             continue;
         }

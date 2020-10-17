@@ -20,8 +20,8 @@ using namespace Praaline::Core;
 
 struct SyllableProminenceAnnotatorData {
     SyllableProminenceAnnotatorData() :
-        fileFeaturesTable(0), streamFeaturesTable(0), fileCRFData(0), streamCRFData(0),
-        attributeDelivery("delivery"), attributeProminenceTrain("prom")
+        attributeDelivery("delivery"), attributeProminenceTrain("prom"),
+        fileFeaturesTable(nullptr), streamFeaturesTable(nullptr), fileCRFData(nullptr), streamCRFData(nullptr)
     {}
 
     QString currentAnnotationID;
@@ -170,6 +170,7 @@ void SyllableProminenceAnnotator::closeCRFDataFile()
 // static
 void SyllableProminenceAnnotator::prepareFeatures(QHash<QString, RealValueList> &features, IntervalTier *tier_syll, IntervalTier *tier_phones)
 {
+    Q_UNUSED(tier_phones)
     // Prepare data
     for (int isyll = 0; isyll < tier_syll->count(); isyll++) {
         Interval *syll = tier_syll->interval(isyll);

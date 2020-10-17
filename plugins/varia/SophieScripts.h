@@ -17,6 +17,7 @@ public:
     SophieScripts();
     ~SophieScripts();
     QString importPhonAnnotation(Praaline::Core::CorpusCommunication *com);
+    QString addPhoneticAnnotationToTokens(Praaline::Core::CorpusCommunication *com);
 
 private:
     SophieScriptsData *d;

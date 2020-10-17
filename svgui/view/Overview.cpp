@@ -20,6 +20,7 @@
 
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPainterPath>
 #include <iostream>
 
 //#define DEBUG_OVERVIEW 1

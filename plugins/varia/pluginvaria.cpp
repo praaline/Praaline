@@ -232,24 +232,26 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
         // printMessage(expecl.createTranscriptionBlocks(com));
         // printMessage(expecl.exportTranscriptionTextGrids(com));
 
+        sophie.addPhoneticAnnotationToTokens(com);
+
         countDone++;
         madeProgress(countDone * 100 / communications.count());
 
-        if (!m.isEmpty()) printMessage(m);
-        QString subjectID = com->ID().left(4);
-        if (!subjects.contains(subjectID)) subjects << subjectID;
-        expeclfiles.setCorpusRepository(com->repository());
+//        if (!m.isEmpty()) printMessage(m);
+//        QString subjectID = com->ID().left(4);
+//        if (!subjects.contains(subjectID)) subjects << subjectID;
+//        expeclfiles.setCorpusRepository(com->repository());
     }
     // orfeo.phonetiseOOV();
 
-    foreach (QString subjectID, subjects) {
-        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "FR", false, QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_FR01.csv").arg(subjectID)));
-        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "FR", true,  QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_FR03.csv").arg(subjectID)));
-        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "EN", false, QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_EN01.csv").arg(subjectID)));
-        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "EN", true,  QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_EN03.csv").arg(subjectID)));
+//    foreach (QString subjectID, subjects) {
+//        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "FR", false, QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_FR01.csv").arg(subjectID)));
+//        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "FR", true,  QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_FR03.csv").arg(subjectID)));
+//        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "EN", false, QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_EN01.csv").arg(subjectID)));
+//        printMessage(expeclfiles.importCSV_ETU_Stroop(subjectID, "EN", true,  QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_EN03.csv").arg(subjectID)));
 //        printMessage(expecl.importCSV_ETU_FR02(QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_FR02.csv").arg(subjectID)));
 //        printMessage(expecl.importCSV_ETU_EN02(QString("/mnt/hgfs/CORPORA/CLETU/RECORDINGS/%1/%1_EN02.csv").arg(subjectID)));
-    }
+//    }
 
 }
 

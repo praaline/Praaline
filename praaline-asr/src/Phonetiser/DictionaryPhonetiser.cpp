@@ -155,7 +155,7 @@ QString DictionaryPhonetiser::phonetiseToken(const QString &token) const
     QStringList phonetisations;
     foreach (QString phonetisationSphinx, phonetisationsSphinx.split("|")) {
         QString phonetisation;
-        foreach (QString phoneSphinx, phonetisationSphinx.split(" ", QString::SkipEmptyParts)) {
+        foreach (QString phoneSphinx, phonetisationSphinx.split(" ", Qt::SkipEmptyParts)) {
             QString phone = d->phonemeTranslation.translate(phoneSphinx);
             phonetisation.append(phone).append(" ");
         }

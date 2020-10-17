@@ -211,7 +211,7 @@ bool PFCPreprocessor::tryFixingSpeakers(Praaline::Core::Interval *intv)
     if (o != s || o != l || s != l) return false;
     if (o != 3) return false;
 
-    QStringList ortho = intv->text().split(" ", QString::SkipEmptyParts);
+    QStringList ortho = intv->text().split(" ", Qt::SkipEmptyParts);
     QStringList schwa = intv->attribute("schwa").toString().split(" ");
     QStringList liaison = intv->attribute("liaison").toString().split(" ");
     if (ortho.isEmpty() || schwa.isEmpty() || liaison.isEmpty()) return false;
@@ -473,7 +473,7 @@ QList<QString> PFCPreprocessor::splitToken(const QString &input)
     text = text.replace("\u2019", "' ").replace("' _", "'_");
     // Numbers not transcribed
     QList<QString> acc;
-    foreach (QString tok, text.trimmed().split(" ", QString::SkipEmptyParts)) {
+    foreach (QString tok, text.trimmed().split(" ", Qt::SkipEmptyParts)) {
         if (d->replaceSegments.contains(tok)) {
             acc << d->replaceSegments.value(tok);
         } else {
@@ -493,7 +493,7 @@ QList<QString> PFCPreprocessor::splitToken(const QString &input)
 
     // Break everything at spaces
     QList<QString> ret;
-    QList<QString> result = text.trimmed().split(" ", QString::SkipEmptyParts);
+    QList<QString> result = text.trimmed().split(" ", Qt::SkipEmptyParts);
     int i = 0;
     while (i < result.count()) {
         if (result.at(i) == "parce" || result.at(i) == "Parce") {

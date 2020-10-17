@@ -127,7 +127,7 @@ QString EasyAlignBasic::prepareAlignmentTextgrid(QList<Interval *> intervalsToAl
             w_xMax = w_xMax + w_step; if (w_xMax > intv_utterance->tMax()) w_xMax = intv_utterance->tMax();
             intervalsWords << new Interval(w_xMin, w_xMax, s_word);
             // phonemes
-            QList<QString> ls_phones = s_phonetisation.split(" ", QString::SkipEmptyParts);
+            QList<QString> ls_phones = s_phonetisation.split(" ", Qt::SkipEmptyParts);
             int countPhones = ls_phones.count();
             RealTime p_xMin = w_xMin;
             RealTime p_step = (w_xMax - w_xMin) / ((double) countPhones);

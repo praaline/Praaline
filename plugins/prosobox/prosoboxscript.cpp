@@ -67,7 +67,10 @@ void ProsoboxScript::createTextGrid(QString path, Corpus *corpus, QString annota
 
 void ProsoboxScript::runCreateSyllTable(QString path, Corpus *corpus, QString annotationID, QString speakerID)
 {
-
+    Q_UNUSED(path)
+    Q_UNUSED(corpus)
+    Q_UNUSED(annotationID)
+    Q_UNUSED(speakerID)
 
 //    QString filenameTempRec = QString("%1_%2.wav").arg(rec->ID()).arg(speakerID);
 //    QFile::copy(corpus->baseMediaPath() + rec->filename(), tempDirectory + filenameTempRec);
@@ -92,6 +95,8 @@ void ProsoboxScript::runCreateSyllTable(QString path, Corpus *corpus, QString an
 
 void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID)
 {
+    Q_UNUSED(tiers)
+
     // Create a temporary directory
     QTemporaryDir dirTemp;
     if (!dirTemp.isValid()) return;
@@ -126,6 +131,11 @@ void ProsoboxScript::runProsoProm(Corpus *corpus, CorpusRecording *rec, Annotati
 
 void ProsoboxScript::runMakeIFtier(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID)
 {
+    Q_UNUSED(corpus)
+    Q_UNUSED(rec)
+    Q_UNUSED(tiers)
+    Q_UNUSED(annotationID)
+    Q_UNUSED(speakerID)
 //    if (com->annotationsCount() == 0)
 //        return;
 //    QString filenameAnnotation = com->basePath() + com->annotation(0)->filename();

@@ -81,7 +81,7 @@ QString Rhapsodie::prepareMultiSpeakerTextgrids(Praaline::Core::CorpusCommunicat
             // Distribute tokens to speakers
             QMap<QString, QStringList> spkTokensText;
             QString speakerID;
-            foreach (QString tokenText, pivotText.split(" ", QString::SkipEmptyParts)) {
+            foreach (QString tokenText, pivotText.split(" ", Qt::SkipEmptyParts)) {
                 if (tokenText.startsWith("$")) {
                     speakerID = annotationID + "_" + tokenText.trimmed();
                 } else {
@@ -503,6 +503,7 @@ QString Rhapsodie::findCONLLUCorrespondancePrepare(QPointer<Praaline::Core::Corp
 
 QString Rhapsodie::findCONLLUCorrespondanceMatch(QPointer<Praaline::Core::Corpus> corpus)
 {
+    Q_UNUSED(corpus)
     QString ret;
     // Read each sentence in the CONLLU file and attribute it to the correct annotation
     QFile file(QDir::homePath() + "/Dropbox/CORPORA/Rhapsodie_UD/fr_spoken-ud-all.conllu");

@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QMap>
 #include <QDebug>
+#include <QRandomGenerator>
 
 #include "PraalineCore/Corpus/CorpusCommunication.h"
 #include "PraalineCore/Annotation/AnnotationTierGroup.h"
@@ -73,7 +74,7 @@ bool PseudoLanguage::createListOfPossibleDiphones(const QList<CorpusCommunicatio
 int randInt(int low, int high)
 {
     // returns a random integer value between low and high
-    return qrand() % ((high + 1) - low) + low;
+    return QRandomGenerator::global()->generate() % ((high + 1) - low) + low;
 }
 
 QString substitutePhoneme(const QString &phoneme, const QString &contextLeft, const QString &contextRight,

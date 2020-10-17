@@ -29,7 +29,7 @@
 #endif
 
 #define COPYRIGHT  "CRF++: Yet Another CRF Tool Kit\nCopyright (C) "    \
-  "2005-2013 Taku Kudo, All rights reserved.\n"
+    "2005-2013 Taku Kudo, All rights reserved.\n"
 #define MODEL_VERSION 100
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -43,138 +43,138 @@
 namespace CRFPP {
 // helper functions defined in the paper
 inline double sigma(double x) {
-  if (x > 0) return 1.0;
-  else if (x < 0) return -1.0;
-  return 0.0;
+    if (x > 0) return 1.0;
+    else if (x < 0) return -1.0;
+    return 0.0;
 }
 
 template <class Iterator>
 inline size_t tokenizeCSV(char *str,
                           Iterator out, size_t max) {
-  char *eos = str + std::strlen(str);
-  char *start = 0;
-  char *end = 0;
-  size_t n = 0;
+    char *eos = str + std::strlen(str);
+    char *start = 0;
+    char *end = 0;
+    size_t n = 0;
 
-  for (; str < eos; ++str) {
-    while (*str == ' ' || *str == '\t') ++str;  // skip white spaces
-    bool inquote = false;
-    if (*str == '"') {
-      start = ++str;
-      end = start;
-      for (; str < eos; ++str) {
+    for (; str < eos; ++str) {
+        while (*str == ' ' || *str == '\t') ++str;  // skip white spaces
+        bool inquote = false;
         if (*str == '"') {
-          str++;
-          if (*str != '"')
-            break;
+            start = ++str;
+            end = start;
+            for (; str < eos; ++str) {
+                if (*str == '"') {
+                    str++;
+                    if (*str != '"')
+                        break;
+                }
+                *end++ = *str;
+            }
+            inquote = true;
+            str = std::find(str, eos, ',');
+        } else {
+            start = str;
+            str = std::find(str, eos, ',');
+            end = str;
         }
-        *end++ = *str;
-      }
-      inquote = true;
-      str = std::find(str, eos, ',');
-    } else {
-      start = str;
-      str = std::find(str, eos, ',');
-      end = str;
+        if (max-- > 1) *end = '\0';
+        *out++ = start;
+        ++n;
+        if (max == 0) break;
     }
-    if (max-- > 1) *end = '\0';
-    *out++ = start;
-    ++n;
-    if (max == 0) break;
-  }
 
-  return n;
+    return n;
 }
 
 template <class Iterator>
 inline size_t tokenize(char *str, const char *del,
                        Iterator out, size_t max) {
-  char *stre = str + std::strlen(str);
-  const char *dele = del + std::strlen(del);
-  size_t size = 0;
+    char *stre = str + std::strlen(str);
+    const char *dele = del + std::strlen(del);
+    size_t size = 0;
 
-  while (size < max) {
-    char *n = std::find_first_of(str, stre, del, dele);
-    *n = '\0';
-    *out++ = str;
-    ++size;
-    if (n == stre) break;
-    str = n + 1;
-  }
+    while (size < max) {
+        char *n = std::find_first_of(str, stre, del, dele);
+        *n = '\0';
+        *out++ = str;
+        ++size;
+        if (n == stre) break;
+        str = n + 1;
+    }
 
-  return size;
+    return size;
 }
 
 // continus run of space is regarded as one space
 template <class Iterator>
 inline size_t tokenize2(char *str, const char *del,
                         Iterator out, size_t max) {
-  char *stre = str + std::strlen(str);
-  const char *dele = del + std::strlen(del);
-  size_t size = 0;
+    char *stre = str + std::strlen(str);
+    const char *dele = del + std::strlen(del);
+    size_t size = 0;
 
-  while (size < max) {
-    char *n = std::find_first_of(str, stre, del, dele);
-    *n = '\0';
-    if (*str != '\0') {
-      *out++ = str;
-      ++size;
+    while (size < max) {
+        char *n = std::find_first_of(str, stre, del, dele);
+        *n = '\0';
+        if (*str != '\0') {
+            *out++ = str;
+            ++size;
+        }
+        if (n == stre) break;
+        str = n + 1;
     }
-    if (n == stre) break;
-    str = n + 1;
-  }
 
-  return size;
+    return size;
 }
 
 void inline dtoa(double val, char *s) {
-  std::sprintf(s, "%-16f", val);
-  char *p = s;
-  for (; *p != ' '; ++p) {}
-  *p = '\0';
-  return;
+    std::sprintf(s, "%-16f", val);
+    char *p = s;
+    for (; *p != ' '; ++p) {}
+    *p = '\0';
+    return;
 }
 
 template <class T> inline void itoa(T val, char *s) {
-  char *t;
-  T mod;
+    char *t;
+    T mod;
 
-  if (val < 0) {
-    *s++ = '-';
-    val = -val;
-  }
-  t = s;
+    if (val < 0) {
+        *s++ = '-';
+        val = -val;
+    }
+    t = s;
 
-  while (val) {
-    mod = val % 10;
-    *t++ = static_cast<char>(mod)+ '0';
-    val /= 10;
-  }
+    while (val) {
+        mod = val % 10;
+        *t++ = static_cast<char>(mod)+ '0';
+        val /= 10;
+    }
 
-  if (s == t) *t++ = '0';
-  *t = '\0';
-  std::reverse(s, t);
+    if (s == t) *t++ = '0';
+    *t = '\0';
+    std::reverse(s, t);
 
-  return;
+    return;
 }
 
 template <class T>
 inline void uitoa(T val, char *s) {
-  char *t;
-  T mod;
-  t = s;
+    char *t;
+    T mod;
+    t = s;
 
-  while (val) {
-    mod = val % 10;
-    *t++ = static_cast<char>(mod) + '0';
-    val /= 10;
-  }
+    while (val) {
+        mod = val % 10;
+        *t++ = static_cast<char>(mod) + '0';
+        val /= 10;
+    }
 
-  if (s == t) *t++ = '0';
-  *t = '\0';
-  std::reverse(s, t);
+    if (s == t) *t++ = '0';
+    *t = '\0';
+    std::reverse(s, t);
 
-  return;
+    return;
 }
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -207,69 +207,69 @@ std::string WideToUtf8(const std::wstring &input);
     return *this; } while (0)
 
 class string_buffer: public std::string {
- public:
-  string_buffer& operator<<(double _n)             { _DTOA(_n); }
-  string_buffer& operator<<(short int _n)          { _ITOA(_n); }
-  string_buffer& operator<<(int _n)                { _ITOA(_n); }
-  string_buffer& operator<<(long int _n)           { _ITOA(_n); }
-  string_buffer& operator<<(unsigned short int _n) { _UITOA(_n); }
-  string_buffer& operator<<(unsigned int _n)       { _UITOA(_n); }
-  string_buffer& operator<<(unsigned long int _n)  { _UITOA(_n); }
-  string_buffer& operator<<(char _n) {
-    push_back(_n);
-    return *this;
-  }
-  string_buffer& operator<<(const char* _n) {
-    append(_n);
-    return *this;
-  }
-  string_buffer& operator<<(const std::string& _n) {
-    append(_n);
-    return *this;
-  }
+public:
+    string_buffer& operator<<(double _n)             { _DTOA(_n); }
+    string_buffer& operator<<(short int _n)          { _ITOA(_n); }
+    string_buffer& operator<<(int _n)                { _ITOA(_n); }
+    string_buffer& operator<<(long int _n)           { _ITOA(_n); }
+    string_buffer& operator<<(unsigned short int _n) { _UITOA(_n); }
+    string_buffer& operator<<(unsigned int _n)       { _UITOA(_n); }
+    string_buffer& operator<<(unsigned long int _n)  { _UITOA(_n); }
+    string_buffer& operator<<(char _n) {
+        push_back(_n);
+        return *this;
+    }
+    string_buffer& operator<<(const char* _n) {
+        append(_n);
+        return *this;
+    }
+    string_buffer& operator<<(const std::string& _n) {
+        append(_n);
+        return *this;
+    }
 };
 
 class die {
- public:
-  die() {}
-  ~die() {
-    std::cerr << std::endl;
-    exit(-1);
-  }
-  int operator&(std::ostream&) { return 0; }
+public:
+    die() {}
+    ~die() {
+        std::cerr << std::endl;
+        exit(-1);
+    }
+    int operator&(std::ostream&) { return 0; }
 };
 
 struct whatlog {
-  std::ostringstream stream_;
-  std::string str_;
-  const char *str() {
-    str_ = stream_.str();
-    return str_.c_str();
-  }
+    std::ostringstream stream_;
+    std::string str_;
+    const char *str() {
+        str_ = stream_.str();
+        return str_.c_str();
+    }
 };
 
 class wlog {
- public:
-  wlog(whatlog *what) : what_(what) {
-    what_->stream_.clear();
-  }
-  bool operator&(std::ostream &) {
-    return false;
-  }
- private:
-  whatlog *what_;
+public:
+    wlog(whatlog *what) : what_(what) {
+        what_->stream_.clear();
+    }
+    bool operator&(std::ostream &) {
+        return false;
+    }
+private:
+    whatlog *what_;
 };
 }  // CRFPP
 
 #define WHAT what_.stream_
 
 #define CHECK_FALSE(condition) \
- if (condition) {} else return \
-   wlog(&what_) & what_.stream_ <<              \
-      __FILE__ << "(" << __LINE__ << ") [" << #condition << "] "
+    if (condition) {} else return \
+    wlog(&what_) & what_.stream_ <<              \
+    __FILE__ << "(" << __LINE__ << ") [" << #condition << "] "
 
 #define CHECK_DIE(condition) \
-(condition) ? 0 : die() & std::cerr << __FILE__ << \
-"(" << __LINE__ << ") [" << #condition << "] "
+    (condition) ? 0 : die() & std::cerr << __FILE__ << \
+    "(" << __LINE__ << ") [" << #condition << "] "
 
 #endif

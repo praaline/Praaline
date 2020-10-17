@@ -143,6 +143,10 @@ bool SphinxLongSoundAligner::stepFindAnchors()
         Interval *intv_rec = (elem.second.afterIdx > 0) ? d->tokens_recognised.at(elem.second.afterIdx - 1) : nullptr;
         dtl::edit_t editType = elem.second.type;
 
+        Q_UNUSED(intv_trn)
+        Q_UNUSED(intv_rec)
+        Q_UNUSED(editType)
+
     }
 
 

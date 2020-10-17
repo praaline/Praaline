@@ -97,9 +97,9 @@ QString SequencerCombineUnits::createSequences(Praaline::Core::CorpusCommunicati
                     indexB.insert(seq->indexTo(), seq);
                 }
             }
-            startCommon = startA.intersect(startB).toList();
+            startCommon = startA.intersect(startB).values();
             std::sort(startCommon.begin(), startCommon.end());
-            endCommon = endA.intersect(endB).toList();
+            endCommon = endA.intersect(endB).values();
             std::sort(endCommon.begin(), endCommon.end());
 
             QList<Sequence *> sequences;

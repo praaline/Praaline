@@ -198,7 +198,13 @@ bool SpeechRecognitionRecipes::preapareAdapationData(CorpusCommunication *com,
                                                      const QString &pathAcousticModel, const QString &filenamePronunciationDictionary,
                                                      QStringList &outputTokensWithoutPhonetisationList)
 {
-
+    Q_UNUSED(com)
+    Q_UNUSED(levelTranscription)
+    Q_UNUSED(attributeIncludeInAdaptation)
+    Q_UNUSED(speakerIDs)
+    Q_UNUSED(pathAcousticModel)
+    Q_UNUSED(filenamePronunciationDictionary)
+    Q_UNUSED(outputTokensWithoutPhonetisationList)
     return true;
 }
 

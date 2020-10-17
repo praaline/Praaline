@@ -157,6 +157,11 @@ QString RegionAverageLayer::getFeatureDescription(View *v, QPoint &p) const
 
 bool RegionAverageLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
+    Q_UNUSED(v)
+    Q_UNUSED(frame)
+    Q_UNUSED(resolution)
+    Q_UNUSED(snap)
+    Q_UNUSED(y)
     return false;
 }
 
@@ -168,22 +173,30 @@ bool RegionAverageLayer::isLayerScrollable(const View *v) const
 
 bool RegionAverageLayer::getValueExtents(double &min, double &max, bool &, QString &) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 bool RegionAverageLayer::getDisplayExtents(double &min, double &max) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 bool RegionAverageLayer::setDisplayExtents(double min, double max)
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 void RegionAverageLayer::toXml(QTextStream &stream, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(stream)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 
 // ====================================================================================================================
@@ -219,11 +232,13 @@ void RegionAverageLayer::setGroupingLevelID(QString groupingLevelID)
 
 int RegionAverageLayer::getYForValue(View *, double value) const
 {
+    Q_UNUSED(value)
     return 0;
 }
 
 double RegionAverageLayer::getValueForY(View *, int y) const
 {
+    Q_UNUSED(y)
     return 0.0;
 }
 
@@ -235,9 +250,14 @@ QString RegionAverageLayer::getScaleUnits() const
 
 void RegionAverageLayer::getScaleExtents(View *, double &min, double &max, bool &log) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
+    Q_UNUSED(log)
 }
 
 int RegionAverageLayer::getDefaultColourHint(bool dark, bool &impose)
 {
+    Q_UNUSED(dark)
+    Q_UNUSED(impose)
     return 0;
 }

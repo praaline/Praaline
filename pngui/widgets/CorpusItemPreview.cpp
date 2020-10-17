@@ -333,6 +333,7 @@ void CorpusItemPreview::videoAvailableChanged(bool available)
 
 void CorpusItemPreview::setStatusInfo(const QString &info)
 {
+    Q_UNUSED(info)
 //    statusInfo = info;
 //    if (!statusInfo.isEmpty())
 //        setWindowTitle(QString("%1 | %2").arg(trackInfo).arg(statusInfo));

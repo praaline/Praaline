@@ -168,7 +168,7 @@ QVariant MetadataStructureTreeModel::headerData(int section, Qt::Orientation ori
 
 Qt::ItemFlags MetadataStructureTreeModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid()) return 0;
+    if (!index.isValid()) return Qt::ItemFlags();
     return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 

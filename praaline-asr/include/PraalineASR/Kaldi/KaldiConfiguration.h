@@ -154,9 +154,9 @@ class PRAALINE_ASR_SHARED_EXPORT MfccConfig : public KaldiConfiguration
                QHash<QString, QString> config_dict = QHash<QString, QString>());
     ~MfccConfig() {}
 
+    QString output_directory;
     QString job;
     QHash<QString, QString> config_dict;
-    QString output_directory;
 
     void update(QHash<QString, QString> new_config_dict);
     QString config_directory() const;

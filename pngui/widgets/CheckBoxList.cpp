@@ -38,6 +38,8 @@ public:
                           const QStyleOptionViewItem & option ,
                           const QModelIndex & index ) const
     {
+        Q_UNUSED(option)
+        Q_UNUSED(index)
         // create check box as our editor
         QCheckBox *editor = new QCheckBox(parent);
         return editor;

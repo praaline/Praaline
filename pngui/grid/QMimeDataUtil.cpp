@@ -31,7 +31,7 @@ void qMimeDataAddCsv(QMimeData* mimeData, QTableView* view, Qt::ItemDataRole rol
 				l << "\"" + view->model()->index(r, view->horizontalHeader()->visualIndex(c)).data(role).toString() + "\"";
 			}
 		}
-		stream << l.join(";") << endl;
+        stream << l.join(";") << "\n";
 	}
 	mimeData->setData("text/csv", d);
 }
@@ -97,7 +97,7 @@ void qMimeDataAddPlainText(QMimeData* mimeData, QTableView* view, Qt::ItemDataRo
 				l << view->model()->index(r, view->horizontalHeader()->visualIndex(c)).data(role).toString();
 			}
 		}
-		stream << l.join("\t") << endl;
+        stream << l.join("\t") << "\n";
 	}
 	mimeData->setData("text/plain", d);
 }

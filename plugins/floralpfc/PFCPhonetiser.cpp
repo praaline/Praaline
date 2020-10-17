@@ -114,7 +114,7 @@ QString PFCPhonetiser::convertPhonetisationsToStars(const QString &phonetisation
             QString phonetisationA = consolidated.at(i).trimmed();
             QString phonetisationB = consolidated.at(j).trimmed();
             WordAlign wa;
-            wa.align(phonetisationA.split(" ", QString::SkipEmptyParts), phonetisationB.split(" ", QString::SkipEmptyParts));
+            wa.align(phonetisationA.split(" ", Qt::SkipEmptyParts), phonetisationB.split(" ", Qt::SkipEmptyParts));
             if (((wa.deletionsCount() + wa.insertionsCount()) == 1) && wa.substitutionsCount() == 0) {
                 QString shorthand;
                 foreach (WordAlign::AlignmentItem item, wa.alignment()) {
@@ -184,7 +184,7 @@ void PFCPhonetiser::applyPFCLiaison(Praaline::Core::Interval *tok_min)
     if (liaisonPresent) {
         // With liaison
         foreach (QString phonetisation, phonetisations) {
-            QStringList phonemes = phonetisation.split(" ", QString::SkipEmptyParts);
+            QStringList phonemes = phonetisation.split(" ", Qt::SkipEmptyParts);
             if (phonemes.isEmpty()) continue;
             if (phonemes.last().endsWith(consonant + "*")) {
                 phonemes[phonemes.count() - 1] = phonemes.last().remove("*");
@@ -197,7 +197,7 @@ void PFCPhonetiser::applyPFCLiaison(Praaline::Core::Interval *tok_min)
     else {
         // No liaison
         foreach (QString phonetisation, phonetisations) {
-            QStringList phonemes = phonetisation.split(" ", QString::SkipEmptyParts);
+            QStringList phonemes = phonetisation.split(" ", Qt::SkipEmptyParts);
             if (phonemes.isEmpty()) continue;
             if (phonemes.last().endsWith("*") && !phonemes.last().endsWith("@*")) {
                 phonemes.takeLast();
@@ -237,7 +237,7 @@ void PFCPhonetiser::applyPFCSchwa(Interval *tok_min)
     QStringList phonetisations = tok_min->attribute("phonetisation").toString().split(" | ");
     QStringList phonetisationsFiltered;
     foreach (QString phonetisation, phonetisations) {
-        QStringList phonemes = phonetisation.split(" ", QString::SkipEmptyParts);
+        QStringList phonemes = phonetisation.split(" ", Qt::SkipEmptyParts);
         if (phonemes.isEmpty()) continue;
         int numberOptionalSchwas(0);
         foreach (QString phoneme, phonemes) { if (phoneme == "@*") numberOptionalSchwas++; }

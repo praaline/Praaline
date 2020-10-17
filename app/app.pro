@@ -122,7 +122,6 @@ PRE_TARGETDEPS += \
         ../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
 SOURCES += main.cpp \
-    #visualisation/pitchanalyser.cpp \
     PraalineMainWindow.cpp \
     NetworkPermissionTester.cpp \
     PraalineSplash.cpp \
@@ -197,7 +196,8 @@ SOURCES += main.cpp \
     visualisation/VisualisationMode.cpp \
     visualisation/VisualisationModeWidget.cpp \
     visualisation/VisualiserWidget.cpp \
-    visualisation/SimpleVisualiserWidget.cpp \    
+    visualisation/SimpleVisualiserWidget.cpp \
+    web/DjangoModelMetadata.cpp \
     visualisation/ExportVisualisationDialog.cpp \
     query/sql/SqlTextEdit.cpp \
     query/sql/SqlUiLexer.cpp \
@@ -253,16 +253,17 @@ SOURCES += main.cpp \
     welcome/WelcomeModeWidget.cpp \
     web/WebDesignerModeWidget.cpp \
     statistics/pca/StatisticsPluginPCA.cpp \
-    statistics/pca/PCAPlotWidget.cpp \ #\
+    statistics/pca/PCAPlotWidget.cpp \
     annotation/editors/PFCTranscriptionEditor.cpp \
     web/MetadataWebDesigner.cpp \
     web/ConcordancerWebDesigner.cpp \
     updater/UpdatePraalineDialog.cpp \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.cpp
+
+    #visualisation/pitchanalyser.cpp \
     #statistics/basic/AnalyserBasic.cpp
 
 HEADERS  += \
-    #visualisation/pitchanalyser.h \
     PraalineMainWindow.h \
     NetworkPermissionTester.h \
     PraalineSplash.h \
@@ -389,7 +390,8 @@ HEADERS  += \
     help/HelpModeWidget.h \
     help/ContentWidgetFactory.h \
     help/HelpBrowser.h \
-    help/HelpModeConfig.h \   
+    help/HelpModeConfig.h \
+    web/DjangoModelMetadata.h \
     updater/Updater.h \
     updater/QSimpleUpdater.h \
     updater/Downloader.h \
@@ -406,7 +408,9 @@ HEADERS  += \
     web/ConcordancerWebDesigner.h \
     updater/UpdatePraalineDialog.h \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.h
+
     #statistics/basic/AnalyserBasic.h
+    #visualisation/pitchanalyser.h
 
 FORMS    += \
     MainWindow.ui \

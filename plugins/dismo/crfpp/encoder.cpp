@@ -97,9 +97,9 @@ bool runMIRA(const std::vector<TaggerImpl* > &x,
              double *alpha,
              size_t maxitr,
              float C,
-             double eta,
+             double /* eta */,
              unsigned short shrinking_size,
-             unsigned short thread_num) {
+             unsigned short /* thread_num */) {
   std::vector<unsigned char> shrink(x.size());
   std::vector<float> upper_bound(x.size());
   std::vector<double> expected(feature_index->size());
@@ -197,7 +197,7 @@ bool runCRF(const std::vector<TaggerImpl* > &x,
             size_t maxitr,
             float C,
             double eta,
-            unsigned short shrinking_size,
+            unsigned short /* shrinking_size */,
             unsigned short thread_num,
             bool orthant) {
   double old_obj = 1e+37;

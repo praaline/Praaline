@@ -38,7 +38,7 @@ public:
 
 QGroupingProxyModelPrivate::QGroupingProxyModelPrivate(QGroupingProxyModel *pm)
 {
-
+    Q_UNUSED(pm)
 }
 
 QGroupingProxyModelPrivate::~QGroupingProxyModelPrivate()
@@ -366,12 +366,13 @@ int QGroupingProxyModel::findText(const QString & text) const
     return -1;
 }
 
-QModelIndex QGroupingProxyModel::mapFromSource(const QModelIndex & sourceIndex) const
+QModelIndex QGroupingProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
 {
+    Q_UNUSED(sourceIndex)
     return QModelIndex();
 }
 
-QModelIndex QGroupingProxyModel::mapToSource(const QModelIndex & proxyIndex) const
+QModelIndex QGroupingProxyModel::mapToSource(const QModelIndex &proxyIndex) const
 {
     QGroupingProxyModelGroup* item = static_cast<QGroupingProxyModelGroup*>(proxyIndex.internalPointer());
     if (item == d->root){
@@ -494,6 +495,7 @@ void QGroupingProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 
 void QGroupingProxyModel::dataChangedHandler(const QModelIndex & topLeft, const QModelIndex & bottomRight)
 {
+    Q_UNUSED(bottomRight)
     if (topLeft.column() != d->modelColumn){
         QGroupingProxyModelGroup* mCurrentGroup = d->root->group(topLeft.row());
         QModelIndex mTopLeft = index(mCurrentGroup->parent()->indexOf(mCurrentGroup), 0);
@@ -522,12 +524,18 @@ void QGroupingProxyModel::dataChangedHandler(const QModelIndex & topLeft, const 
 
 void QGroupingProxyModel::rowsAboutToBeInsertedHandler(const QModelIndex & parent, int start, int end)
 {
+    Q_UNUSED(parent)
+    Q_UNUSED(start)
+    Q_UNUSED(end)
 //    d->root->child(0)->addSourceModelRow(start);
-    //    qDebug() << d->root->child(0)->sourceModelRows();
+//    qDebug() << d->root->child(0)->sourceModelRows();
 }
 
 void QGroupingProxyModel::rowsInsertedHandler(const QModelIndex & parent, int first, int last)
 {
+    Q_UNUSED(parent)
+    Q_UNUSED(first)
+    Q_UNUSED(last)
     // @todo
 //    int mGroup = d->root->group(cSourceModel->index(first, cModelColumn).data(cGroupItemDataRole));
 //    beginResetModel();
@@ -545,9 +553,8 @@ void QGroupingProxyModel::buildGroups()
     beginResetModel();
     d->root->clear();
     if (d->sourceModel){
-        QGroupingProxyModelGroup* group;
         for (int iRow = 0; iRow < d->sourceModel->rowCount(); iRow++){
-            group = d->root->matches(d->sourceModel->index(iRow, d->modelColumn).data(d->groupItemDataRole));
+            QGroupingProxyModelGroup *group = d->root->matches(d->sourceModel->index(iRow, d->modelColumn).data(d->groupItemDataRole));
             if (group == 0){
                 group = d->root->child(0);
             }

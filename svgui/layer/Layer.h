@@ -198,6 +198,7 @@ public:
                                     int &resolution,
                                     SnapType /* snap */,
                                     int y = 0) const {
+        Q_UNUSED(y)
         resolution = 1;
         return false;
     }
@@ -223,6 +224,7 @@ public:
                                       int &resolution,
                                       SnapType /* snap */,
                                       int y = 0) const {
+        Q_UNUSED(y)
         resolution = 1;
         return false;
     }

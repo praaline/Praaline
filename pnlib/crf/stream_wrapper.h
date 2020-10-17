@@ -16,49 +16,49 @@
 namespace CRFPP {
 
 class istream_wrapper {
- private:
-  std::istream* is;
- public:
-  std::istream &operator*() const  { return *is; }
-  std::istream *operator->() const { return is;  }
-  std::istream *get() { return is; }
-  explicit istream_wrapper(const char* filename): is(0) {
-    if (std::strcmp(filename, "-") == 0)
-      is = &std::cin;
-    else
+private:
+    std::istream* is;
+public:
+    std::istream &operator*() const  { return *is; }
+    std::istream *operator->() const { return is;  }
+    std::istream *get() { return is; }
+    explicit istream_wrapper(const char* filename): is(0) {
+        if (std::strcmp(filename, "-") == 0)
+            is = &std::cin;
+        else
 #if defined(__MINGW32__)
-      is = new std::ifstream(filename);
+            is = new std::ifstream(filename);
 #else
-      is = new std::ifstream(WPATH(filename));
+            is = new std::ifstream(WPATH(filename));
 #endif
-  }
+    }
 
-  ~istream_wrapper() {
-    if (is != &std::cin) delete is;
-  }
+    ~istream_wrapper() {
+        if (is != &std::cin) delete is;
+    }
 };
 
 class ostream_wrapper {
- private:
-  std::ostream* os;
- public:
-  std::ostream &operator*() const  { return *os; }
-  std::ostream *operator->() const { return os;  }
-  std::ostream *get() { return os; }
-  explicit ostream_wrapper(const char* filename): os(0) {
-    if (std::strcmp(filename, "-") == 0)
-      os = &std::cout;
-    else
+private:
+    std::ostream* os;
+public:
+    std::ostream &operator*() const  { return *os; }
+    std::ostream *operator->() const { return os;  }
+    std::ostream *get() { return os; }
+    explicit ostream_wrapper(const char* filename): os(0) {
+        if (std::strcmp(filename, "-") == 0)
+            os = &std::cout;
+        else
 #if defined(__MINGW32__)
-      os = new std::ofstream(filename);
+            os = new std::ofstream(filename);
 #else
-      os = new std::ofstream(WPATH(filename));
+            os = new std::ofstream(WPATH(filename));
 #endif
-  }
+    }
 
-  ~ostream_wrapper() {
-    if (os != &std::cout) delete os;
-  }
+    ~ostream_wrapper() {
+        if (os != &std::cout) delete os;
+    }
 };
 }
 

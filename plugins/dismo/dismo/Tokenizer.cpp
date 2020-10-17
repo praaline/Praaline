@@ -178,7 +178,7 @@ void Tokenizer::Tokenize(const IntervalTier *tierInput, const IntervalTier *tier
         input = input.replace("-", "- ");
 
         // break everything at spaces
-        QStringList split = input.split(" ", QString::SkipEmptyParts);
+        QStringList split = input.split(" ", Qt::SkipEmptyParts);
 
         // If this interval has to be separated, use phonetic transcription (if available) or heuristics
         // to find token boundaries (tMin, tMax).
@@ -242,7 +242,6 @@ int matchPhonemes(int start, QList<Interval *> phones, QList<QString> phonetisat
 QList<Interval *> Tokenizer::separateToken(Interval *intvInput, QStringList &split,
                                            const IntervalTier *tierPhones)
 {
-    Interval *intvPrevious = 0;
     QList<Interval *> splitIntervals;
     QList<Interval *> phones;
 
@@ -272,7 +271,6 @@ QList<Interval *> Tokenizer::separateToken(Interval *intvInput, QStringList &spl
             Interval *intv = new Interval(tMin, tMax, s);
             part++;
             splitIntervals << intv;
-            intvPrevious = intv;
             tMin = tMax;
         }
     }

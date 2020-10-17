@@ -230,7 +230,12 @@ void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunicati
         if (seg.speakerID.isEmpty()) seg.speakerID = com->ID();
         if (!speaker_segment_intervals.contains(seg.speakerID)) continue;
         QString text = seg.orthography.join(" ").trimmed();
-        speaker_segment_intervals[seg.speakerID] << new Interval(seg.startTime, seg.startTime + seg.duration, text);
+        Interval *segment = new Interval(seg.startTime, seg.startTime + seg.duration, text);
+        QString ipaModel = seg.ipaModel.pg.join(" ").trimmed();
+        QString ipaActual = seg.ipaActual.pg.join(" ").trimmed();
+        segment->setAttribute("ipa_model", ipaModel);
+        segment->setAttribute("ipa_actual", ipaActual);
+        speaker_segment_intervals[seg.speakerID] << segment;
     }
     foreach (QString speakerID, speaker_segment_intervals.keys()) {
         IntervalTier *tier_transcription = new IntervalTier("segment", speaker_segment_intervals[speakerID]);

@@ -7,6 +7,7 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonValueRef>
 #include <QtCore/QJsonArray>
+#include <QtCore/QRandomGenerator>
 
 #include <QDebug>
 
@@ -55,7 +56,7 @@ setConnectionStyle(QString jsonText)
 #define CONNECTION_STYLE_READ_COLOR(values, variable)  { \
     auto valueRef = values[#variable]; \
     CONNECTION_STYLE_CHECK_UNDEFINED_VALUE(valueRef, variable) \
-    if (CONNECTION_VALUE_EXISTS(valueRef)) \
+    if (CONNECTION_VALUE_EXISTS(valueRef)) { \
     if (valueRef.isArray()) { \
     auto colorArray = valueRef.toArray(); \
     std::vector<int> rgb; rgb.reserve(3); \
@@ -65,6 +66,7 @@ setConnectionStyle(QString jsonText)
     variable = QColor(rgb[0], rgb[1], rgb[2]); \
     } else { \
     variable = QColor(valueRef.toString()); \
+    } \
     } \
     }
 
@@ -157,8 +159,8 @@ normalColor(QString typeId) const
 
     std::size_t const hue_range = 0xFF;
 
-    qsrand(hash);
-    std::size_t hue = qrand() % hue_range;
+    // qsrand(hash);
+    std::size_t hue = QRandomGenerator::global()->generate() % hue_range;
 
     std::size_t sat = 120 + hash % 129;
 

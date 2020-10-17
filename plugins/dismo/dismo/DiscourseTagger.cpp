@@ -30,6 +30,8 @@ bool DiscourseTagger::isEOSToken(int i)
 
 bool DiscourseTagger::isEOSTokenUnit(int i, int j)
 {
+    Q_UNUSED(i)
+    Q_UNUSED(j)
     return false;
 }
 
@@ -77,6 +79,10 @@ void DiscourseTagger::writeTokenToCRF(QTextStream &out, int i, bool isTraining)
 
 void DiscourseTagger::writeTokenUnitToCRF(QTextStream &out, int i, int j, bool isTraining)
 {
+    Q_UNUSED(out)
+    Q_UNUSED(i)
+    Q_UNUSED(j)
+    Q_UNUSED(isTraining)
     // Discourse tags are always annotated at the token level
 }
 
@@ -95,6 +101,9 @@ void DiscourseTagger::decodeTokenFromCRF(const QString &line, int i)
 
 void DiscourseTagger::decodeTokenUnitFromCRF(const QString &line, int i, int j)
 {
+    Q_UNUSED(line)
+    Q_UNUSED(i)
+    Q_UNUSED(j)
     // Discourse tags are always annotated at the token level
 }
 

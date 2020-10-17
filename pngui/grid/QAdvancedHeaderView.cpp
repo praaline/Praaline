@@ -198,15 +198,15 @@ void QAdvancedHeaderView::moreColumnsActionTriggered()
     QStandardItemModel* cm = new QStandardItemModel(dlg);
     cm->setColumnCount(1);
     cm->setRowCount(m->columnCount());
+    Q_UNUSED(hp)
 
     v->setModel(cm);
     v->horizontalHeader()->setStretchLastSection(true);
     v->horizontalHeader()->setVisible(false);
     v->verticalHeader()->setVisible(false);
 
-    QStandardItem* item;
     for (int iColumn = 0; iColumn < m->columnCount(); iColumn++){
-        item = new QStandardItem(m->headerData(iColumn, Qt::Horizontal).toString());
+        QStandardItem *item = new QStandardItem(m->headerData(iColumn, Qt::Horizontal).toString());
         item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
         item->setData(isSectionHidden(iColumn)?Qt::Unchecked:Qt::Checked, Qt::CheckStateRole);
         cm->setItem(iColumn, 0, item);

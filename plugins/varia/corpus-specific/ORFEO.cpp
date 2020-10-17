@@ -406,6 +406,7 @@ QString ORFEO::align(Praaline::Core::CorpusCommunication *com)
                 result = d->aligner.alignUtterance(com->recordings().first()->filePath(), tier_utterance, indexUtterance,
                                                    tier_tok_min, tier_phone, alignerOutput);
                 // if (!result) qDebug() << indexUtterance << result << tier_utterance->at(indexUtterance)->text() << alignerOutput;
+                Q_UNUSED(result)
                 qDebug() << annotationID << speakerID << indexUtterance;
                 indexUtterance--;
                 numberOfUtterances++;

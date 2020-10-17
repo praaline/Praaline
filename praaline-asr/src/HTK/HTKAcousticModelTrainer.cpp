@@ -106,7 +106,7 @@ bool HTKAcousticModelTrainer::createMLF(
                         } else {
                             // from phonetiser
                             QString phonetisation = token->attribute(attributePhonetisation).toString().trimmed();
-                            foreach (QString p, phonetisation.split(" ", QString::SkipEmptyParts)) {
+                            foreach (QString p, phonetisation.split(" ", Qt::SkipEmptyParts)) {
                                 if (d->phonemeTranslations.contains(p)) p = d->phonemeTranslations.value(p);
                                 if (p == "_") p = "sp";
                                 phonemeString << p;

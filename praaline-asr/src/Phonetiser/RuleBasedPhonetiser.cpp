@@ -73,11 +73,13 @@ QString RuleBasedPhonetiser::phonetise(const QString &input)
 
 QString RuleBasedPhonetiser::phonetiseWord(const QString &word)
 {
+    Q_UNUSED(word)
     return QString();
 }
 
 QList<Core::Interval *> RuleBasedPhonetiser::phonetiseUtterance(Core::Interval *utterance)
 {
+    Q_UNUSED(utterance)
     return QList<Core::Interval *>();
 }
 

@@ -105,7 +105,7 @@ QString MBROLAResynthesiser::resynthesise(const QString &directory, Praaline::Co
 #ifdef Q_OS_MAC
     commandMBROLA = "/Users/george/Develop/mbrola/mbrola";
     voice  = (sex == "F") ? "/Users/george/Develop/mbrola/fr2/fr2" : "/Users/george/Develop/mbrola/fr1/fr1";
-#else Q_OS_WIN
+#else
     commandMBROLA = "/home/george/Downloads/mbrola/mbrola";
     voice = (sex == "F") ? "/home/george/Downloads/mbrola/fr2/fr2" : "/home/george/Downloads/mbrola/fr1/fr1";
 #endif

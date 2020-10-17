@@ -32,6 +32,8 @@ bool POSTagger::isEOSToken(int i)
 
 bool POSTagger::isEOSTokenUnit(int i, int j)
 {
+    Q_UNUSED(i)
+    Q_UNUSED(j)
     return false;
 }
 

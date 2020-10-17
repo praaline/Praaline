@@ -20,8 +20,8 @@ public:
     explicit ExternalPhonetiser(QObject *parent = nullptr);
     ~ExternalPhonetiser() override;
 
-    QString phonetiseWord(const QString &word) override {}
-    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override { return QList<Core::Interval *>(); }
+    QString phonetiseWord(const QString &word) override { Q_UNUSED(word) return QString(); }
+    QList<Core::Interval *> phonetiseUtterance(Core::Interval *utterance) override { Q_UNUSED(utterance) return QList<Core::Interval *>(); }
 
     static QList<SpeechToken> phonetiseList(QList<Praaline::Core::Interval *> tokens, const QString &attributeID = QString());
     static QList<SpeechToken> phonetiseTier(Praaline::Core::IntervalTier *tier_tokens, const QString &attributeID = QString());

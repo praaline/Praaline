@@ -127,6 +127,9 @@ bool MFAExternal::alignTokens(const QString &waveFilepath, RealTime timeFrom, Re
                               bool insertLeadingAndTrailingPauses,
                               QList<Interval *> &outPhonesList, QString &outAlignerOutput)
 {
+    Q_UNUSED(outPhonesList)
+    Q_UNUSED(outAlignerOutput)
+
     QList<SpeechToken> atokens;
     QList<SpeechPhone> aphones;
 

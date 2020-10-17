@@ -83,7 +83,9 @@ sv_samplerate_t RegionAverageModel::getSampleRate() const
 
 void RegionAverageModel::toXml(QTextStream &out, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(out)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 
 // ====================================================================================================================

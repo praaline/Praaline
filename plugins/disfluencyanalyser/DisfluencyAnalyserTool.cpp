@@ -88,6 +88,7 @@ bool DisfluencyAnalyserTool::readFromTier(IntervalTier *tierDisfluency, const QS
 
 void disfluencyToBacktrack(Disfluency *disf)
 {
+    Q_UNUSED(disf)
     QList<QPair<int, QString> > line1;
     QList<QPair<int, QString> > line2;
 }

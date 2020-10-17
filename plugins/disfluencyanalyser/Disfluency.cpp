@@ -4,8 +4,7 @@ Disfluency::Disfluency(IntervalTier *tierTokens, int start, int end, const QStri
                        int interruptionPoint, int reparansStart, int editTermStart, int editTermEnd,
                        QObject *parent) :
     TokenSequence(tierTokens, start, end, globalTag, parent),
-    m_interruptionPoint(interruptionPoint), m_reparansStart(reparansStart),
-    m_editTermStart(editTermStart), m_editTermEnd(editTermEnd)
+    m_interruptionPoint(interruptionPoint), m_editTermStart(editTermStart), m_editTermEnd(editTermEnd), m_reparansStart(reparansStart)
 {
     if (!m_tierTokens) {
         // invalid tokens tier
@@ -194,6 +193,8 @@ QString Disfluency::reparansText(const QString &separator) const
 QString Disfluency::formatted(const QString &leftS, const QString &rightS, const QString &intpt,
                               const QString &leftE, const QString &rightE)
 {
+    Q_UNUSED(leftE)
+    Q_UNUSED(rightE)
     QString ret;
     if (!m_tierTokens) return ret;
     if (m_start < 0) return ret;
@@ -237,5 +238,5 @@ QList<QList<Interval *> > Disfluency::backtracking() const
 
 QString Disfluency::backtrackingFormatted() const
 {
-
+    return QString();
 }

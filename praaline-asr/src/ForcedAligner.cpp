@@ -156,7 +156,7 @@ QList<SpeechToken> ForcedAligner::alignerTokensFromIntervalTier(bool insertLeadi
         }
         phonetisationAttributeText = phonetisationAttributeText.trimmed();
         // Split the given phonetisation text into proposed alternates (e.g. abc | def)
-        QStringList phonetisationsProposed = phonetisationAttributeText.split(d->phonetisationSeparatorForVariants, QString::SkipEmptyParts);
+        QStringList phonetisationsProposed = phonetisationAttributeText.split(d->phonetisationSeparatorForVariants, Qt::SkipEmptyParts);
         // Create list of alternate phonetisations
         foreach (QString phonetisationProposed, phonetisationsProposed) {
             QStringList phonemesSeparated;
@@ -169,7 +169,7 @@ QList<SpeechToken> ForcedAligner::alignerTokensFromIntervalTier(bool insertLeadi
                 }
             }
             else {
-                phonemesSeparated = phonetisationProposed.split(d->phonetisationSeparatorForPhonemes, QString::SkipEmptyParts);
+                phonemesSeparated = phonetisationProposed.split(d->phonetisationSeparatorForPhonemes, Qt::SkipEmptyParts);
             }
             // Process alternative phonetisations
             QList<QStringList> phonetisations;
@@ -293,6 +293,7 @@ bool ForcedAligner::alignAllUtterances(const QString &waveFilepath,
         bool result(false);
         result = alignUtterance(waveFilepath, tierUtterances, indexUtterance, tierTokens, tierPhones,
                                 alignerOutput, insertLeadingAndTrailingPauses);
+        Q_UNUSED(result)
         // if (!result) qDebug() << result << tierUtterances->at(indexUtterance)->text() << alignerOutput;
         alignerMessage(alignerOutput);
         indexUtterance--;

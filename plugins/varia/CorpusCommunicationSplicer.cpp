@@ -34,10 +34,10 @@ CorpusCommunicationSplicer::~CorpusCommunicationSplicer()
 
 void CorpusCommunicationSplicer::setRepositorySource(CorpusRepository *repository)
 {
-
+    Q_UNUSED(repository)
 }
 
 void CorpusCommunicationSplicer::setRepositoryDestination(CorpusRepository *repository)
 {
-
+    Q_UNUSED(repository)
 }

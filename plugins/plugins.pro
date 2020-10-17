@@ -14,5 +14,7 @@ SUBDIRS +=  dismo \
             dismo2 \
             mbrola \
             metronome \
-            udpipe
+            udpipe \
+            webdjango
+
 

@@ -94,7 +94,7 @@ QVariant CorpusExplorerTreeModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags CorpusExplorerTreeModel::flags(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return 0;
+        return Qt::ItemFlags();
     if (index.column() < columnCount())
         return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     return ObserverTreeModel::flags(index);

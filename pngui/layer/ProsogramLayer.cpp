@@ -26,8 +26,8 @@ using namespace Praaline::Core;
 
 ProsogramLayer::ProsogramLayer() :
     SingleColourLayer(),
-    m_model(0), m_layerIntensity(new TimeValueLayer), m_layerPitch(new TimeValueLayer),
-    m_semitonesSetAsideForTiers(20.0),
+    m_model(nullptr), m_layerPitch(new TimeValueLayer), m_layerIntensity(new TimeValueLayer),
+    m_semitonesSetAsideForTiers(20.0), m_scaleMinimum(0.0), m_scaleMaximum(0.0),
     m_showPitch(true), m_showPitchRange(true), m_showIntensity(true), m_showVerticalLines(true),
     m_showPhoneTier(true), m_showSyllTier(true), m_showTonalAnnotationTier(true)
 {
@@ -173,6 +173,7 @@ int ProsogramLayer::getVerticalScaleWidth(View *v, bool, QPainter &paint) const
 
 void ProsogramLayer::paintVerticalScale(View *v, bool, QPainter &paint, QRect rect) const
 {
+    Q_UNUSED(rect)
     if (!m_model) return;
     double min, max;
     bool logarithmic;
@@ -222,11 +223,15 @@ bool ProsogramLayer::getValueExtents(double &min, double &max, bool &logarithmic
 
 bool ProsogramLayer::getDisplayExtents(double &min, double &max) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 bool ProsogramLayer::setDisplayExtents(double min, double max)
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
@@ -239,9 +244,11 @@ int ProsogramLayer::getYForValue(View *v, double value) const
     return int(h - ((value - min) * h) / (max - min));
 }
 
-double ProsogramLayer::getValueForY(View *, int y) const
+double ProsogramLayer::getValueForY(View *view, int y) const
 {
-
+    Q_UNUSED(view)
+    Q_UNUSED(y)
+    return 0.0;
 }
 
 QString ProsogramLayer::getScaleUnits() const
@@ -382,7 +389,7 @@ void ProsogramLayer::paintAnnotationTier(View *v, QPainter &paint, sv_frame_t fr
         // Find end frame
         sv_frame_t nextFrame;
         AnnotationGridPointModel::PointList::const_iterator next(i);
-        next++;
+        ++next;
         if (next != intervals.end()) nextFrame = (*next).frame; else nextFrame = model->getEndFrame();
         // Find x-coordinate for point
         int x = v->getXForFrame(p.frame);

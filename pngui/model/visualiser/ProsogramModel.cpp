@@ -214,7 +214,9 @@ sv_samplerate_t ProsogramModel::getSampleRate() const
 
 void ProsogramModel::toXml(QTextStream &out, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(out)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 
 double ProsogramModel::pitchRangeTopST() const

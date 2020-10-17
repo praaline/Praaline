@@ -22,7 +22,10 @@ using namespace QtilitiesCoreGui;
 
 struct TimelineEditorConfigWidgetData {
     TimelineEditorConfigWidgetData() :
-        modelLevelsAttributes(0), modelSpeakers(0)
+        innerwindowLevelsAttributes(nullptr), toolbarLevelsAttributes(nullptr),
+        actionAddLevelAttribute(nullptr), actionRemoveLevelAttribute(nullptr),
+        actionUpdateEditor(nullptr), actionSaveConfiguration(nullptr),
+        modelSpeakers(nullptr), modelLevelsAttributes(nullptr)
     {}
 
     // Controls for level and attribute selection

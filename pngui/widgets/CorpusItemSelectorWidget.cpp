@@ -282,6 +282,11 @@ void CorpusItemSelectorWidget::bookmarkSelected(QModelIndex index)
 void CorpusItemSelectorWidget::addBookmark(const QString &corpusID, const QString &communicationID, const QString &annotationID,
                                            const RealTime &timeStart, const RealTime &timeEnd, const QString &name)
 {
-
+    Q_UNUSED(corpusID)
+    Q_UNUSED(communicationID)
+    Q_UNUSED(annotationID)
+    Q_UNUSED(timeStart)
+    Q_UNUSED(timeEnd)
+    Q_UNUSED(name)
 }
 

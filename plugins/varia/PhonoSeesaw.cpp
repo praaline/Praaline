@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTime>
+#include <QRandomGenerator>
 
 #include "PraalineCore/Corpus/Corpus.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
@@ -49,8 +50,8 @@ PhonoSeesaw::PhonoSeesaw() :
                   << "2" << "9" << "A" << "@" << "E" << "H" << "O" << "R" << "S" << "Z"
                   << "a" << "b" << "d" << "e" << "f" << "g" << "i" << "j" << "k" << "l"
                   << "m" << "n" << "o" << "p" << "s" << "t" << "u" << "v" << "w" << "y" << "z";
-    QTime time = QTime::currentTime();
-    qsrand((uint)time.msec());
+    // QTime time = QTime::currentTime();
+    // qsrand((uint)time.msec());
 }
 
 PhonoSeesaw::~PhonoSeesaw()
@@ -171,7 +172,7 @@ void PhonoSeesaw::calculateDistributionFromPhonemeList(QStringList phonemes, QMa
 int PhonoSeesaw::randInt(int low, int high)
 {
     // Random number between low and high
-    return qrand() % ((high + 1) - low) + low;
+    return QRandomGenerator::global()->generate() % ((high + 1) - low) + low;
 }
 
 QList<int> PhonoSeesaw::selection(int numberOfUnits)

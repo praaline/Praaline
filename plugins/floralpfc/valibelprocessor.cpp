@@ -154,7 +154,7 @@ QList<QString> ValibelProcessor::splitToken(QString input)
 
     // break everything at spaces
     QList<QString> ret;
-    QList<QString> result = input.split(" ", QString::SkipEmptyParts);
+    QList<QString> result = input.split(" ", Qt::SkipEmptyParts);
     int i = 0;
     while (i < result.count()) {
         if (result.at(i).startsWith("parce", Qt::CaseInsensitive)) {

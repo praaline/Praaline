@@ -593,7 +593,7 @@ void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
-        CorpusRecording *rec = com->recordings().first();
+        // CorpusRecording *rec = com->recordings().first();
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
@@ -642,7 +642,7 @@ void Praaline::Plugins::Aligner::PluginAligner::align(const QList<CorpusCommunic
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
-        CorpusRecording *rec = com->recordings().first();
+        // CorpusRecording *rec = com->recordings().first();
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();

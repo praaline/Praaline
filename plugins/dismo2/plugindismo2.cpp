@@ -125,6 +125,7 @@ void Praaline::Plugins::DisMo2::PluginDisMo2::setParameters(const QHash<QString,
 
 void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<CorpusCommunication *> &communications)
 {
+    Q_UNUSED(communications)
 //    DisMoAnnotator::DismoAnnotator *DISMO = new DisMoAnnotator::DismoAnnotator("fr");
 //    QPointer<IntervalTier> tier_tok_min;
 //    QPointer<IntervalTier> tier_tok_mwu;

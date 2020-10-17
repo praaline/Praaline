@@ -184,6 +184,11 @@ QString MovingAverageLayer::getFeatureDescription(View *v, QPoint &p) const
 
 bool MovingAverageLayer::snapToFeatureFrame(View *v, sv_frame_t &frame, int &resolution, SnapType snap, int y) const
 {
+    Q_UNUSED(v)
+    Q_UNUSED(frame)
+    Q_UNUSED(resolution)
+    Q_UNUSED(snap)
+    Q_UNUSED(y)
     return false;
 }
 
@@ -195,22 +200,30 @@ bool MovingAverageLayer::isLayerScrollable(const View *v) const
 
 bool MovingAverageLayer::getValueExtents(double &min, double &max, bool &, QString &) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 bool MovingAverageLayer::getDisplayExtents(double &min, double &max) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 bool MovingAverageLayer::setDisplayExtents(double min, double max)
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     return false;
 }
 
 void MovingAverageLayer::toXml(QTextStream &stream, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(stream)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 
 // ====================================================================================================================
@@ -275,11 +288,13 @@ void MovingAverageLayer::setWindowRightMsec(int right)
 
 int MovingAverageLayer::getYForValue(View *, double value) const
 {
+    Q_UNUSED(value)
     return 0;
 }
 
 double MovingAverageLayer::getValueForY(View *, int y) const
 {
+    Q_UNUSED(y)
     return 0.0;
 }
 
@@ -291,9 +306,14 @@ QString MovingAverageLayer::getScaleUnits() const
 
 void MovingAverageLayer::getScaleExtents(View *, double &min, double &max, bool &log) const
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
+    Q_UNUSED(log)
 }
 
 int MovingAverageLayer::getDefaultColourHint(bool dark, bool &impose)
 {
+    Q_UNUSED(dark)
+    Q_UNUSED(impose)
     return 0;
 }

@@ -24,59 +24,59 @@
 #if(defined(_WIN32) && !defined (__CYGWIN__))
 #define CRFPP_USE_THREAD 1
 #define BEGINTHREAD(src, stack, func, arg, flag, id)                    \
-  (HANDLE)_beginthreadex((void *)(src), (unsigned)(stack),              \
-                         (unsigned(__stdcall *)(void *))(func), (void *)(arg), \
-                         (unsigned)(flag), (unsigned *)(id))
+    (HANDLE)_beginthreadex((void *)(src), (unsigned)(stack),              \
+    (unsigned(__stdcall *)(void *))(func), (void *)(arg), \
+    (unsigned)(flag), (unsigned *)(id))
 #endif
 
 namespace CRFPP {
 
 class thread {
- private:
+private:
 #ifdef HAVE_PTHREAD_H
-  pthread_t hnd_;
+    pthread_t hnd_;
 #else
 #ifdef _WIN32
-  HANDLE  hnd_;
+    HANDLE  hnd_;
 #endif
 #endif
 
- public:
-  static void* wrapper(void *ptr) {
-    thread *p = static_cast<thread *>(ptr);
-    p->run();
-    return 0;
-  }
+public:
+    static void* wrapper(void *ptr) {
+        thread *p = static_cast<thread *>(ptr);
+        p->run();
+        return 0;
+    }
 
-  virtual void run() {}
+    virtual void run() {}
 
-  void start() {
+    void start() {
 #ifdef HAVE_PTHREAD_H
-    pthread_create(&hnd_, 0, &thread::wrapper,
-                   static_cast<void *>(this));
+        pthread_create(&hnd_, 0, &thread::wrapper,
+                       static_cast<void *>(this));
 
 #else
 #ifdef _WIN32
-    DWORD id;
-    hnd_ = BEGINTHREAD(0, 0, &thread::wrapper, this, 0, &id);
+        DWORD id;
+        hnd_ = BEGINTHREAD(0, 0, &thread::wrapper, this, 0, &id);
 #else
-    run();
+        run();
 #endif
 #endif
-  }
+    }
 
-  void join() {
+    void join() {
 #ifdef HAVE_PTHREAD_H
-    pthread_join(hnd_, 0);
+        pthread_join(hnd_, 0);
 #else
 #ifdef _WIN32
-    WaitForSingleObject(hnd_, INFINITE);
-    CloseHandle(hnd_);
+        WaitForSingleObject(hnd_, INFINITE);
+        CloseHandle(hnd_);
 #endif
 #endif
-  }
+    }
 
-  virtual ~thread() {}
+    virtual ~thread() {}
 };
 }
 

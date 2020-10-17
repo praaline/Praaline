@@ -189,12 +189,14 @@ Qt::ItemFlags AnnotationGroupingTierTableModel::flags(const QModelIndex &index) 
 
 void AnnotationGroupingTierTableModel::splitGroup(int groupIndex, int itemIndex)
 {
-    
+    Q_UNUSED(groupIndex)
+    Q_UNUSED(itemIndex)
 }
 
 void AnnotationGroupingTierTableModel::mergeGroups(int groupIndexStart, int groupIndexEnd)
 {
-    
+    Q_UNUSED(groupIndexStart)
+    Q_UNUSED(groupIndexEnd)
 }
 
 

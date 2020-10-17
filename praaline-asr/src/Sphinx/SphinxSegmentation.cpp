@@ -111,7 +111,7 @@ QList<Interval *> SphinxSegmentation::readContinuousFile(const QString &filename
         tokens << token;
     }
     fileSeg.close();
-    qSort(tokens.begin(), tokens.end(), SphinxSegmentation::compareIntervals);
+    std::sort(tokens.begin(), tokens.end(), SphinxSegmentation::compareIntervals);
     return tokens;
 }
 

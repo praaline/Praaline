@@ -56,4 +56,5 @@ bool PhonemeDatabase::createHMMDefsBootstrap(const QString &filename)
     }
 
     fileHMMDEFS.close();
+    return true;
 }

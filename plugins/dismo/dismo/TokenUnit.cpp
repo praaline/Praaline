@@ -84,7 +84,7 @@ void TokenUnit::setPause()
 
 void TokenUnit::addPossibleTag(const QString &dictionaryEntryText)
 {
-    QStringList entries = QString(dictionaryEntryText).split("#", QString::KeepEmptyParts);
+    QStringList entries = QString(dictionaryEntryText).split("#", Qt::KeepEmptyParts);
     QString Lemma, POS, POSext, Discourse, Disfluency;
     if (entries.count() >= 1) Lemma = entries.at(0);
     if (Lemma.length() == 0) Lemma = m_text;

@@ -111,6 +111,7 @@ void Praaline::Plugins::Syntax::PluginSyntax::setParameters(const QHash<QString,
 
 void readUDCorpus(const QList<CorpusCommunication *> &communications)
 {
+    Q_UNUSED(communications)
 //    QString filename = "/media/george/Elements/universal-dependencies-1.2/UD_French/fr-ud-train.conllu"; // "D:/CORPORA/universal-dependencies-1.2/UD_French/fr-ud-train.conllu";
 //    foreach (CorpusCommunication *com, communications) {
 //        if (!com) continue;

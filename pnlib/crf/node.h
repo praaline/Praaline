@@ -22,50 +22,50 @@ namespace CRFPP {
 // e.g., log(exp(log(exp(x) + exp(y))) + exp(z)) =
 // log(exp (x) + exp(y) + exp(z))
 inline double logsumexp(double x, double y, bool flg) {
-  if (flg) return y;  // init mode
-  const double vmin = std::min(x, y);
-  const double vmax = std::max(x, y);
-  if (vmax > vmin + MINUS_LOG_EPSILON) {
-    return vmax;
-  } else {
-    return vmax + std::log(std::exp(vmin - vmax) + 1.0);
-  }
+    if (flg) return y;  // init mode
+    const double vmin = std::min(x, y);
+    const double vmax = std::max(x, y);
+    if (vmax > vmin + MINUS_LOG_EPSILON) {
+        return vmax;
+    } else {
+        return vmax + std::log(std::exp(vmin - vmax) + 1.0);
+    }
 }
 
 struct Path;
 
 struct Node {
-  unsigned int         x;
-  unsigned short int   y;
-  double               alpha;
-  double               beta;
-  double               cost;
-  double               bestCost;
-  Node                *prev;
-  const int           *fvector;
-  std::vector<Path *>  lpath;
-  std::vector<Path *>  rpath;
+    unsigned int         x;
+    unsigned short int   y;
+    double               alpha;
+    double               beta;
+    double               cost;
+    double               bestCost;
+    Node                *prev;
+    const int           *fvector;
+    std::vector<Path *>  lpath;
+    std::vector<Path *>  rpath;
 
-  void calcAlpha();
-  void calcBeta();
-  void calcExpectation(double *expected, double, size_t) const;
+    void calcAlpha();
+    void calcBeta();
+    void calcExpectation(double *expected, double, size_t) const;
 
-  void clear() {
-    x = y = 0;
-    alpha = beta = cost = 0.0;
-    prev = 0;
-    fvector = 0;
-    lpath.clear();
-    rpath.clear();
-  }
+    void clear() {
+        x = y = 0;
+        alpha = beta = cost = 0.0;
+        prev = 0;
+        fvector = 0;
+        lpath.clear();
+        rpath.clear();
+    }
 
-  void shrink() {
-    std::vector<Path *>(lpath).swap(lpath);
-    std::vector<Path *>(rpath).swap(rpath);
-  }
+    void shrink() {
+        std::vector<Path *>(lpath).swap(lpath);
+        std::vector<Path *>(rpath).swap(rpath);
+    }
 
-  Node() : x(0), y(0), alpha(0.0), beta(0.0),
-           cost(0.0), bestCost(0.0), prev(0), fvector(0) {}
+    Node() : x(0), y(0), alpha(0.0), beta(0.0),
+        cost(0.0), bestCost(0.0), prev(0), fvector(0) {}
 };
 }
 #endif

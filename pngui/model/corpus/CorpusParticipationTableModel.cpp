@@ -159,11 +159,17 @@ bool CorpusParticipationTableModel::setData(const QModelIndex &index, const QVar
 
 bool CorpusParticipationTableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 
 bool CorpusParticipationTableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 

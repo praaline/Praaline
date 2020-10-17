@@ -106,9 +106,9 @@ QString IntervalTierCombinations::combineIntervalTiers(Praaline::Core::CorpusCom
                 startB << intv->tMin().toNanoseconds();
                 endB << intv->tMax().toNanoseconds();
             }
-            startCommon = startA.intersect(startB).toList();
+            startCommon = startA.intersect(startB).values();
             std::sort(startCommon.begin(), startCommon.end());
-            endCommon = endA.intersect(endB).toList();
+            endCommon = endA.intersect(endB).values();
             std::sort(endCommon.begin(), endCommon.end());
 
             QList<Interval *> intervals;

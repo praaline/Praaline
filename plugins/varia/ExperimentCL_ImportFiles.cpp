@@ -202,6 +202,7 @@ QString ExperimentCL_ImportFiles::importCSV_ETU_Stroop(const QString &subjectID,
 
 QString ExperimentCL_ImportFiles::importCSV_ETU_ReadingSpan(const QString &subjectID, const QString &filename)
 {
+    Q_UNUSED(subjectID)
     // Reading Span French
     // Create: FR_RSPAN
     QList<Interval *> list_rspan_sentence;

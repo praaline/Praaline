@@ -407,6 +407,7 @@ void AnnotationGridLayer::paint(View *v, QPainter &paint, QRect rect) const
             // Illuminate goes here
             bool shouldIlluminate =  (!AnnotationGridPointModel::Point::Comparator()(pointToIlluminate, p) &&
                                       !AnnotationGridPointModel::Point::Comparator()(p, pointToIlluminate));
+            Q_UNUSED(shouldIlluminate)
 //            if (AnnotationGridPointModel::Point::Comparator()(pointToIlluminate, p) || AnnotationGridPointModel::Point::Comparator()(p, pointToIlluminate)) {
                 paint.setPen(penColour);
                 paint.setBrush(brushColour);
@@ -665,6 +666,8 @@ void AnnotationGridLayer::textEditingFinished()
 
 void AnnotationGridLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
 {
+    Q_UNUSED(s)
+    Q_UNUSED(newStartFrame)
     if (!m_model) return;
 
 //    AnnotationGridModel::EditCommand *command =
@@ -689,6 +692,8 @@ void AnnotationGridLayer::moveSelection(Selection s, sv_frame_t newStartFrame)
 
 void AnnotationGridLayer::resizeSelection(Selection s, Selection newSize)
 {
+    Q_UNUSED(s)
+    Q_UNUSED(newSize)
     if (!m_model) return;
 
 //    AnnotationGridModel::EditCommand *command =
@@ -722,6 +727,7 @@ void AnnotationGridLayer::resizeSelection(Selection s, Selection newSize)
 
 void AnnotationGridLayer::deleteSelection(Selection s)
 {
+    Q_UNUSED(s)
     if (!m_model) return;
 
 //    AnnotationGridModel::EditCommand *command =
@@ -740,6 +746,9 @@ void AnnotationGridLayer::deleteSelection(Selection s)
 
 void AnnotationGridLayer::copy(View *v, Selection s, Clipboard &to)
 {
+    Q_UNUSED(v)
+    Q_UNUSED(s)
+    Q_UNUSED(to)
     if (!m_model) return;
 
 //    AnnotationGridModel::PointList points =
@@ -757,6 +766,8 @@ void AnnotationGridLayer::copy(View *v, Selection s, Clipboard &to)
 
 bool AnnotationGridLayer::paste(View *v, const Clipboard &from, sv_frame_t /* frameOffset */, bool /* interactive */)
 {
+    Q_UNUSED(v)
+    Q_UNUSED(from)
 //    if (!m_model) return false;
 
 //    const Clipboard::PointList &points = from.getPoints();

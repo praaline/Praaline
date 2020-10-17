@@ -132,11 +132,17 @@ bool CorpusAnnotationTableModel::setData(const QModelIndex &index, const QVarian
 
 bool CorpusAnnotationTableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 
 bool CorpusAnnotationTableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 

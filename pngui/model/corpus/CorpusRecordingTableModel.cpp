@@ -149,11 +149,17 @@ bool CorpusRecordingTableModel::setData(const QModelIndex &index, const QVariant
 
 bool CorpusRecordingTableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 
 bool CorpusRecordingTableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 

@@ -92,6 +92,7 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::Prosobox::PluginPro
 
 void Praaline::Plugins::Prosobox::PluginProsobox::setParameters(const QHash<QString, QVariant> &parameters)
 {
+    Q_UNUSED(parameters)
 }
 
 QString temporalVariables(CorpusCommunication *com, QString annotationID, QString speakerID)

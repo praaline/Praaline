@@ -91,9 +91,9 @@ QString YizhiScripts::createAnnotation(Praaline::Core::CorpusCommunication *com)
     }
 
 
-    IntervalTier *tier_tokens = new IntervalTier("tokens");
-    IntervalTier *tier_syll = new IntervalTier("syll");
-    IntervalTier *tier_phone = new IntervalTier("phone");
+//    IntervalTier *tier_tokens = new IntervalTier("tokens");
+//    IntervalTier *tier_syll = new IntervalTier("syll");
+//    IntervalTier *tier_phone = new IntervalTier("phone");
 
 
     // QSharedPointer<AnnotationTierGroup> txg(new AnnotationTierGroup());

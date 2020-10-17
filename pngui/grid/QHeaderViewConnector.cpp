@@ -76,6 +76,8 @@ void QHeaderViewConnector::adjustSectionSize()
 
 void QHeaderViewConnector::scrollBarRangeChanged(int min, int max)
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
     if (cOrientation == Qt::Vertical){
         Q_FOREACH(QHeaderView* mHeaderView, cHeaderViewList){
             if (mHeaderView && mHeaderView){

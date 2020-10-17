@@ -223,6 +223,7 @@ void QAdvancedTableView::contextMenuEvent(QContextMenuEvent *event)
 
 QMenu *QAdvancedTableView::createStandardContextMenu(const QModelIndex & index)
 {
+    Q_UNUSED(index)
     QAction* a;
     QMenu* m = new QMenu();
     m = m->addMenu(tr("View"));
@@ -344,6 +345,8 @@ void QAdvancedTableView::filterAdded(const QModelIndex & parent, int start, int 
 
 void QAdvancedTableView::headerViewHorizontalScrollBarRangeChanged(int min, int max)
 {
+    Q_UNUSED(min)
+    Q_UNUSED(max)
 //    ui->dataTableView->horizontalScrollBar()->setRange(min, max);
 }
 
@@ -799,8 +802,11 @@ void QAdvancedTableView::setColumnFilterTypes(int column, const QVariantList &ty
     d->filterModel->setData(d->filterModel->index(0, column), types, QAbstractFilterModel::ColumnFilterTypesRole);
 }
 
-void QAdvancedTableView::setFilterEnabled(int row, int column, bool enable )
+void QAdvancedTableView::setFilterEnabled(int row, int column, bool enable)
 {
+    Q_UNUSED(row)
+    Q_UNUSED(column)
+    Q_UNUSED(enable)
 //    d->filterModel->setFilterEnabled(row, column, enable);
 }
 

@@ -93,7 +93,9 @@ sv_samplerate_t AnnotationGridModel::getSampleRate() const
 
 void AnnotationGridModel::toXml(QTextStream &out, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(out)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 
 int AnnotationGridModel::countSpeakers() const

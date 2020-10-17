@@ -9,6 +9,8 @@ Description          : Enables the export of QPainter grafics to .eps files
 #ifndef EPS_ENGINE_H
 #define EPS_ENGINE_H
 
+#include <QPainter>
+#include <QPainterPath>
 #include <QPaintDevice>
 #include <QPaintEngine>
 #include <QPrinter>

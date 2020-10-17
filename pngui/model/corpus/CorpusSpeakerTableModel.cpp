@@ -155,11 +155,17 @@ bool CorpusSpeakerTableModel::setData(const QModelIndex &index, const QVariant &
 
 bool CorpusSpeakerTableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 
 bool CorpusSpeakerTableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+    Q_UNUSED(position)
+    Q_UNUSED(rows)
+    Q_UNUSED(index)
     return false;
 }
 

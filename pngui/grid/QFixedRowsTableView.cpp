@@ -169,6 +169,7 @@ void QFixedRowsFilterProxyModel::toggleRow(const QModelIndex &index)
 
 void QFixedRowsFilterProxyModel::setRowFixed(const QModelIndex &index, bool fixed)
 {
+    Q_UNUSED(index)
     if (fixed){
 
     } else {

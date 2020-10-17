@@ -35,7 +35,7 @@ QString SoxExternal::about()
     QString desc;
     if (!bin().isEmpty()) {
         QProcess proc;
-        proc.start(bin()+" --version");
+        proc.start(bin(), QStringList() << "--version");
         proc.waitForFinished();
         desc = proc.readAll().simplified();
         proc.close();
@@ -49,7 +49,7 @@ QString SoxExternal::formats()
     QString tmp;
     if (!bin().isEmpty()) {
         QProcess proc;
-        proc.start(bin()+" --help");
+        proc.start(bin(), QStringList() << "--help");
         proc.waitForFinished();
         tmp = proc.readAll().simplified();
         proc.close();
@@ -81,13 +81,17 @@ QString SoxExternal::dat(QString filename, float fps, int duration, bool x, bool
         if (tmp.exists())
             tmp.remove();
         QProcess proc;
-        QString exestring = bin()+" \""+filename+"\" -r "+QString::number(fps)+" \""+data+"\" trim 0 "+QString::number(duration/fps);
-        proc.start(exestring);
+        QStringList parameters;
+        parameters << QString("\"%1\"").arg(filename);
+        parameters << QString("-r %1").arg(fps);
+        parameters << QString("\"%1\"").arg(data);
+        parameters << QString("trim 0 %1").arg(duration / fps);
+        proc.start(bin(), parameters);
         proc.waitForFinished();
         proc.close();
     }
     else {
-        emit error(tr("Audio file or SoX does not exists"));
+        emit error(tr("Audio file or SoX does not exist."));
         return result;
     }
 
@@ -101,7 +105,7 @@ QString SoxExternal::dat(QString filename, float fps, int duration, bool x, bool
     double maxX = 0;
     double maxY = 0;
     if (!curves.isEmpty()) {
-        QStringList lines = curves.split("\n", QString::SkipEmptyParts);
+        QStringList lines = curves.split("\n", Qt::SkipEmptyParts);
         foreach(QString line, lines) {
             if (!line.startsWith(";")) {
                 QStringList cordinates = line.simplified().split(" ");
@@ -128,7 +132,7 @@ QString SoxExternal::dat(QString filename, float fps, int duration, bool x, bool
     }
     if (!curves.isEmpty()) {
         QString dat;
-        QStringList lines = curves.split("\n", QString::SkipEmptyParts);
+        QStringList lines = curves.split("\n", Qt::SkipEmptyParts);
         foreach(QString line, lines) {
             if (!line.startsWith(";")) {
                 QStringList cordinates = line.simplified().split(" ");
@@ -171,9 +175,11 @@ float SoxExternal::duration(QString filename, float fps)
     QString tmp;
     if (!bin().isEmpty()) {
         QProcess proc;
-        QString exec = bin()+" \""+filename+"\" -n stat";
+        QStringList parameters;
+        parameters << QString("\"%1\"").arg(filename);
+        parameters << "-n stat";
         proc.setProcessChannelMode(QProcess::MergedChannels);
-        proc.start(exec);
+        proc.start(bin(), parameters);
         proc.waitForFinished();
         tmp = proc.readAll();
         proc.close();

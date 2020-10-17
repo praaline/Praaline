@@ -106,8 +106,8 @@ restoreConnection(Properties const &p)
     p.get("in_id", &nodeInId);
     p.get("out_id", &nodeOutId);
 
-    PortIndex portIndexIn;
-    PortIndex portIndexOut;
+    PortIndex portIndexIn { 0 };
+    PortIndex portIndexOut { 0 };
 
     p.get("in_index", &portIndexIn);
     p.get("out_index", &portIndexOut);

@@ -203,8 +203,9 @@ void QCheckStateProxyModel::sourceModelAboutToBeReset()
     d->checkedIndexes.clear();
 }
 
-void QCheckStateProxyModel::sourceModelRowsAboutToBeRemoved(const QModelIndex & parent, int start, int end)
+void QCheckStateProxyModel::sourceModelRowsAboutToBeRemoved(const QModelIndex &parent, int start, int end)
 {
+    Q_UNUSED(parent)
 	for (int i = start; i <= end; i++){
 		QListIterator<QModelIndex> it(d->checkedIndexes);
 		while(it.hasNext()){

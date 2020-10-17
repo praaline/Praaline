@@ -34,6 +34,8 @@ bool DisfluencyDetector::isEOSToken(int i)
 
 bool DisfluencyDetector::isEOSTokenUnit(int i, int j)
 {
+    Q_UNUSED(i)
+    Q_UNUSED(j)
     Token *token = m_tokens[i];
     if (token->isPause()  && token->duration().toDouble() > 0.350) {
         m_previous_tokunit = "";
@@ -56,6 +58,9 @@ bool DisfluencyDetector::skipTokenUnit(int i, int j)
 
 void DisfluencyDetector::writeTokenToCRF(QTextStream &out, int i, bool isTraining)
 {
+    Q_UNUSED(out)
+    Q_UNUSED(i)
+    Q_UNUSED(isTraining)
     // Disfluencies are always found at the token unit level
 }
 
@@ -94,6 +99,8 @@ void DisfluencyDetector::writeTokenUnitToCRF(QTextStream &out, int i, int j, boo
 
 void DisfluencyDetector::decodeTokenFromCRF(const QString &line, int i)
 {
+    Q_UNUSED(line)
+    Q_UNUSED(i)
     // Disfluencies are always found at the token unit level
 }
 

@@ -185,7 +185,7 @@ void GridViewWidget::clipboardCopySelection()
     QModelIndexList list = model->selectedIndexes();
     if(list.size() < 1) return;
 
-    qSort(list);
+    std::sort(list.begin(), list.end());
 
     QString copy_table;
     QModelIndex previous = list.first();
@@ -223,7 +223,7 @@ void GridViewWidget::clipboardPaste()
     QModelIndexList list = smodel->selectedIndexes();
     if(list.size() < 1) return;
 
-    qSort(list);
+    std::sort(list.begin(), list.end());
 
     QString str = QApplication::clipboard()->text();
     QStringList rows = str.split('\n');

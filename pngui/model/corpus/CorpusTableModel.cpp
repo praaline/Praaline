@@ -7,7 +7,11 @@ CorporaTableModel::CorporaTableModel(QObject *parent)
 
 QVariant CorporaTableModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    Q_UNUSED(section)
+    Q_UNUSED(orientation)
+    Q_UNUSED(role)
     // FIXME: Implement me!
+    return QVariant();
 }
 
 bool CorporaTableModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -32,13 +36,14 @@ int CorporaTableModel::rowCount(const QModelIndex &parent) const
 int CorporaTableModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-        return 0;
+    return 0;
 
     // FIXME: Implement me!
 }
 
 QVariant CorporaTableModel::data(const QModelIndex &index, int role) const
 {
+    Q_UNUSED(role)
     if (!index.isValid())
         return QVariant();
 
@@ -69,6 +74,7 @@ bool CorporaTableModel::insertRows(int row, int count, const QModelIndex &parent
     beginInsertRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endInsertRows();
+    return false;
 }
 
 bool CorporaTableModel::insertColumns(int column, int count, const QModelIndex &parent)
@@ -76,6 +82,7 @@ bool CorporaTableModel::insertColumns(int column, int count, const QModelIndex &
     beginInsertColumns(parent, column, column + count - 1);
     // FIXME: Implement me!
     endInsertColumns();
+    return false;
 }
 
 bool CorporaTableModel::removeRows(int row, int count, const QModelIndex &parent)
@@ -83,6 +90,7 @@ bool CorporaTableModel::removeRows(int row, int count, const QModelIndex &parent
     beginRemoveRows(parent, row, row + count - 1);
     // FIXME: Implement me!
     endRemoveRows();
+    return false;
 }
 
 bool CorporaTableModel::removeColumns(int column, int count, const QModelIndex &parent)
@@ -90,4 +98,5 @@ bool CorporaTableModel::removeColumns(int column, int count, const QModelIndex &
     beginRemoveColumns(parent, column, column + count - 1);
     // FIXME: Implement me!
     endRemoveColumns();
+    return false;
 }

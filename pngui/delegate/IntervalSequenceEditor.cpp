@@ -92,17 +92,21 @@ void IntervalSequenceEditor::paintEvent(QPaintEvent *)
 
 void IntervalSequenceEditor::mouseReleaseEvent(QMouseEvent *event)
 {
-
+    Q_UNUSED(event)
 }
 
 int IntervalSequenceEditor::boundaryAtPosition(int x)
 {
-
+    Q_UNUSED(x)
+    return 0;
 }
 
 void IntervalSequenceEditor::paint(QList<Interval *> intervals, QPainter *painter, QStyleOptionViewItem &option,
                                    IntervalSequenceEditor::EditMode mode)
 {
+    Q_UNUSED(intervals)
+    Q_UNUSED(option)
+    Q_UNUSED(mode)
     painter->save();
 
 //    if (option.state & QStyle::State_Selected)
@@ -148,6 +152,7 @@ void IntervalSequenceEditor::paint(QList<Interval *> intervals, QPainter *painte
 
 QSize IntervalSequenceEditor::sizeHint(QList<Interval *> intervals)
 {
+    Q_UNUSED(intervals)
 //    QString intervalsText = index.data(HeaderRole).toString();
 
 

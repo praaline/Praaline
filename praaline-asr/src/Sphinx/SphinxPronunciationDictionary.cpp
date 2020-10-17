@@ -46,7 +46,7 @@ bool SphinxPronunciationDictionary::readFromFile(const QString &filename)
         else
             word = word_and_id.trimmed();
         QStringList phonetisation = line.section(" ", 1, -1).split(" ");
-        d->phonemes.unite(phonetisation.toSet());
+        d->phonemes.unite(QSet<QString>(phonetisation.begin(), phonetisation.end()));
         QString phonetisation_text = phonetisation.join(" ");
         if (!d->dictionary.contains(word)) {
             d->dictionary.insert(word, QList<QString>() << phonetisation_text);
@@ -106,6 +106,8 @@ QString SphinxPronunciationDictionary::phonetise(const QString &word) const
 
 void SphinxPronunciationDictionary::addWord(const QString &word, const QString &phonetisation)
 {
+    Q_UNUSED(word)
+    Q_UNUSED(phonetisation)
 //    d->phonemes.intersect(QSet<QString>::fromList(phonetisation.split(" ")));
 //    d->dictionary.insert(word, phonetisation);
 }

@@ -414,7 +414,7 @@ void TokenList::updateTokenizedTiers(IntervalTier *tierTokMin, IntervalTier *tie
     int i = 0; int j = 0;
     for (i = 0; i < this->count(); ++i) {
         Token *tok = this->at(i);
-        foreach (TokenUnit *tu, tok->getTokenUnits()) j++;
+        j += tok->getTokenUnits().count();
     }
     if (tierTokMin->count() != j) {
         qDebug() << "Error - mismatch number of tokens in tok-min and token list";

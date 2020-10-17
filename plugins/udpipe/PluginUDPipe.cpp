@@ -155,6 +155,7 @@ void Praaline::Plugins::UDPipe::PluginUDPipe::setParameters(const QHash<QString,
 
 void Praaline::Plugins::UDPipe::PluginUDPipe::process(const QList<CorpusCommunication *> &communications)
 {
+    Q_UNUSED(communications)
     QStringList patternsToAnnotate;
     if (d->commandPatternsREP)
     {

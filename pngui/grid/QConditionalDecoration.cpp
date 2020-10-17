@@ -70,6 +70,7 @@ int QConditionalDecoration::count() const
 
 QVariant QConditionalDecoration::decorate(const QModelIndex & index, int role) const
 {
+    Q_UNUSED(role)
     const QConditionalDecorationProxyModel* model = qobject_cast<const QConditionalDecorationProxyModel*>(index.model());
     if (model == 0){
         return QVariant();
@@ -105,7 +106,7 @@ QString QConditionalDecoration::iconName(int index) const
     if (index < property("conditions").toList().size()){
         return property("conditions").toList().at(index).toMap().value("name").toString();
     }
-    return QString::null;
+    return QString();
 }
 
 bool QConditionalDecoration::matches(const QModelIndex & index, const QVariantMap & properties) const

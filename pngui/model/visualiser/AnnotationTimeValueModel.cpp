@@ -31,12 +31,12 @@ AnnotationTimeValueModel::~AnnotationTimeValueModel()
 
 sv_frame_t AnnotationTimeValueModel::getStartFrame() const
 {
-
+    return 0;
 }
 
 sv_frame_t AnnotationTimeValueModel::getEndFrame() const
 {
-
+    return 0;
 }
 
 sv_samplerate_t AnnotationTimeValueModel::getSampleRate() const
@@ -46,6 +46,8 @@ sv_samplerate_t AnnotationTimeValueModel::getSampleRate() const
 
 void AnnotationTimeValueModel::toXml(QTextStream &out, QString indent, QString extraAttributes) const
 {
-
+    Q_UNUSED(out)
+    Q_UNUSED(indent)
+    Q_UNUSED(extraAttributes)
 }
 

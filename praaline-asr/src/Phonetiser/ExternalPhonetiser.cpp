@@ -174,7 +174,7 @@ QList<SpeechToken> ExternalPhonetiser::phonetiseList(QList<Interval *> tokens, c
                 .replace(")", "").replace("/", "").trimmed();
         orthographic = orthographic.simplified();
         if (orthographic.isEmpty()) orthographic = "_";
-        foreach (QString ortho, orthographic.split(" ", QString::SkipEmptyParts)) {
+        foreach (QString ortho, orthographic.split(" ", Qt::SkipEmptyParts)) {
             SpeechToken ptoken(i, i, ortho);
             ptokens << ptoken;
         }
@@ -205,7 +205,7 @@ QList<SpeechToken> ExternalPhonetiser::phonetiseList(QList<Interval *> tokens, c
 
     callPhonetiser(putterances);
     foreach (PUtterance putterance, putterances) {
-        QStringList phonetisation_split = putterance.phonetisation.split("|", QString::SkipEmptyParts);
+        QStringList phonetisation_split = putterance.phonetisation.split("|", Qt::SkipEmptyParts);
         if (phonetisation_split.count() != putterance.ptokens.count()) {
             // qDebug() << "mismatched tokens-phonotokens";
             // qDebug() << putterance.phonetisation << putterance.orthographic;

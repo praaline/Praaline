@@ -348,7 +348,7 @@ QList<DisfluencyPatternDetector::InsertionInfo> DisfluencyPatternDetector::detec
 
 void DisfluencyPatternDetector::codeInsertions(QList<DisfluencyPatternDetector::InsertionInfo> &insertions)
 {
-
+    Q_UNUSED(insertions)
 }
 
 QList<DisfluencyPatternDetector::SubstitutionInfo> DisfluencyPatternDetector::detectSubstitutionPatterns()
@@ -413,7 +413,7 @@ QList<DisfluencyPatternDetector::SubstitutionInfo> DisfluencyPatternDetector::de
 
 void DisfluencyPatternDetector::codeSubstitutions(QList<SubstitutionInfo> &substitutions)
 {
-
+    Q_UNUSED(substitutions)
 }
 
 

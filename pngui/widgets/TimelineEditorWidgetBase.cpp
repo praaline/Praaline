@@ -95,7 +95,7 @@ void TimelineEditorWidgetBase::currentChanged(const QModelIndex &current, const 
 
 void TimelineEditorWidgetBase::contextMenuRequested(const QPoint &point)
 {
-
+    Q_UNUSED(point)
 }
 
 void TimelineEditorWidgetBase::moveToRow(TimelineTableModelBase *model, int row)

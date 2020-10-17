@@ -168,12 +168,12 @@ QString PFCReports::reportCorrections(Praaline::Core::CorpusCommunication *com)
             Interval *original = transcription_original->at(i);
             Interval *modified = transcription->at(i);
             if (original->isPauseSilent() && modified->isPauseSilent()) continue;
-            QStringList tokensOriginal = original->text().split(" ", QString::SkipEmptyParts);
-            QStringList tokensModified = modified->text().split(" ", QString::SkipEmptyParts);
-            QStringList liaisonOriginal = original->attribute("liaison").toString().split(" ", QString::SkipEmptyParts);
-            QStringList liaisonModified = modified->attribute("liaison").toString().split(" ", QString::SkipEmptyParts);
-            QStringList schwaOriginal = original->attribute("schwa").toString().split(" ", QString::SkipEmptyParts);
-            QStringList schwaModified = modified->attribute("schwa").toString().split(" ", QString::SkipEmptyParts);
+            QStringList tokensOriginal = original->text().split(" ", Qt::SkipEmptyParts);
+            QStringList tokensModified = modified->text().split(" ", Qt::SkipEmptyParts);
+            QStringList liaisonOriginal = original->attribute("liaison").toString().split(" ", Qt::SkipEmptyParts);
+            QStringList liaisonModified = modified->attribute("liaison").toString().split(" ", Qt::SkipEmptyParts);
+            QStringList schwaOriginal = original->attribute("schwa").toString().split(" ", Qt::SkipEmptyParts);
+            QStringList schwaModified = modified->attribute("schwa").toString().split(" ", Qt::SkipEmptyParts);
             WordAlign alignTokens;  alignTokens.align(tokensOriginal, tokensModified);
             WordAlign alignLiaison; alignLiaison.align(liaisonOriginal, liaisonModified);
             WordAlign alignSchwa;   alignSchwa.align(schwaOriginal, schwaModified);
