@@ -203,7 +203,7 @@ void MetadataStructureEditor::addMetadataStructureSection()
     MetadataStructureTreeModelCategory *category = qobject_cast<MetadataStructureTreeModelCategory *>(item);
     MetadataStructureSection *section = qobject_cast<MetadataStructureSection *>(item);
     MetadataStructureAttribute *attribute = qobject_cast<MetadataStructureAttribute *>(item);
-    CorpusObject::Type type;
+    CorpusObject::Type type {CorpusObject::Type_Undefined};
     if (category)
         type = category->type;
     else if (section)
@@ -247,8 +247,9 @@ void MetadataStructureEditor::addMetadataStructureAttribute()
     newAttribute->setDatatype(dt);
     newAttribute->setParent(section);
 
-    if (!repository->metadata()->createMetadataAttribute(type, newAttribute))
+    if (!repository->metadata()->createMetadataAttribute(type, newAttribute)) {
         return; // failed to create attribute
+    }
     section->addAttribute(newAttribute);
     refreshMetadataStructureTreeView(repository->metadataStructure());
 }
@@ -319,7 +320,11 @@ void MetadataStructureEditor::importMetadataStructure()
     } else {
         structure = XMLSerialiserMetadataStructure::read(filename);
     }
-    if (!structure) return;
+    if (!structure) {
+        QMessageBox::warning(this, tr("Error Reading File"),
+                             tr("Error while reading the metadata structure file: %1").arg(filename));
+        return;
+    }
     repository->importMetadataStructure(structure);
     refreshMetadataStructureTreeView(repository->metadataStructure());
 }
