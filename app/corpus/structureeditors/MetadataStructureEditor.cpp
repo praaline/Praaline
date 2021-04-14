@@ -236,7 +236,7 @@ void MetadataStructureEditor::addMetadataStructureAttribute()
     CorpusObject::Type type = repository->metadataStructure()->corpusObjectTypeOfSection(section);
 
     // Ask for attribute ID and add it
-    AddAttributeDialog *dialog = new AddAttributeDialog(this);
+    AddAttributeDialog *dialog = new AddAttributeDialog(false, this);
     dialog->exec();
     if (dialog->result() == QDialog::Rejected) return;
     QString attributeID = dialog->attributeID();

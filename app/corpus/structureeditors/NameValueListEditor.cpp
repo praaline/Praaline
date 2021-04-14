@@ -199,7 +199,7 @@ void NameValueListEditor::newList()
 {
     if (!d->datastore) return;
     // Ask for the new list ID and add it
-    AddAttributeDialog *dialog = new AddAttributeDialog(this);
+    AddAttributeDialog *dialog = new AddAttributeDialog(true, this);
     dialog->exec();
     if (dialog->result() == QDialog::Rejected) return;
     QString listID = dialog->attributeID();

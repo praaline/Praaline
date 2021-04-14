@@ -706,13 +706,17 @@ void CorpusExplorerWidget::addCommunication()
         return;
     }
     if (!d->activeCorpus->repository()) return;
-    bool ok(false);
-    AddCorpusCommunicationDialog *dialog = new AddCorpusCommunicationDialog();
+    AddCorpusCommunicationDialog *dialog = new AddCorpusCommunicationDialog(this);
+    dialog->setCorpusID(d->activeCorpus->corpusID());
     dialog->exec();
-
-    QString communicationID; // = QInputDialog::getText(this, tr("Add new Communication"),
-                             //                       tr("Communication ID:"), QLineEdit::Normal, "", &ok);
-    if (!ok || communicationID.isEmpty()) return;
+    if (dialog->result() == QDialog::Rejected) return;
+    QString communicationID = dialog->communicationID();
+    // = QInputDialog::getText(this, tr("Add new Communication"),
+    //                       tr("Communication ID:"), QLineEdit::Normal, "", &ok);
+    if (communicationID.isEmpty()) {
+        QMessageBox::warning(this, tr("Add Communication to Corpus"), tr("The Communication ID cannot be empty."), QMessageBox::Ok);
+        return;
+    }
     d->activeCorpus->addCommunication(new CorpusCommunication(communicationID, d->activeCorpus->repository(), d->activeCorpus));
 }
 
@@ -728,7 +732,11 @@ void CorpusExplorerWidget::addSpeaker()
     bool ok(false);
     QString speakerID = QInputDialog::getText(this, tr("Add new Speaker"),
                                                     tr("Speaker ID:"), QLineEdit::Normal, "", &ok);
-    if (!ok || speakerID.isEmpty()) return;
+    if (!ok) return;
+    if (speakerID.isEmpty()) {
+        QMessageBox::warning(this, tr("Add Speaker to Corpus"), tr("The Speaker ID cannot be empty."), QMessageBox::Ok);
+        return;
+    }
     d->activeCorpus->addSpeaker(new CorpusSpeaker(speakerID, d->activeCorpus->repository(), d->activeCorpus));
 }
 

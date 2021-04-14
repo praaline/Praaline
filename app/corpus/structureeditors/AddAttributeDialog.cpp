@@ -26,6 +26,9 @@ AddAttributeDialog::AddAttributeDialog(bool nameValueListDialog , QWidget *paren
     if (nameValueListDialog ) {
         ui->labelAttributeID->setText(tr("Name-Value List ID:"));
         this->setWindowTitle(tr("Add new name-value list"));
+    } else {
+        ui->labelAttributeID->setText(tr("Attribute ID:"));
+        this->setWindowTitle(tr("Add new attribute"));
     }
 }
 
