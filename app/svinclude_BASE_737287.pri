@@ -52,7 +52,7 @@ SV_LIBS = -Wl,-Bstatic $$SV_LIBS -Wl,-Bdynamic -L../praaline-core/$${COMPONENTSP
 
 win* {
 SV_LIBS = -lsvapp -lsvgui -lsvcore -ldataquay -lpraaline-core$${PRAALINE_LIB_POSTFIX}
-SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay/release -L../praaline-core/$${COMPONENTSPATH} $$SV_LIBS
+SV_LIBS = -L../svapp/$${COMPONENTSPATH} -L../svgui/$${COMPONENTSPATH} -L../svcore/$${COMPONENTSPATH} -L../dataquay -L../praaline-core/$${COMPONENTSPATH} $$SV_LIBS
 }
 
 macx* {
@@ -80,5 +80,5 @@ PRE_TARGETDEPS += ../svapp/$${COMPONENTSPATH}/libsvapp.a \
 PRE_TARGETDEPS += ../svapp/$${COMPONENTSPATH}/libsvapp.a \
                   ../svgui/$${COMPONENTSPATH}/libsvgui.a \
                   ../svcore/$${COMPONENTSPATH}/libsvcore.a \
-                  ../dataquay/libdataquay.a
+                  ../dataquay/release/libdataquay.a
 }
