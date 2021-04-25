@@ -2,13 +2,19 @@
 #define PROSOGRAM_H
 
 #include <QObject>
-#include <QPointer>
 #include <QString>
 #include <QStringList>
-#include "PraalineCore/Corpus/CorpusCommunication.h"
-#include "PraalineCore/Corpus/CorpusAnnotation.h"
-#include "PraalineCore/Annotation/AnnotationTierGroup.h"
-using namespace Praaline::Core;
+
+namespace Praaline {
+namespace Core {
+class Corpus;
+class CorpusCommunication;
+class CorpusRecording;
+class AnnotationTierGroup;
+class IntervalTier;
+}
+}
+
 #include "AnnotationPluginPraatScript.h"
 
 class ProsoGram : public AnnotationPluginPraatScript
@@ -17,10 +23,11 @@ class ProsoGram : public AnnotationPluginPraatScript
 public:
     explicit ProsoGram(QObject *parent = nullptr);
 
-    void runProsoGram(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID);
-    void importResultFiles(Corpus *corpus, CorpusRecording *rec, AnnotationTierGroup *tiers, QString annotationID, QString speakerID,
-                           QString prosoPath = QString());
-    static bool updateGlobal(CorpusCommunication *com, const QString &filenameGlobalsheet);
+    void runProsoGram(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusRecording *rec, Praaline::Core::AnnotationTierGroup *tiers,
+                      QString annotationID, QString speakerID);
+    void importResultFiles(Praaline::Core::Corpus *corpus, Praaline::Core::CorpusRecording *rec, Praaline::Core::AnnotationTierGroup *tiers,
+                           QString annotationID, QString speakerID, QString prosoPath = QString());
+    static bool updateGlobal(Praaline::Core::CorpusCommunication *com, const QString &filenameGlobalsheet);
 
     double timeRangeFrom;
     double timeRangeTo;
@@ -50,7 +57,7 @@ public slots:
 
 private:
     bool updateTonalSegmentsAndVUV(const QString &filenameNuclei, const QString &filenameStylPitchTier,
-                                   IntervalTier *tier_tonal_segments, IntervalTier *tier_vuv);
+                                   Praaline::Core::IntervalTier *tier_tonal_segments, Praaline::Core::IntervalTier *tier_vuv);
 };
 
 #endif // PROSOGRAM_H

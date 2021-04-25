@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QString>
+#include <QPointer>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -15,6 +16,7 @@
 #include "PraalineCore/Corpus/CorpusAnnotation.h"
 #include "PraalineCore/Structure/AnnotationStructureLevel.h"
 #include "PraalineCore/Annotation/AnnotationDataTable.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
 #include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
@@ -25,7 +27,11 @@ using namespace Praaline::Core;
 #include "Prosogram.h"
 
 ProsoGram::ProsoGram(QObject *parent) :
-    AnnotationPluginPraatScript(parent), timeRangeFrom(0.0)
+    AnnotationPluginPraatScript(parent), timeRangeFrom(0.0), timeRangeTo(0.0),
+    f0DetectionMin(0.0), f0DetectionMax(0.0), framePeriod(0.0), segmentationMethod(0),
+    glissandoThreshold(0), keepIntermediateFiles(false),
+    createImageFiles(false), plottingStyle(0), plottingIntervalPerStrip(0.0),
+    plottingMultiStrip(false), plottingFileFormat(0)
 {
 }
 

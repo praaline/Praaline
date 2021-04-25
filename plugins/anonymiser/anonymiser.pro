@@ -60,9 +60,13 @@ LIBS +=  \
 PRE_TARGETDEPS += \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
-HEADERS += \ 
+HEADERS += \
+    AnnotationPluginPraatScript.h \
+    AnonymiserScript.h \
     PluginAnonymiser_global.h \
     PluginAnonymiser.h
 
-SOURCES += \ 
+SOURCES += \
+    AnnotationPluginPraatScript.cpp \
+    AnonymiserScript.cpp \
     PluginAnonymiser.cpp

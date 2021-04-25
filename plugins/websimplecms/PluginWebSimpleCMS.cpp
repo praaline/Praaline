@@ -9,7 +9,6 @@
 #include <QTextStream>
 #include <QStandardPaths>
 
-#include "PluginWebSimpleCMS.h"
 #include "PraalineCore/Corpus/CorpusCommunication.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
@@ -17,20 +16,28 @@
 #include "PraalineCore/Structure/MetadataStructure.h"
 #include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 
+#include "AnalyserTemporalItem.h"
+#include "PluginWebSimpleCMS.h"
+
+
 using namespace Qtilities::ExtensionSystem;
 using namespace Praaline::Plugins;
 
 struct Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMSPrivateData {
     PluginWebSimpleCMSPrivateData() :
     includeSyllables(false) {}
+
     QString pathXML;
     bool includeSyllables;
+    QString levelSyllables;
+    QString levelTokens;
+    QStringList filledPauseTokens;
 };
 
 Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::PluginWebSimpleCMS(QObject* parent) : QObject(parent)
 {
     d = new PluginWebSimpleCMSPrivateData;
-    setObjectName(pluginName());
+    setObjectName("Web interface to SimpleCMS");
 }
 
 Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::~PluginWebSimpleCMS()
@@ -42,7 +49,12 @@ bool Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::initialize(const QStri
     Q_UNUSED(arguments)
     Q_UNUSED(error_strings)
 
-    d->pathXML = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).first();
+    // Default values for plug-in parameters
+    d->pathXML = QStandardPaths::standardLocations(QStandardPaths::DocumentsLocation).at(0);
+    d->includeSyllables = false;
+    d->levelSyllables = "";
+    d->levelTokens = "tok_min";
+    d->filledPauseTokens << "euh" << "euhm" << "hum";
     return true;
 }
 
@@ -65,7 +77,7 @@ QtilitiesCategory Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginCat
 }
 
 Qtilities::Core::VersionInformation Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginVersionInformation() const {
-    VersionInformation version_info(1, 0, 0);
+    VersionInformation version_info(2, 0, 0);
     return version_info;
 }
 
@@ -86,7 +98,7 @@ QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginDescription()
 }
 
 QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginCopyright() const {
-    return QString(tr("Copyright") + " 2014-2015, George Christodoulides");
+    return QString(tr("Copyright") + " 2014-2021, George Christodoulides");
 }
 
 QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginLicense() const {
@@ -98,6 +110,9 @@ QList<IAnnotationPlugin::PluginParameter> Praaline::Plugins::WebSimpleCMS::Plugi
     QList<IAnnotationPlugin::PluginParameter>  parameters;
     parameters << PluginParameter("pathXML", "Folder to save XML files to", QVariant::String, d->pathXML);
     parameters << PluginParameter("includeSyllables", "Include syllable information", QVariant::Bool, d->includeSyllables);
+    parameters << PluginParameter("levelSyllables", "Annotation level for syllables", QVariant::String, d->levelSyllables);
+    parameters << PluginParameter("levelTokens", "Annotation level for tokens", QVariant::String, d->levelTokens);
+    parameters << PluginParameter("filledPauseTokens", "List of tokens considered filled pauses", QVariant::String, d->filledPauseTokens.join(","));
     return parameters;
 }
 
@@ -105,6 +120,9 @@ void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::setParameters(const QH
 {
     if (parameters.contains("pathXML")) d->pathXML = parameters.value("pathXML").toString();
     if (parameters.contains("includeSyllables")) d->includeSyllables = parameters.value("includeSyllables").toBool();
+    if (parameters.contains("levelSyllables")) d->levelSyllables = parameters.value("levelSyllables").toString().trimmed();
+    if (parameters.contains("levelTokens")) d->levelTokens = parameters.value("levelTokens").toString().trimmed();
+    if (parameters.contains("filledPauseTokens")) d->filledPauseTokens = parameters.value("filledPauseTokens").toString().split(",");
 }
 
 
@@ -119,11 +137,22 @@ QString filterNonPrintable(QString text) {
 
 void writeAttributeToXML(QXmlStreamWriter &xml, MetadataStructureAttribute *attribute, QVariant value)
 {
-
+    if (attribute->datatype().base() == DataType::Boolean)
+        xml.writeAttribute(attribute->ID(), value.toBool() ? "true" : "false");
+    else if (attribute->datatype().base() == DataType::Integer)
+        xml.writeAttribute(attribute->ID(), QString::number(value.toInt()));
+    else if (attribute->datatype().base() == DataType::DateTime)
+        xml.writeAttribute(attribute->ID(), value.toDate().toString("yyyy-MM-dd"));
+    else
+        xml.writeAttribute(attribute->ID(), value.toString());
 }
 
+//
+// XML FILE OUTPUT
+//
+
 bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation *annot,
-               const QString &filename, bool includeSyllables = false)
+               const QString &filename, AnalyserTemporalItem &temporalStatistics, bool includeSyllables = false)
 {
     // Checks
     if (!com || !rec || !annot) return false;
@@ -145,6 +174,10 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeStartElement("praaline_to_simple_cms");
     xml.writeAttribute("version", "2.0");
 
+    // ********************************************************************************************
+    // Metadata
+    // ********************************************************************************************
+
     xml.writeStartElement("metadata");
 
     // Communication
@@ -153,12 +186,7 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeAttribute("name", com->name());
     foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Communication)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            if (attribute->datatype().base() == DataType::DateTime)
-                xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-            else if (attribute->datatype().base() == DataType::Integer)
-                xml.writeAttribute(attribute->ID(), QString::number(com->property(attribute->ID()).toInt()));
-            else
-                xml.writeAttribute(attribute->ID(), com->property(attribute->ID()).toString());
+            writeAttributeToXML(xml, attribute, com->property(attribute->ID()));
         }
     }
 
@@ -171,12 +199,7 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeAttribute("duration", QString::number(rec->duration().toDouble()));
     foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Recording)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            if (attribute->datatype().base() == DataType::DateTime)
-                xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-            else if (attribute->datatype().base() == DataType::Integer)
-                xml.writeAttribute(attribute->ID(), QString::number(rec->property(attribute->ID()).toInt()));
-            else
-                xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toString());
+            writeAttributeToXML(xml, attribute, rec->property(attribute->ID()));
         }
     }
     xml.writeEndElement(); // Recording
@@ -188,12 +211,7 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeAttribute("textgrid_url", com->ID() + ".textgrid");
     foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Annotation)) {
         foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-            if (attribute->datatype().base() == DataType::DateTime)
-                xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-            else if (attribute->datatype().base() == DataType::Integer)
-                xml.writeAttribute(attribute->ID(), QString::number(rec->property(attribute->ID()).toInt()));
-            else
-                xml.writeAttribute(attribute->ID(), rec->property(attribute->ID()).toString());
+            writeAttributeToXML(xml, attribute, annot->property(attribute->ID()));
         }
     }
     xml.writeEndElement(); // Annotation
@@ -214,20 +232,19 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
         xml.writeAttribute("name", spk->name());
         foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Speaker)) {
             foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-                if (attribute->datatype().base() == DataType::DateTime)
-                    xml.writeAttribute(attribute->ID(), spk->property(attribute->ID()).toDate().toString("yyyy-MM-dd"));
-                else if (attribute->datatype().base() == DataType::Integer)
-                    xml.writeAttribute(attribute->ID(), QString::number(spk->property(attribute->ID()).toInt()));
-                else
-                    xml.writeAttribute(attribute->ID(), spk->property(attribute->ID()).toString());
+                writeAttributeToXML(xml, attribute, spk->property(attribute->ID()));
             }
         }
-        CorpusParticipation *part = com->corpus()->participation(com->ID(), speakerID);
-        if (part) {
-            xml.writeAttribute("role", part->role());
+        CorpusParticipation *participation = com->corpus()->participation(com->ID(), speakerID);
+        if (participation) {
+            xml.writeAttribute("role", participation->role());
+            foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Participation)) {
+                foreach (MetadataStructureAttribute *attribute, section->attributes()) {
+                    writeAttributeToXML(xml, attribute, participation->property(attribute->ID()));
+                }
+            }
         }
         xml.writeEndElement(); // speaker
-        delete spk;
     }
     xml.writeEndElement(); // Speakers and Participations
 
@@ -242,7 +259,36 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     // End of metadata
     xml.writeEndElement();
 
+    // ********************************************************************************************
+    // Statistics
+    // ********************************************************************************************
+
+    xml.writeStartElement("statistics");
+    xml.writeStartElement("temporal_statistics");
+    xml.writeStartElement("communications");
+    xml.writeStartElement("communication");
+    xml.writeAttribute("communicationID", com->ID());
+    foreach (QString measureID, temporalStatistics.measureIDsForCommunication()) {
+        xml.writeAttribute(measureID, QString::number(temporalStatistics.measureCom(measureID)));
+    }
+    xml.writeEndElement(); // communication
+    xml.writeEndElement(); // communications
+    xml.writeStartElement("speakers");
+    foreach (QString speakerID, temporalStatistics.speakerIDs()) {
+        xml.writeStartElement("speaker");
+        xml.writeAttribute("speakerID", speakerID);
+        foreach (QString measureID, temporalStatistics.measureIDsForSpeaker()) {
+            xml.writeAttribute(measureID, QString::number(temporalStatistics.measureSpk(speakerID, measureID)));
+        }
+        xml.writeEndElement(); // speaker
+    }
+    xml.writeEndElement(); // speakers
+    xml.writeEndElement(); // temporal_statistics
+    xml.writeEndElement(); // statistics
+
+    // ********************************************************************************************
     // Transcription and word count
+    // ********************************************************************************************
     QMap<RealTime, Interval *> listAllTokMin;
     foreach (QString speakerID, tiersAll.keys()) {
         IntervalTier *tier_tok_min = tiersAll.value(speakerID)->getIntervalTierByName("tok_min");
@@ -264,7 +310,11 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeAttribute("word_count", QString::number(count));
     xml.writeEndElement(); // transcription
 
+
+    // ********************************************************************************************
     // Annotation tables
+    // ********************************************************************************************
+
     xml.writeStartElement("annotation");
 
     QMultiMap<RealTime, Interval *> listAllSegments;
@@ -419,23 +469,32 @@ void Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::process(const QList<Co
     if (d->pathXML.isEmpty())
         d->pathXML = QDir::homePath();
     int countDone = 0;
-    madeProgress(0);
-    printMessage("XML file creator for Simple CMS v. 1.0");
+    emit madeProgress(0);
+    emit printMessage("XML file creator for Simple CMS v. 2.0");
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        printMessage(QString("Creating XML file for %1").arg(com->ID()));
+        emit printMessage(QString("Running Temporal Statistical Analysis for %1").arg(com->ID()));
+        AnalyserTemporalItem temporalStatistics;
+        temporalStatistics.setLevelIDTokens(d->levelTokens);
+        if (d->levelSyllables.isEmpty())
+            temporalStatistics.setLevelIDSyllables(d->levelTokens);
+        else
+            temporalStatistics.setLevelIDSyllables(d->levelSyllables);
+        temporalStatistics.setFilledPauseTokens(d->filledPauseTokens);
+        temporalStatistics.analyse(com);
+        emit printMessage(QString("Creating XML file for %1").arg(com->ID()));
         foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             foreach (CorpusAnnotation *annot, com->annotations()) {
                 if (!annot) continue;
-                outputXML(com, rec, annot, d->pathXML + "/" + annot->ID() + ".xml", d->includeSyllables);
+                outputXML(com, rec, annot, d->pathXML + "/" + annot->ID() + ".xml", temporalStatistics, d->includeSyllables);
             }
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
-    madeProgress(100);
-    printMessage("Finished creating XML files for SimpleCMS.");
+    emit madeProgress(100);
+    emit printMessage("Finished creating XML files for SimpleCMS.");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

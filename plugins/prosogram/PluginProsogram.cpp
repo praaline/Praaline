@@ -14,6 +14,7 @@
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
 #include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/AnnotationTierGroup.h"
 using namespace Praaline::Core;
 
 #include "Prosogram.h"
@@ -218,15 +219,15 @@ void Praaline::Plugins::Prosogram::PluginProsogram::setParameters(const QHash<QS
 
 void Praaline::Plugins::Prosogram::PluginProsogram::scriptSentMessage(const QString &message)
 {
-    printMessage(message);
+    emit printMessage(message);
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::scriptFinished(int exitcode)
 {
     if (exitcode == 0)
-        printMessage("Finished succesfully.");
+        emit printMessage("Finished succesfully.");
     else
-        printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
+        emit printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramDataStructures(CorpusRepository *repository)
@@ -302,8 +303,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createProsogramDataStructure
 void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllables(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Creating utterance segmentation from automatically detected syllables");
+    emit madeProgress(0);
+    emit printMessage("Creating utterance segmentation from automatically detected syllables");
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
@@ -317,14 +318,14 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                 if (!tiers) continue;
                 IntervalTier *tier_autosyll = tiers->getIntervalTierByName(d->levelSyllable);
                 if (!tier_autosyll) {
-                    printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Auto-syllable tier (%4) not found.")
+                    emit printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Auto-syllable tier (%4) not found.")
                                  .arg(com->ID()).arg(annot->ID()).arg(speakerID).arg(d->levelSyllable));
                     continue;
                 }
                 IntervalTier *tier_segment = tiers->getIntervalTierByName(d->levelSegmentation);
                 if (tier_segment) {
                     if (!d->overwrite) {
-                        printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Already has segmentation tier (%4).")
+                        emit printMessage(QString("Communication %1 Annotation %2 Speaker %3 - Already has segmentation tier (%4).")
                                      .arg(com->ID()).arg(annot->ID()).arg(speakerID).arg(d->levelSegmentation));
                         continue;
                     } else {
@@ -354,11 +355,11 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
         }
         qDeleteAll(tiersAll);
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
         QApplication::processEvents();
     }
-    madeProgress(100);
-    printMessage("Finished");
+    emit madeProgress(100);
+    emit printMessage("Finished");
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<CorpusCommunication *> &communications)
@@ -391,7 +392,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
 
     int countDone = 0;
     madeProgress(0);
-    printMessage("ProsoGram v.2.9m running");
+    emit printMessage("ProsoGram v.2.9m running");
 
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
@@ -403,14 +404,14 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
                 AnnotationStructureLevel *level_segment = new AnnotationStructureLevel(
                             d->levelSegmentation, AnnotationStructureLevel::IndependentIntervalsLevel, "Segmentation", "");
                 if (!com->repository()->annotations()->createAnnotationLevel(level_segment)) {
-                    printMessage(QString("Error creating segmentation level: %1").arg(d->levelSegmentation));
+                    emit printMessage(QString("Error creating segmentation level: %1").arg(d->levelSegmentation));
                     return;
                 }
                 com->repository()->annotationStructure()->addLevel(level_segment);
             }
         }
 
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
 
@@ -441,7 +442,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
                         QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
                         QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(rec->ID()).arg(speakerID);
                         ProsoGram::updateGlobal(com, prosoPath + filenameGlobalsheet);
-                        printMessage("Autosyll already OK, updated globalsheet");
+                        emit printMessage("Autosyll already OK, updated globalsheet");
                         continue;
                     }
                     AnnotationTierGroup *tiers = new AnnotationTierGroup();
@@ -453,7 +454,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
                     // Other segmentation methods
                     SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                     foreach (QString speakerID, tiersAll.keys()) {
-                        printMessage(QString("   speaker %1").arg(speakerID));
+                        emit printMessage(QString("   speaker %1").arg(speakerID));
                         AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                         if (!tiers) continue;
                         // check speaker-specific recording
@@ -470,13 +471,13 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
             }
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
     disconnect(prosogram, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
     disconnect(prosogram, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
     delete prosogram;
-    madeProgress(100);
-    printMessage("ProsoGram finished.");
+    emit madeProgress(100);
+    emit printMessage("ProsoGram finished.");
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(const QList<CorpusCommunication *> &communications)

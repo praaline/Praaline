@@ -60,6 +60,10 @@ namespace Praaline {
                 void printMessage(const QString &message) override;
                 void madeProgress(int progress) override;
 
+            private slots:
+                void scriptSentMessage(const QString &message);
+                void scriptFinished(int exitcode);
+
             private:
                 PluginAnonymiserPrivateData* d;
 
