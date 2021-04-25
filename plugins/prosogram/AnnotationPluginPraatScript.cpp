@@ -3,6 +3,8 @@
 #include <QStringList>
 #include <QCoreApplication>
 #include <QProcess>
+#include <QFile>
+#include <QDir>
 #include <QDebug>
 
 #include "AnnotationPluginPraatScript.h"
@@ -28,8 +30,10 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     //connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
     QString praatCommand;
 #ifdef Q_OS_WIN
-    QString appPath = QCoreApplication::applicationDirPath();
-    praatCommand = appPath + "/tools/praatcon.exe";
+    praatCommand = QCoreApplication::applicationDirPath() + "/tools/Praat.exe";
+    if (!QFile::exists(praatCommand)) {
+        praatCommand = QDir::homePath() + "/Praaline/tools/Praat.exe";
+    }
 #else
 #ifdef Q_OS_MAC
     praatCommand = "/Applications/Praat.app/Contents/MacOS/Praat";
