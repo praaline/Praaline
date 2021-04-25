@@ -26,4 +26,3 @@ svapp.depends = svcore svgui
 
 app.depends = praaline-core pnlib pngui sub_dataquay svcore svgui svapp
 
-

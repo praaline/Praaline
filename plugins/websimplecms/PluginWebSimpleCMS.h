@@ -1,7 +1,7 @@
 #ifndef PLUGINWEBSIMPLECMS_H
 #define PLUGINWEBSIMPLECMS_H
 
-#include "pluginwebsimplecms_global.h"
+#include "PluginWebSimpleCMS_global.h"
 
 #include "IAnnotationPlugin.h"
 #include <QtilitiesCategory>

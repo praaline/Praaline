@@ -60,9 +60,13 @@ LIBS +=  \
 PRE_TARGETDEPS += \
         ../../praaline-core/$${COMPONENTSPATH}/libpraaline-core$${PRAALINE_LIB_POSTFIX}.$${LIB_SUFFIX}
 
-HEADERS += \ 
-    pluginwebsimplecms_global.h \
-    pluginwebsimplecms.h
+HEADERS += \
+    PluginWebSimpleCMS.h \
+    AnalyserTemporalItem.h \
+    PluginWebSimpleCMS_global.h
 	
-SOURCES += \ 
-    pluginwebsimplecms.cpp
+SOURCES += \
+    PluginWebSimpleCMS.cpp \
+    AnalyserTemporalItem.cpp
+
+
