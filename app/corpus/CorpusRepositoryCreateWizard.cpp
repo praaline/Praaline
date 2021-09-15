@@ -217,8 +217,7 @@ void CorpusRepositoryCreateWizard::createLocalSQLRepository()
     d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
     if (!d->newCorpusRepository) {
         QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")
-                             .arg(tr("There was an error while creating the new repository."))
-                             .arg(errorMessages));
+                             .arg(tr("There was an error while creating the new repository."), errorMessages));
         return;
     }
     d->newDefinition.save(d->newDefinition.filenameDefinition);
@@ -264,8 +263,7 @@ void CorpusRepositoryCreateWizard::createRemoteSQLRepository()
     d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
     if (!d->newCorpusRepository) {
         QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")
-                             .arg(tr("There was an error while creating the new repository."))
-                             .arg(errorMessages));
+                             .arg(tr("There was an error while creating the new repository."), errorMessages));
         return;
     }
     d->newDefinition.save(d->newDefinition.filenameDefinition);

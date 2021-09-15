@@ -40,12 +40,12 @@ SpeechRecognitionWidget::SpeechRecognitionWidget(QWidget *parent) :
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
     ui->gridLayoutCorpusExplorer->addWidget(d->corpusItemSelector);
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)),
-            this, SLOT(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)),
-            this, SLOT(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)),
-            this, SLOT(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)));
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusCommunication,
+            this, &SpeechRecognitionWidget::selectedCorpusCommunication);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusRecording,
+            this, &SpeechRecognitionWidget::selectedCorpusRecording);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusAnnotation,
+            this, &SpeechRecognitionWidget::selectedCorpusAnnotation);
 
     // Left-right splitter sizes
     ui->splitterLR->setSizes(QList<int>() << 50 << 350);

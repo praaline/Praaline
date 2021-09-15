@@ -487,7 +487,7 @@ void CorpusExplorerWidget::corpusRepositoryAdded(const QString &repositoryID)
     // If there is only one corpus in one repository, open it
     if (d->corpusRepositoriesManager->listAvailableCorpusIDs().count() == 1) {
         QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(
-                    d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).first(), repositoryID);
+                    d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).constFirst(), repositoryID);
         if (corpus) d->activeCorpus = corpus;
     }
 }
@@ -753,7 +753,7 @@ void CorpusExplorerWidget::addRecording()
     // Check to see whether there is a selected Communication
     CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
     if (d->corporaObserverWidget->selectedObjects().count() == 1) {
-        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
+        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().constFirst());
     }
     // Get the filenames of the recordings to add
     QFileDialog::Options options;
@@ -788,7 +788,7 @@ void CorpusExplorerWidget::addAnnotation()
 {
     CorpusExplorerTreeNodeCommunication *nodeCom = nullptr;
     if (d->corporaObserverWidget->selectedObjects().count() == 1) {
-        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
+        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().constFirst());
     }
     if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication))) {
         QMessageBox::warning(this, tr("Add Recording to Communication"),
@@ -818,11 +818,11 @@ void CorpusExplorerWidget::addParticipation()
                              QMessageBox::Ok);
         return;
     }
-    nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().first());
-    nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(d->corporaObserverWidget->selectedObjects().last());
+    nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().constFirst());
+    nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(d->corporaObserverWidget->selectedObjects().constLast());
     if ((!nodeCom) || (!nodeSpk)) {
-        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().last());
-        nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(d->corporaObserverWidget->selectedObjects().first());
+        nodeCom = qobject_cast<CorpusExplorerTreeNodeCommunication *>(d->corporaObserverWidget->selectedObjects().constLast());
+        nodeSpk = qobject_cast<CorpusExplorerTreeNodeSpeaker *>(d->corporaObserverWidget->selectedObjects().constFirst());
     }
     if ((!nodeCom) || ((nodeCom) && (!nodeCom->communication)) || (!nodeSpk) || ((nodeSpk) && (!nodeSpk->speaker))) {
         QMessageBox::warning(this, tr("Add Participation"),
@@ -878,10 +878,10 @@ void CorpusExplorerWidget::removeCorpusItems()
             bool alsoDeleteData = false;
             if (QMessageBox::warning(this, tr("Remove communication from corpus?"),
                                      QString(tr("Do you want to remove Communication %1 from Corpus %2?"))
-                                     .arg(com->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+                                     .arg(com->name(), corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             if (QMessageBox::warning(this, tr("Permanently delete data?"),
                                      QString(tr("Do you also want to delete all the annotation data associated with Communication %1 from Corpus %2?"))
-                                     .arg(com->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+                                     .arg(com->name(), corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
                 alsoDeleteData = true;
             }
             if (alsoDeleteData) {
@@ -899,7 +899,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             if (!corpus) return;
             if (QMessageBox::warning(this, tr("Remove speaker from corpus?"),
                                      QString(tr("Do you want to remove Speaker %1 from Corpus %2?"))
-                                     .arg(spk->name()).arg(corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+                                     .arg(spk->name(), corpus->ID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             corpus->removeSpeaker(spk->ID());
             return;
         }
@@ -909,7 +909,7 @@ void CorpusExplorerWidget::removeCorpusItems()
             if (!com) return;
             if (QMessageBox::warning(this, tr("Remove recording from communication?"),
                                      QString(tr("Do you want to remove Recording %1 from Communication %2?"))
-                                     .arg(rec->name()).arg(rec->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+                                     .arg(rec->name(), rec->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             com->removeRecording(rec->ID());
             return;
         }
@@ -920,10 +920,10 @@ void CorpusExplorerWidget::removeCorpusItems()
             bool alsoDeleteData = false;
             if (QMessageBox::warning(this, tr("Remove annotation from communication?"),
                                      QString(tr("Do you want to remove Annotation %1 from Communication %2?"))
-                                     .arg(annot->name()).arg(annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
+                                     .arg(annot->name(), annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) return;
             if (QMessageBox::warning(this, tr("Permanently delete data?"),
                                      QString(tr("Do you also want to delete all the annotation data associated with Annotation %1 in Communication %2?"))
-                                     .arg(annot->name()).arg(annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+                                     .arg(annot->name(), annot->communicationID()), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
                 alsoDeleteData = true;
             }
             if (alsoDeleteData) {

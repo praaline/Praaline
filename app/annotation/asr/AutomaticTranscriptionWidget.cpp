@@ -117,7 +117,7 @@ void AutomaticTranscriptionWidget::open(Corpus *corpus, CorpusCommunication *com
             QDir().mkdir(d->recording->basePath() + "/asr");
         d->transcriber->setWorkingDirectory(d->recording->basePath() + "/asr");
         d->transcriber->setFilePathRecording(d->recording->filePath());
-        ui->textMessages->appendHtml(QString("<b>Opened Communication %1, Recording %2</b>").arg(com->ID()).arg(rec->ID()));
+        ui->textMessages->appendHtml(QString("<b>Opened Communication %1, Recording %2</b>").arg(com->ID(), rec->ID()));
     }
 
     // Visualisation
@@ -209,6 +209,7 @@ void AutomaticTranscriptionWidget::stepVAD()
     // VAD results (probability of frame being speech)
     QPair<double, double> v;
     SparseTimeValueModel *modelVAD = qobject_cast<SparseTimeValueModel *>(d->layerVAD->getModel());
+    if (!modelVAD) return;
     if (modelVAD) modelVAD->clear();
     foreach (v, d->transcriber->vadResults()) {
         RealTime t = RealTime::fromSeconds(v.first);

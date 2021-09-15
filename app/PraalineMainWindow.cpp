@@ -302,7 +302,7 @@ void PraalineMainWindow::initialise()
     d->configurationWidget->initialize();
 
     // Load the previous session's keyboard mapping file.
-    d->shortcut_mapping_file = QString("%1/%2").arg(QtilitiesApplication::applicationSessionPath()).arg(qti_def_PATH_SHORTCUTS_FILE);
+    d->shortcut_mapping_file = QString("%1/%2").arg(QtilitiesApplication::applicationSessionPath(), qti_def_PATH_SHORTCUTS_FILE);
     ACTION_MANAGER->loadShortcutMapping(d->shortcut_mapping_file);
 
 //    #if cocoa
@@ -776,14 +776,11 @@ void PraalineMainWindow::showAbout()
 
     aboutText += tr("<h3>About Praaline</h3>");
     aboutText += tr("<p>Praaline is an open-source tool for language corpus management, annotation, visualisation and analysis.</p>");
-    aboutText += tr("<p>%1 : %2 configuration</p>")
-        .arg(version)
-        .arg(debug ? tr("Debug") : tr("Release"));
-    aboutText += tr("<p>Using Qt framework version %1.</p>")
-        .arg(QT_VERSION_STR);
+    aboutText += tr("<p>%1 : %2 configuration</p>").arg(version, (debug) ? tr("Debug") : tr("Release"));
+    aboutText += tr("<p>Using Qt framework version %1.</p>").arg(QT_VERSION_STR);
 
     aboutText +=
-        "<p>Copyright &copy; 2012&ndash;2020 George Christodoulides</p>"
+        "<p>Copyright &copy; 2012&ndash;2021 George Christodoulides</p>"
         "<p>Additional copyright notices:</p>"
         "<p>Sonic Visualiser. Copyright &copy; 2005&ndash;2014 Chris Cannam, Queen Mary University of London</p>"
         "<p>This program is free software; you can redistribute it and/or "

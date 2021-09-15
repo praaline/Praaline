@@ -38,13 +38,13 @@ private slots:
     void showCorpusExplorerTables();
     void showMetadataStructureEditor();
     void showAnnotationStructureEditor();
+    void setupRecentFilesMenu();
 
 private:
     Ui::CorpusModeWidget *ui;
     CorpusModeWidgetData *d;
 
     void setupActions();
-    void setupRecentFilesMenu();
 
     Praaline::Core::CorpusRepository *openCorpusRepository(const QString &filename, Praaline::Core::CorpusRepositoryDefinition &definition);
     void activateNextCorpusRepository();

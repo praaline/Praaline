@@ -5,7 +5,6 @@
 #include <QModelIndex>
 #include <QStandardItem>
 #include "PraalineCore/Corpus/Corpus.h"
-using namespace Praaline::Core;
 
 namespace Ui {
 class ManualAnnotationWidget;
@@ -22,11 +21,11 @@ public:
     ~ManualAnnotationWidget();
 
 protected slots:
-    void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>);
-    void selectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
-    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>, RealTime);
+    void selectedCorpusCommunication(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>);
+    void selectedCorpusRecording(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusAnnotation>);
+    void selectionChanged(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusRecording>, QPointer<Praaline::Core::CorpusAnnotation>);
+    void moveToAnnotationTime(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusAnnotation>, RealTime);
     void editorTabNew();
     void editorTabCloseRequested(int);
 
@@ -36,7 +35,7 @@ private:
     ManualAnnotationWidgetData *d;
 
     void setupActions();
-    void openForEditing(Corpus *corpus, const QString &annotationID);
+    void openForEditing(Praaline::Core::Corpus *corpus, const QString &annotationID);
 };
 
 #endif // MANUALANNOTATIONWIDGET_H

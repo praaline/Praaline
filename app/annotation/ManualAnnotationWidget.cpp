@@ -12,6 +12,7 @@
 
 #include "PraalineCore/Corpus/Corpus.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
+using namespace Praaline::Core;
 
 #include "pngui/observers/CorpusObserver.h"
 #include "pngui/model/CheckableProxyModel.h"
@@ -60,14 +61,14 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
     ui->gridLayoutCorpusExplorer->addWidget(d->corpusItemSelector);
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)),
-            this, SLOT(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)),
-            this, SLOT(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)),
-            this, SLOT(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)));
-    connect(d->corpusItemSelector, SIGNAL(moveToAnnotationTime(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>,RealTime)),
-            this, SLOT(moveToAnnotationTime(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>,RealTime)));
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusCommunication,
+            this, &ManualAnnotationWidget::selectedCorpusCommunication);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusRecording,
+            this, &ManualAnnotationWidget::selectedCorpusRecording);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusAnnotation,
+            this, &ManualAnnotationWidget::selectedCorpusAnnotation);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::moveToAnnotationTime,
+            this, &ManualAnnotationWidget::moveToAnnotationTime);
 
     // Left-right splitter sizes
     ui->splitterLR->setSizes(QList<int>() << 50 << 350);

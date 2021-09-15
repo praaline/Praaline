@@ -105,12 +105,12 @@ void PFCTranscriptionEditor::edit()
     ui->editComment->setText(d->elements.at(d->index)->attribute("comment").toString());
     ui->labelCheck->setText(d->elements.at(d->index)->attribute("tocheck").toString());
     ui->labelAnnotationID->setText(QString("AnnotationID: %1 Interval Index: %2")
-                                   .arg(d->elements.at(d->index)->attribute("annotationID").toString())
-                                   .arg(d->elements.at(d->index)->attribute("indexNo").toString()));
+                                   .arg(d->elements.at(d->index)->attribute("annotationID").toString(),
+                                        d->elements.at(d->index)->attribute("indexNo").toString()));
     ui->labelIndex->setText(QString("Index: %1\n%2\n%3")
                             .arg(d->index + 1)
-                            .arg(d->elements.at(d->index)->attribute("wordalign").toString())
-                            .arg(d->elements.at(d->index)->attribute("wordalign_wer").toString())
+                            .arg(d->elements.at(d->index)->attribute("wordalign").toString(),
+                                 d->elements.at(d->index)->attribute("wordalign_wer").toString())
                             );
     updateTableView();
     ui->editTranscript->setFocus();

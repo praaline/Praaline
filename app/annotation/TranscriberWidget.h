@@ -17,7 +17,6 @@ class CorpusRecording;
 class CorpusAnnotation;
 }
 }
-using namespace Praaline::Core;
 
 struct TranscriberWidgetData;
 
@@ -32,15 +31,15 @@ public:
 protected slots:
     virtual void newSession() override;
 
-    void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>,
-                                 QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>,
-                                  QPointer<CorpusAnnotation>);
-    void selectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>,
-                          QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
-    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>,
-                              QPointer<CorpusAnnotation>, RealTime);
+    void selectedCorpusCommunication(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>);
+    void selectedCorpusRecording(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>,
+                                 QPointer<Praaline::Core::CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>,
+                                  QPointer<Praaline::Core::CorpusAnnotation>);
+    void selectionChanged(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>,
+                          QPointer<Praaline::Core::CorpusRecording>, QPointer<Praaline::Core::CorpusAnnotation>);
+    void moveToAnnotationTime(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>,
+                              QPointer<Praaline::Core::CorpusAnnotation>, RealTime);
 
 
 private:

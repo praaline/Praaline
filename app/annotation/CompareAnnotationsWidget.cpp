@@ -296,7 +296,7 @@ void CompareAnnotationsWidget::compareAnnotations()
     if (!tier_left) {
         QMessageBox::warning(this, tr("Cannot find left data"),
                              QString(tr("No data for left pane: annotation %1, speaker %2 and annotation level %3."))
-                             .arg(annotationID_left).arg(speakerID_left).arg(levelID_left), QMessageBox::Ok);
+                             .arg(annotationID_left, speakerID_left, levelID_left), QMessageBox::Ok);
         return;
     }
     AnnotationTierGroup *group_right = repository_right->annotations()->getTiers(
@@ -305,7 +305,7 @@ void CompareAnnotationsWidget::compareAnnotations()
     if (!tier_right) {
         QMessageBox::warning(this, tr("Cannot find right data"),
                              QString(tr("No data for right pane: annotation %1, speaker %2 and annotation level %3."))
-                             .arg(annotationID_right).arg(speakerID_right).arg(levelID_right), QMessageBox::Ok);
+                             .arg(annotationID_right, speakerID_right, levelID_right), QMessageBox::Ok);
         return;
     }
 
@@ -450,7 +450,7 @@ void CompareAnnotationsWidget::exportDiffTableByLevelExcel(const QString &commun
     foreach (QString levelID, levelIDs) {
         QPointer<DiffSESforIntervalsTableModel> model = models.value(levelID);
         if (!model) continue;
-        int countAdditions(0), countDeletions(0);
+        int countAdditions{0}, countDeletions{0};
         // Header
         for (int j = 0; j < model->columnCount(); ++j) {
             xlsx.write(1, col + j, levelID, format_header);
@@ -470,12 +470,13 @@ void CompareAnnotationsWidget::exportDiffTableByLevelExcel(const QString &commun
         }
         col = col + model->columnCount();
         // Counts
-        QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
-        message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID).arg(model->rowCount()).arg(countAdditions).arg(countDeletions));
+        QString message = QString("%1\t%2\t%3\t").arg(communicationID, annotationID, speakerID);
+        message = message.append(QString("%1\t%2\t%3\t%4").arg(levelID, QString::number(model->rowCount()),
+                                                               QString::number(countAdditions), QString::number(countDeletions)));
         ui->editCompareCorporaMessages->appendPlainText(message);
         QApplication::processEvents();
     }
-    QString filename = QString("%1_%2.xlsx").arg(communicationID).arg(speakerID);
+    QString filename = QString("%1_%2.xlsx").arg(communicationID, speakerID);
     xlsx.saveAs(d->outputPath + filename);
 }
 
@@ -568,13 +569,13 @@ void CompareAnnotationsWidget::exportDiffTableCombinedExcel(const QString &commu
     }
 
     // Print counts
-    QString message = QString("%1\t%2\t%3\t").arg(communicationID).arg(annotationID).arg(speakerID);
+    QString message = QString("%1\t%2\t%3\t").arg(communicationID, annotationID, speakerID);
     foreach (QString levelID, levelIDs) message = message.append(QString::number(countDifferences[levelID])).append("\t");
     if (!message.isEmpty()) message.chop(1);
     ui->editCompareCorporaMessages->appendPlainText(message);
     QApplication::processEvents();
 
-    QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID).arg(speakerID);
+    QString filename = QString("Combined_%1_%2.xlsx").arg(communicationID, speakerID);
     xlsx.saveAs(d->outputPath + filename);
 }
 

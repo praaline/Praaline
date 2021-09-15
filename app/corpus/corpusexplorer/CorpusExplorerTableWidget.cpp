@@ -179,8 +179,8 @@ void CorpusExplorerTableWidget::refreshModel()
         d->tableView->tableView()->setDefaultFilterType(0, QTextFilter::Type);
         connect(d->tableView->tableView()->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
                 this, SLOT(resultChanged(int,int)));
-        connect(d->tableView->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection, QItemSelection)),
-                this, SLOT(selectionChanged(QItemSelection, QItemSelection)));
+        connect(d->tableView->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+                this, SLOT(selectionChanged(QItemSelection,QItemSelection)));
 
         if (d->model) delete d->model;
         d->model = newModel;

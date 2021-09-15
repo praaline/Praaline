@@ -53,10 +53,10 @@ TranscriberWidget::TranscriberWidget(QWidget *parent) :
     // Create corpus items selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
     ui->gridLayoutTopTab->addWidget(d->corpusItemSelector);
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)),
-            this, SLOT(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)),
-            this, SLOT(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)));
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusCommunication,
+            this, &TranscriberWidget::selectedCorpusCommunication);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusRecording,
+            this, &TranscriberWidget::selectedCorpusRecording);
 
     // Prepare simple visualiser
     QGridLayout *layout = new QGridLayout;
@@ -106,8 +106,8 @@ void TranscriberWidget::newSession()
     closeSession();
     createDocument();
     Pane *pane = m_paneStack->addPane();
-    connect(pane, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(pane, SIGNAL(contextHelpChanged(QString)),
+            this, SLOT(contextHelpChanged(QString)));
     if (!m_timeRulerLayer) {
         m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
     }

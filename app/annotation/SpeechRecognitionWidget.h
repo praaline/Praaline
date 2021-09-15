@@ -4,7 +4,6 @@
 #include <QMainWindow>
 
 #include "PraalineCore/Corpus/Corpus.h"
-using namespace Praaline::Core;
 
 namespace Ui {
 class SpeechRecognitionWidget;
@@ -21,11 +20,11 @@ public:
     ~SpeechRecognitionWidget();
 
 protected slots:
-    void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>);
-    void selectionChanged(QPointer<Corpus>, QPointer<CorpusCommunication>,
-                          QPointer<CorpusRecording>, QPointer<CorpusAnnotation>);
+    void selectedCorpusCommunication(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>);
+    void selectedCorpusRecording(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusAnnotation>);
+    void selectionChanged(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>,
+                          QPointer<Praaline::Core::CorpusRecording>, QPointer<Praaline::Core::CorpusAnnotation>);
     void moduleTabNew();
     void moduleTabCloseRequested(int);
 

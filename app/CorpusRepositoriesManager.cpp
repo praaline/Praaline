@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QString>
 #include <QList>
+#include <QMap>
 #include <QPointer>
 
 #include "PraalineCore/Corpus/Corpus.h"
@@ -67,7 +68,7 @@ void CorpusRepositoriesManager::removeCorpusRepository(const QString &repository
     if (d->repositories.contains(repositoryID)) {
         d->repositories.remove(repositoryID);
         // Delete and remove open corpora
-        foreach (QPointer<Corpus> corpus, d->corpora.values()) {
+        foreach (QPointer<Corpus> corpus, d->corpora) {
             if (!corpus) continue;
             if (!corpus->repository()) continue;
             if (corpus->repository()->ID() == repositoryID) {
@@ -78,8 +79,10 @@ void CorpusRepositoriesManager::removeCorpusRepository(const QString &repository
         emit corpusRepositoryRemoved(repositoryID);
         // Select next repository
         if (d->activeCorpusRepositoryID == repositoryID) {
-            if (d->repositories.isEmpty()) d->activeCorpusRepositoryID = "";
-            else d->activeCorpusRepositoryID = d->repositories.keys().first();
+            if (d->repositories.isEmpty())
+                d->activeCorpusRepositoryID = "";
+            else
+                d->activeCorpusRepositoryID = d->repositories.firstKey();
             emit activeCorpusRepositoryChanged(d->activeCorpusRepositoryID);
         }
     }
@@ -113,7 +116,7 @@ CorpusObserver *CorpusRepositoriesManager::activeCorpusObserver()
 
 bool CorpusRepositoriesManager::isRepositoryDefinitionAlreadyOpen(const QString &filenameDefinition)
 {
-    foreach (QPointer<CorpusRepository> repository, d->repositories.values()) {
+    foreach (QPointer<CorpusRepository> repository, d->repositories) {
         if (repository->definition().filenameDefinition == filenameDefinition)
             return true;
     }
@@ -123,7 +126,7 @@ bool CorpusRepositoriesManager::isRepositoryDefinitionAlreadyOpen(const QString 
 QStringList CorpusRepositoriesManager::listAvailableCorpusIDs(const QString repositoryID)
 {
     QStringList list;
-    foreach (QPointer<CorpusRepository> repository, d->repositories.values()) {
+    foreach (QPointer<CorpusRepository> repository, d->repositories) {
         if (!repository) continue;
         if ((!repositoryID.isEmpty()) && (repository->ID() != repositoryID)) continue;
         foreach (CorpusObjectInfo item, repository->listCorporaInfo()) {

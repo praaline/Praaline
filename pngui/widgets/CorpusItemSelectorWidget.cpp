@@ -61,10 +61,10 @@ CorpusItemSelectorWidget::CorpusItemSelectorWidget(QWidget *parent) :
     d->observerWidgetCorpusItems->setRefreshMode(ObserverWidget::RefreshModeShowTree);
     d->observerWidgetCorpusItems->setGlobalMetaType("Corpus Tree Meta Type");
     d->observerWidgetCorpusItems->setAcceptDrops(false);
-    connect(d->observerWidgetCorpusItems, SIGNAL(doubleClickRequest(QObject*, Observer*)),
-            this, SLOT(doubleClickRequest(QObject*, Observer*)));
-    connect(d->observerWidgetCorpusItems, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
-            this, SLOT(selectionChanged(QList<QObject*>)));
+    connect(d->observerWidgetCorpusItems, &ObserverWidget::doubleClickRequest,
+            this, &CorpusItemSelectorWidget::doubleClickRequest);
+    connect(d->observerWidgetCorpusItems, &ObserverWidget::selectedObjectsChanged,
+            this, &CorpusItemSelectorWidget::selectionChanged);
     d->observerWidgetCorpusItems->setObserverContext(d->corporaTopLevelNode);
     d->observerWidgetCorpusItems->layout()->setMargin(0);
     d->observerWidgetCorpusItems->initialize();

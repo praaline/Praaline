@@ -129,7 +129,7 @@ void CorpusModeWidget::setupActions()
     d->recentFilesMenu = ACTION_MANAGER->createMenu(tr("Open &Recent Corpus Repository"), existed);
     if (!existed) menu_file->addMenu(d->recentFilesMenu, qti_action_FILE_SETTINGS);
     setupRecentFilesMenu();
-    connect(d->recentFiles, SIGNAL(recentChanged()), this, SLOT(setupRecentFilesMenu()));
+    connect(d->recentFiles, &RecentFiles::recentChanged, this, &CorpusModeWidget::setupRecentFilesMenu);
 
     menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
