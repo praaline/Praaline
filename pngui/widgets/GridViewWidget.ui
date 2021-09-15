@@ -87,14 +87,8 @@
            <string>Copy to Clipboard</string>
           </property>
           <property name="icon">
-           <iconset resource="../../app/praaline.qrc">
+           <iconset>
             <normaloff>:/icons/actions/edit_paste_24.png</normaloff>:/icons/actions/edit_paste_24.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -104,14 +98,8 @@
            <string>Export table to tab-separated file...</string>
           </property>
           <property name="icon">
-           <iconset resource="../../app/praaline.qrc">
+           <iconset>
             <normaloff>:/icons/actions/table_export_24.png</normaloff>:/icons/actions/table_export_24.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -121,14 +109,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset resource="../grid/qaiv.qrc">
+           <iconset>
             <normaloff>:/qaiv/view/single</normaloff>:/qaiv/view/single</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -138,14 +120,8 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset resource="../grid/qaiv.qrc">
+           <iconset>
             <normaloff>:/qaiv/pin/enabled</normaloff>:/qaiv/pin/enabled</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
           <property name="checkable">
            <bool>false</bool>
@@ -158,14 +134,8 @@
            <string>Copy to Clipboard</string>
           </property>
           <property name="icon">
-           <iconset resource="../../app/praaline.qrc">
+           <iconset>
             <normaloff>:/icons/actions/edit_copy_24.png</normaloff>:/icons/actions/edit_copy_24.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -175,14 +145,8 @@
            <string>Find in table...</string>
           </property>
           <property name="icon">
-           <iconset resource="../../app/praaline.qrc">
+           <iconset>
             <normaloff>:/icons/actions/filter_24.png</normaloff>:/icons/actions/filter_24.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -192,14 +156,8 @@
            <string>Find in table...</string>
           </property>
           <property name="icon">
-           <iconset resource="../../app/praaline.qrc">
+           <iconset>
             <normaloff>:/icons/actions/edit_find_24.png</normaloff>:/icons/actions/edit_find_24.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>24</width>
-            <height>24</height>
-           </size>
           </property>
          </widget>
         </item>
@@ -224,7 +182,7 @@
   </layout>
   <action name="singleViewAction">
    <property name="icon">
-    <iconset resource="../grid/qaiv.qrc">
+    <iconset>
      <normaloff>:/qaiv/view/single</normaloff>:/qaiv/view/single</iconset>
    </property>
    <property name="text">
@@ -233,7 +191,7 @@
   </action>
   <action name="horizontalSplitAction">
    <property name="icon">
-    <iconset resource="../grid/qaiv.qrc">
+    <iconset>
      <normaloff>:/qaiv/view/splitted</normaloff>:/qaiv/view/splitted</iconset>
    </property>
    <property name="text">
@@ -248,9 +206,6 @@
    <header>grid/QAdvancedTableView.h</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../../app/praaline.qrc"/>
-  <include location="../grid/qaiv.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

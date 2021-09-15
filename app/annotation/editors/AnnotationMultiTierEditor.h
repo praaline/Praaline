@@ -31,6 +31,7 @@ protected slots:
     void timelineSelectedRowsChanged(QList<int> rows);
     void timelineCurrentIndexChanged(const QModelIndex &current, const QModelIndex &previous);
     void toggleOrientation();
+    void toggleSecondaryEditor();
     void toggleTimelineConfig();
 
     void mediaPositionChanged(qint64 position);

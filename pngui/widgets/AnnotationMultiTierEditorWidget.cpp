@@ -46,6 +46,7 @@ AnnotationMultiTierEditorWidget::AnnotationMultiTierEditorWidget(QWidget *parent
 
 AnnotationMultiTierEditorWidget::~AnnotationMultiTierEditorWidget()
 {
+    clearModel();
     if (d->model) delete d->model;
     delete d;
 }

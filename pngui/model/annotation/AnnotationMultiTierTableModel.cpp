@@ -145,7 +145,9 @@ QVariant AnnotationMultiTierTableModel::dataCell(AnnotationTierGroup *spk_tiers,
                                                  const QString &levelID, const QString &attributeID) const
 {
     SequenceTier *tier_seq = spk_tiers->getSequenceTierByName(levelID);
-    if (tier_seq) return "sequence";
+    if (tier_seq) {
+        return tier_seq->sequenceTextForBaseElement(td.index);
+    }
 
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
     if (!tier) return QVariant();

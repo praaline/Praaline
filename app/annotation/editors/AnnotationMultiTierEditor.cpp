@@ -57,9 +57,12 @@ struct AnnotationMultiTierEditorData {
     QAction *actionToggleOrientation;
     QAction *actionRemoveSorting;
     QAction *actionToggleTimelineConfig;
+    QAction *actionToggleSecondaryEditor;
     // Configuration: levels/attributes + speakers
     QDockWidget *dockTimelineConfig;
     TimelineEditorConfigWidget *widgetTimelineConfig;
+    // Secondary editors
+    QTabWidget *tabSecondaryEditors;
     // Waiting spinner
     WaitingSpinnerWidget* waitingSpinner;
     // Media player
@@ -136,16 +139,17 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     this->addToolBar(d->toolbarMain);
     this->addToolBar(d->toolbarEditor);
     // ...annotation widgets in tabs
-    QTabWidget *tabAnnotationWidgets = new QTabWidget(this);
-    tabAnnotationWidgets->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-    tabAnnotationWidgets->addTab(d->annotationWidgetForDisfluencies, "Disfluencies");
-    tabAnnotationWidgets->addTab(d->annotationWidgetForSequences, "Sequences");
+    d->tabSecondaryEditors = new QTabWidget(this);
+    d->tabSecondaryEditors->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    d->tabSecondaryEditors->addTab(d->annotationWidgetForSequences, "Sequences");
+    d->tabSecondaryEditors->addTab(d->annotationWidgetForDisfluencies, "Disfluencies");
     // ...main layout
-    QWidget *mainContents = new QWidget(this);
+    QSplitter *mainContents = new QSplitter(this);
+    mainContents->setOrientation(Qt::Vertical);
     QGridLayout *layout = new QGridLayout(mainContents);
     layout->setMargin(0);
-    layout->addWidget(tabAnnotationWidgets);
     layout->addWidget(d->editor);
+    layout->addWidget(d->tabSecondaryEditors);
     mainContents->setLayout(layout);
     this->setCentralWidget(mainContents);
     // Actions
@@ -221,7 +225,13 @@ void AnnotationMultiTierEditor::setupActions()
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionRemoveSorting);
 
-    d->actionToggleTimelineConfig = new QAction(QIcon(":/icons/actions/toggle_config.png"), tr("Editor Options"), this);
+    d->actionToggleSecondaryEditor = new QAction(QIcon(":/icons/actions/toggle_secondary_editor.png"), tr("Secondary Editor"), this);
+    connect(d->actionToggleSecondaryEditor, SIGNAL(triggered()), this, SLOT(toggleSecondaryEditor()));
+    command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleSecondaryEditor", d->actionToggleSecondaryEditor, context);
+    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
+    d->toolbarEditor->addAction(d->actionToggleSecondaryEditor);
+
+    d->actionToggleTimelineConfig = new QAction(QIcon(":/icons/actions/toggle_config.png"), tr("Options"), this);
     connect(d->actionToggleTimelineConfig, SIGNAL(triggered()), this, SLOT(toggleTimelineConfig()));
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleTimelineConfig", d->actionToggleTimelineConfig, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
@@ -359,6 +369,11 @@ void AnnotationMultiTierEditor::updateAnnotationControls()
 void AnnotationMultiTierEditor::toggleOrientation()
 {
     d->editor->toggleOrientation();
+}
+
+void AnnotationMultiTierEditor::toggleSecondaryEditor()
+{
+    d->tabSecondaryEditors->setVisible(!d->tabSecondaryEditors->isVisible());
 }
 
 void AnnotationMultiTierEditor::toggleTimelineConfig()

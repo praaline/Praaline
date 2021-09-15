@@ -14,6 +14,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
+#include "pngui/widgets/GridViewWidget.h"
 
 struct AnnotationWidgetSequencesData {
     CorpusRepository *repository;
@@ -36,6 +37,9 @@ AnnotationWidgetSequences::AnnotationWidgetSequences(QWidget *parent) :
     connect(ui->comboBoxAnnotationLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelChanged(int)));
     // Initial state: nothing selected
     ui->cmdAddSequence->setEnabled(false);
+    // Make the sequences grid-view a little tighter
+    ui->gridViewSequences->tableView()->verticalHeader()->setDefaultSectionSize(20);
+    ui->gridViewSequences->tableView()->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
 }
 
 AnnotationWidgetSequences::~AnnotationWidgetSequences()
@@ -100,12 +104,13 @@ void AnnotationWidgetSequences::annotationLevelChanged(int index)
     }
     // Update the sequences table model
     if (tiernameSequences.isEmpty()) {
-        ui->tableViewSequences->setModel(nullptr);
+        ui->gridViewSequences->tableView()->setModel(nullptr);
         return;
     }
     if (!d->model) return;
     if (!d->model->sequenceModel(tiernameSequences)) return;
-    ui->tableViewSequences->setModel(d->model->sequenceModel(tiernameSequences));
+    ui->gridViewSequences->tableView()->setModel(d->model->sequenceModel(tiernameSequences));
+    ui->gridViewSequences->tableView()->resizeColumnsToContents();
 }
 
 void AnnotationWidgetSequences::setSelection(QList<int> rowsSelected)
@@ -144,7 +149,7 @@ void AnnotationWidgetSequences::on_cmdAddSequence_clicked()
 // private slot
 void AnnotationWidgetSequences::on_cmdDeleteSequence_clicked()
 {
-    QModelIndexList selectedIndexes = ui->tableViewSequences->selectionModel()->selectedIndexes();
+    QModelIndexList selectedIndexes = ui->gridViewSequences->tableView()->selectionModel()->selectedIndexes();
     QList<int> rows;
     foreach (QModelIndex index, selectedIndexes)
         rows << index.row();
