@@ -245,6 +245,7 @@ bool AnnotationStructureTreeModel::setData(const QModelIndex &index, const QVari
         result = true; break;
     case 1: result = item->setProperty("name", value); break;
     case 2: result = item->setProperty("description", value); break;
+    case 6: result = item->setProperty("nameValueList", value); break;
     default: result = false; break; // the rest of the fields are not editable
     }
 

@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>AnnotationControlsDisfluencies</class>
- <widget class="QWidget" name="AnnotationControlsDisfluencies">
+ <class>AnnotationWidgetDisfluencies</class>
+ <widget class="QWidget" name="AnnotationWidgetDisfluencies">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
-    <height>132</height>
+    <width>1201</width>
+    <height>149</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>

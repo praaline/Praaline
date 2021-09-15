@@ -174,10 +174,12 @@ void AnnotationStructureEditor::activeCorpusRepositoryChanged(const QString &rep
     Q_UNUSED(repositoryID);
     QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
     if (!repository) {
-        d->treeviewAnnotationStructure->setModel(0);
+        d->treeviewAnnotationStructure->setModel(nullptr);
         if (d->treemodelAnnotationStructure) delete d->treemodelAnnotationStructure;
+        d->editorNVList->rebind(nullptr);
     } else {
         refreshAnnotationStructureTreeView(repository->annotationStructure());
+        d->editorNVList->rebind(repository->annotations());
     }
 }
 
@@ -236,7 +238,7 @@ void AnnotationStructureEditor::addAnnotationStructureAttribute()
     if (!level) return;
 
     // Ask for attribute ID and add it
-    AddAttributeDialog *dialog = new AddAttributeDialog(this);
+    AddAttributeDialog *dialog = new AddAttributeDialog(false, this);
     dialog->exec();
     if (dialog->result() == QDialog::Rejected) return;
     QString attributeID = dialog->attributeID();

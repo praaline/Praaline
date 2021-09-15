@@ -2,6 +2,7 @@
 #define ANNOTATIONTIERMODEL_H
 
 #include <QObject>
+#include <QString>
 #include <QPointer>
 #include <QAbstractTableModel>
 #include <QPair>
@@ -13,6 +14,7 @@
 #include "PraalineCore/Base/RealTime.h"
 #include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "TimelineTableModelBase.h"
+#include "SequencesTableModel.h"
 
 struct AnnotationTierModelData;
 
@@ -42,10 +44,20 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex &index, const QVariant &value, int role=Qt::EditRole) override;
 
+    // Extra data that this model provides to clients for convenience
     Qt::Orientation orientation() const;
     void setOrientation(Qt::Orientation);
     QModelIndex modelIndexAtTime(const RealTime &time) const override;
+    QString tiernameMinimal() const;
+    QList<QPair<QString, QString>> displayedAttributes() const;
 
+    // Sequences
+    QList<QString> tiernamesSequences() const;
+    SequencesTableModel *sequenceModel(const QString &tiernameSequence);
+    bool addSequence(const QString &tiernameSequences, const QModelIndex &indexFrom, const QModelIndex &indexTo,
+                     const QString &text, const QHash<QString, QVariant> &attributes = QHash<QString, QVariant>());
+
+    // Split and merge minimal tier intervals
     bool splitAnnotations(const QModelIndex &index, RealTime splitMinimalAt = RealTime());
     bool splitAnnotations(int timelineIndex, int dataIndex, RealTime splitMinimalAt = RealTime());
     bool mergeAnnotations(const QModelIndexList &indices);

@@ -149,14 +149,23 @@ void NameValueListEditor::setupActions()
 
 void NameValueListEditor::rebind(NameValueListDatastore *datastore)
 {
+    // Check if we are actually binding to a new datastore of name-value lists
+    if (d->datastore == datastore) return;
+    // Clear the data that was displayed from the previous model
+    d->comboboxLists->clear();
+    d->editListName->clear();
+    d->textListDescription->clear();
+    d->editNewItemValue->clear();
+    d->editNewItemDisplayString->clear();
+    // Update internal state
     d->datastore = datastore;
     if (!datastore) {
-        d->tableviewCurrentList->setModel(Q_NULLPTR);
-        if (d->model) { delete d->model; d->model = 0; }
-        d->comboboxLists->clear();
+        // Unbound from any datastore (empty state)
+        d->tableviewCurrentList->setModel(nullptr);
+        if (d->model) { delete d->model; d->model = nullptr; }
     }
     else {
-        d->comboboxLists->clear();
+        // Binding to a new datastore: display its name-value lists in the selection combo
         QStringList listIDs = datastore->getAllNameValueListIDs();
         d->comboboxLists->addItems(listIDs);
     }

@@ -6,18 +6,24 @@
 #include <QList>
 
 #include "PraalineCore/Annotation/AnnotationTierGroup.h"
+#include "PraalineCore/Annotation/AnnotationTier.h"
 #include "PraalineCore/Annotation/IntervalTier.h"
+#include "PraalineCore/Annotation/SequenceTier.h"
 using namespace Praaline::Core;
 
 #include "AnnotationMultiTierTableModel.h"
+#include "SequencesTableModel.h"
 
 struct AnnotationTierModelData {
-    AnnotationTierModelData() : orientation(Qt::Vertical) {}
-
     Qt::Orientation orientation;
-    SpeakerAnnotationTierGroupMap tiers;  // Speaker ID, corresponding tiers
+    SpeakerAnnotationTierGroupMap tiers;            // Speaker ID, corresponding tiers
     QString tiernameMinimal;
-    QList<QPair<QString, QString> > attributes;           // Level ID, Attribute ID
+    QList<QPair<QString, QString> > attributes;     // Level ID, Attribute ID
+    // Children models for sequences: one for each sequence tier given
+    QMap<QString, SequencesTableModel *> sequencesModels;
+    // Constructor
+    AnnotationTierModelData() : orientation(Qt::Vertical)
+    {}
 };
 
 AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(SpeakerAnnotationTierGroupMap &tiers,
@@ -30,6 +36,26 @@ AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(SpeakerAnnotationTi
     d->tiernameMinimal = tiernameMinimal;
     d->attributes = attributes;
     calculateTimeline(d->tiers, d->tiernameMinimal);
+    // Create child model for sequences
+    // Find the names of sequence tiers
+    QList<QString> sequenceTierNames;
+    foreach (AnnotationTierGroup *tiersSpk, tiers) {
+        foreach (AnnotationTier *tier, tiersSpk->tiers()) {
+            if (tier->tierType() == AnnotationTier::TierType_Sequences)
+                if (!sequenceTierNames.contains(tier->name())) sequenceTierNames << tier->name();
+        }
+    }
+    // For each of the sequence tiers, create the corresponding child model
+    foreach (const QString &sequenceTierName, sequenceTierNames) {
+        // Find the attributes requested for this sequence tier
+        QList<QString> sequenceAttributes;
+        for (const QPair<QString, QString> &pairLevelAttribute : attributes) {
+            if ((pairLevelAttribute.first == sequenceTierName) && (!pairLevelAttribute.second.isEmpty()))
+                sequenceAttributes << pairLevelAttribute.second;
+        }
+        // Create the child model
+        d->sequencesModels.insert(sequenceTierName, new SequencesTableModel(tiers, sequenceTierName, sequenceAttributes, this));
+    }
 }
 
 AnnotationMultiTierTableModel::~AnnotationMultiTierTableModel()
@@ -41,6 +67,16 @@ QModelIndex AnnotationMultiTierTableModel::parent(const QModelIndex &index) cons
 {
     Q_UNUSED(index);
     return QModelIndex();
+}
+
+QString AnnotationMultiTierTableModel::tiernameMinimal() const
+{
+    return d->tiernameMinimal;
+}
+
+QList<QPair<QString, QString>> AnnotationMultiTierTableModel::displayedAttributes() const
+{
+    return d->attributes;
 }
 
 int AnnotationMultiTierTableModel::rowCount(const QModelIndex &parent) const
@@ -91,7 +127,7 @@ QVariant AnnotationMultiTierTableModel::headerData(int section, Qt::Orientation 
             else if (attributeID == "_context")
                 return levelID + " context";
             else if (attributeID.startsWith("_group:"))
-                return QString("(%1)%2").arg(attributeID.section(":", 1, 1)).arg(levelID);
+                return QString("(%1)%2").arg(attributeID.section(":", 1, 1), levelID);
             return attributeID;
         }
         else
@@ -108,6 +144,9 @@ QVariant AnnotationMultiTierTableModel::headerData(int section, Qt::Orientation 
 QVariant AnnotationMultiTierTableModel::dataCell(AnnotationTierGroup *spk_tiers, TimelineData &td,
                                                  const QString &levelID, const QString &attributeID) const
 {
+    SequenceTier *tier_seq = spk_tiers->getSequenceTierByName(levelID);
+    if (tier_seq) return "sequence";
+
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
     if (!tier) return QVariant();
     int intvID = tier->intervalIndexAtTime(td.tCenter);
@@ -135,7 +174,7 @@ QVariant AnnotationMultiTierTableModel::dataCell(AnnotationTierGroup *spk_tiers,
         else if (attributeID.startsWith("_group_contains:")) intervals = tier_groupped->getIntervalsContainedIn(tier->interval(intvID));
         QString s;
         foreach (Interval *intv, intervals) s.append(intv->text()).append(" ");
-        return QString("(%1)%2").arg(s.trimmed()).arg(tier->interval(intvID)->text());
+        return QString("(%1)%2").arg(s.trimmed(), tier->interval(intvID)->text());
     }
     else if (attributeID.startsWith("_concat:") || attributeID.startsWith("_concat_contains:")) {
         QString levelIDgrouped = attributeID.section(":", 1, 1);
@@ -317,12 +356,12 @@ bool AnnotationMultiTierTableModel::setData(const QModelIndex &index, const QVar
         if (!intv) return false;
         if (d->attributes.at(attributeIndex).second.isEmpty()) {
             intv->setText(value.toString());
-            emit(dataChanged(index, index));
+            emit dataChanged(index, index);
             return true;
         }
         else {
             intv->setAttribute(d->attributes.at(attributeIndex).second, value);
-            emit(dataChanged(index, index));
+            emit dataChanged(index, index);
             return true;
         }
     }
@@ -352,6 +391,10 @@ QModelIndex AnnotationMultiTierTableModel::modelIndexAtTime(const RealTime &time
     // else
     return TimelineTableModelBase::index(0, timelineIndex);
 }
+
+// ========================================================================================================================================
+// Split and Merge intervals on the minimal tier
+// ========================================================================================================================================
 
 bool AnnotationMultiTierTableModel::splitAnnotations(const QModelIndex &index, RealTime splitMinimalAt)
 {
@@ -537,4 +580,45 @@ bool AnnotationMultiTierTableModel::mergeAnnotations(int dataIndex, const QList<
     }
     return true;
 }
+
+// ========================================================================================================================================
+// Sequences
+// ========================================================================================================================================
+
+QList<QString> AnnotationMultiTierTableModel::tiernamesSequences() const
+{
+    return d->sequencesModels.keys();
+}
+
+SequencesTableModel *AnnotationMultiTierTableModel::sequenceModel(const QString &tiernameSequence)
+{
+    return d->sequencesModels.value(tiernameSequence, nullptr);
+}
+
+bool AnnotationMultiTierTableModel::addSequence(const QString &tiernameSequences, const QModelIndex &indexFrom, const QModelIndex &indexTo,
+                                                const QString &text, const QHash<QString, QVariant> &attributes)
+{
+    if (!d->sequencesModels.contains(tiernameSequences)) return false;
+    if (!indexFrom.isValid()) return false;
+    if (!indexTo.isValid()) return false;
+
+    int timelineIndexFrom(-1), timelineIndexTo(-1);
+    if (d->orientation == Qt::Vertical) {
+        timelineIndexFrom = indexFrom.row();
+        timelineIndexTo   = indexTo.row();
+    } else {
+        timelineIndexFrom = indexFrom.column();
+        timelineIndexTo   = indexTo.column();
+    }
+    int minimalTierIndexFrom = m_timeline[timelineIndexFrom].index;
+    int minimalTierIndexTo   = m_timeline[timelineIndexTo].index;
+    if (m_timeline[timelineIndexFrom].speakerID != m_timeline[timelineIndexTo].speakerID)
+        return false;
+    QString speakerID = m_timeline[timelineIndexFrom].speakerID;
+    return d->sequencesModels[tiernameSequences]->addSequence(speakerID,
+                                                              new Sequence(minimalTierIndexFrom, minimalTierIndexTo, text, attributes));
+}
+
+
+
 

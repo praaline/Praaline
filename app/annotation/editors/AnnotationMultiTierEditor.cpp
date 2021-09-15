@@ -25,19 +25,24 @@ using namespace Praaline::Core;
 #include "pngui/widgets/AnnotationMultiTierEditorWidget.h"
 #include "pngui/widgets/WaitingSpinnerWidget.h"
 #include "pngui/widgets/TimelineEditorConfigWidget.h"
-#include "../dis/AnnotationControlsDisfluencies.h"
+
+// Annotation widgets: they add functionality to the editor and are activated depending on the currently edited level/attribute
+#include "../widgets/AnnotationWidgetDisfluencies.h"
+#include "../widgets/AnnotationWidgetSequences.h"
 
 #include "AnnotationMultiTierEditor.h"
 
 
 struct AnnotationMultiTierEditorData {
     AnnotationMultiTierEditorData() :
-        annotationControls(0), editor(0),
+        annotationWidgetForDisfluencies(nullptr), annotationWidgetForSequences(nullptr), editor(nullptr),
         loopInsideInterval(false), tPauseAt_msec(0),
         autoSave(false)
     {}
 
-    AnnotationControlsDisfluencies *annotationControls;
+    // Additional annotation widgets
+    AnnotationWidgetDisfluencies *annotationWidgetForDisfluencies;
+    AnnotationWidgetSequences *annotationWidgetForSequences;
     // Main toolbar
     QToolBar *toolbarMain;
     QAction *actionSave;
@@ -102,8 +107,10 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     d->dockTimelineConfig->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     d->dockTimelineConfig->setWidget(d->widgetTimelineConfig);
     addDockWidget(Qt::RightDockWidgetArea, d->dockTimelineConfig);
-    // Annotation controls
-    d->annotationControls = new AnnotationControlsDisfluencies(this);
+    // Annotation widgets
+    d->annotationWidgetForDisfluencies = new AnnotationWidgetDisfluencies(this);
+    d->annotationWidgetForSequences = new AnnotationWidgetSequences(this);
+    // Annotation widgets need to be informed about changes to the selected row/column
     connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
             this, SLOT(timelineSelectedRowsChanged(QList<int>)));
     connect(d->editor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
@@ -123,16 +130,24 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     d->waitingSpinner->setInnerRadius(10);
     d->waitingSpinner->setRevolutionsPerSecond(1);
     d->waitingSpinner->setColor(QColor(81, 4, 71));
-    // Layout
+    // Layout: toolbar at the top, followed by a tab widget containing the annotation widgets
+    // and editor grid as the main control.
+    // ...toolbars
     this->addToolBar(d->toolbarMain);
     this->addToolBar(d->toolbarEditor);
-    QWidget *contents = new QWidget(this);
-    QGridLayout *layout = new QGridLayout(contents);
+    // ...annotation widgets in tabs
+    QTabWidget *tabAnnotationWidgets = new QTabWidget(this);
+    tabAnnotationWidgets->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    tabAnnotationWidgets->addTab(d->annotationWidgetForDisfluencies, "Disfluencies");
+    tabAnnotationWidgets->addTab(d->annotationWidgetForSequences, "Sequences");
+    // ...main layout
+    QWidget *mainContents = new QWidget(this);
+    QGridLayout *layout = new QGridLayout(mainContents);
     layout->setMargin(0);
-    layout->addWidget(d->annotationControls);
+    layout->addWidget(tabAnnotationWidgets);
     layout->addWidget(d->editor);
-    contents->setLayout(layout);
-    this->setCentralWidget(contents);
+    mainContents->setLayout(layout);
+    this->setCentralWidget(mainContents);
     // Actions
     setupActions();
     // Shortcuts
@@ -335,7 +350,9 @@ void AnnotationMultiTierEditor::updateAnnotationControls()
 {
     // Annotation controls
     if (d->editor->model()) {
-        d->annotationControls->setModel(d->editor->model(), 3, 5, 9);
+        d->annotationWidgetForDisfluencies->setModel(d->editor->model());
+        if (d->currentCorpus)
+            d->annotationWidgetForSequences->setCorpusRepositoryAndModel(d->currentCorpus->repository(), d->editor->model());
     }
 }
 
@@ -351,8 +368,14 @@ void AnnotationMultiTierEditor::toggleTimelineConfig()
 
 void AnnotationMultiTierEditor::timelineSelectedRowsChanged(QList<int> rows)
 {
-    if (d->annotationControls)
-        d->annotationControls->setSelection(rows);
+    // Inform the annotation controls about the change in selection
+    if (d->annotationWidgetForDisfluencies) {
+        d->annotationWidgetForDisfluencies->setSelection(rows);
+    }
+    if (d->annotationWidgetForSequences) {
+        d->annotationWidgetForSequences->setSelection(rows);
+    }
+    // Media player
     if (d->editor->model() && !rows.isEmpty()) {
         d->currentRow = rows.first();
         d->tMin_msec_selected = d->editor->model()->data(d->editor->model()->index(rows.first(), 1), Qt::DisplayRole).toDouble() * 1000;
@@ -421,6 +444,10 @@ void AnnotationMultiTierEditor::mediaPositionChanged(qint64 position)
     }
 }
 
+// ********************************************************************************************************************
+// Media Player controls
+// ********************************************************************************************************************
+
 void AnnotationMultiTierEditor::mediaPlay()
 {
     if ((d->tMin_msec_selected > 0) && (d->tPauseAt_msec == 0)) {
@@ -451,6 +478,10 @@ void AnnotationMultiTierEditor::mediaStop()
     d->actionPause->setShortcut(QKeySequence());
     d->actionPlay->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 }
+
+// ********************************************************************************************************************
+// Interval Editing: join, split, moving boundaries
+// ********************************************************************************************************************
 
 void AnnotationMultiTierEditor::intervalJoin()
 {

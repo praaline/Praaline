@@ -146,10 +146,10 @@ bool PhonetisationTableModel::setUtterance(const QString &speakerID, int indexSt
     if (!tier_tokens) return false;
     if ((indexStart < 0) || (indexStart >= tier_tokens->count())) return false;
     if ((indexEnd < 0) || (indexEnd >= tier_tokens->count())) return false;
-    emit beginResetModel();
+    beginResetModel();
     d->speakerID = speakerID;
     d->indexStart = indexStart;
     d->indexEnd = indexEnd;
-    emit endResetModel();
+    endResetModel();
     return true;
 }

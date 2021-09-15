@@ -128,6 +128,9 @@ SOURCES += main.cpp \
     CorpusRepositoriesManager.cpp \
     annotation/AnnotationBrowserWidget.cpp \
     annotation/asr/PhonetiserWidget.cpp \
+    annotation/editors/TestEditor.cpp \
+    annotation/widgets/AnnotationWidgetDisfluencies.cpp \
+    annotation/widgets/AnnotationWidgetSequences.cpp \
     corpus/CorpusMode.cpp \
     corpus/CorpusModeWidget.cpp \
     corpus/CorpusDatabaseConnectionDialog.cpp \
@@ -183,8 +186,7 @@ SOURCES += main.cpp \
     annotation/calculate/AddCalculatedAnnotationDialog.cpp \
     annotation/calculate/ComposeTranscriptionDialog.cpp \
     annotation/calculate/CreateSequenceAnnotationDialog.cpp \
-    annotation/dis/AnnotationControlsDisfluencies.cpp \
-    annotation/dis/DisfluencyAnalyser.cpp \
+    annotation/widgets/DisfluencyAnalyser.cpp \
     annotation/asr/LanguageModelBuilderWidget.cpp \
     annotation/asr/LongSoundAlignerWidget.cpp \
     annotation/asr/ASRModuleVisualiserWidgetBase.cpp \
@@ -271,6 +273,9 @@ HEADERS  += \
     CorpusRepositoriesManager.h \
     annotation/AnnotationBrowserWidget.h \
     annotation/asr/PhonetiserWidget.h \
+    annotation/editors/TestEditor.h \
+    annotation/widgets/AnnotationWidgetDisfluencies.h \
+    annotation/widgets/AnnotationWidgetSequences.h \
     corpus/corpusexplorer/AddCorpusAnnotationDialog.h \
     corpus/corpusexplorer/AddCorpusCommunicationDialog.h \
     corpus/corpusexplorer/AddCorpusRecordingDialog.h \
@@ -311,8 +316,7 @@ HEADERS  += \
     corpus/utilities/DecodeFilenameToMetadataDialog.h \
     corpus/utilities/SplitCommunicationsDialog.h \
     annotation/asr/LanguageModelBuilderWidget.h \
-    annotation/dis/AnnotationControlsDisfluencies.h \
-    annotation/dis/DisfluencyAnalyser.h \
+    annotation/widgets/DisfluencyAnalyser.h \
     annotation/AnnotationMode.h \
     annotation/AnnotationModeWidget.h \
     annotation/AutomaticAnnotationWidget.h \
@@ -414,6 +418,9 @@ HEADERS  += \
 
 FORMS    += \
     MainWindow.ui \
+    annotation/editors/TestEditor.ui \
+    annotation/widgets/AnnotationWidgetDisfluencies.ui \
+    annotation/widgets/AnnotationWidgetSequences.ui \
     corpus/CorpusModeWidget.ui \
     corpus/CorpusDatabaseConnectionDialog.ui \
     corpus/CorpusRepositoryPropertiesDialog.ui \
@@ -450,7 +457,6 @@ FORMS    += \
     corpus/utilities/DecodeFilenameToMetadataDialog.ui \
     corpus/utilities/MergeCommunicationsDialog.ui \
     annotation/BatchEditorWidget.ui \
-    annotation/dis/AnnotationControlsDisfluencies.ui \
     annotation/AnnotationModeWidget.ui \
     annotation/AutomaticAnnotationWidget.ui \
     annotation/CompareAnnotationsWidget.ui \

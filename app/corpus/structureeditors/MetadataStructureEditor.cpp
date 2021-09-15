@@ -170,9 +170,9 @@ void MetadataStructureEditor::activeCorpusRepositoryChanged(const QString &repos
     Q_UNUSED(repositoryID);
     QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
     if (!repository) {
-        d->treeviewMetadataStructure->setModel(0);
+        d->treeviewMetadataStructure->setModel(nullptr);
         if (d->treemodelMetadataStructure) delete d->treemodelMetadataStructure;
-        d->editorNVList->rebind(0);
+        d->editorNVList->rebind(nullptr);
     } else {
         refreshMetadataStructureTreeView(repository->metadataStructure());
         d->editorNVList->rebind(repository->metadata());

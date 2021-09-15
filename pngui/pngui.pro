@@ -44,6 +44,7 @@ FORMS += \
     widgets/ImportDataPreviewWidget.ui
 
 HEADERS += \
+    model/annotation/SequencesTableModel.h \
     model/visualiser/AnnotationGridPointModel.h \
     model/visualiser/AnnotationGridModel.h \
     model/visualiser/ProsogramTonalSegmentModel.h \
@@ -234,6 +235,7 @@ HEADERS += \
     layer/ProZedLayer.h
 
 SOURCES += \
+    model/annotation/SequencesTableModel.cpp \
     model/visualiser/AnnotationGridModel.cpp \
     model/visualiser/ProsogramModel.cpp \
     model/visualiser/MovingAverageModel.cpp \
