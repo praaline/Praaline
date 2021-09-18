@@ -18,10 +18,10 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QAbstractFilter.h"
 
 #include "QAdvancedTableView.h"
-#include "QFilterGroup.h"
 
 class QAbstractFilterPrivate
 {
@@ -30,7 +30,6 @@ public:
     ~QAbstractFilterPrivate();
 
     QIcon icon;
-    QFilterGroup* group;
     QMap<QString,QVariant> properties;
 
     QAbstractFilter* f;
@@ -49,7 +48,6 @@ QAbstractFilterPrivate::~QAbstractFilterPrivate()
 QAbstractFilter::QAbstractFilter() :
     d(new QAbstractFilterPrivate(this))
 {
-//    cGroup = 0;
     d->properties["enabled"] = false;
     d->properties["type"] = QAbstractFilter::Type;
     d->properties["column"] = -1;
@@ -99,16 +97,16 @@ QColor QAbstractFilter::highlightColor() const
 
 bool QAbstractFilter::isEnabled() const
 {
-	if (!isValid()){
-		return  false;
-	}
+    if (!isValid()) {
+        return  false;
+    }
     return d->properties.value("enabled", false).toBool();
 }
 
 bool QAbstractFilter::isValid() const
 {
     return d->properties.value("type").toInt() != QAbstractFilter::Type &&
-            d->properties.value("column").toInt() > -1;
+           d->properties.value("column").toInt() > -1;
 }
 
 QMap<QString,QVariant> QAbstractFilter::properties() const
@@ -138,7 +136,7 @@ void QAbstractFilter::setHighlightColor(const QColor & color)
 
 void QAbstractFilter::setProperty(const QString & name, const QVariant & value)
 {
-	d->properties[name] = value;
+    d->properties[name] = value;
 }
 
 void QAbstractFilter::setRow(int row)

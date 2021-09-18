@@ -21,15 +21,12 @@
 #ifndef QGROUPINGPROXYMODEL_P_H
 #define QGROUPINGPROXYMODEL_P_H
 
-#include <QString>
-#include <QVariant>
-
 class QGroupingProxyModelGroup
 {
 public:
     QGroupingProxyModelGroup(QGroupingProxyModelGroup* parent = nullptr);
     QGroupingProxyModelGroup(int sourceModelRow, QGroupingProxyModelGroup* parent = nullptr);
-    QGroupingProxyModelGroup(const QString &name, QGroupingProxyModelGroup* parent = nullptr);
+    QGroupingProxyModelGroup(const QString & name, QGroupingProxyModelGroup* parent = nullptr);
     ~QGroupingProxyModelGroup();
 
     void addSourceModelRow(int row);

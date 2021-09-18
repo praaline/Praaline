@@ -18,27 +18,34 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QFilterEditorPopupWidget.h"
 
+/**
+ * Constructs a QFilterEditorPopupWidget with the given @p parent.
+ * Sets the window flags Qt::Popup and Qt::Window.
+ */
 QFilterEditorPopupWidget::QFilterEditorPopupWidget(QWidget *parent)
-	: QFrame(parent, Qt::Popup | Qt::Window)
+    : QFrame(parent, Qt::Popup | Qt::Window)
 {
 }
-
+/**
+ * Destroys the QFilterEditorPopupWidget.
+ */
 QFilterEditorPopupWidget::~QFilterEditorPopupWidget()
 {
 }
 
 bool QFilterEditorPopupWidget::cancelAndClose(QObject* obj, int key) const
 {
-	Q_UNUSED(obj);
-	Q_UNUSED(key);
-	return false;
+    Q_UNUSED(obj);
+    Q_UNUSED(key);
+    return false;
 }
 
 bool QFilterEditorPopupWidget::commitAndClose(QObject* obj, int key) const
 {
-	Q_UNUSED(obj);
-	Q_UNUSED(key);
-	return false;
+    Q_UNUSED(obj);
+    Q_UNUSED(key);
+    return false;
 }

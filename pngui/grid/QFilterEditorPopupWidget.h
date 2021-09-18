@@ -21,20 +21,23 @@
 #ifndef QFILTEREDITORPOPUPWIDGET_H
 #define QFILTEREDITORPOPUPWIDGET_H
 
+#include <QObject>
+#include <QWidget>
 #include <QFrame>
 
+//! The QFilterEditorPopupWidget class provides a base class for filter editor popup widgets.
 class QFilterEditorPopupWidget : public QFrame
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	QFilterEditorPopupWidget(QWidget *parent);
-	~QFilterEditorPopupWidget();
+    QFilterEditorPopupWidget(QWidget *parent);
+    ~QFilterEditorPopupWidget();
 
-	virtual bool cancelAndClose(QObject* obj, int key) const;
+    virtual bool cancelAndClose(QObject* obj, int key) const;
 
-	virtual bool commitAndClose(QObject* obj, int key) const;
+    virtual bool commitAndClose(QObject* obj, int key) const;
 private:
-	
+
 };
 
 #endif // QFILTEREDITORPOPUPWIDGET_H

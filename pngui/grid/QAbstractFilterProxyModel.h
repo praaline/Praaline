@@ -22,6 +22,7 @@
 #define QABSTRACTFILTERPROXYMODEL_H
 
 #include <QSortFilterProxyModel>
+
 #include "QAIVlib_global.h"
 
 class QAbstractFilterModel;
@@ -36,10 +37,10 @@ public:
     /**
       * Constructs a QAbstractFilterProxyModel with the given @p parent.
       */
-    QAbstractFilterProxyModel(QObject *parent = nullptr);
-	/**
-	 * Destroys the filter proxy model.
-	 */
+    QAbstractFilterProxyModel(QObject* parent = nullptr);
+    /**
+     * Destroys the filter proxy model.
+     */
     ~QAbstractFilterProxyModel();
     /**
       * Returns the filter model accosiated with proxy model.
@@ -47,28 +48,46 @@ public:
       */
     QAbstractFilterModel* filterModel() const;
 
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     /**
       * Sets the filter @p model providing the filter definitions.
       * @see filterModel()
       */
     void setFilterModel(QAbstractFilterModel* model);
-	/**
-	 * @reimp QSortFilterProxyModel
-	 */
-    virtual void setSourceModel(QAbstractItemModel* sourceModel);
+    /**
+     * @reimp QSortFilterProxyModel
+     */
+    virtual void setSourceModel(QAbstractItemModel* sourceModel) override;
+
+    virtual QModelIndex mapDeepFromSource(const QModelIndex &sourceIndex) const;
+
 signals:
+    /**
+      * This signal is emitted before the filter current filtering is invalidated.
+      * @see resultChanged()
+      */
+    void resultAboutToChange();
+    /**
+      * This signal is emitted after the filtering has been completed.
+      * @see resultChanged(), resultCountChanged()
+      */
+    void resultChanged();
     /**
       * This signal is emitted whenever the number of rows in the filtered result set has changed.
       */
     void resultCountChanged(int filteredRows, int unfilteredRows);
+
 protected:
     void emitResultCountChanged();
-    virtual bool filterAcceptsRow( int source_row, const QModelIndex & source_parent ) const = 0;
+    virtual bool filterAcceptsRow(int source_row, const QModelIndex & source_parent) const = 0;
+
 private slots:
     void updateResult();
+
 private:
     QAbstractFilterProxyModelPrivate* d;
+
+    QModelIndex getIndexForModel(const QAbstractItemModel* model, const QModelIndex &sourceIndex) const;
 };
 
 #endif // QABSTRACTFILTERPROXYMODEL_H

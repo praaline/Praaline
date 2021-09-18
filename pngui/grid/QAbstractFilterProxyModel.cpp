@@ -18,6 +18,7 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QAbstractFilterProxyModel.h"
 
 #include "QFilterModel.h"
@@ -28,16 +29,16 @@ public:
     QAbstractFilterProxyModelPrivate(QAbstractFilterProxyModel* pm);
     ~QAbstractFilterProxyModelPrivate();
 
+    QAbstractFilterProxyModel* m;
     QAbstractFilterModel* filterModel;
     int lastResultCount;
-    QAbstractFilterProxyModel* m;
 };
 
 
 QAbstractFilterProxyModelPrivate::QAbstractFilterProxyModelPrivate(QAbstractFilterProxyModel *pm)
 {
     m = pm;
-    filterModel = 0;
+    filterModel = nullptr;
     lastResultCount = -1;
 }
 
@@ -63,50 +64,85 @@ QAbstractFilterModel* QAbstractFilterProxyModel::filterModel() const
 
 QVariant QAbstractFilterProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (orientation == Qt::Vertical){
-		if (role == Qt::SizeHintRole){
-			QSize s = QSortFilterProxyModel::headerData(section, orientation, role).toSize();
-			s.setHeight(50);
-			return s;
-		}
-	}
-	return QSortFilterProxyModel::headerData(section, orientation, role);
+    if (orientation == Qt::Vertical) {
+        /*if (role == Qt::SizeHintRole) {
+            QSize s = QSortFilterProxyModel::headerData(section, orientation, role).toSize();
+            s.setHeight(30);
+            return s;
+        }*/
+    }
+    return QSortFilterProxyModel::headerData(section, orientation, role);
 }
 
 void QAbstractFilterProxyModel::setFilterModel(QAbstractFilterModel* filterModel)
 {
-    if (d->filterModel){
+    if (d->filterModel) {
         disconnect(d->filterModel);
     }
     d->filterModel = filterModel;
-    connect(d->filterModel, &QAbstractFilterModel::dataChanged, this, &QAbstractFilterProxyModel::updateResult);
-    connect(d->filterModel, &QAbstractFilterModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel, &QAbstractItemModel::dataChanged, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel, &QAbstractItemModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
     connect(d->filterModel, &QAbstractFilterModel::modeChanged, this, &QAbstractFilterProxyModel::updateResult);
     connect(d->filterModel, &QAbstractFilterModel::matchModeChanged, this, &QAbstractFilterProxyModel::updateResult);
     d->filterModel->setSourceModel(sourceModel());
 }
 
+QModelIndex QAbstractFilterProxyModel::getIndexForModel(const QAbstractItemModel* model, const QModelIndex &sourceIndex) const {
+    if (model) {
+        QAbstractProxyModel* p = qobject_cast<QAbstractProxyModel*>((QAbstractProxyModel*)model);
+
+        if (p) {
+            QAbstractItemModel * sModel = p->sourceModel();
+            if (sModel == sourceIndex.model()) {
+                return p->mapFromSource(sourceIndex);
+            } else {
+                return p->mapFromSource(getIndexForModel(sModel, sourceIndex));
+            }
+        }
+    }
+    return QModelIndex();
+}
+
+QModelIndex QAbstractFilterProxyModel::mapDeepFromSource(const QModelIndex &sourceIndex) const {
+    if (sourceIndex.isValid()) {
+        return getIndexForModel(this, sourceIndex);
+    }
+    return QModelIndex();
+}
+
 void QAbstractFilterProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 {
-	if (d->filterModel->sourceModel()){
-		disconnect(d->filterModel->sourceModel(), 0, this, 0);
-	}
+    if (d->filterModel->sourceModel()) {
+        disconnect(d->filterModel->sourceModel(), 0, this, 0);
+    }
     QSortFilterProxyModel::setSourceModel(sourceModel);
     d->filterModel->setSourceModel(sourceModel);
-	connect(d->filterModel->sourceModel(), &QAbstractItemModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel->sourceModel(), &QAbstractItemModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel->sourceModel(), &QAbstractItemModel::rowsInserted, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel->sourceModel(), &QAbstractItemModel::rowsRemoved, this, &QAbstractFilterProxyModel::updateResult);
     emitResultCountChanged();
 }
 
 void QAbstractFilterProxyModel::updateResult()
 {
-    invalidate();
+    // reset last result count
+    d->lastResultCount = -1;
+    emit resultAboutToChange();
+    // invalidate filter
+    invalidateFilter();
+    //
+    emit resultChanged();
+    // emit result count changed
     emitResultCountChanged();
 }
 
 void QAbstractFilterProxyModel::emitResultCountChanged()
 {
-    if (rowCount() != d->lastResultCount){
+    if (rowCount() != d->lastResultCount) {
         d->lastResultCount = rowCount();
-        emit resultCountChanged(d->lastResultCount, d->filterModel->sourceModel()->rowCount());
+        if (d->filterModel && d->filterModel->sourceModel())
+            emit resultCountChanged(d->lastResultCount, d->filterModel->sourceModel()->rowCount());
+        else
+            emit resultCountChanged(d->lastResultCount, 0);
     }
 }

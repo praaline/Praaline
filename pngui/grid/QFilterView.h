@@ -43,14 +43,9 @@ class QAIVLIBSHARED_EXPORT QFilterView : public QTableView
       * @see maxVisibileFilterSets() setMaxVisibileFilterSets()
       */
     Q_PROPERTY(int maxVisibileFilterSets READ maxVisibileFilterSets WRITE setMaxVisibileFilterSets)
+
 public:
-    /**
-      * Constructs a QFilterView with the given @p parent.
-      */
-    QFilterView( QWidget *parent = nullptr );
-    /**
-      * Destroys the filter view.
-      */
+    QFilterView(QWidget* parent = nullptr);
     ~QFilterView();
 
     void connectToView(QAbstractItemView* view);
@@ -64,6 +59,7 @@ public:
       * Returns the maximum number of visible filter sets.
       * @see setMaxVisibileFilterSets()
       */
+
     int maxVisibileFilterSets() const;
 
     void setAllowedFilterTypes(int types);
@@ -72,11 +68,13 @@ public:
 
     void setMaxVisibileFilterSets(int rows);
 
-    void setModel(QAbstractItemModel* model);
+    void setModel(QAbstractItemModel* model) override;
     /**
       * Toggles the state (enabled/disabled) of the filter specified by the given @p index.
       */
-    void toggleFilter( const QModelIndex & index );
+
+    void toggleFilter(const QModelIndex & index);
+
 signals:
     void calcGeometryRequested();
     void cornerButtonClicked();
@@ -86,6 +84,7 @@ signals:
       */
     void visibilityChanged(bool visible);
     void removeColumnFilter(int row, int column);
+
 public slots:
     void addFilter();
     /**
@@ -95,26 +94,29 @@ public slots:
     void changeProperties();
     void disableSelectedFilters();
     void enableSelectedFilters();
-	/**
-	 * Removes the current filter.
-	 */
+    /**
+     * Removes the current filter.
+     */
     void removeFilter();
     /**
       * If @p visible the filters in the filter model are shown. Otherwise the size of this is reduced to show the header view only.
       */
     void setFilterVisible(bool visible);
-	/**
-	 * Toggles the state (enabled/disabled) of the filter selection.
-	 * @see toggleFilter()
-	 */
+    /**
+     * Toggles the state (enabled/disabled) of the filter selection.
+     * @see toggleFilter()
+     */
     void toggleSelectedFilters();
+
 protected:
-    void contextMenuEvent( QContextMenuEvent* event );
-    void focusInEvent(QFocusEvent* event);
-    void mousePressEvent( QMouseEvent* event );
+    void contextMenuEvent(QContextMenuEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+
 private slots:
     void hideFilter();
     void showFilter();
+
 private:
     void updateGeometry();
 

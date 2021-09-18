@@ -22,6 +22,7 @@
 #define QSPECIALFILTER_P_H
 
 #include <QLineEdit>
+
 #include "QFilterEditorWidget.h"
 #include "QClickableLabel.h"
 
@@ -29,7 +30,7 @@ class QSpecialFilterEditor : public QFilterEditorWidget
 {
     Q_OBJECT
 public:
-    QSpecialFilterEditor(QWidget *parent = nullptr);
+    QSpecialFilterEditor(QWidget* parent = nullptr);
     ~QSpecialFilterEditor();
 
     Qt::CaseSensitivity caseSensitivity() const;

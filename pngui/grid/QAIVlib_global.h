@@ -21,8 +21,16 @@
 #ifndef QAIVLIB_GLOBAL_H
 #define QAIVLIB_GLOBAL_H
 
-#include <qglobal.h>
+#include <QtCore/qglobal.h>
 
+#ifdef QAIVLIB_SHARED
+#if defined(QAIVLIB_LIBRARY)
+#  define QAIVLIBSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define QAIVLIBSHARED_EXPORT Q_DECL_IMPORT
+#endif
+#else
 #  define QAIVLIBSHARED_EXPORT
+#endif
 
 #endif // QAIVLIB_GLOBAL_H

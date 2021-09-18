@@ -50,13 +50,15 @@ class QAdvancedTableViewProxy : public QTableView
 {
     Q_OBJECT
 public:
-    QAdvancedTableViewProxy(QWidget *parent = nullptr);
+    QAdvancedTableViewProxy(QWidget* parent = nullptr);
     ~QAdvancedTableViewProxy();
+
 signals:
     void focusReceived();
+
 protected:
-    void closeEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint);
-    void focusInEvent(QFocusEvent *event);
+    void closeEditor(QWidget * editor, QAbstractItemDelegate::EndEditHint hint) override;
+    void focusInEvent(QFocusEvent *event) override;
 };
 
 #endif // QFILTERTABLEVIEW_P_H

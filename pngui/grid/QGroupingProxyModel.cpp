@@ -18,6 +18,8 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
+
 #include <QStandardItemModel>
 #include "QGroupingProxyModel.h"
 #include "QGroupingProxyModel_p.h"
@@ -28,6 +30,7 @@ public:
     QGroupingProxyModelPrivate(QGroupingProxyModel* pm);
     ~QGroupingProxyModelPrivate();
 
+    bool groupsSpanned;
     int modelColumn;
     int groupItemDataRole;
     QGroupingProxyModelGroup* root;
@@ -38,18 +41,23 @@ public:
 
 QGroupingProxyModelPrivate::QGroupingProxyModelPrivate(QGroupingProxyModel *pm)
 {
-    Q_UNUSED(pm)
+    groupItemDataRole = Qt::DisplayRole;
+    groupsSpanned = false;
+    modelColumn = 0;
+    root = nullptr;
+    sourceModel = nullptr;
+    m = pm;
 }
 
 QGroupingProxyModelPrivate::~QGroupingProxyModelPrivate()
 {
-
+    m = nullptr;
 }
 
 QGroupingProxyModelGroup::QGroupingProxyModelGroup(QGroupingProxyModelGroup* parent)
 {
     cParent = parent;
-    if (cParent){
+    if (cParent) {
         cParent->cChildren.append(this);
     }
     cSourceModelRow = -1;
@@ -58,7 +66,7 @@ QGroupingProxyModelGroup::QGroupingProxyModelGroup(QGroupingProxyModelGroup* par
 QGroupingProxyModelGroup::QGroupingProxyModelGroup(int sourceModelRow, QGroupingProxyModelGroup *parent)
 {
     cParent = parent;
-    if (cParent){
+    if (cParent) {
         cParent->cChildren.append(this);
     }
     cSourceModelRow = sourceModelRow;
@@ -71,15 +79,15 @@ QGroupingProxyModelGroup::~QGroupingProxyModelGroup()
 
 void QGroupingProxyModelGroup::addSourceModelRow(int row)
 {
-    if (!cSourceModelRows.contains(row)){
+    if (!cSourceModelRows.contains(row)) {
         cSourceModelRows.append(row);
     }
 }
 
 void QGroupingProxyModelGroup::clear()
 {
-    for (int iChild = cChildren.size() - 1; iChild > -1; --iChild){
-        if (cChildren.at(iChild)->sourceModelRow() == -1){
+    for (int iChild = cChildren.size() - 1; iChild > -1; --iChild) {
+        if (cChildren.at(iChild)->sourceModelRow() == -1) {
             cChildren.at(iChild)->clear();
         } else {
             delete cChildren.takeAt(iChild);
@@ -104,14 +112,14 @@ QVariant QGroupingProxyModelGroup::data(int role) const
 
 QGroupingProxyModelGroup *QGroupingProxyModelGroup::findSourceModelRow(int sourceModelRow) const
 {
-    if (cSourceModelRow == sourceModelRow){
+    if (cSourceModelRow == sourceModelRow) {
         return const_cast<QGroupingProxyModelGroup*>(this);
     }
-    QGroupingProxyModelGroup* mGroup;
-    Q_FOREACH(QGroupingProxyModelGroup* mItem, cChildren){
-        mGroup = mItem->findSourceModelRow(sourceModelRow);
-        if (mGroup){
-            return mGroup;
+
+    Q_FOREACH(QGroupingProxyModelGroup* item, cChildren){
+        QGroupingProxyModelGroup* group = item->findSourceModelRow(sourceModelRow);
+        if (group) {
+            return group;
         }
     }
     return 0;
@@ -119,14 +127,14 @@ QGroupingProxyModelGroup *QGroupingProxyModelGroup::findSourceModelRow(int sourc
 
 QGroupingProxyModelGroup* QGroupingProxyModelGroup::group(int sourceModelRow) const
 {
-    if (cSourceModelRow != -1 && cSourceModelRow == sourceModelRow){
+    if (cSourceModelRow != -1 && cSourceModelRow == sourceModelRow) {
         return parent();
     }
-    QGroupingProxyModelGroup* mGroup;
-    Q_FOREACH(QGroupingProxyModelGroup* mItem, cChildren){
-        mGroup = mItem->findSourceModelRow(sourceModelRow);
-        if (mGroup){
-            return mGroup->parent();
+
+    Q_FOREACH(QGroupingProxyModelGroup* item, cChildren) {
+        QGroupingProxyModelGroup* group = item->findSourceModelRow(sourceModelRow);
+        if (group) {
+            return group->parent();
         }
     }
     return 0;
@@ -139,8 +147,8 @@ int QGroupingProxyModelGroup::indexOf(QGroupingProxyModelGroup* group) const
 
 int QGroupingProxyModelGroup::sourceModelRowIndexAt(int sourceModelRow) const
 {
-    for (int iChild = 0; iChild < cChildren.size(); iChild++){
-        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow){
+    for (int iChild = 0; iChild < cChildren.size(); iChild++) {
+        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow) {
             return iChild;
         }
     }
@@ -149,20 +157,19 @@ int QGroupingProxyModelGroup::sourceModelRowIndexAt(int sourceModelRow) const
 
 QGroupingProxyModelGroup* QGroupingProxyModelGroup::matches(const QVariant & value) const
 {
-    if (cSourceModelRow != -1){
+    if (cSourceModelRow != -1) {
         return 0;
     }
-    if (cParent != 0 && data(Qt::EditRole) == value){
+    if (cParent != 0 && data(Qt::EditRole) == value) {
         return const_cast<QGroupingProxyModelGroup*>(this);
     }
-    QGroupingProxyModelGroup* mGroup;
-    Q_FOREACH(QGroupingProxyModelGroup* mItem, cChildren){
-        mGroup = mItem->matches(value);
-        if (mGroup){
-            return mGroup;
+    Q_FOREACH(QGroupingProxyModelGroup* item, cChildren) {
+        QGroupingProxyModelGroup* group = item->matches(value);
+        if (group) {
+            return group;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void QGroupingProxyModelGroup::moveSourceRow(int count)
@@ -177,15 +184,15 @@ QGroupingProxyModelGroup *QGroupingProxyModelGroup::parent() const
 
 void QGroupingProxyModelGroup::removeChild(int index)
 {
-    if (index < cChildren.size()){
+    if (index < cChildren.size()) {
         delete cChildren.takeAt(index);
     }
 }
 
 void QGroupingProxyModelGroup::removeChildAtSourceModelRow(int sourceModelRow)
 {
-    for (int iChild = 0; iChild < cChildren.size(); iChild++){
-        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow){
+    for (int iChild = 0; iChild < cChildren.size(); iChild++) {
+        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow) {
             delete cChildren.takeAt(iChild);
         }
     }
@@ -198,7 +205,7 @@ void QGroupingProxyModelGroup::removeSourceModelRow(int row)
 
 int QGroupingProxyModelGroup::row() const
 {
-    if (cParent){
+    if (cParent) {
         return cParent->cChildren.indexOf(const_cast<QGroupingProxyModelGroup*>(this));
     }
     return 0;
@@ -206,8 +213,8 @@ int QGroupingProxyModelGroup::row() const
 
 int QGroupingProxyModelGroup::row(int sourceModelRow) const
 {
-    for (int iChild = 0; iChild < cChildren.size(); iChild++){
-        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow){
+    for (int iChild = 0; iChild < cChildren.size(); iChild++) {
+        if (cChildren.at(iChild)->sourceModelRow() == sourceModelRow) {
             return iChild;
         }
     }
@@ -231,14 +238,16 @@ QList<int> QGroupingProxyModelGroup::sourceModelRows() const
 
 QGroupingProxyModel::QGroupingProxyModel(QObject *parent) :
     QAbstractItemModel(parent), d(new QGroupingProxyModelPrivate(this))
-{    
+{
     d->modelColumn = 0;
     d->groupItemDataRole = Qt::DisplayRole;
 
     d->sourceModel = new QStandardItemModel(this);
     d->root = new QGroupingProxyModelGroup();
-    QGroupingProxyModelGroup* item = new QGroupingProxyModelGroup(d->root);
-    item->setData(tr("Ungrouped"), Qt::DisplayRole);
+    m_groupUngroupedItem = new QGroupingProxyModelGroup(d->root);
+    m_groupUngroupedItem->setData(tr("Ungrouped"), Qt::DisplayRole);
+
+    m_groupSectionHeader = tr("Group");
 }
 
 QGroupingProxyModel::~QGroupingProxyModel()
@@ -250,7 +259,7 @@ void QGroupingProxyModel::addGroup(const QString & text, const QVariant & value)
 {
     QGroupingProxyModelGroup* g = new QGroupingProxyModelGroup(d->root);
     g->setData(text, Qt::DisplayRole);
-    if (value.isNull()){
+    if (value.isNull()) {
         g->setData(text, Qt::EditRole);
     } else {
         g->setData(value, Qt::EditRole);
@@ -263,7 +272,7 @@ void QGroupingProxyModel::addGroup(const QIcon & icon, const QString &text, cons
     QGroupingProxyModelGroup* g = new QGroupingProxyModelGroup(d->root);
     g->setData(icon, Qt::DecorationRole);
     g->setData(text, Qt::DisplayRole);
-    if (value.isNull()){
+    if (value.isNull()) {
         g->setData(text, Qt::EditRole);
     } else {
         g->setData(value, Qt::EditRole);
@@ -279,33 +288,33 @@ int QGroupingProxyModel::columnCount(const QModelIndex & parent) const
 
 QVariant QGroupingProxyModel::data(const QModelIndex & proxyIndex, int role) const
 {
-    if (!proxyIndex.isValid()){
+    if (!proxyIndex.isValid()) {
         return QVariant();
     }
-//    if (role == Qt::DisplayRole){
-//        if (proxyIndex.column() == 0){
-//            QGroupingProxyModelGroup* mItem = static_cast<QGroupingProxyModelGroup*>(proxyIndex.internalPointer());
-//            if (mItem->parent() == d->root){
-//                return QString("%1 [%2]").arg(mItem->data(Qt::DisplayRole).toString()).arg(mItem->childCount());
-//            } else {
-//                return "A";
-//            }
-//        } else {
+    //    if (role == Qt::DisplayRole){
+    //        if (proxyIndex.column() == 0){
+    //            QGroupingProxyModelGroup* mItem = static_cast<QGroupingProxyModelGroup*>(proxyIndex.internalPointer());
+    //            if (mItem->parent() == d->root){
+    //                return QString("%1 [%2]").arg(mItem->data(Qt::DisplayRole).toString()).arg(mItem->childCount());
+    //            } else {
+    //                return "A";
+    //            }
+    //        } else {
 
-//        }
-//    }
+    //        }
+    //    }
     QGroupingProxyModelGroup* item = static_cast<QGroupingProxyModelGroup*>(proxyIndex.internalPointer());
-    if (item->parent() == d->root){
-        if (proxyIndex.column() == 0){
-            if (role == Qt::DisplayRole){
+    if (item->parent() == d->root) {
+        if (proxyIndex.column() == 0) {
+            if (role == Qt::DisplayRole) {
                 return QString("%1 [%2]").arg(item->data(Qt::DisplayRole).toString()).arg(item->childCount());
             } else {
                 return item->data(role);
             }
         }
     } else {
-        if (proxyIndex.column() == 0){
-            if (role == Qt::DisplayRole){
+        if (proxyIndex.column() == 0) {
+            if (role == Qt::DisplayRole) {
                 return "";
             }
         }
@@ -316,21 +325,29 @@ QVariant QGroupingProxyModel::data(const QModelIndex & proxyIndex, int role) con
 Qt::ItemFlags QGroupingProxyModel::flags(const QModelIndex & index) const
 {
     QGroupingProxyModelGroup* item = static_cast<QGroupingProxyModelGroup*>(index.internalPointer());
-    if (item && item->parent() == d->root){
+    if (item && item->parent() == d->root) {
         return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
     } else {
-        if (index.column() == 0){
+        if (index.column() == 0) {
             return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
         }
     }
     return d->sourceModel->flags(mapToSource(index));
 }
+/**
+ * Returns true if the groups are spanned over all columns. Otherwise false.
+ * @see span()
+ */
+bool QGroupingProxyModel::groupsSpanned() const
+{
+    return d->groupsSpanned;
+}
 
 QVariant QGroupingProxyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (section == 0){
-        if (role == Qt::DisplayRole){
-            return tr("Group");
+    if (section == 0) {
+        if (role == Qt::DisplayRole) {
+            return m_groupSectionHeader;
         }
         return QVariant();
     }
@@ -339,18 +356,18 @@ QVariant QGroupingProxyModel::headerData(int section, Qt::Orientation orientatio
 
 QModelIndex QGroupingProxyModel::index(int row, int column, const QModelIndex & parent) const
 {
-    if (!hasIndex(row, column, parent)){
+    if (!hasIndex(row, column, parent)) {
         return QModelIndex();
     }
     QGroupingProxyModelGroup* mParentItem;
     QGroupingProxyModelGroup* mChildItem;
-    if (!parent.isValid()){
+    if (!parent.isValid()) {
         mParentItem = d->root;
     } else {
         mParentItem = static_cast<QGroupingProxyModelGroup*>(parent.internalPointer());
     }
     mChildItem = mParentItem->child(row);
-    if (mChildItem){
+    if (mChildItem) {
         return createIndex(row, column, mChildItem);
     }
     return QModelIndex();
@@ -358,27 +375,27 @@ QModelIndex QGroupingProxyModel::index(int row, int column, const QModelIndex & 
 
 int QGroupingProxyModel::findText(const QString & text) const
 {
-    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++){
-        if (d->root->child(iGroup)->data(Qt::DisplayRole).toString() == text){
+    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++) {
+        if (d->root->child(iGroup)->data(Qt::DisplayRole).toString() == text) {
             return iGroup;
         }
     }
     return -1;
 }
 
-QModelIndex QGroupingProxyModel::mapFromSource(const QModelIndex &sourceIndex) const
+QModelIndex QGroupingProxyModel::mapFromSource(const QModelIndex & sourceIndex) const
 {
     Q_UNUSED(sourceIndex)
     return QModelIndex();
 }
 
-QModelIndex QGroupingProxyModel::mapToSource(const QModelIndex &proxyIndex) const
+QModelIndex QGroupingProxyModel::mapToSource(const QModelIndex & proxyIndex) const
 {
     QGroupingProxyModelGroup* item = static_cast<QGroupingProxyModelGroup*>(proxyIndex.internalPointer());
-    if (item == d->root){
+    if (item == d->root) {
         return QModelIndex();
     }
-    if (item == 0){
+    if (item == 0) {
         return QModelIndex();
     }
     return d->sourceModel->index(item->sourceModelRow(), proxyIndex.column() - 1);
@@ -391,12 +408,12 @@ int QGroupingProxyModel::modelColumn() const
 
 QModelIndex QGroupingProxyModel::parent(const QModelIndex & child) const
 {
-    if (!child.isValid()){
+    if (!child.isValid()) {
         return QModelIndex();
     }
     QGroupingProxyModelGroup* childItem = static_cast<QGroupingProxyModelGroup*>(child.internalPointer());
     QGroupingProxyModelGroup* parentItem = childItem->parent();
-    if (parentItem == d->root){
+    if (parentItem == d->root) {
         return QModelIndex();
     }
     return createIndex(parentItem->row(), 0, parentItem);
@@ -404,7 +421,7 @@ QModelIndex QGroupingProxyModel::parent(const QModelIndex & child) const
 
 bool QGroupingProxyModel::removeGroup(int index)
 {
-    if (index < 1){
+    if (index < 1) {
         return false;
     }
     beginRemoveRows(QModelIndex(), index, index);
@@ -421,17 +438,17 @@ bool QGroupingProxyModel::restoreGroups(const QByteArray & data)
     qint32 version;
 
     stream >> version;
-    if (version == 1){
+    if (version == 1) {
         beginResetModel();
 
-        for (int iGroup = 1; iGroup < d->root->childCount(); iGroup++){
+        for (int iGroup = 1; iGroup < d->root->childCount(); iGroup++) {
             d->root->removeChild(iGroup);
         }
         QIcon icon;
         QString text;
         QVariant value;
         stream >> d->modelColumn >> d->groupItemDataRole;
-        while(!stream.atEnd()){
+        while(!stream.atEnd())  {
             stream >> icon >> text >> value;
             addGroup(icon, text, value);
         }
@@ -444,11 +461,11 @@ bool QGroupingProxyModel::restoreGroups(const QByteArray & data)
 
 int QGroupingProxyModel::rowCount(const QModelIndex & parent) const
 {
-    if (parent.column() > 0){
+    if (parent.column() > 0) {
         return 0;
     }
     QGroupingProxyModelGroup* parentItem;
-    if (!parent.isValid()){
+    if (!parent.isValid()) {
         parentItem = d->root;
     } else {
         parentItem = static_cast<QGroupingProxyModelGroup*>(parent.internalPointer());
@@ -458,7 +475,7 @@ int QGroupingProxyModel::rowCount(const QModelIndex & parent) const
 
 bool QGroupingProxyModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
-    if (!index.parent().isValid()){
+    if (!index.parent().isValid()) {
         d->root->child(index.row())->setData(value, role);
     }
     return d->sourceModel->setData(mapToSource(index), value, role);
@@ -470,10 +487,10 @@ QByteArray QGroupingProxyModel::saveGroups() const
     QDataStream stream(&groups, QIODevice::WriteOnly);
     stream << qint32(1) << qint32(d->modelColumn) << qint32(d->groupItemDataRole);
 
-    for (int iGroup = 1; iGroup < d->root->childCount(); iGroup++){
+    for (int iGroup = 1; iGroup < d->root->childCount(); iGroup++) {
         stream << d->root->child(iGroup)->data(Qt::DecorationRole)
-                << d->root->child(iGroup)->data(Qt::DisplayRole)
-                << d->root->child(iGroup)->data(Qt::EditRole);
+               << d->root->child(iGroup)->data(Qt::DisplayRole)
+               << d->root->child(iGroup)->data(Qt::EditRole);
     }
     return groups;
 }
@@ -491,12 +508,24 @@ void QGroupingProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
     connect(d->sourceModel, &QAbstractItemModel::dataChanged, this, &QGroupingProxyModel::dataChangedHandler);
     connect(d->sourceModel, &QAbstractItemModel::rowsAboutToBeInserted, this, &QGroupingProxyModel::rowsAboutToBeInsertedHandler);
     connect(d->sourceModel, &QAbstractItemModel::rowsInserted, this, &QGroupingProxyModel::rowsInsertedHandler);
+    connect(d->sourceModel, &QAbstractItemModel::modelReset, this, &QGroupingProxyModel::sourceModelResetHandler);
+}
+
+void QGroupingProxyModel::setUngroupedItemTitle(const QString & title)
+{
+    m_groupUngroupedItem->setData(title, Qt::DisplayRole);
+}
+
+void QGroupingProxyModel::setUngroupedItemTitle(const QString & title, const QIcon & icon)
+{
+    m_groupUngroupedItem->setData(title, Qt::DisplayRole);
+    m_groupUngroupedItem->setData(icon, Qt::DecorationRole);
 }
 
 void QGroupingProxyModel::dataChangedHandler(const QModelIndex & topLeft, const QModelIndex & bottomRight)
 {
     Q_UNUSED(bottomRight)
-    if (topLeft.column() != d->modelColumn){
+    if (topLeft.column() != d->modelColumn) {
         QGroupingProxyModelGroup* mCurrentGroup = d->root->group(topLeft.row());
         QModelIndex mTopLeft = index(mCurrentGroup->parent()->indexOf(mCurrentGroup), 0);
         QModelIndex mBottomRight = index(mTopLeft.row(), d->sourceModel->columnCount());
@@ -504,10 +533,10 @@ void QGroupingProxyModel::dataChangedHandler(const QModelIndex & topLeft, const 
     } else {
         QGroupingProxyModelGroup* currentGroup = d->root->group(topLeft.row());
         QGroupingProxyModelGroup* newGroup = d->root->matches(d->sourceModel->index(topLeft.row(), d->modelColumn).data(d->groupItemDataRole));
-        if (newGroup == 0){
+        if (newGroup == 0) {
             newGroup = d->root->child(0);
         }
-        if (currentGroup != newGroup){
+        if (currentGroup != newGroup) {
             QModelIndex p;
             p = index(currentGroup->parent()->indexOf(currentGroup), 0);
             beginRemoveRows(p, currentGroup->row(topLeft.row()), currentGroup->row(topLeft.row()));
@@ -527,8 +556,8 @@ void QGroupingProxyModel::rowsAboutToBeInsertedHandler(const QModelIndex & paren
     Q_UNUSED(parent)
     Q_UNUSED(start)
     Q_UNUSED(end)
-//    d->root->child(0)->addSourceModelRow(start);
-//    qDebug() << d->root->child(0)->sourceModelRows();
+    //    d->root->child(0)->addSourceModelRow(start);
+    //    qDebug() << d->root->child(0)->sourceModelRows();
 }
 
 void QGroupingProxyModel::rowsInsertedHandler(const QModelIndex & parent, int first, int last)
@@ -537,14 +566,14 @@ void QGroupingProxyModel::rowsInsertedHandler(const QModelIndex & parent, int fi
     Q_UNUSED(first)
     Q_UNUSED(last)
     // @todo
-//    int mGroup = d->root->group(cSourceModel->index(first, cModelColumn).data(cGroupItemDataRole));
-//    beginResetModel();
-//    moveRows(first, 1);
-//    if (mGroup == -1){
-//        new QGroupingProxyModelGroup(first, d->root->child(0));
-//    } else {
-//        new QGroupingProxyModelGroup(first, d->root->child(mGroup));
-//    }
+    //    int mGroup = d->root->group(cSourceModel->index(first, cModelColumn).data(cGroupItemDataRole));
+    //    beginResetModel();
+    //    moveRows(first, 1);
+    //    if (mGroup == -1){
+    //        new QGroupingProxyModelGroup(first, d->root->child(0));
+    //    } else {
+    //        new QGroupingProxyModelGroup(first, d->root->child(mGroup));
+    //    }
     //    endResetModel();
 }
 
@@ -552,10 +581,10 @@ void QGroupingProxyModel::buildGroups()
 {
     beginResetModel();
     d->root->clear();
-    if (d->sourceModel){
-        for (int iRow = 0; iRow < d->sourceModel->rowCount(); iRow++){
-            QGroupingProxyModelGroup *group = d->root->matches(d->sourceModel->index(iRow, d->modelColumn).data(d->groupItemDataRole));
-            if (group == 0){
+    if (d->sourceModel) {
+        for (int iRow = 0; iRow < d->sourceModel->rowCount(); iRow++) {
+            QGroupingProxyModelGroup* group = d->root->matches(d->sourceModel->index(iRow, d->modelColumn).data(d->groupItemDataRole));
+            if (group == 0) {
                 group = d->root->child(0);
             }
             new QGroupingProxyModelGroup(iRow, group);
@@ -566,9 +595,9 @@ void QGroupingProxyModel::buildGroups()
 
 int QGroupingProxyModel::groupAt(int sourceModelRow)
 {
-    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++){
-        for (int iRow = 0; iRow < d->root->child(iGroup)->childCount(); iRow++){
-            if (d->root->child(iGroup)->child(iRow)->sourceModelRow() == sourceModelRow){
+    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++) {
+        for (int iRow = 0; iRow < d->root->child(iGroup)->childCount(); iRow++) {
+            if (d->root->child(iGroup)->child(iRow)->sourceModelRow() == sourceModelRow) {
                 return iGroup;
             }
         }
@@ -578,9 +607,9 @@ int QGroupingProxyModel::groupAt(int sourceModelRow)
 
 void QGroupingProxyModel::moveRows(int row, int count)
 {
-    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++){
-        for (int iChild = 0; iChild < d->root->child(iGroup)->childCount(); iChild++){
-            if (d->root->child(iGroup)->child(iChild)->sourceModelRow() >= row){
+    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++) {
+        for (int iChild = 0; iChild < d->root->child(iGroup)->childCount(); iChild++) {
+            if (d->root->child(iGroup)->child(iChild)->sourceModelRow() >= row) {
                 d->root->child(iGroup)->child(iChild)->moveSourceRow(count);
             }
         }
@@ -589,7 +618,40 @@ void QGroupingProxyModel::moveRows(int row, int count)
 
 void QGroupingProxyModel::removeSourceModelRow(int sourceModelRow)
 {
-    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++){
+    for (int iGroup = 0; iGroup < d->root->childCount(); iGroup++) {
         d->root->child(iGroup)->removeChildAtSourceModelRow(sourceModelRow);
+    }
+}
+
+void QGroupingProxyModel::setGroupSectionHeader(const QString & header)
+{
+    if (header != m_groupSectionHeader) {
+        m_groupSectionHeader = header;
+        emit headerDataChanged(Qt::Horizontal, 0, 0);
+    }
+}
+/**
+ * If @p on is true, the groups are spanned over all columns.
+ * @see span()
+ */
+void QGroupingProxyModel::setGroupsSpanned(bool on)
+{
+    d->groupsSpanned = on;
+}
+
+void QGroupingProxyModel::sourceModelResetHandler()
+{
+    buildGroups();
+}
+/**
+ * Returns the row and column span of the item represented by @p index.
+ * If groupsSpanned is enabled QSize(columnCount(), 1) is returned for all root indexes.
+ */
+QSize QGroupingProxyModel::span(const QModelIndex & index) const
+{
+    if (index.parent().isValid() || !d->groupsSpanned) {
+        return QAbstractItemModel::span(index);
+    } else {
+        return QSize(columnCount(), 1);
     }
 }

@@ -35,6 +35,7 @@ DEFINES += XLSX_NO_LIB
 DEFINES += NODE_EDITOR_STATIC
 
 FORMS += \
+    grid/QSearchBar.ui \
     widgets/TimelineEditorConfigWidget.ui \
     widgets/GridViewWidget.ui \
     widgets/GridViewFindDialog.ui \
@@ -44,6 +45,15 @@ FORMS += \
     widgets/ImportDataPreviewWidget.ui
 
 HEADERS += \
+    grid/QAdvancedHeaderView_p.h \
+    grid/QSearchBar.h \
+    grid/QSearchBar_p.h \
+    grid/QTableModelCSVWriter_p.h \
+    grid/QTableModelExcelMLWriter_p.h \
+    grid/QTableModelExportPushButton.h \
+    grid/QTableModelHtmlWriter_p.h \
+    grid/QTableModelWordMLWriter_p.h \
+    grid/QTableModelWriter.h \
     model/annotation/SequencesTableModel.h \
     model/visualiser/AnnotationGridPointModel.h \
     model/visualiser/AnnotationGridModel.h \
@@ -235,6 +245,13 @@ HEADERS += \
     layer/ProZedLayer.h
 
 SOURCES += \
+    grid/QSearchBar.cpp \
+    grid/QTableModelCSVWriter.cpp \
+    grid/QTableModelExcelMLWriter.cpp \
+    grid/QTableModelExportPushButton.cpp \
+    grid/QTableModelHtmlWriter.cpp \
+    grid/QTableModelWordMLWriter.cpp \
+    grid/QTableModelWriter.cpp \
     model/annotation/SequencesTableModel.cpp \
     model/visualiser/AnnotationGridModel.cpp \
     model/visualiser/ProsogramModel.cpp \

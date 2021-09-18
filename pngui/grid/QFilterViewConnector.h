@@ -22,7 +22,7 @@
 #define QFILTERVIEWCONNECTOR_H
 
 #include <QObject>
-#include <QTreeView>
+
 #include "QAIVlib_global.h"
 
 class QFilterView;
@@ -41,7 +41,7 @@ public:
     void setDataView(QTableView* view);
     void setDataView(QTreeView* view);
 signals:
-    
+
 public slots:
     void adjustVerticalHeaderWidth();
 private slots:

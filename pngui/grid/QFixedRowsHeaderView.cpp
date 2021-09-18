@@ -18,6 +18,7 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QFixedRowsHeaderView.h"
 
 QFixedRowsHeaderView::QFixedRowsHeaderView(Qt::Orientation orientation, QWidget *parent) :
@@ -27,9 +28,9 @@ QFixedRowsHeaderView::QFixedRowsHeaderView(Qt::Orientation orientation, QWidget 
 
 void QFixedRowsHeaderView::mouseReleaseEvent(QMouseEvent *event)
 {
-//    if (event->button() == Qt::LeftButton && orientation() == Qt::Vertical && event->pos().x() < 32){
-//        qDebug() << "toggle";
-//    } else {
-        QHeaderView::mouseReleaseEvent(event);
-//    }
+    //    if (event->button() == Qt::LeftButton && orientation() == Qt::Vertical && event->pos().x() < 32){
+    //        qDebug() << "toggle";
+    //    } else {
+    QHeaderView::mouseReleaseEvent(event);
+    //    }
 }

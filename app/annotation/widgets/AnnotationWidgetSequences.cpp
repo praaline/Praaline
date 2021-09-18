@@ -2,6 +2,7 @@
 #include <QList>
 #include <QMap>
 #include <QMessageBox>
+#include <QStandardItemModel>
 
 #include "AnnotationWidgetSequences.h"
 #include "ui_AnnotationWidgetSequences.h"
@@ -23,9 +24,10 @@ struct AnnotationWidgetSequencesData {
     QMap<QString, int> parentTierColumnIndexes;
     int columnIndexParentTier;
     QList<int> rowsSelected;
+    SequencesTableModel *sequenceModel;
 
     AnnotationWidgetSequencesData() :
-        repository(nullptr)
+        repository(nullptr), model(nullptr), sequenceModel(nullptr)
     {}
 };
 
@@ -103,15 +105,9 @@ void AnnotationWidgetSequences::annotationLevelChanged(int index)
                                                nvl->value(i));
         }
     }
-    // Update the sequences table model
-    if (tiernameSequences.isEmpty()) {
-        ui->gridViewSequences->tableView()->setModel(nullptr);
-        return;
-    }
     if (!d->model) return;
-    if (!d->model->sequenceModel(tiernameSequences)) return;
-    ui->tableView->setModel(d->model->sequenceModel(tiernameSequences));
-    ui->gridViewSequences->tableView()->setModel(d->model->sequenceModel(tiernameSequences));
+    SequencesTableModel *newSequencesModel = d->model->sequenceModel(tiernameSequences);
+    ui->gridViewSequences->tableView()->setModel(newSequencesModel);
     ui->gridViewSequences->tableView()->resizeColumnsToContents();
 }
 
@@ -145,6 +141,7 @@ void AnnotationWidgetSequences::on_cmdAddSequence_clicked()
     if (!ret) {
         QMessageBox::warning(this, tr("Error"), tr("Error adding sequence. Please ensure that the sequence begins and ends within utterances of the same speaker."),
                              QMessageBox::Ok);
+        return;
     }
 }
 

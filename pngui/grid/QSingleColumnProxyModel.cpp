@@ -18,6 +18,7 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QSingleColumnProxyModel.h"
 
 class QSingleColumnProxyModelPrivate

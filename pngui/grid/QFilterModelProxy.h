@@ -34,21 +34,21 @@ class QAIVLIBSHARED_EXPORT QFilterModelProxy : public QAbstractFilterProxyModel
 {
     Q_OBJECT
 public:
-	/**
-	 * Constructs a filter model with the given @p parent.
-	 */
-    QFilterModelProxy(QObject *parent = nullptr);
-	/**
-	 * Destroys the filter model.
-	 */
+    /**
+     * Constructs a filter model with the given @p parent.
+     */
+    QFilterModelProxy(QObject* parent = nullptr);
+    /**
+     * Destroys the filter model.
+     */
     ~QFilterModelProxy();
 
     QVariant data(const QModelIndex & index, int role) const;
 protected:
-	/**
-	 * @reimp
-	 */
-    bool filterAcceptsRow( int source_row, const QModelIndex & source_parent ) const;
+    /**
+     * @reimp
+     */
+    bool filterAcceptsRow(int source_row, const QModelIndex & source_parent) const;
 };
 
 #endif // QFILTERMODELPROXY_H

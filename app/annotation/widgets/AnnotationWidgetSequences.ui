@@ -106,6 +106,19 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="1" column="1">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item row="0" column="0" colspan="2">
        <widget class="GridViewWidget" name="gridViewSequences" native="true"/>
       </item>
@@ -121,22 +134,6 @@
          <string>Delete Sequence</string>
         </property>
        </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QTableView" name="tableView"/>
-      </item>
-      <item row="1" column="1">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </widget>

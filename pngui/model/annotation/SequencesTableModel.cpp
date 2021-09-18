@@ -2,6 +2,7 @@
 #include <QString>
 #include <QPointer>
 #include <QAbstractTableModel>
+#include <QDebug>
 
 #include "PraalineCore/Annotation/AnnotationTierGroup.h"
 #include "PraalineCore/Annotation/SequenceTier.h"
@@ -205,17 +206,19 @@ bool SequencesTableModel::addSequence(const QString &speakerID, Sequence *sequen
 {
     int row(0);
     foreach (const QString &speakerID_iter, d->sequenceTiers.keys()) {
-        row = row + d->sequenceTiers.value(speakerID_iter)->count();
         if (speakerID_iter == speakerID) {
             int indexOfAddedSequence(0);
-            while (indexOfAddedSequence < d->sequenceTiers[speakerID]->count() && d->sequenceTiers[speakerID]->at(indexOfAddedSequence) < sequence) {
+            while (indexOfAddedSequence < d->sequenceTiers[speakerID]->count() &&
+                   (d->sequenceTiers[speakerID]->at(indexOfAddedSequence)->compare(*sequence) < 0)) {
                 indexOfAddedSequence++;
             }
             beginInsertRows(QModelIndex(), row + indexOfAddedSequence, row + indexOfAddedSequence);
+            qDebug() << "SequencesTableModel::addSequence calls beginInsertRows with row = " << row + indexOfAddedSequence;
             d->sequenceTiers[speakerID]->addSequence(sequence);
             endInsertRows();
             return true;
         }
+        row = row + d->sequenceTiers.value(speakerID_iter)->count();
     }
     return false;
 }

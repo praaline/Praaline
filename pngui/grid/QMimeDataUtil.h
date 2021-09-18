@@ -10,13 +10,23 @@
 #include <QItemSelection>
 
 #include "QAIVlib_global.h"
-#include "QAdvancedTableView.h"
 
-QAIVLIBSHARED_EXPORT void qMimeDataAddCsv(QMimeData* mimeData, QTableView* view, Qt::ItemDataRole role = Qt::DisplayRole);
+class QItemSelectionModel;
+class QMimeData;
+class QAdvancedTableView;
+class QTableView;
 
-QAIVLIBSHARED_EXPORT void qMimeDataAddHtml(QMimeData* mimeData, QTableView* view, Qt::ItemDataRole role = Qt::DisplayRole);
+QAIVLIBSHARED_EXPORT void qMimeDataAddCsv(QMimeData* mimeData, QAdvancedTableView* view, int role = Qt::DisplayRole);
 
-QAIVLIBSHARED_EXPORT void qMimeDataAddPlainText(QMimeData* mimeData, QTableView* view, Qt::ItemDataRole role = Qt::DisplayRole);
+QAIVLIBSHARED_EXPORT void qMimeDataAddCsv(QMimeData* mimeData, QTableView* view, int role = Qt::DisplayRole);
+
+QAIVLIBSHARED_EXPORT void qMimeDataAddHtml(QMimeData* mimeData, QAdvancedTableView* view, int role = Qt::DisplayRole);
+
+QAIVLIBSHARED_EXPORT void qMimeDataAddHtml(QMimeData* mimeData, QTableView* view, int role = Qt::DisplayRole);
+
+QAIVLIBSHARED_EXPORT void qMimeDataAddPlainText(QMimeData* mimeData, QAdvancedTableView* view, int role = Qt::DisplayRole);
+
+QAIVLIBSHARED_EXPORT void qMimeDataAddPlainText(QMimeData* mimeData, QTableView* view, int role = Qt::DisplayRole);
 
 QAIVLIBSHARED_EXPORT QPair<QModelIndex, QModelIndex> selectionEdges(QItemSelection selection);
 

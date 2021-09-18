@@ -22,6 +22,7 @@
 #define QFILTERMODEL_H
 
 #include <QMenu>
+
 #include "QAbstractFilterModel.h"
 #include "QAIVlib_global.h"
 

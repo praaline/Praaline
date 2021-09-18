@@ -18,6 +18,7 @@
 ** License along with qadvanceditemviews.
 ** If not, see <http://www.gnu.org/licenses/>.
 ******************************************************************************/
+
 #include "QSharedItemSelectionModel.h"
 
 class QSharedItemSelectionModelPrivate
@@ -34,6 +35,7 @@ public:
 QSharedItemSelectionModelPrivate::QSharedItemSelectionModelPrivate(QSharedItemSelectionModel *sm)
 {
     m = sm;
+    shared = nullptr;
 }
 
 QSharedItemSelectionModelPrivate::~QSharedItemSelectionModelPrivate()

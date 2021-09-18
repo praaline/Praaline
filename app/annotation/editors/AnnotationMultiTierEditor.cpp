@@ -399,7 +399,7 @@ void AnnotationMultiTierEditor::timelineSelectedRowsChanged(QList<int> rows)
             const QSignalBlocker blocker(d->mediaPlayer);
             // no signals here
             d->mediaPlayer->setPosition(d->tMin_msec_selected);
-            qDebug() << "verticalTimelineSelectedRowsChanged : mediaplayer->set position" << d->tMin_msec_selected;
+            // qDebug() << "verticalTimelineSelectedRowsChanged : mediaplayer->set position" << d->tMin_msec_selected;
         }
         d->tPauseAt_msec = 0;
     } else {
@@ -420,7 +420,7 @@ void AnnotationMultiTierEditor::timelineCurrentIndexChanged(const QModelIndex &c
             const QSignalBlocker blocker(d->mediaPlayer);
             // no signals here
             d->mediaPlayer->setPosition(d->tMin_msec_selected);
-            qDebug() << "verticalTimelineCurrentIndexChanged : mediaplayer->set position" << d->tMin_msec_selected;
+            // qDebug() << "verticalTimelineCurrentIndexChanged : mediaplayer->set position" << d->tMin_msec_selected;
         }
         d->tPauseAt_msec = 0;
     } else {

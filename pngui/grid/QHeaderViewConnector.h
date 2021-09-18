@@ -41,7 +41,7 @@ public:
       */
     void append(QHeaderView* view);
 signals:
-    
+
 public slots:
     void adjustSectionSize();
 private slots:

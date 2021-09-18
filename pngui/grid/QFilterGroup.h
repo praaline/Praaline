@@ -22,6 +22,7 @@
 #define QFILTERGROUP_H
 
 #include <QString>
+
 #include "QAIVlib_global.h"
 #include "QAbstractFilter.h"
 
