@@ -54,8 +54,8 @@ ListInputDialog::ListInputDialog(QWidget *parent, const QString &title,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     vbox->addWidget(bb);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 ListInputDialog::~ListInputDialog()

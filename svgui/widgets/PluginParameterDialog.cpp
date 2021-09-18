@@ -109,7 +109,7 @@ PluginParameterDialog::PluginParameterDialog(Vamp::PluginBase *plugin,
     m_moreInfo = new QPushButton;
     m_moreInfo->setIcon(IconLoader().load("info"));
     m_moreInfo->setFixedSize(QSize(16, 16));
-    connect(m_moreInfo, SIGNAL(clicked()), this, SLOT(moreInfo()));
+    connect(m_moreInfo, &QAbstractButton::clicked, this, &PluginParameterDialog::moreInfo);
     subgrid->addWidget(m_moreInfo, row, 2, Qt::AlignTop | Qt::AlignRight);
     m_moreInfo->hide();
 
@@ -205,8 +205,8 @@ PluginParameterDialog::PluginParameterDialog(Vamp::PluginBase *plugin,
     paramLayout->addWidget(scroll);
 
     m_parameterBox = new PluginParameterBox(m_plugin);
-    connect(m_parameterBox, SIGNAL(pluginConfigurationChanged(QString)),
-            this,  SIGNAL(pluginConfigurationChanged(QString)));
+    connect(m_parameterBox, &PluginParameterBox::pluginConfigurationChanged,
+            this,  &PluginParameterDialog::pluginConfigurationChanged);
     scroll->setWidget(m_parameterBox);
 
     m_advanced = new QFrame;
@@ -234,7 +234,7 @@ PluginParameterDialog::PluginParameterDialog(Vamp::PluginBase *plugin,
 
     m_advancedButton = new QPushButton(tr("Advanced >>"));
     m_advancedButton->setCheckable(true);
-    connect(m_advancedButton, SIGNAL(clicked()), this, SLOT(advancedToggled()));
+    connect(m_advancedButton, &QAbstractButton::clicked, this, &PluginParameterDialog::advancedToggled);
         
     QSettings settings;
     settings.beginGroup("PluginParameterDialog");
@@ -249,8 +249,8 @@ PluginParameterDialog::PluginParameterDialog(Vamp::PluginBase *plugin,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     hbox->addWidget(bb);
-    connect(bb, SIGNAL(accepted()), this, SLOT(dialogAccepted()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &PluginParameterDialog::dialogAccepted);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
     bb->button(QDialogButtonBox::Ok)->setDefault(true);
 
     setAdvancedVisible(m_advancedVisible);
@@ -426,8 +426,8 @@ PluginParameterDialog::setShowProcessingOptions(bool showWindowSize,
             blockSizeCombo->setCurrentIndex(blockSizeCombo->count() - 1);
         }
         blockSizeCombo->setValidator(new QIntValidator(1, int(pow(2., 18)), this));
-        connect(blockSizeCombo, SIGNAL(editTextChanged(const QString &)),
-                this, SLOT(blockSizeComboChanged(const QString &)));
+        connect(blockSizeCombo, &QComboBox::editTextChanged,
+                this, &PluginParameterDialog::blockSizeComboChanged);
         windowLayout->addWidget(blockSizeCombo, 0, 1);
 
         windowLayout->addWidget(new QLabel(tr("Window increment:")), 1, 0);
@@ -448,16 +448,16 @@ PluginParameterDialog::setShowProcessingOptions(bool showWindowSize,
             incrementCombo->setCurrentIndex(incrementCombo->count() - 1);
         }
         incrementCombo->setValidator(new QIntValidator(1, int(pow(2., 18)), this));
-        connect(incrementCombo, SIGNAL(editTextChanged(const QString &)),
-                this, SLOT(incrementComboChanged(const QString &)));
+        connect(incrementCombo, &QComboBox::editTextChanged,
+                this, &PluginParameterDialog::incrementComboChanged);
         windowLayout->addWidget(incrementCombo, 1, 1);
         
         if (showFrequencyDomainOptions) {
             
             windowLayout->addWidget(new QLabel(tr("Window shape:")), 2, 0);
             WindowTypeSelector *windowTypeSelector = new WindowTypeSelector;
-            connect(windowTypeSelector, SIGNAL(windowTypeChanged(WindowType)),
-                    this, SLOT(windowTypeChanged(WindowType)));
+            connect(windowTypeSelector, &WindowTypeSelector::windowTypeChanged,
+                    this, &PluginParameterDialog::windowTypeChanged);
             windowLayout->addWidget(windowTypeSelector, 2, 1);
         }
 
@@ -520,8 +520,8 @@ PluginParameterDialog::setShowSelectionOnlyOption(bool show)
     m_selectionOnly->setChecked(lastSelectionOnly);
     m_currentSelectionOnly = lastSelectionOnly;
 
-    connect(m_selectionOnly, SIGNAL(stateChanged(int)),
-            this, SLOT(selectionOnlyChanged(int)));
+    connect(m_selectionOnly, &QCheckBox::stateChanged,
+            this, &PluginParameterDialog::selectionOnlyChanged);
 
     m_selectionOnly->show();
     m_inputModelBox->show();

@@ -166,8 +166,8 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
 {
     QList<QPointer<CorpusRepository> > repositoriesWithMetronomeAnnotationStructure;
     int countDone = 0;
-    madeProgress(0);
-    printMessage(QString("Metronome version 1.0: Detecting and Annotating Rhythmic Patterns"));
+    emit madeProgress(0);
+    emit printMessage(QString("Metronome version 1.0: Detecting and Annotating Rhythmic Patterns"));
 
     // Prepare list of values that indicate that a syllable is prominent
     QStringList valuesProminent = d->valuelistProminence.split(" ");
@@ -189,24 +189,24 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
             emit printMessage("Created annotation levels and attributes to store rhythmic pattern annotations.");
         }
         // QString path = com->repository()->files()->basePath();
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 // Find necessary tiers: syllables and phones
                 IntervalTier *tier_phone = tiers->getIntervalTierByName(d->levelPhone);
                 if (!tier_phone) {
-                    printMessage(QString("    Tier not found for phones (tier name: %1)").arg(d->levelPhone));
+                    emit printMessage(QString("    Tier not found for phones (tier name: %1)").arg(d->levelPhone));
                     continue;
                 }
                 IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
                 if (!tier_syll) {
-                    printMessage(QString("    Tier not found for syllables (tier name: %1)").arg(d->levelSyllable));
+                    emit printMessage(QString("    Tier not found for syllables (tier name: %1)").arg(d->levelSyllable));
                     continue;
                 }
                 // Find beats = the attack of a prominent syllable
@@ -229,7 +229,7 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
                 }
                 // Create rhythm intervals = time intervals between beats
                 if (beats.isEmpty()) {
-                    printMessage("   No prominent syllables found - no beats: aborting.");
+                    emit printMessage("   No prominent syllables found - no beats: aborting.");
                     continue;
                 }
                 if (beats.first() != RealTime::zeroTime) beats.insert(0, RealTime(0, 0));
@@ -273,18 +273,18 @@ void Praaline::Plugins::Metronome::PluginMetronome::annotateRhythmicPatterns(con
                     }
                     ++index;
                 }
-                printMessage(QString("   Found %1 regions of >=%2 intervals perceived as isochronous.")
+                emit printMessage(QString("   Found %1 regions of >=%2 intervals perceived as isochronous.")
                              .arg(countIsochronies).arg(d->isochronyConsecutiveCount));
 
             }
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 
     if (!d->filenameBookmarks.isEmpty()) {
-        printMessage(QString("Saved rhythmic patterns in bookmarks file: %1").arg(d->filenameBookmarks));
+        emit printMessage(QString("Saved rhythmic patterns in bookmarks file: %1").arg(d->filenameBookmarks));
         XMLSerialiserCorpusBookmark::saveCorpusBookmarks(listBookmarks, d->filenameBookmarks);
     }
     qDeleteAll(listBookmarks);

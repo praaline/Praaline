@@ -30,7 +30,7 @@ ProgressDialog::ProgressDialog(QString message, bool cancellable,
     if (timeBeforeShow > 0) {
         m_dialog->hide();
         m_showTimer = new QTimer;
-        connect(m_showTimer, SIGNAL(timeout()), this, SLOT(showTimerElapsed()));
+        connect(m_showTimer, &QTimer::timeout, this, &ProgressDialog::showTimerElapsed);
         m_showTimer->setSingleShot(true);
         m_showTimer->start(timeBeforeShow);
     } else {
@@ -40,7 +40,7 @@ ProgressDialog::ProgressDialog(QString message, bool cancellable,
     }
 
     if (cancellable) {
-        connect(m_dialog, SIGNAL(canceled()), this, SLOT(canceled()));
+        connect(m_dialog, &QProgressDialog::canceled, this, &ProgressDialog::canceled);
     }
 }
 

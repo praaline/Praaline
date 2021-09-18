@@ -152,8 +152,8 @@ CSVFormatDialog::CSVFormatDialog(QWidget *parent, CSVFormat format,
     layout->addWidget(m_sampleRateCombo, row++, 1);
     connect(m_sampleRateCombo, SIGNAL(activated(QString)),
 	    this, SLOT(sampleRateChanged(QString)));
-    connect(m_sampleRateCombo, SIGNAL(editTextChanged(QString)),
-	    this, SLOT(sampleRateChanged(QString)));
+    connect(m_sampleRateCombo, &QComboBox::editTextChanged,
+	    this, &CSVFormatDialog::sampleRateChanged);
 
     m_windowSizeLabel = new QLabel(tr("Frame increment between rows:"));
     layout->addWidget(m_windowSizeLabel, row, 0);
@@ -171,8 +171,8 @@ CSVFormatDialog::CSVFormatDialog(QWidget *parent, CSVFormat format,
     layout->addWidget(m_windowSizeCombo, row++, 1);
     connect(m_windowSizeCombo, SIGNAL(activated(QString)),
 	    this, SLOT(windowSizeChanged(QString)));
-    connect(m_windowSizeCombo, SIGNAL(editTextChanged(QString)),
-	    this, SLOT(windowSizeChanged(QString)));
+    connect(m_windowSizeCombo, &QComboBox::editTextChanged,
+	    this, &CSVFormatDialog::windowSizeChanged);
 
     m_modelLabel = new QLabel;
     QFont f(m_modelLabel->font());
@@ -183,8 +183,8 @@ CSVFormatDialog::CSVFormatDialog(QWidget *parent, CSVFormat format,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     layout->addWidget(bb, row++, 0, 1, 4);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     setLayout(layout);
 

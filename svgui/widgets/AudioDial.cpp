@@ -104,8 +104,8 @@ void AudioDial::setRangeMapper(RangeMapper *mapper)
     if (m_rangeMapper == mapper) return;
 
     if (!m_rangeMapper && mapper) {
-        connect(this, SIGNAL(valueChanged(int)),
-                this, SLOT(updateMappedValue(int)));
+        connect(this, &QAbstractSlider::valueChanged,
+                this, &AudioDial::updateMappedValue);
     }
 
     delete m_rangeMapper;

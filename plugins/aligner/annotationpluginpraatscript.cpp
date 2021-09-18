@@ -24,7 +24,7 @@ void AnnotationPluginPraatScript::executePraatScript(QString script, QStringList
     if (m_process) delete m_process;
     m_process = new QProcess(this);
     m_process->setReadChannel(QProcess::StandardOutput);
-    connect(m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(readyRead()));
+    connect(m_process, &QProcess::readyReadStandardOutput, this, &AnnotationPluginPraatScript::readyRead);
     connect(m_process, SIGNAL(finished(int)), this, SLOT(processFinished(int)));
     QString appPath = QCoreApplication::applicationDirPath();
     QString command = appPath + "/tools/praatcon.exe";

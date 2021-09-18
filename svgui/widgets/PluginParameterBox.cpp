@@ -164,8 +164,8 @@ PluginParameterBox::populate()
             QCheckBox *checkbox = new QCheckBox;
             checkbox->setObjectName(identifier);
             checkbox->setCheckState(value < 0.5 ? Qt::Unchecked : Qt::Checked);
-            connect(checkbox, SIGNAL(stateChanged(int)),
-                    this, SLOT(checkBoxChanged(int)));
+            connect(checkbox, &QCheckBox::stateChanged,
+                    this, &PluginParameterBox::checkBoxChanged);
             m_layout->addWidget(checkbox, i + offset, 2);
             rec.check = checkbox;
 
@@ -191,8 +191,8 @@ PluginParameterBox::populate()
             dial->setDefaultValue(rm->getPositionForValue(deft));
             dial->setValue(rm->getPositionForValue(value));
             dial->setShowToolTip(true);
-            connect(dial, SIGNAL(valueChanged(int)),
-                    this, SLOT(dialChanged(int)));
+            connect(dial, &QAbstractSlider::valueChanged,
+                    this, &PluginParameterBox::dialChanged);
             m_layout->addWidget(dial, i + offset, 1);
 
             QDoubleSpinBox *spinbox = new QDoubleSpinBox;

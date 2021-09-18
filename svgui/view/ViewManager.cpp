@@ -500,7 +500,7 @@ void
 ViewManager::setAudioPlaySource(AudioPlaySource *source)
 {
     if (!m_playSource) {
-	QTimer::singleShot(100, this, SLOT(checkPlayStatus()));
+	QTimer::singleShot(100, this, &ViewManager::checkPlayStatus);
     }
     m_playSource = source;
 }
@@ -536,7 +536,7 @@ ViewManager::checkPlayStatus()
 
 	emit playbackFrameChanged(m_playbackFrame);
 
-	QTimer::singleShot(20, this, SLOT(checkPlayStatus()));
+	QTimer::singleShot(20, this, &ViewManager::checkPlayStatus);
 
     } else {
 

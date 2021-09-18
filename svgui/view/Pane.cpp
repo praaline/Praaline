@@ -95,8 +95,8 @@ Pane::Pane(QWidget *w) :
     
     updateHeadsUpDisplay();
 
-    connect(this, SIGNAL(regionOutlined(QRect)), 
-            this, SLOT(zoomToRegion(QRect)));
+    connect(this, &Pane::regionOutlined, 
+            this, &Pane::zoomToRegion);
 
     cerr << "Pane::Pane(" << this << ") returning" << endl;
 }
@@ -145,10 +145,10 @@ Pane::updateHeadsUpDisplay()
         m_hthumb->setFixedHeight(16);
         m_hthumb->setDefaultValue(0);
         m_hthumb->setSpeed(0.6f);
-        connect(m_hthumb, SIGNAL(valueChanged(int)), this, 
-                SLOT(horizontalThumbwheelMoved(int)));
-        connect(m_hthumb, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-        connect(m_hthumb, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+        connect(m_hthumb, &Thumbwheel::valueChanged, this, 
+                &Pane::horizontalThumbwheelMoved);
+        connect(m_hthumb, &Thumbwheel::mouseEntered, this, &Pane::mouseEnteredWidget);
+        connect(m_hthumb, &Thumbwheel::mouseLeft, this, &Pane::mouseLeftWidget);
 
         m_vpan = new Panner;
         m_vpan->setCursor(Qt::ArrowCursor);
@@ -156,12 +156,12 @@ Pane::updateHeadsUpDisplay()
         m_vpan->setFixedWidth(12);
         m_vpan->setFixedHeight(70);
         m_vpan->setAlpha(80, 130);
-        connect(m_vpan, SIGNAL(rectExtentsChanged(float, float, float, float)),
-                this, SLOT(verticalPannerMoved(float, float, float, float)));
-        connect(m_vpan, SIGNAL(doubleClicked()),
-                this, SLOT(editVerticalPannerExtents()));
-        connect(m_vpan, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-        connect(m_vpan, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+        connect(m_vpan, &Panner::rectExtentsChanged,
+                this, &Pane::verticalPannerMoved);
+        connect(m_vpan, &Panner::doubleClicked,
+                this, &Pane::editVerticalPannerExtents);
+        connect(m_vpan, &Panner::mouseEntered, this, &Pane::mouseEnteredWidget);
+        connect(m_vpan, &Panner::mouseLeft, this, &Pane::mouseLeftWidget);
 
         m_vthumb = new Thumbwheel(Qt::Vertical);
         m_vthumb->setObjectName(tr("Vertical Zoom"));
@@ -169,10 +169,10 @@ Pane::updateHeadsUpDisplay()
         layout->addWidget(m_vthumb, 0, 2);
         m_vthumb->setFixedWidth(16);
         m_vthumb->setFixedHeight(70);
-        connect(m_vthumb, SIGNAL(valueChanged(int)), this, 
-                SLOT(verticalThumbwheelMoved(int)));
-        connect(m_vthumb, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-        connect(m_vthumb, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+        connect(m_vthumb, &Thumbwheel::valueChanged, this, 
+                &Pane::verticalThumbwheelMoved);
+        connect(m_vthumb, &Thumbwheel::mouseEntered, this, &Pane::mouseEnteredWidget);
+        connect(m_vthumb, &Thumbwheel::mouseLeft, this, &Pane::mouseLeftWidget);
 
         if (layer) {
             RangeMapper *rm = layer->getNewVerticalZoomRangeMapper();
@@ -190,11 +190,11 @@ Pane::updateHeadsUpDisplay()
         
         layout->setColumnStretch(0, 20);
 
-        connect(m_reset, SIGNAL(clicked()), m_hthumb, SLOT(resetToDefault()));
-        connect(m_reset, SIGNAL(clicked()), m_vthumb, SLOT(resetToDefault()));
-        connect(m_reset, SIGNAL(clicked()), m_vpan, SLOT(resetToDefault()));
-        connect(m_reset, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-        connect(m_reset, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+        connect(m_reset, &QAbstractButton::clicked, m_hthumb, &Thumbwheel::resetToDefault);
+        connect(m_reset, &QAbstractButton::clicked, m_vthumb, &Thumbwheel::resetToDefault);
+        connect(m_reset, &QAbstractButton::clicked, m_vpan, &Panner::resetToDefault);
+        connect(m_reset, &NotifyingPushButton::mouseEntered, this, &Pane::mouseEnteredWidget);
+        connect(m_reset, &NotifyingPushButton::mouseLeft, this, &Pane::mouseLeftWidget);
     }
 
     int count = 0;
@@ -1417,7 +1417,7 @@ Pane::schedulePlaybackFrameMove(sv_frame_t frame)
     m_playbackFrameMoveTo = frame;
     m_playbackFrameMoveScheduled = true;
     QTimer::singleShot(QApplication::doubleClickInterval() + 10, this,
-                       SLOT(playbackScheduleTimerElapsed()));
+                       &Pane::playbackScheduleTimerElapsed);
 }
 
 void
@@ -2706,8 +2706,8 @@ Pane::propertyContainerSelected(View *v, PropertyContainer *pc)
 
     if (getLayerCount() > 0) {
         layer = getLayer(getLayerCount() - 1);
-        disconnect(layer, SIGNAL(verticalZoomChanged()),
-                   this, SLOT(verticalZoomChanged()));
+        disconnect(layer, &Layer::verticalZoomChanged,
+                   this, &Pane::verticalZoomChanged);
     }
 
     View::propertyContainerSelected(v, pc);
@@ -2721,8 +2721,8 @@ Pane::propertyContainerSelected(View *v, PropertyContainer *pc)
 
     if (getLayerCount() > 0) {
         layer = getLayer(getLayerCount() - 1);
-        connect(layer, SIGNAL(verticalZoomChanged()),
-                this, SLOT(verticalZoomChanged()));
+        connect(layer, &Layer::verticalZoomChanged,
+                this, &Pane::verticalZoomChanged);
     }
 }
 

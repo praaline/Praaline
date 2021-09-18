@@ -42,17 +42,17 @@ void
 Model::setSourceModel(Model *model)
 {
     if (m_sourceModel) {
-        disconnect(m_sourceModel, SIGNAL(aboutToBeDeleted()),
-                   this, SLOT(sourceModelAboutToBeDeleted()));
+        disconnect(m_sourceModel, &Model::aboutToBeDeleted,
+                   this, &Model::sourceModelAboutToBeDeleted);
     }
 
     m_sourceModel = model;
 
     if (m_sourceModel) {
-        connect(m_sourceModel, SIGNAL(alignmentCompletionChanged()),
-                this, SIGNAL(alignmentCompletionChanged()));
-        connect(m_sourceModel, SIGNAL(aboutToBeDeleted()),
-                this, SLOT(sourceModelAboutToBeDeleted()));
+        connect(m_sourceModel, &Model::alignmentCompletionChanged,
+                this, &Model::alignmentCompletionChanged);
+        connect(m_sourceModel, &Model::aboutToBeDeleted,
+                this, &Model::sourceModelAboutToBeDeleted);
     }
 }
 

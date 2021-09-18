@@ -59,8 +59,8 @@ RangeInputDialog::RangeInputDialog(QString title, QString message,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     grid->addWidget(bb, 2, 0, 1, 5);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 RangeInputDialog::~RangeInputDialog()

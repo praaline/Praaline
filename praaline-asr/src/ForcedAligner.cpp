@@ -295,7 +295,7 @@ bool ForcedAligner::alignAllUtterances(const QString &waveFilepath,
                                 alignerOutput, insertLeadingAndTrailingPauses);
         Q_UNUSED(result)
         // if (!result) qDebug() << result << tierUtterances->at(indexUtterance)->text() << alignerOutput;
-        alignerMessage(alignerOutput);
+        emit alignerMessage(alignerOutput);
         indexUtterance--;
     }
     tierTokens->mergeIdenticalAnnotations("_");

@@ -164,14 +164,14 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIIn
 
     connect(CommandHistory::getInstance(), SIGNAL(commandExecuted()),
             this, SLOT(documentModified()));
-    connect(CommandHistory::getInstance(), SIGNAL(documentRestored()),
-            this, SLOT(documentRestored()));
+    connect(CommandHistory::getInstance(), &CommandHistory::documentRestored,
+            this, &VisualiserWindowBase::documentRestored);
     
     m_viewManager = new ViewManager();
     connect(m_viewManager, SIGNAL(selectionChanged()),
             this, SLOT(updateMenuStates()));
-    connect(m_viewManager, SIGNAL(inProgressSelectionChanged()),
-            this, SLOT(inProgressSelectionChanged()));
+    connect(m_viewManager, &ViewManager::inProgressSelectionChanged,
+            this, &VisualiserWindowBase::inProgressSelectionChanged);
 
     // set a sensible default font size for views -- cannot do this
     // in Preferences, which is in base and not supposed to use QtGui
@@ -191,20 +191,20 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIIn
     }
 
     m_paneStack = new PaneStack(0, m_viewManager);
-    connect(m_paneStack, SIGNAL(currentPaneChanged(Pane *)),
-            this, SLOT(currentPaneChanged(Pane *)));
-    connect(m_paneStack, SIGNAL(currentLayerChanged(Pane *, Layer *)),
-            this, SLOT(currentLayerChanged(Pane *, Layer *)));
+    connect(m_paneStack, &PaneStack::currentPaneChanged,
+            this, &VisualiserWindowBase::currentPaneChanged);
+    connect(m_paneStack, &PaneStack::currentLayerChanged,
+            this, &VisualiserWindowBase::currentLayerChanged);
     connect(m_paneStack, SIGNAL(rightButtonMenuRequested(Pane *, QPoint)),
             this, SLOT(rightButtonMenuRequested(Pane *, QPoint)));
-    connect(m_paneStack, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(m_paneStack, &PaneStack::contextHelpChanged,
+            this, &VisualiserWindowBase::contextHelpChanged);
     connect(m_paneStack, SIGNAL(paneAdded(Pane *)),
             this, SLOT(paneAdded(Pane *)));
     connect(m_paneStack, SIGNAL(paneHidden(Pane *)),
             this, SLOT(paneHidden(Pane *)));
-    connect(m_paneStack, SIGNAL(paneAboutToBeDeleted(Pane *)),
-            this, SLOT(paneAboutToBeDeleted(Pane *)));
+    connect(m_paneStack, &PaneStack::paneAboutToBeDeleted,
+            this, &VisualiserWindowBase::paneAboutToBeDeleted);
     connect(m_paneStack, SIGNAL(dropAccepted(Pane *, QStringList)),
             this, SLOT(paneDropAccepted(Pane *, QStringList)));
     connect(m_paneStack, SIGNAL(dropAccepted(Pane *, QString)),
@@ -215,21 +215,21 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIIn
     m_playSource = new AudioCallbackPlaySource(m_viewManager,
                                                QApplication::applicationName());
 
-    connect(m_playSource, SIGNAL(sampleRateMismatch(sv_samplerate_t, sv_samplerate_t, bool)),
-            this,           SLOT(sampleRateMismatch(sv_samplerate_t, sv_samplerate_t, bool)));
-    connect(m_playSource, SIGNAL(audioOverloadPluginDisabled()),
-            this,           SLOT(audioOverloadPluginDisabled()));
-    connect(m_playSource, SIGNAL(audioTimeStretchMultiChannelDisabled()),
-            this,           SLOT(audioTimeStretchMultiChannelDisabled()));
+    connect(m_playSource, &AudioCallbackPlaySource::sampleRateMismatch,
+            this,           &VisualiserWindowBase::sampleRateMismatch);
+    connect(m_playSource, &AudioCallbackPlaySource::audioOverloadPluginDisabled,
+            this,           &VisualiserWindowBase::audioOverloadPluginDisabled);
+    connect(m_playSource, &AudioCallbackPlaySource::audioTimeStretchMultiChannelDisabled,
+            this,           &VisualiserWindowBase::audioTimeStretchMultiChannelDisabled);
 
-    connect(m_viewManager, SIGNAL(outputLevelsChanged(float, float)),
-            this, SLOT(outputLevelsChanged(float, float)));
+    connect(m_viewManager, &ViewManager::outputLevelsChanged,
+            this, &VisualiserWindowBase::outputLevelsChanged);
 
-    connect(m_viewManager, SIGNAL(playbackFrameChanged(sv_frame_t)),
-            this, SLOT(playbackFrameChanged(sv_frame_t)));
+    connect(m_viewManager, &ViewManager::playbackFrameChanged,
+            this, &VisualiserWindowBase::playbackFrameChanged);
 
-    connect(m_viewManager, SIGNAL(globalCentreFrameChanged(sv_frame_t)),
-            this, SLOT(globalCentreFrameChanged(sv_frame_t)));
+    connect(m_viewManager, &ViewManager::globalCentreFrameChanged,
+            this, &VisualiserWindowBase::globalCentreFrameChanged);
 
     connect(m_viewManager, SIGNAL(viewCentreFrameChanged(View *, sv_frame_t)),
             this, SLOT(viewCentreFrameChanged(View *, sv_frame_t)));
@@ -238,9 +238,9 @@ VisualiserWindowBase::VisualiserWindowBase(bool withAudioOutput, bool withMIDIIn
             this, SLOT(viewZoomLevelChanged(View *, int, bool)));
 
     connect(Preferences::getInstance(),
-            SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
+            &PropertyContainer::propertyChanged,
             this,
-            SLOT(preferenceChanged(PropertyContainer::PropertyName)));
+            &VisualiserWindowBase::preferenceChanged);
 
     Labeller::ValueType labellerType = Labeller::ValueFromTwoLevelCounter;
     settings.beginGroup("MainWindow");
@@ -292,16 +292,16 @@ void VisualiserWindowBase::resizeConstrained(QSize size)
 void VisualiserWindowBase::startOSCQueue()
 {
     m_oscQueueStarter = new OSCQueueStarter(this);
-    connect(m_oscQueueStarter, SIGNAL(finished()), this, SLOT(oscReady()));
+    connect(m_oscQueueStarter, &QThread::finished, this, &VisualiserWindowBase::oscReady);
     m_oscQueueStarter->start();
 }
 
 void VisualiserWindowBase::oscReady()
 {
     if (m_oscQueue && m_oscQueue->isOK()) {
-        connect(m_oscQueue, SIGNAL(messagesAvailable()), this, SLOT(pollOSC()));
+        connect(m_oscQueue, &OSCQueue::messagesAvailable, this, &VisualiserWindowBase::pollOSC);
         QTimer *oscTimer = new QTimer(this);
-        connect(oscTimer, SIGNAL(timeout()), this, SLOT(pollOSC()));
+        connect(oscTimer, &QTimer::timeout, this, &VisualiserWindowBase::pollOSC);
         oscTimer->start(1000);
         cerr << "Finished setting up OSC interface" << endl;
     }
@@ -1023,7 +1023,7 @@ VisualiserWindowBase::FileOpenStatus
 VisualiserWindowBase::openPath(QString fileOrUrl, AudioFileOpenMode mode)
 {
     ProgressDialog dialog(tr("Opening file or URL..."), true, 2000, this);
-    connect(&dialog, SIGNAL(showing()), this, SIGNAL(hideSplash()));
+    connect(&dialog, &ProgressDialog::showing, this, &VisualiserWindowBase::hideSplash);
     return open(FileSource(fileOrUrl, &dialog), mode);
 }
 
@@ -1383,7 +1383,7 @@ VisualiserWindowBase::openPlaylist(FileSource source, AudioFileOpenMode mode)
          i != playlist.end(); ++i) {
 
         ProgressDialog dialog(tr("Opening playlist..."), true, 2000, this);
-        connect(&dialog, SIGNAL(showing()), this, SIGNAL(hideSplash()));
+        connect(&dialog, &ProgressDialog::showing, this, &VisualiserWindowBase::hideSplash);
         FileOpenStatus status = openAudio(FileSource(*i, &dialog), mode);
 
         if (status == FileOpenCancelled) {
@@ -1450,11 +1450,11 @@ VisualiserWindowBase::openLayer(FileSource source)
         
         SVFileReader reader(m_document, callback, source.getLocation());
         connect
-                (&reader, SIGNAL(modelRegenerationFailed(QString, QString, QString)),
-                 this, SLOT(modelRegenerationFailed(QString, QString, QString)));
+                (&reader, &SVFileReader::modelRegenerationFailed,
+                 this, &VisualiserWindowBase::modelRegenerationFailed);
         connect
-                (&reader, SIGNAL(modelRegenerationWarning(QString, QString, QString)),
-                 this, SLOT(modelRegenerationWarning(QString, QString, QString)));
+                (&reader, &SVFileReader::modelRegenerationWarning,
+                 this, &VisualiserWindowBase::modelRegenerationWarning);
         reader.setCurrentPane(pane);
         
         QXmlInputSource inputSource(&file);
@@ -1588,7 +1588,7 @@ VisualiserWindowBase::FileOpenStatus
 VisualiserWindowBase::openSessionPath(QString fileOrUrl)
 {
     ProgressDialog dialog(tr("Opening session..."), true, 2000, this);
-    connect(&dialog, SIGNAL(showing()), this, SIGNAL(hideSplash()));
+    connect(&dialog, &ProgressDialog::showing, this, &VisualiserWindowBase::hideSplash);
     return openSession(FileSource(fileOrUrl, &dialog));
 }
 
@@ -1663,11 +1663,11 @@ VisualiserWindowBase::openSession(FileSource source)
 
     SVFileReader reader(m_document, callback, source.getLocation());
     connect
-            (&reader, SIGNAL(modelRegenerationFailed(QString, QString, QString)),
-             this, SLOT(modelRegenerationFailed(QString, QString, QString)));
+            (&reader, &SVFileReader::modelRegenerationFailed,
+             this, &VisualiserWindowBase::modelRegenerationFailed);
     connect
-            (&reader, SIGNAL(modelRegenerationWarning(QString, QString, QString)),
-             this, SLOT(modelRegenerationWarning(QString, QString, QString)));
+            (&reader, &SVFileReader::modelRegenerationWarning,
+             this, &VisualiserWindowBase::modelRegenerationWarning);
 
     reader.parse(*inputSource);
     
@@ -1762,11 +1762,11 @@ VisualiserWindowBase::openSessionTemplate(FileSource source)
 
     SVFileReader reader(m_document, callback, source.getLocation());
     connect
-            (&reader, SIGNAL(modelRegenerationFailed(QString, QString, QString)),
-             this, SLOT(modelRegenerationFailed(QString, QString, QString)));
+            (&reader, &SVFileReader::modelRegenerationFailed,
+             this, &VisualiserWindowBase::modelRegenerationFailed);
     connect
-            (&reader, SIGNAL(modelRegenerationWarning(QString, QString, QString)),
-             this, SLOT(modelRegenerationWarning(QString, QString, QString)));
+            (&reader, &SVFileReader::modelRegenerationWarning,
+             this, &VisualiserWindowBase::modelRegenerationWarning);
 
     reader.parse(*inputSource);
     
@@ -1837,7 +1837,7 @@ VisualiserWindowBase::openLayersFromRDF(FileSource source)
     cerr << "MainWindowBase::openLayersFromRDF" << endl;
 
     ProgressDialog dialog(tr("Importing from RDF..."), true, 2000, this);
-    connect(&dialog, SIGNAL(showing()), this, SIGNAL(hideSplash()));
+    connect(&dialog, &ProgressDialog::showing, this, &VisualiserWindowBase::hideSplash);
 
     if (getMainModel()) {
         rate = getMainModel()->getSampleRate();
@@ -2029,32 +2029,32 @@ VisualiserWindowBase::createDocument()
 {
     m_document = new Document;
 
-    connect(m_document, SIGNAL(layerAdded(Layer *)),
-            this, SLOT(layerAdded(Layer *)));
-    connect(m_document, SIGNAL(layerRemoved(Layer *)),
-            this, SLOT(layerRemoved(Layer *)));
-    connect(m_document, SIGNAL(layerAboutToBeDeleted(Layer *)),
-            this, SLOT(layerAboutToBeDeleted(Layer *)));
-    connect(m_document, SIGNAL(layerInAView(Layer *, bool)),
-            this, SLOT(layerInAView(Layer *, bool)));
+    connect(m_document, &Document::layerAdded,
+            this, &VisualiserWindowBase::layerAdded);
+    connect(m_document, &Document::layerRemoved,
+            this, &VisualiserWindowBase::layerRemoved);
+    connect(m_document, &Document::layerAboutToBeDeleted,
+            this, &VisualiserWindowBase::layerAboutToBeDeleted);
+    connect(m_document, &Document::layerInAView,
+            this, &VisualiserWindowBase::layerInAView);
 
-    connect(m_document, SIGNAL(modelAdded(Model *)),
-            this, SLOT(modelAdded(Model *)));
-    connect(m_document, SIGNAL(mainModelChanged(WaveFileModel *)),
-            this, SLOT(mainModelChanged(WaveFileModel *)));
-    connect(m_document, SIGNAL(modelAboutToBeDeleted(Model *)),
-            this, SLOT(modelAboutToBeDeleted(Model *)));
+    connect(m_document, &Document::modelAdded,
+            this, &VisualiserWindowBase::modelAdded);
+    connect(m_document, &Document::mainModelChanged,
+            this, &VisualiserWindowBase::mainModelChanged);
+    connect(m_document, &Document::modelAboutToBeDeleted,
+            this, &VisualiserWindowBase::modelAboutToBeDeleted);
 
-    connect(m_document, SIGNAL(modelGenerationFailed(QString, QString)),
-            this, SLOT(modelGenerationFailed(QString, QString)));
-    connect(m_document, SIGNAL(modelRegenerationWarning(QString, QString, QString)),
-            this, SLOT(modelRegenerationWarning(QString, QString, QString)));
-    connect(m_document, SIGNAL(modelGenerationFailed(QString, QString)),
-            this, SLOT(modelGenerationFailed(QString, QString)));
-    connect(m_document, SIGNAL(modelRegenerationWarning(QString, QString, QString)),
-            this, SLOT(modelRegenerationWarning(QString, QString, QString)));
-    connect(m_document, SIGNAL(alignmentFailed(QString, QString)),
-            this, SLOT(alignmentFailed(QString, QString)));
+    connect(m_document, &Document::modelGenerationFailed,
+            this, &VisualiserWindowBase::modelGenerationFailed);
+    connect(m_document, &Document::modelRegenerationWarning,
+            this, &VisualiserWindowBase::modelRegenerationWarning);
+    connect(m_document, &Document::modelGenerationFailed,
+            this, &VisualiserWindowBase::modelGenerationFailed);
+    connect(m_document, &Document::modelRegenerationWarning,
+            this, &VisualiserWindowBase::modelRegenerationWarning);
+    connect(m_document, &Document::alignmentFailed,
+            this, &VisualiserWindowBase::alignmentFailed);
 
     emit replacedDocument();
 }
@@ -2685,8 +2685,8 @@ VisualiserWindowBase::AddPaneCommand::execute()
         m_prevCurrentPane = m_mw->m_paneStack->getCurrentPane();
         m_pane = m_mw->m_paneStack->addPane();
 
-        connect(m_pane, SIGNAL(contextHelpChanged(const QString &)),
-                m_mw, SLOT(contextHelpChanged(const QString &)));
+        connect(m_pane, &View::contextHelpChanged,
+                m_mw, &VisualiserWindowBase::contextHelpChanged);
     } else {
         m_mw->m_paneStack->showPane(m_pane);
     }
@@ -2824,24 +2824,24 @@ void
 VisualiserWindowBase::connectLayerEditDialog(ModelDataTableDialog *dialog)
 {
     connect(m_viewManager,
-            SIGNAL(globalCentreFrameChanged(sv_frame_t)),
+            &ViewManager::globalCentreFrameChanged,
             dialog,
-            SLOT(userScrolledToFrame(sv_frame_t)));
+            &ModelDataTableDialog::userScrolledToFrame);
 
     connect(m_viewManager,
-            SIGNAL(playbackFrameChanged(sv_frame_t)),
+            &ViewManager::playbackFrameChanged,
             dialog,
-            SLOT(playbackScrolledToFrame(sv_frame_t)));
+            &ModelDataTableDialog::playbackScrolledToFrame);
 
     connect(dialog,
-            SIGNAL(scrollToFrame(sv_frame_t)),
+            &ModelDataTableDialog::scrollToFrame,
             m_viewManager,
-            SLOT(setGlobalCentreFrame(sv_frame_t)));
+            &ViewManager::setGlobalCentreFrame);
 
     connect(dialog,
-            SIGNAL(scrollToFrame(sv_frame_t)),
+            &ModelDataTableDialog::scrollToFrame,
             m_viewManager,
-            SLOT(setPlaybackFrame(sv_frame_t)));
+            &ViewManager::setPlaybackFrame);
 }    
 
 void

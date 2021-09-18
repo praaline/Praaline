@@ -360,11 +360,11 @@ void Praaline::Plugins::WebDjango::PluginWebDjango::process(const QList<CorpusCo
 {
     if (d->pathXML.isEmpty()) d->pathXML = ".";
     int countDone = 0;
-    madeProgress(0);
-    printMessage("XML file creator for Simple CMS v. 1.0");
+    emit madeProgress(0);
+    emit printMessage("XML file creator for Simple CMS v. 1.0");
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        printMessage(QString("Creating XML file for %1").arg(com->ID()));
+        emit printMessage(QString("Creating XML file for %1").arg(com->ID()));
         foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             foreach (CorpusAnnotation *annot, com->annotations()) {
@@ -373,10 +373,10 @@ void Praaline::Plugins::WebDjango::PluginWebDjango::process(const QList<CorpusCo
             }
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
-    madeProgress(100);
-    printMessage("Finished creating XML files for Django.");
+    emit madeProgress(100);
+    emit printMessage("Finished creating XML files for Django.");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

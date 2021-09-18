@@ -56,28 +56,28 @@ CommandHistory::CommandHistory() :
     m_undoAction = new QAction(QIcon(":/icons/visualiser/undo.png"), tr("&Undo"), this);
     m_undoAction->setShortcut(tr("Ctrl+Z"));
     m_undoAction->setStatusTip(tr("Undo the last editing operation"));
-    connect(m_undoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(m_undoAction, &QAction::triggered, this, &CommandHistory::undo);
     
     m_undoMenuAction = new QAction(QIcon(":/icons/visualiser/undo.png"), tr("&Undo"), this);
-    connect(m_undoMenuAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(m_undoMenuAction, &QAction::triggered, this, &CommandHistory::undo);
     
     m_undoMenu = new QMenu(tr("&Undo"));
     m_undoMenuAction->setMenu(m_undoMenu);
-    connect(m_undoMenu, SIGNAL(triggered(QAction *)),
-	    this, SLOT(undoActivated(QAction*)));
+    connect(m_undoMenu, &QMenu::triggered,
+	    this, &CommandHistory::undoActivated);
 
     m_redoAction = new QAction(QIcon(":/icons/visualiser/redo.png"), tr("Re&do"), this);
     m_redoAction->setShortcut(tr("Ctrl+Shift+Z"));
     m_redoAction->setStatusTip(tr("Redo the last operation that was undone"));
-    connect(m_redoAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(m_redoAction, &QAction::triggered, this, &CommandHistory::redo);
     
     m_redoMenuAction = new QAction(QIcon(":/icons/visualiser/redo.png"), tr("Re&do"), this);
-    connect(m_redoMenuAction, SIGNAL(triggered()), this, SLOT(redo()));
+    connect(m_redoMenuAction, &QAction::triggered, this, &CommandHistory::redo);
 
     m_redoMenu = new QMenu(tr("Re&do"));
     m_redoMenuAction->setMenu(m_redoMenu);
-    connect(m_redoMenu, SIGNAL(triggered(QAction *)),
-	    this, SLOT(redoActivated(QAction*)));
+    connect(m_redoMenu, &QMenu::triggered,
+	    this, &CommandHistory::redoActivated);
 }
 
 CommandHistory::~CommandHistory()
@@ -235,7 +235,7 @@ CommandHistory::addToBundle(UndoableCommand *command, bool execute)
 
     delete m_bundleTimer;
     m_bundleTimer = new QTimer(this);
-    connect(m_bundleTimer, SIGNAL(timeout()), this, SLOT(bundleTimerTimeout()));
+    connect(m_bundleTimer, &QTimer::timeout, this, &CommandHistory::bundleTimerTimeout);
     m_bundleTimer->start(m_bundleTimeout);
 }
 

@@ -164,8 +164,8 @@ ItemEditDialog::ItemEditDialog(sv_samplerate_t sampleRate, int options,
         subgrid->addWidget(new QLabel(tr("Text:")), subrow, 0);
 
         m_textField = new QLineEdit;
-        connect(m_textField, SIGNAL(textChanged(QString)),
-                this, SLOT(textChanged(QString)));
+        connect(m_textField, &QLineEdit::textChanged,
+                this, &ItemEditDialog::textChanged);
         subgrid->addWidget(m_textField, subrow, 1);
 
         ++subrow;
@@ -186,9 +186,9 @@ ItemEditDialog::ItemEditDialog(sv_samplerate_t sampleRate, int options,
     bb->addButton(ok, QDialogButtonBox::AcceptRole);
     bb->addButton(m_resetButton, QDialogButtonBox::ResetRole);
     bb->addButton(cancel, QDialogButtonBox::RejectRole);
-    connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(m_resetButton, SIGNAL(clicked()), this, SLOT(reset()));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
+    connect(ok, &QAbstractButton::clicked, this, &QDialog::accept);
+    connect(m_resetButton, &QAbstractButton::clicked, this, &ItemEditDialog::reset);
+    connect(cancel, &QAbstractButton::clicked, this, &QDialog::reject);
     m_resetButton->setEnabled(false);
 }
 

@@ -59,7 +59,7 @@ DecodingWavFileReader::DecodingWavFileReader(FileSource source,
     if (resampleMode == ResampleAtOnce) {
 
         if (m_reporter) {
-            connect(m_reporter, SIGNAL(cancelled()), this, SLOT(cancelled()));
+            connect(m_reporter, &ProgressReporter::cancelled, this, &DecodingWavFileReader::cancelled);
             m_reporter->setMessage
                 (tr("Decoding %1...").arg(QFileInfo(m_path).fileName()));
         }

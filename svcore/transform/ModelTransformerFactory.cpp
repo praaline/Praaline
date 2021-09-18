@@ -223,7 +223,7 @@ ModelTransformerFactory::transformMultiple(const Transforms &transforms,
 
     m_runningTransformers.insert(t);
 
-    connect(t, SIGNAL(finished()), this, SLOT(transformerFinished()));
+    connect(t, &QThread::finished, this, &ModelTransformerFactory::transformerFinished);
 
     t->start();
     vector<Model *> models = t->detachOutputModels();

@@ -77,7 +77,7 @@ RegionLayer::setModel(RegionModel *model)
 
     connectSignals(m_model);
 
-    connect(m_model, SIGNAL(modelChanged()), this, SLOT(recalcSpacing()));
+    connect(m_model, &Model::modelChanged, this, &RegionLayer::recalcSpacing);
     recalcSpacing();
 
     //    cerr << "RegionLayer::setModel(" << model << ")" << endl;

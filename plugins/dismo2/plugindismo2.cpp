@@ -186,8 +186,8 @@ void Praaline::Plugins::DisMo2::PluginDisMo2::process(const QList<CorpusCommunic
 //        madeProgress(countDone * 100 / communications.count());
 //    }
 //    delete DISMO;
-    madeProgress(100);
-    printMessage("DisMo finished.");
+    emit madeProgress(100);
+    emit printMessage("DisMo finished.");
 }
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     using namespace Praaline::Plugins::DisMo2;

@@ -128,7 +128,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
 {
     bool withSyllData = true;
     int countDone = 0;
-    madeProgress(0);
+    emit madeProgress(0);
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
@@ -264,14 +264,14 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::concordanc
                 }
                 delete DA;
                 if (result.length() > 1) result.chop(1);
-                if (!result.isEmpty()) printMessage(result);
+                if (!result.isEmpty()) emit printMessage(result);
                 result.clear();
 
             }
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
@@ -279,8 +279,8 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
     (const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Creating sequences in database"));
+    emit madeProgress(0);
+    emit printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Creating sequences in database"));
 
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
@@ -308,7 +308,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::createSequ
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
@@ -316,19 +316,19 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
         const QList<CorpusCommunication *> &communications, const QStringList &codes)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: %1 patterns").arg(codes.join(", ")));
+    emit madeProgress(0);
+    emit printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: %1 patterns").arg(codes.join(", ")));
     QList<CorpusBookmark *> bookmarks;
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
@@ -358,7 +358,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::patterns(
             XMLSerialiserCorpusBookmark::saveCorpusBookmarks(bookmarks, com->repository()->files()->basePath() + "/autodisfluencies_bookmarks.xml");
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
@@ -366,20 +366,20 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
         const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Exporting multi-tier textgrid"));
+    emit madeProgress(0);
+    emit printMessage(QString("DisMo Disfluency Analyser ver. 0.1 running: Exporting multi-tier textgrid"));
 
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         QString path = com->repository()->files()->basePath();
-        printMessage(QString("Exporting %1").arg(com->ID()));
+        emit printMessage(QString("Exporting %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             QString annotationID = annot->ID();
             tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annotationID);
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
@@ -485,7 +485,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::exportMult
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
@@ -508,7 +508,7 @@ void Praaline::Plugins::DisfluencyAnalyser::PluginDisfluencyAnalyser::process(co
         title = title.append("reparandum\tinterregnum\tinterregnum_pos\tinterregnum_disfluency\treparans\t");
         title = title.append("rightContext\trightContext_SIL\t");
         title = title.append("reparans_arc\tinterregnum_arc\treparans_arc");
-        printMessage(title);
+        emit printMessage(title);
 
         concordances(communications);
     }

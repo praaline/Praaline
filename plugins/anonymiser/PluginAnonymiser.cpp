@@ -143,8 +143,8 @@ void Praaline::Plugins::Anonymiser::PluginAnonymiser::scriptFinished(int exitcod
 void Praaline::Plugins::Anonymiser::PluginAnonymiser::process(const QList<CorpusCommunication *> &communications)
 {
     AnonymiserScript *anonymiser = new AnonymiserScript(this);
-    connect(anonymiser, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    connect(anonymiser, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+    connect(anonymiser, &AnnotationPluginPraatScript::logOutput, this, &PluginAnonymiser::scriptSentMessage);
+    connect(anonymiser, &AnnotationPluginPraatScript::finished, this, &PluginAnonymiser::scriptFinished);
     // Pass parameters from the plug-in to anonymiser script object
     anonymiser->pitchAnalysisDuration = d->pitchAnalysisDuration;
     anonymiser->pitchAnalysisTimestep = d->pitchAnalysisTimestep;
@@ -190,8 +190,8 @@ void Praaline::Plugins::Anonymiser::PluginAnonymiser::process(const QList<Corpus
         countDone++;
         emit madeProgress(countDone * 100 / communications.count());
     }
-    disconnect(anonymiser, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    disconnect(anonymiser, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+    disconnect(anonymiser, &AnnotationPluginPraatScript::logOutput, this, &PluginAnonymiser::scriptSentMessage);
+    disconnect(anonymiser, &AnnotationPluginPraatScript::finished, this, &PluginAnonymiser::scriptFinished);
     delete anonymiser;
     emit madeProgress(100);
     emit printMessage("Finished anonymisation.");

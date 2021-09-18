@@ -94,11 +94,11 @@ PropertyBox::PropertyBox(PropertyContainer *container) :
 
     m_layout->setRowStretch(m_layout->rowCount(), 10);
 
-    connect(UnitDatabase::getInstance(), SIGNAL(unitDatabaseChanged()),
-            this, SLOT(unitDatabaseChanged()));
+    connect(UnitDatabase::getInstance(), &UnitDatabase::unitDatabaseChanged,
+            this, &PropertyBox::unitDatabaseChanged);
 
-    connect(ColourDatabase::getInstance(), SIGNAL(colourDatabaseChanged()),
-            this, SLOT(colourDatabaseChanged()));
+    connect(ColourDatabase::getInstance(), &ColourDatabase::colourDatabaseChanged,
+            this, &PropertyBox::colourDatabaseChanged);
 
 #ifdef DEBUG_PROPERTY_BOX
     cerr << "PropertyBox[" << this << "]::PropertyBox returning" << endl;
@@ -128,10 +128,10 @@ PropertyBox::populateViewPlayFrame()
 
     Layer *layer = dynamic_cast<Layer *>(m_container);
     if (layer) {
-	disconnect(layer, SIGNAL(modelReplaced()),
-                   this, SLOT(populateViewPlayFrame()));
-	connect(layer, SIGNAL(modelReplaced()),
-		this, SLOT(populateViewPlayFrame()));
+	disconnect(layer, &Layer::modelReplaced,
+                   this, &PropertyBox::populateViewPlayFrame);
+	connect(layer, &Layer::modelReplaced,
+		this, &PropertyBox::populateViewPlayFrame);
     }
 
     PlayParameters *params = m_container->getPlayParameters();
@@ -157,12 +157,12 @@ PropertyBox::populateViewPlayFrame()
 
 	m_showButton = new LEDButton(Qt::blue);
 	layout->addWidget(m_showButton);
-	connect(m_showButton, SIGNAL(stateChanged(bool)),
-		this, SIGNAL(showLayer(bool)));
-        connect(m_showButton, SIGNAL(mouseEntered()),
-                this, SLOT(mouseEnteredWidget()));
-        connect(m_showButton, SIGNAL(mouseLeft()),
-                this, SLOT(mouseLeftWidget()));
+	connect(m_showButton, &LEDButton::stateChanged,
+		this, &PropertyBox::showLayer);
+        connect(m_showButton, &LEDButton::mouseEntered,
+                this, &PropertyBox::mouseEnteredWidget);
+        connect(m_showButton, &LEDButton::mouseLeft,
+                this, &PropertyBox::mouseLeftWidget);
 	layout->setAlignment(m_showButton, Qt::AlignVCenter);
     }
     
@@ -175,14 +175,14 @@ PropertyBox::populateViewPlayFrame()
 	m_playButton = new LEDButton(Qt::darkGreen);
         m_playButton->setState(!params->isPlayMuted());
 	layout->addWidget(m_playButton);
-	connect(m_playButton, SIGNAL(stateChanged(bool)),
-		this, SLOT(playAudibleButtonChanged(bool)));
-        connect(m_playButton, SIGNAL(mouseEntered()),
-                this, SLOT(mouseEnteredWidget()));
-        connect(m_playButton, SIGNAL(mouseLeft()),
-                this, SLOT(mouseLeftWidget()));
-	connect(params, SIGNAL(playAudibleChanged(bool)),
-		this, SLOT(playAudibleChanged(bool)));
+	connect(m_playButton, &LEDButton::stateChanged,
+		this, &PropertyBox::playAudibleButtonChanged);
+        connect(m_playButton, &LEDButton::mouseEntered,
+                this, &PropertyBox::mouseEnteredWidget);
+        connect(m_playButton, &LEDButton::mouseLeft,
+                this, &PropertyBox::mouseLeftWidget);
+	connect(params, &PlayParameters::playAudibleChanged,
+		this, &PropertyBox::playAudibleChanged);
 	layout->setAlignment(m_playButton, Qt::AlignVCenter);
 
 	layout->insertStretch(-1, 10);
@@ -193,8 +193,8 @@ PropertyBox::populateViewPlayFrame()
             playParamButton->setFixedWidth(24);
             playParamButton->setFixedHeight(24);
             layout->addWidget(playParamButton);
-            connect(playParamButton, SIGNAL(clicked()),
-                    this, SLOT(editPlayParameters()));
+            connect(playParamButton, &QAbstractButton::clicked,
+                    this, &PropertyBox::editPlayParameters);
         }
 
 	AudioDial *gainDial = new AudioDial;
@@ -211,16 +211,16 @@ PropertyBox::populateViewPlayFrame()
         gainDial->setRangeMapper(new LinearRangeMapper
                                  (-50, 50, -25, 25, tr("dB")));
         gainDial->setShowToolTip(true);
-	connect(gainDial, SIGNAL(valueChanged(int)),
-		this, SLOT(playGainDialChanged(int)));
-	connect(params, SIGNAL(playGainChanged(float)),
-		this, SLOT(playGainChanged(float)));
+	connect(gainDial, &QAbstractSlider::valueChanged,
+		this, &PropertyBox::playGainDialChanged);
+	connect(params, &PlayParameters::playGainChanged,
+		this, &PropertyBox::playGainChanged);
 	connect(this, SIGNAL(changePlayGainDial(int)),
 		gainDial, SLOT(setValue(int)));
-        connect(gainDial, SIGNAL(mouseEntered()),
-                this, SLOT(mouseEnteredWidget()));
-        connect(gainDial, SIGNAL(mouseLeft()),
-                this, SLOT(mouseLeftWidget()));
+        connect(gainDial, &AudioDial::mouseEntered,
+                this, &PropertyBox::mouseEnteredWidget);
+        connect(gainDial, &AudioDial::mouseLeft,
+                this, &PropertyBox::mouseLeftWidget);
         playGainChanged(params->getPlayGain());
 	layout->setAlignment(gainDial, Qt::AlignVCenter);
 
@@ -237,16 +237,16 @@ PropertyBox::populateViewPlayFrame()
 	panDial->setDefaultValue(0);
         panDial->setObjectName(tr("Playback Pan / Balance"));
         panDial->setShowToolTip(true);
-	connect(panDial, SIGNAL(valueChanged(int)),
-		this, SLOT(playPanDialChanged(int)));
-	connect(params, SIGNAL(playPanChanged(float)),
-		this, SLOT(playPanChanged(float)));
+	connect(panDial, &QAbstractSlider::valueChanged,
+		this, &PropertyBox::playPanDialChanged);
+	connect(params, &PlayParameters::playPanChanged,
+		this, &PropertyBox::playPanChanged);
 	connect(this, SIGNAL(changePlayPanDial(int)),
 		panDial, SLOT(setValue(int)));
-        connect(panDial, SIGNAL(mouseEntered()),
-                this, SLOT(mouseEnteredWidget()));
-        connect(panDial, SIGNAL(mouseLeft()),
-                this, SLOT(mouseLeftWidget()));
+        connect(panDial, &AudioDial::mouseEntered,
+                this, &PropertyBox::mouseEnteredWidget);
+        connect(panDial, &AudioDial::mouseLeft,
+                this, &PropertyBox::mouseLeftWidget);
         playPanChanged(params->getPlayPan());
 	layout->setAlignment(panDial, Qt::AlignVCenter);
 
@@ -383,10 +383,10 @@ PropertyBox::updatePropertyEditor(PropertyContainer::PropertyName name,
             dial->setShowToolTip(true);
 	    connect(dial, SIGNAL(valueChanged(int)),
 		    this, SLOT(propertyControllerChanged(int)));
-            connect(dial, SIGNAL(mouseEntered()),
-                    this, SLOT(mouseEnteredWidget()));
-            connect(dial, SIGNAL(mouseLeft()),
-                    this, SLOT(mouseLeftWidget()));
+            connect(dial, &AudioDial::mouseEntered,
+                    this, &PropertyBox::mouseEnteredWidget);
+            connect(dial, &AudioDial::mouseLeft,
+                    this, &PropertyBox::mouseLeftWidget);
 
 	    if (inGroup) {
 		dial->setFixedWidth(24);
@@ -477,10 +477,10 @@ PropertyBox::updatePropertyEditor(PropertyContainer::PropertyName name,
         if (!have) {
 	    connect(cb, SIGNAL(activated(int)),
 		    this, SLOT(propertyControllerChanged(int)));
-            connect(cb, SIGNAL(mouseEntered()),
-                    this, SLOT(mouseEnteredWidget()));
-            connect(cb, SIGNAL(mouseLeft()),
-                    this, SLOT(mouseLeftWidget()));
+            connect(cb, &NotifyingComboBox::mouseEntered,
+                    this, &PropertyBox::mouseEnteredWidget);
+            connect(cb, &NotifyingComboBox::mouseLeft,
+                    this, &PropertyBox::mouseLeftWidget);
 
 	    if (inGroup) {
 		cb->setToolTip(propertyLabel);
@@ -779,8 +779,8 @@ PropertyBox::editPlayParameters()
         }
     }
 
-    connect(dialog, SIGNAL(textValueChanged(QString)), 
-            this, SLOT(playClipChanged(QString)));
+    connect(dialog, &QInputDialog::textValueChanged, 
+            this, &PropertyBox::playClipChanged);
 
     if (dialog->exec() == QDialog::Accepted) {
         QString newClip = dialog->textValue();

@@ -287,8 +287,8 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<CorpusCommunicat
     QList<QPointer<CorpusRepository> > repositoriesWithDisMoAnnotationStructure;
 
     int countDone = 0;
-    madeProgress(0);
-    printMessage("DisMo Annotator ver. 1.0 running");
+    emit madeProgress(0);
+    emit printMessage("DisMo Annotator ver. 1.0 running");
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) {
@@ -300,12 +300,12 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<CorpusCommunicat
             repositoriesWithDisMoAnnotationStructure << com->repository();
             emit printMessage("Created annotation levels and attributes to store DisMo annotations");
         }
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 if (!d->alreadyTokenised) {
@@ -348,11 +348,11 @@ void Praaline::Plugins::DisMo::PluginDisMo::process(const QList<CorpusCommunicat
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
     delete DISMO;
-    madeProgress(100);
-    printMessage("DisMo finished.");
+    emit madeProgress(100);
+    emit printMessage("DisMo finished.");
 }
 
 void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<CorpusCommunication *> communications)
@@ -361,20 +361,20 @@ void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<CorpusCommun
     QPointer<IntervalTier> tier_tok_mwu;
 
     int countDone = 0;
-    madeProgress(0);
-    printMessage("DisMo Annotator ver. 1.0 running");
+    emit madeProgress(0);
+    emit printMessage("DisMo Annotator ver. 1.0 running");
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) {
             emit printMessage(QString("DisMo: no corpus repository available for %1").arg(com->ID()));
             continue;
         }
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 tier_tok_min = tiers->getIntervalTierByName(d->levelTokMin);
@@ -398,10 +398,10 @@ void Praaline::Plugins::DisMo::PluginDisMo::addMWUindications(QList<CorpusCommun
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
-    madeProgress(100);
-    printMessage("DisMo finished.");
+    emit madeProgress(100);
+    emit printMessage("DisMo finished.");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

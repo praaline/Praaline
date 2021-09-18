@@ -122,8 +122,8 @@ SpectrogramLayer::SpectrogramLayer(Configuration config) :
     }
 
     Preferences *prefs = Preferences::getInstance();
-    connect(prefs, SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
-            this, SLOT(preferenceChanged(PropertyContainer::PropertyName)));
+    connect(prefs, &PropertyContainer::propertyChanged,
+            this, &SpectrogramLayer::preferenceChanged);
     setWindowType(prefs->getWindowType());
 
     initialisePalette();
@@ -1676,8 +1676,8 @@ SpectrogramLayer::getFFTModel(const View *v) const
         
         delete m_updateTimer;
         m_updateTimer = new QTimer((SpectrogramLayer *)this);
-        connect(m_updateTimer, SIGNAL(timeout()),
-                this, SLOT(fillTimerTimedOut()));
+        connect(m_updateTimer, &QTimer::timeout,
+                this, &SpectrogramLayer::fillTimerTimedOut);
         m_updateTimer->start(200);
     }
 

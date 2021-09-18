@@ -229,21 +229,21 @@ void Praaline::Plugins::Promise::PluginPromise::createPromiseSyllableInfoStructu
 void Praaline::Plugins::Promise::PluginPromise::runSpeechRateEstimator(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Promise: Speech Rate Estimator");
+    emit madeProgress(0);
+    emit printMessage("Promise: Speech Rate Estimator");
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
                 IntervalTier *tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
-                if (!tier_syll) { printMessage("   Tier not found: syll (syllables). Aborting."); continue; }
+                if (!tier_syll) { emit printMessage("   Tier not found: syll (syllables). Aborting."); continue; }
                 QList<Point *> points;
                 for (RealTime centre = tier_syll->tMin(); centre <= tier_syll->tMax(); centre = centre + RealTime::fromMilliseconds(100)) {
                     points << new Point(centre, "");
@@ -265,15 +265,15 @@ void Praaline::Plugins::Promise::PluginPromise::runSpeechRateEstimator(const QLi
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
 void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Promise Prosodic Prominence Annotator ver. 1.0 running");
+    emit madeProgress(0);
+    emit printMessage("Promise Prosodic Prominence Annotator ver. 1.0 running");
 
     QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
 
@@ -287,12 +287,12 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
     if (d->createFeatureTable) {
         QString filenameFeaturesTable = QDir::homePath() + "/promise_prominence_features.txt";
         if (promise->openFeaturesTableFile(filenameFeaturesTable))
-            printMessage(QString("Features table will be saved in: %1").arg(filenameFeaturesTable));
+            emit printMessage(QString("Features table will be saved in: %1").arg(filenameFeaturesTable));
     }
     if (d->createCRFData) {
         QString filenameCRFData = QDir::homePath() + "/promise_prominence_crf.txt";
         if (promise->openCRFDataFile(filenameCRFData))
-            printMessage(QString("CRF data will be saved in: %1").arg(filenameCRFData));
+            emit printMessage(QString("CRF data will be saved in: %1").arg(filenameCRFData));
     }
 
     foreach(CorpusCommunication *com, communications) {
@@ -307,39 +307,39 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
         }
         // Check that the attribute the syllable level and the attribute to store results exists
         if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
-            printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
+            emit printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
                          .arg(com->ID()).arg(d->levelSyllable));
             continue;
         } else if (com->repository()->annotationStructure()->level(d->levelSyllable)) {
             if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeProminence_NoPOS)) &&
                 (!d->attributeProminence_NoPOS.isEmpty())) {
-                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                emit printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
                                      "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
                              .arg(com->ID()).arg(d->attributeProminence_NoPOS));
                 continue;
             }
             if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeProminence_POS)) &&
                 (!d->attributeProminence_POS.isEmpty())) {
-                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                emit printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
                                      "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
                              .arg(com->ID()).arg(d->attributeProminence_POS));
                 continue;
             }
         }
         // Start annotation
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 QPointer<IntervalTier> tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
-                if (!tier_syll)  { printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
+                if (!tier_syll)  { emit printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
                 QPointer<IntervalTier> tier_token = tiers->getIntervalTierByName(d->levelToken);
-                if (!tier_token) { printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
+                if (!tier_token) { emit printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
 
                 IntervalTier *tier_promise_nopos(0), *tier_promise_pos(0);
                 if (!d->attributeProminence_NoPOS.isEmpty())
@@ -371,7 +371,7 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
     if (d->createFeatureTable) promise->closeFeaturesTableFile();
     if (d->createCRFData) promise->closeCRFDataFile();
@@ -381,8 +381,8 @@ void Praaline::Plugins::Promise::PluginPromise::runSyllableProminenceAnnotator(c
 void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Promise Prosodic Boundaries Annotator ver. 1.0 running");
+    emit madeProgress(0);
+    emit printMessage("Promise Prosodic Boundaries Annotator ver. 1.0 running");
 
     QList<QPointer<CorpusRepository> > repositoriesWithAnnotationStructure;
 
@@ -396,16 +396,16 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
     if (d->createFeatureTable) {
         QString filenameFeaturesTable = QDir::homePath() + "/promise_boundary_features.txt";
         if (promise->openFeaturesTableFile(filenameFeaturesTable))
-            printMessage(QString("Features table will be saved in: %1").arg(filenameFeaturesTable));
+            emit printMessage(QString("Features table will be saved in: %1").arg(filenameFeaturesTable));
         else
-            printMessage(QString("Error opening file for writing the features table: %1").arg(filenameFeaturesTable));
+            emit printMessage(QString("Error opening file for writing the features table: %1").arg(filenameFeaturesTable));
     }
     if (d->createCRFData) {
         QString filenameCRFData = QDir::homePath() + "/promise_boundary_crf.txt";
         if (promise->openCRFDataFile(filenameCRFData))
-            printMessage(QString("CRF data will be saved in: %1").arg(filenameCRFData));
+            emit printMessage(QString("CRF data will be saved in: %1").arg(filenameCRFData));
         else
-            printMessage(QString("Error opening file for writing CRF data: %1").arg(filenameCRFData));
+            emit printMessage(QString("Error opening file for writing CRF data: %1").arg(filenameCRFData));
     }
 
     foreach(CorpusCommunication *com, communications) {
@@ -420,39 +420,39 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
         }
         // Check that the attribute the syllable level and the attribute to store results exists
         if (!com->repository()->annotationStructure()->hasLevel(d->levelSyllable)) {
-            printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
+            emit printMessage(QString("Communication ID %1: Annotation level for syllables %2 not found. Aborting.")
                          .arg(com->ID()).arg(d->levelSyllable));
             continue;
         } else if (com->repository()->annotationStructure()->level(d->levelSyllable)) {
             if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeBoundaries)) &&
                 (!d->attributeBoundaries.isEmpty())) {
-                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                emit printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
                                      "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
                              .arg(com->ID()).arg(d->attributeBoundaries));
                 continue;
             }
             if ((!com->repository()->annotationStructure()->level(d->levelSyllable)->hasAttribute(d->attributeContour)) &&
                 (!d->attributeContour.isEmpty())) {
-                printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
+                emit printMessage(QString("Communication ID %1: Annotation attribute to store results (%2) not found. "
                                      "Please create this attribute using the Annotation Structure editor before running Promise. Aborting.")
                              .arg(com->ID()).arg(d->attributeContour));
                 continue;
             }
         }
         // Start annotation
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         foreach (CorpusAnnotation *annot, com->annotations()) {
             if (!annot) continue;
             SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
             foreach (QString speakerID, tiersAll.keys()) {
-                printMessage(QString("   speaker %1").arg(speakerID));
+                emit printMessage(QString("   speaker %1").arg(speakerID));
                 AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                 if (!tiers) continue;
 
                 QPointer<IntervalTier> tier_syll = tiers->getIntervalTierByName(d->levelSyllable);
-                if (!tier_syll) { printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
+                if (!tier_syll) { emit printMessage(QString("   Annotation level for syllables %1 not found. Aborting.").arg(d->levelSyllable)); continue; }
                 QPointer<IntervalTier> tier_token = tiers->getIntervalTierByName(d->levelToken);
-                if (!tier_token) { printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
+                if (!tier_token) { emit printMessage(QString("   Annotation level for tokens %1 not found. Aborting.").arg(d->levelToken)); continue; }
 
                 IntervalTier *tier_promise_boundary(0), *tier_promise_contour(0);
                 if (!d->attributeBoundaries.isEmpty())
@@ -484,7 +484,7 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
     if (d->createFeatureTable) promise->closeFeaturesTableFile();
     if (d->createCRFData) promise->closeCRFDataFile();
@@ -494,15 +494,15 @@ void Praaline::Plugins::Promise::PluginPromise::runProsodicBoundariesAnnotator(c
 void Praaline::Plugins::Promise::PluginPromise::runProsodicUnitsAnnotator(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Promise: Prosodic Units annotation");
+    emit madeProgress(0);
+    emit printMessage("Promise: Prosodic Units annotation");
     ProsodicUnitsAnnotator units;
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
-        printMessage(units.createProsodicUnitsTierBoundaries(com, "B3", false));
+        emit printMessage(units.createProsodicUnitsTierBoundaries(com, "B3", false));
         QApplication::processEvents();
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
 }
 
@@ -513,8 +513,8 @@ void Praaline::Plugins::Promise::PluginPromise::process(const QList<CorpusCommun
     else if (d->command == 2) runSpeechRateEstimator(communications);
     else if (d->command == 3) runProsodicUnitsAnnotator(communications);
 
-    madeProgress(100);
-    printMessage("Promise plugin finished.");
+    emit madeProgress(100);
+    emit printMessage("Promise plugin finished.");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

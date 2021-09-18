@@ -144,29 +144,29 @@ void Praaline::Plugins::Syntax::PluginSyntax::process(const QList<CorpusCommunic
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         m = latex.process(com);
-        if (!m.isEmpty()) printMessage(m);
+        if (!m.isEmpty()) emit printMessage(m);
     }
     return;
 
 
     SentencesSplitter sentenceSplitter;
     if (d->operationImportSentenceBreakFile) {
-        printMessage(sentenceSplitter.readBreaksFile("/mnt/hgfs/Dropbox/CORPORA/Phonogenre/phonogenre_sentences.txt"));
+        emit printMessage(sentenceSplitter.readBreaksFile("/mnt/hgfs/Dropbox/CORPORA/Phonogenre/phonogenre_sentences.txt"));
         foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
-            printMessage(sentenceSplitter.importBreaks(com));
+            emit printMessage(sentenceSplitter.importBreaks(com));
         }
     }
     if (d->operationExportSentenceBreakFile) {
         foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
-            printMessage(sentenceSplitter.exportSentences(com));
+            emit printMessage(sentenceSplitter.exportSentences(com));
         }
     }
     if (d->operationCreateSentenceTier) {
         foreach (CorpusCommunication *com, communications) {
             if (!com) continue;
-            printMessage(sentenceSplitter.createSentenceTier(com));
+            emit printMessage(sentenceSplitter.createSentenceTier(com));
         }
     }
 

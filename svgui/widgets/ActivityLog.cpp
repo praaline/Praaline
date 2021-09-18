@@ -48,7 +48,7 @@ ActivityLog::ActivityLog() : QDialog()
     layout->setRowStretch(1, 10);
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(bb, SIGNAL(rejected()), this, SLOT(hide()));
+    connect(bb, &QDialogButtonBox::rejected, this, &QWidget::hide);
     layout->addWidget(bb, 2, 0);
 }
 

@@ -70,15 +70,15 @@ TipDialog::TipDialog(QWidget *parent) :
     
     QPushButton *prev = new QPushButton(tr("<< Previous"));
     hbox->addWidget(prev);
-    connect(prev, SIGNAL(clicked()), this, SLOT(previous()));
+    connect(prev, &QAbstractButton::clicked, this, &TipDialog::previous);
     
     QPushButton *next = new QPushButton(tr("Next >>"));
     hbox->addWidget(next);
-    connect(next, SIGNAL(clicked()), this, SLOT(next()));
+    connect(next, &QAbstractButton::clicked, this, &TipDialog::next);
     
     QPushButton *close = new QPushButton(tr("Close"));
     hbox->addWidget(close);
-    connect(close, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(close, &QAbstractButton::clicked, this, &QDialog::accept);
     
     close->setDefault(true);
 

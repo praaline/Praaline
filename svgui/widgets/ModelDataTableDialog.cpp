@@ -15,6 +15,7 @@
 
 #include "ModelDataTableDialog.h"
 
+#include "base/Command.h"
 #include "data/model/ModelDataTableModel.h"
 #include "data/model/TabularModel.h"
 #include "data/model/Model.h"
@@ -56,7 +57,7 @@ ModelDataTableDialog::ModelDataTableDialog(TabularModel *model,
     action->setStatusTip(tr("Toggle tracking of playback position"));
     action->setCheckable(true);
     action->setChecked(m_trackPlayback);
-    connect(action, SIGNAL(triggered()), this, SLOT(togglePlayTracking()));
+    connect(action, &QAction::triggered, this, &ModelDataTableDialog::togglePlayTracking);
     toolbar->addAction(action);
 
     toolbar = addToolBar(tr("Edit Toolbar"));
@@ -64,13 +65,13 @@ ModelDataTableDialog::ModelDataTableDialog(TabularModel *model,
     action = new QAction(il.load("datainsert"), tr("Insert New Item"), this);
     action->setShortcut(tr("Insert"));
     action->setStatusTip(tr("Insert a new item"));
-    connect(action, SIGNAL(triggered()), this, SLOT(insertRow()));
+    connect(action, &QAction::triggered, this, &ModelDataTableDialog::insertRow);
     toolbar->addAction(action);
 
     action = new QAction(il.load("datadelete"), tr("Delete Selected Items"), this);
     action->setShortcut(tr("Delete"));
     action->setStatusTip(tr("Delete the selected item or items"));
-    connect(action, SIGNAL(triggered()), this, SLOT(deleteRows()));
+    connect(action, &QAction::triggered, this, &ModelDataTableDialog::deleteRows);
     toolbar->addAction(action);
 
     CommandHistory::getInstance()->registerToolbar(toolbar);
@@ -108,10 +109,10 @@ ModelDataTableDialog::ModelDataTableDialog(TabularModel *model,
     subgrid->addWidget(new QLabel(tr(" ")), 1, 1);
     m_find = new QLineEdit;
     subgrid->addWidget(m_find, 1, 2);
-    connect(m_find, SIGNAL(textChanged(const QString &)),
-            this, SLOT(searchTextChanged(const QString &)));
-    connect(m_find, SIGNAL(returnPressed()),
-            this, SLOT(searchRepeated()));
+    connect(m_find, &QLineEdit::textChanged,
+            this, &ModelDataTableDialog::searchTextChanged);
+    connect(m_find, &QLineEdit::returnPressed,
+            this, &ModelDataTableDialog::searchRepeated);
 
     m_tableView = new QTableView;
     subgrid->addWidget(m_tableView, 0, 0, 1, 3);
@@ -124,23 +125,23 @@ ModelDataTableDialog::ModelDataTableDialog(TabularModel *model,
 
     m_tableView->horizontalHeader()->setStretchLastSection(true);
 
-    connect(m_tableView, SIGNAL(clicked(const QModelIndex &)),
-            this, SLOT(viewClicked(const QModelIndex &)));
-    connect(m_tableView, SIGNAL(pressed(const QModelIndex &)),
-            this, SLOT(viewPressed(const QModelIndex &)));
+    connect(m_tableView, &QAbstractItemView::clicked,
+            this, &ModelDataTableDialog::viewClicked);
+    connect(m_tableView, &QAbstractItemView::pressed,
+            this, &ModelDataTableDialog::viewPressed);
     connect(m_tableView->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+            &QItemSelectionModel::currentChanged,
             this,
-            SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
-    connect(m_table, SIGNAL(addCommand(Command *)),
-            this, SLOT(addCommand(Command *)));
-    connect(m_table, SIGNAL(currentChanged(const QModelIndex &)),
-            this, SLOT(currentChangedThroughResort(const QModelIndex &)));
-    connect(m_table, SIGNAL(modelRemoved()),
-            this, SLOT(modelRemoved()));
+            &ModelDataTableDialog::currentChanged);
+    connect(m_table, &ModelDataTableModel::addCommand,
+            this, &ModelDataTableDialog::addCommand);
+    connect(m_table, &ModelDataTableModel::currentChanged,
+            this, &ModelDataTableDialog::currentChangedThroughResort);
+    connect(m_table, &ModelDataTableModel::modelRemoved,
+            this, &ModelDataTableDialog::modelRemoved);
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(bb, SIGNAL(rejected()), this, SLOT(close()));
+    connect(bb, &QDialogButtonBox::rejected, this, &QWidget::close);
     grid->addWidget(bb, 2, 0);
     grid->setRowStretch(2, 0);
     

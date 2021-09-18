@@ -39,9 +39,9 @@ PropertyStack::PropertyStack(QWidget *parent, View *client) :
     NotifyingTabBar *bar = new NotifyingTabBar();
     bar->setDrawBase(false);
 
-    connect(bar, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredTabBar()));
-    connect(bar, SIGNAL(mouseLeft()), this, SLOT(mouseLeftTabBar()));
-    connect(bar, SIGNAL(activeTabClicked()), this, SLOT(activeTabClicked()));
+    connect(bar, &NotifyingTabBar::mouseEntered, this, &PropertyStack::mouseEnteredTabBar);
+    connect(bar, &NotifyingTabBar::mouseLeft, this, &PropertyStack::mouseLeftTabBar);
+    connect(bar, &NotifyingTabBar::activeTabClicked, this, &PropertyStack::activeTabClicked);
 
     setTabBar(bar);
 
@@ -53,23 +53,23 @@ PropertyStack::PropertyStack(QWidget *parent, View *client) :
     
     repopulate();
 
-    connect(this, SIGNAL(currentChanged(int)),
-	    this, SLOT(selectedContainerChanged(int)));
+    connect(this, &QTabWidget::currentChanged,
+	    this, &PropertyStack::selectedContainerChanged);
 
-    connect(m_client, SIGNAL(propertyContainerAdded(PropertyContainer *)),
-	    this, SLOT(propertyContainerAdded(PropertyContainer *)));
+    connect(m_client, &View::propertyContainerAdded,
+	    this, &PropertyStack::propertyContainerAdded);
 
-    connect(m_client, SIGNAL(propertyContainerRemoved(PropertyContainer *)),
-	    this, SLOT(propertyContainerRemoved(PropertyContainer *)));
+    connect(m_client, &View::propertyContainerRemoved,
+	    this, &PropertyStack::propertyContainerRemoved);
 
-    connect(m_client, SIGNAL(propertyContainerPropertyChanged(PropertyContainer *)),
-	    this, SLOT(propertyContainerPropertyChanged(PropertyContainer *)));
+    connect(m_client, &View::propertyContainerPropertyChanged,
+	    this, &PropertyStack::propertyContainerPropertyChanged);
 
-    connect(m_client, SIGNAL(propertyContainerPropertyRangeChanged(PropertyContainer *)),
-	    this, SLOT(propertyContainerPropertyRangeChanged(PropertyContainer *)));
+    connect(m_client, &View::propertyContainerPropertyRangeChanged,
+	    this, &PropertyStack::propertyContainerPropertyRangeChanged);
 
-    connect(m_client, SIGNAL(propertyContainerNameChanged(PropertyContainer *)),
-	    this, SLOT(propertyContainerNameChanged(PropertyContainer *)));
+    connect(m_client, &View::propertyContainerNameChanged,
+	    this, &PropertyStack::propertyContainerNameChanged);
 
     connect(this, SIGNAL(propertyContainerSelected(View *, PropertyContainer *)),
 	    m_client, SLOT(propertyContainerSelected(View *, PropertyContainer *)));
@@ -109,9 +109,9 @@ PropertyStack::repopulate()
 
 	PropertyBox *box = new PropertyBox(container);
 
-	connect(box, SIGNAL(showLayer(bool)), this, SLOT(showLayer(bool)));
-        connect(box, SIGNAL(contextHelpChanged(const QString &)),
-                this, SIGNAL(contextHelpChanged(const QString &)));
+	connect(box, &PropertyBox::showLayer, this, &PropertyStack::showLayer);
+        connect(box, &PropertyBox::contextHelpChanged,
+                this, &PropertyStack::contextHelpChanged);
 
         Layer *layer = dynamic_cast<Layer *>(container);
         if (layer) {

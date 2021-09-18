@@ -351,7 +351,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
                 }
                 com->repository()->annotations()->saveTier(annotationID, speakerID, tier_segment);
             }
-            printMessage(QString("OK %1 %2").arg(com->ID()).arg(annot->ID()));
+            emit printMessage(QString("OK %1 %2").arg(com->ID()).arg(annot->ID()));
         }
         qDeleteAll(tiersAll);
         countDone++;
@@ -365,8 +365,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::createSegmentsFromAutoSyllab
 void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<CorpusCommunication *> &communications)
 {
     ProsoGram *prosogram = new ProsoGram(this);
-    connect(prosogram, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    connect(prosogram, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+    connect(prosogram, &AnnotationPluginPraatScript::logOutput, this, &PluginProsogram::scriptSentMessage);
+    connect(prosogram, &AnnotationPluginPraatScript::finished, this, &PluginProsogram::scriptFinished);
 
     prosogram->timeRangeFrom = d->timeRangeFrom;
     prosogram->timeRangeTo = d->timeRangeTo;
@@ -391,7 +391,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
     prosogram->plottingOutputDirectory = d->plottingOutputDirectory;
 
     int countDone = 0;
-    madeProgress(0);
+    emit madeProgress(0);
     emit printMessage("ProsoGram v.2.9m running");
 
     foreach(CorpusCommunication *com, communications) {
@@ -473,8 +473,8 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
         countDone++;
         emit madeProgress(countDone * 100 / communications.count());
     }
-    disconnect(prosogram, SIGNAL(logOutput(QString)), this, SLOT(scriptSentMessage(QString)));
-    disconnect(prosogram, SIGNAL(finished(int)), this, SLOT(scriptFinished(int)));
+    disconnect(prosogram, &AnnotationPluginPraatScript::logOutput, this, &PluginProsogram::scriptSentMessage);
+    disconnect(prosogram, &AnnotationPluginPraatScript::finished, this, &PluginProsogram::scriptFinished);
     delete prosogram;
     emit madeProgress(100);
     emit printMessage("ProsoGram finished.");
@@ -483,12 +483,12 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogram(const QList<Cor
 void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(const QList<CorpusCommunication *> &communications)
 {
     if (communications.isEmpty()) {
-        printMessage("No Communications selected.");
+        emit printMessage("No Communications selected.");
         return;
     }
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Importing Prosogram result files into database");
+    emit madeProgress(0);
+    emit printMessage("Importing Prosogram result files into database");
     ProsoGram *prosogram = new ProsoGram(this);
     // Pass parameters to prosogram
     prosogram->segmentationMethod = d->segmentationMethod;
@@ -501,7 +501,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(cons
     foreach(CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->repository()) continue;
-        printMessage(QString("Importing %1").arg(com->ID()));
+        emit printMessage(QString("Importing %1").arg(com->ID()));
         foreach (CorpusRecording *rec, com->recordings()) {
             if (!rec) continue;
             foreach (CorpusAnnotation *annot, com->annotations()) {
@@ -509,7 +509,7 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(cons
                 // TODO : ANNOTATION CORRESPONDANCE !!!
                 SpeakerAnnotationTierGroupMap tiersAll = com->repository()->annotations()->getTiersAllSpeakers(annot->ID());
                 foreach (QString speakerID, tiersAll.keys()) {
-                    printMessage(QString("   speaker %1").arg(speakerID));
+                    emit printMessage(QString("   speaker %1").arg(speakerID));
                     AnnotationTierGroup *tiers = tiersAll.value(speakerID);
                     if (!tiers) continue;
                     // check speaker-specific recording
@@ -524,36 +524,36 @@ void Praaline::Plugins::Prosogram::PluginProsogram::runProsogramImportFiles(cons
             QApplication::processEvents();
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
     delete prosogram;
-    madeProgress(100);
-    printMessage("Import of Prosogram result files into the database finished.");
+    emit madeProgress(100);
+    emit printMessage("Import of Prosogram result files into the database finished.");
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::runIntonationAnnotation(const QList<CorpusCommunication *> &communications)
 {
     if (communications.isEmpty()) {
-        printMessage("No Communications selected.");
+        emit printMessage("No Communications selected.");
         return;
     }
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Automatic Annotation of Intonation running");
+    emit madeProgress(0);
+    emit printMessage("Automatic Annotation of Intonation running");
     IntonationAnnotator annotator;
     QPointer<Corpus> corpus = communications.first()->corpus();
-    printMessage("Pitch range estimation...");
+    emit printMessage("Pitch range estimation...");
     annotator.estimatePitchRange(corpus);
-    printMessage("Annotation...");
+    emit printMessage("Annotation...");
     foreach (CorpusCommunication *com, communications) {
-        printMessage(QString("Annotating %1").arg(com->ID()));
+        emit printMessage(QString("Annotating %1").arg(com->ID()));
         annotator.annotate(com);
         QApplication::processEvents();
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
     }
-    madeProgress(100);
-    printMessage("Automatic Annotation of Intonation finished.");
+    emit madeProgress(100);
+    emit printMessage("Automatic Annotation of Intonation finished.");
 }
 
 void Praaline::Plugins::Prosogram::PluginProsogram::process(const QList<CorpusCommunication *> &communications)

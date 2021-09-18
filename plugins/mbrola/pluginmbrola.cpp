@@ -108,15 +108,15 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::setParameters(const QHash<QString,
 
 void Praaline::Plugins::MBROLA::PluginMBROLA::scriptSentMessage(const QString &message)
 {
-    printMessage(message);
+    emit printMessage(message);
 }
 
 void Praaline::Plugins::MBROLA::PluginMBROLA::scriptFinished(int exitcode)
 {
     if (exitcode == 0)
-        printMessage("Finished succesfully.");
+        emit printMessage("Finished succesfully.");
     else
-        printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
+        emit printMessage(QString("Finished with errors. The error code was %1").arg(exitcode));
 }
 
 // ====================================================================================================================
@@ -129,7 +129,7 @@ void Praaline::Plugins::MBROLA::PluginMBROLA::process(const QList<CorpusCommunic
         QString dir = "/Users/george/Documents/resynth";
         // dir = "/home/george/resynth";
         m = MBROLAResynthesiser::resynthesise(dir, com);
-        if (!m.isEmpty()) printMessage(m);
+        if (!m.isEmpty()) emit printMessage(m);
     }
 
 //    QFile file("D:/DROPBOX/2015-10_SP8_ProsodicBoundariesExpe/test.txt");

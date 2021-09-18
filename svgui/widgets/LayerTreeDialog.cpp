@@ -85,7 +85,7 @@ LayerTreeDialog::LayerTreeDialog(PaneStack *stack, QWidget *parent) :
     m_layerView->expandAll();
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
     grid->addWidget(bb, 2, 0);
     grid->setRowStretch(2, 0);
     

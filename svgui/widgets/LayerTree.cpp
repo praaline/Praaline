@@ -48,23 +48,23 @@ ModelMetadataModel::ModelMetadataModel(PaneStack *stack, bool waveModelsOnly,
     }
 
     connect(stack, SIGNAL(paneAdded()), this, SLOT(paneAdded()));
-    connect(stack, SIGNAL(paneDeleted()), this, SLOT(paneDeleted()));
+    connect(stack, &PaneStack::paneDeleted, this, &ModelMetadataModel::paneDeleted);
 
     for (int i = 0; i < stack->getPaneCount(); ++i) {
         Pane *pane = stack->getPane(i);
         if (!pane) continue;
-        connect(pane, SIGNAL(propertyContainerAdded(PropertyContainer *)),
-                this, SLOT(propertyContainerAdded(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerRemoved(PropertyContainer *)),
-                this, SLOT(propertyContainerRemoved(PropertyContainer *)));
+        connect(pane, &View::propertyContainerAdded,
+                this, &ModelMetadataModel::propertyContainerAdded);
+        connect(pane, &View::propertyContainerRemoved,
+                this, &ModelMetadataModel::propertyContainerRemoved);
         connect(pane, SIGNAL(propertyContainerSelected(PropertyContainer *)),
                 this, SLOT(propertyContainerSelected(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerPropertyChanged(PropertyContainer *)),
-                this, SLOT(propertyContainerPropertyChanged(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerNameChanged(PropertyContainer *)),
-                this, SLOT(propertyContainerPropertyChanged(PropertyContainer *)));
-        connect(pane, SIGNAL(layerModelChanged()),
-                this, SLOT(paneLayerModelChanged()));
+        connect(pane, &View::propertyContainerPropertyChanged,
+                this, &ModelMetadataModel::propertyContainerPropertyChanged);
+        connect(pane, &View::propertyContainerNameChanged,
+                this, &ModelMetadataModel::propertyContainerPropertyChanged);
+        connect(pane, &View::layerModelChanged,
+                this, &ModelMetadataModel::paneLayerModelChanged);
     }
 
     rebuildModelSet();
@@ -97,8 +97,8 @@ ModelMetadataModel::rebuildModelSet()
             }
 
             if (m_models.find(model) == m_models.end()) {
-                connect(model, SIGNAL(aboutToBeDeleted()),
-                        this, SLOT(rebuildModelSet()));
+                connect(model, &Model::aboutToBeDeleted,
+                        this, &ModelMetadataModel::rebuildModelSet);
                 m_models.insert(model);
             } else {
                 unfound.erase(model);
@@ -276,32 +276,32 @@ LayerTreeModel::LayerTreeModel(PaneStack *stack, QObject *parent) :
     m_columnCount = 4;
 
     connect(stack, SIGNAL(paneAdded()), this, SLOT(paneAdded()));
-    connect(stack, SIGNAL(paneAboutToBeDeleted(Pane *)),
-            this, SLOT(paneAboutToBeDeleted(Pane *)));
+    connect(stack, &PaneStack::paneAboutToBeDeleted,
+            this, &LayerTreeModel::paneAboutToBeDeleted);
 
     for (int i = 0; i < stack->getPaneCount(); ++i) {
         Pane *pane = stack->getPane(i);
         if (!pane) continue;
-        connect(pane, SIGNAL(propertyContainerAdded(PropertyContainer *)),
-                this, SLOT(propertyContainerAdded(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerRemoved(PropertyContainer *)),
-                this, SLOT(propertyContainerRemoved(PropertyContainer *)));
+        connect(pane, &View::propertyContainerAdded,
+                this, &LayerTreeModel::propertyContainerAdded);
+        connect(pane, &View::propertyContainerRemoved,
+                this, &LayerTreeModel::propertyContainerRemoved);
         connect(pane, SIGNAL(propertyContainerSelected(PropertyContainer *)),
                 this, SLOT(propertyContainerSelected(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerPropertyChanged(PropertyContainer *)),
-                this, SLOT(propertyContainerPropertyChanged(PropertyContainer *)));
-        connect(pane, SIGNAL(propertyContainerNameChanged(PropertyContainer *)),
-                this, SLOT(propertyContainerPropertyChanged(PropertyContainer *)));
-        connect(pane, SIGNAL(layerModelChanged()),
-                this, SLOT(paneLayerModelChanged()));
+        connect(pane, &View::propertyContainerPropertyChanged,
+                this, &LayerTreeModel::propertyContainerPropertyChanged);
+        connect(pane, &View::propertyContainerNameChanged,
+                this, &LayerTreeModel::propertyContainerPropertyChanged);
+        connect(pane, &View::layerModelChanged,
+                this, &LayerTreeModel::paneLayerModelChanged);
 
         for (int j = 0; j < pane->getLayerCount(); ++j) {
             Layer *layer = pane->getLayer(j);
             if (!layer) continue;
             PlayParameters *params = layer->getPlayParameters();
             if (!params) continue;
-            connect(params, SIGNAL(playAudibleChanged(bool)),
-                    this, SLOT(playParametersAudibilityChanged(bool)));
+            connect(params, &PlayParameters::playAudibleChanged,
+                    this, &LayerTreeModel::playParametersAudibilityChanged);
         }
     }
 }

@@ -48,17 +48,17 @@ Layer::~Layer()
 void
 Layer::connectSignals(const Model *model)
 {
-    connect(model, SIGNAL(modelChanged()),
-            this, SIGNAL(modelChanged()));
+    connect(model, &Model::modelChanged,
+            this, &Layer::modelChanged);
 
-    connect(model, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-            this, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)));
+    connect(model, &Model::modelChangedWithin,
+            this, &Layer::modelChangedWithin);
 
-    connect(model, SIGNAL(completionChanged()),
-            this, SIGNAL(modelCompletionChanged()));
+    connect(model, &Model::completionChanged,
+            this, &Layer::modelCompletionChanged);
 
-    connect(model, SIGNAL(alignmentCompletionChanged()),
-            this, SIGNAL(modelAlignmentCompletionChanged()));
+    connect(model, &Model::alignmentCompletionChanged,
+            this, &Layer::modelAlignmentCompletionChanged);
 }
 
 QString

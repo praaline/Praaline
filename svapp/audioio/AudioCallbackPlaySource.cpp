@@ -83,8 +83,8 @@ AudioCallbackPlaySource::AudioCallbackPlaySource(ViewManagerBase *manager,
 {
     m_viewManager->setAudioPlaySource(this);
 
-    connect(m_viewManager, SIGNAL(selectionChanged()),
-	    this, SLOT(selectionChanged()));
+    connect(m_viewManager, &ViewManagerBase::selectionChanged,
+	    this, &AudioCallbackPlaySource::selectionChanged);
     connect(m_viewManager, SIGNAL(playLoopModeChanged()),
 	    this, SLOT(playLoopModeChanged()));
     connect(m_viewManager, SIGNAL(playSelectionModeChanged()),
@@ -98,8 +98,8 @@ AudioCallbackPlaySource::AudioCallbackPlaySource(ViewManagerBase *manager,
 	    this, SLOT(playParametersChanged(PlayParameters *)));
 
     connect(Preferences::getInstance(),
-            SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
-            this, SLOT(preferenceChanged(PropertyContainer::PropertyName)));
+            &PropertyContainer::propertyChanged,
+            this, &AudioCallbackPlaySource::preferenceChanged);
 }
 
 AudioCallbackPlaySource::~AudioCallbackPlaySource()
@@ -256,8 +256,8 @@ AudioCallbackPlaySource::addModel(Model *model)
 	emit modelReplaced();
     }
 
-    connect(model, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-            this, SLOT(modelChangedWithin(sv_frame_t, sv_frame_t)));
+    connect(model, &Model::modelChangedWithin,
+            this, &AudioCallbackPlaySource::modelChangedWithin);
 
 #ifdef DEBUG_AUDIO_PLAY_SOURCE
     cout << "AudioCallbackPlaySource::addModel: awakening thread" << endl;
@@ -291,8 +291,8 @@ AudioCallbackPlaySource::removeModel(Model *model)
     cout << "AudioCallbackPlaySource::removeModel(" << model << ")" << endl;
 #endif
 
-    disconnect(model, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-               this, SLOT(modelChangedWithin(sv_frame_t, sv_frame_t)));
+    disconnect(model, &Model::modelChangedWithin,
+               this, &AudioCallbackPlaySource::modelChangedWithin);
 
     m_models.erase(model);
 

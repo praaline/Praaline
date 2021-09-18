@@ -91,7 +91,7 @@ PaneStack::insertPane(int index, bool suppressPropertyBox)
     connect(xButton, SIGNAL(clicked()), this, SLOT(paneDeleteButtonClicked()));
 
     ClickableLabel *currentIndicator = new ClickableLabel(frame);
-    connect(currentIndicator, SIGNAL(clicked()), this, SLOT(indicatorClicked()));
+    connect(currentIndicator, &ClickableLabel::clicked, this, &PaneStack::indicatorClicked);
     layout->addWidget(currentIndicator, 1, 0);
     layout->setRowStretch(1, 20);
     currentIndicator->setMinimumWidth(8);
@@ -144,20 +144,20 @@ PaneStack::insertPane(int index, bool suppressPropertyBox)
     frame->setLayout(layout);
     m_splitter->insertWidget(index, frame);
 
-    connect(pane, SIGNAL(propertyContainerAdded(PropertyContainer *)),
-	    this, SLOT(propertyContainerAdded(PropertyContainer *)));
-    connect(pane, SIGNAL(propertyContainerRemoved(PropertyContainer *)),
-	    this, SLOT(propertyContainerRemoved(PropertyContainer *)));
-    connect(pane, SIGNAL(paneInteractedWith()),
-	    this, SLOT(paneInteractedWith()));
+    connect(pane, &View::propertyContainerAdded,
+	    this, &PaneStack::propertyContainerAdded);
+    connect(pane, &View::propertyContainerRemoved,
+	    this, &PaneStack::propertyContainerRemoved);
+    connect(pane, &Pane::paneInteractedWith,
+	    this, &PaneStack::paneInteractedWith);
     connect(pane, SIGNAL(rightButtonMenuRequested(QPoint)),
             this, SLOT(rightButtonMenuRequested(QPoint)));
     connect(pane, SIGNAL(dropAccepted(QStringList)),
             this, SLOT(paneDropAccepted(QStringList)));
     connect(pane, SIGNAL(dropAccepted(QString)),
             this, SLOT(paneDropAccepted(QString)));
-    connect(pane, SIGNAL(doubleClickSelectInvoked(sv_frame_t)),
-            this, SIGNAL(doubleClickSelectInvoked(sv_frame_t)));
+    connect(pane, &Pane::doubleClickSelectInvoked,
+            this, &PaneStack::doubleClickSelectInvoked);
 
     emit paneAdded(pane);
     emit paneAdded();

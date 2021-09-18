@@ -59,8 +59,8 @@ LabelCounterInputDialog::LabelCounterInputDialog(Labeller *labeller,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     layout->addWidget(bb, 2, 0, 1, 2);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(cancelClicked()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &LabelCounterInputDialog::cancelClicked);
 }
 
 LabelCounterInputDialog::~LabelCounterInputDialog()

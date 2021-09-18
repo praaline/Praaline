@@ -34,14 +34,14 @@ AlignmentModel::AlignmentModel(Model *reference,
 {
     if (m_rawPath) {
 
-        connect(m_rawPath, SIGNAL(modelChanged()),
-                this, SLOT(pathChanged()));
+        connect(m_rawPath, &Model::modelChanged,
+                this, &AlignmentModel::pathChanged);
 
-        connect(m_rawPath, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-                this, SLOT(pathChangedWithin(sv_frame_t, sv_frame_t)));
+        connect(m_rawPath, &Model::modelChangedWithin,
+                this, &AlignmentModel::pathChangedWithin);
         
-        connect(m_rawPath, SIGNAL(completionChanged()),
-                this, SLOT(pathCompletionChanged()));
+        connect(m_rawPath, &Model::completionChanged,
+                this, &AlignmentModel::pathCompletionChanged);
 
         constructPath();
         constructReversePath();
@@ -352,14 +352,14 @@ AlignmentModel::setPathFrom(SparseTimeValueModel *rawpath)
 
     m_rawPath = rawpath;
 
-    connect(m_rawPath, SIGNAL(modelChanged()),
-            this, SLOT(pathChanged()));
+    connect(m_rawPath, &Model::modelChanged,
+            this, &AlignmentModel::pathChanged);
 
-    connect(m_rawPath, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-            this, SLOT(pathChangedWithin(sv_frame_t, sv_frame_t)));
+    connect(m_rawPath, &Model::modelChangedWithin,
+            this, &AlignmentModel::pathChangedWithin);
         
-    connect(m_rawPath, SIGNAL(completionChanged()),
-            this, SLOT(pathCompletionChanged()));
+    connect(m_rawPath, &Model::completionChanged,
+            this, &AlignmentModel::pathCompletionChanged);
     
     constructPath();
     constructReversePath();

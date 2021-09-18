@@ -926,7 +926,7 @@ ImageLayer::checkAddSource(QString img) const
     if (rf->isOK()) {
         cerr << "ok, adding it (local filename = " << rf->getLocalFilename() << ")" << endl;
         m_fileSources[img] = rf;
-        connect(rf, SIGNAL(ready()), this, SLOT(fileSourceReady()));
+        connect(rf, &FileSource::ready, this, &ImageLayer::fileSourceReady);
     } else {
         delete rf;
     }

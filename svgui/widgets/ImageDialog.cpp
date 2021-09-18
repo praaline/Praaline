@@ -71,7 +71,7 @@ ImageDialog::ImageDialog(QString title,
             this, SLOT(imageEditEdited()));
 
     QPushButton *browse = new QPushButton(tr("Browse..."));
-    connect(browse, SIGNAL(clicked()), this, SLOT(browseClicked()));
+    connect(browse, &QAbstractButton::clicked, this, &ImageDialog::browseClicked);
     subgrid->addWidget(browse, row, 2, 1, 1);
 
     ++row;
@@ -99,8 +99,8 @@ ImageDialog::ImageDialog(QString title,
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     grid->addWidget(bb, 2, 0, 1, 1);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     m_okButton = bb->button(QDialogButtonBox::Ok);
     m_okButton->setEnabled(false);

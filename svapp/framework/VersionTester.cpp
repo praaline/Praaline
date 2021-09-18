@@ -38,7 +38,7 @@ VersionTester::VersionTester(QString hostname, QString versionFilePath,
     m_reply = m_nm->get(QNetworkRequest(url));
     connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)),
             this, SLOT(error(QNetworkReply::NetworkError)));
-    connect(m_reply, SIGNAL(finished()), this, SLOT(finished()));
+    connect(m_reply, &QNetworkReply::finished, this, &VersionTester::finished);
 }
 
 VersionTester::~VersionTester()

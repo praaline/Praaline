@@ -111,7 +111,7 @@ MP3FileReader::MP3FileReader(FileSource source, DecodeMode decodeMode,
     if (decodeMode == DecodeAtOnce) {
 
         if (m_reporter) {
-            connect(m_reporter, SIGNAL(cancelled()), this, SLOT(cancelled()));
+            connect(m_reporter, &ProgressReporter::cancelled, this, &MP3FileReader::cancelled);
             m_reporter->setMessage
                 (tr("Decoding %1...").arg(QFileInfo(m_path).fileName()));
         }

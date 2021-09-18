@@ -30,11 +30,11 @@ ModelDataTableModel::ModelDataTableModel(TabularModel *m) :
 {
     Model *baseModel = dynamic_cast<Model *>(m);
 
-    connect(baseModel, SIGNAL(modelChanged()), this, SLOT(modelChanged()));
-    connect(baseModel, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-            this, SLOT(modelChangedWithin(sv_frame_t, sv_frame_t)));
-    connect(baseModel, SIGNAL(aboutToBeDeleted()),
-            this, SLOT(modelAboutToBeDeleted()));
+    connect(baseModel, &Model::modelChanged, this, &ModelDataTableModel::modelChanged);
+    connect(baseModel, &Model::modelChangedWithin,
+            this, &ModelDataTableModel::modelChangedWithin);
+    connect(baseModel, &Model::aboutToBeDeleted,
+            this, &ModelDataTableModel::modelAboutToBeDeleted);
 }
 
 ModelDataTableModel::~ModelDataTableModel()
@@ -72,7 +72,7 @@ ModelDataTableModel::insertRow(int row, const QModelIndex &parent)
     if (!m_model) return false;
     if (parent.isValid()) return false;
 
-    emit beginInsertRows(parent, row, row);
+    beginInsertRows(parent, row, row);
 
     UndoableCommand *command = m_model->getInsertRowCommand(getUnsorted(row));
 
@@ -80,7 +80,7 @@ ModelDataTableModel::insertRow(int row, const QModelIndex &parent)
         emit addCommand(command);
     }
 
-    emit endInsertRows();
+    endInsertRows();
 
     return (command ? true : false);
 }
@@ -91,7 +91,7 @@ ModelDataTableModel::removeRow(int row, const QModelIndex &parent)
     if (!m_model) return false;
     if (parent.isValid()) return false;
 
-    emit beginRemoveRows(parent, row, row);
+    beginRemoveRows(parent, row, row);
 
     UndoableCommand *command = m_model->getRemoveRowCommand(getUnsorted(row));
 
@@ -99,7 +99,7 @@ ModelDataTableModel::removeRow(int row, const QModelIndex &parent)
         emit addCommand(command);
     }
 
-    emit endRemoveRows();
+    endRemoveRows();
 
     return (command ? true : false);
 }

@@ -74,9 +74,9 @@ Praaline::Plugins::Aligner::PluginAligner::PluginAligner(QObject* parent) :
     QObject(parent), d(new PluginAlignerPrivateData)
 {
     setObjectName(pluginName());
-    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
-    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
-    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
+    connect(&(d->watcher), &QFutureWatcherBase::resultReadyAt, this, &PluginAligner::futureResultReadyAt);
+    connect(&(d->watcher), &QFutureWatcherBase::progressValueChanged, this, &PluginAligner::futureProgressValueChanged);
+    connect(&(d->watcher), &QFutureWatcherBase::finished, this, &PluginAligner::futureFinished);
 }
 
 Praaline::Plugins::Aligner::PluginAligner::~PluginAligner()
@@ -178,19 +178,19 @@ void Praaline::Plugins::Aligner::PluginAligner::setParameters(const QHash<QStrin
 
 void Praaline::Plugins::Aligner::PluginAligner::createUtterancesFromProsogramAutosyll(const QList<CorpusCommunication *> &communications)
 {
-    printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
+    emit printMessage("Creating auto_utterance from Prosogram auto_syll and auto_syll_nucl");
     QPointer<LongSoundAligner> LSA = new LongSoundAligner();
-    madeProgress(0);
+    emit madeProgress(0);
     int countDone = 0;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (!com->hasRecordings()) continue;
         LSA->createUtterancesFromProsogramAutosyll(com);
         ++countDone;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
         QApplication::processEvents();
     }
-    madeProgress(100);
+    emit madeProgress(100);
 }
 
 
@@ -379,8 +379,8 @@ struct RunEasyAlignStep
 
 void Praaline::Plugins::Aligner::PluginAligner::process(const QList<CorpusCommunication *> &communications)
 {
-    madeProgress(0);
-    printMessage("Starting");
+    emit madeProgress(0);
+    emit printMessage("Starting");
     QElapsedTimer timer;
     timer.start();
 
@@ -427,8 +427,8 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<CorpusCommun
         d->watcher.setFuture(d->future);
         while (d->watcher.isRunning()) QApplication::processEvents();
     }
-    printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
-    madeProgress(100);
+    emit printMessage(QString("Time: %1").arg(timer.elapsed() / 1000.0));
+    emit madeProgress(100);
     return;
 
 }
@@ -558,8 +558,8 @@ void Praaline::Plugins::Aligner::PluginAligner::process(const QList<CorpusCommun
 void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Adding phonetisation to tokens");
+    emit madeProgress(0);
+    emit printMessage("Adding phonetisation to tokens");
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
@@ -579,12 +579,12 @@ void Praaline::Plugins::Aligner::PluginAligner::addPhonetisationToTokens(const Q
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
-        printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
+        emit madeProgress(countDone * 100 / communications.count());
+        emit printMessage(QString("Phonetisation OK: %1").arg(com->ID()));
         QApplication::processEvents();
     }
-    madeProgress(100);
-    printMessage("Finished");
+    emit madeProgress(100);
+    emit printMessage("Finished");
 }
 
 void Praaline::Plugins::Aligner::PluginAligner::createFeatureFilesFromUtterances(const QList<CorpusCommunication *> &communications)
@@ -656,7 +656,7 @@ void Praaline::Plugins::Aligner::PluginAligner::align(const QList<CorpusCommunic
                 IntervalTier *tier_segment = tiers->getIntervalTierByName("segment");
                 if (!tier_segment) continue;
             }
-            printMessage("Progress");
+            emit printMessage("Progress");
         }
         qDeleteAll(tiersAll);
     }
@@ -666,8 +666,8 @@ void Praaline::Plugins::Aligner::PluginAligner::align(const QList<CorpusCommunic
 void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<CorpusCommunication *> &communications)
 {
     int countDone = 0;
-    madeProgress(0);
-    printMessage("Checking...");
+    emit madeProgress(0);
+    emit printMessage("Checking...");
     SpeakerAnnotationTierGroupMap tiersAll;
     foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
@@ -689,7 +689,7 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<CorpusCommuni
                     tok = tok.remove(" ").remove("_");
                     seg = segment->text().remove(" ").remove("|-").remove("-|").remove("/");
                     if (tok != seg) {
-                        printMessage(QString("%1\t%2\t%3").arg(annotationID).arg(seg).arg(tok));
+                        emit printMessage(QString("%1\t%2\t%3").arg(annotationID).arg(seg).arg(tok));
                     }
                 }
                 // corpus->datastoreAnnotations()->saveTier(annot->ID(), speakerID, tier_token);
@@ -697,10 +697,10 @@ void Praaline::Plugins::Aligner::PluginAligner::checks(const QList<CorpusCommuni
             qDeleteAll(tiersAll);
         }
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
         QApplication::processEvents();
     }
-    madeProgress(100);
-    printMessage("Finished");
+    emit madeProgress(100);
+    emit printMessage("Finished");
 }
 

@@ -38,8 +38,8 @@ SpectrumLayer::SpectrumLayer() :
     m_newFFTNeeded(true)
 {
     Preferences *prefs = Preferences::getInstance();
-    connect(prefs, SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
-            this, SLOT(preferenceChanged(PropertyContainer::PropertyName)));
+    connect(prefs, &PropertyContainer::propertyChanged,
+            this, &SpectrumLayer::preferenceChanged);
     setWindowType(prefs->getWindowType());
 
     setBinScale(LogBins);

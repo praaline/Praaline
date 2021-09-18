@@ -86,7 +86,7 @@ ObjectMapperForwarder::ObjectMapperForwarder(ObjectMapper *m, QObject *o) :
         }
     }
     
-    connect(o, SIGNAL(destroyed(QObject *)), this, SLOT(objectDestroyed()));
+    connect(o, &QObject::destroyed, this, &ObjectMapperForwarder::objectDestroyed);
 }
 
 void

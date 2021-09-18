@@ -82,7 +82,7 @@ bool SphinxOfflineRecogniser::openFeatureFile(const QString &filename)
     if (!d->pocketSphinx) return false;
     // Open file
     if ((infh = fopen(filename.toLocal8Bit().constData(), "rb")) == nullptr) {
-        error(QString("Failed to open %1").arg(filename));
+        emit error(QString("Failed to open %1").arg(filename));
         return false;
     }
     // Read and check it is an MFCC file
@@ -90,7 +90,7 @@ bool SphinxOfflineRecogniser::openFeatureFile(const QString &filename)
     flen = ftell(infh);
     fseek(infh, 0, SEEK_SET);
     if (fread(&nmfc, 4, 1, infh) != 1) {
-        error("Failed to read 4 bytes from MFCC file");
+        emit error("Failed to read 4 bytes from MFCC file");
         fclose(infh);
         return false;
     }
@@ -98,13 +98,13 @@ bool SphinxOfflineRecogniser::openFeatureFile(const QString &filename)
         SWAP_INT32(&nmfc);
         mfccShouldSwap = true;
         if (nmfc != flen / 4 - 1) {
-            error(QString("File length mismatch: %1 != %2, maybe it's not MFCC file").arg(nmfc).arg(flen / 4 - 1));
+            emit error(QString("File length mismatch: %1 != %2, maybe it's not MFCC file").arg(nmfc).arg(flen / 4 - 1));
             fclose(infh);
             return false;
         }
     }
     if (nmfc == 0) {
-        error("Empty mfcc file");
+        emit error("Empty mfcc file");
         fclose(infh);
         return false;
     }
@@ -142,14 +142,14 @@ bool SphinxOfflineRecogniser::decode(int startFrame, int endFrame)
     if (!d->pocketSphinx) return false;
     if (!d->mfccFileHandle) return false;
     if (endFrame != -1 && endFrame < startFrame) {
-        error(QString("End frame %1 is < start frame %2").arg(endFrame).arg(startFrame));
+        emit error(QString("End frame %1 is < start frame %2").arg(endFrame).arg(startFrame));
         return false;
     }
 
     // Return to beginning of MFC file and read first 4 bytes
     fseek(d->mfccFileHandle, 0, SEEK_SET);
     if (fread(&nmfc, 4, 1, d->mfccFileHandle) != 1) {
-        error("Failed to read 4 bytes from MFCC file");
+        emit error("Failed to read 4 bytes from MFCC file");
         fclose(d->mfccFileHandle);
         return false;
     }
@@ -166,7 +166,7 @@ bool SphinxOfflineRecogniser::decode(int startFrame, int endFrame)
     size_t ret = fread(floats, sizeof(mfcc_t), length, d->mfccFileHandle);
     if (ret != length) {
         perror("Error");
-        error("Failed to read items from mfcfile");
+        emit error("Failed to read items from mfcfile");
         ckd_free_2d(mfcs);
         return false;
     }
@@ -212,7 +212,7 @@ bool SphinxOfflineRecogniser::setLanguageModel(const QString &filenameLM)
     if (!d->pocketSphinx) return false;
     if (filenameLM.isEmpty()) return false;
     if (ps_set_search(d->pocketSphinx, filenameLM.toLocal8Bit().constData())) {
-        error(QString("No such language model: %1").arg(filenameLM));
+        emit error(QString("No such language model: %1").arg(filenameLM));
         return false;
     }
     return true;

@@ -206,7 +206,7 @@ setNodeToPort(std::shared_ptr<Node> node,
 
     _connectionState.setNoRequiredPort();
 
-    updated(*this);
+    emit updated(*this);
 }
 
 

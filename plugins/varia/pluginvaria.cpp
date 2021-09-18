@@ -62,9 +62,9 @@ Praaline::Plugins::Varia::PluginVaria::PluginVaria(QObject* parent) :
     QObject(parent), d(new PluginVariaPrivateData)
 {
     setObjectName(pluginName());
-    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
-    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
-    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
+    connect(&(d->watcher), &QFutureWatcherBase::resultReadyAt, this, &PluginVaria::futureResultReadyAt);
+    connect(&(d->watcher), &QFutureWatcherBase::progressValueChanged, this, &PluginVaria::futureProgressValueChanged);
+    connect(&(d->watcher), &QFutureWatcherBase::finished, this, &PluginVaria::futureFinished);
 }
 
 Praaline::Plugins::Varia::PluginVaria::~PluginVaria()
@@ -205,7 +205,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
     ORFEO orfeo;
     QString m;
     int countDone = 0;
-    madeProgress(0);
+    emit madeProgress(0);
 
     QStringList subjects;
     foreach (CorpusCommunication *com, communications) {
@@ -235,7 +235,7 @@ void Praaline::Plugins::Varia::PluginVaria::process(const QList<CorpusCommunicat
         sophie.addPhoneticAnnotationToTokens(com);
 
         countDone++;
-        madeProgress(countDone * 100 / communications.count());
+        emit madeProgress(countDone * 100 / communications.count());
 
 //        if (!m.isEmpty()) printMessage(m);
 //        QString subjectID = com->ID().left(4);

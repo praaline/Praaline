@@ -44,7 +44,7 @@ UnitConverter::UnitConverter(QWidget *parent) :
     
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Close);
     maingrid->addWidget(bb, 1, 0);
-    connect(bb, SIGNAL(rejected()), this, SLOT(close()));
+    connect(bb, &QDialogButtonBox::rejected, this, &QWidget::close);
     
     QFrame *frame = new QFrame;
     tabs->addTab(frame, tr("Pitch"));
@@ -193,8 +193,8 @@ UnitConverter::UnitConverter(QWidget *parent) :
     m_samplerate->setCurrentText("44100 Hz");
     
     connect(Preferences::getInstance(),
-	    SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
-	    this, SLOT(preferenceChanged(PropertyContainer::PropertyName)));
+	    &PropertyContainer::propertyChanged,
+	    this, &UnitConverter::preferenceChanged);
 
     row = 0;
 

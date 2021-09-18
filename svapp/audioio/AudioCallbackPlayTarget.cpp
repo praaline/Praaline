@@ -23,8 +23,8 @@ AudioCallbackPlayTarget::AudioCallbackPlayTarget(AudioCallbackPlaySource *source
     m_outputGain(1.0)
 {
     if (m_source) {
-	connect(m_source, SIGNAL(modelReplaced()),
-		this, SLOT(sourceModelReplaced()));
+	connect(m_source, &AudioCallbackPlaySource::modelReplaced,
+		this, &AudioCallbackPlayTarget::sourceModelReplaced);
     }
 }
 

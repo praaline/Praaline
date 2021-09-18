@@ -545,15 +545,15 @@ View::addLayer(Layer *layer)
     cancel->setIcon(IconLoader().load("fileclose"));
     cancel->setFlat(true);
     cancel->setFixedSize(QSize(20, 20));
-    connect(cancel, SIGNAL(clicked()), this, SLOT(cancelClicked()));
+    connect(cancel, &QAbstractButton::clicked, this, &View::cancelClicked);
     
     ProgressBarRec pbr;
     pbr.cancel = cancel;
     pbr.bar = pb;
     pbr.lastCheck = 0;
     pbr.checkTimer = new QTimer();
-    connect(pbr.checkTimer, SIGNAL(timeout()), this,
-            SLOT(progressCheckStalledTimerElapsed()));
+    connect(pbr.checkTimer, &QTimer::timeout, this,
+            &View::progressCheckStalledTimerElapsed);
 
     m_progressBars[layer] = pbr;
 
@@ -566,24 +566,24 @@ View::addLayer(Layer *layer)
     pb->setFont(f);
     pb->hide();
     
-    connect(layer, SIGNAL(layerParametersChanged()),
-	    this,    SLOT(layerParametersChanged()));
-    connect(layer, SIGNAL(layerParameterRangesChanged()),
-	    this,    SLOT(layerParameterRangesChanged()));
-    connect(layer, SIGNAL(layerMeasurementRectsChanged()),
-	    this,    SLOT(layerMeasurementRectsChanged()));
-    connect(layer, SIGNAL(layerNameChanged()),
-	    this,    SLOT(layerNameChanged()));
-    connect(layer, SIGNAL(modelChanged()),
-	    this,    SLOT(modelChanged()));
-    connect(layer, SIGNAL(modelCompletionChanged()),
-	    this,    SLOT(modelCompletionChanged()));
-    connect(layer, SIGNAL(modelAlignmentCompletionChanged()),
-	    this,    SLOT(modelAlignmentCompletionChanged()));
-    connect(layer, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-	    this,    SLOT(modelChangedWithin(sv_frame_t, sv_frame_t)));
-    connect(layer, SIGNAL(modelReplaced()),
-	    this,    SLOT(modelReplaced()));
+    connect(layer, &Layer::layerParametersChanged,
+	    this,    &View::layerParametersChanged);
+    connect(layer, &Layer::layerParameterRangesChanged,
+	    this,    &View::layerParameterRangesChanged);
+    connect(layer, &Layer::layerMeasurementRectsChanged,
+	    this,    &View::layerMeasurementRectsChanged);
+    connect(layer, &Layer::layerNameChanged,
+	    this,    &View::layerNameChanged);
+    connect(layer, &Layer::modelChanged,
+	    this,    &View::modelChanged);
+    connect(layer, &Layer::modelCompletionChanged,
+	    this,    &View::modelCompletionChanged);
+    connect(layer, &Layer::modelAlignmentCompletionChanged,
+	    this,    &View::modelAlignmentCompletionChanged);
+    connect(layer, &Layer::modelChangedWithin,
+	    this,    &View::modelChangedWithin);
+    connect(layer, &Layer::modelReplaced,
+	    this,    &View::modelReplaced);
 
     update();
 
@@ -624,22 +624,22 @@ View::removeLayer(Layer *layer)
 	}
     }
     
-    disconnect(layer, SIGNAL(layerParametersChanged()),
-               this,    SLOT(layerParametersChanged()));
-    disconnect(layer, SIGNAL(layerParameterRangesChanged()),
-               this,    SLOT(layerParameterRangesChanged()));
-    disconnect(layer, SIGNAL(layerNameChanged()),
-               this,    SLOT(layerNameChanged()));
-    disconnect(layer, SIGNAL(modelChanged()),
-               this,    SLOT(modelChanged()));
-    disconnect(layer, SIGNAL(modelCompletionChanged()),
-               this,    SLOT(modelCompletionChanged()));
-    disconnect(layer, SIGNAL(modelAlignmentCompletionChanged()),
-               this,    SLOT(modelAlignmentCompletionChanged()));
-    disconnect(layer, SIGNAL(modelChangedWithin(sv_frame_t, sv_frame_t)),
-               this,    SLOT(modelChangedWithin(sv_frame_t, sv_frame_t)));
-    disconnect(layer, SIGNAL(modelReplaced()),
-               this,    SLOT(modelReplaced()));
+    disconnect(layer, &Layer::layerParametersChanged,
+               this,    &View::layerParametersChanged);
+    disconnect(layer, &Layer::layerParameterRangesChanged,
+               this,    &View::layerParameterRangesChanged);
+    disconnect(layer, &Layer::layerNameChanged,
+               this,    &View::layerNameChanged);
+    disconnect(layer, &Layer::modelChanged,
+               this,    &View::modelChanged);
+    disconnect(layer, &Layer::modelCompletionChanged,
+               this,    &View::modelCompletionChanged);
+    disconnect(layer, &Layer::modelAlignmentCompletionChanged,
+               this,    &View::modelAlignmentCompletionChanged);
+    disconnect(layer, &Layer::modelChangedWithin,
+               this,    &View::modelChangedWithin);
+    disconnect(layer, &Layer::modelReplaced,
+               this,    &View::modelReplaced);
 
     update();
 
@@ -706,28 +706,28 @@ View::setViewManager(ViewManager *manager)
 
     m_manager = manager;
 
-    connect(m_manager, SIGNAL(globalCentreFrameChanged(sv_frame_t)),
-	    this, SLOT(globalCentreFrameChanged(sv_frame_t)));
+    connect(m_manager, &ViewManager::globalCentreFrameChanged,
+	    this, &View::globalCentreFrameChanged);
     connect(m_manager, SIGNAL(viewCentreFrameChanged(View *, sv_frame_t)),
 	    this, SLOT(viewCentreFrameChanged(View *, sv_frame_t)));
-    connect(m_manager, SIGNAL(playbackFrameChanged(sv_frame_t)),
-	    this, SLOT(viewManagerPlaybackFrameChanged(sv_frame_t)));
+    connect(m_manager, &ViewManager::playbackFrameChanged,
+	    this, &View::viewManagerPlaybackFrameChanged);
 
     connect(m_manager, SIGNAL(viewZoomLevelChanged(View *, int, bool)),
 	    this, SLOT(viewZoomLevelChanged(View *, int, bool)));
 
-    connect(m_manager, SIGNAL(toolModeChanged()),
-	    this, SLOT(toolModeChanged()));
+    connect(m_manager, &ViewManager::toolModeChanged,
+	    this, &View::toolModeChanged);
     connect(m_manager, SIGNAL(selectionChanged()),
 	    this, SLOT(selectionChanged()));
-    connect(m_manager, SIGNAL(inProgressSelectionChanged()),
-	    this, SLOT(selectionChanged()));
-    connect(m_manager, SIGNAL(overlayModeChanged()),
-            this, SLOT(overlayModeChanged()));
-    connect(m_manager, SIGNAL(showCentreLineChanged()),
-            this, SLOT(overlayModeChanged()));
-    connect(m_manager, SIGNAL(zoomWheelsEnabledChanged()),
-            this, SLOT(zoomWheelsEnabledChanged()));
+    connect(m_manager, &ViewManager::inProgressSelectionChanged,
+	    this, &View::selectionChanged);
+    connect(m_manager, &ViewManager::overlayModeChanged,
+            this, &View::overlayModeChanged);
+    connect(m_manager, &ViewManager::showCentreLineChanged,
+            this, &View::overlayModeChanged);
+    connect(m_manager, &ViewManager::zoomWheelsEnabledChanged,
+            this, &View::zoomWheelsEnabledChanged);
 
     connect(this, SIGNAL(centreFrameChanged(sv_frame_t, bool,
                                             PlaybackFollowMode)),
@@ -2542,8 +2542,8 @@ ViewPropertyContainer::ViewPropertyContainer(View *v) :
     m_v(v)
 {
 //    cerr << "ViewPropertyContainer: " << this << " is owned by View " << v << endl;
-    connect(m_v, SIGNAL(propertyChanged(PropertyContainer::PropertyName)),
-	    this, SIGNAL(propertyChanged(PropertyContainer::PropertyName)));
+    connect(m_v, &View::propertyChanged,
+	    this, &PropertyContainer::propertyChanged);
 }
 
 ViewPropertyContainer::~ViewPropertyContainer()

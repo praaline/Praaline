@@ -22,6 +22,7 @@
 #include <QDialogButtonBox>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QAbstractButton>
 
 KeyReference::KeyReference() :
     m_text(0),
@@ -181,7 +182,7 @@ KeyReference::show()
     layout->addWidget(m_text);
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Close);
-    connect(bb, SIGNAL(clicked(QAbstractButton *)), this, SLOT(dialogButtonClicked(QAbstractButton *)));
+    connect(bb, &QDialogButtonBox::clicked, this, &KeyReference::dialogButtonClicked);
     layout->addWidget(bb);
 
     m_dialog->show();

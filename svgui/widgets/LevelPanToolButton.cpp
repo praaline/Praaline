@@ -34,13 +34,13 @@ LevelPanToolButton::LevelPanToolButton(QWidget *parent) :
 {
     m_lpw = new LevelPanWidget();
 
-    connect(m_lpw, SIGNAL(levelChanged(float)), this, SIGNAL(levelChanged(float)));
-    connect(m_lpw, SIGNAL(levelChanged(float)), this, SLOT(selfLevelChanged(float)));
+    connect(m_lpw, &LevelPanWidget::levelChanged, this, &LevelPanToolButton::levelChanged);
+    connect(m_lpw, &LevelPanWidget::levelChanged, this, &LevelPanToolButton::selfLevelChanged);
 
-    connect(m_lpw, SIGNAL(panChanged(float)), this, SIGNAL(panChanged(float)));
+    connect(m_lpw, &LevelPanWidget::panChanged, this, &LevelPanToolButton::panChanged);
     connect(m_lpw, SIGNAL(panChanged(float)), this, SLOT(update()));
 
-    connect(this, SIGNAL(clicked(bool)), this, SLOT(selfClicked()));
+    connect(this, &QAbstractButton::clicked, this, &LevelPanToolButton::selfClicked);
     
     QMenu *menu = new QMenu();
     QWidgetAction *wa = new QWidgetAction(menu);

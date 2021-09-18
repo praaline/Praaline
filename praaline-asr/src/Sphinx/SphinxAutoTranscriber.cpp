@@ -50,8 +50,8 @@ SphinxAutoTranscriber::SphinxAutoTranscriber(QObject *parent) :
 {
     d->extractor = new SphinxFeatureExtractor(this);
     d->recogniser = new SphinxOfflineRecogniser(this);
-    connect(d->recogniser, SIGNAL(error(QString)), this, SLOT(recogniserError(QString)));
-    connect(d->recogniser, SIGNAL(info(QString)), this, SLOT(recogniserInfo(QString)));
+    connect(d->recogniser, &SphinxOfflineRecogniser::error, this, &SphinxAutoTranscriber::recogniserError);
+    connect(d->recogniser, &SphinxOfflineRecogniser::info, this, &SphinxAutoTranscriber::recogniserInfo);
 }
 
 SphinxAutoTranscriber::~SphinxAutoTranscriber()
@@ -128,12 +128,12 @@ QList<Interval *> SphinxAutoTranscriber::tokens()
 
 void SphinxAutoTranscriber::recogniserError(QString message)
 {
-    printMessage(message);
+    emit printMessage(message);
 }
 
 void SphinxAutoTranscriber::recogniserInfo(QString message)
 {
-    printMessage(message);
+    emit printMessage(message);
 }
 
 // ====================================================================================================================
@@ -142,13 +142,13 @@ bool SphinxAutoTranscriber::stepExtractFeaturesFile()
 {
     // Decide on paths and filenames
     if (!QFile::exists(d->filePathRecording)) {
-        printMessage(QString("Error: File <i>%1</i> does not exist.").arg(d->filePathRecording));
+        emit printMessage(QString("Error: File <i>%1</i> does not exist.").arg(d->filePathRecording));
         return false;
     }
     QFileInfo fi(d->filePathRecording);
     if (d->workingDirectory.isEmpty()) {
         if (!d->tempDirectory.isValid()) {
-            printMessage(QString("Error: Could not create temporary working directory. %1")
+            emit printMessage(QString("Error: Could not create temporary working directory. %1")
                          .arg(d->tempDirectory.errorString()));
             return false;
         }
@@ -164,7 +164,7 @@ bool SphinxAutoTranscriber::stepExtractFeaturesFile()
     // Create downsampled file
     AudioSegmenter::resample(d->filePathRecording, d->filePathDownsampled, 16000, false, 1);
     if (!QFile::exists(d->filePathDownsampled)) {
-        printMessage(QString("Error: Could not create down-sampled wave file %1")
+        emit printMessage(QString("Error: Could not create down-sampled wave file %1")
                      .arg(d->filePathDownsampled));
         return false;
     }
@@ -176,11 +176,11 @@ bool SphinxAutoTranscriber::stepExtractFeaturesFile()
     QFile::rename(filenameFEOut, filenameSimple);
     // Check for success
     if (!QFile::exists(d->filePathFeaturesFile)) {
-        printMessage(QString("Error: Could not create extracted features file %1")
+        emit printMessage(QString("Error: Could not create extracted features file %1")
                      .arg(d->filePathFeaturesFile));
         return false;
     }
-    printMessage("Succesfully extracted features for speech recognition.");
+    emit printMessage("Succesfully extracted features for speech recognition.");
     d->state = StateFeaturesFileExtracted;
     return true;
 }
@@ -188,7 +188,7 @@ bool SphinxAutoTranscriber::stepExtractFeaturesFile()
 bool SphinxAutoTranscriber::stepVoiceActivityDetection()
 {
     if (!QFile::exists(d->filePathRecording)) {
-        printMessage(QString("Error: File <i>%1</i> does not exist.").arg(d->filePathRecording));
+        emit printMessage(QString("Error: File <i>%1</i> does not exist.").arg(d->filePathRecording));
         return false;
     }
     // Run OpenSmile VAD
@@ -208,12 +208,12 @@ bool SphinxAutoTranscriber::stepVoiceActivityDetection()
 bool SphinxAutoTranscriber::stepAutoTranscribe()
 {
     if (!QFile::exists(d->filePathFeaturesFile)) {
-        printMessage(QString("Error: Extracted features file <i>%1</i> does not exist. Please extract features.")
+        emit printMessage(QString("Error: Extracted features file <i>%1</i> does not exist. Please extract features.")
                      .arg(d->filePathFeaturesFile));
         return false;
     }
     if (d->utterances.isEmpty()) {
-        printMessage(QString("The utterance list is empty. Please run Voice Activity Detection."));
+        emit printMessage(QString("The utterance list is empty. Please run Voice Activity Detection."));
         return false;
     }
     d->recogniser->openFeatureFile(d->filePathFeaturesFile);
@@ -224,7 +224,7 @@ bool SphinxAutoTranscriber::stepAutoTranscribe()
             utt->setText(d->recogniser->getUtteranceText());
             d->tokens.insert(utt->tMin().toNanoseconds(), d->recogniser->getSegmentation());
         }
-        printMessage(QString("%1\t%2\t%3\t%4\t%5")
+        emit printMessage(QString("%1\t%2\t%3\t%4\t%5")
                      .arg(utt->tMin().toDouble()).arg(utt->tMax().toDouble())
                      .arg(frameStart).arg(frameEnd)
                      .arg(utt->text().replace("<", "{").replace(">", "}")));

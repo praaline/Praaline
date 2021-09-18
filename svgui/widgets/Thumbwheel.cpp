@@ -61,8 +61,8 @@ Thumbwheel::setRangeMapper(RangeMapper *mapper)
     if (m_rangeMapper == mapper) return;
 
     if (!m_rangeMapper && mapper) {
-        connect(this, SIGNAL(valueChanged(int)),
-                this, SLOT(updateMappedValue(int)));
+        connect(this, &Thumbwheel::valueChanged,
+                this, &Thumbwheel::updateMappedValue);
     }
 
     delete m_rangeMapper;

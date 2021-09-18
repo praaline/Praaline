@@ -598,11 +598,11 @@ WaveFileModel::fillCache()
     m_mutex.lock();
 
     m_updateTimer = new QTimer(this);
-    connect(m_updateTimer, SIGNAL(timeout()), this, SLOT(fillTimerTimedOut()));
+    connect(m_updateTimer, &QTimer::timeout, this, &WaveFileModel::fillTimerTimedOut);
     m_updateTimer->start(100);
 
     m_fillThread = new RangeCacheFillThread(*this);
-    connect(m_fillThread, SIGNAL(finished()), this, SLOT(cacheFilled()));
+    connect(m_fillThread, &QThread::finished, this, &WaveFileModel::cacheFilled);
 
     m_mutex.unlock();
     m_fillThread->start();

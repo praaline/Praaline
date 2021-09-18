@@ -191,7 +191,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
         foreach (CorpusCommunication *com, communications) {
             QString m = preprocessor.prepareTranscription(com);
             m = m.append("\t").append(preprocessor.checkSpeakers(com));
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
     }
     if (d->pfc_preprocessor_diarise_tokenise) {
@@ -199,23 +199,23 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
             QString m = preprocessor.separateSpeakers(com);
             m = m.append("\t").append(preprocessor.tokenise(com));
             m = m.append("\t").append(preprocessor.tokmin_punctuation(com));
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
     }
     if (d->pfc_phonetiser_phonetise) {
         phonetiser.loadPhonetisationDictionary();
         foreach (CorpusCommunication *com, communications) {
             QString m = phonetiser.phonetiseFromDictionary(com);
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
-        printMessage(phonetiser.writeListOfWordsOOV("/mnt/hgfs/DATA/PFCALIGN/phonetisation/oov.txt"));
-        printMessage(phonetiser.writeListOfWordsFalseStarts("/mnt/hgfs/DATA/PFCALIGN/phonetisation/falsestarts.txt"));
+        emit printMessage(phonetiser.writeListOfWordsOOV("/mnt/hgfs/DATA/PFCALIGN/phonetisation/oov.txt"));
+        emit printMessage(phonetiser.writeListOfWordsFalseStarts("/mnt/hgfs/DATA/PFCALIGN/phonetisation/falsestarts.txt"));
     }
     if (d->pfc_aligner_htk) {
         foreach (CorpusCommunication *com, communications) {
             if (com->ID().endsWith("m")) continue;
             QString m = aligner.align(com, "htk");
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
     }
     if (d->pfc_aligner_mfa_individual) {
@@ -224,7 +224,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
             if (com->ID().endsWith("m")) continue;
             QString m = aligner.align(com, "mfa_individual");
             aligner.dictionaryMFAClose(com->ID());
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
     }
     if (d->pfc_aligner_mfa_regionstyle) {
@@ -246,13 +246,13 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
                                       "/mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1/align_%1 "
                                       "-o /mnt/hgfs/DATA/PFCALIGN/MFA_region_style/%1/model_%1 "
                                       "-t /mnt/hgfs/DATA/PFCALIGN/MFA_temp_region_style -f -q -c").arg(groupID);
-            printMessage(command);
+            emit printMessage(command);
         }
     }
     if (d->pfc_aligner_cross_text) {
         QString cross = aligner.scriptCrossAlignment();
         // QString cross = aligner.combineDictionaries();
-        printMessage(cross);
+        emit printMessage(cross);
     }
     if (d->pfc_evaluate) {
         evaluation.pivotReset();
@@ -260,7 +260,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
             if (com->ID().endsWith("m")) continue;
             // QString m = evaluation.evaluate_Individual_RegionStyle(com);
             QString m = evaluation.evaluate_RegionStyle_RegionStyle(com);
-            if (!m.isEmpty()) printMessage(m);
+            if (!m.isEmpty()) emit printMessage(m);
         }
         writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_list_text.txt", evaluation.pivotList("text"));
         writeStringListToFile("/mnt/hgfs/DATA/PFCALIGN/MFA_evaluate/crosseval_list_conv.txt", evaluation.pivotList("conv"));
@@ -272,7 +272,7 @@ void Praaline::Plugins::FloralPFC::PluginFloralPFC::process(const QList<CorpusCo
     if (d->pfc_reports_corpuscoverage) {
         QString m;
         if (!communications.isEmpty()) m = reports.corpusCoverageStatistics(communications.first()->corpus());
-        if (!m.isEmpty()) printMessage(m);
+        if (!m.isEmpty()) emit printMessage(m);
     }
 
 //    PFCPreprocessor p;

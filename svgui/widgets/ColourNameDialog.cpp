@@ -43,8 +43,8 @@ ColourNameDialog::ColourNameDialog(QString title, QString message,
     m_textField = new QLineEdit(defaultName, this);
     layout->addWidget(m_textField, 1, 0);
 
-    connect(m_textField, SIGNAL(textChanged(const QString &)),
-            this, SLOT(textChanged(const QString &)));
+    connect(m_textField, &QLineEdit::textChanged,
+            this, &ColourNameDialog::textChanged);
     
     m_darkBackground = new QCheckBox(this);
     layout->addWidget(m_darkBackground, 2, 0);
@@ -52,14 +52,14 @@ ColourNameDialog::ColourNameDialog(QString title, QString message,
         (colour.red() + colour.green() + colour.blue() > 384);
     fillColourLabel();
 
-    connect(m_darkBackground, SIGNAL(stateChanged(int)),
-            this, SLOT(darkBackgroundChanged(int)));
+    connect(m_darkBackground, &QCheckBox::stateChanged,
+            this, &ColourNameDialog::darkBackgroundChanged);
 
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     layout->addWidget(bb, 3, 0, 1, 2);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
     m_okButton = bb->button(QDialogButtonBox::Ok);
     m_okButton->setEnabled(defaultName != "");
 }

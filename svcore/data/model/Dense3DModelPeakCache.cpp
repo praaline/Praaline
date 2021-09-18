@@ -31,8 +31,8 @@ Dense3DModelPeakCache::Dense3DModelPeakCache(DenseThreeDimensionalModel *source,
          EditableDenseThreeDimensionalModel::NoCompression,
          false);
 
-    connect(source, SIGNAL(modelChanged()),
-            this, SLOT(sourceModelChanged()));
+    connect(source, &Model::modelChanged,
+            this, &Dense3DModelPeakCache::sourceModelChanged);
     connect(source, SIGNAL(aboutToBeDeleted()),
             this, SLOT(sourceModelAboutToBeDeleted()));
 

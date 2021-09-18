@@ -45,8 +45,8 @@ TransformFinder::TransformFinder(QWidget *parent) :
     
     QLineEdit *searchField = new QLineEdit;
     mainGrid->addWidget(searchField, 0, 1);
-    connect(searchField, SIGNAL(textChanged(const QString &)),
-            this, SLOT(searchTextChanged(const QString &)));
+    connect(searchField, &QLineEdit::textChanged,
+            this, &TransformFinder::searchTextChanged);
 
 //    m_infoLabel = new QLabel(tr("Type in this box to search descriptions of available and known transforms"));
     m_infoLabel = new QLabel;
@@ -59,8 +59,8 @@ TransformFinder::TransformFinder(QWidget *parent) :
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     mainGrid->addWidget(bb, 3, 0, 1, 2);
-    connect(bb, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     m_resultsFrame = new QWidget;
     QPalette palette = m_resultsFrame->palette();
@@ -84,12 +84,12 @@ TransformFinder::TransformFinder(QWidget *parent) :
 
     QAction *up = new QAction(tr("Up"), this);
     up->setShortcut(tr("Up"));
-    connect(up, SIGNAL(triggered()), this, SLOT(up()));
+    connect(up, &QAction::triggered, this, &TransformFinder::up);
     addAction(up);
 
     QAction *down = new QAction(tr("Down"), this);
     down->setShortcut(tr("Down"));
-    connect(down, SIGNAL(triggered()), this, SLOT(down()));
+    connect(down, &QAction::triggered, this, &TransformFinder::down);
     addAction(down);
 
     QDesktopWidget *desktop = QApplication::desktop();
@@ -111,7 +111,7 @@ TransformFinder::TransformFinder(QWidget *parent) :
 
     m_upToDateCount = 0;
     m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(timeout()));
+    connect(m_timer, &QTimer::timeout, this, &TransformFinder::timeout);
     m_timer->start(30);
 }
 
@@ -305,10 +305,10 @@ TransformFinder::timeout()
         if (i >= (int)m_labels.size()) {
             SelectableLabel *label = new SelectableLabel(m_resultsFrame);
             m_resultsLayout->addWidget(label);
-            connect(label, SIGNAL(selectionChanged()), this,
-                    SLOT(selectedLabelChanged()));
-            connect(label, SIGNAL(doubleClicked()), this,
-                    SLOT(labelDoubleClicked()));
+            connect(label, &SelectableLabel::selectionChanged, this,
+                    &TransformFinder::selectedLabelChanged);
+            connect(label, &SelectableLabel::doubleClicked, this,
+                    &TransformFinder::labelDoubleClicked);
             QPalette palette = label->palette();
             label->setPalette(palette);
             m_labels.push_back(label);
