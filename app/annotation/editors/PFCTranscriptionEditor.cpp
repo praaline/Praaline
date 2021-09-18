@@ -30,14 +30,14 @@ PFCTranscriptionEditor::PFCTranscriptionEditor(QWidget *parent) :
     QMainWindow(parent), d(new PFCTranscriptionEditorData), ui(new Ui::PFCTranscriptionEditor)
 {
     ui->setupUi(this);
-    connect(ui->commandPrevious, SIGNAL(clicked(bool)), this, SLOT(previous()));
-    connect(ui->commandNext, SIGNAL(clicked(bool)), this, SLOT(next()));
-    connect(ui->commandSave, SIGNAL(clicked(bool)), this, SLOT(save()));
-    connect(ui->commandGoto, SIGNAL(clicked(bool)), this, SLOT(gotoIndex()));
+    connect(ui->commandPrevious, &QAbstractButton::clicked, this, &PFCTranscriptionEditor::previous);
+    connect(ui->commandNext, &QAbstractButton::clicked, this, &PFCTranscriptionEditor::next);
+    connect(ui->commandSave, &QAbstractButton::clicked, this, &PFCTranscriptionEditor::save);
+    connect(ui->commandGoto, &QAbstractButton::clicked, this, &PFCTranscriptionEditor::gotoIndex);
 
-    connect(ui->editTranscript, SIGNAL(textChanged(QString)), this, SLOT(updateTableView()));
-    connect(ui->editSchwa, SIGNAL(textChanged(QString)), this, SLOT(updateTableView()));
-    connect(ui->editLiaison, SIGNAL(textChanged(QString)), this, SLOT(updateTableView()));
+    connect(ui->editTranscript, &QLineEdit::textChanged, this, &PFCTranscriptionEditor::updateTableView);
+    connect(ui->editSchwa, &QLineEdit::textChanged, this, &PFCTranscriptionEditor::updateTableView);
+    connect(ui->editLiaison, &QLineEdit::textChanged, this, &PFCTranscriptionEditor::updateTableView);
 
     QFont fixedFont = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     ui->editTranscript->setFont(fixedFont);

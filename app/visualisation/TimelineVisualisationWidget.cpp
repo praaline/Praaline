@@ -84,12 +84,12 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     // Timeline configuration
     d->timelineConfig = new TimelineEditorConfigWidget(this);
     ui->gridLayoutBottomTab->addWidget(d->timelineConfig);
-    connect(d->timelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
-            this, SLOT(selectedLevelsAttributesChanged()));
-    connect(d->timelineConfig, SIGNAL(speakerAdded(QString)),
-            this, SLOT(speakerAdded(QString)));
-    connect(d->timelineConfig, SIGNAL(speakerRemoved(QString)),
-            this, SLOT(speakerRemoved(QString)));
+    connect(d->timelineConfig, &TimelineEditorConfigWidget::selectedLevelsAttributesChanged,
+            this, &TimelineVisualisationWidget::selectedLevelsAttributesChanged);
+    connect(d->timelineConfig, &TimelineEditorConfigWidget::speakerAdded,
+            this, &TimelineVisualisationWidget::speakerAdded);
+    connect(d->timelineConfig, &TimelineEditorConfigWidget::speakerRemoved,
+            this, &TimelineVisualisationWidget::speakerRemoved);
 
     // Visualiser
     d->visualiser = new VisualiserWidget("Context.VisualisationMode");
@@ -106,12 +106,12 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
     ui->splitterLeftRight->setSizes(QList<int>() << 250 << 500);
 
     // Synchronise visualiser with annotation editor
-    connect(d->annotationEditor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
-            this, SLOT(annotationEditorCurrentIndexChanged(QModelIndex,QModelIndex)));
-    connect(d->visualiser, SIGNAL(userScrolledToTime(RealTime)),
-            this, SLOT(visualiserUserScrolledToTime(RealTime)));
-    connect(d->visualiser, SIGNAL(playbackScrolledToTime(RealTime)),
-            this, SLOT(visualiserPlaybackScrolledToTime(RealTime)));
+    connect(d->annotationEditor, &TimelineEditorWidgetBase::currentIndexChanged,
+            this, &TimelineVisualisationWidget::annotationEditorCurrentIndexChanged);
+    connect(d->visualiser, &SimpleVisualiserWidget::userScrolledToTime,
+            this, &TimelineVisualisationWidget::visualiserUserScrolledToTime);
+    connect(d->visualiser, &SimpleVisualiserWidget::playbackScrolledToTime,
+            this, &TimelineVisualisationWidget::visualiserPlaybackScrolledToTime);
 
     // Waiting spinner
     d->waitingSpinner = new WaitingSpinnerWidget(this);

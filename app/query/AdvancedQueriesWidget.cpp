@@ -46,8 +46,8 @@ AdvancedQueriesWidget::AdvancedQueriesWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)),
-            this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged,
+            this, &AdvancedQueriesWidget::activeCorpusRepositoryChanged);
     // Add results grid
     d->tableView = new GridViewWidget(this);
     ui->gridLayoutTable->addWidget(d->tableView);

@@ -35,7 +35,7 @@ SpeechRecognitionWidget::SpeechRecognitionWidget(QWidget *parent) :
     ui->comboBoxModuleSelection->addItem("Long Sound Alignment", "LongSoundAligner");
     ui->comboBoxModuleSelection->addItem("Language Model Builder", "LanguageModelBuilder");
     ui->comboBoxModuleSelection->setCurrentIndex(0);
-    connect(ui->commandOpenModule, SIGNAL(clicked(bool)), this, SLOT(moduleTabNew()));
+    connect(ui->commandOpenModule, &QAbstractButton::clicked, this, &SpeechRecognitionWidget::moduleTabNew);
 
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
@@ -51,7 +51,7 @@ SpeechRecognitionWidget::SpeechRecognitionWidget(QWidget *parent) :
     ui->splitterLR->setSizes(QList<int>() << 50 << 350);
 
     // Handle close document
-    connect(ui->tabWidgetModules, SIGNAL(tabCloseRequested(int)), this, SLOT(moduleTabCloseRequested(int)));
+    connect(ui->tabWidgetModules, &QTabWidget::tabCloseRequested, this, &SpeechRecognitionWidget::moduleTabCloseRequested);
 }
 
 SpeechRecognitionWidget::~SpeechRecognitionWidget()

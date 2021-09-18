@@ -39,9 +39,9 @@ CorpusRepositoryCreateWizard::CorpusRepositoryCreateWizard(QWidget *parent) :
     // XML files with metadata and annotation templates
     populateTemplates();
     // Connect signals for the wizard
-    connect(ui->commandSelectFolder, SIGNAL(clicked()), this, SLOT(selectMediaBaseFolder()));
-    connect(ui->editDatabaseNameMetadata, SIGNAL(textChanged(QString)), this, SLOT(databaseNameChanged()));
-    connect(ui->optionSameDatastore, SIGNAL(toggled(bool)), this, SLOT(databaseNameChanged()));
+    connect(ui->commandSelectFolder, &QAbstractButton::clicked, this, &CorpusRepositoryCreateWizard::selectMediaBaseFolder);
+    connect(ui->editDatabaseNameMetadata, &QLineEdit::textChanged, this, &CorpusRepositoryCreateWizard::databaseNameChanged);
+    connect(ui->optionSameDatastore, &QAbstractButton::toggled, this, &CorpusRepositoryCreateWizard::databaseNameChanged);
 }
 
 CorpusRepositoryCreateWizard::~CorpusRepositoryCreateWizard()

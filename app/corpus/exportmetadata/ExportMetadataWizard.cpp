@@ -43,14 +43,14 @@ ExportMetadataWizard::ExportMetadataWizard(QWidget *parent) :
     if (!d->corpusRepositoriesManager) this->reject();
     // Repository combobox
     ui->comboBoxRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
+    connect(ui->comboBoxRepository, &QComboBox::currentTextChanged, this, &ExportMetadataWizard::corpusRepositoryChanged);
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     // Export formats
     ui->comboBoxExportFormat->addItems(QStringList() << tr("Tab-separated Text Files (*.txt)"));
     ui->comboBoxExportFormat->setCurrentIndex(0);
-    connect(ui->comboBoxExportFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(exportFormatChanged(int)));
+    connect(ui->comboBoxExportFormat, qOverload<int>(&QComboBox::currentIndexChanged), this, &ExportMetadataWizard::exportFormatChanged);
     // Select file or folder button
-    connect(ui->commandSelectFileFolder, SIGNAL(clicked()), this, SLOT(selectFileFolder()));
+    connect(ui->commandSelectFileFolder, &QAbstractButton::clicked, this, &ExportMetadataWizard::selectFileFolder);
     // List of corpus objects
     d->modelCorpusObjectTypes = QSharedPointer<QStandardItemModel>(new  QStandardItemModel(this));
     d->modelCorpusObjectTypes->setColumnCount(1);
@@ -66,7 +66,7 @@ ExportMetadataWizard::ExportMetadataWizard(QWidget *parent) :
         ++i;
     }
     ui->treeViewCorpusObjectTypes->setModel(d->modelCorpusObjectTypes.data());
-    connect(ui->treeViewCorpusObjectTypes, SIGNAL(clicked(QModelIndex)), this, SLOT(corpusObjectClicked(QModelIndex)));
+    connect(ui->treeViewCorpusObjectTypes, &QAbstractItemView::clicked, this, &ExportMetadataWizard::corpusObjectClicked);
     // Presentation
     ui->treeViewRepositoriesCorpora->setHeaderHidden(true);
     ui->treeViewCorpusObjectTypes->setHeaderHidden(true);

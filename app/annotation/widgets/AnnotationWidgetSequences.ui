@@ -106,6 +106,9 @@
       <string/>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0" colspan="2">
+       <widget class="GridViewWidget" name="gridViewSequences" native="true"/>
+      </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="cmdDeleteSequence">
         <property name="sizePolicy">
@@ -119,6 +122,9 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="2">
+       <widget class="QTableView" name="tableView"/>
+      </item>
       <item row="1" column="1">
        <spacer name="horizontalSpacer">
         <property name="orientation">
@@ -131,9 +137,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item row="0" column="0" colspan="2">
-       <widget class="GridViewWidget" name="gridViewSequences" native="true"/>
       </item>
      </layout>
     </widget>

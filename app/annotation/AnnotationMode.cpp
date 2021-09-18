@@ -32,7 +32,7 @@ AnnotationMode::AnnotationMode(QObject *parent) :
     }
 
     if (!d->widget) d->widget = new AnnotationModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &AnnotationModeWidget::activateMode, this, &AnnotationMode::activateMode);
 }
 
 AnnotationMode::~AnnotationMode()

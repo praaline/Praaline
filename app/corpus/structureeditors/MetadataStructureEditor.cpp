@@ -56,7 +56,7 @@ MetadataStructureEditor::MetadataStructureEditor(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &MetadataStructureEditor::activeCorpusRepositoryChanged);
 
     // Toolbars and actions
     d->toolbarMetadataStructure = new QToolBar("Metadata Structure", this);
@@ -108,37 +108,37 @@ void MetadataStructureEditor::setupActions()
     // STRUCTURE EDITOR
     // ------------------------------------------------------------------------------------------------------
     d->actionSaveMetadataStructure = new QAction(QIcon(":icons/actions/action_save.png"), "Save", this);
-    connect(d->actionSaveMetadataStructure, SIGNAL(triggered()), SLOT(saveMetadataStructure()));
+    connect(d->actionSaveMetadataStructure, &QAction::triggered, this, &MetadataStructureEditor::saveMetadataStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveMetadataStructure", d->actionSaveMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionSaveMetadataStructure);
 
     d->actionAddMetadataStructureSection = new QAction(QIcon(":icons/actions/list_add.png"), "Add Section", this);
-    connect(d->actionAddMetadataStructureSection, SIGNAL(triggered()), SLOT(addMetadataStructureSection()));
+    connect(d->actionAddMetadataStructureSection, &QAction::triggered, this, &MetadataStructureEditor::addMetadataStructureSection);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.AddMetadataSection", d->actionAddMetadataStructureSection, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionAddMetadataStructureSection);
 
     d->actionAddMetadataStructureAttribute = new QAction(QIcon(":icons/actions/list_add.png"), "Add Attribute", this);
-    connect(d->actionAddMetadataStructureAttribute, SIGNAL(triggered()), SLOT(addMetadataStructureAttribute()));
+    connect(d->actionAddMetadataStructureAttribute, &QAction::triggered, this, &MetadataStructureEditor::addMetadataStructureAttribute);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.AddMetadataAttribute", d->actionAddMetadataStructureAttribute, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionAddMetadataStructureAttribute);
 
     d->actionRemoveMetadataStructureItem = new QAction(QIcon(":icons/actions/list_remove.png"), "Delete", this);
-    connect(d->actionRemoveMetadataStructureItem, SIGNAL(triggered()), SLOT(removeMetadataStructureItem()));
+    connect(d->actionRemoveMetadataStructureItem, &QAction::triggered, this, &MetadataStructureEditor::removeMetadataStructureItem);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.RemoveMetadataItem", d->actionRemoveMetadataStructureItem, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionRemoveMetadataStructureItem);
 
     d->actionImportMetadataStructure = new QAction(QIcon(":icons/actions/table_import.png"), "Import Metadata Structure", this);
-    connect(d->actionImportMetadataStructure, SIGNAL(triggered()), SLOT(importMetadataStructure()));
+    connect(d->actionImportMetadataStructure, &QAction::triggered, this, &MetadataStructureEditor::importMetadataStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ImportMetadataStructure", d->actionImportMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionImportMetadataStructure);
 
     d->actionExportMetadataStructure = new QAction(QIcon(":icons/actions/table_export.png"), "Export Metadata Structure", this);
-    connect(d->actionExportMetadataStructure, SIGNAL(triggered()), SLOT(exportMetadataStructure()));
+    connect(d->actionExportMetadataStructure, &QAction::triggered, this, &MetadataStructureEditor::exportMetadataStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ExportMetadataStructure", d->actionExportMetadataStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataStructure->addAction(d->actionExportMetadataStructure);
@@ -155,8 +155,8 @@ void MetadataStructureEditor::refreshMetadataStructureTreeView(MetadataStructure
     // create new model
     d->treemodelMetadataStructure = new MetadataStructureTreeModel(structure, this);
     // connect signals to new model
-    connect(d->treemodelMetadataStructure, SIGNAL(renameMetadataAttribute(Praaline::Core::CorpusObject::Type, QString, QString)),
-            this, SLOT(renameMetadataAttribute(Praaline::Core::CorpusObject::Type,QString,QString)));
+    connect(d->treemodelMetadataStructure.data(), &MetadataStructureTreeModel::renameMetadataAttribute,
+            this, &MetadataStructureEditor::renameMetadataAttribute);
     // set model
     d->treeviewMetadataStructure->setModel(d->treemodelMetadataStructure);
     d->treeviewMetadataStructure->expandAll();
@@ -315,7 +315,7 @@ void MetadataStructureEditor::importMetadataStructure()
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
     MetadataStructure *structure(0);
-    if (filename.toLower().endsWith(".json")) {
+    if (filename.endsWith(".json", Qt::CaseInsensitive)) {
         structure = JSONSerialiserMetadataStructure::read(filename);
     } else {
         structure = XMLSerialiserMetadataStructure::read(filename);
@@ -339,10 +339,10 @@ void MetadataStructureEditor::exportMetadataStructure()
                                                     tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-    if (filename.toLower().endsWith("json")) {
+    if (filename.endsWith("json", Qt::CaseInsensitive)) {
         JSONSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
     } else {
-        if (!filename.toLower().endsWith(".xml")) filename = filename.append(".xml");
+        if (!filename.endsWith(".xml", Qt::CaseInsensitive)) filename = filename.append(".xml");
         XMLSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
     }
 }

@@ -52,7 +52,7 @@ ImportCorpusItemsWizardCorrespondancesPage::ImportCorpusItemsWizardCorrespondanc
     encodings << tr("UTF-8") << tr("ISO 8859-1");
     ui->comboEncoding->addItems(encodings);
 
-    connect(ui->commandBatchUpdate, SIGNAL(clicked()), this, SLOT(batchUpdate()));
+    connect(ui->commandBatchUpdate, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardCorrespondancesPage::batchUpdate);
 }
 
 ImportCorpusItemsWizardCorrespondancesPage::~ImportCorpusItemsWizardCorrespondancesPage()

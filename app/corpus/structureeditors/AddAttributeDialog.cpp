@@ -18,10 +18,10 @@ AddAttributeDialog::AddAttributeDialog(bool nameValueListDialog , QWidget *paren
     ui->comboDatatype->addItems(datatypes);
     ui->spinDatalength->setValue(256);
 
-    connect(ui->comboDatatype, SIGNAL(currentTextChanged(QString)), this, SLOT(datatypeChanged(QString)));
+    connect(ui->comboDatatype, &QComboBox::currentTextChanged, this, &AddAttributeDialog::datatypeChanged);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
     // Is this a name-value list dialog?
     if (nameValueListDialog ) {
         ui->labelAttributeID->setText(tr("Name-Value List ID:"));

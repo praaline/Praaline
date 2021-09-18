@@ -166,8 +166,8 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_viewManager->setShowCentreLine(false);
     m_viewManager->setOverlayMode(ViewManager::GlobalOverlays);
 
-    connect(m_viewManager, SIGNAL(selectionChangedByUser()),
-        this, SLOT(selectionChangedByUser()));
+    connect(m_viewManager, &ViewManager::selectionChangedByUser,
+        this, &PitchAnalyserWidget::selectionChangedByUser);
 
     QFrame *frame = new QFrame;
     setCentralWidget(frame);
@@ -184,8 +184,8 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     // variable
     m_paneStack->setLayoutStyle(PaneStack::NoPropertyStacks);
     m_paneStack->setShowPaneAccessories(false);
-    connect(m_paneStack, SIGNAL(doubleClickSelectInvoked(size_t)),
-            this, SLOT(doubleClickSelectInvoked(size_t)));
+    connect(m_paneStack, &PaneStack::doubleClickSelectInvoked,
+            this, &PitchAnalyserWidget::doubleClickSelectInvoked);
     scroll->setWidget(m_paneStack);
 
     m_overview = new Overview(frame);
@@ -197,8 +197,8 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     // to track down the reason why.
     m_overview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 #endif
-    connect(m_overview, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(m_overview, &View::contextHelpChanged,
+            this, &PitchAnalyserWidget::contextHelpChanged);
 
     m_panLayer = new WaveformLayer;
     m_panLayer->setChannelMode(WaveformLayer::MergeChannels);
@@ -214,8 +214,8 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     }
 
     m_fader = new Fader(frame, false);
-    connect(m_fader, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_fader, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_fader, &Fader::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_fader, &Fader::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     m_playSpeed = new AudioDial(frame);
     m_playSpeed->setMeterColor(Qt::darkBlue);
@@ -230,10 +230,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_playSpeed->setDefaultValue(100);
     m_playSpeed->setRangeMapper(new PlaySpeedRangeMapper(0, 200));
     m_playSpeed->setShowToolTip(true);
-    connect(m_playSpeed, SIGNAL(valueChanged(int)),
-        this, SLOT(playSpeedChanged(int)));
-    connect(m_playSpeed, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_playSpeed, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_playSpeed, &QAbstractSlider::valueChanged,
+        this, &PitchAnalyserWidget::playSpeedChanged);
+    connect(m_playSpeed, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_playSpeed, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     // Gain controls
     m_gainAudio = new AudioDial(frame);
@@ -250,10 +250,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_gainAudio->setObjectName(tr("Audio Track Gain"));
     m_gainAudio->setRangeMapper(new LinearRangeMapper(-50, 50, -25, 25, tr("dB")));
     m_gainAudio->setShowToolTip(true);
-    connect(m_gainAudio, SIGNAL(valueChanged(int)),
-            this, SLOT(audioGainChanged(int)));
-    connect(m_gainAudio, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_gainAudio, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_gainAudio, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::audioGainChanged);
+    connect(m_gainAudio, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_gainAudio, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     m_gainPitch = new AudioDial(frame);
     m_gainPitch->setMeterColor(Qt::darkRed);
@@ -268,10 +268,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_gainPitch->setObjectName(tr("Pitch Track Gain"));
     m_gainPitch->setRangeMapper(new LinearRangeMapper(-50, 50, -25, 25, tr("dB")));
     m_gainPitch->setShowToolTip(true);
-    connect(m_gainPitch, SIGNAL(valueChanged(int)),
-            this, SLOT(pitchGainChanged(int)));
-    connect(m_gainPitch, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_gainPitch, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_gainPitch, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::pitchGainChanged);
+    connect(m_gainPitch, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_gainPitch, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     m_gainNotes = new AudioDial(frame);
     m_gainNotes->setMeterColor(Qt::darkRed);
@@ -286,10 +286,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_gainNotes->setObjectName(tr("Pitch Track Gain"));
     m_gainNotes->setRangeMapper(new LinearRangeMapper(-50, 50, -25, 25, tr("dB")));
     m_gainNotes->setShowToolTip(true);
-    connect(m_gainNotes, SIGNAL(valueChanged(int)),
-            this, SLOT(notesGainChanged(int)));
-    connect(m_gainNotes, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_gainNotes, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_gainNotes, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::notesGainChanged);
+    connect(m_gainNotes, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_gainNotes, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
     // End of Gain controls
 
     // Pan controls
@@ -307,10 +307,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_panAudio->setObjectName(tr("Audio Track Pan"));
     m_panAudio->setRangeMapper(new LinearRangeMapper(-100, 100, -100, 100, tr("")));
     m_panAudio->setShowToolTip(true);
-    connect(m_panAudio, SIGNAL(valueChanged(int)),
-            this, SLOT(audioPanChanged(int)));
-    connect(m_panAudio, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_panAudio, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_panAudio, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::audioPanChanged);
+    connect(m_panAudio, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_panAudio, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     m_panPitch = new AudioDial(frame);
     m_panPitch->setMeterColor(Qt::darkGreen);
@@ -325,10 +325,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_panPitch->setObjectName(tr("Pitch Track Pan"));
     m_panPitch->setRangeMapper(new LinearRangeMapper(-100, 100, -100, 100, tr("")));
     m_panPitch->setShowToolTip(true);
-    connect(m_panPitch, SIGNAL(valueChanged(int)),
-            this, SLOT(pitchPanChanged(int)));
-    connect(m_panPitch, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_panPitch, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_panPitch, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::pitchPanChanged);
+    connect(m_panPitch, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_panPitch, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
 
     m_panNotes = new AudioDial(frame);
     m_panNotes->setMeterColor(Qt::darkGreen);
@@ -343,10 +343,10 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     m_panNotes->setObjectName(tr("Notes Track Pan"));
     m_panNotes->setRangeMapper(new LinearRangeMapper(-100, 100, -100, 100, tr("")));
     m_panNotes->setShowToolTip(true);
-    connect(m_panNotes, SIGNAL(valueChanged(int)),
-            this, SLOT(notesPanChanged(int)));
-    connect(m_panNotes, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_panNotes, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_panNotes, &QAbstractSlider::valueChanged,
+            this, &PitchAnalyserWidget::notesPanChanged);
+    connect(m_panNotes, &AudioDial::mouseEntered, this, &PitchAnalyserWidget::mouseEnteredWidget);
+    connect(m_panNotes, &AudioDial::mouseLeft, this, &PitchAnalyserWidget::mouseLeftWidget);
     // End of Pan controls
 
     layout->setSpacing(4);
@@ -358,8 +358,8 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
     frame->setLayout(layout);
 
     m_analyser = new PitchAnalyser();
-    connect(m_analyser, SIGNAL(layersChanged()),
-            this, SLOT(updateLayerStatuses()));
+    connect(m_analyser, &PitchAnalyser::layersChanged,
+            this, &PitchAnalyserWidget::updateLayerStatuses);
     connect(m_analyser, SIGNAL(layersChanged()),
             this, SLOT(updateMenuStates()));
 
@@ -369,17 +369,17 @@ PitchAnalyserWidget::PitchAnalyserWidget(bool withAudioOutput, bool withOSCSuppo
 
     statusBar();
 
-    connect(m_viewManager, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(m_playSource, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(CommandHistory::getInstance(), SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(this, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(this, SIGNAL(replacedDocument()), this, SLOT(documentReplaced()));
-    connect(this, SIGNAL(sessionLoaded()), this, SLOT(analyseNewMainModel()));
-    connect(this, SIGNAL(audioFileLoaded()), this, SLOT(analyseNewMainModel()));
+    connect(m_viewManager, &ViewManager::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(m_playSource, &AudioCallbackPlaySource::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(CommandHistory::getInstance(), &CommandHistory::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(this, &VisualiserWindowBase::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(this, &VisualiserWindowBase::replacedDocument, this, &PitchAnalyserWidget::documentReplaced);
+    connect(this, &VisualiserWindowBase::sessionLoaded, this, &PitchAnalyserWidget::analyseNewMainModel);
+    connect(this, &VisualiserWindowBase::audioFileLoaded, this, &PitchAnalyserWidget::analyseNewMainModel);
     m_activityLog->hide();
 
     newSession();
@@ -448,7 +448,7 @@ PitchAnalyserWidget::setupFileMenu()
     action = new QAction(icon, tr("&Open..."), this);
     action->setShortcut(tr("Ctrl+O"));
     action->setStatusTip(tr("Open a session or audio file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openFile()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::openFile);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
     toolbar->addAction(action);
@@ -456,15 +456,15 @@ PitchAnalyserWidget::setupFileMenu()
     action = new QAction(tr("Open Lo&cation..."), this);
     action->setShortcut(tr("Ctrl+Shift+O"));
     action->setStatusTip(tr("Open a file from a remote URL"));
-    connect(action, SIGNAL(triggered()), this, SLOT(openLocation()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::openLocation);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     m_recentFilesMenu = menu->addMenu(tr("Open &Recent"));
     m_recentFilesMenu->setTearOffEnabled(true);
     setupRecentFilesMenu();
-    connect(&m_recentFiles, SIGNAL(recentChanged()),
-            this, SLOT(setupRecentFilesMenu()));
+    connect(&m_recentFiles, &RecentFiles::recentChanged,
+            this, &PitchAnalyserWidget::setupRecentFilesMenu);
 
     menu->addSeparator();
 
@@ -473,8 +473,8 @@ PitchAnalyserWidget::setupFileMenu()
     action = new QAction(icon, tr("&Save Session"), this);
     action->setShortcut(tr("Ctrl+S"));
     action->setStatusTip(tr("Save the current session into a %1 session file").arg(QApplication::applicationName()));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveSession()));
-    connect(this, SIGNAL(canSave(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::saveSession);
+    connect(this, &VisualiserWindowBase::canSave, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
     toolbar->addAction(action);
@@ -484,16 +484,16 @@ PitchAnalyserWidget::setupFileMenu()
     action = new QAction(icon, tr("Save Session &As..."), this);
     action->setShortcut(tr("Ctrl+Shift+S"));
     action->setStatusTip(tr("Save the current session into a new %1 session file").arg(QApplication::applicationName()));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveSessionAs()));
-    connect(this, SIGNAL(canSaveAs(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::saveSessionAs);
+    connect(this, &VisualiserWindowBase::canSaveAs, action, &QAction::setEnabled);
     menu->addAction(action);
     toolbar->addAction(action);
 
     action = new QAction(tr("Save Session to Audio &Path"), this);
     action->setShortcut(tr("Ctrl+Alt+S"));
     action->setStatusTip(tr("Save the current session into a %1 session file with the same filename as the audio but a .ton extension.").arg(QApplication::applicationName()));
-    connect(action, SIGNAL(triggered()), this, SLOT(saveSessionInAudioPath()));
-    connect(this, SIGNAL(canSaveAs(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::saveSessionInAudioPath);
+    connect(this, &VisualiserWindowBase::canSaveAs, action, &QAction::setEnabled);
     menu->addAction(action);
 
     menu->addSeparator();
@@ -501,26 +501,26 @@ PitchAnalyserWidget::setupFileMenu()
     action = new QAction(tr("I&mport Pitch Track Data..."), this);
     action->setStatusTip(tr("Import pitch-track data from a CSV, RDF, or layer XML file"));
     connect(action, SIGNAL(triggered()), this, SLOT(importPitchLayer()));
-    connect(this, SIGNAL(canImportLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canImportLayer, action, &QAction::setEnabled);
     menu->addAction(action);
 
     action = new QAction(tr("E&xport Pitch Track Data..."), this);
     action->setStatusTip(tr("Export pitch-track data to a CSV, RDF, or layer XML file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportPitchLayer()));
-    connect(this, SIGNAL(canExportPitchTrack(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::exportPitchLayer);
+    connect(this, &PitchAnalyserWidget::canExportPitchTrack, action, &QAction::setEnabled);
     menu->addAction(action);
 
     action = new QAction(tr("&Export Note Data..."), this);
     action->setStatusTip(tr("Export note data to a CSV, RDF, layer XML, or MIDI file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportNoteLayer()));
-    connect(this, SIGNAL(canExportNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::exportNoteLayer);
+    connect(this, &PitchAnalyserWidget::canExportNotes, action, &QAction::setEnabled);
     menu->addAction(action);
 
     menu->addSeparator();
     action = new QAction(il.load("exit"), tr("&Quit"), this);
     action->setShortcut(tr("Ctrl+Q"));
     action->setStatusTip(tr("Exit %1").arg(QApplication::applicationName()));
-    connect(action, SIGNAL(triggered()), this, SLOT(close()));
+    connect(action, &QAction::triggered, this, &QWidget::close);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 }
@@ -562,8 +562,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setChecked(true);
     action->setShortcut(tr("1"));
     action->setStatusTip(tr("Navigate"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toolNavigateSelected()));
-    connect(this, SIGNAL(replacedDocument()), action, SLOT(trigger()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::toolNavigateSelected);
+    connect(this, &VisualiserWindowBase::replacedDocument, action, &QAction::trigger);
     group->addAction(action);
     menu->addAction(action);
     m_keyReference->registerShortcut(action);
@@ -586,7 +586,7 @@ PitchAnalyserWidget::setupEditMenu()
     action->setCheckable(true);
     action->setShortcut(tr("2"));
     action->setStatusTip(tr("Edit with Note Intelligence"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toolEditSelected()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::toolEditSelected);
     group->addAction(action);
     menu->addAction(action);
     m_keyReference->registerShortcut(action);
@@ -627,8 +627,8 @@ PitchAnalyserWidget::setupEditMenu()
     action = new QAction(tr("Select &All"), this);
     action->setShortcut(tr("Ctrl+A"));
     action->setStatusTip(tr("Select the whole duration of the current session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
-    connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::selectAll);
+    connect(this, &VisualiserWindowBase::canSelect, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
@@ -638,8 +638,8 @@ PitchAnalyserWidget::setupEditMenu()
                          << QKeySequence(tr("Esc"))
                          << QKeySequence(tr("Ctrl+Esc")));
     action->setStatusTip(tr("Clear the selection and abandon any pending pitch choices in it"));
-    connect(action, SIGNAL(triggered()), this, SLOT(abandonSelection()));
-    connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::abandonSelection);
+    connect(this, &VisualiserWindowBase::canClearSelection, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     m_keyReference->registerAlternativeShortcut(action, QKeySequence(tr("Ctrl+Esc")));
     menu->addAction(action);
@@ -654,8 +654,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("Ctrl+Up"));
     action->setStatusTip(tr("Move pitches up an octave, or to the next higher pitch candidate"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(switchPitchUp()));
-    connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::switchPitchUp);
+    connect(this, &VisualiserWindowBase::canClearSelection, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -663,8 +663,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("Ctrl+Down"));
     action->setStatusTip(tr("Move pitches down an octave, or to the next lower pitch candidate"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(switchPitchDown()));
-    connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::switchPitchDown);
+    connect(this, &VisualiserWindowBase::canClearSelection, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -672,8 +672,8 @@ PitchAnalyserWidget::setupEditMenu()
     m_showCandidatesAction->setShortcut(tr("Ctrl+Return"));
     m_showCandidatesAction->setStatusTip(tr("Toggle the display of alternative pitch candidates for the selected region"));
     m_keyReference->registerShortcut(m_showCandidatesAction);
-    connect(m_showCandidatesAction, SIGNAL(triggered()), this, SLOT(togglePitchCandidates()));
-    connect(this, SIGNAL(canClearSelection(bool)), m_showCandidatesAction, SLOT(setEnabled(bool)));
+    connect(m_showCandidatesAction, &QAction::triggered, this, &PitchAnalyserWidget::togglePitchCandidates);
+    connect(this, &VisualiserWindowBase::canClearSelection, m_showCandidatesAction, &QAction::setEnabled);
     menu->addAction(m_showCandidatesAction);
     m_rightButtonMenu->addAction(m_showCandidatesAction);
 
@@ -681,8 +681,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("Ctrl+Backspace"));
     action->setStatusTip(tr("Remove all pitch estimates within the selected region, making it unvoiced"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(clearPitches()));
-    connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::clearPitches);
+    connect(this, &VisualiserWindowBase::canClearSelection, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -695,8 +695,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("/"));
     action->setStatusTip(tr("Split the note at the current playback position into two"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(splitNote()));
-    connect(this, SIGNAL(canExportNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::splitNote);
+    connect(this, &PitchAnalyserWidget::canExportNotes, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -704,8 +704,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("\\"));
     action->setStatusTip(tr("Merge all notes within the selected region into a single note"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(mergeNotes()));
-    connect(this, SIGNAL(canSnapNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::mergeNotes);
+    connect(this, &PitchAnalyserWidget::canSnapNotes, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -713,8 +713,8 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("Backspace"));
     action->setStatusTip(tr("Delete all notes within the selected region"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(deleteNotes()));
-    connect(this, SIGNAL(canSnapNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::deleteNotes);
+    connect(this, &PitchAnalyserWidget::canSnapNotes, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
@@ -722,16 +722,16 @@ PitchAnalyserWidget::setupEditMenu()
     action->setShortcut(tr("="));
     action->setStatusTip(tr("Form a note spanning the selected region, splitting any existing notes at its boundaries"));
     m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(formNoteFromSelection()));
-    connect(this, SIGNAL(canSnapNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::formNoteFromSelection);
+    connect(this, &PitchAnalyserWidget::canSnapNotes, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 
     action = new QAction(tr("Snap Notes to Pitch Track"), this);
     action->setStatusTip(tr("Set notes within the selected region to the median frequency of their underlying pitches, or remove them if there are no underlying pitches"));
     // m_keyReference->registerShortcut(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(snapNotesToPitches()));
-    connect(this, SIGNAL(canSnapNotes(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::snapNotesToPitches);
+    connect(this, &PitchAnalyserWidget::canSnapNotes, action, &QAction::setEnabled);
     menu->addAction(action);
     m_rightButtonMenu->addAction(action);
 }
@@ -752,16 +752,16 @@ PitchAnalyserWidget::setupViewMenu()
     action = new QAction(tr("Peek &Left"), this);
     action->setShortcut(tr("Alt+Left"));
     action->setStatusTip(tr("Scroll the current pane to the left without changing the play position"));
-    connect(action, SIGNAL(triggered()), this, SLOT(scrollLeft()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::scrollLeft);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Peek &Right"), this);
     action->setShortcut(tr("Alt+Right"));
     action->setStatusTip(tr("Scroll the current pane to the right without changing the play position"));
-    connect(action, SIGNAL(triggered()), this, SLOT(scrollRight()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::scrollRight);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -773,8 +773,8 @@ PitchAnalyserWidget::setupViewMenu()
                          tr("Zoom &In"), this);
     action->setShortcut(tr("Up"));
     action->setStatusTip(tr("Increase the zoom level"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomIn()));
-    connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::zoomIn);
+    connect(this, &VisualiserWindowBase::canZoom, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -782,23 +782,23 @@ PitchAnalyserWidget::setupViewMenu()
                          tr("Zoom &Out"), this);
     action->setShortcut(tr("Down"));
     action->setStatusTip(tr("Decrease the zoom level"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomOut()));
-    connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::zoomOut);
+    connect(this, &VisualiserWindowBase::canZoom, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Restore &Default Zoom"), this);
     action->setStatusTip(tr("Restore the zoom level to the default"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomDefault()));
-    connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::zoomDefault);
+    connect(this, &VisualiserWindowBase::canZoom, action, &QAction::setEnabled);
     menu->addAction(action);
 
     action = new QAction(il.load("zoom-fit"),
                          tr("Zoom to &Fit"), this);
     action->setShortcut(tr("F"));
     action->setStatusTip(tr("Zoom to show the whole file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomToFit()));
-    connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::zoomToFit);
+    connect(this, &VisualiserWindowBase::canZoom, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -806,7 +806,7 @@ PitchAnalyserWidget::setupViewMenu()
 
     action = new QAction(tr("Set Displayed Fre&quency Range..."), this);
     action->setStatusTip(tr("Set the minimum and maximum frequencies in the visible display"));
-    connect(action, SIGNAL(triggered()), this, SLOT(editDisplayExtents()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::editDisplayExtents);
     menu->addAction(action);
 }
 
@@ -825,7 +825,7 @@ PitchAnalyserWidget::setupAnalysisMenu()
 
     action = new QAction(tr("&Analyse now!"), this);
     action->setStatusTip(tr("Trigger analysis of pitches and notes. (This will delete all existing pitches and notes.)"));
-    connect(action, SIGNAL(triggered()), this, SLOT(analyseNow()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::analyseNow);
     menu->addAction(action);
     m_keyReference->registerShortcut(action);
 
@@ -842,21 +842,21 @@ PitchAnalyserWidget::setupAnalysisMenu()
     action->setStatusTip(tr("Automatically trigger analysis upon opening of a new audio file."));
     action->setCheckable(true);
     action->setChecked(autoAnalyse);
-    connect(action, SIGNAL(triggered()), this, SLOT(autoAnalysisToggled()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::autoAnalysisToggled);
     menu->addAction(action);
 
     action = new QAction(tr("&Unbiased Timing (slow)"), this);
     action->setStatusTip(tr("Use a symmetric window in YIN to remove frequency-dependent timing bias. (This is slow!)"));
     action->setCheckable(true);
     action->setChecked(precise);
-    connect(action, SIGNAL(triggered()), this, SLOT(precisionAnalysisToggled()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::precisionAnalysisToggled);
     menu->addAction(action);
 
     action = new QAction(tr("&Penalise Soft Pitches"), this);
     action->setStatusTip(tr("Reduce the likelihood of detecting a pitch when the signal has low amplitude."));
     action->setCheckable(true);
     action->setChecked(lowamp);
-    connect(action, SIGNAL(triggered()), this, SLOT(lowampAnalysisToggled()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::lowampAnalysisToggled);
     menu->addAction(action);
 
 }
@@ -923,25 +923,25 @@ PitchAnalyserWidget::setupHelpMenu()
                                   tr("&Help Reference"), this);
     action->setShortcut(tr("F1"));
     action->setStatusTip(tr("Open the %1 reference manual").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(help()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::help);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("&Key and Mouse Reference"), this);
     action->setShortcut(tr("F2"));
     action->setStatusTip(tr("Open a window showing the keystrokes you can use in %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(keyReference()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::keyReference);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("%1 on the &Web").arg(name), this);
     action->setStatusTip(tr("Open the %1 website").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(website()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::website);
     menu->addAction(action);
 
     action = new QAction(tr("&About %1").arg(name), this);
     action->setStatusTip(tr("Show information about %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(about()));
+    connect(action, &QAction::triggered, this, &PitchAnalyserWidget::about);
     menu->addAction(action);
 }
 
@@ -952,7 +952,7 @@ PitchAnalyserWidget::setupRecentFilesMenu()
     vector<QString> files = m_recentFiles.getRecent();
     for (size_t i = 0; i < files.size(); ++i) {
         QAction *action = new QAction(files[i], this);
-        connect(action, SIGNAL(triggered()), this, SLOT(openRecentFile()));
+        connect(action, &QAction::triggered, this, &PitchAnalyserWidget::openRecentFile);
         if (i == 0) {
             action->setShortcut(tr("Ctrl+R"));
             m_keyReference->registerShortcut
@@ -982,15 +982,15 @@ PitchAnalyserWidget::setupToolbars()
                                                  tr("Rewind to Start"));
     rwdStartAction->setShortcut(tr("Home"));
     rwdStartAction->setStatusTip(tr("Rewind to the start"));
-    connect(rwdStartAction, SIGNAL(triggered()), this, SLOT(rewindStart()));
-    connect(this, SIGNAL(canPlay(bool)), rwdStartAction, SLOT(setEnabled(bool)));
+    connect(rwdStartAction, &QAction::triggered, this, &PitchAnalyserWidget::rewindStart);
+    connect(this, &VisualiserWindowBase::canPlay, rwdStartAction, &QAction::setEnabled);
 
     QAction *m_rwdAction = toolbar->addAction(il.load("rewind"),
                                               tr("Rewind"));
     m_rwdAction->setShortcut(tr("Left"));
     m_rwdAction->setStatusTip(tr("Rewind to the previous one-second boundary"));
-    connect(m_rwdAction, SIGNAL(triggered()), this, SLOT(rewind()));
-    connect(this, SIGNAL(canRewind(bool)), m_rwdAction, SLOT(setEnabled(bool)));
+    connect(m_rwdAction, &QAction::triggered, this, &PitchAnalyserWidget::rewind);
+    connect(this, &VisualiserWindowBase::canRewind, m_rwdAction, &QAction::setEnabled);
 
     setDefaultFfwdRwdStep(RealTime(1, 0));
 
@@ -999,24 +999,24 @@ PitchAnalyserWidget::setupToolbars()
     playAction->setCheckable(true);
     playAction->setShortcut(tr("Space"));
     playAction->setStatusTip(tr("Start or stop playback from the current position"));
-    connect(playAction, SIGNAL(triggered()), this, SLOT(play()));
-    connect(m_playSource, SIGNAL(playStatusChanged(bool)),
-        playAction, SLOT(setChecked(bool)));
-    connect(this, SIGNAL(canPlay(bool)), playAction, SLOT(setEnabled(bool)));
+    connect(playAction, &QAction::triggered, this, &PitchAnalyserWidget::play);
+    connect(m_playSource, &AudioCallbackPlaySource::playStatusChanged,
+        playAction, &QAction::setChecked);
+    connect(this, &VisualiserWindowBase::canPlay, playAction, &QAction::setEnabled);
 
     m_ffwdAction = toolbar->addAction(il.load("ffwd"),
                                               tr("Fast Forward"));
     m_ffwdAction->setShortcut(tr("Right"));
     m_ffwdAction->setStatusTip(tr("Fast-forward to the next one-second boundary"));
-    connect(m_ffwdAction, SIGNAL(triggered()), this, SLOT(ffwd()));
-    connect(this, SIGNAL(canFfwd(bool)), m_ffwdAction, SLOT(setEnabled(bool)));
+    connect(m_ffwdAction, &QAction::triggered, this, &PitchAnalyserWidget::ffwd);
+    connect(this, &VisualiserWindowBase::canFfwd, m_ffwdAction, &QAction::setEnabled);
 
     QAction *ffwdEndAction = toolbar->addAction(il.load("ffwd-end"),
                                                 tr("Fast Forward to End"));
     ffwdEndAction->setShortcut(tr("End"));
     ffwdEndAction->setStatusTip(tr("Fast-forward to the end"));
-    connect(ffwdEndAction, SIGNAL(triggered()), this, SLOT(ffwdEnd()));
-    connect(this, SIGNAL(canPlay(bool)), ffwdEndAction, SLOT(setEnabled(bool)));
+    connect(ffwdEndAction, &QAction::triggered, this, &PitchAnalyserWidget::ffwdEnd);
+    connect(this, &VisualiserWindowBase::canPlay, ffwdEndAction, &QAction::setEnabled);
 
     toolbar = addToolBar(tr("Play Mode Toolbar"));
 
@@ -1028,8 +1028,8 @@ PitchAnalyserWidget::setupToolbars()
     psAction->setStatusTip(tr("Constrain playback to the selected regions"));
     connect(m_viewManager, SIGNAL(playSelectionModeChanged(bool)),
             psAction, SLOT(setChecked(bool)));
-    connect(psAction, SIGNAL(triggered()), this, SLOT(playSelectionToggled()));
-    connect(this, SIGNAL(canPlaySelection(bool)), psAction, SLOT(setEnabled(bool)));
+    connect(psAction, &QAction::triggered, this, &PitchAnalyserWidget::playSelectionToggled);
+    connect(this, &VisualiserWindowBase::canPlaySelection, psAction, &QAction::setEnabled);
 
     QAction *plAction = toolbar->addAction(il.load("playloop"),
                                            tr("Loop Playback"));
@@ -1039,32 +1039,32 @@ PitchAnalyserWidget::setupToolbars()
     plAction->setStatusTip(tr("Loop playback"));
     connect(m_viewManager, SIGNAL(playLoopModeChanged(bool)),
             plAction, SLOT(setChecked(bool)));
-    connect(plAction, SIGNAL(triggered()), this, SLOT(playLoopToggled()));
-    connect(this, SIGNAL(canPlay(bool)), plAction, SLOT(setEnabled(bool)));
+    connect(plAction, &QAction::triggered, this, &PitchAnalyserWidget::playLoopToggled);
+    connect(this, &VisualiserWindowBase::canPlay, plAction, &QAction::setEnabled);
 
     QAction *oneLeftAction = new QAction(tr("&One Note Left"), this);
     oneLeftAction->setShortcut(tr("Ctrl+Left"));
     oneLeftAction->setStatusTip(tr("Move cursor to the preceding note (or silence) onset."));
-    connect(oneLeftAction, SIGNAL(triggered()), this, SLOT(moveOneNoteLeft()));
-    connect(this, SIGNAL(canScroll(bool)), oneLeftAction, SLOT(setEnabled(bool)));
+    connect(oneLeftAction, &QAction::triggered, this, &PitchAnalyserWidget::moveOneNoteLeft);
+    connect(this, &VisualiserWindowBase::canScroll, oneLeftAction, &QAction::setEnabled);
 
     QAction *oneRightAction = new QAction(tr("O&ne Note Right"), this);
     oneRightAction->setShortcut(tr("Ctrl+Right"));
     oneRightAction->setStatusTip(tr("Move cursor to the succeeding note (or silence)."));
-    connect(oneRightAction, SIGNAL(triggered()), this, SLOT(moveOneNoteRight()));
-    connect(this, SIGNAL(canScroll(bool)), oneRightAction, SLOT(setEnabled(bool)));
+    connect(oneRightAction, &QAction::triggered, this, &PitchAnalyserWidget::moveOneNoteRight);
+    connect(this, &VisualiserWindowBase::canScroll, oneRightAction, &QAction::setEnabled);
 
     QAction *selectOneLeftAction = new QAction(tr("&Select One Note Left"), this);
     selectOneLeftAction->setShortcut(tr("Ctrl+Shift+Left"));
     selectOneLeftAction->setStatusTip(tr("Select to the preceding note (or silence) onset."));
-    connect(selectOneLeftAction, SIGNAL(triggered()), this, SLOT(selectOneNoteLeft()));
-    connect(this, SIGNAL(canScroll(bool)), selectOneLeftAction, SLOT(setEnabled(bool)));
+    connect(selectOneLeftAction, &QAction::triggered, this, &PitchAnalyserWidget::selectOneNoteLeft);
+    connect(this, &VisualiserWindowBase::canScroll, selectOneLeftAction, &QAction::setEnabled);
 
     QAction *selectOneRightAction = new QAction(tr("S&elect One Note Right"), this);
     selectOneRightAction->setShortcut(tr("Ctrl+Shift+Right"));
     selectOneRightAction->setStatusTip(tr("Select to the succeeding note (or silence)."));
-    connect(selectOneRightAction, SIGNAL(triggered()), this, SLOT(selectOneNoteRight()));
-    connect(this, SIGNAL(canScroll(bool)), selectOneRightAction, SLOT(setEnabled(bool)));
+    connect(selectOneRightAction, &QAction::triggered, this, &PitchAnalyserWidget::selectOneNoteRight);
+    connect(this, &VisualiserWindowBase::canScroll, selectOneRightAction, &QAction::setEnabled);
 
     m_keyReference->registerShortcut(psAction);
     m_keyReference->registerShortcut(plAction);
@@ -1113,20 +1113,20 @@ PitchAnalyserWidget::setupToolbars()
     QAction *fastAction = menu->addAction(tr("Speed Up"));
     fastAction->setShortcut(tr("Ctrl+PgUp"));
     fastAction->setStatusTip(tr("Time-stretch playback to speed it up without changing pitch"));
-    connect(fastAction, SIGNAL(triggered()), this, SLOT(speedUpPlayback()));
-    connect(this, SIGNAL(canSpeedUpPlayback(bool)), fastAction, SLOT(setEnabled(bool)));
+    connect(fastAction, &QAction::triggered, this, &PitchAnalyserWidget::speedUpPlayback);
+    connect(this, &VisualiserWindowBase::canSpeedUpPlayback, fastAction, &QAction::setEnabled);
 
     QAction *slowAction = menu->addAction(tr("Slow Down"));
     slowAction->setShortcut(tr("Ctrl+PgDown"));
     slowAction->setStatusTip(tr("Time-stretch playback to slow it down without changing pitch"));
-    connect(slowAction, SIGNAL(triggered()), this, SLOT(slowDownPlayback()));
-    connect(this, SIGNAL(canSlowDownPlayback(bool)), slowAction, SLOT(setEnabled(bool)));
+    connect(slowAction, &QAction::triggered, this, &PitchAnalyserWidget::slowDownPlayback);
+    connect(this, &VisualiserWindowBase::canSlowDownPlayback, slowAction, &QAction::setEnabled);
 
     QAction *normalAction = menu->addAction(tr("Restore Normal Speed"));
     normalAction->setShortcut(tr("Ctrl+Home"));
     normalAction->setStatusTip(tr("Restore non-time-stretched playback"));
-    connect(normalAction, SIGNAL(triggered()), this, SLOT(restoreNormalPlayback()));
-    connect(this, SIGNAL(canChangePlaybackSpeed(bool)), normalAction, SLOT(setEnabled(bool)));
+    connect(normalAction, &QAction::triggered, this, &PitchAnalyserWidget::restoreNormalPlayback);
+    connect(this, &VisualiserWindowBase::canChangePlaybackSpeed, normalAction, &QAction::setEnabled);
 
     m_keyReference->registerShortcut(fastAction);
     m_keyReference->registerShortcut(slowAction);
@@ -1147,13 +1147,13 @@ PitchAnalyserWidget::setupToolbars()
 
     m_showAudio = toolbar->addAction(il.load("waveform"), tr("Show Audio"));
     m_showAudio->setCheckable(true);
-    connect(m_showAudio, SIGNAL(triggered()), this, SLOT(showAudioToggled()));
-    connect(this, SIGNAL(canPlay(bool)), m_showAudio, SLOT(setEnabled(bool)));
+    connect(m_showAudio, &QAction::triggered, this, &PitchAnalyserWidget::showAudioToggled);
+    connect(this, &VisualiserWindowBase::canPlay, m_showAudio, &QAction::setEnabled);
 
     m_playAudio = toolbar->addAction(il.load("speaker"), tr("Play Audio"));
     m_playAudio->setCheckable(true);
-    connect(m_playAudio, SIGNAL(triggered()), this, SLOT(playAudioToggled()));
-    connect(this, SIGNAL(canPlayWaveform(bool)), m_playAudio, SLOT(setEnabled(bool)));
+    connect(m_playAudio, &QAction::triggered, this, &PitchAnalyserWidget::playAudioToggled);
+    connect(this, &PitchAnalyserWidget::canPlayWaveform, m_playAudio, &QAction::setEnabled);
 
     toolbar->addWidget(m_gainAudio);
     toolbar->addWidget(m_panAudio);
@@ -1165,13 +1165,13 @@ PitchAnalyserWidget::setupToolbars()
 
     m_showPitch = toolbar->addAction(il.load("values"), tr("Show Pitch Track"));
     m_showPitch->setCheckable(true);
-    connect(m_showPitch, SIGNAL(triggered()), this, SLOT(showPitchToggled()));
-    connect(this, SIGNAL(canPlay(bool)), m_showPitch, SLOT(setEnabled(bool)));
+    connect(m_showPitch, &QAction::triggered, this, &PitchAnalyserWidget::showPitchToggled);
+    connect(this, &VisualiserWindowBase::canPlay, m_showPitch, &QAction::setEnabled);
 
     m_playPitch = toolbar->addAction(il.load("speaker"), tr("Play Pitch Track"));
     m_playPitch->setCheckable(true);
-    connect(m_playPitch, SIGNAL(triggered()), this, SLOT(playPitchToggled()));
-    connect(this, SIGNAL(canPlayPitch(bool)), m_playPitch, SLOT(setEnabled(bool)));
+    connect(m_playPitch, &QAction::triggered, this, &PitchAnalyserWidget::playPitchToggled);
+    connect(this, &PitchAnalyserWidget::canPlayPitch, m_playPitch, &QAction::setEnabled);
 
     toolbar->addWidget(m_gainPitch);
     toolbar->addWidget(m_panPitch);
@@ -1183,13 +1183,13 @@ PitchAnalyserWidget::setupToolbars()
 
     m_showNotes = toolbar->addAction(il.load("notes"), tr("Show Notes"));
     m_showNotes->setCheckable(true);
-    connect(m_showNotes, SIGNAL(triggered()), this, SLOT(showNotesToggled()));
-    connect(this, SIGNAL(canPlay(bool)), m_showNotes, SLOT(setEnabled(bool)));
+    connect(m_showNotes, &QAction::triggered, this, &PitchAnalyserWidget::showNotesToggled);
+    connect(this, &VisualiserWindowBase::canPlay, m_showNotes, &QAction::setEnabled);
 
     m_playNotes = toolbar->addAction(il.load("speaker"), tr("Play Notes"));
     m_playNotes->setCheckable(true);
-    connect(m_playNotes, SIGNAL(triggered()), this, SLOT(playNotesToggled()));
-    connect(this, SIGNAL(canPlayNotes(bool)), m_playNotes, SLOT(setEnabled(bool)));
+    connect(m_playNotes, &QAction::triggered, this, &PitchAnalyserWidget::playNotesToggled);
+    connect(this, &PitchAnalyserWidget::canPlayNotes, m_playNotes, &QAction::setEnabled);
 
     toolbar->addWidget(m_gainNotes);
     toolbar->addWidget(m_panNotes);
@@ -1201,8 +1201,8 @@ PitchAnalyserWidget::setupToolbars()
 
     m_showSpect = toolbar->addAction(il.load("spectrogram"), tr("Show Spectrogram"));
     m_showSpect->setCheckable(true);
-    connect(m_showSpect, SIGNAL(triggered()), this, SLOT(showSpectToggled()));
-    connect(this, SIGNAL(canPlay(bool)), m_showSpect, SLOT(setEnabled(bool)));
+    connect(m_showSpect, &QAction::triggered, this, &PitchAnalyserWidget::showSpectToggled);
+    connect(this, &VisualiserWindowBase::canPlay, m_showSpect, &QAction::setEnabled);
 
     Pane::registerShortcuts(*m_keyReference);
 }
@@ -1577,8 +1577,8 @@ PitchAnalyserWidget::newSession()
 
     Pane *pane = m_paneStack->addPane();
 
-    connect(pane, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(pane, &View::contextHelpChanged,
+            this, &PitchAnalyserWidget::contextHelpChanged);
 
 //    Layer *waveform = m_document->createMainModelLayer(LayerFactory::Waveform);
 //    m_document->addLayerToView(pane, waveform);
@@ -1595,8 +1595,8 @@ void
 PitchAnalyserWidget::documentReplaced()
 {
     if (m_document) {
-        connect(m_document, SIGNAL(activity(QString)),
-                m_activityLog, SLOT(activityHappened(QString)));
+        connect(m_document, &Document::activity,
+                m_activityLog, &ActivityLog::activityHappened);
     }
 }
 
@@ -1914,8 +1914,8 @@ PitchAnalyserWidget::waitForInitialAnalysis()
                    QMessageBox::Cancel,
                    this);
 
-    connect(m_analyser, SIGNAL(initialAnalysisCompleted()),
-            &mb, SLOT(accept()));
+    connect(m_analyser, &PitchAnalyser::initialAnalysisCompleted,
+            &mb, &QDialog::accept);
 
     if (mb.exec() == QDialog::Accepted) {
         return true;
@@ -1990,9 +1990,7 @@ PitchAnalyserWidget::saveSessionInAudioPath()
         QMessageBox::critical(this, tr("Failed to save file"),
                               tr("Session file \"%1\" could not be saved.").arg(path));
     } else {
-        setWindowTitle(tr("%1: %2")
-                       .arg(QApplication::applicationName())
-                       .arg(QFileInfo(path).fileName()));
+        setWindowTitle(tr("%1: %2").arg(QApplication::applicationName(), QFileInfo(path).fileName()));
         m_sessionFile = path;
         CommandHistory::getInstance()->documentSaved();
         documentRestored();
@@ -2024,9 +2022,7 @@ PitchAnalyserWidget::saveSessionAs()
         QMessageBox::critical(this, tr("Failed to save file"),
                               tr("Session file \"%1\" could not be saved.").arg(path));
     } else {
-        setWindowTitle(tr("%1: %2")
-                       .arg(QApplication::applicationName())
-                       .arg(QFileInfo(path).fileName()));
+        setWindowTitle(tr("%1: %2").arg(QApplication::applicationName(), QFileInfo(path).fileName()));
         m_sessionFile = path;
         CommandHistory::getInstance()->documentSaved();
         documentRestored();
@@ -2937,10 +2933,10 @@ PitchAnalyserWidget::updateVisibleRangeDisplay(Pane *p) const
 
     if (haveSelection) {
         m_myStatusMessage = tr("Selection: %1 to %2 (duration %3)")
-            .arg(startStr).arg(endStr).arg(durationStr);
+            .arg(startStr, endStr, durationStr);
     } else {
         m_myStatusMessage = tr("Visible: %1 to %2 (duration %3)")
-            .arg(startStr).arg(endStr).arg(durationStr);
+            .arg(startStr, endStr, durationStr);
     }
 
     statusBar()->showMessage(m_myStatusMessage);
@@ -3022,8 +3018,8 @@ PitchAnalyserWidget::mainModelChanged(WaveFileModel *model)
     VisualiserWindowBase::mainModelChanged(model);
 
     if (m_playTarget) {
-        connect(m_fader, SIGNAL(valueChanged(float)),
-                m_playTarget, SLOT(setOutputGain(float)));
+        connect(m_fader, &Fader::valueChanged,
+                m_playTarget, &AudioCallbackPlayTarget::setOutputGain);
     }
 }
 
@@ -3093,10 +3089,10 @@ PitchAnalyserWidget::analyseNewMainModel()
 
     if (pane) {
 
-        disconnect(pane, SIGNAL(regionOutlined(QRect)),
-                   pane, SLOT(zoomToRegion(QRect)));
-        connect(pane, SIGNAL(regionOutlined(QRect)),
-                this, SLOT(regionOutlined(QRect)));
+        disconnect(pane, &Pane::regionOutlined,
+                   pane, &Pane::zoomToRegion);
+        connect(pane, &Pane::regionOutlined,
+                this, &PitchAnalyserWidget::regionOutlined);
 
         QString error = m_analyser->newFileLoaded
             (m_document, getMainModel(), m_paneStack, pane);
@@ -3119,7 +3115,7 @@ PitchAnalyserWidget::modelGenerationFailed(QString transformName, QString messag
             (this,
              tr("Failed to generate layer"),
              tr("<b>Layer generation failed</b><p>Failed to generate derived layer.<p>The layer transform \"%1\" failed:<p>%2")
-             .arg(transformName).arg(message),
+             .arg(transformName, message),
              QMessageBox::Ok);
     } else {
         QMessageBox::warning
@@ -3148,14 +3144,14 @@ PitchAnalyserWidget::modelRegenerationFailed(QString layerName,
             (this,
              tr("Failed to regenerate layer"),
              tr("<b>Layer generation failed</b><p>Failed to regenerate derived layer \"%1\" using new data model as input.<p>The layer transform \"%2\" failed:<p>%3")
-             .arg(layerName).arg(transformName).arg(message),
+             .arg(layerName, transformName, message),
              QMessageBox::Ok);
     } else {
         QMessageBox::warning
             (this,
              tr("Failed to regenerate layer"),
              tr("<b>Layer generation failed</b><p>Failed to regenerate derived layer \"%1\" using new data model as input.<p>The layer transform \"%2\" failed.<p>No error information is available.")
-             .arg(layerName).arg(transformName),
+             .arg(layerName, transformName),
              QMessageBox::Ok);
     }
 }
@@ -3165,7 +3161,9 @@ PitchAnalyserWidget::modelRegenerationWarning(QString layerName,
                                      QString transformName, QString message)
 {
     QMessageBox::warning
-        (this, tr("Warning"), tr("<b>Warning when regenerating layer</b><p>When regenerating the derived layer \"%1\" using new data model as input:<p>%2").arg(layerName).arg(message), QMessageBox::Ok);
+        (this, tr("Warning"),
+         tr("<b>Warning when regenerating layer</b><p>When regenerating the derived layer \"%1\" using new data model as input:<p>%2")
+         .arg(layerName, message), QMessageBox::Ok);
 }
 
 void
@@ -3175,7 +3173,7 @@ PitchAnalyserWidget::alignmentFailed(QString transformName, QString message)
         (this,
          tr("Failed to calculate alignment"),
          tr("<b>Alignment calculation failed</b><p>Failed to calculate an audio alignment using transform \"%1\":<p>%2")
-         .arg(transformName).arg(message),
+         .arg(transformName, message),
          QMessageBox::Ok);
 }
 
@@ -3246,8 +3244,7 @@ PitchAnalyserWidget::about()
     aboutText += tr("<h3>About Tony</h3>");
     aboutText += tr("<p>Tony is a program for interactive note and pitch analysis and annotation.</p>");
     aboutText += tr("<p>%1 : %2 configuration</p>")
-        .arg(version)
-        .arg(debug ? tr("Debug") : tr("Release"));
+        .arg(version, debug ? tr("Debug") : tr("Release"));
     aboutText += tr("<p>Using Qt framework version %1.</p>")
         .arg(QT_VERSION_STR);
 

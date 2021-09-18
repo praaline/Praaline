@@ -32,12 +32,12 @@ AddCalculatedAnnotationDialog::AddCalculatedAnnotationDialog(QWidget *parent) :
     if (!d->corpusRepositoriesManager) return;
     // Repository combobox
     ui->comboBoxRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
+    connect(ui->comboBoxRepository, &QComboBox::currentTextChanged, this, &AddCalculatedAnnotationDialog::corpusRepositoryChanged);
     // Annotation level combo-boxes
-    connect(ui->comboBoxAnnotationLevelBase, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelBaseChanged(int)));
-    connect(ui->comboBoxAnnotationLevelDerived, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelDerivedChanged(int)));
+    connect(ui->comboBoxAnnotationLevelBase, qOverload<int>(&QComboBox::currentIndexChanged), this, &AddCalculatedAnnotationDialog::annotationLevelBaseChanged);
+    connect(ui->comboBoxAnnotationLevelDerived, qOverload<int>(&QComboBox::currentIndexChanged), this, &AddCalculatedAnnotationDialog::annotationLevelDerivedChanged);
     // Apply button
-    connect(ui->commandApply, SIGNAL(clicked(bool)), this, SLOT(createSequences()));
+    connect(ui->commandApply, &QPushButton::clicked, this, &AddCalculatedAnnotationDialog::applyCalculation);
     // Initialize
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
 }
@@ -91,7 +91,7 @@ void AddCalculatedAnnotationDialog::annotationLevelDerivedChanged(int index)
     }
 }
 
-void AddCalculatedAnnotationDialog::applyMeasure()
+void AddCalculatedAnnotationDialog::applyCalculation()
 {
 
 }

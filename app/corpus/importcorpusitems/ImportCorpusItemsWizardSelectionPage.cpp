@@ -30,8 +30,8 @@ ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
     d(new ImportCorpusItemsWizardSelectionPageData(corpus, candidateRecordings, candidateAnnotations))
 {
     ui->setupUi(this);
-    connect(ui->commandSelectFolder, SIGNAL(clicked()), this, SLOT(selectFolder()));
-    connect(ui->commandAbort, SIGNAL(clicked()), this, SLOT(abortProcess()));
+    connect(ui->commandSelectFolder, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardSelectionPage::selectFolder);
+    connect(ui->commandAbort, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardSelectionPage::abortProcess);
 
     // Set path
     if (corpus && corpus->repository() && corpus->repository()->files())
@@ -217,7 +217,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
         rec->setFilename(d->corpus->repository()->files()->getRelativeToBasePath(info.canonicalFilePath()));
         d->candidateRecordings.insert(QPair<QString, QString>(communicationID, baseFilename), rec);
         ui->texteditMessages->appendPlainText(QString("MEDIA RECORDING %1 >> Communication ID: %2, Recording ID: %3")
-                                              .arg(info.canonicalFilePath()).arg(communicationID).arg(baseFilename));
+                                              .arg(info.canonicalFilePath(), communicationID, baseFilename));
         ui->texteditMessages->moveCursor(QTextCursor::End);
     } else if (isAnnotation) {
         CorpusAnnotation *annot = new CorpusAnnotation(communicationID); // baseFilename
@@ -242,7 +242,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
 
         d->candidateAnnotations.insert(QPair<QString, QString>(communicationID, baseFilename), annot);
         ui->texteditMessages->appendPlainText(QString("ANNOTATION %1 >> Communication ID: %2, Annotation ID: %3")
-                                              .arg(info.canonicalFilePath()).arg(communicationID).arg(baseFilename));
+                                              .arg(info.canonicalFilePath(), communicationID, baseFilename));
         ui->texteditMessages->moveCursor(QTextCursor::End);
     }
     return true;

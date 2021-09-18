@@ -117,7 +117,7 @@ QWidget* QRangeFilter::createEditor(QFilterViewItemDelegate* delegate, QWidget* 
     Q_UNUSED(option);
     Q_UNUSED(index);
 	QRangeFilterEditor* e = new QRangeFilterEditor(parent);
-	QObject::connect(e, SIGNAL(commitAndClose(QAbstractItemDelegate::EndEditHint)), delegate, SLOT(commitAndClose(QAbstractItemDelegate::EndEditHint)));
+	QObject::connect(e, &QFilterEditorWidget::commitAndClose, delegate, &QFilterViewItemDelegate::commitAndClose);
     return e;
 }
 
@@ -131,7 +131,7 @@ QVariant QRangeFilter::data(int role) const
 		} else if (!property("rangeFrom").toString().isNull() && property("rangeTo").toString().isNull()){
 	        return QString(QObject::tr("%1 - <any>")).arg(property("rangeFrom").toString());
 		}
-        return QString("%1 - %2").arg(property("rangeFrom").toString()).arg(property("rangeTo").toString());
+        return QString("%1 - %2").arg(property("rangeFrom").toString(), property("rangeTo").toString());
     }
     return QVariant();
 }

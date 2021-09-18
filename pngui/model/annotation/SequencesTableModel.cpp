@@ -207,7 +207,11 @@ bool SequencesTableModel::addSequence(const QString &speakerID, Sequence *sequen
     foreach (const QString &speakerID_iter, d->sequenceTiers.keys()) {
         row = row + d->sequenceTiers.value(speakerID_iter)->count();
         if (speakerID_iter == speakerID) {
-            beginInsertRows(QModelIndex(), row, row);
+            int indexOfAddedSequence(0);
+            while (indexOfAddedSequence < d->sequenceTiers[speakerID]->count() && d->sequenceTiers[speakerID]->at(indexOfAddedSequence) < sequence) {
+                indexOfAddedSequence++;
+            }
+            beginInsertRows(QModelIndex(), row + indexOfAddedSequence, row + indexOfAddedSequence);
             d->sequenceTiers[speakerID]->addSequence(sequence);
             endInsertRows();
             return true;
@@ -216,16 +220,17 @@ bool SequencesTableModel::addSequence(const QString &speakerID, Sequence *sequen
     return false;
 }
 
-bool SequencesTableModel::removeSequence(int row)
+bool SequencesTableModel::removeRows(int position, int rows, const QModelIndex &parent)
 {
-    QPair<QString, int> index = modelRowToSpeakerAndSequenceIndex(row);
-    if (d->sequenceTiers.contains(index.first)) {
-        if ((index.second >= 0) && (index.second < d->sequenceTiers.value(index.first)->count())) {
-            beginRemoveRows(QModelIndex(), row, row);
-            d->sequenceTiers[index.first]->removeSequenceAt(index.second);
-            endRemoveRows();
-            return true;
+    Q_UNUSED(parent);
+    beginRemoveRows(QModelIndex(), position, position + rows - 1);
+    for (int row = 0; row < rows; ++row) {
+        QPair<QString, int> indexPair = modelRowToSpeakerAndSequenceIndex(position);
+        QString speakerID = indexPair.first; int sequenceIndex = indexPair.second;
+        if ((d->sequenceTiers.contains(speakerID)) && (sequenceIndex >= 0) && (sequenceIndex < d->sequenceTiers.value(speakerID)->count())) {
+            d->sequenceTiers[speakerID]->removeSequenceAt(sequenceIndex);
         }
     }
-    return false;
+    endRemoveRows();
+    return true;
 }

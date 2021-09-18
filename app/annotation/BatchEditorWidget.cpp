@@ -38,8 +38,8 @@ BatchEditorWidget::BatchEditorWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
-    connect(ui->comboBoxLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(levelChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &BatchEditorWidget::activeCorpusRepositoryChanged);
+    connect(ui->comboBoxLevel, &QComboBox::currentTextChanged, this, &BatchEditorWidget::levelChanged);
 
     // Manual selection model - table
     d->tableDistinctValues = new GridViewWidget(this);
@@ -48,8 +48,8 @@ BatchEditorWidget::BatchEditorWidget(QWidget *parent) :
     ui->gridLayoutResults->addWidget(d->tableDistinctValues );
 
     // Actions
-    connect(ui->commandGetDistinctValues, SIGNAL(clicked()), this, SLOT(actionGetDistinctValues()));
-    connect(ui->commandUpdateValues, SIGNAL(clicked()), this, SLOT(actionUpdateValues()));
+    connect(ui->commandGetDistinctValues, &QAbstractButton::clicked, this, &BatchEditorWidget::actionGetDistinctValues);
+    connect(ui->commandUpdateValues, &QAbstractButton::clicked, this, &BatchEditorWidget::actionUpdateValues);
 }
 
 BatchEditorWidget::~BatchEditorWidget()

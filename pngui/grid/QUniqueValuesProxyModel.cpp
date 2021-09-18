@@ -92,9 +92,9 @@ void QUniqueValuesProxyModel::setModelColumn(int colum)
 
 void QUniqueValuesProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 {
-    connect(sourceModel, SIGNAL(layoutChanged()), this, SLOT(buildMap()));
-    connect(sourceModel, SIGNAL(modelReset()), this, SLOT(buildMap()));
-    connect(sourceModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(sourceModelDataChanged(QModelIndex,QModelIndex)));
+    connect(sourceModel, &QAbstractItemModel::layoutChanged, this, &QUniqueValuesProxyModel::buildMap);
+    connect(sourceModel, &QAbstractItemModel::modelReset, this, &QUniqueValuesProxyModel::buildMap);
+    connect(sourceModel, &QAbstractItemModel::dataChanged, this, &QUniqueValuesProxyModel::sourceModelDataChanged);
     QSortFilterProxyModel::setSourceModel(sourceModel);
     buildMap();
     invalidate();

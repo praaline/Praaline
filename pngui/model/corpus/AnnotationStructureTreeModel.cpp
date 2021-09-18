@@ -203,9 +203,11 @@ bool AnnotationStructureTreeModel::setData(const QModelIndex &index, const QVari
     } else {
         if (role != Qt::EditRole) return false;
     }
-    // Find whether the edited item is a level or an attribute
+    // Get the item corresponding to the model index and ensure it exists
     QObject *item = getItem(index);
-    bool isAttribute = (qobject_cast<AnnotationStructureAttribute *>(item) != 0);
+    if (!item) return false;
+    // Find whether the edited item is a level or an attribute
+    bool isAttribute = (!qobject_cast<AnnotationStructureAttribute *>(item));
     // Find the corresponding level ID and attribute ID and store them in a pair
     QPair<QString, QString> pair;
     if (isAttribute) {

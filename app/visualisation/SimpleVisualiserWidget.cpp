@@ -88,8 +88,8 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     // to track down the reason why.
     m_overview->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
 #endif
-    connect(m_overview, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(m_overview, &View::contextHelpChanged,
+            this, &SimpleVisualiserWidget::contextHelpChanged);
 
     m_panLayer = new WaveformLayer;
     m_panLayer->setChannelMode(WaveformLayer::MergeChannels);
@@ -103,8 +103,8 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     }
 
     m_fader = new Fader(m_visualiserFrame, false);
-    connect(m_fader, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_fader, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_fader, &Fader::mouseEntered, this, &SimpleVisualiserWidget::mouseEnteredWidget);
+    connect(m_fader, &Fader::mouseLeft, this, &SimpleVisualiserWidget::mouseLeftWidget);
 
     m_playSpeed = new AudioDial(m_visualiserFrame);
     m_playSpeed->setMinimum(60);
@@ -118,27 +118,27 @@ SimpleVisualiserWidget::SimpleVisualiserWidget(const QString &contextStringID, b
     m_playSpeed->setRangeMapper(new PlaySpeedRangeMapper(60, 120));
     m_playSpeed->setDefaultValue(100);
     m_playSpeed->setShowToolTip(true);
-    connect(m_playSpeed, SIGNAL(valueChanged(int)), this, SLOT(playSpeedChanged(int)));
-    connect(m_playSpeed, SIGNAL(mouseEntered()), this, SLOT(mouseEnteredWidget()));
-    connect(m_playSpeed, SIGNAL(mouseLeft()), this, SLOT(mouseLeftWidget()));
+    connect(m_playSpeed, &QAbstractSlider::valueChanged, this, &SimpleVisualiserWidget::playSpeedChanged);
+    connect(m_playSpeed, &AudioDial::mouseEntered, this, &SimpleVisualiserWidget::mouseEnteredWidget);
+    connect(m_playSpeed, &AudioDial::mouseLeft, this, &SimpleVisualiserWidget::mouseLeftWidget);
 
-    connect(m_viewManager, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(m_playSource, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(CommandHistory::getInstance(), SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(this, SIGNAL(activity(QString)),
-            m_activityLog, SLOT(activityHappened(QString)));
-    connect(this, SIGNAL(replacedDocument()), this, SLOT(documentReplaced()));
+    connect(m_viewManager, &ViewManager::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(m_playSource, &AudioCallbackPlaySource::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(CommandHistory::getInstance(), &CommandHistory::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(this, &VisualiserWindowBase::activity,
+            m_activityLog, &ActivityLog::activityHappened);
+    connect(this, &VisualiserWindowBase::replacedDocument, this, &SimpleVisualiserWidget::documentReplaced);
     m_activityLog->hide();
 
     // Signals from base connect to slots in the visualiser widget, which emits signals
     // in order to be able to synchronise itselft with other widgets (e.g. the annotations editor)
-    connect(m_viewManager, SIGNAL(globalCentreFrameChanged(sv_frame_t)),
-            this, SLOT(baseGlobalCentreFrameChanged(sv_frame_t)));
-    connect(m_viewManager, SIGNAL(playbackFrameChanged(sv_frame_t)),
-            this, SLOT(basePlaybackFrameChanged(sv_frame_t)));
+    connect(m_viewManager, &ViewManager::globalCentreFrameChanged,
+            this, &SimpleVisualiserWidget::baseGlobalCentreFrameChanged);
+    connect(m_viewManager, &ViewManager::playbackFrameChanged,
+            this, &SimpleVisualiserWidget::basePlaybackFrameChanged);
 }
 
 SimpleVisualiserWidget::~SimpleVisualiserWidget()
@@ -176,55 +176,55 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     m_rwdStartAction = m_toolbarPlayback->addAction(il.load("rewind-start"), tr("Rewind to Start"));
     m_rwdStartAction->setShortcut(tr("Home"));
     m_rwdStartAction->setStatusTip(tr("Rewind to the start"));
-    connect(m_rwdStartAction, SIGNAL(triggered()), this, SLOT(rewindStart()));
-    connect(this, SIGNAL(canPlay(bool)), m_rwdStartAction, SLOT(setEnabled(bool)));
+    connect(m_rwdStartAction, &QAction::triggered, this, &SimpleVisualiserWidget::rewindStart);
+    connect(this, &VisualiserWindowBase::canPlay, m_rwdStartAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.RewindStart", m_rwdStartAction, context);
 
     m_rwdAction = m_toolbarPlayback->addAction(il.load("rewind"), tr("Rewind"));
     m_rwdAction->setShortcut(tr("PgUp"));
     m_rwdAction->setStatusTip(tr("Rewind to the previous time instant or time ruler notch"));
-    connect(m_rwdAction, SIGNAL(triggered()), this, SLOT(rewind()));
-    connect(this, SIGNAL(canRewind(bool)), m_rwdAction, SLOT(setEnabled(bool)));
+    connect(m_rwdAction, &QAction::triggered, this, &SimpleVisualiserWidget::rewind);
+    connect(this, &VisualiserWindowBase::canRewind, m_rwdAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.Rewind", m_rwdAction, context);
 
     m_rwdSimilarAction = new QAction(tr("Rewind to Similar Point"), this);
     m_rwdSimilarAction->setShortcut(tr("Shift+PgUp"));
     m_rwdSimilarAction->setStatusTip(tr("Rewind to the previous similarly valued time instant"));
-    connect(m_rwdSimilarAction, SIGNAL(triggered()), this, SLOT(rewindSimilar()));
-    connect(this, SIGNAL(canRewind(bool)), m_rwdSimilarAction, SLOT(setEnabled(bool)));
+    connect(m_rwdSimilarAction, &QAction::triggered, this, &SimpleVisualiserWidget::rewindSimilar);
+    connect(this, &VisualiserWindowBase::canRewind, m_rwdSimilarAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.RewindSimilar", m_rwdSimilarAction, context);
 
     m_playAction = m_toolbarPlayback->addAction(il.load("playpause"), tr("Play / Pause"));
     m_playAction->setCheckable(true);
     m_playAction->setShortcut(tr("Space"));
     m_playAction->setStatusTip(tr("Start or stop playback from the current position"));
-    connect(m_playAction, SIGNAL(triggered()), this, SLOT(play()));
-    connect(m_playSource, SIGNAL(playStatusChanged(bool)),
-            m_playAction, SLOT(setChecked(bool)));
+    connect(m_playAction, &QAction::triggered, this, &SimpleVisualiserWidget::play);
+    connect(m_playSource, &AudioCallbackPlaySource::playStatusChanged,
+            m_playAction, &QAction::setChecked);
     connect(m_playSource, SIGNAL(playStatusChanged(bool)),
             this, SLOT(playStatusChanged(bool)));
-    connect(this, SIGNAL(canPlay(bool)), m_playAction, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canPlay, m_playAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.PlayPause", m_playAction, context);
 
     m_ffwdAction = m_toolbarPlayback->addAction(il.load("ffwd"), tr("Fast Forward"));
     m_ffwdAction->setShortcut(tr("PgDown"));
     m_ffwdAction->setStatusTip(tr("Fast-forward to the next time instant or time ruler notch"));
-    connect(m_ffwdAction, SIGNAL(triggered()), this, SLOT(ffwd()));
-    connect(this, SIGNAL(canFfwd(bool)), m_ffwdAction, SLOT(setEnabled(bool)));
+    connect(m_ffwdAction, &QAction::triggered, this, &SimpleVisualiserWidget::ffwd);
+    connect(this, &VisualiserWindowBase::canFfwd, m_ffwdAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.FastForward", m_ffwdAction, context);
 
     m_ffwdSimilarAction = new QAction(tr("Fast Forward to Similar Point"), this);
     m_ffwdSimilarAction->setShortcut(tr("Shift+PgDown"));
     m_ffwdSimilarAction->setStatusTip(tr("Fast-forward to the next similarly valued time instant"));
-    connect(m_ffwdSimilarAction, SIGNAL(triggered()), this, SLOT(ffwdSimilar()));
-    connect(this, SIGNAL(canFfwd(bool)), m_ffwdSimilarAction, SLOT(setEnabled(bool)));
+    connect(m_ffwdSimilarAction, &QAction::triggered, this, &SimpleVisualiserWidget::ffwdSimilar);
+    connect(this, &VisualiserWindowBase::canFfwd, m_ffwdSimilarAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.FastForwardSimilar", m_ffwdSimilarAction, context);
 
     m_ffwdEndAction = m_toolbarPlayback->addAction(il.load("ffwd-end"), tr("Fast Forward to End"));
     m_ffwdEndAction->setShortcut(tr("End"));
     m_ffwdEndAction->setStatusTip(tr("Fast-forward to the end"));
-    connect(m_ffwdEndAction, SIGNAL(triggered()), this, SLOT(ffwdEnd()));
-    connect(this, SIGNAL(canPlay(bool)), m_ffwdEndAction, SLOT(setEnabled(bool)));
+    connect(m_ffwdEndAction, &QAction::triggered, this, &SimpleVisualiserWidget::ffwdEnd);
+    connect(this, &VisualiserWindowBase::canPlay, m_ffwdEndAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.FastForwardEnd", m_ffwdEndAction, context);
 
     m_toolbarPlayMode = new QToolBar(tr("Play Mode Toolbar"));
@@ -236,8 +236,8 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     m_playSelectionAction->setStatusTip(tr("Constrain playback to the selected regions"));
     connect(m_viewManager, SIGNAL(playSelectionModeChanged(bool)),
             m_playSelectionAction, SLOT(setChecked(bool)));
-    connect(m_playSelectionAction, SIGNAL(triggered()), this, SLOT(playSelectionToggled()));
-    connect(this, SIGNAL(canPlaySelection(bool)), m_playSelectionAction, SLOT(setEnabled(bool)));
+    connect(m_playSelectionAction, &QAction::triggered, this, &SimpleVisualiserWidget::playSelectionToggled);
+    connect(this, &VisualiserWindowBase::canPlaySelection, m_playSelectionAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.PlaySelection", m_playSelectionAction, context);
 
     m_playLoopAction = m_toolbarPlayMode->addAction(il.load("playloop"), tr("Loop Playback"));
@@ -247,8 +247,8 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     m_playLoopAction->setStatusTip(tr("Loop playback"));
     connect(m_viewManager, SIGNAL(playLoopModeChanged(bool)),
             m_playLoopAction, SLOT(setChecked(bool)));
-    connect(m_playLoopAction, SIGNAL(triggered()), this, SLOT(playLoopToggled()));
-    connect(this, SIGNAL(canPlay(bool)), m_playLoopAction, SLOT(setEnabled(bool)));
+    connect(m_playLoopAction, &QAction::triggered, this, &SimpleVisualiserWidget::playLoopToggled);
+    connect(this, &VisualiserWindowBase::canPlay, m_playLoopAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.PlayLoop", m_playLoopAction, context);
 
     m_soloAction = m_toolbarPlayMode->addAction(il.load("solo"), tr("Solo Current Pane"));
@@ -260,7 +260,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     connect(m_viewManager, SIGNAL(playSoloModeChanged(bool)),
             m_soloAction, SLOT(setChecked(bool)));
     connect(m_soloAction, SIGNAL(triggered()), this, SLOT(playSoloToggled()));
-    connect(this, SIGNAL(canChangeSolo(bool)), m_soloAction, SLOT(setEnabled(bool)));
+    connect(this, &SimpleVisualiserWidget::canChangeSolo, m_soloAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.PlaySolo", m_soloAction, context);
 
     QAction *alAction = 0;
@@ -272,7 +272,7 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
         connect(m_viewManager, SIGNAL(alignModeChanged(bool)),
                 alAction, SLOT(setChecked(bool)));
         connect(alAction, SIGNAL(triggered()), this, SLOT(alignToggled()));
-        connect(this, SIGNAL(canAlign(bool)), alAction, SLOT(setEnabled(bool)));
+        connect(this, &SimpleVisualiserWidget::canAlign, alAction, &QAction::setEnabled);
         ACTION_MANAGER->registerAction("Playback.Align", alAction, context);
     }
 
@@ -304,22 +304,22 @@ void SimpleVisualiserWidget::setupPlaybackMenusAndToolbar()
     QAction *fastAction = new QAction(tr("Speed Up"), this);
     fastAction->setShortcut(tr("Ctrl+Alt+PgUp"));
     fastAction->setStatusTip(tr("Time-stretch playback to speed it up without changing pitch"));
-    connect(fastAction, SIGNAL(triggered()), this, SLOT(speedUpPlayback()));
-    connect(this, SIGNAL(canSpeedUpPlayback(bool)), fastAction, SLOT(setEnabled(bool)));
+    connect(fastAction, &QAction::triggered, this, &SimpleVisualiserWidget::speedUpPlayback);
+    connect(this, &VisualiserWindowBase::canSpeedUpPlayback, fastAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.SpeedUp", fastAction, context);
 
     QAction *slowAction = new QAction(tr("Slow Down"), this);
     slowAction->setShortcut(tr("Ctrl+Alt+PgDown"));
     slowAction->setStatusTip(tr("Time-stretch playback to slow it down without changing pitch"));
-    connect(slowAction, SIGNAL(triggered()), this, SLOT(slowDownPlayback()));
-    connect(this, SIGNAL(canSlowDownPlayback(bool)), slowAction, SLOT(setEnabled(bool)));
+    connect(slowAction, &QAction::triggered, this, &SimpleVisualiserWidget::slowDownPlayback);
+    connect(this, &VisualiserWindowBase::canSlowDownPlayback, slowAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.SlowDown", slowAction, context);
 
     QAction *normalAction = new QAction(tr("Restore Normal Speed"), this);
     normalAction->setShortcut(tr("Ctrl+Alt+Home"));
     normalAction->setStatusTip(tr("Restore non-time-stretched playback"));
-    connect(normalAction, SIGNAL(triggered()), this, SLOT(restoreNormalPlayback()));
-    connect(this, SIGNAL(canChangePlaybackSpeed(bool)), normalAction, SLOT(setEnabled(bool)));
+    connect(normalAction, &QAction::triggered, this, &SimpleVisualiserWidget::restoreNormalPlayback);
+    connect(this, &VisualiserWindowBase::canChangePlaybackSpeed, normalAction, &QAction::setEnabled);
     ACTION_MANAGER->registerAction("Playback.RestoreNormalSpeed", normalAction, context);
 
     m_keyReference->registerShortcut(fastAction);
@@ -553,8 +553,8 @@ void SimpleVisualiserWidget::documentRestored()
 void SimpleVisualiserWidget::documentReplaced()
 {
     if (m_document) {
-        connect(m_document, SIGNAL(activity(QString)),
-                m_activityLog, SLOT(activityHappened(QString)));
+        connect(m_document, &Document::activity,
+                m_activityLog, &ActivityLog::activityHappened);
     }
 }
 
@@ -831,8 +831,8 @@ void SimpleVisualiserWidget::mainModelChanged(WaveFileModel *model)
     m_panLayer->setModel(model);
     VisualiserWindowBase::mainModelChanged(model);
     if (m_playTarget) {
-        connect(m_fader, SIGNAL(valueChanged(float)),
-                this, SLOT(mainModelGainChanged(float)));
+        connect(m_fader, &Fader::valueChanged,
+                this, &SimpleVisualiserWidget::mainModelGainChanged);
     }
 }
 

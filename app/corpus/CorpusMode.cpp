@@ -32,7 +32,7 @@ CorpusMode::CorpusMode(QObject *parent) :
     }
 
     if (!d->widget) d->widget = new CorpusModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &CorpusModeWidget::activateMode, this, &CorpusMode::activateMode);
 }
 
 CorpusMode::~CorpusMode()

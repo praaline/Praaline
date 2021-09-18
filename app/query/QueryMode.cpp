@@ -32,7 +32,7 @@ QueryMode::QueryMode(QObject *parent) :
     }
 
     if (!d->widget) d->widget = new QueryModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &QueryModeWidget::activateMode, this, &QueryMode::activateMode);
 }
 
 QueryMode::~QueryMode()

@@ -32,7 +32,7 @@ AnnotationGridLayer::AnnotationGridLayer() :
     m_textEditor->setVisible(false);
     m_textEditor->setFrame(false);
     m_textEditor->setAlignment(Qt::AlignHCenter);
-    connect(m_textEditor, SIGNAL(editingFinished()), this, SLOT(textEditingFinished()));
+    connect(m_textEditor.data(), &QLineEdit::editingFinished, this, &AnnotationGridLayer::textEditingFinished);
 }
 
 AnnotationGridLayer::~AnnotationGridLayer()

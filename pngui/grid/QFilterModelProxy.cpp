@@ -62,8 +62,8 @@ QVariant QFilterModelProxy::data(const QModelIndex & index, int role) const
 			qreal s = 1 / ((qreal)cl.size() - 1);
 			g.setColorAt(0, cl.first());
 			g.setColorAt(1, cl.last());
-			for (qreal i  = 1; i < cl.size() - 1; i++){
-				g.setColorAt(s * i, cl.at(i));
+            for (int i  = 1; i < cl.size() - 1; i++){
+                g.setColorAt(s * static_cast<qreal>(i), cl.at(i));
 			}
 			return QBrush(g);
 		}

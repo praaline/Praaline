@@ -49,7 +49,7 @@ QAutoFilterEditorPopup::QAutoFilterEditorPopup(QWidget* parent) :
 	m_emptyToolButton->setAutoRaise(true);
 	m_emptyToolButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	lb->addWidget(m_emptyToolButton);
-	connect(m_emptyToolButton, SIGNAL(clicked()), this, SLOT(emptyToolButtonClicked()));
+	connect(m_emptyToolButton, &QAbstractButton::clicked, this, &QAutoFilterEditorPopup::emptyToolButtonClicked);
 
 	m_notEmptyToolButton = new QToolButton(this);
 	m_notEmptyToolButton->setText(tr("Not Empty"));
@@ -57,7 +57,7 @@ QAutoFilterEditorPopup::QAutoFilterEditorPopup(QWidget* parent) :
 	m_notEmptyToolButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 	lb->addWidget(m_notEmptyToolButton);
 	l->addLayout(lb);
-	connect(m_notEmptyToolButton, SIGNAL(clicked()), this, SLOT(notEmptyToolButtonClicked()));
+	connect(m_notEmptyToolButton, &QAbstractButton::clicked, this, &QAutoFilterEditorPopup::notEmptyToolButtonClicked);
 
 	QFrame* f = new QFrame(this);
 	f->setFrameShape(QFrame::HLine);
@@ -67,7 +67,7 @@ QAutoFilterEditorPopup::QAutoFilterEditorPopup(QWidget* parent) :
 	m_lineEdit = new QLineEdit(this);
     m_lineEdit->setMinimumWidth(200);
     m_lineEdit->setPlaceholderText(tr("Search for"));
-    connect(m_lineEdit, SIGNAL(textEdited(QString)), this, SLOT(searchForTextEdited(QString)));
+    connect(m_lineEdit, &QLineEdit::textEdited, this, &QAutoFilterEditorPopup::searchForTextEdited);
 
     l->addWidget(m_lineEdit);
     m_listView = new QListView(this);
@@ -75,11 +75,11 @@ QAutoFilterEditorPopup::QAutoFilterEditorPopup(QWidget* parent) :
     setLayout(l);
 
     m_checkStateProxy = new QCheckStateProxyModel(this);
-	connect(m_checkStateProxy, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(checkStateProxyDataChanged(QModelIndex, QModelIndex)));
+    connect(m_checkStateProxy, &QAbstractItemModel::dataChanged, this, &QAutoFilterEditorPopup::checkStateProxyDataChanged);
 
 	m_singleColumnProxy = new QSingleColumnProxyModel(this);
     m_singleValueProxy = new QUniqueValuesProxyModel(this);
-	connect(m_singleValueProxy, SIGNAL(progressChanged(int)), this, SLOT(uniqueValueModelProgressChanged(int)));
+	connect(m_singleValueProxy, &QUniqueValuesProxyModel::progressChanged, this, &QAutoFilterEditorPopup::uniqueValueModelProgressChanged);
 	m_singleValueProxy->setEmptyItemsAllowed(false);
 
     m_singleColumnProxy->setSourceModel(m_singleValueProxy);
@@ -90,7 +90,7 @@ QAutoFilterEditorPopup::QAutoFilterEditorPopup(QWidget* parent) :
 	m_selectCheckBox->setText(tr("Select/Deselect all"));
 	m_selectCheckBox->setTristate(true);
 	m_selectCheckBox->installEventFilter(parent);
-	connect(m_selectCheckBox, SIGNAL(stateChanged(int)), this, SLOT(selectCheckBoxStateChanged(int)));
+	connect(m_selectCheckBox, &QCheckBox::stateChanged, this, &QAutoFilterEditorPopup::selectCheckBoxStateChanged);
 
 	l->addWidget(m_selectCheckBox);
 	m_listView->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -210,8 +210,8 @@ QWidget* QAutoFilter::createEditor(QFilterViewItemDelegate* delegate, QWidget* p
     Q_UNUSED(option);
     Q_UNUSED(index);
 	QAutoFilterEditor* e = new QAutoFilterEditor(parent);
-	QObject::connect(e, SIGNAL(cancelAndClose(QAbstractItemDelegate::EndEditHint)), delegate, SLOT(cancelAndClose(QAbstractItemDelegate::EndEditHint)));
-	QObject::connect(e, SIGNAL(commitAndClose(QAbstractItemDelegate::EndEditHint)), delegate, SLOT(commitAndClose(QAbstractItemDelegate::EndEditHint)));
+	QObject::connect(e, &QFilterEditorWidget::cancelAndClose, delegate, &QFilterViewItemDelegate::cancelAndClose);
+	QObject::connect(e, &QFilterEditorWidget::commitAndClose, delegate, &QFilterViewItemDelegate::commitAndClose);
     return e;
 }
 

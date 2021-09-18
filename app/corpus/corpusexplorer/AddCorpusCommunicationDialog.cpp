@@ -11,8 +11,8 @@ AddCorpusCommunicationDialog::AddCorpusCommunicationDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 AddCorpusCommunicationDialog::~AddCorpusCommunicationDialog()

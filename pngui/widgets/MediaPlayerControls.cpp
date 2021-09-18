@@ -29,28 +29,28 @@ MediaPlayerControls::MediaPlayerControls(QWidget *parent) :
 {
     d->playButton = new QToolButton(this);
     d->playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-    connect(d->playButton, SIGNAL(clicked()), this, SLOT(playClicked()));
+    connect(d->playButton, &QAbstractButton::clicked, this, &MediaPlayerControls::playClicked);
 
     d->stopButton = new QToolButton(this);
     d->stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
     d->stopButton->setEnabled(false);
-    connect(d->stopButton, SIGNAL(clicked()), this, SIGNAL(stop()));
+    connect(d->stopButton, &QAbstractButton::clicked, this, &MediaPlayerControls::stop);
 
     d->seekForwardButton = new QToolButton(this);
     d->seekForwardButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekForward));
-    connect(d->seekForwardButton, SIGNAL(clicked()), this, SIGNAL(seekForward()));
+    connect(d->seekForwardButton, &QAbstractButton::clicked, this, &MediaPlayerControls::seekForward);
 
     d->seekBackwardButton = new QToolButton(this);
     d->seekBackwardButton->setIcon(style()->standardIcon(QStyle::SP_MediaSeekBackward));
-    connect(d->seekBackwardButton, SIGNAL(clicked()), this, SIGNAL(seekBackward()));
+    connect(d->seekBackwardButton, &QAbstractButton::clicked, this, &MediaPlayerControls::seekBackward);
 
     d->muteButton = new QToolButton(this);
     d->muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-    connect(d->muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));
+    connect(d->muteButton, &QAbstractButton::clicked, this, &MediaPlayerControls::muteClicked);
 
     d->volumeSlider = new QSlider(Qt::Horizontal, this);
     d->volumeSlider->setRange(0, 100);
-    connect(d->volumeSlider, SIGNAL(sliderMoved(int)), this, SIGNAL(changeVolume(int)));
+    connect(d->volumeSlider, &QAbstractSlider::sliderMoved, this, &MediaPlayerControls::changeVolume);
 
     d->rateBox = new QComboBox(this);
     d->rateBox->addItem("0.5x", QVariant(0.5));

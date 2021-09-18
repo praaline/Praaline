@@ -118,7 +118,7 @@ ConcordancerWidget::ConcordancerWidget(QWidget *parent) :
     ui->gridLayoutResults->addWidget(d->innerwindowResults);
 
     setupActions();
-    connect(ui->commandSearchOccurrences, SIGNAL(clicked()), this, SLOT(searchOccurrences()));
+    connect(ui->commandSearchOccurrences, &QAbstractButton::clicked, this, &ConcordancerWidget::searchOccurrences);
 
     // Corpora manager
     QList<QObject *> list;
@@ -127,7 +127,7 @@ ConcordancerWidget::ConcordancerWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &ConcordancerWidget::activeCorpusRepositoryChanged);
 
 }
 
@@ -146,13 +146,13 @@ void ConcordancerWidget::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionDefinitionOpen = new QAction(QIcon(":/icons/actions/action_open.png"), tr("Open Query Definition"), this);
-    connect(d->actionDefinitionOpen, SIGNAL(triggered()), SLOT(definitionOpen()));
+    connect(d->actionDefinitionOpen, &QAction::triggered, this, &ConcordancerWidget::definitionOpen);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.DefinitionOpen", d->actionDefinitionOpen, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionDefinitionOpen);
 
     d->actionDefinitionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Query Definition"), this);
-    connect(d->actionDefinitionSave, SIGNAL(triggered()), SLOT(definitionSave()));
+    connect(d->actionDefinitionSave, &QAction::triggered, this, &ConcordancerWidget::definitionSave);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.DefinitionSave", d->actionDefinitionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionDefinitionSave);
@@ -160,13 +160,13 @@ void ConcordancerWidget::setupActions()
     // METADATA FILTER TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionMetadataFilterAdd = new QAction(QIcon(":/icons/actions/list_add.png"), tr("Add Filter"), this);
-    connect(d->actionMetadataFilterAdd, SIGNAL(triggered()), SLOT(metadataFilterAdd()));
+    connect(d->actionMetadataFilterAdd, &QAction::triggered, this, &ConcordancerWidget::metadataFilterAdd);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.MetadataFilterAdd", d->actionMetadataFilterAdd, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataFilters->addAction(d->actionMetadataFilterAdd);
 
     d->actionMetadataFilterRemove = new QAction(QIcon(":/icons/actions/list_remove.png"), tr("Remove Filter"), this);
-    connect(d->actionMetadataFilterRemove, SIGNAL(triggered()), SLOT(metadataFilterRemove()));
+    connect(d->actionMetadataFilterRemove, &QAction::triggered, this, &ConcordancerWidget::metadataFilterRemove);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.MetadataFilterRemove", d->actionMetadataFilterRemove, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMetadataFilters->addAction(d->actionMetadataFilterRemove);
@@ -174,25 +174,25 @@ void ConcordancerWidget::setupActions()
     // QUERY TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionQueryAddFilterGroup = new QAction(QIcon(":/icons/actions/list_add.png"), tr("Group"), this);
-    connect(d->actionQueryAddFilterGroup, SIGNAL(triggered()), SLOT(queryAddFilterGroup()));
+    connect(d->actionQueryAddFilterGroup, &QAction::triggered, this, &ConcordancerWidget::queryAddFilterGroup);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.QueryAddFilterGroup", d->actionQueryAddFilterGroup, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarQueryDefinition->addAction(d->actionQueryAddFilterGroup);
 
     d->actionQueryAddFilterSequence = new QAction(QIcon(":/icons/actions/list_add.png"), tr("Level"), this);
-    connect(d->actionQueryAddFilterSequence, SIGNAL(triggered()), SLOT(queryAddFilterSequence()));
+    connect(d->actionQueryAddFilterSequence, &QAction::triggered, this, &ConcordancerWidget::queryAddFilterSequence);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.QueryAddFilterSequence", d->actionQueryAddFilterSequence, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarQueryDefinition->addAction(d->actionQueryAddFilterSequence);
 
     d->actionQueryAddFilterAttribute = new QAction(QIcon(":/icons/actions/list_add.png"), tr("Attribute"), this);
-    connect(d->actionQueryAddFilterAttribute, SIGNAL(triggered()), SLOT(queryAddFilterAttribute()));
+    connect(d->actionQueryAddFilterAttribute, &QAction::triggered, this, &ConcordancerWidget::queryAddFilterAttribute);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.QueryAddFilterAttribute", d->actionQueryAddFilterAttribute, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarQueryDefinition->addAction(d->actionQueryAddFilterAttribute);
 
     d->actionQueryRemove = new QAction(QIcon(":/icons/actions/list_remove.png"), tr("Remove"), this);
-    connect(d->actionQueryRemove, SIGNAL(triggered()), SLOT(queryRemove()));
+    connect(d->actionQueryRemove, &QAction::triggered, this, &ConcordancerWidget::queryRemove);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.QueryRemove", d->actionQueryRemove, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarQueryDefinition->addAction(d->actionQueryRemove);
@@ -200,13 +200,13 @@ void ConcordancerWidget::setupActions()
     // LEVELS-ATTRIBUTES TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionLevelAttributeAdd = new QAction(QIcon(":/icons/actions/list_add.png"), tr("Add"), this);
-    connect(d->actionLevelAttributeAdd, SIGNAL(triggered()), SLOT(displayLevelsAttributesAdd()));
+    connect(d->actionLevelAttributeAdd, &QAction::triggered, this, &ConcordancerWidget::displayLevelsAttributesAdd);
     command = ACTION_MANAGER->registerAction("Query.C5oncordancer.LevelsAttributesAdd", d->actionLevelAttributeAdd, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionLevelAttributeAdd);
 
     d->actionLevelAttributeRemove = new QAction(QIcon(":/icons/actions/list_remove.png"), tr("Remove"), this);
-    connect(d->actionLevelAttributeRemove, SIGNAL(triggered()), SLOT(displayLevelsAttributesRemove()));
+    connect(d->actionLevelAttributeRemove, &QAction::triggered, this, &ConcordancerWidget::displayLevelsAttributesRemove);
     command = ACTION_MANAGER->registerAction("Query.Concordancer.LevelsAttributesRemove", d->actionLevelAttributeRemove, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionLevelAttributeRemove);
@@ -214,7 +214,7 @@ void ConcordancerWidget::setupActions()
     // RESULTS TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionResultsExport = new QAction(QIcon(":/icons/actions/export.png"), tr("Export"), this);
-    connect(d->actionResultsExport, SIGNAL(triggered()), SLOT(resultsExport()));
+    connect(d->actionResultsExport, &QAction::triggered, this, &ConcordancerWidget::resultsExport);
     command = ACTION_MANAGER->registerAction("Query.C5oncordancer.ResultsExport", d->actionResultsExport, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarResults->addAction(d->actionResultsExport);

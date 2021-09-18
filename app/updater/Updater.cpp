@@ -43,10 +43,10 @@ Updater::Updater()
     setUserAgentString (QString ("%1/%2 (Qt; QSimpleUpdater)").arg (qApp->applicationName(),
                                                                     qApp->applicationVersion()));
 
-    connect (m_downloader, SIGNAL (downloadFinished (QString, QString)),
-             this,         SIGNAL (downloadFinished (QString, QString)));
-    connect (m_manager,    SIGNAL (finished (QNetworkReply*)),
-             this,           SLOT (onReply  (QNetworkReply*)));
+    connect (m_downloader, &Downloader::downloadFinished,
+             this,         &Updater::downloadFinished);
+    connect (m_manager,    &QNetworkAccessManager::finished,
+             this,           &Updater::onReply);
 }
 
 Updater::~Updater()
@@ -386,7 +386,7 @@ void Updater::setUpdateAvailable (const bool available)
         QString text = tr ("Would you like to download the update now?");
         QString title = "<h3>"
                 + tr ("Version %1 of %2 has been released!")
-                .arg (latestVersion()).arg (moduleName())
+                .arg (latestVersion(), moduleName())
                 + "</h3>";
 
         box.setText (title);

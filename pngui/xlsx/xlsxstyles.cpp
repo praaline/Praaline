@@ -105,10 +105,10 @@ void Styles::fixNumFmt(const Format &format)
         m_builtinNumFmtsHash.insert(QStringLiteral("0.00"), 2);
         m_builtinNumFmtsHash.insert(QStringLiteral("#,##0"), 3);
         m_builtinNumFmtsHash.insert(QStringLiteral("#,##0.00"), 4);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0_);($#,##0)"), 5);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0_);[Red]($#,##0)"), 6);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0.00_);($#,##0.00)"), 7);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0.00_);[Red]($#,##0.00)"), 8);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0_);($#,##0)"), 5);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0_);[Red]($#,##0)"), 6);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0.00_);($#,##0.00)"), 7);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("($#,##0.00_);[Red]($#,##0.00)"), 8);
         m_builtinNumFmtsHash.insert(QStringLiteral("0%"), 9);
         m_builtinNumFmtsHash.insert(QStringLiteral("0.00%"), 10);
         m_builtinNumFmtsHash.insert(QStringLiteral("0.00E+00"), 11);
@@ -128,10 +128,10 @@ void Styles::fixNumFmt(const Format &format)
         m_builtinNumFmtsHash.insert(QStringLiteral("(#,##0_);[Red](#,##0)"), 38);
         m_builtinNumFmtsHash.insert(QStringLiteral("(#,##0.00_);(#,##0.00)"), 39);
         m_builtinNumFmtsHash.insert(QStringLiteral("(#,##0.00_);[Red](#,##0.00)"), 40);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("_(* #,##0_);_(* (#,##0);_(* \"-\"_);_(_)"), 41);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("_($* #,##0_);_($* (#,##0);_($* \"-\"_);_(_)"), 42);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("_(* #,##0.00_);_(* (#,##0.00);_(* \"-\"??_);_(_)"), 43);
-//            m_builtinNumFmtsHash.insert(QStringLiteral("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(_)"), 44);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("_(* #,##0_);_(* (#,##0);_(* \"-\"_);_(_)"), 41);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("_($* #,##0_);_($* (#,##0);_($* \"-\"_);_(_)"), 42);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("_(* #,##0.00_);_(* (#,##0.00);_(* \"-\"??_);_(_)"), 43);
+        //            m_builtinNumFmtsHash.insert(QStringLiteral("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(_)"), 44);
         m_builtinNumFmtsHash.insert(QStringLiteral("mm:ss"), 45);
         m_builtinNumFmtsHash.insert(QStringLiteral("[h]:mm:ss"), 46);
         m_builtinNumFmtsHash.insert(QStringLiteral("mm:ss.0"), 47);
@@ -528,8 +528,8 @@ void Styles::writeBorder(QXmlStreamWriter &writer, const Format &border, bool is
         writeSubBorder(writer, QStringLiteral("diagonal"), border.diagonalBorderStyle(), border.property(FormatPrivate::P_Border_DiagonalColor).value<XlsxColor>());
 
     if (isDxf) {
-//        writeSubBorder(wirter, QStringLiteral("vertical"), );
-//        writeSubBorder(writer, QStringLiteral("horizontal"), );
+        //        writeSubBorder(wirter, QStringLiteral("vertical"), );
+        //        writeSubBorder(writer, QStringLiteral("horizontal"), );
     }
 
     writer.writeEndElement();//border
@@ -711,7 +711,7 @@ bool Styles::readNumFmts(QXmlStreamReader &reader)
 
     //Read utill we find the numFmts end tag or ....
     while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
-           && reader.name() == QLatin1String("numFmts"))) {
+                                && reader.name() == QLatin1String("numFmts"))) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("numFmt")) {
@@ -743,7 +743,7 @@ bool Styles::readFonts(QXmlStreamReader &reader)
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
-                               && reader.name() == QLatin1String("fonts"))) {
+                                && reader.name() == QLatin1String("fonts"))) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("font")) {
@@ -768,7 +768,7 @@ bool Styles::readFont(QXmlStreamReader &reader, Format &format)
 {
     Q_ASSERT(reader.name() == QLatin1String("font"));
     while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
-                               && reader.name() == QLatin1String("font"))) {
+                                && reader.name() == QLatin1String("font"))) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             QXmlStreamAttributes attributes = reader.attributes();
@@ -831,7 +831,7 @@ bool Styles::readFills(QXmlStreamReader &reader)
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
-                               && reader.name() == QLatin1String("fills"))) {
+                                && reader.name() == QLatin1String("fills"))) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("fill")) {
@@ -925,7 +925,7 @@ bool Styles::readBorders(QXmlStreamReader &reader)
     bool hasCount = attributes.hasAttribute(QLatin1String("count"));
     int count = hasCount ? attributes.value(QLatin1String("count")).toString().toInt() : -1;
     while (!reader.atEnd() && !(reader.tokenType() == QXmlStreamReader::EndElement
-                               && reader.name() == QLatin1String("borders"))) {
+                                && reader.name() == QLatin1String("borders"))) {
         reader.readNextStartElement();
         if (reader.tokenType() == QXmlStreamReader::StartElement) {
             if (reader.name() == QLatin1String("border")) {
@@ -1308,22 +1308,22 @@ bool Styles::loadFromXmlFile(QIODevice *device)
 QColor Styles::getColorByIndex(int idx)
 {
     if (m_indexedColors.isEmpty()) {
-        m_indexedColors<<QColor("#000000") <<QColor("#FFFFFF") <<QColor("#FF0000") <<QColor("#00FF00")
-                      <<QColor("#0000FF") <<QColor("#FFFF00") <<QColor("#FF00FF") <<QColor("#00FFFF")
-                     <<QColor("#000000") <<QColor("#FFFFFF") <<QColor("#FF0000") <<QColor("#00FF00")
-                    <<QColor("#0000FF") <<QColor("#FFFF00") <<QColor("#FF00FF") <<QColor("#00FFFF")
-                   <<QColor("#800000") <<QColor("#008000") <<QColor("#000080") <<QColor("#808000")
-                  <<QColor("#800080") <<QColor("#008080") <<QColor("#C0C0C0") <<QColor("#808080")
-                 <<QColor("#9999FF") <<QColor("#993366") <<QColor("#FFFFCC") <<QColor("#CCFFFF")
-                <<QColor("#660066") <<QColor("#FF8080") <<QColor("#0066CC") <<QColor("#CCCCFF")
-               <<QColor("#000080") <<QColor("#FF00FF") <<QColor("#FFFF00") <<QColor("#00FFFF")
-              <<QColor("#800080") <<QColor("#800000") <<QColor("#008080") <<QColor("#0000FF")
-             <<QColor("#00CCFF") <<QColor("#CCFFFF") <<QColor("#CCFFCC") <<QColor("#FFFF99")
-            <<QColor("#99CCFF") <<QColor("#FF99CC") <<QColor("#CC99FF") <<QColor("#FFCC99")
-           <<QColor("#3366FF") <<QColor("#33CCCC") <<QColor("#99CC00") <<QColor("#FFCC00")
-          <<QColor("#FF9900") <<QColor("#FF6600") <<QColor("#666699") <<QColor("#969696")
-         <<QColor("#003366") <<QColor("#339966") <<QColor("#003300") <<QColor("#333300")
-        <<QColor("#993300") <<QColor("#993366") <<QColor("#333399") <<QColor("#333333");
+        m_indexedColors << QColor(0x00, 0x00, 0x00) << QColor(0xFF, 0xFF, 0xFF) << QColor(0xFF, 0x00, 0x00) << QColor(0x00, 0xFF, 0x00)
+                        << QColor(0x00, 0x00, 0xFF) << QColor(0xFF, 0xFF, 0x00) << QColor(0xFF, 0x00, 0xFF) << QColor(0x00, 0xFF, 0xFF)
+                        << QColor(0x00, 0x00, 0x00) << QColor(0xFF, 0xFF, 0xFF) << QColor(0xFF, 0x00, 0x00) << QColor(0x00, 0xFF, 0x00)
+                        << QColor(0x00, 0x00, 0xFF) << QColor(0xFF, 0xFF, 0x00) << QColor(0xFF, 0x00, 0xFF) << QColor(0x00, 0xFF, 0xFF)
+                        << QColor(0x80, 0x00, 0x00) << QColor(0x00, 0x80, 0x00) << QColor(0x00, 0x00, 0x80) << QColor(0x80, 0x80, 0x00)
+                        << QColor(0x80, 0x00, 0x80) << QColor(0x00, 0x80, 0x80) << QColor(0xC0, 0xC0, 0xC0) << QColor(0x80, 0x80, 0x80)
+                        << QColor(0x99, 0x99, 0xFF) << QColor(0x99, 0x33, 0x66) << QColor(0xFF, 0xFF, 0xCC) << QColor(0xCC, 0xFF, 0xFF)
+                        << QColor(0x66, 0x00, 0x66) << QColor(0xFF, 0x80, 0x80) << QColor(0x00, 0x66, 0xCC) << QColor(0xCC, 0xCC, 0xFF)
+                        << QColor(0x00, 0x00, 0x80) << QColor(0xFF, 0x00, 0xFF) << QColor(0xFF, 0xFF, 0x00) << QColor(0x00, 0xFF, 0xFF)
+                        << QColor(0x80, 0x00, 0x80) << QColor(0x80, 0x00, 0x00) << QColor(0x00, 0x80, 0x80) << QColor(0x00, 0x00, 0xFF)
+                        << QColor(0x00, 0xCC, 0xFF) << QColor(0xCC, 0xFF, 0xFF) << QColor(0xCC, 0xFF, 0xCC) << QColor(0xFF, 0xFF, 0x99)
+                        << QColor(0x99, 0xCC, 0xFF) << QColor(0xFF, 0x99, 0xCC) << QColor(0xCC, 0x99, 0xFF) << QColor(0xFF, 0xCC, 0x99)
+                        << QColor(0x33, 0x66, 0xFF) << QColor(0x33, 0xCC, 0xCC) << QColor(0x99, 0xCC, 0x00) << QColor(0xFF, 0xCC, 0x00)
+                        << QColor(0xFF, 0x99, 0x00) << QColor(0xFF, 0x66, 0x00) << QColor(0x66, 0x66, 0x99) << QColor(0x96, 0x96, 0x96)
+                        << QColor(0x00, 0x33, 0x66) << QColor(0x33, 0x99, 0x66) << QColor(0x00, 0x33, 0x00) << QColor(0x33, 0x33, 0x00)
+                        << QColor(0x99, 0x33, 0x00) << QColor(0x99, 0x33, 0x66) << QColor(0x33, 0x33, 0x99) << QColor(0x33, 0x33, 0x33);
         m_isIndexedColorsDefault = true;
     }
     if (idx < 0 || idx >= m_indexedColors.size())

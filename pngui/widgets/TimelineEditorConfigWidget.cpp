@@ -145,19 +145,19 @@ void TimelineEditorConfigWidget::setupActions()
     d->toolbarLevelsAttributes->addAction(d->actionAddLevelAttribute);
 
     d->actionRemoveLevelAttribute = new QAction(QIcon(":/icons/actions/list_remove.png"), "Remove", this);
-    connect(d->actionRemoveLevelAttribute, SIGNAL(triggered()), this, SLOT(removeLevelAttribute()));
+    connect(d->actionRemoveLevelAttribute, &QAction::triggered, this, &TimelineEditorConfigWidget::removeLevelAttribute);
     command = ACTION_MANAGER->registerAction("Annotation.VerticalTimelineEditor.RemoveLevelAttribute", d->actionRemoveLevelAttribute, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionRemoveLevelAttribute);
 
     d->actionUpdateEditor = new QAction(QIcon(":/icons/actions/view_refresh.png"), "Update editor", this);
-    connect(d->actionUpdateEditor, SIGNAL(triggered()), this, SLOT(updateEditor()));
+    connect(d->actionUpdateEditor, &QAction::triggered, this, &TimelineEditorConfigWidget::updateEditor);
     command = ACTION_MANAGER->registerAction("Annotation.VerticalTimelineEditor.UpdateEditor", d->actionUpdateEditor, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionUpdateEditor);
 
     d->actionSaveConfiguration = new QAction(QIcon(":/icons/actions/action_save.png"), "Save config", this);
-    connect(d->actionSaveConfiguration, SIGNAL(triggered()), this, SLOT(saveConfiguration()));
+    connect(d->actionSaveConfiguration, &QAction::triggered, this, &TimelineEditorConfigWidget::saveConfiguration);
     command = ACTION_MANAGER->registerAction("Annotation.VerticalTimelineEditor.SaveConfig", d->actionSaveConfiguration, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarLevelsAttributes->addAction(d->actionSaveConfiguration);
@@ -232,7 +232,7 @@ void TimelineEditorConfigWidget::saveConfiguration()
 void TimelineEditorConfigWidget::updateSpeakerList(QStringList speakerIDs) {
     // Speakers list
     if (d->modelSpeakers) {
-        disconnect(d->modelSpeakers, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(speakerSelectionChanged(QStandardItem*)));
+        disconnect(d->modelSpeakers, &QStandardItemModel::itemChanged, this, &TimelineEditorConfigWidget::speakerSelectionChanged);
         delete d->modelSpeakers;
     }
     d->modelSpeakers = new QStandardItemModel;
@@ -247,7 +247,7 @@ void TimelineEditorConfigWidget::updateSpeakerList(QStringList speakerIDs) {
     }
     d->modelSpeakers->setVerticalHeaderLabels(QStringList() << "Speaker ID");
     d->treeviewSpeakers->setModel(d->modelSpeakers);
-    connect(d->modelSpeakers, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(speakerSelectionChanged(QStandardItem*)));
+    connect(d->modelSpeakers, &QStandardItemModel::itemChanged, this, &TimelineEditorConfigWidget::speakerSelectionChanged);
 }
 
 void TimelineEditorConfigWidget::speakerSelectionChanged(QStandardItem *item)

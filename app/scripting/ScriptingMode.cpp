@@ -32,7 +32,7 @@ ScriptingMode::ScriptingMode(QObject *parent) :
     }
 
     if (!d->widget) d->widget = new ScriptingModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &ScriptingModeWidget::activateMode, this, &ScriptingMode::activateMode);
 }
 
 ScriptingMode::~ScriptingMode()

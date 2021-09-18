@@ -1,3 +1,5 @@
+#include <QComboBox>
+
 #include "CreateSequenceAnnotationDialog.h"
 #include "ui_CreateSequenceAnnotationDialog.h"
 
@@ -34,11 +36,12 @@ CreateSequenceAnnotationDialog::CreateSequenceAnnotationDialog(QWidget *parent) 
     if (!d->corpusRepositoriesManager) return;
     // Repository combobox
     ui->comboBoxRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
+    connect(ui->comboBoxRepository, &QComboBox::currentTextChanged, this, &CreateSequenceAnnotationDialog::corpusRepositoryChanged);
     // Annotation level combo-boxes
-    connect(ui->comboBoxAnnotationLevelBase, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelBaseChanged(int)));
+    connect(ui->comboBoxAnnotationLevelBase, qOverload<int>(&QComboBox::currentIndexChanged),
+            this, &CreateSequenceAnnotationDialog::annotationLevelBaseChanged);
     // Apply button
-    connect(ui->commandCreateSequences, SIGNAL(clicked(bool)), this, SLOT(createSequences()));
+    connect(ui->commandCreateSequences, &QAbstractButton::clicked, this, &CreateSequenceAnnotationDialog::createSequences);
     // Initialize
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
 }
@@ -135,5 +138,4 @@ void CreateSequenceAnnotationDialog::createSequences()
         ui->progressBar->setValue(i);
     }
 }
-
 

@@ -69,14 +69,14 @@ ImportCorpusItemsWizardAnalysePage::ImportCorpusItemsWizardAnalysePage(
     m_modelAnnotations(0), m_stop(false)
 {
     ui->setupUi(this);
-    connect(ui->commandStopFiles, SIGNAL(clicked()), this, SLOT(stopProcess()));
+    connect(ui->commandStopFiles, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardAnalysePage::stopProcess);
     setTitle(tr("Analysing annotation files"));
     setSubTitle(tr("Please wait while your annotation files are being analysed."));
     ui->progressBarFiles->setValue(0);
     ui->tableviewAnnotations->verticalHeader()->setDefaultSectionSize(20);
 
-    connect(ui->commandUpdateSpeakerID, SIGNAL(clicked(bool)), this, SLOT(updateSpeakerIDTier()));
-    connect(ui->commandCopyTable, SIGNAL(clicked()), this, SLOT(copyAnalysisTable()));
+    connect(ui->commandUpdateSpeakerID, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardAnalysePage::updateSpeakerIDTier);
+    connect(ui->commandCopyTable, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardAnalysePage::copyAnalysisTable);
 }
 
 ImportCorpusItemsWizardAnalysePage::~ImportCorpusItemsWizardAnalysePage()

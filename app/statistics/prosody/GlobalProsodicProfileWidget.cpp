@@ -55,7 +55,7 @@ GlobalProsodicProfileWidget::GlobalProsodicProfileWidget(CorpusRepository *repos
         ++i;
     }
     // Command Analyse
-    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
+    connect(ui->commandAnalyse, &QAbstractButton::clicked, this, &GlobalProsodicProfileWidget::analyse);
     // Results grid view
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
@@ -187,7 +187,7 @@ void GlobalProsodicProfileWidget::analyse()
                     // Read prosogram global profile
                     QFileInfo info(rec->filePath());
                     QString prosoPath = info.absoluteDir().absolutePath() + "/prosogram/";
-                    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(info.baseName()).arg(speakerID);
+                    QString filenameGlobalsheet = QString("%1_%2_globalsheet.txt").arg(info.baseName(), speakerID);
                     AnnotationDataTable table;
                     if (!(table.readFromFile(prosoPath + filenameGlobalsheet))) {
                         qDebug() << "Error reading: " << filenameGlobalsheet;

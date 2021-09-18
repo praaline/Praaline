@@ -75,21 +75,21 @@ CompareAnnotationsWidget::CompareAnnotationsWidget(QWidget *parent) :
         if (manager) d->corpusRepositoriesManager = manager;
     }
     // Repository
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryAdded, this, &CompareAnnotationsWidget::corpusRepositoryAdded);
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryRemoved, this, &CompareAnnotationsWidget::corpusRepositoryRemoved);
     // Compare Corpora
-    connect(ui->comboBoxCCRepositoryLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(ccRepositoryLeftChanged(QString)));
-    connect(ui->comboBoxCCRepositoryRight, SIGNAL(currentTextChanged(QString)), this, SLOT(ccRepositoryRightChanged(QString)));
+    connect(ui->comboBoxCCRepositoryLeft, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::ccRepositoryLeftChanged);
+    connect(ui->comboBoxCCRepositoryRight, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::ccRepositoryRightChanged);
     // Compare Annotations
-    connect(ui->comboBoxCARepositoryLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caRepositoryLeftChanged(QString)));
-    connect(ui->comboBoxCARepositoryRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caRepositoryRightChanged(QString)));
-    connect(ui->comboBoxLevelLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caLevelLeftChanged(QString)));
-    connect(ui->comboBoxLevelRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caLevelRightChanged(QString)));
-    connect(ui->comboBoxAnnotationLeft, SIGNAL(currentTextChanged(QString)), this, SLOT(caAnnotationLeftChanged(QString)));
-    connect(ui->comboBoxAnnotationRight, SIGNAL(currentTextChanged(QString)), this, SLOT(caAnnotationRightChanged(QString)));
+    connect(ui->comboBoxCARepositoryLeft, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caRepositoryLeftChanged);
+    connect(ui->comboBoxCARepositoryRight, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caRepositoryRightChanged);
+    connect(ui->comboBoxLevelLeft, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caLevelLeftChanged);
+    connect(ui->comboBoxLevelRight, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caLevelRightChanged);
+    connect(ui->comboBoxAnnotationLeft, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caAnnotationLeftChanged);
+    connect(ui->comboBoxAnnotationRight, &QComboBox::currentTextChanged, this, &CompareAnnotationsWidget::caAnnotationRightChanged);
     // Compare commands
-    connect(ui->commandCompareCorpora, SIGNAL(clicked()), this, SLOT(compareCorpora()));
-    connect(ui->commandCompareAnnotations, SIGNAL(clicked()), this, SLOT(compareAnnotations()));
+    connect(ui->commandCompareCorpora, &QAbstractButton::clicked, this, &CompareAnnotationsWidget::compareCorpora);
+    connect(ui->commandCompareAnnotations, &QAbstractButton::clicked, this, &CompareAnnotationsWidget::compareAnnotations);
 }
 
 CompareAnnotationsWidget::~CompareAnnotationsWidget()
@@ -105,7 +105,7 @@ void CompareAnnotationsWidget::setupActions()
     Command* command;
 
     d->actionExport = new QAction(QIcon(":/icons/actions/action_export.png"), tr("Export"), this);
-    connect(d->actionExport, SIGNAL(triggered()), SLOT(exportResults()));
+    connect(d->actionExport, &QAction::triggered, this, &CompareAnnotationsWidget::exportResults);
     command = ACTION_MANAGER->registerAction("Annotation.CompareAnnotations.Export", d->actionExport, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionExport);

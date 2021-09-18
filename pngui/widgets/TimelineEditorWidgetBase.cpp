@@ -31,12 +31,12 @@ TimelineEditorWidgetBase::TimelineEditorWidgetBase(QWidget *parent)
     m_view->tableView()->verticalHeader()->setDefaultSectionSize(20);
     m_view->tableView()->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive); // StretchLastSection(true);
     // Connect signals
-    connect(m_view->tableView()->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
-            this, SLOT(resultChanged(int,int)));
-    connect(m_view->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-            this, SLOT(selectionChanged(QItemSelection,QItemSelection)));
-    connect(m_view->tableView()->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)),
-            this, SLOT(currentChanged(QModelIndex,QModelIndex)));
+    connect(m_view->tableView()->filterProxyModel(), &QAbstractFilterProxyModel::resultCountChanged,
+            this, &TimelineEditorWidgetBase::resultChanged);
+    connect(m_view->tableView()->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &TimelineEditorWidgetBase::selectionChanged);
+    connect(m_view->tableView()->selectionModel(), &QItemSelectionModel::currentChanged,
+            this, &TimelineEditorWidgetBase::currentChanged);
     m_view->tableView()->horizontalHeader()->setSectionsClickable(true);
     m_view->tableView()->setDefaultFilterType(0, QTextFilter::Type);
 }

@@ -54,7 +54,7 @@ ImportMetadataWizard::ImportMetadataWizard(const QString &filename, QWidget *par
 
     d->repositoryID = d->corpusRepositoriesManager->activeCorpusRepositoryID();
     ui->comboBoxCorpusRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxCorpusRepository, SIGNAL(currentIndexChanged(QString)), this, SLOT(corpusRepositoryChanged()));
+    connect(ui->comboBoxCorpusRepository, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::corpusRepositoryChanged);
 
     ui->tableViewPreviewIntro->verticalHeader()->setDefaultSectionSize(20);
     ui->tableViewPreviewIntro->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -96,20 +96,20 @@ ImportMetadataWizard::ImportMetadataWizard(const QString &filename, QWidget *par
     // Create initial attribute/column correspondance list (for Communications objects)
     corpusRepositoryChanged(); // will call objectTypeChanged as well
     // Signals and slots
-    connect(ui->optionCommunications, SIGNAL(toggled(bool)), this, SLOT(objectTypeChanged()));
-    connect(ui->optionSpeakers, SIGNAL(toggled(bool)), this, SLOT(objectTypeChanged()));
-    connect(ui->optionRecordings, SIGNAL(toggled(bool)), this, SLOT(objectTypeChanged()));
-    connect(ui->optionAnnotations, SIGNAL(toggled(bool)), this, SLOT(objectTypeChanged()));
-    connect(ui->optionParticipations, SIGNAL(toggled(bool)), this, SLOT(objectTypeChanged()));
-    connect(ui->comboDelimiter, SIGNAL(currentIndexChanged(int)), this, SLOT(fileParametersChanged()));
-    connect(ui->comboTextQualifier, SIGNAL(currentIndexChanged(int)), this, SLOT(fileParametersChanged()));
-    connect(ui->comboEncoding, SIGNAL(currentIndexChanged(int)), this, SLOT(fileParametersChanged()));
-    connect(ui->checkHeaderLine, SIGNAL(stateChanged(int)), this, SLOT(fileParametersChanged()));
-    connect(ui->comboAttribute, SIGNAL(currentIndexChanged(int)), this, SLOT(correspondanceChanged()));
-    connect(ui->optionFormatText, SIGNAL(toggled(bool)), this, SLOT(correspondanceChanged()));
-    connect(ui->optionFormatNumber, SIGNAL(toggled(bool)), this, SLOT(correspondanceChanged()));
-    connect(ui->optionFormatDate, SIGNAL(toggled(bool)), this, SLOT(correspondanceChanged()));
-    connect(ui->comboDateFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(correspondanceChanged()));
+    connect(ui->optionCommunications, &QAbstractButton::toggled, this, &ImportMetadataWizard::objectTypeChanged);
+    connect(ui->optionSpeakers, &QAbstractButton::toggled, this, &ImportMetadataWizard::objectTypeChanged);
+    connect(ui->optionRecordings, &QAbstractButton::toggled, this, &ImportMetadataWizard::objectTypeChanged);
+    connect(ui->optionAnnotations, &QAbstractButton::toggled, this, &ImportMetadataWizard::objectTypeChanged);
+    connect(ui->optionParticipations, &QAbstractButton::toggled, this, &ImportMetadataWizard::objectTypeChanged);
+    connect(ui->comboDelimiter, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::fileParametersChanged);
+    connect(ui->comboTextQualifier, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::fileParametersChanged);
+    connect(ui->comboEncoding, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::fileParametersChanged);
+    connect(ui->checkHeaderLine, &QCheckBox::stateChanged, this, &ImportMetadataWizard::fileParametersChanged);
+    connect(ui->comboAttribute, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::correspondanceChanged);
+    connect(ui->optionFormatText, &QAbstractButton::toggled, this, &ImportMetadataWizard::correspondanceChanged);
+    connect(ui->optionFormatNumber, &QAbstractButton::toggled, this, &ImportMetadataWizard::correspondanceChanged);
+    connect(ui->optionFormatDate, &QAbstractButton::toggled, this, &ImportMetadataWizard::correspondanceChanged);
+    connect(ui->comboDateFormat, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportMetadataWizard::correspondanceChanged);
     // Read file for preview
     readFile();
 }
@@ -347,8 +347,8 @@ void ImportMetadataWizard::preparePreview()
     // link model to two preview table views
     ui->tableViewPreviewIntro->setModel(d->previewModel);
     ui->tableViewPreviewColumns->setModel(d->previewModel);
-    connect(ui->tableViewPreviewColumns->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-            this, SLOT(previewSelectionChanged(QItemSelection,QItemSelection)));
+    connect(ui->tableViewPreviewColumns->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &ImportMetadataWizard::previewSelectionChanged);
     // next step
     guessCorrespondances();
 }

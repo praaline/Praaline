@@ -312,7 +312,7 @@ void QConditionalDecorationDialog::removePushButtonClicked()
 
 QComboBox* QConditionalDecorationDialog::iconSetComboBox(const QString & name)
 {
-    if (!cIconSets.keys().contains(name)){
+    if (!cIconSets.contains(name)) { // searches for name in the keys
         return 0;
     }
     QComboBox* cb = new QComboBox(this);
@@ -387,8 +387,8 @@ SelectValueDialog::SelectValueDialog(QAbstractItemModel* model, int column, QWid
     QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, this);
     layout->addWidget(buttonBox);
 
-    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 int SelectValueDialog::selectedColumn() const
@@ -436,7 +436,7 @@ ValueEdit::ValueEdit(QAbstractItemModel* model, int column, QWidget *parent) :
     QPushButton* mButton = new QPushButton(this);
     mButton->setFlat(true);
     mButton->setIcon(QIcon(":/qaiv/dialog/table.select"));
-    connect(mButton, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+    connect(mButton, &QAbstractButton::clicked, this, &ValueEdit::buttonClicked);
 
     mLayout->addWidget(m_edit);
     mLayout->addWidget(mButton);

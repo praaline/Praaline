@@ -244,17 +244,17 @@ QFixedRowsTableView::QFixedRowsTableView(QWidget *parent) :
     d->filterProxy = new QFixedRowsFilterProxyModel(this);
     d->decorationProxy = new QFixedRowsDecorationProxyModel(d->filterProxy, this);
 
-    connect(verticalHeader(), SIGNAL(sectionClicked(int)), this, SLOT(verticalHeaderSectionClicked(int)));
+    connect(verticalHeader(), &QHeaderView::sectionClicked, this, &QFixedRowsTableView::verticalHeaderSectionClicked);
 
     verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
     QTableView::setModel(d->filterProxy);
 
-    connect(d->filterProxy, SIGNAL(layoutChanged()), this, SLOT(updateHeight()));
-    connect(d->filterProxy, SIGNAL(modelReset()), this, SLOT(updateHeight()));
-    connect(d->filterProxy, SIGNAL(rowsInserted(QModelIndex,int,int)), this, SLOT(updateHeight()));
-    connect(d->filterProxy, SIGNAL(rowsRemoved(QModelIndex,int,int)), this, SLOT(updateHeight()));
+    connect(d->filterProxy, &QAbstractItemModel::layoutChanged, this, &QFixedRowsTableView::updateHeight);
+    connect(d->filterProxy, &QAbstractItemModel::modelReset, this, &QFixedRowsTableView::updateHeight);
+    connect(d->filterProxy, &QAbstractItemModel::rowsInserted, this, &QFixedRowsTableView::updateHeight);
+    connect(d->filterProxy, &QAbstractItemModel::rowsRemoved, this, &QFixedRowsTableView::updateHeight);
 
-    connect(d->decorationProxy, SIGNAL(modelToggled(bool)), d->filterProxy, SLOT(setEnabled(bool)));
+    connect(d->decorationProxy, &QFixedRowsDecorationProxyModel::modelToggled, d->filterProxy, &QFixedRowsFilterProxyModel::setEnabled);
 
     updateHeight();
 }
@@ -279,7 +279,7 @@ void QFixedRowsTableView::setModel(QAbstractItemModel *model)
     d->decorationProxy->setSourceModel(model);
     d->filterProxy->setSourceModel(model);
 
-    connect(model, SIGNAL(modelReset()), d->filterProxy, SLOT(sourceModelReset()));
+    connect(model, &QAbstractItemModel::modelReset, d->filterProxy, &QFixedRowsFilterProxyModel::sourceModelReset);
     updateHeight();
 }
 

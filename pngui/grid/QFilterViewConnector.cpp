@@ -34,9 +34,9 @@ QFilterViewConnector::QFilterViewConnector(QFilterView* filterView) :
     cTableView = 0;
     cTreeView = 0;
 
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(filterViewHorizontalSectionMoved(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(filterViewHorizontalSectionResized(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(filterViewHorizontalSortIndicatorChanged(int,Qt::SortOrder)));
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionMoved, this, &QFilterViewConnector::filterViewHorizontalSectionMoved);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionResized, this, &QFilterViewConnector::filterViewHorizontalSectionResized);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &QFilterViewConnector::filterViewHorizontalSortIndicatorChanged);
 }
 
 QFilterViewConnector::QFilterViewConnector(QFilterView* filterView, QTableView* tableView, QObject* parent) :
@@ -46,9 +46,9 @@ QFilterViewConnector::QFilterViewConnector(QFilterView* filterView, QTableView* 
     cTableView = tableView;
     cTreeView = 0;
 
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(filterViewHorizontalSectionMoved(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(filterViewHorizontalSectionResized(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(filterViewHorizontalSortIndicatorChanged(int,Qt::SortOrder)));
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionMoved, this, &QFilterViewConnector::filterViewHorizontalSectionMoved);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionResized, this, &QFilterViewConnector::filterViewHorizontalSectionResized);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &QFilterViewConnector::filterViewHorizontalSortIndicatorChanged);
 
     setDataView(tableView);
 }
@@ -60,9 +60,9 @@ QFilterViewConnector::QFilterViewConnector(QFilterView* filterView, QTreeView* t
     cTableView = 0;
     cTreeView = treeView;
 
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(filterViewHorizontalSectionMoved(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(filterViewHorizontalSectionResized(int,int,int)));
-    connect(cFilterView->horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(filterViewHorizontalSortIndicatorChanged(int,Qt::SortOrder)));
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionMoved, this, &QFilterViewConnector::filterViewHorizontalSectionMoved);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sectionResized, this, &QFilterViewConnector::filterViewHorizontalSectionResized);
+    connect(cFilterView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &QFilterViewConnector::filterViewHorizontalSortIndicatorChanged);
 
     setDataView(treeView);
 }
@@ -75,14 +75,16 @@ void QFilterViewConnector::setDataView(QTableView *view)
         disconnect(cTableView->verticalHeader(), 0, this, 0);
     }
     cTableView = view;
-    connect(cTableView->horizontalHeader(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(dataViewHorizontalSectionMoved(int,int,int)));
-    connect(cTableView->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(dataViewHorizontalSectionResized(int,int,int)));
-    connect(cTableView->horizontalHeader(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(dataViewHorizontalSortIndicatorChanged(int,Qt::SortOrder)));
-    connect(cTableView->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(dataViewHorizontalScrollBarRangeChanged(int,int)));
-    connect(cTableView->horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(dataViewHorizontalScrollBarSilderMoved(int)));
+    if (cTableView) {
+        connect(cTableView->horizontalHeader(), &QHeaderView::sectionMoved, this, &QFilterViewConnector::dataViewHorizontalSectionMoved);
+        connect(cTableView->horizontalHeader(), &QHeaderView::sectionResized, this, &QFilterViewConnector::dataViewHorizontalSectionResized);
+        connect(cTableView->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &QFilterViewConnector::dataViewHorizontalSortIndicatorChanged);
+        connect(cTableView->horizontalScrollBar(), &QAbstractSlider::rangeChanged, this, &QFilterViewConnector::dataViewHorizontalScrollBarRangeChanged);
+        connect(cTableView->horizontalScrollBar(), &QAbstractSlider::sliderMoved, this, &QFilterViewConnector::dataViewHorizontalScrollBarSilderMoved);
 
-    connect(cTableView->verticalHeader(), SIGNAL(sectionCountChanged(int,int)), this, SLOT(adjustVerticalHeaderWidth()));
-    connect(cTableView->verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(dataViewVerticalScrollBarRangeChanged(int,int)));
+        connect(cTableView->verticalHeader(), &QHeaderView::sectionCountChanged, this, &QFilterViewConnector::adjustVerticalHeaderWidth);
+        connect(cTableView->verticalScrollBar(), &QAbstractSlider::rangeChanged, this, &QFilterViewConnector::dataViewVerticalScrollBarRangeChanged);
+    }
 }
 
 void QFilterViewConnector::setDataView(QTreeView *view)
@@ -91,11 +93,13 @@ void QFilterViewConnector::setDataView(QTreeView *view)
         disconnect(cTreeView->header(), 0, this, 0);
     }
     cTreeView = view;
-    connect(cTreeView->header(), SIGNAL(sectionMoved(int,int,int)), this, SLOT(dataViewHorizontalSectionMoved(int,int,int)));
-    connect(cTreeView->header(), SIGNAL(sectionResized(int,int,int)), this, SLOT(dataViewHorizontalSectionResized(int,int,int)));
-    connect(cTreeView->header(), SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(dataViewHorizontalSortIndicatorChanged(int,Qt::SortOrder)));
-    connect(cTreeView->header(), SIGNAL(rangeChanged(int,int)), this, SLOT(dataViewHorizontalScrollBarRangeChanged(int,int)));
-    connect(cTreeView->header(), SIGNAL(sliderMoved(int)), this, SLOT(dataViewHorizontalScrollBarSilderMoved(int)));
+    if (cTreeView) {
+        connect(cTreeView->header(), &QHeaderView::sectionMoved, this, &QFilterViewConnector::dataViewHorizontalSectionMoved);
+        connect(cTreeView->header(), &QHeaderView::sectionResized, this, &QFilterViewConnector::dataViewHorizontalSectionResized);
+        connect(cTreeView->header(), &QHeaderView::sortIndicatorChanged, this, &QFilterViewConnector::dataViewHorizontalSortIndicatorChanged);
+        connect(cTreeView->header(), SIGNAL(rangeChanged(int,int)), this, SLOT(dataViewHorizontalScrollBarRangeChanged(int,int)));
+        connect(cTreeView->header(), SIGNAL(sliderMoved(int)), this, SLOT(dataViewHorizontalScrollBarSilderMoved(int)));
+    }
 }
 
 void QFilterViewConnector::adjustVerticalHeaderWidth()

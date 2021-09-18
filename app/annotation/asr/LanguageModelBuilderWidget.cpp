@@ -35,10 +35,10 @@ LanguageModelBuilderWidget::LanguageModelBuilderWidget(QWidget *parent) :
     // Initialise
     d->languageModelBuilder = new SphinxLanguageModelBuilder(this);
     // Annotation Level and Attributes
-    connect(ui->comboBoxUtterancesLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(utterancesLevelChanged(QString)));
-    connect(ui->comboBoxTokensLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(tokensLevelChanged(QString)));
+    connect(ui->comboBoxUtterancesLevel, &QComboBox::currentTextChanged, this, &LanguageModelBuilderWidget::utterancesLevelChanged);
+    connect(ui->comboBoxTokensLevel, &QComboBox::currentTextChanged, this, &LanguageModelBuilderWidget::tokensLevelChanged);
     // Command
-    connect(ui->commandCreateLM, SIGNAL(clicked(bool)), this, SLOT(createLanguageModel()));
+    connect(ui->commandCreateLM, &QAbstractButton::clicked, this, &LanguageModelBuilderWidget::createLanguageModel);
 }
 
 LanguageModelBuilderWidget::~LanguageModelBuilderWidget()

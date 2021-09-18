@@ -44,16 +44,16 @@ ExportAnnotationsWizard::ExportAnnotationsWizard(QWidget *parent) :
     if (!d->corpusRepositoriesManager) this->reject();
     // Repository combobox
     ui->comboBoxRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
+    connect(ui->comboBoxRepository, &QComboBox::currentTextChanged, this, &ExportAnnotationsWizard::corpusRepositoryChanged);
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     // Export formats
     ui->comboBoxExportFormat->addItem(tr("Praat TextGrids"), Page_Praat);
     ui->comboBoxExportFormat->addItem(tr("Multi-tier timeline to Excel spreadsheet(s)"), Page_Timelines);
     ui->comboBoxExportFormat->setCurrentIndex(0);
-    connect(ui->comboBoxExportFormat, SIGNAL(currentIndexChanged(int)), this, SLOT(exportFormatChanged(int)));
+    connect(ui->comboBoxExportFormat, qOverload<int>(&QComboBox::currentIndexChanged), this, &ExportAnnotationsWizard::exportFormatChanged);
     // Select file or folder button
     ui->editFileFolder->setText(QDir::homePath());
-    connect(ui->commandSelectFileFolder, SIGNAL(clicked()), this, SLOT(selectFileFolder()));
+    connect(ui->commandSelectFileFolder, &QAbstractButton::clicked, this, &ExportAnnotationsWizard::selectFileFolder);
     // Presentation
     ui->treeViewAnnotations->setHeaderHidden(false);
     // Pages for export formats

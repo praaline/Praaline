@@ -75,7 +75,7 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoryManager = manager;
     }
-    connect(d->corpusRepositoryManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoryManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &CorpusExplorerTableWidget::activeCorpusRepositoryChanged);
     // Add grid
     d->tableView = new GridViewWidget(this);
     d->tableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -84,7 +84,7 @@ CorpusExplorerTableWidget::CorpusExplorerTableWidget(QWidget *parent) :
     // Corpus object types
     ui->comboItemType->addItems(QStringList() << tr("Communications") << tr("Speakers") << tr("Recordings") << tr("Annotations") << tr("Participations"));
     ui->comboItemType->setCurrentText(tr("Communications"));
-    connect(ui->comboItemType, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusObjectTypeChanged(QString)));
+    connect(ui->comboItemType, &QComboBox::currentTextChanged, this, &CorpusExplorerTableWidget::corpusObjectTypeChanged);
     // Menu and Toolbar actions
     d->toolbarCorpusExplorerTable = new QToolBar("Corpus Explorer Tables", this);
     d->toolbarCorpusExplorerTable->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -108,7 +108,7 @@ void CorpusExplorerTableWidget::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save"), this);
-    connect(d->actionSave, SIGNAL(triggered()), SLOT(save()));
+    connect(d->actionSave, &QAction::triggered, this, &CorpusExplorerTableWidget::save);
     command = ACTION_MANAGER->registerAction("Annotation.AnnotationBrowser.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarCorpusExplorerTable->addAction(d->actionSave);
@@ -177,10 +177,10 @@ void CorpusExplorerTableWidget::refreshModel()
         d->tableView->tableView()->setModel(newModel);
         d->tableView->tableView()->horizontalHeader()->setSectionsClickable(true);
         d->tableView->tableView()->setDefaultFilterType(0, QTextFilter::Type);
-        connect(d->tableView->tableView()->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
-                this, SLOT(resultChanged(int,int)));
-        connect(d->tableView->tableView()->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
-                this, SLOT(selectionChanged(QItemSelection,QItemSelection)));
+        connect(d->tableView->tableView()->filterProxyModel(), &QAbstractFilterProxyModel::resultCountChanged,
+                this, &CorpusExplorerTableWidget::resultChanged);
+        connect(d->tableView->tableView()->selectionModel(), &QItemSelectionModel::selectionChanged,
+                this, &CorpusExplorerTableWidget::selectionChanged);
 
         if (d->model) delete d->model;
         d->model = newModel;

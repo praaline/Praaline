@@ -162,7 +162,7 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(CorpusCommunication *co
     if (!d->corpus->repository()) return;
     if (!d->corpus->repository()->annotations()) return;
 
-    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
+    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
     SpeakerAnnotationTierGroupMap tiersAll;
     QList<CorpusSpeaker *> speakers;
@@ -193,7 +193,7 @@ void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunicati
     if (!d->corpus->repository()) return;
     if (!d->corpus->repository()->annotations()) return;
 
-    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
+    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
     SpeakerAnnotationTierGroupMap tiersAll;
     QList<CorpusSpeaker *> speakers;
@@ -252,7 +252,7 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunica
     if (!d->corpus->repository()) return;
     if (!d->corpus->repository()->annotations()) return;
 
-    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
+    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
     QPointer<IntervalTier> tierTranscription = new IntervalTier();
     bool result = SubtitlesFile::loadSRT(annot->filename(), tierTranscription);
@@ -273,7 +273,7 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunica
 void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, CorpusAnnotation *annot,
                                                    QList<TierCorrespondance> &correspondances)
 {
-    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID()).arg(annot->ID()));
+    ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
     AnnotationTierGroup *inputTiers = new AnnotationTierGroup();
 
     PraatTextGrid::load(annot->filename(), inputTiers);
@@ -361,7 +361,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, Cor
                 }
             }
             ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle,
-                                           QString("%1_%2").arg(annot->ID()).arg(speakerID), tiersSpk, correspondances);
+                                           QString("%1_%2").arg(annot->ID(), speakerID), tiersSpk, correspondances);
             delete tiersSpk;
         }
         if (shouldDeleteSpeakerTier && tierSpeaker) {

@@ -30,7 +30,7 @@ ImportDataPreviewWidget::ImportDataPreviewWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     // Select file command
-    connect(ui->commandSelectFile, SIGNAL(clicked(bool)), this, SLOT(selectFile()));
+    connect(ui->commandSelectFile, &QAbstractButton::clicked, this, &ImportDataPreviewWidget::selectFile);
     // Preview table
     ui->tableViewPreview->verticalHeader()->setDefaultSectionSize(20);
     ui->tableViewPreview->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -69,15 +69,15 @@ ImportDataPreviewWidget::ImportDataPreviewWidget(QWidget *parent) :
     ui->optionExcelHasHeader->setChecked(true);
     // Connect signals to respond to import parameter changes (update preview)
     // Text file
-    connect(ui->comboBoxTextFileDelimiter, SIGNAL(currentIndexChanged(int)), this, SLOT(importParametersChangedTextFile()));
-    connect(ui->comboBoxTextFileTextQualifier, SIGNAL(currentIndexChanged(int)), this, SLOT(importParametersChangedTextFile()));
-    connect(ui->comboBoxTextFileEncoding, SIGNAL(currentIndexChanged(int)), this, SLOT(importParametersChangedTextFile()));
-    connect(ui->optionTextFileHasHeader, SIGNAL(stateChanged(int)), this, SLOT(importParametersChangedTextFile()));
-    connect(ui->spinBoxTextFileSkipRows, SIGNAL(valueChanged(int)), this, SLOT(importParametersChangedTextFile()));
+    connect(ui->comboBoxTextFileDelimiter, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportDataPreviewWidget::importParametersChangedTextFile);
+    connect(ui->comboBoxTextFileTextQualifier, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportDataPreviewWidget::importParametersChangedTextFile);
+    connect(ui->comboBoxTextFileEncoding, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportDataPreviewWidget::importParametersChangedTextFile);
+    connect(ui->optionTextFileHasHeader, &QCheckBox::stateChanged, this, &ImportDataPreviewWidget::importParametersChangedTextFile);
+    connect(ui->spinBoxTextFileSkipRows, qOverload<int>(&QSpinBox::valueChanged), this, &ImportDataPreviewWidget::importParametersChangedTextFile);
     // Excel
-    connect(ui->comboBoxExcelSheet, SIGNAL(stateChanged(int)), this, SLOT(importParametersChangedExcel()));
-    connect(ui->optionExcelHasHeader, SIGNAL(stateChanged(int)), this, SLOT(importParametersChangedExcel()));
-    connect(ui->spinBoxExcelSkipRows, SIGNAL(valueChanged(int)), this, SLOT(importParametersChangedExcel()));
+    connect(ui->comboBoxExcelSheet, qOverload<int>(&QComboBox::currentIndexChanged), this, &ImportDataPreviewWidget::importParametersChangedExcel);
+    connect(ui->optionExcelHasHeader, &QCheckBox::stateChanged, this, &ImportDataPreviewWidget::importParametersChangedExcel);
+    connect(ui->spinBoxExcelSkipRows, qOverload<int>(&QSpinBox::valueChanged), this, &ImportDataPreviewWidget::importParametersChangedExcel);
     // Start with text file properties
     ui->stackedWidget->setCurrentIndex(0);
 }

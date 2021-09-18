@@ -38,10 +38,10 @@ ExportAnnotationsWizardTimelinePage::ExportAnnotationsWizardTimelinePage(QWidget
     ui->editFilenameTemplateAll->setText("$CorpusID.xlsx");
     ui->editFilenameTemplateEach->setText("$AnnotationID.xlsx");
     // Edit the timeline structure
-    connect(ui->buttonAdd, SIGNAL(clicked(bool)), this, SLOT(timelineStructureAdd()));
-    connect(ui->buttonDelete, SIGNAL(clicked(bool)), this, SLOT(timelineStructureDelete()));
-    connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(timelineStructureMoveUp()));
-    connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(timelineStructureMoveDown()));
+    connect(ui->buttonAdd, &QAbstractButton::clicked, this, &ExportAnnotationsWizardTimelinePage::timelineStructureAdd);
+    connect(ui->buttonDelete, &QAbstractButton::clicked, this, &ExportAnnotationsWizardTimelinePage::timelineStructureDelete);
+    connect(ui->buttonMoveUp, &QAbstractButton::clicked, this, &ExportAnnotationsWizardTimelinePage::timelineStructureMoveUp);
+    connect(ui->buttonMoveDown, &QAbstractButton::clicked, this, &ExportAnnotationsWizardTimelinePage::timelineStructureMoveDown);
 }
 
 ExportAnnotationsWizardTimelinePage::~ExportAnnotationsWizardTimelinePage()
@@ -66,8 +66,8 @@ void ExportAnnotationsWizardTimelinePage::setRepository(CorpusRepository *reposi
     ui->treeviewLevelsAttributes->setModel(d->modelLevelsAttributes.data());
     // Whenever the user clicks (selects or deselects) an item (level/attribute) of this treeview, we need to
     // add it to or remove it from the table showing the structure of the exported textgrids
-    connect(d->modelLevelsAttributes.data(), SIGNAL(annotationLevelAttributeSelectionChanged(QString,QString,bool)),
-            this, SLOT(annotationLevelAttributeSelectionChanged(QString,QString,bool)));
+    connect(d->modelLevelsAttributes.data(), &AnnotationStructureTreeModel::annotationLevelAttributeSelectionChanged,
+            this, &ExportAnnotationsWizardTimelinePage::annotationLevelAttributeSelectionChanged);
     // Reset textgrid structure
     d->modelTimelineStructure = QSharedPointer<QStandardItemModel>(new QStandardItemModel);
     d->modelTimelineStructure->setColumnCount(4);

@@ -54,24 +54,24 @@ CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
 {
     // List of available recordings (media files) to preview
     d->recordingsComboBox = new QComboBox(this);
-    connect(d->recordingsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(recordingChanged(QString)));
+    connect(d->recordingsComboBox, &QComboBox::currentTextChanged, this, &CorpusItemPreview::recordingChanged);
     // List of available annotations (for transcription preview)
     d->annotationsComboBox = new QComboBox(this);
-    connect(d->annotationsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(annotationChanged(QString)));
+    connect(d->annotationsComboBox, &QComboBox::currentTextChanged, this, &CorpusItemPreview::annotationChanged);
     // List of available annotation levels
     d->annotationLevelsComboBox = new QComboBox(this);
-    connect(d->annotationLevelsComboBox, SIGNAL(currentTextChanged(QString)), SLOT(annotationLevelChanged(QString)));
+    connect(d->annotationLevelsComboBox, &QComboBox::currentTextChanged, this, &CorpusItemPreview::annotationLevelChanged);
     // Status label
     d->labelStatus = new QLabel(this);
     // Media player
     d->player = new QMediaPlayer(this);
-    connect(d->player, SIGNAL(durationChanged(qint64)), SLOT(durationChanged(qint64)));
-    connect(d->player, SIGNAL(positionChanged(qint64)), SLOT(positionChanged(qint64)));
+    connect(d->player, &QMediaPlayer::durationChanged, this, &CorpusItemPreview::durationChanged);
+    connect(d->player, &QMediaPlayer::positionChanged, this, &CorpusItemPreview::positionChanged);
     connect(d->player, SIGNAL(metaDataChanged()), SLOT(metaDataChanged()));
-    connect(d->player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
-            this, SLOT(statusChanged(QMediaPlayer::MediaStatus)));
-    connect(d->player, SIGNAL(bufferStatusChanged(int)), this, SLOT(bufferingProgress(int)));
-    connect(d->player, SIGNAL(videoAvailableChanged(bool)), this, SLOT(videoAvailableChanged(bool)));
+    connect(d->player, &QMediaPlayer::mediaStatusChanged,
+            this, &CorpusItemPreview::statusChanged);
+    connect(d->player, &QMediaPlayer::bufferStatusChanged, this, &CorpusItemPreview::bufferingProgress);
+    connect(d->player, &QMediaPlayer::videoAvailableChanged, this, &CorpusItemPreview::videoAvailableChanged);
     connect(d->player, SIGNAL(error(QMediaPlayer::Error)), this, SLOT(displayErrorMessage()));
     // Video player widget
     d->videoWidget = new MediaPlayerVideoWidget(this);
@@ -82,35 +82,35 @@ CorpusItemPreview::CorpusItemPreview(QWidget *parent) :
     d->slider->setRange(0, d->player->duration() / 1000);
     // Duration label
     d->labelDuration = new QLabel(this);
-    connect(d->slider, SIGNAL(sliderMoved(int)), this, SLOT(seek(int)));
+    connect(d->slider, &QAbstractSlider::sliderMoved, this, &CorpusItemPreview::seek);
     // Playback controls
     d->controls = new MediaPlayerControls(this);
     d->controls->setState(d->player->state());
     d->controls->setVolume(d->player->volume());
     d->controls->setMuted(d->controls->isMuted()); // this sets the icon
     // Connections from the controls to the media player and local slots
-    connect(d->controls, SIGNAL(play()), d->player, SLOT(play()));
-    connect(d->controls, SIGNAL(pause()), d->player, SLOT(pause()));
-    connect(d->controls, SIGNAL(stop()), d->player, SLOT(stop()));
-    connect(d->controls, SIGNAL(seekForward()), this, SLOT(seekForward()));
-    connect(d->controls, SIGNAL(seekBackward()), this, SLOT(seekBackward()));
-    connect(d->controls, SIGNAL(changeVolume(int)), d->player, SLOT(setVolume(int)));
-    connect(d->controls, SIGNAL(changeMuting(bool)), d->player, SLOT(setMuted(bool)));
-    connect(d->controls, SIGNAL(changeRate(qreal)), d->player, SLOT(setPlaybackRate(qreal)));
+    connect(d->controls, &MediaPlayerControls::play, d->player, &QMediaPlayer::play);
+    connect(d->controls, &MediaPlayerControls::pause, d->player, &QMediaPlayer::pause);
+    connect(d->controls, &MediaPlayerControls::stop, d->player, &QMediaPlayer::stop);
+    connect(d->controls, &MediaPlayerControls::seekForward, this, &CorpusItemPreview::seekForward);
+    connect(d->controls, &MediaPlayerControls::seekBackward, this, &CorpusItemPreview::seekBackward);
+    connect(d->controls, &MediaPlayerControls::changeVolume, d->player, &QMediaPlayer::setVolume);
+    connect(d->controls, &MediaPlayerControls::changeMuting, d->player, &QMediaPlayer::setMuted);
+    connect(d->controls, &MediaPlayerControls::changeRate, d->player, &QMediaPlayer::setPlaybackRate);
     // Connection from the controls to the video player
     connect(d->controls, SIGNAL(stop()), d->videoWidget, SLOT(update()));
     // Connections from the media player to the controls
-    connect(d->player, SIGNAL(stateChanged(QMediaPlayer::State)),
-            d->controls, SLOT(setState(QMediaPlayer::State)));
-    connect(d->player, SIGNAL(volumeChanged(int)), d->controls, SLOT(setVolume(int)));
-    connect(d->player, SIGNAL(mutedChanged(bool)), d->controls, SLOT(setMuted(bool)));
+    connect(d->player, &QMediaPlayer::stateChanged,
+            d->controls, &MediaPlayerControls::setState);
+    connect(d->player, &QMediaPlayer::volumeChanged, d->controls, &MediaPlayerControls::setVolume);
+    connect(d->player, &QMediaPlayer::mutedChanged, d->controls, &MediaPlayerControls::setMuted);
     // Full screen button
     d->fullScreenButton = new QPushButton(tr("FullScreen"), this);
     d->fullScreenButton->setCheckable(true);
     // Color adjustments button
     d->colorButton = new QPushButton(tr("Color Options..."), this);
     d->colorButton->setEnabled(false);
-    connect(d->colorButton, SIGNAL(clicked()), this, SLOT(showColorDialog()));
+    connect(d->colorButton, &QAbstractButton::clicked, this, &CorpusItemPreview::showColorDialog);
     // Transcription preview widget
     d->transcriptionWidget = new MiniTranscriptionWidget(this);
     // Create layout
@@ -319,12 +319,12 @@ void CorpusItemPreview::bufferingProgress(int progress)
 void CorpusItemPreview::videoAvailableChanged(bool available)
 {
     if (!available) {
-        disconnect(d->fullScreenButton, SIGNAL(clicked(bool)), d->videoWidget, SLOT(setFullScreen(bool)));
-        disconnect(d->videoWidget, SIGNAL(fullScreenChanged(bool)), d->fullScreenButton, SLOT(setChecked(bool)));
+        disconnect(d->fullScreenButton, &QAbstractButton::clicked, d->videoWidget, &QVideoWidget::setFullScreen);
+        disconnect(d->videoWidget, &QVideoWidget::fullScreenChanged, d->fullScreenButton, &QAbstractButton::setChecked);
         d->videoWidget->setFullScreen(false);
     } else {
-        connect(d->fullScreenButton, SIGNAL(clicked(bool)), d->videoWidget, SLOT(setFullScreen(bool)));
-        connect(d->videoWidget, SIGNAL(fullScreenChanged(bool)), d->fullScreenButton, SLOT(setChecked(bool)));
+        connect(d->fullScreenButton, &QAbstractButton::clicked, d->videoWidget, &QVideoWidget::setFullScreen);
+        connect(d->videoWidget, &QVideoWidget::fullScreenChanged, d->fullScreenButton, &QAbstractButton::setChecked);
         if (d->fullScreenButton->isChecked())
             d->videoWidget->setFullScreen(true);
     }
@@ -366,26 +366,26 @@ void CorpusItemPreview::showColorDialog()
         QSlider *brightnessSlider = new QSlider(Qt::Horizontal);
         brightnessSlider->setRange(-100, 100);
         brightnessSlider->setValue(d->videoWidget->brightness());
-        connect(brightnessSlider, SIGNAL(sliderMoved(int)), d->videoWidget, SLOT(setBrightness(int)));
-        connect(d->videoWidget, SIGNAL(brightnessChanged(int)), brightnessSlider, SLOT(setValue(int)));
+        connect(brightnessSlider, &QAbstractSlider::sliderMoved, d->videoWidget, &QVideoWidget::setBrightness);
+        connect(d->videoWidget, &QVideoWidget::brightnessChanged, brightnessSlider, &QAbstractSlider::setValue);
 
         QSlider *contrastSlider = new QSlider(Qt::Horizontal);
         contrastSlider->setRange(-100, 100);
         contrastSlider->setValue(d->videoWidget->contrast());
-        connect(contrastSlider, SIGNAL(sliderMoved(int)), d->videoWidget, SLOT(setContrast(int)));
-        connect(d->videoWidget, SIGNAL(contrastChanged(int)), contrastSlider, SLOT(setValue(int)));
+        connect(contrastSlider, &QAbstractSlider::sliderMoved, d->videoWidget, &QVideoWidget::setContrast);
+        connect(d->videoWidget, &QVideoWidget::contrastChanged, contrastSlider, &QAbstractSlider::setValue);
 
         QSlider *hueSlider = new QSlider(Qt::Horizontal);
         hueSlider->setRange(-100, 100);
         hueSlider->setValue(d->videoWidget->hue());
-        connect(hueSlider, SIGNAL(sliderMoved(int)), d->videoWidget, SLOT(setHue(int)));
-        connect(d->videoWidget, SIGNAL(hueChanged(int)), hueSlider, SLOT(setValue(int)));
+        connect(hueSlider, &QAbstractSlider::sliderMoved, d->videoWidget, &QVideoWidget::setHue);
+        connect(d->videoWidget, &QVideoWidget::hueChanged, hueSlider, &QAbstractSlider::setValue);
 
         QSlider *saturationSlider = new QSlider(Qt::Horizontal);
         saturationSlider->setRange(-100, 100);
         saturationSlider->setValue(d->videoWidget->saturation());
-        connect(saturationSlider, SIGNAL(sliderMoved(int)), d->videoWidget, SLOT(setSaturation(int)));
-        connect(d->videoWidget, SIGNAL(saturationChanged(int)), saturationSlider, SLOT(setValue(int)));
+        connect(saturationSlider, &QAbstractSlider::sliderMoved, d->videoWidget, &QVideoWidget::setSaturation);
+        connect(d->videoWidget, &QVideoWidget::saturationChanged, saturationSlider, &QAbstractSlider::setValue);
 
         QFormLayout *layout = new QFormLayout;
         layout->addRow(tr("Brightness"), brightnessSlider);
@@ -400,7 +400,7 @@ void CorpusItemPreview::showColorDialog()
         d->colorDialog->setWindowTitle(tr("Color Options"));
         d->colorDialog->setLayout(layout);
 
-        connect(button, SIGNAL(clicked()), d->colorDialog, SLOT(close()));
+        connect(button, &QAbstractButton::clicked, d->colorDialog, &QWidget::close);
     }
     d->colorDialog->show();
 }

@@ -51,19 +51,19 @@ PCAPlotWidget::PCAPlotWidget(CorpusRepository *repository, QWidget *parent) :
     // Properties of selected communication
     ui->treeWidgetItemProperties->setHeaderLabels(QStringList() << tr("Property") << tr("Value"));
     // Respond to user changes in the parameters
-    connect(ui->comboBoxFilterAttribute, SIGNAL(currentIndexChanged(QString)), this, SLOT(filterAttributeChanged(QString)));
-    connect(ui->listFilterAttributeValues, SIGNAL(currentTextChanged(QString)), this, SLOT(replot()));
-    connect(ui->comboBoxClassificationAttribute, SIGNAL(currentIndexChanged(QString)), this, SLOT(replot()));
+    connect(ui->comboBoxFilterAttribute, qOverload<int>(&QComboBox::currentIndexChanged), this, &PCAPlotWidget::filterAttributeChanged);
+    connect(ui->listFilterAttributeValues, &QListWidget::currentTextChanged, this, &PCAPlotWidget::replot);
+    connect(ui->comboBoxClassificationAttribute, qOverload<int>(&QComboBox::currentIndexChanged), this, &PCAPlotWidget::replot);
 
     // Set up plot
     d->plot = new QCustomPlot(this);
     ui->gridLayoutPlot->addWidget(d->plot);
 
     // Handle click and double click on graph points
-    connect(d->plot, SIGNAL(plottableClick(QCPAbstractPlottable*,int,QMouseEvent*)),
-            this, SLOT(plotItemClick(QCPAbstractPlottable*,int,QMouseEvent*)));
-    connect(d->plot, SIGNAL(plottableDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*)),
-            this, SLOT(plotItemDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*)));
+    connect(d->plot, &QCustomPlot::plottableClick,
+            this, &PCAPlotWidget::plotItemClick);
+    connect(d->plot, &QCustomPlot::plottableDoubleClick,
+            this, &PCAPlotWidget::plotItemDoubleClick);
 
     ui->comboBoxFilterAttribute->setCurrentText("Utterance ID");
     ui->comboBoxClassificationAttribute->setCurrentText("Discourse Relation");
@@ -74,9 +74,9 @@ PCAPlotWidget::~PCAPlotWidget()
     delete ui;
 }
 
-void PCAPlotWidget::filterAttributeChanged(const QString &attributeName)
+void PCAPlotWidget::filterAttributeChanged(int indexFilterAttribute)
 {
-    Q_UNUSED(attributeName)
+    Q_UNUSED(indexFilterAttribute)
     if (!d->repository) return;
     QString attributeID = ui->comboBoxFilterAttribute->currentData().toString();
     if (!d->repository->metadataStructure()->attributeIDs(CorpusObject::Type_Communication).contains(attributeID)) return;

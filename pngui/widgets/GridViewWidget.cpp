@@ -36,28 +36,28 @@ GridViewWidget::GridViewWidget(QWidget *parent) :
     m->addAction(ui->horizontalSplitAction);
     ui->splitModeToolButton->setMenu(m);
     ui->splitModeToolButton->setDefaultAction(ui->singleViewAction);
-    connect(ui->pinRowsToolButton, SIGNAL(clicked(bool)), this, SLOT(pinRowsToolButtonClicked()));
-    connect(ui->singleViewAction, SIGNAL(triggered(bool)), this, SLOT(splitGridActionTriggered()));
-    connect(ui->horizontalSplitAction, SIGNAL(triggered(bool)), this, SLOT(splitGridActionTriggered()));
-    connect(ui->filterToolButton, SIGNAL(clicked(bool)), this, SLOT(toggleFilterRows()));
+    connect(ui->pinRowsToolButton, &QAbstractButton::clicked, this, &GridViewWidget::pinRowsToolButtonClicked);
+    connect(ui->singleViewAction, &QAction::triggered, this, &GridViewWidget::splitGridActionTriggered);
+    connect(ui->horizontalSplitAction, &QAction::triggered, this, &GridViewWidget::splitGridActionTriggered);
+    connect(ui->filterToolButton, &QAbstractButton::clicked, this, &GridViewWidget::toggleFilterRows);
 
-    connect(ui->clipboardCopyToolButton, SIGNAL(clicked(bool)), this, SLOT(clipboardCopySelection()));
+    connect(ui->clipboardCopyToolButton, &QAbstractButton::clicked, this, &GridViewWidget::clipboardCopySelection);
     ui->clipboardCopyToolButton->setShortcut(QKeySequence("Ctrl+C"));
-    connect(ui->clipboardPasteToolButton, SIGNAL(clicked(bool)), this, SLOT(clipboardPaste()));
+    connect(ui->clipboardPasteToolButton, &QAbstractButton::clicked, this, &GridViewWidget::clipboardPaste);
     ui->clipboardPasteToolButton->setShortcut(QKeySequence("Ctrl+V"));
-    connect(ui->findToolButton, SIGNAL(clicked(bool)), this, SLOT(findDialog()));
+    connect(ui->findToolButton, &QAbstractButton::clicked, this, &GridViewWidget::findDialog);
     ui->findToolButton->setShortcut(QKeySequence("Ctrl+F"));
-    connect(ui->exportToolButton, SIGNAL(clicked(bool)), this, SLOT(exportToFile()));
+    connect(ui->exportToolButton, &QAbstractButton::clicked, this, &GridViewWidget::exportToFile);
 
     d->findDialog = new GridViewFindDialog(this);
     d->findDialog->setModal(false);
-    connect(d->findDialog, SIGNAL(findNext()), this, SLOT(findNext()));
+    connect(d->findDialog, &GridViewFindDialog::findNext, this, &GridViewWidget::findNext);
 
     ui->advancedTableView->setVerticalHeadersSize(20);
 
     // default result text
-    connect(ui->advancedTableView->filterProxyModel(), SIGNAL(resultCountChanged(int,int)),
-            this, SLOT(resultCountChanged(int,int)));
+    connect(ui->advancedTableView->filterProxyModel(), &QAbstractFilterProxyModel::resultCountChanged,
+            this, &GridViewWidget::resultCountChanged);
 }
 
 GridViewWidget::~GridViewWidget()

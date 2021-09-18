@@ -67,7 +67,7 @@ LongSoundAlignerWidget::LongSoundAlignerWidget(QWidget *parent) :
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutDiff->addWidget(d->gridviewResults);
 
-    connect(ui->commandCompare, SIGNAL(clicked(bool)), this, SLOT(diffTranscriptionWithRecogniser()));
+    connect(ui->commandCompare, &QAbstractButton::clicked, this, &LongSoundAlignerWidget::diffTranscriptionWithRecogniser);
 }
 
 LongSoundAlignerWidget::~LongSoundAlignerWidget()

@@ -44,9 +44,9 @@ CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
     m_model->setHorizontalHeaderLabels(headerLabels);
     ui->treeviewRecordings->setModel(m_model);
     for (int i = 0; i < 3; ++i) ui->treeviewRecordings->resizeColumnToContents(i);
-    connect(this, SIGNAL(rejected()), this, SLOT(stop()));
-    connect(ui->commandClose, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ui->commandProcess, SIGNAL(clicked()), this, SLOT(process()));
+    connect(this, &QDialog::rejected, this, &CheckMediaFilesDialog::stop);
+    connect(ui->commandClose, &QAbstractButton::clicked, this, &QDialog::reject);
+    connect(ui->commandProcess, &QAbstractButton::clicked, this, &CheckMediaFilesDialog::process);
 }
 
 CheckMediaFilesDialog::~CheckMediaFilesDialog()

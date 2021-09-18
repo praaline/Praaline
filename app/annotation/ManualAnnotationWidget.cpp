@@ -56,7 +56,7 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     ui->comboBoxEditorSelection->addItem("Transcrtipt Editor", "TranscriptAnnotationEditor");
     ui->comboBoxEditorSelection->addItem("PFC Editor", "PFCTranscriptionEditor");
     ui->comboBoxEditorSelection->setCurrentIndex(0);
-    connect(ui->commandOpenEditor, SIGNAL(clicked(bool)), this, SLOT(editorTabNew()));
+    connect(ui->commandOpenEditor, &QAbstractButton::clicked, this, &ManualAnnotationWidget::editorTabNew);
 
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
@@ -74,7 +74,7 @@ ManualAnnotationWidget::ManualAnnotationWidget(QWidget *parent) :
     ui->splitterLR->setSizes(QList<int>() << 50 << 350);
 
     // Handle close document
-    connect(ui->tabWidgetEditors, SIGNAL(tabCloseRequested(int)), this, SLOT(editorTabCloseRequested(int)));
+    connect(ui->tabWidgetEditors, &QTabWidget::tabCloseRequested, this, &ManualAnnotationWidget::editorTabCloseRequested);
 }
 
 ManualAnnotationWidget::~ManualAnnotationWidget()

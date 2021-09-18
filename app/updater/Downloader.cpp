@@ -30,7 +30,7 @@ Downloader::Downloader (QWidget* parent) : QWidget (parent)
     m_useCustomProcedures = false;
 
     /* Set download directory */
-    m_downloadDir = QDir::homePath() + "/Downloads/";
+    m_downloadDir.setPath(QDir::homePath() + "/Downloads/");
 
     /* Make the window look like a modal dialog */
     setWindowIcon (QIcon());
@@ -39,10 +39,10 @@ Downloader::Downloader (QWidget* parent) : QWidget (parent)
     /* Configure the appearance and behavior of the buttons */
     m_ui->openButton->setEnabled (false);
     m_ui->openButton->setVisible (false);
-    connect (m_ui->stopButton, SIGNAL (clicked()),
-             this,               SLOT (cancelDownload()));
-    connect (m_ui->openButton, SIGNAL (clicked()),
-             this,               SLOT (installUpdate()));
+    connect (m_ui->stopButton, &QAbstractButton::clicked,
+             this,               &Downloader::cancelDownload);
+    connect (m_ui->openButton, &QAbstractButton::clicked,
+             this,               &Downloader::installUpdate);
 
     /* Resize to fit */
     setFixedSize (minimumSizeHint());
@@ -95,7 +95,7 @@ void Downloader::startDownload (const QUrl& url)
 
     /* Start download */
     m_reply = m_manager->get (request);
-    m_startTime = QDateTime::currentDateTime().toTime_t();
+    m_startTime = QDateTime::currentDateTimeUtc().toTime_t();
 
     /* Ensure that downloads directory exists */
     if (!m_downloadDir.exists())
@@ -106,12 +106,12 @@ void Downloader::startDownload (const QUrl& url)
     QFile::remove (m_downloadDir.filePath (m_fileName + PARTIAL_DOWN));
 
     /* Update UI when download progress changes or download finishes */
-    connect (m_reply, SIGNAL (downloadProgress (qint64, qint64)),
-             this,      SLOT (updateProgress   (qint64, qint64)));
-    connect (m_reply, SIGNAL (finished ()),
-             this,      SLOT (finished ()));
-    connect (m_reply, SIGNAL (redirected       (QUrl)),
-             this,      SLOT (startDownload    (QUrl)));
+    connect (m_reply, &QNetworkReply::downloadProgress,
+             this,      &Downloader::updateProgress);
+    connect (m_reply, &QNetworkReply::finished,
+             this,      &Downloader::finished);
+    connect (m_reply, &QNetworkReply::redirected,
+             this,      &Downloader::startDownload);
 
     showNormal();
 }
@@ -316,9 +316,7 @@ void Downloader::updateProgress (qint64 received, qint64 total)
         m_ui->progressBar->setMaximum (0);
         m_ui->progressBar->setValue (-1);
         m_ui->downloadLabel->setText (tr ("Downloading Updates") + "...");
-        m_ui->timeLabel->setText (QString ("%1: %2")
-                                  .arg (tr ("Time Remaining"))
-                                  .arg (tr ("Unknown")));
+        m_ui->timeLabel->setText (QString ("%1: %2").arg(tr("Time Remaining"), tr ("Unknown")));
     }
 }
 
@@ -332,7 +330,7 @@ void Downloader::updateProgress (qint64 received, qint64 total)
  */
 void Downloader::calculateTimeRemaining (qint64 received, qint64 total)
 {
-    uint difference = QDateTime::currentDateTime().toTime_t() - m_startTime;
+    uint difference = QDateTime::currentDateTimeUtc().toTime_t() - m_startTime;
 
     if (difference > 0) {
         QString timeString;
@@ -387,7 +385,7 @@ QString Downloader::downloadDir() const
 void Downloader::setDownloadDir(const QString& downloadDir)
 {
     if(m_downloadDir.absolutePath() != downloadDir) {
-        m_downloadDir = downloadDir;
+        m_downloadDir.setPath(downloadDir);
     }
 }
 

@@ -15,7 +15,7 @@ CorpusRepositoryPropertiesDialog::CorpusRepositoryPropertiesDialog(const CorpusR
     QDialog(parent), ui(new Ui::CorpusRepositoryPropertiesDialog), d(new CorpusRepositoryPropertiesDialogData)
 {
     ui->setupUi(this);
-    connect(ui->commandSelectBasePathMedia, SIGNAL(clicked(bool)), this, SLOT(selectBasePathMedia()));
+    connect(ui->commandSelectBasePathMedia, &QAbstractButton::clicked, this, &CorpusRepositoryPropertiesDialog::selectBasePathMedia);
 
     d->repositoryDef = repositoryDef;
     updateFields();

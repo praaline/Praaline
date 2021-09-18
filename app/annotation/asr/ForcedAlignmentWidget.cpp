@@ -97,9 +97,9 @@ ForcedAlignmentWidget::ForcedAlignmentWidget(QWidget *parent) :
     ui->gridLayoutMessages->addWidget(d->statusMessages);
 
     // Processing steps
-    connect(ui->commandPhonetiseAll, SIGNAL(clicked(bool)), this, SLOT(stepPhonetiseAll()));
-    connect(ui->commandAlignAll, SIGNAL(clicked(bool)), this, SLOT(stepAlignAll()));
-    connect(ui->commandSpeakerAdaptation, SIGNAL(clicked(bool)), this, SLOT(stepSpeakerAdaptation()));
+    connect(ui->commandPhonetiseAll, &QAbstractButton::clicked, this, &ForcedAlignmentWidget::stepPhonetiseAll);
+    connect(ui->commandAlignAll, &QAbstractButton::clicked, this, &ForcedAlignmentWidget::stepAlignAll);
+    connect(ui->commandSpeakerAdaptation, &QAbstractButton::clicked, this, &ForcedAlignmentWidget::stepSpeakerAdaptation);
 
     // Plugin parameters property browser
     d->propertyVariantManagerConfigParameters = new QtVariantPropertyManager(this);

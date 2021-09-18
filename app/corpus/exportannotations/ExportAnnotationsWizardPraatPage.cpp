@@ -31,11 +31,11 @@ ExportAnnotationsWizardPraatPage::ExportAnnotationsWizardPraatPage(QWidget *pare
     ui->setupUi(this);
     ui->editFilenameTemplate->setText("$AnnotationID_$SpeakerID.TextGrid");
     // Move items in the textgrid structure up or down
-    connect(ui->buttonMoveUp, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveUp()));
-    connect(ui->buttonMoveDown, SIGNAL(clicked(bool)), this, SLOT(textgridStructureMoveDown()));
+    connect(ui->buttonMoveUp, &QAbstractButton::clicked, this, &ExportAnnotationsWizardPraatPage::textgridStructureMoveUp);
+    connect(ui->buttonMoveDown, &QAbstractButton::clicked, this, &ExportAnnotationsWizardPraatPage::textgridStructureMoveDown);
     // Propose different filename templates based on whether different speakers will be included in the same TextGrid or not.
-    connect(ui->optionAllSpeakers, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
-    connect(ui->optionOneSpeakerPerFile, SIGNAL(clicked(bool)), this, SLOT(changedSpeakerPolicy()));
+    connect(ui->optionAllSpeakers, &QAbstractButton::clicked, this, &ExportAnnotationsWizardPraatPage::changedSpeakerPolicy);
+    connect(ui->optionOneSpeakerPerFile, &QAbstractButton::clicked, this, &ExportAnnotationsWizardPraatPage::changedSpeakerPolicy);
 }
 
 ExportAnnotationsWizardPraatPage::~ExportAnnotationsWizardPraatPage()
@@ -60,8 +60,8 @@ void ExportAnnotationsWizardPraatPage::setRepository(CorpusRepository *repositor
     ui->treeviewLevelsAttributes->setModel(d->modelLevelsAttributes.data());
     // Whenever the user clicks (selects or deselects) an item (level/attribute) of this treeview, we need to
     // add it to or remove it from the table showing the structure of the exported textgrids
-    connect(d->modelLevelsAttributes.data(), SIGNAL(annotationLevelAttributeSelectionChanged(QString,QString,bool)),
-            this, SLOT(annotationLevelAttributeSelectionChanged(QString,QString,bool)));
+    connect(d->modelLevelsAttributes.data(), &AnnotationStructureTreeModel::annotationLevelAttributeSelectionChanged,
+            this, &ExportAnnotationsWizardPraatPage::annotationLevelAttributeSelectionChanged);
     // Reset textgrid structure
     d->modelTextgridStructure = QSharedPointer<QStandardItemModel>(new QStandardItemModel);
     d->modelTextgridStructure->setColumnCount(3);

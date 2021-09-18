@@ -51,16 +51,16 @@ PitchAnalyser::PitchAnalyser() :
     QSettings settings;
     settings.beginGroup("LayerDefaults");
     settings.setValue
-        ("timevalues",
-         QString("<layer verticalScale=\"%1\" plotStyle=\"%2\" "
-                 "scaleMinimum=\"%3\" scaleMaximum=\"%4\"/>")
-         .arg(int(TimeValueLayer::AutoAlignScale))
-         .arg(int(TimeValueLayer::PlotPoints))
-         .arg(27.5f).arg(880.f)); // temporary values: better get the real extents of the data from the model
+            ("timevalues",
+             QString("<layer verticalScale=\"%1\" plotStyle=\"%2\" "
+                     "scaleMinimum=\"%3\" scaleMaximum=\"%4\"/>")
+             .arg(int(TimeValueLayer::AutoAlignScale))
+             .arg(int(TimeValueLayer::PlotPoints))
+             .arg(27.5f).arg(880.f)); // temporary values: better get the real extents of the data from the model
     settings.setValue
-        ("flexinotes",
-         QString("<layer verticalScale=\"%1\"/>")
-         .arg(int(FlexiNoteLayer::AutoAlignScale)));
+            ("flexinotes",
+             QString("<layer verticalScale=\"%1\"/>")
+             .arg(int(FlexiNoteLayer::AutoAlignScale)));
     settings.endGroup();
 }
 
@@ -77,8 +77,8 @@ PitchAnalyser::newFileLoaded(Document *doc, WaveFileModel *model,
     m_paneStack = paneStack;
     m_pane = pane;
 
-    connect(doc, SIGNAL(layerAboutToBeDeleted(Layer *)),
-            this, SLOT(layerAboutToBeDeleted(Layer *)));
+    connect(doc, &Document::layerAboutToBeDeleted,
+            this, &PitchAnalyser::layerAboutToBeDeleted);
 
     QSettings settings;
     settings.beginGroup("Analyser");
@@ -203,7 +203,7 @@ PitchAnalyser::addVisualisations()
     // A spectrogram, off by default. Must go at the back because it's
     // opaque
 
-/* This is roughly what we'd do for a constant-Q spectrogram, but it
+    /* This is roughly what we'd do for a constant-Q spectrogram, but it
    currently has issues with y-axis alignment
 
     TransformFactory *tf = TransformFactory::getInstance();
@@ -234,7 +234,7 @@ PitchAnalyser::addVisualisations()
 
     for (int i = 0; i < m_pane->getLayerCount(); ++i) {
         SpectrogramLayer *existing = qobject_cast<SpectrogramLayer *>
-            (m_pane->getLayer(i));
+                (m_pane->getLayer(i));
         if (existing) {
             cerr << "recording existing spectrogram layer" << endl;
             m_layers[Spectrogram] = existing;
@@ -243,7 +243,7 @@ PitchAnalyser::addVisualisations()
     }
 
     SpectrogramLayer *spectrogram = qobject_cast<SpectrogramLayer *>
-        (m_document->createMainModelLayer(LayerFactory::Type("MelodicRangeSpectrogram")));
+            (m_document->createMainModelLayer(LayerFactory::Type("MelodicRangeSpectrogram")));
 
     spectrogram->setColourMap((int)ColourMapper::BlackOnWhite);
     spectrogram->setNormalizeHybrid(true);
@@ -266,7 +266,7 @@ PitchAnalyser::addWaveform()
     // use it
     for (int i = 0; i < m_pane->getLayerCount(); ++i) {
         WaveformLayer *existing = qobject_cast<WaveformLayer *>
-            (m_pane->getLayer(i));
+                (m_pane->getLayer(i));
         if (existing) {
             cerr << "recording existing waveform layer" << endl;
             m_layers[Audio] = existing;
@@ -275,12 +275,12 @@ PitchAnalyser::addWaveform()
     }
 
     WaveformLayer *waveform = qobject_cast<WaveformLayer *>
-        (m_document->createMainModelLayer(LayerFactory::Type("Waveform")));
+            (m_document->createMainModelLayer(LayerFactory::Type("Waveform")));
 
     waveform->setMiddleLineHeight(0.9);
     waveform->setShowMeans(false); // too small & pale for this
     waveform->setBaseColour
-        (ColourDatabase::getInstance()->getColourIndex(tr("Grey")));
+            (ColourDatabase::getInstance()->getColourIndex(tr("Grey")));
     PlayParameters *params = waveform->getPlayParameters();
     if (params) params->setPlayPan(-1);
 
@@ -330,7 +330,7 @@ PitchAnalyser::addAnalyses()
 
     Transforms transforms;
 
-/*!!! we could have more than one pitch track...
+    /*!!! we could have more than one pitch track...
     QString cx = "vamp:cepstral-pitchtracker:cepstral-pitchtracker:f0";
     if (tf->haveTransform(cx)) {
         Transform tx = tf->getDefaultTransformFor(cx);
@@ -344,10 +344,10 @@ PitchAnalyser::addAnalyses()
 
     QString notFound = tr("Transform \"%1\" not found. Unable to analyse audio file.<br><br>Is the %2 Vamp plugin correctly installed?");
     if (!tf->haveTransform(base + f0out)) {
-    return notFound.arg(base + f0out).arg(plugname);
+        return notFound.arg(base + f0out, plugname);
     }
     if (!tf->haveTransform(base + noteout)) {
-    return notFound.arg(base + noteout).arg(plugname);
+        return notFound.arg(base + noteout, plugname);
     }
 
     QSettings settings;
@@ -360,7 +360,7 @@ PitchAnalyser::addAnalyses()
     settings.endGroup();
 
     Transform t = tf->getDefaultTransformFor
-        (base + f0out, m_fileModel->getSampleRate());
+            (base + f0out, m_fileModel->getSampleRate());
     t.setStepSize(256);
     t.setBlockSize(2048);
 
@@ -387,7 +387,7 @@ PitchAnalyser::addAnalyses()
     transforms.push_back(t);
 
     std::vector<Layer *> layers =
-        m_document->createDerivedLayers(transforms, m_fileModel);
+            m_document->createDerivedLayers(transforms, m_fileModel);
 
     for (int i = 0; i < (int)layers.size(); ++i) {
 
@@ -403,24 +403,24 @@ PitchAnalyser::addAnalyses()
     ColourDatabase *cdb = ColourDatabase::getInstance();
 
     TimeValueLayer *pitchLayer =
-        qobject_cast<TimeValueLayer *>(m_layers[PitchTrack]);
+            qobject_cast<TimeValueLayer *>(m_layers[PitchTrack]);
     if (pitchLayer) {
         pitchLayer->setBaseColour(cdb->getColourIndex(tr("Black")));
         PlayParameters *params = pitchLayer->getPlayParameters();
         if (params) params->setPlayPan(1);
     }
-    connect(pitchLayer, SIGNAL(modelCompletionChanged()),
-            this, SLOT(layerCompletionChanged()));
+    connect(pitchLayer, &Layer::modelCompletionChanged,
+            this, &PitchAnalyser::layerCompletionChanged);
 
     FlexiNoteLayer *flexiNoteLayer =
-        qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
+            qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
     if (flexiNoteLayer) {
         flexiNoteLayer->setBaseColour(cdb->getColourIndex(tr("Bright Blue")));
         PlayParameters *params = flexiNoteLayer->getPlayParameters();
         if (params) params->setPlayPan(1);
     }
-    connect(flexiNoteLayer, SIGNAL(modelCompletionChanged()),
-            this, SLOT(layerCompletionChanged()));
+    connect(flexiNoteLayer, &Layer::modelCompletionChanged,
+            this, &PitchAnalyser::layerCompletionChanged);
 
     return "";
 }
@@ -438,7 +438,7 @@ PitchAnalyser::reAnalyseSelection(Selection sel, FrequencyRange range)
 
     if (!m_reAnalysisCandidates.empty()) {
         CommandHistory::getInstance()->startCompoundOperation
-            (tr("Discard Previous Candidates"), true);
+                (tr("Discard Previous Candidates"), true);
         discardPitchCandidates();
         CommandHistory::getInstance()->endCompoundOperation();
     }
@@ -468,11 +468,11 @@ PitchAnalyser::reAnalyseSelection(Selection sel, FrequencyRange range)
 
     QString notFound = tr("Transform \"%1\" not found. Unable to perform interactive analysis.<br><br>Are the %2 and %3 Vamp plugins correctly installed?");
     if (!tf->haveTransform(base + out)) {
-    return notFound.arg(base + out).arg(plugname1).arg(plugname2);
+        return notFound.arg(base + out, plugname1, plugname2);
     }
 
     Transform t = tf->getDefaultTransformFor
-        (base + out, m_fileModel->getSampleRate());
+            (base + out, m_fileModel->getSampleRate());
     t.setStepSize(256);
     t.setBlockSize(2048);
 
@@ -513,7 +513,7 @@ PitchAnalyser::reAnalyseSelection(Selection sel, FrequencyRange range)
     transforms.push_back(t);
 
     m_currentAsyncHandle =
-        m_document->createDerivedLayersAsync(transforms, m_fileModel, this);
+            m_document->createDerivedLayersAsync(transforms, m_fileModel, this);
 
     return "";
 }
@@ -532,12 +532,12 @@ PitchAnalyser::showPitchCandidates(bool shown)
     foreach (Layer *layer, m_reAnalysisCandidates) {
         if (shown) {
             CommandHistory::getInstance()->addCommand
-                (new ShowLayerCommand(m_pane, layer, true,
-                                      tr("Show Pitch Candidates")));
+                    (new ShowLayerCommand(m_pane, layer, true,
+                                          tr("Show Pitch Candidates")));
         } else {
             CommandHistory::getInstance()->addCommand
-                (new ShowLayerCommand(m_pane, layer, false,
-                                      tr("Hide Pitch Candidates")));
+                    (new ShowLayerCommand(m_pane, layer, false,
+                                          tr("Hide Pitch Candidates")));
         }
     }
 
@@ -546,14 +546,14 @@ PitchAnalyser::showPitchCandidates(bool shown)
 
 void
 PitchAnalyser::layersCreated(Document::LayerCreationAsyncHandle handle,
-                        vector<Layer *> primary,
-                        vector<Layer *> additional)
+                             vector<Layer *> primary,
+                             vector<Layer *> additional)
 {
     {
         QMutexLocker locker(&m_asyncMutex);
 
         if (handle != m_currentAsyncHandle ||
-            m_reAnalysingSelection == Selection()) {
+                m_reAnalysingSelection == Selection()) {
             // We don't want these!
             for (int i = 0; i < (int)primary.size(); ++i) {
                 m_document->deleteLayer(primary[i]);
@@ -566,7 +566,7 @@ PitchAnalyser::layersCreated(Document::LayerCreationAsyncHandle handle,
         m_currentAsyncHandle = 0;
 
         CommandHistory::getInstance()->startCompoundOperation
-            (tr("Re-Analyse Selection"), true);
+                (tr("Re-Analyse Selection"), true);
 
         m_reAnalysisCandidates.clear();
 
@@ -586,7 +586,7 @@ PitchAnalyser::layersCreated(Document::LayerCreationAsyncHandle handle,
                     params->setPlayAudible(false);
                 }
                 t->setBaseColour
-                    (ColourDatabase::getInstance()->getColourIndex(tr("Bright Orange")));
+                        (ColourDatabase::getInstance()->getColourIndex(tr("Bright Orange")));
                 t->setPresentationName("candidate");
                 m_document->addLayerToView(m_pane, t);
                 m_reAnalysisCandidates.push_back(t);
@@ -776,7 +776,7 @@ void
 PitchAnalyser::getEnclosingSelectionScope(sv_frame_t f, sv_frame_t &f0, sv_frame_t &f1)
 {
     FlexiNoteLayer *flexiNoteLayer =
-        qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
+            qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
 
     sv_frame_t f0i = f, f1i = f;
     int res = 1;
@@ -824,7 +824,7 @@ PitchAnalyser::setIntelligentActions(bool on)
     std::cerr << "toggle setIntelligentActions " << on << std::endl;
 
     FlexiNoteLayer *flexiNoteLayer =
-        qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
+            qobject_cast<FlexiNoteLayer *>(m_layers[Notes]);
     if (flexiNoteLayer) {
         flexiNoteLayer->setIntelligentActions(on);
     }
@@ -853,7 +853,7 @@ PitchAnalyser::setVisible(Component c, bool v)
                 // raise the pitch track, then notes on top (if present)
                 m_paneStack->setCurrentLayer(m_pane, m_layers[c]);
                 if (m_layers[Notes] &&
-                    !m_layers[Notes]->isLayerDormant(m_pane)) {
+                        !m_layers[Notes]->isLayerDormant(m_pane)) {
                     m_paneStack->setCurrentLayer(m_pane, m_layers[Notes]);
                 }
             }

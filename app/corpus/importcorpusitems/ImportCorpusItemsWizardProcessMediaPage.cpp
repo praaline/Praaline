@@ -24,7 +24,7 @@ ImportCorpusItemsWizardProcessMediaPage::ImportCorpusItemsWizardProcessMediaPage
     setTitle(tr("Analyse media files"));
     setSubTitle(tr("In this first step the media file Recordings will be analysed, so that their properties can be saved into Praaline's corpus database. "
                    "This information allows Praaline to detect if changes were made on them at a later stage."));
-    connect(ui->commandStop, SIGNAL(clicked()), this, SLOT(stopProcess()));
+    connect(ui->commandStop, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardProcessMediaPage::stopProcess);
 }
 
 ImportCorpusItemsWizardProcessMediaPage::~ImportCorpusItemsWizardProcessMediaPage()

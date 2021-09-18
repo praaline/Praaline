@@ -40,8 +40,8 @@ VisualisationModeWidget::VisualisationModeWidget(QWidget *parent) :
 
     ui->stackedWidget->setCurrentIndex(0);
 
-    connect(ui->commandTimelineVisualisation, SIGNAL(clicked()), this, SLOT(showTimelineVisualisation()));
-    connect(ui->commandGlobalVisualisation, SIGNAL(clicked()), this, SLOT(showGlobalVisualisation()));
+    connect(ui->commandTimelineVisualisation, &QAbstractButton::clicked, this, &VisualisationModeWidget::showTimelineVisualisation);
+    connect(ui->commandGlobalVisualisation, &QAbstractButton::clicked, this, &VisualisationModeWidget::showGlobalVisualisation);
 }
 
 VisualisationModeWidget::~VisualisationModeWidget()
@@ -68,13 +68,13 @@ void VisualisationModeWidget::setupActions()
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionShowTimelineVisualisation = new QAction("Timeline Visualiser", this);
-    connect(d->actionShowTimelineVisualisation, SIGNAL(triggered()), SLOT(showTimelineVisualisation()));
+    connect(d->actionShowTimelineVisualisation, &QAction::triggered, this, &VisualisationModeWidget::showTimelineVisualisation);
     command = ACTION_MANAGER->registerAction("Annotation.ShowTimeline", d->actionShowTimelineVisualisation, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
     d->actionShowGlobalVisualisation = new QAction("Corpus-level Visualiser", this);
-    connect(d->actionShowGlobalVisualisation, SIGNAL(triggered()), SLOT(showGlobalVisualisation()));
+    connect(d->actionShowGlobalVisualisation, &QAction::triggered, this, &VisualisationModeWidget::showGlobalVisualisation);
     command = ACTION_MANAGER->registerAction("Annotation.ShowGlobal", d->actionShowGlobalVisualisation, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);

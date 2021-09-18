@@ -31,8 +31,8 @@ ScriptingModeWidget::ScriptingModeWidget(QWidget *parent) :
 
     setupActions();
 
-    connect(ui->commandScriptEditor, SIGNAL(clicked()), this, SLOT(showScriptEditor()));
-    connect(ui->commandInteractiveConsole, SIGNAL(clicked()), this, SLOT(showInteractiveConsole()));
+    connect(ui->commandScriptEditor, &QAbstractButton::clicked, this, &ScriptingModeWidget::showScriptEditor);
+    connect(ui->commandInteractiveConsole, &QAbstractButton::clicked, this, &ScriptingModeWidget::showInteractiveConsole);
 
     ui->stackedWidget->setCurrentIndex(0);
 }
@@ -60,13 +60,13 @@ void ScriptingModeWidget::setupActions()
     // WINDOW MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionShowScriptEditor = new QAction(tr("Script Editor"), this);
-    connect(d->actionShowScriptEditor, SIGNAL(triggered()), SLOT(showScriptEditor()));
+    connect(d->actionShowScriptEditor, &QAction::triggered, this, &ScriptingModeWidget::showScriptEditor);
     command = ACTION_MANAGER->registerAction("Corpus.ShowScriptEditor", d->actionShowScriptEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
     d->actionShowInteractiveConsole = new QAction(tr("Interactive Console"), this);
-    connect(d->actionShowInteractiveConsole, SIGNAL(triggered()), SLOT(showInteractiveConsole()));
+    connect(d->actionShowInteractiveConsole, &QAction::triggered, this, &ScriptingModeWidget::showInteractiveConsole);
     command = ACTION_MANAGER->registerAction("Corpus.ShowInteractiveConsole", d->actionShowInteractiveConsole, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);

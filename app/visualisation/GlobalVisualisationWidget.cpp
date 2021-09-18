@@ -122,8 +122,11 @@ void GlobalVisualisationWidget::test3()
     volumeNeg->setBrush(QColor(180, 90, 90));
 
     // interconnect x axis ranges of main and bottom axis rects:
-    connect(ui->plot->xAxis, SIGNAL(rangeChanged(QCPRange)), volumeAxisRect->axis(QCPAxis::atBottom), SLOT(setRange(QCPRange)));
-    connect(volumeAxisRect->axis(QCPAxis::atBottom), SIGNAL(rangeChanged(QCPRange)), ui->plot->xAxis, SLOT(setRange(QCPRange)));
+    // DOES NOT WORK, investigate
+    // connect(ui->plot->xAxis, qOverload<const QCPRange &>(&QCPAxis::rangeChanged),
+    //        volumeAxisRect->axis(QCPAxis::atBottom), qOverload<const QCPRange &>(&QCPAxis::rangeChanged));
+    // connect(volumeAxisRect->axis(QCPAxis::atBottom), qOverload<const QCPRange &>(&QCPAxis::rangeChanged),
+    //       ui->plot->xAxis, qOverload<const QCPRange &>(&QCPAxis::rangeChanged));
     // configure axes of both main and bottom axis rect:
     QSharedPointer<QCPAxisTickerDateTime> dateTimeTicker(new QCPAxisTickerDateTime);
     dateTimeTicker->setDateTimeSpec(Qt::UTC);

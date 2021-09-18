@@ -53,10 +53,10 @@ void HelpModeConfig::configPageApply() {
     if (files_widget.stringList() == HELP_MANAGER->registeredFiles())
         return;
 
-    disconnect(HELP_MANAGER,SIGNAL(registeredFilesChanged(QStringList)),this,SLOT(handleFilesChanged(QStringList)));
+    disconnect(HELP_MANAGER,&Qtilities::CoreGui::HelpManager::registeredFilesChanged,this,&HelpModeConfig::handleFilesChanged);
     HELP_MANAGER->clearRegisteredFiles(false);
     HELP_MANAGER->registerFiles(files_widget.stringList());
-    connect(HELP_MANAGER,SIGNAL(registeredFilesChanged(QStringList)),SLOT(handleFilesChanged(QStringList)));
+    connect(HELP_MANAGER,&Qtilities::CoreGui::HelpManager::registeredFilesChanged,this, &HelpModeConfig::handleFilesChanged);
     HELP_MANAGER->writeSettings();
 }
 
@@ -71,7 +71,7 @@ void HelpModeConfig::configPageInitialize() {
     files_widget.setListType(StringListWidget::FilePaths);
     files_widget.setFileOpenDialogFilter("Help Files (*.qch)");
 
-    connect(HELP_MANAGER,SIGNAL(registeredFilesChanged(QStringList)),SLOT(handleFilesChanged(QStringList)));
+    connect(HELP_MANAGER,&Qtilities::CoreGui::HelpManager::registeredFilesChanged,this, &HelpModeConfig::handleFilesChanged);
     handleFilesChanged(HELP_MANAGER->registeredFiles());
 }
 

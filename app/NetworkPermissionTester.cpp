@@ -74,7 +74,7 @@ bool NetworkPermissionTester::havePermission()
         layout->addWidget(cb, 1, 0);
 
         QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok);
-        QObject::connect(bb, SIGNAL(accepted()), &d, SLOT(accept()));
+        QObject::connect(bb, &QDialogButtonBox::accepted, &d, &QDialog::accept);
         layout->addWidget(bb, 2, 0);
 
         d.exec();

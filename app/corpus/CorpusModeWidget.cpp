@@ -76,10 +76,10 @@ CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
 
     ui->stackedWidget->setCurrentIndex(0);
 
-    connect(ui->commandCorpusExplorer, SIGNAL(clicked()), this, SLOT(showCorpusExplorer()));
-    connect(ui->commandCorpusExplorerTables, SIGNAL(clicked()), this, SLOT(showCorpusExplorerTables()));
-    connect(ui->commandMetadataStructureEditor, SIGNAL(clicked()), this, SLOT(showMetadataStructureEditor()));
-    connect(ui->commandAnnotationStructureEditor, SIGNAL(clicked()), this, SLOT(showAnnotationStructureEditor()));
+    connect(ui->commandCorpusExplorer, &QAbstractButton::clicked, this, &CorpusModeWidget::showCorpusExplorer);
+    connect(ui->commandCorpusExplorerTables, &QAbstractButton::clicked, this, &CorpusModeWidget::showCorpusExplorerTables);
+    connect(ui->commandMetadataStructureEditor, &QAbstractButton::clicked, this, &CorpusModeWidget::showMetadataStructureEditor);
+    connect(ui->commandAnnotationStructureEditor, &QAbstractButton::clicked, this, &CorpusModeWidget::showAnnotationStructureEditor);
 
     // Get Corpus Repositories Manager from global object list
     QList<QObject *> list;
@@ -115,13 +115,13 @@ void CorpusModeWidget::setupActions()
     // FILE MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionNewCorpusRepository = new QAction(tr("New Corpus Repository..."), this);
-    connect(d->actionNewCorpusRepository, SIGNAL(triggered()), SLOT(newCorpusRepository()));
+    connect(d->actionNewCorpusRepository, &QAction::triggered, this, &CorpusModeWidget::newCorpusRepository);
     command = ACTION_MANAGER->registerAction("File.NewCorpusRepository", d->actionNewCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
     d->actionOpenCorpusRepository = new QAction(tr("Open Corpus Repository..."), this);
-    connect(d->actionOpenCorpusRepository, SIGNAL(triggered()), SLOT(openCorpusRepository()));
+    connect(d->actionOpenCorpusRepository, &QAction::triggered, this, qOverload<>(&CorpusModeWidget::openCorpusRepository));
     command = ACTION_MANAGER->registerAction("File.OpenCorpusRepository", d->actionOpenCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
@@ -134,7 +134,7 @@ void CorpusModeWidget::setupActions()
     menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionEditCorpusRepository = new QAction(tr("Edit Corpus Repository Properties..."), this);
-    connect(d->actionEditCorpusRepository, SIGNAL(triggered()), SLOT(editCorpusRepository()));
+    connect(d->actionEditCorpusRepository, &QAction::triggered, this, &CorpusModeWidget::editCorpusRepository);
     command = ACTION_MANAGER->registerAction("File.EditCorpusRepository", d->actionEditCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
@@ -142,13 +142,13 @@ void CorpusModeWidget::setupActions()
     menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionSaveCorpusRepository = new QAction(tr("Save Corpus Repository Properties File"), this);
-    connect(d->actionSaveCorpusRepository, SIGNAL(triggered()), SLOT(saveCorpusRepository()));
+    connect(d->actionSaveCorpusRepository, &QAction::triggered, this, &CorpusModeWidget::saveCorpusRepository);
     command = ACTION_MANAGER->registerAction("File.SaveCorpusRepository", d->actionSaveCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
 
     d->actionSaveCorpusRepositoryAs = new QAction(tr("Save Corpus Repository Properties File As..."), this);
-    connect(d->actionSaveCorpusRepositoryAs, SIGNAL(triggered()), SLOT(saveCorpusRepositoryAs()));
+    connect(d->actionSaveCorpusRepositoryAs, &QAction::triggered, this, &CorpusModeWidget::saveCorpusRepositoryAs);
     command = ACTION_MANAGER->registerAction("File.SaveCorpusRepositoryAs", d->actionSaveCorpusRepositoryAs, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
@@ -156,7 +156,7 @@ void CorpusModeWidget::setupActions()
     menu_file->addSeparator(qti_action_FILE_SETTINGS);
 
     d->actionCloseCorpusRepository = new QAction(tr("Close Corpus Repository"), this);
-    connect(d->actionCloseCorpusRepository, SIGNAL(triggered()), SLOT(closeCorpusRepository()));
+    connect(d->actionCloseCorpusRepository, &QAction::triggered, this, &CorpusModeWidget::closeCorpusRepository);
     command = ACTION_MANAGER->registerAction("File.CloseCorpusRepository", d->actionCloseCorpusRepository, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     menu_file->addAction(command, qti_action_FILE_SETTINGS);
@@ -165,25 +165,25 @@ void CorpusModeWidget::setupActions()
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionShowCorpusExplorer = new QAction(tr("Corpus Explorer (trees)"), this);
-    connect(d->actionShowCorpusExplorer, SIGNAL(triggered()), SLOT(showCorpusExplorer()));
+    connect(d->actionShowCorpusExplorer, &QAction::triggered, this, &CorpusModeWidget::showCorpusExplorer);
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorer", d->actionShowCorpusExplorer, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
     d->actionShowCorpusExplorerTables = new QAction(tr("Corpus Explorer (tabular)"), this);
-    connect(d->actionShowCorpusExplorerTables, SIGNAL(triggered()), SLOT(showCorpusExplorerTables()));
+    connect(d->actionShowCorpusExplorerTables, &QAction::triggered, this, &CorpusModeWidget::showCorpusExplorerTables);
     command = ACTION_MANAGER->registerAction("Window.ShowCorpusExplorerTables", d->actionShowCorpusExplorerTables, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
     d->actionShowMetadataStructureEditor = new QAction(tr("Metadata Structure Editor"), this);
-    connect(d->actionShowMetadataStructureEditor, SIGNAL(triggered()), SLOT(showMetadataStructureEditor()));
+    connect(d->actionShowMetadataStructureEditor, &QAction::triggered, this, &CorpusModeWidget::showMetadataStructureEditor);
     command = ACTION_MANAGER->registerAction("Window.ShowMetadataStructureEditor", d->actionShowMetadataStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
 
     d->actionShowAnnotationStructureEditor = new QAction(tr("Annotation Structure Editor"), this);
-    connect(d->actionShowAnnotationStructureEditor, SIGNAL(triggered()), SLOT(showAnnotationStructureEditor()));
+    connect(d->actionShowAnnotationStructureEditor, &QAction::triggered, this, &CorpusModeWidget::showAnnotationStructureEditor);
     command = ACTION_MANAGER->registerAction("Window.ShowAnnotationStructureEditor", d->actionShowAnnotationStructureEditor, context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     menu_window->addAction(command);
@@ -197,7 +197,7 @@ void CorpusModeWidget::setupRecentFilesMenu()
     vector<QString> files = d->recentFiles->getRecent();
     for (size_t i = 0; i < files.size(); ++i) {
         QAction *action = new QAction(files[i], this);
-        connect(action, SIGNAL(triggered()), this, SLOT(openCorpusRepositoryRecent()));
+        connect(action, &QAction::triggered, this, &CorpusModeWidget::openCorpusRepositoryRecent);
         if (i == 0) {
             action->setShortcut(tr("Ctrl+R"));
         }

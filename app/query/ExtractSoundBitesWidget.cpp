@@ -46,8 +46,8 @@ ExtractSoundBitesWidget::ExtractSoundBitesWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     // Controls
-    connect(ui->commandBrowseForOutputFolder, SIGNAL(clicked(bool)), this, SLOT(browseForFolder()));
-    connect(ui->commandExtract, SIGNAL(clicked(bool)), this, SLOT(extractSoundBites()));
+    connect(ui->commandBrowseForOutputFolder, &QAbstractButton::clicked, this, &ExtractSoundBitesWidget::browseForFolder);
+    connect(ui->commandExtract, &QAbstractButton::clicked, this, &ExtractSoundBitesWidget::extractSoundBites);
     ui->optionSamplingRateOriginal->setChecked(true);
 
     // Corpus Repositories Manager
@@ -57,7 +57,7 @@ ExtractSoundBitesWidget::ExtractSoundBitesWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &ExtractSoundBitesWidget::activeCorpusRepositoryChanged);
     // Corpora combobox
     if (d->corpusRepositoriesManager->activeCorpusRepository()) {
         ui->comboBoxSourceCorpus->addItems(d->corpusRepositoriesManager->activeCorpusRepository()->listCorporaIDs());
@@ -71,7 +71,7 @@ ExtractSoundBitesWidget::ExtractSoundBitesWidget(QWidget *parent) :
                 << tr("Start Time (s)") << tr("End Time (s)"));
     d->manualSelectionTable->tableView()->setModel(d->manualSelectionModel);
     // Manual selection - clear table
-    connect(ui->commandManualEntryClearTable, SIGNAL(clicked(bool)), this, SLOT(manualEntryClearTable()));
+    connect(ui->commandManualEntryClearTable, &QAbstractButton::clicked, this, &ExtractSoundBitesWidget::manualEntryClearTable);
 }
 
 ExtractSoundBitesWidget::~ExtractSoundBitesWidget()

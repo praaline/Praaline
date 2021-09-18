@@ -56,10 +56,10 @@ KappaStatisticsWidget::KappaStatisticsWidget(CorpusRepository *repository, QWidg
     // Levels and attributes
     QStringList levelIDs = repository->annotationStructure()->levelIDs();
     ui->comboBoxAnnotationLevel->addItems(levelIDs);
-    connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationLevelChanged(QString)));
+    connect(ui->comboBoxAnnotationLevel, &QComboBox::currentTextChanged, this, &KappaStatisticsWidget::annotationLevelChanged);
     annotationLevelChanged("");
     // Command Analyse
-    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
+    connect(ui->commandAnalyse, &QAbstractButton::clicked, this, &KappaStatisticsWidget::analyse);
     // Results grid view
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);

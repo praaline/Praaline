@@ -37,7 +37,7 @@ class QPushButton;
 
 /**
  * View is the base class of widgets that display one or more
- * overlaid views of data against a horizontal time scale. 
+ * overlaid views of data against a horizontal time scale.
  *
  * A View may have any number of attached Layers, each of which
  * is expected to have one data Model (although multiple views may
@@ -49,7 +49,7 @@ class QPushButton;
  */
 
 class View : public QFrame,
-	     public XmlExportable
+        public XmlExportable
 {
     Q_OBJECT
 
@@ -112,8 +112,8 @@ public:
      *
      * Not thread-safe in logarithmic mode.  Call only from GUI thread.
      */
-    double getYForFrequency(double frequency, double minFreq, double maxFreq, 
-			   bool logarithmic) const;
+    double getYForFrequency(double frequency, double minFreq, double maxFreq,
+                            bool logarithmic) const;
 
     /**
      * Return the closest frequency to the given pixel y-coordinate,
@@ -122,7 +122,7 @@ public:
      * Not thread-safe in logarithmic mode.  Call only from GUI thread.
      */
     double getFrequencyForY(int y, double minFreq, double maxFreq,
-			   bool logarithmic) const;
+                            bool logarithmic) const;
 
     /**
      * Return the zoom level, i.e. the number of frames per pixel
@@ -250,7 +250,7 @@ public:
     };
 
     virtual void drawVisibleText(QPainter &p, int x, int y,
-				 QString text, TextStyle style) const;
+                                 QString text, TextStyle style) const;
 
     virtual void drawMeasurementRect(QPainter &p, const Layer *,
                                      QRect rect, bool focus) const;
@@ -278,9 +278,9 @@ public:
     virtual QString getPropertyLabel(const PropertyName &) const;
     virtual PropertyContainer::PropertyType getPropertyType(const PropertyName &) const;
     virtual int getPropertyRangeAndValue(const PropertyName &,
-					 int *min, int *max, int *deflt) const;
+                                         int *min, int *max, int *deflt) const;
     virtual QString getPropertyValueLabel(const PropertyName &,
-					  int value) const;
+                                          int value) const;
     virtual void setProperty(const PropertyName &, int value);
     virtual QString getPropertyContainerName() const {
         return objectName();
@@ -387,8 +387,8 @@ protected:
     LayerList getScrollableBackLayers(bool testChanged, bool &changed) const;
     LayerList getNonScrollableFrontLayers(bool testChanged, bool &changed) const;
     int getZoomConstraintBlockSize(int blockSize,
-				      ZoomConstraint::RoundingDirection dir =
-				      ZoomConstraint::RoundNearest) const;
+                                   ZoomConstraint::RoundingDirection dir =
+            ZoomConstraint::RoundNearest) const;
 
     // True if the top layer(s) use colours for meaningful things.  If
     // this is the case, selections will be shown using unfilled boxes
@@ -466,25 +466,25 @@ public:
         return m_v->getPropertyLabel(n);
     }
     PropertyType getPropertyType(const PropertyName &n) const {
-	return m_v->getPropertyType(n);
+        return m_v->getPropertyType(n);
     }
     int getPropertyRangeAndValue(const PropertyName &n, int *min, int *max,
                                  int *deflt) const {
-	return m_v->getPropertyRangeAndValue(n, min, max, deflt);
+        return m_v->getPropertyRangeAndValue(n, min, max, deflt);
     }
     QString getPropertyValueLabel(const PropertyName &n, int value) const {
-	return m_v->getPropertyValueLabel(n, value);
+        return m_v->getPropertyValueLabel(n, value);
     }
     QString getPropertyContainerName() const {
-	return m_v->getPropertyContainerName();
+        return m_v->getPropertyContainerName();
     }
     QString getPropertyContainerIconName() const {
-	return m_v->getPropertyContainerIconName();
+        return m_v->getPropertyContainerIconName();
     }
 
 public slots:
-    virtual void setProperty(const PropertyName &n, int value) {
-	m_v->setProperty(n, value);
+    virtual void setProperty(const PropertyContainer::PropertyName &n, int value) {
+        m_v->setProperty(n, value);
     }
 
 protected:

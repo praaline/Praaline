@@ -56,15 +56,15 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
         ++i;
     }
     // Command Analyse
-    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
+    connect(ui->commandAnalyse, &QAbstractButton::clicked, this, &StatisticsPluginBasicWidget::analyse);
     // Results grid view
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
     ui->gridLayoutResults->addWidget(d->gridviewResults);
     // Default
     ui->optionOrientationVertical->setChecked(true);
-    connect(ui->optionOrientationVertical, SIGNAL(clicked(bool)), this, SLOT(updateTable()));
-    connect(ui->optionOrientationHorizontal, SIGNAL(clicked(bool)), this, SLOT(updateTable()));
+    connect(ui->optionOrientationVertical, &QAbstractButton::clicked, this, &StatisticsPluginBasicWidget::updateTable);
+    connect(ui->optionOrientationHorizontal, &QAbstractButton::clicked, this, &StatisticsPluginBasicWidget::updateTable);
 }
 
 StatisticsPluginBasicWidget::~StatisticsPluginBasicWidget()

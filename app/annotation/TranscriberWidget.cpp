@@ -106,8 +106,8 @@ void TranscriberWidget::newSession()
     closeSession();
     createDocument();
     Pane *pane = m_paneStack->addPane();
-    connect(pane, SIGNAL(contextHelpChanged(QString)),
-            this, SLOT(contextHelpChanged(QString)));
+    connect(pane, &View::contextHelpChanged,
+            this, &TranscriberWidget::contextHelpChanged);
     if (!m_timeRulerLayer) {
         m_timeRulerLayer = m_document->createMainModelLayer(LayerFactory::Type("TimeRuler"));
     }

@@ -21,11 +21,11 @@ AddLevelDialog::AddLevelDialog(AnnotationStructure *structure, QWidget *parent) 
     }
     ui->spinDatalength->setValue(1024);
 
-    connect(ui->comboLevelType, SIGNAL(currentTextChanged(QString)), this, SLOT(levelTypeChanged(QString)));
-    connect(ui->comboDatatype, SIGNAL(currentTextChanged(QString)), this, SLOT(datatypeChanged(QString)));
+    connect(ui->comboLevelType, &QComboBox::currentTextChanged, this, &AddLevelDialog::levelTypeChanged);
+    connect(ui->comboDatatype, &QComboBox::currentTextChanged, this, &AddLevelDialog::datatypeChanged);
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 }
 
 AddLevelDialog::~AddLevelDialog()

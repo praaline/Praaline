@@ -108,7 +108,7 @@ AutomaticAnnotationWidget::AutomaticAnnotationWidget(QWidget *parent) :
     d->treeviewAnnotationPlugins = new QTreeView(this);
     d->treeviewAnnotationPlugins->setModel(d->checkableProxyModelAnnotationPlugins);
     ui->gridLayoutAnnotationPlugins->addWidget(d->treeviewAnnotationPlugins);
-    connect(d->checkableProxyModelAnnotationPlugins, SIGNAL(checkedNodesChanged()), this, SLOT(pluginSelectionChanged()));
+    connect(d->checkableProxyModelAnnotationPlugins, &CheckableProxyModel::checkedNodesChanged, this, &AutomaticAnnotationWidget::pluginSelectionChanged);
 
     // Layout
     // Set proportions
@@ -125,7 +125,7 @@ AutomaticAnnotationWidget::~AutomaticAnnotationWidget()
 
 void AutomaticAnnotationWidget::setupActions()
 {
-    connect(ui->commandAnnotate, SIGNAL(clicked()), this, SLOT(actionAnnotate()));
+    connect(ui->commandAnnotate, &QAbstractButton::clicked, this, &AutomaticAnnotationWidget::actionAnnotate);
 }
 
 void AutomaticAnnotationWidget::pluginSelectionChanged()

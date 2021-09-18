@@ -57,7 +57,7 @@ AnnotationStructureEditor::AnnotationStructureEditor(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(activeCorpusRepositoryChanged(QString)), this, SLOT(activeCorpusRepositoryChanged(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::activeCorpusRepositoryChanged, this, &AnnotationStructureEditor::activeCorpusRepositoryChanged);
 
     // Toolbars and actions
     d->toolbarAnnotationStructure = new QToolBar("Annotation Structure", this);
@@ -110,37 +110,37 @@ void AnnotationStructureEditor::setupActions()
     // ------------------------------------------------------------------------------------------------------
 
     d->actionSaveAnnotationStructure = new QAction(QIcon(":icons/actions/action_save.png"), "Save", this);
-    connect(d->actionSaveAnnotationStructure, SIGNAL(triggered()), SLOT(saveAnnotationStructure()));
+    connect(d->actionSaveAnnotationStructure, &QAction::triggered, this, &AnnotationStructureEditor::saveAnnotationStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.SaveAnnotationStructure", d->actionSaveAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionSaveAnnotationStructure);
 
     d->actionAddAnnotationStructureLevel = new QAction(QIcon(":icons/actions/list_add.png"), "Add Level", this);
-    connect(d->actionAddAnnotationStructureLevel, SIGNAL(triggered()), SLOT(addAnnotationStructureLevel()));
+    connect(d->actionAddAnnotationStructureLevel, &QAction::triggered, this, &AnnotationStructureEditor::addAnnotationStructureLevel);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.AddAnnotationLevel", d->actionAddAnnotationStructureLevel, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionAddAnnotationStructureLevel);
 
     d->actionAddAnnotationStructureAttribute = new QAction(QIcon(":icons/actions/list_add.png"), "Add Attribute", this);
-    connect(d->actionAddAnnotationStructureAttribute, SIGNAL(triggered()), SLOT(addAnnotationStructureAttribute()));
+    connect(d->actionAddAnnotationStructureAttribute, &QAction::triggered, this, &AnnotationStructureEditor::addAnnotationStructureAttribute);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.AddAnnotationAttribute", d->actionAddAnnotationStructureAttribute, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionAddAnnotationStructureAttribute);
 
     d->actionRemoveAnnotationStructureItem = new QAction(QIcon(":icons/actions/list_remove.png"), "Delete", this);
-    connect(d->actionRemoveAnnotationStructureItem, SIGNAL(triggered()), SLOT(removeAnnotationStructureItem()));
+    connect(d->actionRemoveAnnotationStructureItem, &QAction::triggered, this, &AnnotationStructureEditor::removeAnnotationStructureItem);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.RemoveAnnotationItem", d->actionRemoveAnnotationStructureItem, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionRemoveAnnotationStructureItem);
 
     d->actionImportAnnotationStructure = new QAction(QIcon(":icons/actions/table_import.png"), "Import Annotation Structure", this);
-    connect(d->actionImportAnnotationStructure, SIGNAL(triggered()), SLOT(importAnnotationStructure()));
+    connect(d->actionImportAnnotationStructure, &QAction::triggered, this, &AnnotationStructureEditor::importAnnotationStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ImportAnnotationStructure", d->actionImportAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionImportAnnotationStructure);
 
     d->actionExportAnnotationStructure = new QAction(QIcon(":icons/actions/table_export.png"), "Export Annotation Structure", this);
-    connect(d->actionExportAnnotationStructure, SIGNAL(triggered()), SLOT(exportAnnotationStructure()));
+    connect(d->actionExportAnnotationStructure, &QAction::triggered, this, &AnnotationStructureEditor::exportAnnotationStructure);
     command = ACTION_MANAGER->registerAction("Corpus.Structure.ExportAnnotationStructure", d->actionExportAnnotationStructure, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarAnnotationStructure->addAction(d->actionExportAnnotationStructure);
@@ -157,10 +157,10 @@ void AnnotationStructureEditor::refreshAnnotationStructureTreeView(AnnotationStr
     // create new model
     d->treemodelAnnotationStructure = new AnnotationStructureTreeModel(structure, false, false, this);
     // connect signals to new model
-    connect(d->treemodelAnnotationStructure, SIGNAL(renameAnnotationLevel(QString, QString)),
-            this, SLOT(renameAnnotationLevel(QString,QString)));
-    connect(d->treemodelAnnotationStructure, SIGNAL(renameAnnotationAttribute(QString, QString, QString)),
-            this, SLOT(renameAnnotationAttribute(QString,QString,QString)));
+    connect(d->treemodelAnnotationStructure.data(), &AnnotationStructureTreeModel::renameAnnotationLevel,
+            this, &AnnotationStructureEditor::renameAnnotationLevel);
+    connect(d->treemodelAnnotationStructure.data(), &AnnotationStructureTreeModel::renameAnnotationAttribute,
+            this, &AnnotationStructureEditor::renameAnnotationAttribute);
     // set model
     d->treeviewAnnotationStructure->setModel(d->treemodelAnnotationStructure);
     d->treeviewAnnotationStructure->expandAll();
@@ -300,7 +300,7 @@ void AnnotationStructureEditor::importAnnotationStructure()
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
     AnnotationStructure *structure(0);
-    if (filename.toLower().endsWith(".json")) {
+    if (filename.endsWith(".json", Qt::CaseInsensitive)) {
         structure = JSONSerialiserAnnotationStructure::read(filename);
     } else {
         structure = XMLSerialiserAnnotationStructure::read(filename);
@@ -321,10 +321,10 @@ void AnnotationStructureEditor::exportAnnotationStructure()
                                                     tr("XML File (*.xml);;JSON File (*.json);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-    if (filename.toLower().endsWith("json")) {
+    if (filename.endsWith("json", Qt::CaseInsensitive)) {
         JSONSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
     } else {
-        if (!filename.toLower().endsWith(".xml")) filename = filename.append(".xml");
+        if (!filename.endsWith(".xml", Qt::CaseInsensitive)) filename = filename.append(".xml");
         XMLSerialiserAnnotationStructure::write(repository->annotationStructure(), filename);
     }
 }

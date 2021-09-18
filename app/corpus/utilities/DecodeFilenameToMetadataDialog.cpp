@@ -36,11 +36,11 @@ DecodeFilenameToMetadataDialog::DecodeFilenameToMetadataDialog(Corpus *corpus, Q
 {
     ui->setupUi(this);
     d->corpus = corpus;
-    connect(ui->commandClose, SIGNAL(clicked(bool)), this, SLOT(close()));
-    connect(ui->commandAdd, SIGNAL(clicked(bool)), this, SLOT(addCorrespondance()));
-    connect(ui->commandRemove, SIGNAL(clicked(bool)), this, SLOT(removeCorrespondance()));
-    connect(ui->commandUpdateMetadata, SIGNAL(clicked(bool)), this, SLOT(updateMetadata()));
-    connect(ui->comboBoxOperation, SIGNAL(currentIndexChanged(int)), this, SLOT(operationChanged(int)));
+    connect(ui->commandClose, &QAbstractButton::clicked, this, &QWidget::close);
+    connect(ui->commandAdd, &QAbstractButton::clicked, this, &DecodeFilenameToMetadataDialog::addCorrespondance);
+    connect(ui->commandRemove, &QAbstractButton::clicked, this, &DecodeFilenameToMetadataDialog::removeCorrespondance);
+    connect(ui->commandUpdateMetadata, &QAbstractButton::clicked, this, &DecodeFilenameToMetadataDialog::updateMetadata);
+    connect(ui->comboBoxOperation, qOverload<int>(&QComboBox::currentIndexChanged), this, &DecodeFilenameToMetadataDialog::operationChanged);
     ui->spinBoxFrom->setMinimum(1);
     ui->spinBoxTo->setMinimum(1);
     // Load metadata attributes in current corpus

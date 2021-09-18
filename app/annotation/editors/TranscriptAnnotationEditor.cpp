@@ -62,7 +62,7 @@ TranscriptAnnotationEditor::TranscriptAnnotationEditor(QWidget *parent) :
     // Media player
     d->mediaPlayer = new QMediaPlayer(this);
     d->mediaPlayer->setNotifyInterval(20);
-    connect(d->mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(mediaPositionChanged(qint64)));
+    connect(d->mediaPlayer, &QMediaPlayer::positionChanged, this, &TranscriptAnnotationEditor::mediaPositionChanged);
     // Layout
     this->addToolBar(d->toolbarMain);
     QWidget *contents = new QWidget(this);
@@ -90,26 +90,26 @@ void TranscriptAnnotationEditor::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
-    connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotations()));
+    connect(d->actionSave, &QAction::triggered, this, &TranscriptAnnotationEditor::saveAnnotations);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionSave);
     d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
     d->actionPlay = new QAction(QIcon(":/icons/media/media_play.png"), tr("Play"), this);
-    connect(d->actionPlay, SIGNAL(triggered()), SLOT(mediaPlay()));
+    connect(d->actionPlay, &QAction::triggered, this, &TranscriptAnnotationEditor::mediaPlay);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Play", d->actionPlay, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPlay);
 
     d->actionPause = new QAction(QIcon(":/icons/media/media_pause.png"), tr("Pause"), this);
-    connect(d->actionPause, SIGNAL(triggered()), SLOT(mediaPause()));
+    connect(d->actionPause, &QAction::triggered, this, &TranscriptAnnotationEditor::mediaPause);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Pause", d->actionPause, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPause);
 
     d->actionStop = new QAction(QIcon(":/icons/media/media_stop.png"), tr("Stop"), this);
-    connect(d->actionStop, SIGNAL(triggered()), SLOT(mediaStop()));
+    connect(d->actionStop, &QAction::triggered, this, &TranscriptAnnotationEditor::mediaStop);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Stop", d->actionStop, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionStop);

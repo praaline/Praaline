@@ -84,25 +84,25 @@ GroupingAnnotationEditor::GroupingAnnotationEditor(QWidget *parent) :
     d->editor = new GroupingAnnotationEditorWidget(this);
     // Timeline configuration
     d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
-    connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
-            this, SLOT(selectedLevelsAttributesChanged()));
-    connect(d->widgetTimelineConfig, SIGNAL(speakerAdded(QString)),
-            this, SLOT(speakerAdded(QString)));
-    connect(d->widgetTimelineConfig, SIGNAL(speakerRemoved(QString)),
-            this, SLOT(speakerRemoved(QString)));
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::selectedLevelsAttributesChanged,
+            this, &GroupingAnnotationEditor::selectedLevelsAttributesChanged);
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::speakerAdded,
+            this, &GroupingAnnotationEditor::speakerAdded);
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::speakerRemoved,
+            this, &GroupingAnnotationEditor::speakerRemoved);
     d->dockTimelineConfig = new QDockWidget(tr("Timeline Configuration"), this);
     d->dockTimelineConfig->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     d->dockTimelineConfig->setWidget(d->widgetTimelineConfig);
     addDockWidget(Qt::RightDockWidgetArea, d->dockTimelineConfig);
     // Changes to editor state
-    connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
-            this, SLOT(timelineSelectedRowsChanged(QList<int>)));
-    connect(d->editor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
-            this, SLOT(timelineCurrentIndexChanged(QModelIndex,QModelIndex)));
+    connect(d->editor, &GroupingAnnotationEditorWidget::selectedRowsChanged,
+            this, &GroupingAnnotationEditor::timelineSelectedRowsChanged);
+    connect(d->editor, &TimelineEditorWidgetBase::currentIndexChanged,
+            this, &GroupingAnnotationEditor::timelineCurrentIndexChanged);
     // Media player
     d->mediaPlayer = new QMediaPlayer(this);
     d->mediaPlayer->setNotifyInterval(20);
-    connect(d->mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(mediaPositionChanged(qint64)));
+    connect(d->mediaPlayer, &QMediaPlayer::positionChanged, this, &GroupingAnnotationEditor::mediaPositionChanged);
     // Waiting spinner while load corpus data
     d->waitingSpinner = new WaitingSpinnerWidget(this);
     d->waitingSpinner->setRoundness(70.0);
@@ -144,26 +144,26 @@ void GroupingAnnotationEditor::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
-    connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotations()));
+    connect(d->actionSave, &QAction::triggered, this, &GroupingAnnotationEditor::saveAnnotations);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionSave);
     d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
     d->actionPlay = new QAction(QIcon(":/icons/media/media_play.png"), tr("Play"), this);
-    connect(d->actionPlay, SIGNAL(triggered()), SLOT(mediaPlay()));
+    connect(d->actionPlay, &QAction::triggered, this, &GroupingAnnotationEditor::mediaPlay);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Play", d->actionPlay, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPlay);
 
     d->actionPause = new QAction(QIcon(":/icons/media/media_pause.png"), tr("Pause"), this);
-    connect(d->actionPause, SIGNAL(triggered()), SLOT(mediaPause()));
+    connect(d->actionPause, &QAction::triggered, this, &GroupingAnnotationEditor::mediaPause);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Pause", d->actionPause, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPause);
 
     d->actionStop = new QAction(QIcon(":/icons/media/media_stop.png"), tr("Stop"), this);
-    connect(d->actionStop, SIGNAL(triggered()), SLOT(mediaStop()));
+    connect(d->actionStop, &QAction::triggered, this, &GroupingAnnotationEditor::mediaStop);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Stop", d->actionStop, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionStop);
@@ -172,13 +172,13 @@ void GroupingAnnotationEditor::setupActions()
     // ----------------------------------------------------------------------------------------------------------------
 
     d->actionRemoveSorting = new QAction(QIcon(":/icons/actions/sort_remove.png"), tr("Remove Sort"), this);
-    connect(d->actionRemoveSorting, SIGNAL(triggered()), d->editor, SLOT(removeSorting()));
+    connect(d->actionRemoveSorting, &QAction::triggered, d->editor, &GroupingAnnotationEditorWidget::removeSorting);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.RemoveSorting", d->actionRemoveSorting, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionRemoveSorting);
 
     d->actionToggleTimelineConfig = new QAction(QIcon(":/icons/actions/toggle_config.png"), tr("Editor Options"), this);
-    connect(d->actionToggleTimelineConfig, SIGNAL(triggered()), this, SLOT(toggleTimelineConfig()));
+    connect(d->actionToggleTimelineConfig, &QAction::triggered, this, &GroupingAnnotationEditor::toggleTimelineConfig);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleTimelineConfig", d->actionToggleTimelineConfig, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleTimelineConfig);

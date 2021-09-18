@@ -188,7 +188,7 @@ void QCheckStateProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 		if (QCheckStateProxyModel::sourceModel()){
 			disconnect(QCheckStateProxyModel::sourceModel(), 0, this, 0);
 		}
-		connect(sourceModel, SIGNAL(modelAboutToBeReset()), this, SLOT(sourceModelAboutToBeReset()));
+		connect(sourceModel, &QAbstractItemModel::modelAboutToBeReset, this, &QCheckStateProxyModel::sourceModelAboutToBeReset);
 	}
 	QIdentityProxyModel::setSourceModel(sourceModel);
 

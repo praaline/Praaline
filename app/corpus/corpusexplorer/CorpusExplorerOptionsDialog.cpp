@@ -21,14 +21,14 @@ CorpusExplorerOptionsDialog::CorpusExplorerOptionsDialog(MetadataStructure *mstr
 {
     ui->setupUi(this);
 
-    connect(ui->commandComGroup, SIGNAL(clicked(bool)), this, SLOT(commandGroup()));
-    connect(ui->commandComUngroup, SIGNAL(clicked(bool)), this, SLOT(commandUngroup()));
-    connect(ui->commandComUp, SIGNAL(clicked(bool)), this, SLOT(commandGroupMoveUp()));
-    connect(ui->commandComDown, SIGNAL(clicked(bool)), this, SLOT(commandGroupMoveDown()));
-    connect(ui->commandSpkGroup, SIGNAL(clicked(bool)), this, SLOT(commandGroup()));
-    connect(ui->commandSpkUngroup, SIGNAL(clicked(bool)), this, SLOT(commandUngroup()));
-    connect(ui->commandSpkUp, SIGNAL(clicked(bool)), this, SLOT(commandGroupMoveUp()));
-    connect(ui->commandSpkDown, SIGNAL(clicked(bool)), this, SLOT(commandGroupMoveDown()));
+    connect(ui->commandComGroup, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroup);
+    connect(ui->commandComUngroup, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandUngroup);
+    connect(ui->commandComUp, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroupMoveUp);
+    connect(ui->commandComDown, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroupMoveDown);
+    connect(ui->commandSpkGroup, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroup);
+    connect(ui->commandSpkUngroup, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandUngroup);
+    connect(ui->commandSpkUp, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroupMoveUp);
+    connect(ui->commandSpkDown, &QAbstractButton::clicked, this, &CorpusExplorerOptionsDialog::commandGroupMoveDown);
 
     // Initialise lists
     if (!mstructure) return;

@@ -28,7 +28,7 @@ QWidget* SearchWidgetFactory::produceWidget() {
 
         QVBoxLayout* layout = new QVBoxLayout(d_combined_widget);
         QHelpSearchQueryWidget* queryWidget = d_help_search_engine->queryWidget();
-        connect(queryWidget,SIGNAL(search()),SLOT(handleSearchSignal()));
+        connect(queryWidget,&QHelpSearchQueryWidget::search,this, &SearchWidgetFactory::handleSearchSignal);
         layout->addWidget(queryWidget);
         QHelpSearchResultWidget* result_widget = d_help_search_engine->resultWidget();
         layout->addWidget(result_widget);

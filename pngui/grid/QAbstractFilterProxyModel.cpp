@@ -79,10 +79,10 @@ void QAbstractFilterProxyModel::setFilterModel(QAbstractFilterModel* filterModel
         disconnect(d->filterModel);
     }
     d->filterModel = filterModel;
-    connect(d->filterModel, SIGNAL(dataChanged(QModelIndex, QModelIndex)), this, SLOT(updateResult()));
-    connect(d->filterModel, SIGNAL(modelReset()), this, SLOT(updateResult()));
-    connect(d->filterModel, SIGNAL(modeChanged(QAdvancedItemViews::FilterProxyMode)), this, SLOT(updateResult()));
-    connect(d->filterModel, SIGNAL(matchModeChanged(QAdvancedItemViews::FilterMatchMode)), this, SLOT(updateResult()));
+    connect(d->filterModel, &QAbstractFilterModel::dataChanged, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel, &QAbstractFilterModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel, &QAbstractFilterModel::modeChanged, this, &QAbstractFilterProxyModel::updateResult);
+    connect(d->filterModel, &QAbstractFilterModel::matchModeChanged, this, &QAbstractFilterProxyModel::updateResult);
     d->filterModel->setSourceModel(sourceModel());
 }
 
@@ -93,7 +93,7 @@ void QAbstractFilterProxyModel::setSourceModel(QAbstractItemModel* sourceModel)
 	}
     QSortFilterProxyModel::setSourceModel(sourceModel);
     d->filterModel->setSourceModel(sourceModel);
-	connect(d->filterModel->sourceModel(), SIGNAL(modelReset()), this, SLOT(updateResult()));
+	connect(d->filterModel->sourceModel(), &QAbstractItemModel::modelReset, this, &QAbstractFilterProxyModel::updateResult);
     emitResultCountChanged();
 }
 

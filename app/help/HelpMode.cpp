@@ -39,7 +39,7 @@ HelpMode::HelpMode(QObject *parent) :
 
     // Create widget
     if (!d->widget) d->widget = new HelpModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &HelpModeWidget::activateMode, this, &HelpMode::activateMode);
 }
 
 HelpMode::~HelpMode()

@@ -81,7 +81,7 @@ PauseLengthDistributionWidget::PauseLengthDistributionWidget(CorpusRepository *r
     ui->spinBoxNumberOfColumns->setMinimum(1);
     ui->spinBoxNumberOfColumns->setValue(1);
     // Draw charts command
-    connect(ui->commandDraw, SIGNAL(clicked(bool)), this, SLOT(drawCharts()));
+    connect(ui->commandDraw, &QAbstractButton::clicked, this, &PauseLengthDistributionWidget::drawCharts);
 }
 
 PauseLengthDistributionWidget::~PauseLengthDistributionWidget()

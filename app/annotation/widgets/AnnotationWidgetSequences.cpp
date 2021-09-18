@@ -34,7 +34,8 @@ AnnotationWidgetSequences::AnnotationWidgetSequences(QWidget *parent) :
 {
     ui->setupUi(this);
     // When the user selects a sequence annotation level, show the appropriate labels from the name-value list
-    connect(ui->comboBoxAnnotationLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelChanged(int)));
+    connect(ui->comboBoxAnnotationLevel, qOverload<int>(&QComboBox::currentIndexChanged),
+            this, &AnnotationWidgetSequences::annotationLevelChanged);
     // Initial state: nothing selected
     ui->cmdAddSequence->setEnabled(false);
     // Make the sequences grid-view a little tighter
@@ -109,6 +110,7 @@ void AnnotationWidgetSequences::annotationLevelChanged(int index)
     }
     if (!d->model) return;
     if (!d->model->sequenceModel(tiernameSequences)) return;
+    ui->tableView->setModel(d->model->sequenceModel(tiernameSequences));
     ui->gridViewSequences->tableView()->setModel(d->model->sequenceModel(tiernameSequences));
     ui->gridViewSequences->tableView()->resizeColumnsToContents();
 }
@@ -141,7 +143,7 @@ void AnnotationWidgetSequences::on_cmdAddSequence_clicked()
     QModelIndex indexTo   = d->model->index(d->rowsSelected.last(), d->columnIndexParentTier);
     bool ret = d->model->addSequence(tiernameSequences, indexFrom, indexTo, ui->comboBoxSequenceLabel->currentData().toString());
     if (!ret) {
-        QMessageBox::warning(this, tr("Error"), tr("Error adding sequence. Ensure that the sequence begins and ends within utterances of the same speaker."),
+        QMessageBox::warning(this, tr("Error"), tr("Error adding sequence. Please ensure that the sequence begins and ends within utterances of the same speaker."),
                              QMessageBox::Ok);
     }
 }
@@ -156,5 +158,5 @@ void AnnotationWidgetSequences::on_cmdDeleteSequence_clicked()
     QString tiernameSequences = ui->comboBoxAnnotationLevel->currentData().toString();
     if (!d->model->sequenceModel(tiernameSequences)) return;
     for (int i = rows.count() - 1; i >= 0; --i)
-        d->model->sequenceModel(tiernameSequences)->removeSequence(rows.at(i));
+        d->model->sequenceModel(tiernameSequences)->removeRows(rows.at(i), 1, QModelIndex());
 }

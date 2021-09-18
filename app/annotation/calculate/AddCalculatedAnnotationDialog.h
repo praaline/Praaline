@@ -21,7 +21,7 @@ private slots:
     void corpusRepositoryChanged(const QString &repositoryID);
     void annotationLevelBaseChanged(int index);
     void annotationLevelDerivedChanged(int index);
-    void applyMeasure();
+    void applyCalculation();
 
 private:
     Ui::AddCalculatedAnnotationDialog *ui;

@@ -295,16 +295,16 @@ void VisualiserWidget::goFullScreen()
     ps->setParent(0);
     QShortcut *sc;
     sc = new QShortcut(QKeySequence("Esc"), ps);
-    connect(sc, SIGNAL(activated()), this, SLOT(endFullScreen()));
+    connect(sc, &QShortcut::activated, this, &VisualiserWidget::endFullScreen);
     sc = new QShortcut(QKeySequence("F11"), ps);
-    connect(sc, SIGNAL(activated()), this, SLOT(endFullScreen()));
+    connect(sc, &QShortcut::activated, this, &VisualiserWidget::endFullScreen);
     QAction *acts[] = {
         m_playAction, m_zoomInAction, m_zoomOutAction, m_zoomFitAction,
         m_scrollLeftAction, m_scrollRightAction, m_showPropertyBoxesAction
     };
     for (int i = 0; i < int(sizeof(acts)/sizeof(acts[0])); ++i) {
         sc = new QShortcut(acts[i]->shortcut(), ps);
-        connect(sc, SIGNAL(activated()), acts[i], SLOT(trigger()));
+        connect(sc, &QShortcut::activated, acts[i], &QAction::trigger);
     }
     ps->showFullScreen();
 }
@@ -361,7 +361,7 @@ void VisualiserWidget::setupFileMenu()
     icon = il.load("fileopen");
     action = new QAction(icon, tr("&Export..."), this);
     action->setStatusTip(tr("Export Visualisation"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportVisualisation()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::exportVisualisation);
     m_keyReference->registerShortcut(action);
     toolbar->addAction(action);
 
@@ -371,14 +371,14 @@ void VisualiserWidget::setupFileMenu()
     iaction->setShortcut(tr("Ctrl+I"));
     iaction->setStatusTip(tr("Import an extra audio file into a new pane"));
     connect(iaction, SIGNAL(triggered()), this, SLOT(importMoreAudio()));
-    connect(this, SIGNAL(canImportMoreAudio(bool)), iaction, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canImportMoreAudio, iaction, &QAction::setEnabled);
     m_keyReference->registerShortcut(iaction);
 
     // We want this one to go on the toolbar now, if we add it at all, but on the menu later
     QAction *raction = new QAction(tr("Replace &Main Audio..."), this);
     raction->setStatusTip(tr("Replace the main audio file of the session with a different file"));
     connect(raction, SIGNAL(triggered()), this, SLOT(replaceMainAudio()));
-    connect(this, SIGNAL(canReplaceMainAudio(bool)), raction, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canReplaceMainAudio, raction, &QAction::setEnabled);
 
     action = new QAction(tr("Open Lo&cation..."), this);
     action->setShortcut(tr("Ctrl+Shift+O"));
@@ -396,7 +396,7 @@ void VisualiserWidget::setupFileMenu()
     action->setShortcut(tr("Ctrl+S"));
     action->setStatusTip(tr("Save the current session into a %1 session file").arg(QApplication::applicationName()));
     connect(action, SIGNAL(triggered()), this, SLOT(saveSession()));
-    connect(this, SIGNAL(canSave(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canSave, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     toolbar->addAction(action);
     command = ACTION_MANAGER->registerAction("Visualisation.SaveSession", action, context);
@@ -438,7 +438,7 @@ void VisualiserWidget::setupFileMenu()
     action = new QAction(tr("&Export Audio File..."), this);
     action->setStatusTip(tr("Export selection as an audio file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportAudio()));
-    connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canExportAudio, action, &QAction::setEnabled);
     command = ACTION_MANAGER->registerAction("Visualisation.ExportAudio", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
@@ -446,7 +446,7 @@ void VisualiserWidget::setupFileMenu()
     action = new QAction(tr("Export Audio Data..."), this);
     action->setStatusTip(tr("Export audio from selection into a data file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportAudioData()));
-    connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canExportAudio, action, &QAction::setEnabled);
     command = ACTION_MANAGER->registerAction("Visualisation.ExportAudioData", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
@@ -457,7 +457,7 @@ void VisualiserWidget::setupFileMenu()
     action->setShortcut(tr("Ctrl+L"));
     action->setStatusTip(tr("Import layer data from an existing file"));
     connect(action, SIGNAL(triggered()), this, SLOT(importLayer()));
-    connect(this, SIGNAL(canImportLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canImportLayer, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     command = ACTION_MANAGER->registerAction("Visualisation.ImportAnnotationLayer", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
@@ -467,7 +467,7 @@ void VisualiserWidget::setupFileMenu()
     action->setShortcut(tr("Ctrl+Y"));
     action->setStatusTip(tr("Export layer data to a file"));
     connect(action, SIGNAL(triggered()), this, SLOT(exportLayer()));
-    connect(this, SIGNAL(canExportLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canExportLayer, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     command = ACTION_MANAGER->registerAction("Visualisation.ExportAnnotationLayer", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
@@ -477,8 +477,8 @@ void VisualiserWidget::setupFileMenu()
 
     action = new QAction(tr("Export Image File..."), this);
     action->setStatusTip(tr("Export a single pane to an image file"));
-    connect(action, SIGNAL(triggered()), this, SLOT(exportVisualisation()));
-    connect(this, SIGNAL(canExportImage(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::exportVisualisation);
+    connect(this, &VisualiserWindowBase::canExportImage, action, &QAction::setEnabled);
     command = ACTION_MANAGER->registerAction("Visualisation.ExportImage", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
@@ -490,21 +490,21 @@ void VisualiserWidget::setupFileMenu()
     m_templatesMenu->setTearOffEnabled(true);
     // We need to have a main model for this option to be useful:
     // canExportAudio captures that
-    connect(this, SIGNAL(canExportAudio(bool)), m_templatesMenu, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canExportAudio, m_templatesMenu, &QWidget::setEnabled);
 
     // Set up the menu in a moment, after m_manageTemplatesAction constructed
 
     action = new QAction(tr("Export Session as Template..."), this);
-    connect(action, SIGNAL(triggered()), this, SLOT(saveSessionAsTemplate()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::saveSessionAsTemplate);
     // We need to have something in the session for this to be useful:
     // canDeleteCurrentLayer captures that
-    connect(this, SIGNAL(canExportAudio(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canExportAudio, action, &QAction::setEnabled);
     command = ACTION_MANAGER->registerAction("Visualisation.SaveTemplate", action, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
 
     m_manageTemplatesAction = new QAction(tr("Manage Exported Templates"), this);
-    connect(m_manageTemplatesAction, SIGNAL(triggered()), this, SLOT(manageSavedTemplates()));
+    connect(m_manageTemplatesAction, &QAction::triggered, this, &VisualiserWidget::manageSavedTemplates);
     command = ACTION_MANAGER->registerAction("Visualisation.ManageTemplates", m_manageTemplatesAction, context);
     command->setCategory(QtilitiesCategory("Visualisation"));
     menu_visualisation->addAction(command);
@@ -532,8 +532,8 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(il.load("editcut"), tr("Cu&t"), this);
     action->setShortcut(tr("Ctrl+X"));
     action->setStatusTip(tr("Cut the selection from the current layer to the clipboard"));
-    connect(action, SIGNAL(triggered()), this, SLOT(cut()));
-    connect(this, SIGNAL(canEditSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::cut);
+    connect(this, &VisualiserWindowBase::canEditSelection, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     m_rightButtonMenu->addAction(action);
     ACTION_MANAGER->registerAction("Edit.Cut", action, context);
@@ -541,8 +541,8 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(il.load("editcopy"), tr("&Copy"), this);
     action->setShortcut(tr("Ctrl+C"));
     action->setStatusTip(tr("Copy the selection from the current layer to the clipboard"));
-    connect(action, SIGNAL(triggered()), this, SLOT(copy()));
-    connect(this, SIGNAL(canEditSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::copy);
+    connect(this, &VisualiserWindowBase::canEditSelection, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     m_rightButtonMenu->addAction(action);
     ACTION_MANAGER->registerAction("Edit.Copy", action, context);
@@ -550,8 +550,8 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(il.load("editpaste"), tr("&Paste"), this);
     action->setShortcut(tr("Ctrl+V"));
     action->setStatusTip(tr("Paste from the clipboard to the current layer"));
-    connect(action, SIGNAL(triggered()), this, SLOT(paste()));
-    connect(this, SIGNAL(canPaste(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::paste);
+    connect(this, &VisualiserWindowBase::canPaste, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     m_rightButtonMenu->addAction(action);
     ACTION_MANAGER->registerAction("Edit.Paste", action, context);
@@ -559,8 +559,8 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(tr("Paste at Playback Position"), this);
     action->setShortcut(tr("Ctrl+Shift+V"));
     action->setStatusTip(tr("Paste from the clipboard to the current layer, placing the first item at the playback position"));
-    connect(action, SIGNAL(triggered()), this, SLOT(pasteAtPlaybackPosition()));
-    connect(this, SIGNAL(canPaste(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::pasteAtPlaybackPosition);
+    connect(this, &VisualiserWindowBase::canPaste, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
@@ -568,8 +568,8 @@ void VisualiserWidget::setupEditMenu()
     m_deleteSelectedAction = new QAction(tr("&Delete Selected Items"), this);
     m_deleteSelectedAction->setShortcut(tr("Del"));
     m_deleteSelectedAction->setStatusTip(tr("Delete items in current selection from the current layer"));
-    connect(m_deleteSelectedAction, SIGNAL(triggered()), this, SLOT(deleteSelected()));
-    connect(this, SIGNAL(canDeleteSelection(bool)), m_deleteSelectedAction, SLOT(setEnabled(bool)));
+    connect(m_deleteSelectedAction, &QAction::triggered, this, &VisualiserWidget::deleteSelected);
+    connect(this, &VisualiserWindowBase::canDeleteSelection, m_deleteSelectedAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_deleteSelectedAction);
     //menu->addAction(m_deleteSelectedAction);
     m_rightButtonMenu->addAction(m_deleteSelectedAction);
@@ -582,8 +582,8 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(tr("Select &All"), this);
     action->setShortcut(tr("Ctrl+A"));
     action->setStatusTip(tr("Select the whole duration of the current session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(selectAll()));
-    connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::selectAll);
+    connect(this, &VisualiserWindowBase::canSelect, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
@@ -591,32 +591,32 @@ void VisualiserWidget::setupEditMenu()
     action = new QAction(tr("Select &Visible Range"), this);
     action->setShortcut(tr("Ctrl+Shift+A"));
     action->setStatusTip(tr("Select the time range corresponding to the current window width"));
-    connect(action, SIGNAL(triggered()), this, SLOT(selectVisible()));
-    connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::selectVisible);
+    connect(this, &VisualiserWindowBase::canSelect, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
 
     action = new QAction(tr("Select to &Start"), this);
     action->setShortcut(tr("Shift+Left"));
     action->setStatusTip(tr("Select from the start of the session to the current playback position"));
-    connect(action, SIGNAL(triggered()), this, SLOT(selectToStart()));
-    connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::selectToStart);
+    connect(this, &VisualiserWindowBase::canSelect, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
 
     action = new QAction(tr("Select to &End"), this);
     action->setShortcut(tr("Shift+Right"));
     action->setStatusTip(tr("Select from the current playback position to the end of the session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(selectToEnd()));
-    connect(this, SIGNAL(canSelect(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::selectToEnd);
+    connect(this, &VisualiserWindowBase::canSelect, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
 
     action = new QAction(tr("C&lear Selection"), this);
     action->setShortcut(tr("Esc"));
     action->setStatusTip(tr("Clear the selection"));
-    connect(action, SIGNAL(triggered()), this, SLOT(clearSelection()));
-    connect(this, SIGNAL(canClearSelection(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::clearSelection);
+    connect(this, &VisualiserWindowBase::canClearSelection, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     //menu->addAction(action);
     m_rightButtonMenu->addAction(action);
@@ -742,48 +742,48 @@ void VisualiserWidget::setupViewMenu()
     m_scrollLeftAction = new QAction(tr("Scroll &Left"), this);
     m_scrollLeftAction->setShortcut(tr("Left"));
     m_scrollLeftAction->setStatusTip(tr("Scroll the current pane to the left"));
-    connect(m_scrollLeftAction, SIGNAL(triggered()), this, SLOT(scrollLeft()));
-    connect(this, SIGNAL(canScroll(bool)), m_scrollLeftAction, SLOT(setEnabled(bool)));
+    connect(m_scrollLeftAction, &QAction::triggered, this, &VisualiserWidget::scrollLeft);
+    connect(this, &VisualiserWindowBase::canScroll, m_scrollLeftAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_scrollLeftAction);
     menu->addAction(m_scrollLeftAction);
 
     m_scrollRightAction = new QAction(tr("Scroll &Right"), this);
     m_scrollRightAction->setShortcut(tr("Right"));
     m_scrollRightAction->setStatusTip(tr("Scroll the current pane to the right"));
-    connect(m_scrollRightAction, SIGNAL(triggered()), this, SLOT(scrollRight()));
-    connect(this, SIGNAL(canScroll(bool)), m_scrollRightAction, SLOT(setEnabled(bool)));
+    connect(m_scrollRightAction, &QAction::triggered, this, &VisualiserWidget::scrollRight);
+    connect(this, &VisualiserWindowBase::canScroll, m_scrollRightAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_scrollRightAction);
     menu->addAction(m_scrollRightAction);
 
     action = new QAction(tr("&Jump Left"), this);
     action->setShortcut(tr("Ctrl+Left"));
     action->setStatusTip(tr("Scroll the current pane a big step to the left"));
-    connect(action, SIGNAL(triggered()), this, SLOT(jumpLeft()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::jumpLeft);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("J&ump Right"), this);
     action->setShortcut(tr("Ctrl+Right"));
     action->setStatusTip(tr("Scroll the current pane a big step to the right"));
-    connect(action, SIGNAL(triggered()), this, SLOT(jumpRight()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::jumpRight);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Peek Left"), this);
     action->setShortcut(tr("Alt+Left"));
     action->setStatusTip(tr("Scroll the current pane to the left without moving the playback cursor or other panes"));
-    connect(action, SIGNAL(triggered()), this, SLOT(peekLeft()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::peekLeft);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Peek Right"), this);
     action->setShortcut(tr("Alt+Right"));
     action->setStatusTip(tr("Scroll the current pane to the right without moving the playback cursor or other panes"));
-    connect(action, SIGNAL(triggered()), this, SLOT(peekRight()));
-    connect(this, SIGNAL(canScroll(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::peekRight);
+    connect(this, &VisualiserWindowBase::canScroll, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -794,30 +794,30 @@ void VisualiserWidget::setupViewMenu()
     m_zoomInAction = new QAction(il.load("zoom-in"), tr("Zoom &In"), this);
     m_zoomInAction->setShortcut(tr("Up"));
     m_zoomInAction->setStatusTip(tr("Increase the zoom level"));
-    connect(m_zoomInAction, SIGNAL(triggered()), this, SLOT(zoomIn()));
-    connect(this, SIGNAL(canZoom(bool)), m_zoomInAction, SLOT(setEnabled(bool)));
+    connect(m_zoomInAction, &QAction::triggered, this, &VisualiserWidget::zoomIn);
+    connect(this, &VisualiserWindowBase::canZoom, m_zoomInAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_zoomInAction);
     menu->addAction(m_zoomInAction);
 
     m_zoomOutAction = new QAction(il.load("zoom-out"), tr("Zoom &Out"), this);
     m_zoomOutAction->setShortcut(tr("Down"));
     m_zoomOutAction->setStatusTip(tr("Decrease the zoom level"));
-    connect(m_zoomOutAction, SIGNAL(triggered()), this, SLOT(zoomOut()));
-    connect(this, SIGNAL(canZoom(bool)), m_zoomOutAction, SLOT(setEnabled(bool)));
+    connect(m_zoomOutAction, &QAction::triggered, this, &VisualiserWidget::zoomOut);
+    connect(this, &VisualiserWindowBase::canZoom, m_zoomOutAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_zoomOutAction);
     menu->addAction(m_zoomOutAction);
 
     action = new QAction(tr("Restore &Default Zoom"), this);
     action->setStatusTip(tr("Restore the zoom level to the default"));
-    connect(action, SIGNAL(triggered()), this, SLOT(zoomDefault()));
-    connect(this, SIGNAL(canZoom(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::zoomDefault);
+    connect(this, &VisualiserWindowBase::canZoom, action, &QAction::setEnabled);
     menu->addAction(action);
 
     m_zoomFitAction = new QAction(il.load("zoom-fit"), tr("Zoom to &Fit"), this);
     m_zoomFitAction->setShortcut(tr("F"));
     m_zoomFitAction->setStatusTip(tr("Zoom to show the whole file"));
-    connect(m_zoomFitAction, SIGNAL(triggered()), this, SLOT(zoomToFit()));
-    connect(this, SIGNAL(canZoom(bool)), m_zoomFitAction, SLOT(setEnabled(bool)));
+    connect(m_zoomFitAction, &QAction::triggered, this, &VisualiserWidget::zoomToFit);
+    connect(this, &VisualiserWindowBase::canZoom, m_zoomFitAction, &QAction::setEnabled);
     m_keyReference->registerShortcut(m_zoomFitAction);
     menu->addAction(m_zoomFitAction);
 
@@ -828,7 +828,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show &Centre Line"), this);
     action->setShortcut(tr("'"));
     action->setStatusTip(tr("Show or hide the centre line"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleCentreLine()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::toggleCentreLine);
     action->setCheckable(true);
     action->setChecked(m_viewManager->shouldShowCentreLine());
     m_keyReference->registerShortcut(action);
@@ -837,7 +837,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Toggle All Time Rulers"), this);
     action->setShortcut(tr("#"));
     action->setStatusTip(tr("Show or hide all time rulers"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleTimeRulers()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::toggleTimeRulers);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -850,7 +850,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show &No Overlays"), this);
     action->setShortcut(tr("0"));
     action->setStatusTip(tr("Hide times, layer names, and scale"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showNoOverlays()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::showNoOverlays);
     action->setCheckable(true);
     action->setChecked(mode == ViewManager::NoOverlays);
     overlayGroup->addAction(action);
@@ -860,7 +860,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show &Minimal Overlays"), this);
     action->setShortcut(tr("9"));
     action->setStatusTip(tr("Show times and basic scale"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showMinimalOverlays()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::showMinimalOverlays);
     action->setCheckable(true);
     action->setChecked(mode == ViewManager::StandardOverlays);
     overlayGroup->addAction(action);
@@ -870,7 +870,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show &All Overlays"), this);
     action->setShortcut(tr("8"));
     action->setStatusTip(tr("Show times, layer names, and scale"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showAllOverlays()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::showAllOverlays);
     action->setCheckable(true);
     action->setChecked(mode == ViewManager::AllOverlays);
     overlayGroup->addAction(action);
@@ -882,7 +882,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show &Zoom Wheels"), this);
     action->setShortcut(tr("Z"));
     action->setStatusTip(tr("Show thumbwheels for zooming horizontally and vertically"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleZoomWheels()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::toggleZoomWheels);
     action->setCheckable(true);
     action->setChecked(m_viewManager->getZoomWheelsEnabled());
     m_keyReference->registerShortcut(action);
@@ -891,7 +891,7 @@ void VisualiserWidget::setupViewMenu()
     m_showPropertyBoxesAction = new QAction(tr("Show Property Bo&xes"), this);
     m_showPropertyBoxesAction->setShortcut(tr("X"));
     m_showPropertyBoxesAction->setStatusTip(tr("Show the layer property boxes at the side of the main window"));
-    connect(m_showPropertyBoxesAction, SIGNAL(triggered()), this, SLOT(togglePropertyBoxes()));
+    connect(m_showPropertyBoxesAction, &QAction::triggered, this, &VisualiserWidget::togglePropertyBoxes);
     m_showPropertyBoxesAction->setCheckable(true);
     m_showPropertyBoxesAction->setChecked(true);
     m_keyReference->registerShortcut(m_showPropertyBoxesAction);
@@ -899,7 +899,7 @@ void VisualiserWidget::setupViewMenu()
 
     action = new QAction(tr("Show Status &Bar"), this);
     action->setStatusTip(tr("Show context help information in the status bar at the bottom of the window"));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleStatusBar()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::toggleStatusBar);
     action->setCheckable(true);
     action->setChecked(true);
     menu->addAction(action);
@@ -918,7 +918,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Show La&yer Summary"), this);
     action->setShortcut(tr("Y"));
     action->setStatusTip(tr("Open a window displaying the hierarchy of panes and layers in this session"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showLayerTree()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::showLayerTree);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -927,7 +927,7 @@ void VisualiserWidget::setupViewMenu()
     action = new QAction(tr("Go Full-Screen"), this);
     action->setShortcut(tr("F11"));
     action->setStatusTip(tr("Expand the pane area to the whole screen"));
-    connect(action, SIGNAL(triggered()), this, SLOT(goFullScreen()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::goFullScreen);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 }
@@ -968,7 +968,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     action->setShortcut(tr("N"));
     action->setStatusTip(tr("Add a new pane containing only a time ruler"));
     connect(action, SIGNAL(triggered()), this, SLOT(addPane()));
-    connect(this, SIGNAL(canAddPane(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canAddPane, action, &QAction::setEnabled);
     m_paneActions[action] = LayerConfiguration(LayerFactory::Type("TimeRuler"));
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
@@ -1004,7 +1004,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
         }
 
         connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
-        connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+        connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
         m_layerActions[action] = LayerConfiguration(type);
         menu->addAction(action);
         m_rightButtonLayerMenu->addAction(action);
@@ -1153,15 +1153,15 @@ void VisualiserWidget::setupPaneAndLayerMenus()
                         if (menuType == paneMenuType) {
                             connect(action, SIGNAL(triggered()),
                                     this, SLOT(addPane()));
-                            connect(this, SIGNAL(canAddPane(bool)),
-                                    action, SLOT(setEnabled(bool)));
+                            connect(this, &VisualiserWindowBase::canAddPane,
+                                    action, &QAction::setEnabled);
                             m_paneActions[action] =
                                     LayerConfiguration(type, model);
                         } else {
                             connect(action, SIGNAL(triggered()),
                                     this, SLOT(addLayer()));
-                            connect(this, SIGNAL(canAddLayer(bool)),
-                                    action, SLOT(setEnabled(bool)));
+                            connect(this, &VisualiserWindowBase::canAddLayer,
+                                    action, &QAction::setEnabled);
                             m_layerActions[action] =
                                     LayerConfiguration(type, model);
                         }
@@ -1210,15 +1210,15 @@ void VisualiserWidget::setupPaneAndLayerMenus()
                         if (menuType == paneMenuType) {
                             connect(action, SIGNAL(triggered()),
                                     this, SLOT(addPane()));
-                            connect(this, SIGNAL(canAddPane(bool)),
-                                    action, SLOT(setEnabled(bool)));
+                            connect(this, &VisualiserWindowBase::canAddPane,
+                                    action, &QAction::setEnabled);
                             m_paneActions[action] =
                                     LayerConfiguration(type, model, c - 1);
                         } else {
                             connect(action, SIGNAL(triggered()),
                                     this, SLOT(addLayer()));
-                            connect(this, SIGNAL(canAddLayer(bool)),
-                                    action, SLOT(setEnabled(bool)));
+                            connect(this, &VisualiserWindowBase::canAddLayer,
+                                    action, &QAction::setEnabled);
                             m_layerActions[action] =
                                     LayerConfiguration(type, model, c - 1);
                         }
@@ -1235,8 +1235,8 @@ void VisualiserWidget::setupPaneAndLayerMenus()
                         action->setStatusTip(tipText);
                         connect(action, SIGNAL(triggered()),
                                 this, SLOT(addLayer()));
-                        connect(this, SIGNAL(canAddLayer(bool)),
-                                action, SLOT(setEnabled(bool)));
+                        connect(this, &VisualiserWindowBase::canAddLayer,
+                                action, &QAction::setEnabled);
                         m_layerActions[action] = LayerConfiguration(type, 0, 0);
                         m_rightButtonLayerMenu->addAction(action);
                     }
@@ -1253,16 +1253,16 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     action = new QAction(tr("Switch to Previous Pane"), this);
     action->setShortcut(tr("["));
     action->setStatusTip(tr("Make the next pane up in the pane stack current"));
-    connect(action, SIGNAL(triggered()), this, SLOT(previousPane()));
-    connect(this, SIGNAL(canSelectPreviousPane(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::previousPane);
+    connect(this, &VisualiserWindowBase::canSelectPreviousPane, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Switch to Next Pane"), this);
     action->setShortcut(tr("]"));
     action->setStatusTip(tr("Make the next pane down in the pane stack current"));
-    connect(action, SIGNAL(triggered()), this, SLOT(nextPane()));
-    connect(this, SIGNAL(canSelectNextPane(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::nextPane);
+    connect(this, &VisualiserWindowBase::canSelectNextPane, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -1271,8 +1271,8 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     action = new QAction(il.load("editdelete"), tr("&Delete Pane"), this);
     action->setShortcut(tr("Ctrl+Shift+D"));
     action->setStatusTip(tr("Delete the currently active pane"));
-    connect(action, SIGNAL(triggered()), this, SLOT(deleteCurrentPane()));
-    connect(this, SIGNAL(canDeleteCurrentPane(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::deleteCurrentPane);
+    connect(this, &VisualiserWindowBase::canDeleteCurrentPane, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -1281,7 +1281,7 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     action = new QAction(il.load("timeruler"), tr("Add &Time Ruler"), this);
     action->setStatusTip(tr("Add a new layer showing a time ruler"));
     connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
-    connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
     m_layerActions[action] = LayerConfiguration(LayerFactory::Type("TimeRuler"));
     menu->addAction(action);
 
@@ -1302,16 +1302,16 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     action = new QAction(tr("Switch to Previous Layer"), this);
     action->setShortcut(tr("{"));
     action->setStatusTip(tr("Make the previous layer in the pane current"));
-    connect(action, SIGNAL(triggered()), this, SLOT(previousLayer()));
-    connect(this, SIGNAL(canSelectPreviousLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::previousLayer);
+    connect(this, &VisualiserWindowBase::canSelectPreviousLayer, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
     action = new QAction(tr("Switch to Next Layer"), this);
     action->setShortcut(tr("}"));
     action->setStatusTip(tr("Make the next layer in the pane current"));
-    connect(action, SIGNAL(triggered()), this, SLOT(nextLayer()));
-    connect(this, SIGNAL(canSelectNextLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::nextLayer);
+    connect(this, &VisualiserWindowBase::canSelectNextLayer, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
 
@@ -1321,24 +1321,24 @@ void VisualiserWidget::setupPaneAndLayerMenus()
     QAction *raction = new QAction(tr("&Rename Layer..."), this);
     raction->setShortcut(tr("R"));
     raction->setStatusTip(tr("Rename the currently active layer"));
-    connect(raction, SIGNAL(triggered()), this, SLOT(renameCurrentLayer()));
-    connect(this, SIGNAL(canRenameLayer(bool)), raction, SLOT(setEnabled(bool)));
+    connect(raction, &QAction::triggered, this, &VisualiserWidget::renameCurrentLayer);
+    connect(this, &VisualiserWindowBase::canRenameLayer, raction, &QAction::setEnabled);
     menu->addAction(raction);
     m_rightButtonLayerMenu->addAction(raction);
 
     QAction *eaction = new QAction(tr("Edit Layer Data"), this);
     eaction->setShortcut(tr("E"));
     eaction->setStatusTip(tr("Edit the currently active layer as a data grid"));
-    connect(eaction, SIGNAL(triggered()), this, SLOT(editCurrentLayer()));
-    connect(this, SIGNAL(canEditLayerTabular(bool)), eaction, SLOT(setEnabled(bool)));
+    connect(eaction, &QAction::triggered, this, &VisualiserWidget::editCurrentLayer);
+    connect(this, &VisualiserWindowBase::canEditLayerTabular, eaction, &QAction::setEnabled);
     menu->addAction(eaction);
     m_rightButtonLayerMenu->addAction(eaction);
 
     action = new QAction(il.load("editdelete"), tr("&Delete Layer"), this);
     action->setShortcut(tr("Ctrl+D"));
     action->setStatusTip(tr("Delete the currently active layer"));
-    connect(action, SIGNAL(triggered()), this, SLOT(deleteCurrentLayer()));
-    connect(this, SIGNAL(canDeleteCurrentLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::deleteCurrentLayer);
+    connect(this, &VisualiserWindowBase::canDeleteCurrentLayer, action, &QAction::setEnabled);
     m_keyReference->registerShortcut(action);
     menu->addAction(action);
     m_rightButtonLayerMenu->addAction(action);
@@ -1377,8 +1377,8 @@ void VisualiserWidget::setupTransformsMenu()
     m_recentTransformsMenu = m_transformsMenu->addMenu(tr("&Recent Transforms"));
     m_recentTransformsMenu->setTearOffEnabled(true);
     m_rightButtonTransformsMenu->addMenu(m_recentTransformsMenu);
-    connect(&m_recentTransforms, SIGNAL(recentChanged()),
-            this, SLOT(setupRecentTransformsMenu()));
+    connect(&m_recentTransforms, &RecentFiles::recentChanged,
+            this, &VisualiserWidget::setupRecentTransformsMenu);
 
     m_transformsMenu->addSeparator();
     m_rightButtonTransformsMenu->addSeparator();
@@ -1517,7 +1517,7 @@ void VisualiserWidget::setupTransformsMenu()
         connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
         m_transformActions[action] = transforms[i].identifier;
         m_transformActionsReverse[transforms[i].identifier] = action;
-        connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+        connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
 
         action->setStatusTip(transforms[i].longDescription);
 
@@ -1542,7 +1542,7 @@ void VisualiserWidget::setupTransformsMenu()
         action = new QAction(tr("%1...").arg(output == "" ? pluginName : output), this);
         connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
         m_transformActions[action] = transforms[i].identifier;
-        connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+        connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
         action->setStatusTip(transforms[i].longDescription);
 
         //        cerr << "Transform: \"" << name << "\": plugin name \"" << pluginName << "\"" << endl;
@@ -1558,9 +1558,9 @@ void VisualiserWidget::setupTransformsMenu()
             } else {
                 pluginNameMenus[type][pluginName] =
                         parentMenu->addMenu(pluginName);
-                connect(this, SIGNAL(canAddLayer(bool)),
+                connect(this, &VisualiserWindowBase::canAddLayer,
                         pluginNameMenus[type][pluginName],
-                        SLOT(setEnabled(bool)));
+                        &QWidget::setEnabled);
             }
         }
 
@@ -1581,7 +1581,7 @@ void VisualiserWidget::setupTransformsMenu()
     QAction *action = new QAction(tr("Find a Transform..."), this);
     action->setStatusTip(tr("Search for a transform from the installed plugins, by name or description"));
     action->setShortcut(tr("Ctrl+M"));
-    connect(action, SIGNAL(triggered()), this, SLOT(findTransform()));
+    connect(action, &QAction::triggered, this, &VisualiserWidget::findTransform);
     //    connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
     m_keyReference->registerShortcut(action);
     m_transformsMenu->addAction(action);
@@ -1596,7 +1596,7 @@ void VisualiserWidget::setupTemplatesMenu()
 
     QAction *defaultAction = new QAction(tr("Standard Waveform"), this);
     defaultAction->setObjectName("default");
-    connect(defaultAction, SIGNAL(triggered()), this, SLOT(applyTemplate()));
+    connect(defaultAction, &QAction::triggered, this, &VisualiserWidget::applyTemplate);
     m_templatesMenu->addAction(defaultAction);
 
     m_templatesMenu->addSeparator();
@@ -1617,7 +1617,7 @@ void VisualiserWidget::setupTemplatesMenu()
     foreach (QString t, byName) {
         if (t.toLower() == "default") continue;
         action = new QAction(t, this);
-        connect(action, SIGNAL(triggered()), this, SLOT(applyTemplate()));
+        connect(action, &QAction::triggered, this, &VisualiserWidget::applyTemplate);
         m_templatesMenu->addAction(action);
     }
 
@@ -1626,13 +1626,13 @@ void VisualiserWidget::setupTemplatesMenu()
     if (!m_templateWatcher) {
         m_templateWatcher = new QFileSystemWatcher(this);
         m_templateWatcher->addPath(ResourceFinder().getResourceSaveDir("templates"));
-        connect(m_templateWatcher, SIGNAL(directoryChanged(const QString &)),
-                this, SLOT(setupTemplatesMenu()));
+        connect(m_templateWatcher, &QFileSystemWatcher::directoryChanged,
+                this, &VisualiserWidget::setupTemplatesMenu);
     }
 
     QAction *setDefaultAction = new QAction(tr("Choose Default Template..."), this);
     setDefaultAction->setObjectName("set_default_template");
-    connect(setDefaultAction, SIGNAL(triggered()), this, SLOT(selectDefaultTemplate()));
+    connect(setDefaultAction, &QAction::triggered, this, &VisualiserWidget::selectDefaultTemplate);
     m_templatesMenu->addSeparator();
     m_templatesMenu->addAction(setDefaultAction);
 
@@ -1725,7 +1725,7 @@ void VisualiserWidget::setupExistingLayersMenus()
 
         QAction *action = new QAction(icon, name, this);
         connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
-        connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+        connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
         m_existingLayerActions[action] = layer;
 
         m_existingLayersMenu->addAction(action);
@@ -1733,7 +1733,7 @@ void VisualiserWidget::setupExistingLayersMenus()
         if (sliceableLayers.find(layer) != sliceableLayers.end()) {
             action = new QAction(icon, name, this);
             connect(action, SIGNAL(triggered()), this, SLOT(addLayer()));
-            connect(this, SIGNAL(canAddLayer(bool)), action, SLOT(setEnabled(bool)));
+            connect(this, &VisualiserWindowBase::canAddLayer, action, &QAction::setEnabled);
             m_sliceActions[action] = layer;
             m_sliceMenu->addAction(action);
         }
@@ -1791,7 +1791,7 @@ void VisualiserWidget::setupToolbars()
     action->setShortcut(tr("1"));
     action->setStatusTip(tr("Navigate"));
     connect(action, SIGNAL(triggered()), this, SLOT(toolNavigateSelected()));
-    connect(this, SIGNAL(replacedDocument()), action, SLOT(trigger()));
+    connect(this, &VisualiserWindowBase::replacedDocument, action, &QAction::trigger);
     group->addAction(action);
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::NavigateMode] = action;
@@ -1846,7 +1846,7 @@ void VisualiserWidget::setupToolbars()
     action->setShortcut(tr("3"));
     action->setStatusTip(tr("Edit items in layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(toolEditSelected()));
-    connect(this, SIGNAL(canEditLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canEditLayer, action, &QAction::setEnabled);
     group->addAction(action);
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::EditMode] = action;
@@ -1867,7 +1867,7 @@ void VisualiserWidget::setupToolbars()
     action->setShortcut(tr("4"));
     action->setStatusTip(tr("Draw new items in layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(toolDrawSelected()));
-    connect(this, SIGNAL(canEditLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canEditLayer, action, &QAction::setEnabled);
     group->addAction(action);
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::DrawMode] = action;
@@ -1885,7 +1885,7 @@ void VisualiserWidget::setupToolbars()
     action->setShortcut(tr("5"));
     action->setStatusTip(tr("Erase items from layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(toolEraseSelected()));
-    connect(this, SIGNAL(canEditLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canEditLayer, action, &QAction::setEnabled);
     group->addAction(action);
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::EraseMode] = action;
@@ -1902,7 +1902,7 @@ void VisualiserWidget::setupToolbars()
     action->setShortcut(tr("6"));
     action->setStatusTip(tr("Make measurements in layer"));
     connect(action, SIGNAL(triggered()), this, SLOT(toolMeasureSelected()));
-    connect(this, SIGNAL(canMeasureLayer(bool)), action, SLOT(setEnabled(bool)));
+    connect(this, &VisualiserWindowBase::canMeasureLayer, action, &QAction::setEnabled);
     group->addAction(action);
     m_keyReference->registerShortcut(action);
     m_toolActions[ViewManager::MeasureMode] = action;
@@ -2418,8 +2418,8 @@ VisualiserWidget::newSession()
     closeSession();
     createDocument();
     Pane *pane = m_paneStack->addPane();
-    connect(pane, SIGNAL(contextHelpChanged(const QString &)),
-            this, SLOT(contextHelpChanged(const QString &)));
+    connect(pane, &View::contextHelpChanged,
+            this, &VisualiserWidget::contextHelpChanged);
     if (!m_timeRulerLayer) {
         m_timeRulerLayer = m_document->createMainModelLayer
                 (LayerFactory::Type("TimeRuler"));
@@ -2534,9 +2534,9 @@ VisualiserWidget::saveSessionAsTemplate()
     QDialogButtonBox *bb = new QDialogButtonBox(QDialogButtonBox::Ok |
                                                 QDialogButtonBox::Cancel);
     layout->addWidget(bb, 3, 0);
-    connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
-    connect(bb, SIGNAL(accepted()), d, SLOT(accept()));
-    connect(bb, SIGNAL(rejected()), d, SLOT(reject()));
+    connect(bb, &QDialogButtonBox::accepted, d, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::accepted, d, &QDialog::accept);
+    connect(bb, &QDialogButtonBox::rejected, d, &QDialog::reject);
 
     if (d->exec() == QDialog::Accepted) {
 
@@ -2868,10 +2868,10 @@ void VisualiserWidget::addLayer()
         if (source && dest) {
             //!!!???
             dest->setSliceableModel(source->getSliceableModel());
-            connect(source, SIGNAL(sliceableModelReplaced(const Model *, const Model *)),
-                    dest, SLOT(sliceableModelReplaced(const Model *, const Model *)));
-            connect(m_document, SIGNAL(modelAboutToBeDeleted(Model *)),
-                    dest, SLOT(modelAboutToBeDeleted(Model *)));
+            connect(source, &SliceableLayer::sliceableModelReplaced,
+                    dest, &SliceLayer::sliceableModelReplaced);
+            connect(m_document, &Document::modelAboutToBeDeleted,
+                    dest, &SliceLayer::modelAboutToBeDeleted);
         }
         m_document->addLayerToView(pane, newLayer);
         m_paneStack->setCurrentLayer(pane, newLayer);

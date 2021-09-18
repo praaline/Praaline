@@ -36,10 +36,10 @@ SplitCommunicationsDialog::SplitCommunicationsDialog(Corpus *corpus, QWidget *pa
     ui->setupUi(this);
     d->corpus = corpus;
 
-    connect(ui->commandClose, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(ui->comboBoxLevel, SIGNAL(currentIndexChanged(QString)), this, SLOT(annotationLevelChanged()));
-    connect(ui->comboBoxAttribute, SIGNAL(currentIndexChanged(QString)), this, SLOT(annotationAttributeChanged()));
-    connect(ui->commandSplit, SIGNAL(clicked()), this, SLOT(doSplit()));
+    connect(ui->commandClose, &QAbstractButton::clicked, this, &QDialog::reject);
+    connect(ui->comboBoxLevel, qOverload<int>(&QComboBox::currentIndexChanged), this, &SplitCommunicationsDialog::annotationLevelChanged);
+    connect(ui->comboBoxAttribute, qOverload<int>(&QComboBox::currentIndexChanged), this, &SplitCommunicationsDialog::annotationAttributeChanged);
+    connect(ui->commandSplit, &QAbstractButton::clicked, this, &SplitCommunicationsDialog::doSplit);
 
     if (!corpus) return;
     d->modelCorpusCommunications = new QStandardItemModel(this);

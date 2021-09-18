@@ -18,9 +18,9 @@ UpdatePraalineDialog::UpdatePraalineDialog(QWidget *parent) :
     // QSimpleUpdater is a singleton
     d->updater = QSimpleUpdater::getInstance();
     // Check updates slot
-    connect(ui->commandCheckForUpdates, SIGNAL(clicked()), this, SLOT(checkForUpdates()));
+    connect(ui->commandCheckForUpdates, &QAbstractButton::clicked, this, &UpdatePraalineDialog::checkForUpdates);
     // Update changelog when update finishes
-    connect (d->updater, SIGNAL(checkingFinished(QString)), this, SLOT(updateChangelog(QString)));
+    connect (d->updater, &QSimpleUpdater::checkingFinished, this, &UpdatePraalineDialog::updateChangelog);
 }
 
 UpdatePraalineDialog::~UpdatePraalineDialog()

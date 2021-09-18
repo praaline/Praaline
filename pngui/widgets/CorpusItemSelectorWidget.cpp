@@ -82,7 +82,7 @@ CorpusItemSelectorWidget::CorpusItemSelectorWidget(QWidget *parent) :
     d->innerwindowBookmarks->setCentralWidget(d->treeviewBookmarks);
     ui->gridLayoutBookmarks->setMargin(0);
     ui->gridLayoutBookmarks->addWidget(d->innerwindowBookmarks);
-    connect(d->treeviewBookmarks, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(bookmarkSelected(QModelIndex)));
+    connect(d->treeviewBookmarks, &QAbstractItemView::doubleClicked, this, &CorpusItemSelectorWidget::bookmarkSelected);
 
     setupActions();
 }
@@ -102,13 +102,13 @@ void CorpusItemSelectorWidget::setupActions()
     // BOOKMARKS TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionOpenBookmarks = new QAction(QIcon(":/icons/actions/action_open.png"), "Open Bookmarks", this);
-    connect(d->actionOpenBookmarks, SIGNAL(triggered()), this, SLOT(openBookmarks()));
+    connect(d->actionOpenBookmarks, &QAction::triggered, this, &CorpusItemSelectorWidget::openBookmarks);
     command = ACTION_MANAGER->registerAction("CorpusItemsSelector.OpenBookmarks", d->actionOpenBookmarks, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarBookmarks->addAction(d->actionOpenBookmarks);
 
     d->actionSaveBookmarks = new QAction(QIcon(":/icons/actions/action_save.png"), "Save Bookmarks", this);
-    connect(d->actionSaveBookmarks, SIGNAL(triggered()), this, SLOT(saveBookmarks()));
+    connect(d->actionSaveBookmarks, &QAction::triggered, this, &CorpusItemSelectorWidget::saveBookmarks);
     command = ACTION_MANAGER->registerAction("CorpusItemsSelector.SaveBookmarks", d->actionSaveBookmarks, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarBookmarks->addAction(d->actionSaveBookmarks);

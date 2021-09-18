@@ -518,6 +518,10 @@ public:
      * Returns true if word wrap is enabled. Otherwise false.
 	 */
 	bool wordWrap() const;
+
+    int rowSpan(int row, int column) const;
+    int columnSpan(int row, int column) const;
+
 signals:
 	/**
 	 * This signal is emitted when the item specified by index is activated by the user. How to activate items depends on the platform; e.g., by single- or double-clicking the item, or by pressing the Return or Enter key when the item is current.
@@ -675,8 +679,6 @@ public slots:
 
     void setSpan(int row, int column, int rowSpanCount, int columnSpanCount);
     void clearSpans();
-    int rowSpan(int row, int column) const;
-    int columnSpan(int row, int column) const;
 
     void setVerticalHeadersSize(int height);
 

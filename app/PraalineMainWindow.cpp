@@ -468,13 +468,13 @@ void PraalineMainWindow::setupFileMenu()
     d->menu_file->addSeparator();
 #endif
     Command* command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_SETTINGS, tr("&Settings"), QKeySequence(), std_context);
-    connect(command->action(), SIGNAL(triggered()), d->configurationWidget, SLOT(show()));
+    connect(command->action(), &QAction::triggered, d->configurationWidget, &QWidget::show);
     d->menu_file->addAction(command);
 #ifndef Q_OS_MAC
     d->menu_file->addSeparator();
 #endif
     command = ACTION_MANAGER->registerActionPlaceHolder(qti_action_FILE_EXIT, tr("&Quit"), QKeySequence(QKeySequence::Quit), std_context);
-    connect(command->action(), SIGNAL(triggered()), QCoreApplication::instance(), SLOT(quit()));
+    connect(command->action(), &QAction::triggered, QCoreApplication::instance(), &QCoreApplication::quit);
     d->menu_file->addAction(command);
 }
 
@@ -517,7 +517,7 @@ void PraalineMainWindow::setupViewMenu()
     // Select colour palette
     action = new QAction(tr("Change Colour Palette (Light/Dark)"), this);
     action->setStatusTip(tr("Change the display colours used in Praaline between a light and a dark palette."));
-    connect(action, SIGNAL(triggered()), this, SLOT(toggleColourPalette()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::toggleColourPalette);
     command = ACTION_MANAGER->registerAction("View.ChangePalette", action, std_context);
     command->setCategory(QtilitiesCategory("View"));
     d->menu_view->addAction(command);
@@ -650,7 +650,7 @@ void PraalineMainWindow::setupToolsMenu()
     // Unit converter
     action = new QAction(tr("&Unit Converter"), this);
     action->setStatusTip(tr("Open a window of pitch and timing conversion utilities"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showUnitConverter()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showUnitConverter);
     command = ACTION_MANAGER->registerAction("Tools.UnitConverter", action, std_context);
     command->setCategory(QtilitiesCategory(tr("Tools")));
     d->menu_tools->addAction(command);
@@ -659,7 +659,7 @@ void PraalineMainWindow::setupToolsMenu()
     // Check for updates
     action = new QAction(tr("&Check for Updates"), this);
     action->setStatusTip(tr("Check over the Internet for updates to Praaline"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showUpdater()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showUpdater);
     command = ACTION_MANAGER->registerAction("Tools.CheckForUpdates", action, std_context);
     command->setCategory(QtilitiesCategory(tr("Tools")));
     d->menu_tools->addAction(command);
@@ -675,7 +675,7 @@ void PraalineMainWindow::setupWindowMenu()
     // Activity log
     action = new QAction(tr("Acti&vity Log"), this);
     action->setStatusTip(tr("Open a window listing interactions and other events"));
-    connect(action, SIGNAL(triggered()), this, SLOT(showActivityLog()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showActivityLog);
     command = ACTION_MANAGER->registerAction("Window.Activity Log", action, std_context);
     command->setCategory(QtilitiesCategory(tr("Active Window Selection")));
     d->menu_window->addAction(command);
@@ -696,7 +696,7 @@ void PraalineMainWindow::setupHelpMenu()
     action = new QAction(il.load("help"), tr("&Help Reference"), this);
     action->setShortcut(tr("F1"));
     action->setStatusTip(tr("Open the %1 reference manual").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(showHelp()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showHelp);
     d->keyReference->registerShortcut(action);
     command = ACTION_MANAGER->registerAction("Help.Reference", action, std_context);
     command->setCategory(QtilitiesCategory("Help"));
@@ -705,7 +705,7 @@ void PraalineMainWindow::setupHelpMenu()
     action = new QAction(tr("&Key and Mouse Reference"), this);
     action->setShortcut(tr("F12"));
     action->setStatusTip(tr("Open a window showing the keystrokes you can use in %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(showKeyReference()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showKeyReference);
     d->keyReference->registerShortcut(action);
     command = ACTION_MANAGER->registerAction("Help.KeyReference", action, std_context);
     command->setCategory(QtilitiesCategory("Help"));
@@ -713,14 +713,14 @@ void PraalineMainWindow::setupHelpMenu()
     // Website
     action = new QAction(tr("%1 on the &Web").arg(name), this);
     action->setStatusTip(tr("Open the %1 website").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(showWebsite()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showWebsite);
     command = ACTION_MANAGER->registerAction("Help.Website", action, std_context);
     command->setCategory(QtilitiesCategory("Help"));
     d->menu_help->addAction(command);
     // About
     action = new QAction(tr("&About %1").arg(name), this);
     action->setStatusTip(tr("Show information about %1").arg(name));
-    connect(action, SIGNAL(triggered()), this, SLOT(showAbout()));
+    connect(action, &QAction::triggered, this, &PraalineMainWindow::showAbout);
     command = ACTION_MANAGER->registerAction("Help.About", action, std_context);
     command->setCategory(QtilitiesCategory("Help"));
     d->menu_help->addAction(command);

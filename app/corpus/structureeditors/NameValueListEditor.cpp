@@ -59,7 +59,7 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
 {
     // List selection combobox
     d->comboboxLists = new QComboBox(this);
-    connect(d->comboboxLists, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedListChanged(int)));
+    connect(d->comboboxLists, qOverload<int>(&QComboBox::currentIndexChanged), this, &NameValueListEditor::selectedListChanged);
     d->comboboxLists->setEditable(false);
     // Editing basic list definition
     d->editListName = new QLineEdit(this);
@@ -79,7 +79,7 @@ NameValueListEditor::NameValueListEditor(QWidget *parent) :
     d->editNewItemDisplayString = new QLineEdit(this);
     d->buttonAddItem = new QToolButton(this);
     d->buttonAddItem->setIcon(QIcon(":icons/actions/list_add.png"));
-    connect(d->buttonAddItem, SIGNAL(clicked(bool)), this, SLOT(addItem()));
+    connect(d->buttonAddItem, &QAbstractButton::clicked, this, &NameValueListEditor::addItem);
     // Layout
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(d->toolbarLists);
@@ -115,35 +115,35 @@ void NameValueListEditor::setupActions()
     if ((!d->toolbarLists) || (!d->toolbarCurrentList)) return;
 
     d->actionNewList = new QAction(QIcon(":icons/actions/list_add.png"), "New", this);
-    connect(d->actionNewList, SIGNAL(triggered()), SLOT(newList()));
+    connect(d->actionNewList, &QAction::triggered, this, &NameValueListEditor::newList);
     d->toolbarLists->addAction(d->actionNewList);
 
     d->actionSaveList = new QAction(QIcon(":icons/actions/action_save.png"), "Save", this);
-    connect(d->actionSaveList, SIGNAL(triggered()), SLOT(saveList()));
+    connect(d->actionSaveList, &QAction::triggered, this, &NameValueListEditor::saveList);
     d->toolbarLists->addAction(d->actionSaveList);
 
     d->actionDeleteList = new QAction(QIcon(":icons/actions/action_delete.png"), "Delete", this);
-    connect(d->actionDeleteList, SIGNAL(triggered()), SLOT(deleteList()));
+    connect(d->actionDeleteList, &QAction::triggered, this, &NameValueListEditor::deleteList);
     d->toolbarLists->addAction(d->actionDeleteList);
 
     d->actionImportLists = new QAction(QIcon(":icons/actions/table_import.png"), "Import", this);
-    connect(d->actionImportLists, SIGNAL(triggered()), SLOT(importLists()));
+    connect(d->actionImportLists, &QAction::triggered, this, &NameValueListEditor::importLists);
     d->toolbarLists->addAction(d->actionImportLists);
 
     d->actionExportLists = new QAction(QIcon(":icons/actions/table_export.png"), "Export", this);
-    connect(d->actionExportLists, SIGNAL(triggered()), SLOT(exportLists()));
+    connect(d->actionExportLists, &QAction::triggered, this, &NameValueListEditor::exportLists);
     d->toolbarLists->addAction(d->actionExportLists);
 
     d->actionRemoveItem = new QAction(QIcon(":icons/actions/list_remove.png"), "Remove", this);
-    connect(d->actionRemoveItem, SIGNAL(triggered()), SLOT(removeItem()));
+    connect(d->actionRemoveItem, &QAction::triggered, this, &NameValueListEditor::removeItem);
     d->toolbarCurrentList->addAction(d->actionRemoveItem);
 
     d->actionMoveItemUp = new QAction(QIcon(":icons/actions/move_up.png"), "Move Up", this);
-    connect(d->actionMoveItemUp, SIGNAL(triggered()), SLOT(moveItemUp()));
+    connect(d->actionMoveItemUp, &QAction::triggered, this, &NameValueListEditor::moveItemUp);
     d->toolbarCurrentList->addAction(d->actionMoveItemUp);
 
     d->actionMoveItemDown = new QAction(QIcon(":icons/actions/move_down.png"), "Move Down", this);
-    connect(d->actionMoveItemDown, SIGNAL(triggered()), SLOT(moveItemDown()));
+    connect(d->actionMoveItemDown, &QAction::triggered, this, &NameValueListEditor::moveItemDown);
     d->toolbarCurrentList->addAction(d->actionMoveItemDown);
 }
 

@@ -282,8 +282,8 @@ protected slots:
     virtual void contextHelpChanged(const QString &);
     virtual void inProgressSelectionChanged();
 
-    virtual FileOpenStatus openSessionFromRDF(FileSource source);
-    virtual FileOpenStatus openLayersFromRDF(FileSource source);
+    virtual VisualiserWindowBase::FileOpenStatus openSessionFromRDF(FileSource source);
+    virtual VisualiserWindowBase::FileOpenStatus openLayersFromRDF(FileSource source);
 
     virtual void closeSession() = 0;
 

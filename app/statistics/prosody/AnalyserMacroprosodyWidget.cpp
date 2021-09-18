@@ -51,7 +51,9 @@ public:
     RealTime tMin;
     RealTime tMax;
     QString label;
-    QString key() { return QString("%1\t%2\t%3").arg(communicationID).arg(annotationID).arg(speakerID); }
+    QString key() {
+        return QString("%1\t%2\t%3").arg(communicationID, annotationID, speakerID);
+    }
 };
 
 AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *repository, QWidget *parent) :
@@ -81,9 +83,9 @@ AnalyserMacroprosodyWidget::AnalyserMacroprosodyWidget(CorpusRepository *reposit
     // Levels from annotation structure
     ui->comboBoxMUTier->addItems(repository->annotationStructure()->levelIDs());
     // Command Analyse
-    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
+    connect(ui->commandAnalyse, &QAbstractButton::clicked, this, &AnalyserMacroprosodyWidget::analyse);
     // Command Open File for MU list
-    connect(ui->commandOpenFileMUList, SIGNAL(clicked(bool)), this, SLOT(openFileMUList()));
+    connect(ui->commandOpenFileMUList, &QAbstractButton::clicked, this, &AnalyserMacroprosodyWidget::openFileMUList);
     // Results grid view
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);

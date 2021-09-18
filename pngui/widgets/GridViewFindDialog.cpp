@@ -10,8 +10,8 @@ GridViewFindDialog::GridViewFindDialog(QWidget *parent) :
     ui->comboBoxSearchScope->addItems(QStringList() << "Rows" << "Columns" << "Entire table");
     setDefaultSearchScope(GridViewFindDialog::EntireTable);
 
-    connect(ui->commandFindNext, SIGNAL(clicked(bool)), this, SLOT(findNextClicked()));
-    connect(ui->commandClose, SIGNAL(clicked(bool)), this, SLOT(close()));
+    connect(ui->commandFindNext, &QAbstractButton::clicked, this, &GridViewFindDialog::findNextClicked);
+    connect(ui->commandClose, &QAbstractButton::clicked, this, &QWidget::close);
 }
 
 GridViewFindDialog::~GridViewFindDialog()

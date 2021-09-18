@@ -47,7 +47,7 @@ StatisticsMode::StatisticsMode(QObject *parent) :
     OBJECT_MANAGER->registerObject(new Praaline::Plugins::StatisticsPluginPCA::StatisticsPluginPCA(), QtilitiesCategory("Statistics"));
 
     if (!d->widget) d->widget = new StatisticsModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &StatisticsModeWidget::activateMode, this, &StatisticsMode::activateMode);
 }
 
 StatisticsMode::~StatisticsMode()

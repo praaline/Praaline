@@ -28,7 +28,7 @@ public:
     ~PCAPlotWidget();
 
 private slots:
-    void filterAttributeChanged(const QString &attributeName);
+    void filterAttributeChanged(int indexFilterAttribute);
     void replot();
     void plotItemClick(QCPAbstractPlottable*,int,QMouseEvent*);
     void plotItemDoubleClick(QCPAbstractPlottable*,int,QMouseEvent*);

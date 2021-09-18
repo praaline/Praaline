@@ -37,9 +37,9 @@ struct AnalyserTemporalData {
 AnalyserTemporal::AnalyserTemporal(QObject *parent) :
     QObject(parent), d(new AnalyserTemporalData)
 {
-    connect(&(d->watcher), SIGNAL(resultReadyAt(int)), this, SLOT(futureResultReadyAt(int)));
-    connect(&(d->watcher), SIGNAL(progressValueChanged(int)), this, SLOT(futureProgressValueChanged(int)));
-    connect(&(d->watcher), SIGNAL(finished()), this, SLOT(futureFinished()));
+    connect(&(d->watcher), &QFutureWatcherBase::resultReadyAt, this, &AnalyserTemporal::futureResultReadyAt);
+    connect(&(d->watcher), &QFutureWatcherBase::progressValueChanged, this, &AnalyserTemporal::futureProgressValueChanged);
+    connect(&(d->watcher), &QFutureWatcherBase::finished, this, &AnalyserTemporal::futureFinished);
 }
 
 AnalyserTemporal::~AnalyserTemporal()
@@ -132,7 +132,7 @@ struct RunAnalysisStep
 
     QString operator() (CorpusCommunication *com)
     {
-        if (!com) return QString("%1\tis empty.").arg(com->ID());
+        if (!com) return QString("Empty Communication.");
         QSharedPointer<AnalyserTemporalItem> item(new AnalyserTemporalItem());
         item->setLevelIDSyllables(levelSyllables);
         item->setLevelIDTokens(levelTokens);
@@ -147,8 +147,8 @@ struct RunAnalysisStep
 void AnalyserTemporal::analyse()
 {
     if (!d->corpus) return;
-    madeProgress(0);
-    printMessage("Starting");
+    emit madeProgress(0);
+    emit printMessage("Starting");
     QElapsedTimer timer;
 
     QThreadPool::globalInstance()->setMaxThreadCount(64);
@@ -159,8 +159,8 @@ void AnalyserTemporal::analyse()
     d->watcher.setFuture(d->future);
     while (d->watcher.isRunning()) QApplication::processEvents();
 
-    printMessage(QString("Time: %1 seconds").arg(static_cast<double>(timer.elapsed()) / 1000.0));
-    madeProgress(100);
+    emit printMessage(QString("Time: %1 seconds").arg(static_cast<double>(timer.elapsed()) / 1000.0));
+    emit madeProgress(100);
 
 //    int i = 0;
 //    foreach (CorpusCommunication *com, d->corpus->communications()) {

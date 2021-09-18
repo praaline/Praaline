@@ -375,12 +375,12 @@ Updater* QSimpleUpdater::getUpdater (const QString& url) const
         URLS.append (url);
         UPDATERS.append (updater);
 
-        connect (updater, SIGNAL (checkingFinished  (QString)),
-                 this,    SIGNAL (checkingFinished  (QString)));
-        connect (updater, SIGNAL (downloadFinished  (QString, QString)),
-                 this,    SIGNAL (downloadFinished  (QString, QString)));
-        connect (updater, SIGNAL (appcastDownloaded (QString, QByteArray)),
-                 this,    SIGNAL (appcastDownloaded (QString, QByteArray)));
+        connect (updater, &Updater::checkingFinished,
+                 this,    &QSimpleUpdater::checkingFinished);
+        connect (updater, &Updater::downloadFinished,
+                 this,    &QSimpleUpdater::downloadFinished);
+        connect (updater, &Updater::appcastDownloaded,
+                 this,    &QSimpleUpdater::appcastDownloaded);
     }
 
     return UPDATERS.at (URLS.indexOf (url));

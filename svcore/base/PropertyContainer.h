@@ -115,14 +115,14 @@ public slots:
      * colours, the integer value is an index into the colours in the
      * global ColourDatabase.
      */
-    virtual void setProperty(const PropertyName &, int value);
+    virtual void setProperty(const PropertyContainer::PropertyName &, int value);
 
     /**
      * Obtain a command that sets the given property, which can be
      * added to the command history for undo/redo.  Returns NULL
      * if the property is already set to the given value.
      */
-    virtual UndoableCommand *getSetPropertyCommand(const PropertyName &, int value);
+    virtual UndoableCommand *getSetPropertyCommand(const PropertyContainer::PropertyName &, int value);
 
     /**
      * Set a property using a fuzzy match.  Compare nameString with

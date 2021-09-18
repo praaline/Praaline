@@ -37,17 +37,17 @@ void QHeaderViewConnector::append(QHeaderView* view)
         return;
     }
     cHeaderViewList.append(view);
-    connect(view, SIGNAL(destroyed(QObject*)), this, SLOT(viewDestroyed(QObject*)));
-    connect(view, SIGNAL(sectionMoved(int,int,int)), this, SLOT(sectionMoved(int,int,int)));
-    connect(view, SIGNAL(sectionResized(int,int,int)), this, SLOT(sectionResized(int,int,int)));
-    connect(view, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)), this, SLOT(sortIndicatorChanged(int,Qt::SortOrder)));
+    connect(view, &QObject::destroyed, this, &QHeaderViewConnector::viewDestroyed);
+    connect(view, &QHeaderView::sectionMoved, this, &QHeaderViewConnector::sectionMoved);
+    connect(view, &QHeaderView::sectionResized, this, &QHeaderViewConnector::sectionResized);
+    connect(view, &QHeaderView::sortIndicatorChanged, this, &QHeaderViewConnector::sortIndicatorChanged);
 
     if (cOrientation == Qt::Horizontal){
         QTableView* mView = qobject_cast<QTableView*>(view->parentWidget());
         if (mView){
-            connect(mView->horizontalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(scrollBarRangeChanged(int,int)));
-            connect(mView->horizontalScrollBar(), SIGNAL(sliderMoved(int)), this, SLOT(scrollBarSilderMoved(int)));
-            connect(mView->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(scrollBarSilderMoved(int)));
+            connect(mView->horizontalScrollBar(), &QAbstractSlider::rangeChanged, this, &QHeaderViewConnector::scrollBarRangeChanged);
+            connect(mView->horizontalScrollBar(), &QAbstractSlider::sliderMoved, this, &QHeaderViewConnector::scrollBarSilderMoved);
+            connect(mView->horizontalScrollBar(), &QAbstractSlider::valueChanged, this, &QHeaderViewConnector::scrollBarSilderMoved);
         }
     }
 }

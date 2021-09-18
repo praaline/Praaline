@@ -38,7 +38,7 @@ public:
 
     // Add and remove sequences
     bool addSequence(const QString &speakerID, Praaline::Core::Sequence *sequence);
-    bool removeSequence(int row);
+    bool removeRows(int position, int rows, const QModelIndex &parent) override;
 
 private:
     SequencesTableModelData *d;

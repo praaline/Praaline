@@ -124,10 +124,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
         if (manager) d->corpusRepositoriesManager = manager;
     }
     if (d->corpusRepositoriesManager) {
-        connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)),
-                this, SLOT(corpusRepositoryAdded(QString)));
-        connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)),
-                this, SLOT(corpusRepositoryRemoved(QString)));
+        connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryAdded,
+                this, &CorpusExplorerWidget::corpusRepositoryAdded);
+        connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryRemoved,
+                this, &CorpusExplorerWidget::corpusRepositoryRemoved);
     }
 
     d->corporaTopLevelNode = new TreeNode(tr("Corpus Explorer"));
@@ -151,10 +151,10 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
     d->corporaObserverWidget->setRefreshMode(ObserverWidget::RefreshModeShowTree);
     d->corporaObserverWidget->setGlobalMetaType("Corpus Tree Meta Type");
     d->corporaObserverWidget->setAcceptDrops(true);
-    connect(d->corporaObserverWidget, SIGNAL(selectedObjectsChanged(QList<QObject*>)),
-            this, SLOT(corporaObserverWidgetSelectedObjectsChanged(QList<QObject*>)));
-    connect(d->corporaObserverWidget, SIGNAL(doubleClickRequest(QObject*,Observer*)),
-            this, SLOT(corporaObserverWidgetDoubleClickRequest(QObject*,Observer*)));
+    connect(d->corporaObserverWidget, &ObserverWidget::selectedObjectsChanged,
+            this, &CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged);
+    connect(d->corporaObserverWidget, &Qtilities::CoreGui::ObserverWidget::doubleClickRequest,
+            this, &CorpusExplorerWidget::corporaObserverWidgetDoubleClickRequest);
     d->corporaObserverWidget->setObserverContext(d->corporaTopLevelNode);
     d->corporaObserverWidget->layout()->setMargin(0);
     d->corporaObserverWidget->initialize();
@@ -219,28 +219,28 @@ void CorpusExplorerWidget::setupActions()
     // CORPUS MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionCreateCorpus = new QAction(QIcon(":icons/actions/action_new.png"), tr("Create New Corpus..."), this);
-    connect(d->actionCreateCorpus, SIGNAL(triggered()), SLOT(createCorpus()));
+    connect(d->actionCreateCorpus, &QAction::triggered, this, &CorpusExplorerWidget::createCorpus);
     command = ACTION_MANAGER->registerAction("Corpus.CreateCorpus", d->actionCreateCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionCreateCorpus);
 
     d->actionOpenCorpus = new QAction(QIcon(":icons/actions/action_open.png"), tr("Open Corpus"), this);
-    connect(d->actionOpenCorpus, SIGNAL(triggered()), SLOT(openCorpus()));
+    connect(d->actionOpenCorpus, &QAction::triggered, this, &CorpusExplorerWidget::openCorpus);
     command = ACTION_MANAGER->registerAction("Corpus.OpenCorpus", d->actionOpenCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionOpenCorpus);
 
     d->actionSaveMetadata = new QAction(QIcon(":icons/actions/action_save.png"), tr("Save Metadata"), this);
-    connect(d->actionSaveMetadata, SIGNAL(triggered()), SLOT(saveMetadata()));
+    connect(d->actionSaveMetadata, &QAction::triggered, this, &CorpusExplorerWidget::saveMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.SaveMetadata", d->actionSaveMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionSaveMetadata);
 
     d->actionDeleteCorpus = new QAction(QIcon(":icons/actions/action_delete.png"), tr("Delete Corpus"), this);
-    connect(d->actionDeleteCorpus, SIGNAL(triggered()), SLOT(deleteCorpus()));
+    connect(d->actionDeleteCorpus, &QAction::triggered, this, &CorpusExplorerWidget::deleteCorpus);
     command = ACTION_MANAGER->registerAction("Corpus.DeleteCorpus", d->actionDeleteCorpus, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -250,49 +250,49 @@ void CorpusExplorerWidget::setupActions()
     // Corpus Items
     // --------------------------------------------------------------------------------------------
     d->actionAddCommunication = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Communication..."), this);
-    connect(d->actionAddCommunication, SIGNAL(triggered()), SLOT(addCommunication()));
+    connect(d->actionAddCommunication, &QAction::triggered, this, &CorpusExplorerWidget::addCommunication);
     command = ACTION_MANAGER->registerAction("Corpus.AddCommunication", d->actionAddCommunication, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddCommunication);
 
     d->actionAddSpeaker = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Speaker..."), this);
-    connect(d->actionAddSpeaker, SIGNAL(triggered()), SLOT(addSpeaker()));
+    connect(d->actionAddSpeaker, &QAction::triggered, this, &CorpusExplorerWidget::addSpeaker);
     command = ACTION_MANAGER->registerAction("Corpus.AddSpeaker", d->actionAddSpeaker, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddSpeaker);
 
     d->actionAddRecording = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Media Recording..."), this);
-    connect(d->actionAddRecording, SIGNAL(triggered()), SLOT(addRecording()));
+    connect(d->actionAddRecording, &QAction::triggered, this, &CorpusExplorerWidget::addRecording);
     command = ACTION_MANAGER->registerAction("Corpus.AddRecording", d->actionAddRecording, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddRecording);
 
     d->actionAddAnnotation = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Annotation..."), this);
-    connect(d->actionAddAnnotation, SIGNAL(triggered()), SLOT(addAnnotation()));
+    connect(d->actionAddAnnotation, &QAction::triggered, this, &CorpusExplorerWidget::addAnnotation);
     command = ACTION_MANAGER->registerAction("Corpus.AddAnnotation", d->actionAddAnnotation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddAnnotation);
 
     d->actionAddParticipation = new QAction(QIcon(":icons/actions/list_add.png"), tr("Add Participation..."), this);
-    connect(d->actionAddParticipation, SIGNAL(triggered()), SLOT(addParticipation()));
+    connect(d->actionAddParticipation, &QAction::triggered, this, &CorpusExplorerWidget::addParticipation);
     command = ACTION_MANAGER->registerAction("Corpus.AddParticipation", d->actionAddParticipation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionAddParticipation);
 
     d->actionRemoveCorpusItems = new QAction(QIcon(":icons/actions/list_remove.png"), tr("Remove Corpus Item(s)"), this);
-    connect(d->actionRemoveCorpusItems, SIGNAL(triggered()), SLOT(removeCorpusItems()));
+    connect(d->actionRemoveCorpusItems, &QAction::triggered, this, &CorpusExplorerWidget::removeCorpusItems);
     command = ACTION_MANAGER->registerAction("Corpus.RemoveCorpusItems", d->actionRemoveCorpusItems, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
     d->toolbarCorpusExplorer->addAction(d->actionRemoveCorpusItems);
 
     d->actionRelinkCorpusItem = new QAction(tr("Link Item to another Communication..."), this);
-    connect(d->actionRelinkCorpusItem, SIGNAL(triggered()), SLOT(relinkCorpusItem()));
+    connect(d->actionRelinkCorpusItem, &QAction::triggered, this, &CorpusExplorerWidget::relinkCorpusItem);
     command = ACTION_MANAGER->registerAction("Corpus.RelinkCorpusItem", d->actionRelinkCorpusItem, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -303,19 +303,19 @@ void CorpusExplorerWidget::setupActions()
     // --------------------------------------------------------------------------------------------
 
     d->actionAddItemsFromFolder = new QAction(tr("Add corpus items from folder..."), this);
-    connect(d->actionAddItemsFromFolder, SIGNAL(triggered()), SLOT(addItemsFromFolder()));
+    connect(d->actionAddItemsFromFolder, &QAction::triggered, this, &CorpusExplorerWidget::addItemsFromFolder);
     command = ACTION_MANAGER->registerAction("Corpus.AddItemsFromFolder", d->actionAddItemsFromFolder, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionImportMetadata = new QAction(tr("Import corpus metadata..."), this);
-    connect(d->actionImportMetadata, SIGNAL(triggered()), SLOT(importMetadata()));
+    connect(d->actionImportMetadata, &QAction::triggered, this, &CorpusExplorerWidget::importMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.ImportMetadata", d->actionImportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionExportMetadata = new QAction(tr("Export corpus metadata..."), this);
-    connect(d->actionExportMetadata, SIGNAL(triggered()), SLOT(exportMetadata()));
+    connect(d->actionExportMetadata, &QAction::triggered, this, &CorpusExplorerWidget::exportMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.ExportMetadata", d->actionExportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -326,25 +326,25 @@ void CorpusExplorerWidget::setupActions()
     // --------------------------------------------------------------------------------------------
 
     d->actionCheckMediaFiles = new QAction(tr("Check files of Media Recordings..."), this);
-    connect(d->actionCheckMediaFiles, SIGNAL(triggered()), SLOT(checkMediaFiles()));
+    connect(d->actionCheckMediaFiles, &QAction::triggered, this, &CorpusExplorerWidget::checkMediaFiles);
     command = ACTION_MANAGER->registerAction("Corpus.CheckMediaFiles", d->actionCheckMediaFiles, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionCreateAnnotationsFromRecordings = new QAction(tr("Create Annotations for Recordings not having one..."), this);
-    connect(d->actionCreateAnnotationsFromRecordings, SIGNAL(triggered()), SLOT(createAnnotationsFromRecordings()));
+    connect(d->actionCreateAnnotationsFromRecordings, &QAction::triggered, this, &CorpusExplorerWidget::createAnnotationsFromRecordings);
     command = ACTION_MANAGER->registerAction("Corpus.AnnotationsFromRecordings", d->actionCreateAnnotationsFromRecordings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionCreateSpeakersFromAnnotations = new QAction(tr("Create Speakers and Participations from Annotations..."), this);
-    connect(d->actionCreateSpeakersFromAnnotations, SIGNAL(triggered()), SLOT(createSpeakersFromAnnotations()));
+    connect(d->actionCreateSpeakersFromAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::createSpeakersFromAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.SpeakersParticipationsFromAnnotations", d->actionCreateSpeakersFromAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionCleanUpParticipations = new QAction(tr("Clean-up Participations based on Annotations..."), this);
-    connect(d->actionCleanUpParticipations, SIGNAL(triggered()), SLOT(cleanUpParticipationsFromAnnotations()));
+    connect(d->actionCleanUpParticipations, &QAction::triggered, this, &CorpusExplorerWidget::cleanUpParticipationsFromAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.CleanUpParticipationsFromAnnotations", d->actionCleanUpParticipations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -355,25 +355,25 @@ void CorpusExplorerWidget::setupActions()
     // --------------------------------------------------------------------------------------------
 
     d->actionSplitCommunications = new QAction(tr("Split Communications based on annotation..."), this);
-    connect(d->actionSplitCommunications, SIGNAL(triggered()), SLOT(utilitiesSplitCommunications()));
+    connect(d->actionSplitCommunications, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesSplitCommunications);
     command = ACTION_MANAGER->registerAction("Corpus.SplitCommunications", d->actionSplitCommunications, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionMergeCommunications = new QAction(tr("Merge Communications..."), this);
-    connect(d->actionMergeCommunications, SIGNAL(triggered()), SLOT(utilitiesMergeCommunications()));
+    connect(d->actionMergeCommunications, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesMergeCommunications);
     command = ACTION_MANAGER->registerAction("Corpus.MergeCommunications", d->actionMergeCommunications, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionDecodeFilenameToMetadata = new QAction(tr("Decode Filename into Metadata..."), this);
-    connect(d->actionDecodeFilenameToMetadata, SIGNAL(triggered()), SLOT(utilitiesDecodeFilenameToMetadata()));
+    connect(d->actionDecodeFilenameToMetadata, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesDecodeFilenameToMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.DecodeFilenameToMetadata", d->actionDecodeFilenameToMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
 
     d->actionMergeCorpora = new QAction(tr("Merge Corpora..."), this);
-    connect(d->actionMergeCorpora, SIGNAL(triggered()), SLOT(utilitiesMergeCorpora()));
+    connect(d->actionMergeCorpora, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesMergeCorpora);
     command = ACTION_MANAGER->registerAction("Corpus.MergeCorpora", d->actionMergeCorpora, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -383,13 +383,13 @@ void CorpusExplorerWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
 
     d->actionImportAnnotations = new QAction(tr("Import annotations..."), this);
-    connect(d->actionImportAnnotations, SIGNAL(triggered()), SLOT(importAnnotations()));
+    connect(d->actionImportAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::importAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.ImportAnnotations", d->actionImportAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     annotation_menu->addAction(command);
 
     d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
-    connect(d->actionExportAnnotations, SIGNAL(triggered()), SLOT(exportAnnotations()));
+    connect(d->actionExportAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::exportAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.ExportAnnotations", d->actionExportAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     annotation_menu->addAction(command);
@@ -398,13 +398,13 @@ void CorpusExplorerWidget::setupActions()
     // VIEW MENU
     // ------------------------------------------------------------------------------------------------------
     d->actionAttributesAndGroupings = new QAction(tr("Select Attributes and Groupings"), this);
-    connect(d->actionAttributesAndGroupings, SIGNAL(triggered()), SLOT(attributesAndGroupings()));
+    connect(d->actionAttributesAndGroupings, &QAction::triggered, this, &CorpusExplorerWidget::attributesAndGroupings);
     command = ACTION_MANAGER->registerAction("Corpus.AttributesAndGroupings", d->actionAttributesAndGroupings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     view_menu->addAction(command);
 
     d->actionToggleSearchBox = new QAction(QIcon(":icons/corpusexplorer/search.png"), tr("Search"), this);
-    connect(d->actionToggleSearchBox, SIGNAL(triggered()), d->corporaObserverWidget, SLOT(toggleSearchBox()));
+    connect(d->actionToggleSearchBox, &QAction::triggered, d->corporaObserverWidget, &Qtilities::CoreGui::ObserverWidget::toggleSearchBox);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.ToggleSearchBox", d->actionToggleSearchBox, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
@@ -423,19 +423,19 @@ void CorpusExplorerWidget::setupMetadataEditorsStylingMenu()
     d->menuMetadataEditorStyles = new QMenu(this);
 
     d->actionMetadataEditorPrimaryStyleTree = new QAction(tr("Primary Metadata Editor: Tree View"), this);
-    connect(d->actionMetadataEditorPrimaryStyleTree, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleTree()));
+    connect(d->actionMetadataEditorPrimaryStyleTree, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorPrimaryStyleTree);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.Tree", d->actionMetadataEditorPrimaryStyleTree, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleTree);
 
     d->actionMetadataEditorPrimaryStyleGroupBox = new QAction(tr("Primary Metadata Editor: Form View"), this);
-    connect(d->actionMetadataEditorPrimaryStyleGroupBox, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleGroupBox()));
+    connect(d->actionMetadataEditorPrimaryStyleGroupBox, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorPrimaryStyleGroupBox);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.GroupBox", d->actionMetadataEditorPrimaryStyleGroupBox, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleGroupBox);
 
     d->actionMetadataEditorPrimaryStyleButton = new QAction(tr("Primary Metadata Editor: Compact View"), this);
-    connect(d->actionMetadataEditorPrimaryStyleButton, SIGNAL(triggered()), SLOT(metadataEditorPrimaryStyleButton()));
+    connect(d->actionMetadataEditorPrimaryStyleButton, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorPrimaryStyleButton);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.PrimaryMetadataEditor.Button", d->actionMetadataEditorPrimaryStyleButton, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorPrimaryStyleButton);
@@ -443,19 +443,19 @@ void CorpusExplorerWidget::setupMetadataEditorsStylingMenu()
     d->menuMetadataEditorStyles->addSeparator();
 
     d->actionMetadataEditorSecondaryStyleTree = new QAction(tr("Secondary Metadata Editor: Tree View"), this);
-    connect(d->actionMetadataEditorSecondaryStyleTree, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleTree()));
+    connect(d->actionMetadataEditorSecondaryStyleTree, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorSecondaryStyleTree);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.Tree", d->actionMetadataEditorSecondaryStyleTree, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleTree);
 
     d->actionMetadataEditorSecondaryStyleGroupBox = new QAction(tr("Secondary Metadata Editor: Form View"), this);
-    connect(d->actionMetadataEditorSecondaryStyleGroupBox, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleGroupBox()));
+    connect(d->actionMetadataEditorSecondaryStyleGroupBox, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorSecondaryStyleGroupBox);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.GroupBox", d->actionMetadataEditorSecondaryStyleGroupBox, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleGroupBox);
 
     d->actionMetadataEditorSecondaryStyleButton = new QAction(tr("Secondary Metadata Editor: Compact View"), this);
-    connect(d->actionMetadataEditorSecondaryStyleButton, SIGNAL(triggered()), SLOT(metadataEditorSecondaryStyleButton()));
+    connect(d->actionMetadataEditorSecondaryStyleButton, &QAction::triggered, this, &CorpusExplorerWidget::metadataEditorSecondaryStyleButton);
     command = ACTION_MANAGER->registerAction("Corpus.Explorer.SecondaryMetadataEditor.Button", d->actionMetadataEditorSecondaryStyleButton, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->menuMetadataEditorStyles->addAction(d->actionMetadataEditorSecondaryStyleButton);

@@ -86,14 +86,14 @@ HelpBrowser::HelpBrowser(QHelpEngine* helpEngine, const QUrl &url, QWidget* pare
     button_flags |= SearchBoxWidget::NextButtons;
     button_flags |= SearchBoxWidget::PreviousButtons;
     d->searchBoxWidget = new SearchBoxWidget(search_options,SearchBoxWidget::SearchOnly,button_flags);
-    connect(d->searchBoxWidget,SIGNAL(btnClose_clicked()),SLOT(handleSearchClose()));
+    connect(d->searchBoxWidget,&Qtilities::CoreGui::SearchBoxWidget::btnClose_clicked,this, &HelpBrowser::handleSearchClose);
     d->searchBoxWidget->hide();
 
     d->btnSearch = new QPushButton;
     d->btnSearch->setIcon(QIcon(qti_icon_FIND_16x16));
-    connect(d->btnSearch,SIGNAL(clicked()),SLOT(showSearchBox()));
-    connect(d->searchBoxWidget,SIGNAL(searchStringChanged(QString)),SLOT(handleSearchStringChanged(QString)));
-    connect(d->searchBoxWidget,SIGNAL(searchOptionsChanged()),SLOT(handleSearchOptionsChanged()));
+    connect(d->btnSearch,&QAbstractButton::clicked,this, &HelpBrowser::showSearchBox);
+    connect(d->searchBoxWidget,&Qtilities::CoreGui::SearchBoxWidget::searchStringChanged,this, &HelpBrowser::handleSearchStringChanged);
+    connect(d->searchBoxWidget,&Qtilities::CoreGui::SearchBoxWidget::searchOptionsChanged,this, &HelpBrowser::handleSearchOptionsChanged);
 
     // Config SearchBar Layout
     if (d->locationBar->layout())

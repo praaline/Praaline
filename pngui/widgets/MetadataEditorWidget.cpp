@@ -91,22 +91,22 @@ MetadataEditorWidget::MetadataEditorWidget(MetadataEditorWidgetStyle style, QWid
     d->dateTimeEditFactory = new QtDateTimeEditFactory(this); // datetime
 
     // Signals and slots
-    connect(d->stringManager, SIGNAL(valueChanged(QtProperty*, const QString &)),
-            this, SLOT(valueChanged(QtProperty *, const QString &)));
-    connect(d->boolManager, SIGNAL(valueChanged(QtProperty*, bool)),
-            this, SLOT(valueChanged(QtProperty *, bool)));
-    connect(d->intManager, SIGNAL(valueChanged(QtProperty*, int)),
-            this, SLOT(valueChanged(QtProperty *, int)));
-    connect(d->doubleManager, SIGNAL(valueChanged(QtProperty *, double)),
-            this, SLOT(valueChanged(QtProperty *, double)));
-    connect(d->enumManager, SIGNAL(valueChanged(QtProperty*, int)),
-            this, SLOT(enumValueChanged(QtProperty*,int)));
-    connect(d->dateManager, SIGNAL(valueChanged(QtProperty*, const QDate &)),
-            this, SLOT(valueChanged(QtProperty*, const QDate &)));
-    connect(d->timeManager, SIGNAL(valueChanged(QtProperty*,QTime)),
-            this, SLOT(valueChanged(QtProperty*, const QTime &)));
-    connect(d->dateTimeManager, SIGNAL(valueChanged(QtProperty*,QDateTime)),
-            this, SLOT(valueChanged(QtProperty*, const QDateTime &)));
+    connect(d->stringManager, &QtStringPropertyManager::valueChanged,
+            this, qOverload<QtProperty *, const QString &>(&MetadataEditorWidget::valueChanged));
+    connect(d->boolManager, &QtBoolPropertyManager::valueChanged,
+            this, qOverload<QtProperty *, bool>(&MetadataEditorWidget::valueChanged));
+    connect(d->intManager, &QtIntPropertyManager::valueChanged,
+            this, qOverload<QtProperty *, int>(&MetadataEditorWidget::valueChanged));
+    connect(d->doubleManager, &QtDoublePropertyManager::valueChanged,
+            this, qOverload<QtProperty *, double>(&MetadataEditorWidget::valueChanged));
+    connect(d->enumManager, &QtEnumPropertyManager::valueChanged,
+            this, &MetadataEditorWidget::enumValueChanged);
+    connect(d->dateManager, &QtDatePropertyManager::valueChanged,
+            this, qOverload<QtProperty *, const QDate &>(&MetadataEditorWidget::valueChanged));
+    connect(d->timeManager, &QtTimePropertyManager::valueChanged,
+            this, qOverload<QtProperty *, const QTime &>(&MetadataEditorWidget::valueChanged));
+    connect(d->dateTimeManager, &QtDateTimePropertyManager::valueChanged,
+            this, qOverload<QtProperty *, const QDateTime &>(&MetadataEditorWidget::valueChanged));
 
     d->mainLayout = new QGridLayout(this);
     this->setLayout(d->mainLayout);

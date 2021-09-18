@@ -42,10 +42,10 @@ public slots:
                      const RealTime &timeStart, const RealTime &timeEnd, const QString &name);
 
 signals:
-    void selectedCorpusCommunication(QPointer<Corpus>, QPointer<CorpusCommunication>);
-    void selectedCorpusRecording(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusRecording>);
-    void selectedCorpusAnnotation(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>);
-    void moveToAnnotationTime(QPointer<Corpus>, QPointer<CorpusCommunication>, QPointer<CorpusAnnotation>, RealTime);
+    void selectedCorpusCommunication(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>);
+    void selectedCorpusRecording(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusRecording>);
+    void selectedCorpusAnnotation(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusAnnotation>);
+    void moveToAnnotationTime(QPointer<Praaline::Core::Corpus>, QPointer<Praaline::Core::CorpusCommunication>, QPointer<Praaline::Core::CorpusAnnotation>, RealTime);
 
 private:
     Ui::CorpusItemSelectorWidget *ui;

@@ -100,12 +100,12 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     d->editor->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     // Timeline configuration
     d->widgetTimelineConfig = new TimelineEditorConfigWidget(this);
-    connect(d->widgetTimelineConfig, SIGNAL(selectedLevelsAttributesChanged()),
-            this, SLOT(selectedLevelsAttributesChanged()));
-    connect(d->widgetTimelineConfig, SIGNAL(speakerAdded(QString)),
-            this, SLOT(speakerAdded(QString)));
-    connect(d->widgetTimelineConfig, SIGNAL(speakerRemoved(QString)),
-            this, SLOT(speakerRemoved(QString)));
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::selectedLevelsAttributesChanged,
+            this, &AnnotationMultiTierEditor::selectedLevelsAttributesChanged);
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::speakerAdded,
+            this, &AnnotationMultiTierEditor::speakerAdded);
+    connect(d->widgetTimelineConfig, &TimelineEditorConfigWidget::speakerRemoved,
+            this, &AnnotationMultiTierEditor::speakerRemoved);
     d->dockTimelineConfig = new QDockWidget(tr("Timeline Configuration"), this);
     d->dockTimelineConfig->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     d->dockTimelineConfig->setWidget(d->widgetTimelineConfig);
@@ -114,14 +114,14 @@ AnnotationMultiTierEditor::AnnotationMultiTierEditor(QWidget *parent) :
     d->annotationWidgetForDisfluencies = new AnnotationWidgetDisfluencies(this);
     d->annotationWidgetForSequences = new AnnotationWidgetSequences(this);
     // Annotation widgets need to be informed about changes to the selected row/column
-    connect(d->editor, SIGNAL(selectedRowsChanged(QList<int>)),
-            this, SLOT(timelineSelectedRowsChanged(QList<int>)));
-    connect(d->editor, SIGNAL(currentIndexChanged(QModelIndex,QModelIndex)),
-            this, SLOT(timelineCurrentIndexChanged(QModelIndex,QModelIndex)));
+    connect(d->editor, &AnnotationMultiTierEditorWidget::selectedRowsChanged,
+            this, &AnnotationMultiTierEditor::timelineSelectedRowsChanged);
+    connect(d->editor, &TimelineEditorWidgetBase::currentIndexChanged,
+            this, &AnnotationMultiTierEditor::timelineCurrentIndexChanged);
     // Media player
     d->mediaPlayer = new QMediaPlayer(this);
     d->mediaPlayer->setNotifyInterval(20);
-    connect(d->mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(mediaPositionChanged(qint64)));
+    connect(d->mediaPlayer, &QMediaPlayer::positionChanged, this, &AnnotationMultiTierEditor::mediaPositionChanged);
     // Waiting spinner while load corpus data
     d->waitingSpinner = new WaitingSpinnerWidget(this);
     d->waitingSpinner->setRoundness(70.0);
@@ -175,26 +175,26 @@ void AnnotationMultiTierEditor::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
-    connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotations()));
+    connect(d->actionSave, &QAction::triggered, this, &AnnotationMultiTierEditor::saveAnnotations);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionSave);
     d->actionSave->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
     d->actionPlay = new QAction(QIcon(":/icons/media/media_play.png"), tr("Play"), this);
-    connect(d->actionPlay, SIGNAL(triggered()), SLOT(mediaPlay()));
+    connect(d->actionPlay, &QAction::triggered, this, &AnnotationMultiTierEditor::mediaPlay);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Play", d->actionPlay, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPlay);
 
     d->actionPause = new QAction(QIcon(":/icons/media/media_pause.png"), tr("Pause"), this);
-    connect(d->actionPause, SIGNAL(triggered()), SLOT(mediaPause()));
+    connect(d->actionPause, &QAction::triggered, this, &AnnotationMultiTierEditor::mediaPause);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Pause", d->actionPause, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionPause);
 
     d->actionStop = new QAction(QIcon(":/icons/media/media_stop.png"), tr("Stop"), this);
-    connect(d->actionStop, SIGNAL(triggered()), SLOT(mediaStop()));
+    connect(d->actionStop, &QAction::triggered, this, &AnnotationMultiTierEditor::mediaStop);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.Stop", d->actionStop, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionStop);
@@ -202,37 +202,37 @@ void AnnotationMultiTierEditor::setupActions()
     // EDITOR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionEditorIntervalJoin = new QAction(QIcon(":/icons/actions/interval_join.png"), tr("Join Intervals"), this);
-    connect(d->actionEditorIntervalJoin, SIGNAL(triggered()), this, SLOT(intervalJoin()));
+    connect(d->actionEditorIntervalJoin, &QAction::triggered, this, &AnnotationMultiTierEditor::intervalJoin);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalJoin", d->actionEditorIntervalJoin, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionEditorIntervalJoin);
 
     d->actionEditorIntervalSplit = new QAction(QIcon(":/icons/actions/interval_split.png"), tr("Split Intervals"), this);
-    connect(d->actionEditorIntervalSplit, SIGNAL(triggered()), this, SLOT(intervalSplit()));
+    connect(d->actionEditorIntervalSplit, &QAction::triggered, this, &AnnotationMultiTierEditor::intervalSplit);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.IntervalSplit", d->actionEditorIntervalSplit, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionEditorIntervalSplit);
 
     d->actionToggleOrientation = new QAction(QIcon(":/icons/actions/change_orientation.png"), tr("Change Orientation"), this);
-    connect(d->actionToggleOrientation, SIGNAL(triggered()), this, SLOT(toggleOrientation()));
+    connect(d->actionToggleOrientation, &QAction::triggered, this, &AnnotationMultiTierEditor::toggleOrientation);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleOrientation", d->actionToggleOrientation, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleOrientation);
 
     d->actionRemoveSorting = new QAction(QIcon(":/icons/actions/sort_remove.png"), tr("Remove Sort"), this);
-    connect(d->actionRemoveSorting, SIGNAL(triggered()), d->editor, SLOT(removeSorting()));
+    connect(d->actionRemoveSorting, &QAction::triggered, d->editor, &AnnotationMultiTierEditorWidget::removeSorting);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.RemoveSorting", d->actionRemoveSorting, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionRemoveSorting);
 
     d->actionToggleSecondaryEditor = new QAction(QIcon(":/icons/actions/toggle_secondary_editor.png"), tr("Secondary Editor"), this);
-    connect(d->actionToggleSecondaryEditor, SIGNAL(triggered()), this, SLOT(toggleSecondaryEditor()));
+    connect(d->actionToggleSecondaryEditor, &QAction::triggered, this, &AnnotationMultiTierEditor::toggleSecondaryEditor);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleSecondaryEditor", d->actionToggleSecondaryEditor, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleSecondaryEditor);
 
     d->actionToggleTimelineConfig = new QAction(QIcon(":/icons/actions/toggle_config.png"), tr("Options"), this);
-    connect(d->actionToggleTimelineConfig, SIGNAL(triggered()), this, SLOT(toggleTimelineConfig()));
+    connect(d->actionToggleTimelineConfig, &QAction::triggered, this, &AnnotationMultiTierEditor::toggleTimelineConfig);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.ToggleTimelineConfig", d->actionToggleTimelineConfig, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarEditor->addAction(d->actionToggleTimelineConfig);
@@ -240,14 +240,14 @@ void AnnotationMultiTierEditor::setupActions()
     // SYNC ACTIONS
     // ----------------------------------------------------------------------------------------------------------------
     d->actionMoveMinBoundaryLeft = new QAction(tr("Move min boundary left"), this);
-    connect(d->actionMoveMinBoundaryLeft, SIGNAL(triggered()), this, SLOT(moveMinBoundaryLeft()));
+    connect(d->actionMoveMinBoundaryLeft, &QAction::triggered, this, &AnnotationMultiTierEditor::moveMinBoundaryLeft);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMinBoundaryLeft", d->actionMoveMinBoundaryLeft, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->editor->addAction(d->actionMoveMinBoundaryLeft);
     d->actionMoveMinBoundaryLeft->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Minus));
 
     d->actionMoveMaxBoundaryRight = new QAction(tr("Move max boundary right"), this);
-    connect(d->actionMoveMaxBoundaryRight, SIGNAL(triggered()), this, SLOT(moveMaxBoundaryRight()));
+    connect(d->actionMoveMaxBoundaryRight, &QAction::triggered, this, &AnnotationMultiTierEditor::moveMaxBoundaryRight);
     command = ACTION_MANAGER->registerAction("Annotation.TimelineEditor.MoveMaxBoundaryRight", d->actionMoveMaxBoundaryRight, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->editor->addAction(d->actionMoveMaxBoundaryRight);

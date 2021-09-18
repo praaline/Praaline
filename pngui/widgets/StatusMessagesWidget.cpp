@@ -46,9 +46,9 @@ StatusMessagesWidget::StatusMessagesWidget(QWidget *parent) :
 
     // Setup actions
     d->actionSaveOutput = d->toolbarOutput->addAction(QIcon(":/icons/actions/action_save.png"), tr("Save output"));
-    connect(d->actionSaveOutput, SIGNAL(triggered()), this, SLOT(actionSaveOutput()));
+    connect(d->actionSaveOutput, &QAction::triggered, this, &StatusMessagesWidget::actionSaveOutput);
     d->actionClearOutput = d->toolbarOutput->addAction(QIcon(":/icons/actions/clear.png"), tr("Clear output"));
-    connect(d->actionClearOutput, SIGNAL(triggered()), this, SLOT(actionClearOutput()));
+    connect(d->actionClearOutput, &QAction::triggered, this, &StatusMessagesWidget::actionClearOutput);
 }
 
 StatusMessagesWidget::~StatusMessagesWidget()

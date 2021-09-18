@@ -62,13 +62,13 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
     ui->gridLayoutTranscription->addWidget(d->gridviewTranscription);
 
     // Annotation Level and Attributes
-    connect(ui->comboBoxAnnotationLevel, SIGNAL(currentTextChanged(QString)), this, SLOT(annotationLevelChanged(QString)));
+    connect(ui->comboBoxAnnotationLevel, &QComboBox::currentTextChanged, this, &AutomaticTranscriptionWidget::annotationLevelChanged);
 
     // Processing steps
-    connect(ui->commandPrepare, SIGNAL(clicked(bool)), this, SLOT(stepPrepare()));
-    connect(ui->commandVAD, SIGNAL(clicked(bool)), this, SLOT(stepVAD()));
-    connect(ui->commandAutoTranscribe, SIGNAL(clicked(bool)), this, SLOT(stepAutoTranscribe()));
-    connect(ui->commandSpeakerAdaptation, SIGNAL(clicked(bool)), this, SLOT(stepSpeakerAdaptation()));
+    connect(ui->commandPrepare, &QAbstractButton::clicked, this, &AutomaticTranscriptionWidget::stepPrepare);
+    connect(ui->commandVAD, &QAbstractButton::clicked, this, &AutomaticTranscriptionWidget::stepVAD);
+    connect(ui->commandAutoTranscribe, &QAbstractButton::clicked, this, &AutomaticTranscriptionWidget::stepAutoTranscribe);
+    connect(ui->commandSpeakerAdaptation, &QAbstractButton::clicked, this, &AutomaticTranscriptionWidget::stepSpeakerAdaptation);
 
     // Sphinx configuration
     QString sphinxPath = QDir::homePath() + "/Praaline/plugins/aligner/sphinx/";
@@ -79,7 +79,7 @@ AutomaticTranscriptionWidget::AutomaticTranscriptionWidget(QWidget *parent) :
     // Automatic Transcriber module
     d->transcriber = new SphinxAutoTranscriber(this);
     d->transcriber->setConfiguration(d->config);
-    connect(d->transcriber, SIGNAL(printMessage(QString)), this, SLOT(receivedMessage(QString)));
+    connect(d->transcriber, &SphinxAutoTranscriber::printMessage, this, &AutomaticTranscriptionWidget::receivedMessage);
 }
 
 AutomaticTranscriptionWidget::~AutomaticTranscriptionWidget()

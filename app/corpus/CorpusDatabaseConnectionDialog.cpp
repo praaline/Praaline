@@ -11,8 +11,8 @@ CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) 
     ui(new Ui::CorpusDatabaseConnectionDialog)
 {
     ui->setupUi(this);
-    connect(ui->commandConnect, SIGNAL(clicked(bool)), this, SLOT(accept()));
-    connect(ui->commandCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(ui->commandConnect, &QAbstractButton::clicked, this, &QDialog::accept);
+    connect(ui->commandCancel, &QAbstractButton::clicked, this, &QDialog::reject);
     // Database types
     QStringList databaseTypeNames; databaseTypeNames << tr("SQLite database") << tr("MySQL database") << tr("PostgreSQL database");
     QStringList databaseTypeDrivers; databaseTypeDrivers << "QSQLITE" << "QMYSQL" << "QPSQL";
@@ -23,13 +23,20 @@ CorpusDatabaseConnectionDialog::CorpusDatabaseConnectionDialog(QWidget *parent) 
     ui->comboBoxDatabaseTypeMetadata->setCurrentIndex(0);
     ui->comboBoxDatabaseTypeAnnotations->setCurrentIndex(0);
     //
-    connect(ui->commandSelectFolder, SIGNAL(clicked(bool)), this, SLOT(selectBaseFolder()));
-    connect(ui->comboBoxDatabaseTypeMetadata, SIGNAL(currentIndexChanged(int)), this, SLOT(datastoreInfoChanged()));
-    connect(ui->editHostnameMetadata, SIGNAL(textChanged(QString)), this, SLOT(datastoreInfoChanged()));
-    connect(ui->editUsernameMetadata, SIGNAL(textChanged(QString)), this, SLOT(datastoreInfoChanged()));
-    connect(ui->editPasswordMetadata, SIGNAL(textChanged(QString)), this, SLOT(datastoreInfoChanged()));
-    connect(ui->editDatabaseNameMetadata, SIGNAL(textChanged(QString)), this, SLOT(datastoreInfoChanged()));
-    connect(ui->optionUseSameDatabase, SIGNAL(stateChanged(int)), this, SLOT(useSameDatabaseChanged()));
+    connect(ui->commandSelectFolder, &QAbstractButton::clicked,
+            this, &CorpusDatabaseConnectionDialog::selectBaseFolder);
+    connect(ui->comboBoxDatabaseTypeMetadata, qOverload<int>(&QComboBox::currentIndexChanged),
+            this, &CorpusDatabaseConnectionDialog::datastoreInfoChanged);
+    connect(ui->editHostnameMetadata, &QLineEdit::textChanged,
+            this, &CorpusDatabaseConnectionDialog::datastoreInfoChanged);
+    connect(ui->editUsernameMetadata, &QLineEdit::textChanged,
+            this, &CorpusDatabaseConnectionDialog::datastoreInfoChanged);
+    connect(ui->editPasswordMetadata, &QLineEdit::textChanged,
+            this, &CorpusDatabaseConnectionDialog::datastoreInfoChanged);
+    connect(ui->editDatabaseNameMetadata, &QLineEdit::textChanged,
+            this, &CorpusDatabaseConnectionDialog::datastoreInfoChanged);
+    connect(ui->optionUseSameDatabase, &QCheckBox::stateChanged,
+            this, &CorpusDatabaseConnectionDialog::useSameDatabaseChanged);
 }
 
 CorpusDatabaseConnectionDialog::~CorpusDatabaseConnectionDialog()

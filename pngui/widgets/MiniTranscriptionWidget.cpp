@@ -133,9 +133,9 @@ void MiniTranscriptionWidget::rebind(Praaline::Core::CorpusAnnotation *annot, co
     d->annotation = annot;
 
     d->transcriptionView->insertTopLevelItem(0,
-        new QTreeWidgetItem((QTreeWidget*)0, QStringList() << "Loading..." << "Loading..." << "Loading..."));
+        new QTreeWidgetItem(QStringList() << "Loading..." << "Loading..." << "Loading..."));
     d->watcher = QSharedPointer<QFutureWatcher<void> >(new QFutureWatcher<void>());
-    connect(d->watcher.data(), SIGNAL(finished()), this, SLOT(asyncCreateTranscriptFinished()));
+    connect(d->watcher.data(), &QFutureWatcherBase::finished, this, &MiniTranscriptionWidget::asyncCreateTranscriptFinished);
 
     QFuture<void> future = QtConcurrent::run(this, &MiniTranscriptionWidget::asyncCreateTranscript, annot);
     d->watcher->setFuture(future);

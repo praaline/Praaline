@@ -51,7 +51,7 @@ SqlTextEdit::SqlTextEdit(QWidget* parent) :
     reloadSettings();
 
     // Connect signals
-    connect(this, SIGNAL(linesChanged()), this, SLOT(updateLineNumberAreaWidth()));
+    connect(this, &QsciScintilla::linesChanged, this, &SqlTextEdit::updateLineNumberAreaWidth);
 }
 
 SqlTextEdit::~SqlTextEdit()

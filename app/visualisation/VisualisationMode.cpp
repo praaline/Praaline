@@ -32,7 +32,7 @@ VisualisationMode::VisualisationMode(QObject *parent) :
     }
 
     if (!d->widget) d->widget = new VisualisationModeWidget();
-    connect(d->widget, SIGNAL(activateMode()), this, SLOT(activateMode()));
+    connect(d->widget.data(), &VisualisationModeWidget::activateMode, this, &VisualisationMode::activateMode);
 }
 
 VisualisationMode::~VisualisationMode()

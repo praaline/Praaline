@@ -36,15 +36,15 @@ StatisticsModeWidget::StatisticsModeWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryAdded, this, &StatisticsModeWidget::corpusRepositoryAdded);
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryRemoved, this, &StatisticsModeWidget::corpusRepositoryRemoved);
     // List of repositories
     ui->comboBoxCorpusRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
     // Find available statistical analysis plugins
     createStatisticsPluginsTree();
     // Handle "open analyser" double click
-    connect(ui->treeviewStatisticsPlugins, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(anayserDoubleClicked(QModelIndex)));
-    connect(ui->tabWidgetDocuments, SIGNAL(tabCloseRequested(int)), this, SLOT(documentTabCloseRequested(int)));
+    connect(ui->treeviewStatisticsPlugins, &QAbstractItemView::doubleClicked, this, &StatisticsModeWidget::anayserDoubleClicked);
+    connect(ui->tabWidgetDocuments, &QTabWidget::tabCloseRequested, this, &StatisticsModeWidget::documentTabCloseRequested);
 }
 
 StatisticsModeWidget::~StatisticsModeWidget()

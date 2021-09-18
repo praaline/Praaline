@@ -33,11 +33,12 @@ TidyUpAnnotationsDialog::TidyUpAnnotationsDialog(QWidget *parent) :
     if (!d->corpusRepositoriesManager) return;
     // Repository combobox
     ui->comboBoxRepository->addItems(d->corpusRepositoriesManager->listCorpusRepositoryIDs());
-    connect(ui->comboBoxRepository, SIGNAL(currentTextChanged(QString)), this, SLOT(corpusRepositoryChanged(QString)));
+    connect(ui->comboBoxRepository, &QComboBox::currentTextChanged, this, &TidyUpAnnotationsDialog::corpusRepositoryChanged);
     // Annotation level combo-box
-    connect(ui->comboBoxAnnotationLevel, SIGNAL(currentIndexChanged(int)), this, SLOT(annotationLevelChanged(int)));
+    connect(ui->comboBoxAnnotationLevel, qOverload<int>(&QComboBox::currentIndexChanged),
+            this, &TidyUpAnnotationsDialog::annotationLevelChanged);
     // Apply button
-    connect(ui->commandApply, SIGNAL(clicked(bool)), this, SLOT(applyChanges()));
+    connect(ui->commandApply, &QAbstractButton::clicked, this, &TidyUpAnnotationsDialog::applyChanges);
     // Initialize
     corpusRepositoryChanged(d->corpusRepositoriesManager->activeCorpusRepositoryID());
 }

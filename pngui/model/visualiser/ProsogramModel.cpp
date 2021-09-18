@@ -82,10 +82,10 @@ ProsogramModel::ProsogramModel(sv_samplerate_t sampleRate,
             if (!annot) continue;
             QString speakerID = participation->speakerID();
             readProsogramFiles(sampleRate, speakerID, d->segments,
-                               prosoPath + QString("%1_%2_nucl.TextGrid").arg(rec->ID()).arg(participation->speakerID()),
-                               prosoPath + QString("%1_%2_styl.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
-                               prosoPath + QString("%1_%2.PitchTier").arg(rec->ID()).arg(participation->speakerID()),
-                               prosoPath + QString("%1_%2.IntensityTier").arg(rec->ID()).arg(participation->speakerID()),
+                               prosoPath + QString("%1_%2_nucl.TextGrid").arg(rec->ID(), participation->speakerID()),
+                               prosoPath + QString("%1_%2_styl.PitchTier").arg(rec->ID(), participation->speakerID()),
+                               prosoPath + QString("%1_%2.PitchTier").arg(rec->ID(), participation->speakerID()),
+                               prosoPath + QString("%1_%2.IntensityTier").arg(rec->ID(), participation->speakerID()),
                                corpus, annot->ID());
             // Get pitch range
             QPointer<CorpusSpeaker> spk = corpus->speaker(speakerID);

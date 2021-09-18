@@ -61,7 +61,7 @@ AnalyserDisfluenciesWidget::AnalyserDisfluenciesWidget(CorpusRepository *reposit
     d->repository = repository;
     // Analyser
     d->analyser = analyser;
-    connect(d->analyser, SIGNAL(madeProgress(int)), this, SLOT(madeProgress(int)));
+    connect(d->analyser, &AnalyserDisfluencies::madeProgress, this, &AnalyserDisfluenciesWidget::madeProgress);
     // ================================================================================================================
     // MAIN WIDGET AND RESUTLS TAB
     // ================================================================================================================
@@ -84,7 +84,7 @@ AnalyserDisfluenciesWidget::AnalyserDisfluenciesWidget(CorpusRepository *reposit
     if (levelIDs.contains(d->analyser->levelSyllables()))   ui->comboBoxLevelSyllables->setCurrentText(d->analyser->levelSyllables());
     if (levelIDs.contains(d->analyser->levelTokens()))      ui->comboBoxLevelTokens->setCurrentText(d->analyser->levelTokens());
     // Command Analyse
-    connect(ui->commandAnalyse, SIGNAL(clicked(bool)), this, SLOT(analyse()));
+    connect(ui->commandAnalyse, &QAbstractButton::clicked, this, &AnalyserDisfluenciesWidget::analyse);
     // Results grid view
     d->gridviewResults = new GridViewWidget(this);
     d->gridviewResults->tableView()->verticalHeader()->setDefaultSectionSize(20);
@@ -104,10 +104,10 @@ AnalyserDisfluenciesWidget::AnalyserDisfluenciesWidget(CorpusRepository *reposit
     ui->optionCommunications->setChecked(true);
     ui->optionOrientationVertical->setChecked(true);
     // Change display
-    connect(ui->optionCommunications, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
-    connect(ui->optionSpeakers, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
-    connect(ui->optionOrientationVertical, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
-    connect(ui->optionOrientationHorizontal, SIGNAL(toggled(bool)), this, SLOT(changeDisplayedModel()));
+    connect(ui->optionCommunications, &QAbstractButton::toggled, this, &AnalyserDisfluenciesWidget::changeDisplayedModel);
+    connect(ui->optionSpeakers, &QAbstractButton::toggled, this, &AnalyserDisfluenciesWidget::changeDisplayedModel);
+    connect(ui->optionOrientationVertical, &QAbstractButton::toggled, this, &AnalyserDisfluenciesWidget::changeDisplayedModel);
+    connect(ui->optionOrientationHorizontal, &QAbstractButton::toggled, this, &AnalyserDisfluenciesWidget::changeDisplayedModel);
     // ================================================================================================================
     // CHARTS TAB
     // ================================================================================================================
@@ -131,7 +131,7 @@ AnalyserDisfluenciesWidget::AnalyserDisfluenciesWidget(CorpusRepository *reposit
         ui->comboBoxGroupBySpk->setCurrentText("");
     }
     // Command Draw Chart
-    connect(ui->commandDrawChart, SIGNAL(clicked(bool)), this, SLOT(drawChart()));
+    connect(ui->commandDrawChart, &QAbstractButton::clicked, this, &AnalyserDisfluenciesWidget::drawChart);
     // Defaults
     ui->checkBoxSetYMinMax->setChecked(true);
     // Go to results tab
@@ -441,14 +441,14 @@ void AnalyserDisfluenciesWidget::drawChart()
         chart->createDefaultAxes();
     }
     // Configure chart
-    chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText()).arg(groupAttributes));
+    chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText(), groupAttributes));
     chart->setAnimationOptions(QChart::SeriesAnimations);
     if (ui->checkBoxSetYMinMax->isChecked()) {
-        chart->axisY()->setMin(yMin);
-        chart->axisY()->setMax(yMax);
+        chart->axes(Qt::Vertical).at(0)->setMin(yMin);
+        chart->axes(Qt::Vertical).at(0)->setMax(yMax);
     } else {
-        chart->axisY()->setMin(qRound(min * 0.9));
-        chart->axisY()->setMax(qRound(max * 1.1));
+        chart->axes(Qt::Vertical).at(0)->setMin(qRound(min * 0.9));
+        chart->axes(Qt::Vertical).at(0)->setMax(qRound(max * 1.1));
     }
     chart->legend()->setVisible(true);
     chart->legend()->setAlignment(Qt::AlignBottom);

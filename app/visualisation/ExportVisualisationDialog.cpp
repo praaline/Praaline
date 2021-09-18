@@ -54,9 +54,9 @@ ExportVisualisationDialog::ExportVisualisationDialog(Document *document, PaneSta
     ui->setupUi(this);
     // Export directory
     ui->editExportDirectory->setText(QDir::homePath());
-    connect(ui->commandSelectExportDirectory, SIGNAL(clicked(bool)), this, SLOT(selectExportDirectory()));
+    connect(ui->commandSelectExportDirectory, &QAbstractButton::clicked, this, &ExportVisualisationDialog::selectExportDirectory);
     // Export command
-    connect(ui->commandExport, SIGNAL(clicked(bool)), this, SLOT(doExport()));
+    connect(ui->commandExport, &QAbstractButton::clicked, this, &ExportVisualisationDialog::doExport);
 }
 
 ExportVisualisationDialog::~ExportVisualisationDialog()

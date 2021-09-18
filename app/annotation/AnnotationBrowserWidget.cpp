@@ -47,14 +47,14 @@ AnnotationBrowserWidget::AnnotationBrowserWidget(QWidget *parent) :
         CorpusRepositoriesManager *manager = qobject_cast<CorpusRepositoriesManager *>(obj);
         if (manager) d->corpusRepositoriesManager = manager;
     }
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryAdded(QString)), this, SLOT(corpusRepositoryAdded(QString)));
-    connect(d->corpusRepositoriesManager, SIGNAL(corpusRepositoryRemoved(QString)), this, SLOT(corpusRepositoryRemoved(QString)));
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryAdded, this, &AnnotationBrowserWidget::corpusRepositoryAdded);
+    connect(d->corpusRepositoriesManager, &CorpusRepositoriesManager::corpusRepositoryRemoved, this, &AnnotationBrowserWidget::corpusRepositoryRemoved);
     // Corpus repositories and Annotation Level selection combo-boxes
     d->comboboxCorpusRepositories = new QComboBox(this);
-    connect(d->comboboxCorpusRepositories, SIGNAL(currentIndexChanged(int)), this, SLOT(selectedCorpusRepositoryChanged(int)));
+    connect(d->comboboxCorpusRepositories, qOverload<int>(&QComboBox::currentIndexChanged), this, qOverload<int>(&AnnotationBrowserWidget::selectedCorpusRepositoryChanged));
     d->comboboxAnnotationLevel = new QComboBox(this);
     QPushButton *commandRefresh = new QPushButton("Load Annotation Data", this);
-    connect(commandRefresh, SIGNAL(clicked(bool)), this, SLOT(loadAnnotationData()));
+    connect(commandRefresh, &QAbstractButton::clicked, this, &AnnotationBrowserWidget::loadAnnotationData);
     // Grid view
     d->gridview = new GridViewWidget(this);
     d->gridview->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -95,7 +95,7 @@ void AnnotationBrowserWidget::setupActions()
     // MAIN TOOLBAR
     // ----------------------------------------------------------------------------------------------------------------
     d->actionSave = new QAction(QIcon(":/icons/actions/action_save.png"), tr("Save Annotations"), this);
-    connect(d->actionSave, SIGNAL(triggered()), SLOT(saveAnnotationData()));
+    connect(d->actionSave, &QAction::triggered, this, &AnnotationBrowserWidget::saveAnnotationData);
     command = ACTION_MANAGER->registerAction("Annotation.AnnotationBrowser.Save", d->actionSave, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     d->toolbarMain->addAction(d->actionSave);

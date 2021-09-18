@@ -27,12 +27,12 @@ public:
     QString levelID;
     QString label;
 
-    QString getLabel() const { return (label.isEmpty()) ? QString("%1 %2 %3").arg(speakerID).arg(levelID).arg(frame) : label; }
+    QString getLabel() const { return (label.isEmpty()) ? QString("%1 %2 %3").arg(speakerID, levelID, QString::number(frame)) : label; }
 
     void toXml(QTextStream &stream, QString indent = "", QString extraAttributes = "") const
     {
         stream << QString("%1<point frame=\"%2\" speakerID=\"%3\" levelID=\"%4\" label=\"%5\" %6 />\n")
-                  .arg(indent).arg(frame).arg(speakerID).arg(levelID).arg(label).arg(extraAttributes);
+                  .arg(indent, QString::number(frame), speakerID, levelID, label, extraAttributes);
     }
 
     QString toDelimitedDataString(QString delimiter, DataExportOptions, sv_samplerate_t sampleRate) const

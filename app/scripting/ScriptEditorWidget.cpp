@@ -46,7 +46,7 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget *parent) :
     setupToolBars();
     setupStatusBar();
 
-    connect(d->textEdit, SIGNAL(textChanged()), this, SLOT(documentWasModified()));
+    connect(d->textEdit, &QsciScintilla::textChanged, this, &ScriptEditorWidget::documentWasModified);
 
     setCurrentFile("");
 }
@@ -61,41 +61,41 @@ void ScriptEditorWidget::setupActions()
     d->newAction = new QAction(QIcon(":/icons/actions/action_new.png"), tr("&New"), this);
     d->newAction->setShortcut(tr("Ctrl+N"));
     d->newAction->setStatusTip(tr("Create a new file"));
-    connect(d->newAction, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(d->newAction, &QAction::triggered, this, &ScriptEditorWidget::newFile);
 
     d->openAction = new QAction(QIcon(":/icons/actions/action_open.png"), tr("&Open..."), this);
     d->openAction->setShortcut(tr("Ctrl+O"));
     d->openAction->setStatusTip(tr("Open an existing file"));
-    connect(d->openAction, SIGNAL(triggered()), this, SLOT(open()));
+    connect(d->openAction, &QAction::triggered, this, &ScriptEditorWidget::open);
 
     d->saveAction = new QAction(QIcon(":/icons/actions/action_save.png"), tr("&Save"), this);
     d->saveAction->setShortcut(tr("Ctrl+S"));
     d->saveAction->setStatusTip(tr("Save the document to disk"));
-    connect(d->saveAction, SIGNAL(triggered()), this, SLOT(save()));
+    connect(d->saveAction, &QAction::triggered, this, &ScriptEditorWidget::save);
 
     d->saveAsAction = new QAction(QIcon(":/icons/actions/action_saveas.png"), tr("Save &As..."), this);
     d->saveAsAction->setStatusTip(tr("Save the document under a new name"));
-    connect(d->saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(d->saveAsAction, &QAction::triggered, this, &ScriptEditorWidget::saveAs);
 
     d->cutAction = new QAction(QIcon(":/icons/actions/edit_cut.png"), tr("Cu&t"), this);
     d->cutAction->setShortcut(tr("Ctrl+X"));
     d->cutAction->setStatusTip(tr("Cut the current selection's contents to the clipboard"));
-    connect(d->cutAction, SIGNAL(triggered()), d->textEdit, SLOT(cut()));
+    connect(d->cutAction, &QAction::triggered, d->textEdit, &QsciScintilla::cut);
 
     d->copyAction = new QAction(QIcon(":/icons/actions/edit_copy.png"), tr("&Copy"), this);
     d->copyAction->setShortcut(tr("Ctrl+C"));
     d->copyAction->setStatusTip(tr("Copy the current selection's contents to the clipboard"));
-    connect(d->copyAction, SIGNAL(triggered()), d->textEdit, SLOT(copy()));
+    connect(d->copyAction, &QAction::triggered, d->textEdit, &QsciScintilla::copy);
 
     d->pasteAction = new QAction(QIcon(":/icons/actions/edit_paste.png"), tr("&Paste"), this);
     d->pasteAction->setShortcut(tr("Ctrl+V"));
     d->pasteAction->setStatusTip(tr("Paste the clipboard's contents into the current selection"));
-    connect(d->pasteAction, SIGNAL(triggered()), d->textEdit, SLOT(paste()));
+    connect(d->pasteAction, &QAction::triggered, d->textEdit, &QsciScintilla::paste);
 
     d->cutAction->setEnabled(false);
     d->copyAction->setEnabled(false);
-    connect(d->textEdit, SIGNAL(copyAvailable(bool)), d->cutAction, SLOT(setEnabled(bool)));
-    connect(d->textEdit, SIGNAL(copyAvailable(bool)), d->copyAction, SLOT(setEnabled(bool)));
+    connect(d->textEdit, &QsciScintilla::copyAvailable, d->cutAction, &QAction::setEnabled);
+    connect(d->textEdit, &QsciScintilla::copyAvailable, d->copyAction, &QAction::setEnabled);
 }
 
 void ScriptEditorWidget::setupToolBars()
@@ -141,7 +141,7 @@ void ScriptEditorWidget::loadFile(const QString &fileName)
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly)) {
         QMessageBox::warning(this, tr("Praaline Script Editor"),
-                             tr("Cannot read file %1:\n%2.").arg(fileName).arg(file.errorString()));
+                             tr("Cannot read file %1:\n%2.").arg(fileName, file.errorString()));
         return;
     }
     QTextStream in(&file);
@@ -157,7 +157,7 @@ bool ScriptEditorWidget::saveFile(const QString &fileName)
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly)) {
         QMessageBox::warning(this, tr("Praaline Script Editor"),
-                             tr("Cannot write file %1:\n%2.").arg(fileName).arg(file.errorString()));
+                             tr("Cannot write file %1:\n%2.").arg(fileName, file.errorString()));
         return false;
     }
     QTextStream out(&file);
@@ -181,7 +181,7 @@ void ScriptEditorWidget::setCurrentFile(const QString &fileName)
     else
         shownName = QFileInfo(d->currentFile).fileName();
 
-    setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("Praaline Script Editor")));
+    setWindowTitle(tr("%1[*] - %2").arg(shownName, tr("Praaline Script Editor")));
 }
 
 // ==============================================================================================================================
