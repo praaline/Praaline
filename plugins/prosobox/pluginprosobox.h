@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginProsobox(QObject* parent = 0);
+                PluginProsobox(QObject *parent = nullptr);
                 ~PluginProsobox();
 
                 // IObjectBase implementation

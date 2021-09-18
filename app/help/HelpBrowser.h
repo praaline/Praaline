@@ -29,7 +29,7 @@ struct HelpBrowserData;
 class HelpTextBrowser : public QTextBrowser
 {
 public:
-    HelpTextBrowser(QHelpEngine* helpEngine, QWidget* parent = 0);
+    HelpTextBrowser(QHelpEngine* helpEngine, QWidget *parent = nullptr);
     QVariant loadResource (int type, const QUrl& name);
 private:
     QHelpEngine* helpEngine;
@@ -43,7 +43,7 @@ class HelpBrowser : public QWidget
 {
     Q_OBJECT
     public:
-        HelpBrowser(QHelpEngine* helpEngine, const QUrl &url = QUrl(), QWidget* parent = 0);
+        HelpBrowser(QHelpEngine *helpEngine, const QUrl &url = QUrl(), QWidget *parent = nullptr);
         ~HelpBrowser();
 
         //! Loads the specified url.

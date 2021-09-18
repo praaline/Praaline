@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginUDPipe(QObject* parent = 0);
+                PluginUDPipe(QObject *parent = nullptr);
                 ~PluginUDPipe();
 
                 // IObjectBase implementation

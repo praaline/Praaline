@@ -28,7 +28,7 @@ namespace Praaline {
                 #endif
 
             public:
-                StatisticsPluginInterrater(QObject* parent = 0);
+                StatisticsPluginInterrater(QObject *parent = nullptr);
                 virtual ~StatisticsPluginInterrater();
 
                 // IObjectBase implementation

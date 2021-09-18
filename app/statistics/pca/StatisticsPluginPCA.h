@@ -28,7 +28,7 @@ namespace Praaline {
                 #endif
 
             public:
-                StatisticsPluginPCA(QObject* parent = 0);
+                StatisticsPluginPCA(QObject *parent = nullptr);
                 virtual ~StatisticsPluginPCA();
 
                 // IObjectBase implementation

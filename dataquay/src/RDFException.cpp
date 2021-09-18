@@ -105,7 +105,7 @@ RDFException::setMessage(QString m)
 {
     if (m_message) free(m_message);
     m_message = strdup(m.toLocal8Bit().data());
-    DEBUG << "RDFException: " << m_message << endl;
+    DEBUG << "RDFException: " << m_message << Qt::endl;
 }
 
 }

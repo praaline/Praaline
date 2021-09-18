@@ -49,7 +49,7 @@ class QRangeFilterEditor : public QFilterEditorWidget
 {
     Q_OBJECT
 public:
-    QRangeFilterEditor( QWidget* parent = 0 );
+    QRangeFilterEditor( QWidget *parent = nullptr );
     ~QRangeFilterEditor();
 
     QString rangeFrom() const;

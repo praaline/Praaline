@@ -371,19 +371,19 @@ RDFTransformFactoryImpl::writeTransformToRDF(const Transform &transform,
     QString pluginUri = PluginRDFIndexer::getInstance()->getURIForPluginId(pluginId);
 
     if (pluginUri != "") {
-        s << uri << " a vamp:Transform ;" << endl;
-        s << "    vamp:plugin <" << QUrl(pluginUri).toEncoded().data() << "> ;" << endl;
+        s << uri << " a vamp:Transform ;" << Qt::endl;
+        s << "    vamp:plugin <" << QUrl(pluginUri).toEncoded().data() << "> ;" << Qt::endl;
     } else {
         cerr << "WARNING: RDFTransformFactory::writeTransformToRDF: No plugin URI available for plugin id \"" << pluginId << "\", writing synthetic plugin and library resources" << endl;
         QString type, soname, label;
         PluginIdentifier::parseIdentifier(pluginId, type, soname, label);
-        s << uri << "_plugin a vamp:Plugin ;" << endl;
-        s << "    vamp:identifier \"" << label << "\" .\n" << endl;
-        s << uri << "_library a vamp:PluginLibrary ;" << endl;
-        s << "    vamp:identifier \"" << soname << "\" ;" << endl;
-        s << "    vamp:available_plugin " << uri << "_plugin .\n" << endl;
-        s << uri << " a vamp:Transform ;" << endl;
-        s << "    vamp:plugin " << uri << "_plugin ;" << endl;
+        s << uri << "_plugin a vamp:Plugin ;" << Qt::endl;
+        s << "    vamp:identifier \"" << label << "\" .\n" << Qt::endl;
+        s << uri << "_library a vamp:PluginLibrary ;" << Qt::endl;
+        s << "    vamp:identifier \"" << soname << "\" ;" << Qt::endl;
+        s << "    vamp:available_plugin " << uri << "_plugin .\n" << Qt::endl;
+        s << uri << " a vamp:Transform ;" << Qt::endl;
+        s << "    vamp:plugin " << uri << "_plugin ;" << Qt::endl;
     }
 
     PluginRDFDescription description(pluginId);
@@ -395,10 +395,10 @@ RDFTransformFactoryImpl::writeTransformToRDF(const Transform &transform,
     }
 
     if (transform.getStepSize() != 0) {
-        s << "    vamp:step_size \"" << transform.getStepSize() << "\"^^xsd:int ; " << endl;
+        s << "    vamp:step_size \"" << transform.getStepSize() << "\"^^xsd:int ; " << Qt::endl;
     }
     if (transform.getBlockSize() != 0) {
-        s << "    vamp:block_size \"" << transform.getBlockSize() << "\"^^xsd:int ; " << endl;
+        s << "    vamp:block_size \"" << transform.getBlockSize() << "\"^^xsd:int ; " << Qt::endl;
     }
     if (transform.getWindowType() != HanningWindow) {
         s << "    vamp:window_type \"" <<
@@ -406,26 +406,26 @@ RDFTransformFactoryImpl::writeTransformToRDF(const Transform &transform,
           << "\" ; " << endl;
     }
     if (transform.getStartTime() != RealTime::zeroTime) {
-        s << "    vamp:start \"" << transform.getStartTime().toXsdDuration().c_str() << "\"^^xsd:duration ; " << endl;
+        s << "    vamp:start \"" << transform.getStartTime().toXsdDuration().c_str() << "\"^^xsd:duration ; " << Qt::endl;
     }
     if (transform.getDuration() != RealTime::zeroTime) {
-        s << "    vamp:duration \"" << transform.getDuration().toXsdDuration().c_str() << "\"^^xsd:duration ; " << endl;
+        s << "    vamp:duration \"" << transform.getDuration().toXsdDuration().c_str() << "\"^^xsd:duration ; " << Qt::endl;
     }
     if (transform.getSampleRate() != 0) {
-        s << "    vamp:sample_rate \"" << transform.getSampleRate() << "\"^^xsd:float ; " << endl;
+        s << "    vamp:sample_rate \"" << transform.getSampleRate() << "\"^^xsd:float ; " << Qt::endl;
     }
     if (transform.getPluginVersion() != "") {
-        s << "    vamp:plugin_version \"\"\"" << transform.getPluginVersion() << "\"\"\" ; " << endl;
+        s << "    vamp:plugin_version \"\"\"" << transform.getPluginVersion() << "\"\"\" ; " << Qt::endl;
     }
     
     QString program = transform.getProgram();
     if (program != "") {
-        s << "    vamp:program \"\"\"" << program << "\"\"\" ;" << endl;
+        s << "    vamp:program \"\"\"" << program << "\"\"\" ;" << Qt::endl;
     }
 
     QString summary = transform.summaryTypeToString(transform.getSummaryType());
     if (summary != "") {
-        s << "    vamp:summary_type \"" << summary << "\" ;" << endl;
+        s << "    vamp:summary_type \"" << summary << "\" ;" << Qt::endl;
     }
 
     Transform::ParameterMap parameters = transform.getParameters();
@@ -433,18 +433,18 @@ RDFTransformFactoryImpl::writeTransformToRDF(const Transform &transform,
          i != parameters.end(); ++i) {
         QString name = i->first;
         float value = i->second;
-        s << "    vamp:parameter_binding [" << endl;
-        s << "        vamp:parameter [ vamp:identifier \"" << name << "\" ] ;" << endl;
-        s << "        vamp:value \"" << value << "\"^^xsd:float ;" << endl;
-        s << "    ] ;" << endl;
+        s << "    vamp:parameter_binding [" << Qt::endl;
+        s << "        vamp:parameter [ vamp:identifier \"" << name << "\" ] ;" << Qt::endl;
+        s << "        vamp:value \"" << value << "\"^^xsd:float ;" << Qt::endl;
+        s << "    ] ;" << Qt::endl;
     }
 
     if (outputUri != "") {
-        s << "    vamp:output <" << QUrl(outputUri).toEncoded().data() << "> ." << endl;
+        s << "    vamp:output <" << QUrl(outputUri).toEncoded().data() << "> ." << Qt::endl;
     } else if (outputId != "") {
-        s << "    vamp:output [ vamp:identifier \"" << outputId << "\" ] ." << endl;
+        s << "    vamp:output [ vamp:identifier \"" << outputId << "\" ] ." << Qt::endl;
     } else {
-        s << "    ." << endl;
+        s << "    ." << Qt::endl;
     }
 
     return str;

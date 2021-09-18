@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginWebSimpleCMS(QObject* parent = 0);
+                PluginWebSimpleCMS(QObject *parent = nullptr);
                 virtual ~PluginWebSimpleCMS();
 
                 // IObjectBase implementation

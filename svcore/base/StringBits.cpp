@@ -146,8 +146,8 @@ StringBits::split(QString line, QChar separator, bool quoted)
         return splitQuoted(line, separator);
     } else {
         return line.split(separator,
-                          separator == ' ' ? QString::SkipEmptyParts :
-                          QString::KeepEmptyParts);
+                          separator == ' ' ? Qt::SkipEmptyParts :
+                          Qt::KeepEmptyParts);
     }
 }
 

@@ -64,7 +64,7 @@ CSVFormat::guessFormatFor(QString path)
         // See comment about line endings in CSVFileReader::load() 
 
         QString chunk = in.readLine();
-        QStringList lines = chunk.split('\r', QString::SkipEmptyParts);
+        QStringList lines = chunk.split('\r', Qt::SkipEmptyParts);
 
         for (int li = 0; li < lines.size(); ++li) {
 

@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginAligner(QObject* parent = 0);
+                PluginAligner(QObject *parent = nullptr);
                 virtual ~PluginAligner();
 
                 // IObjectBase implementation

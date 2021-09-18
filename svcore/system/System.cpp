@@ -216,7 +216,7 @@ GetRealMemoryMBAvailable(ssize_t &available, ssize_t &total)
         bool isMemTotal = (!isMemFree && (strncmp(buf, "MemTotal:", 9) == 0));
         if (isMemFree || isMemTotal) {
             QString line = QString(buf).trimmed();
-            QStringList elements = line.split(' ', QString::SkipEmptyParts);
+            QStringList elements = line.split(' ', Qt::SkipEmptyParts);
             QString unit = "kB";
             if (elements.size() > 2) unit = elements[2];
             int size = elements[1].toInt();

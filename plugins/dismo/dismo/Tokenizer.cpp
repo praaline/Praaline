@@ -315,7 +315,7 @@ QList<Interval *> Tokenizer::separateToken(Interval *intvInput, QStringList &spl
 //        phoneIter++;
 //    } else if (m_phonetisations.contains(s)) {
 //        // Try to match phonemes
-//        QList<QString> phonetisation = m_phonetisations.value(s).split(" ", QString::SkipEmptyParts);
+//        QList<QString> phonetisation = m_phonetisations.value(s).split(" ", Qt::SkipEmptyParts);
 //        int match = matchPhonemes(phoneIter, phones, phonetisation);
 //        if (match > phoneIter) {
 //            tMax = phones.at(match)->tMax();

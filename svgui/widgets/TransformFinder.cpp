@@ -183,7 +183,7 @@ TransformFinder::timeout()
         QString text = m_newSearchText;
         m_newSearchText = "";
 
-        QStringList keywords = text.split(' ', QString::SkipEmptyParts);
+        QStringList keywords = text.split(' ', Qt::SkipEmptyParts);
         TransformFactory::SearchResults results =
             TransformFactory::getInstance()->search(keywords);
         

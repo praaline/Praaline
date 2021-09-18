@@ -37,7 +37,7 @@ class RangeEdit : public QWidget
 {
     Q_OBJECT
 public:
-    RangeEdit(QAbstractItemModel* model, int column, QWidget* parent = 0);
+    RangeEdit(QAbstractItemModel* model, int column, QWidget *parent = nullptr);
 
 	void setColumn(int col);
 
@@ -79,7 +79,7 @@ class ValueEdit : public QWidget
 {
     Q_OBJECT
 public:
-    ValueEdit(QAbstractItemModel* model, int column, QWidget* parent = 0);
+    ValueEdit(QAbstractItemModel* model, int column, QWidget *parent = nullptr);
 
 	int column() const;
 

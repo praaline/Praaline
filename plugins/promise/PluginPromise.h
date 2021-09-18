@@ -35,7 +35,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginPromise(QObject* parent = 0);
+                PluginPromise(QObject *parent = nullptr);
                 virtual ~PluginPromise();
 
                 // IObjectBase implementation

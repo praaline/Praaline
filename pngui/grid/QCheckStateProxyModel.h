@@ -38,7 +38,7 @@ public:
 	/**
 	 * Constructs a QCheckStateProxyModel with the given @p parent.
 	 */
-    explicit QCheckStateProxyModel(QObject* parent = 0);
+    explicit QCheckStateProxyModel(QObject *parent = nullptr);
     /**
       * Destroys the QCheckStateProxyModel object.
       */

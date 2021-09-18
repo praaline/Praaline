@@ -115,7 +115,7 @@ PlaylistFileReader::load() const
         // as well as DOS/Unix style
 
         QString chunk = in.readLine();
-        QStringList lines = chunk.split('\r', QString::SkipEmptyParts);
+        QStringList lines = chunk.split('\r', Qt::SkipEmptyParts);
         
         for (int li = 0; li < lines.size(); ++li) {
 

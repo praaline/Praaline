@@ -108,7 +108,7 @@ public:
 
     void clear() {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::clear" << endl;
+        DEBUG << "BasicStore::clear" << Qt::endl;
         if (m_model) sord_free(m_model);
         // Sord can only perform wildcard matches if at least one of
         // the non-wildcard nodes in the matched triple is the primary
@@ -124,22 +124,22 @@ public:
 
     bool add(Triple t) {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::add: " << t << endl;
+        DEBUG << "BasicStore::add: " << t << Qt::endl;
         return doAdd(t);
     }
 
     bool remove(Triple t) {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::remove: " << t << endl;
+        DEBUG << "BasicStore::remove: " << t << Qt::endl;
         if (t.a.type == Node::Nothing || 
             t.b.type == Node::Nothing ||
             t.c.type == Node::Nothing) {
             Triples tt = doMatch(t);
             if (tt.empty()) return false;
-            DEBUG << "BasicStore::remove: Removing " << tt.size() << " triple(s)" << endl;
+            DEBUG << "BasicStore::remove: Removing " << tt.size() << " triple(s)" << Qt::endl;
             for (int i = 0; i < tt.size(); ++i) {
                 if (!doRemove(tt[i])) {
-                    DEBUG << "Failed to remove matched triple in remove() with wildcards; triple was: " << tt[i] << endl;
+                    DEBUG << "Failed to remove matched triple in remove() with wildcards; triple was: " << tt[i] << Qt::endl;
                     throw RDFInternalError("Failed to remove matched statement in remove() with wildcards");
                 }
             }
@@ -151,7 +151,7 @@ public:
 
     void change(ChangeSet cs) {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::change: " << cs.size() << " changes" << endl;
+        DEBUG << "BasicStore::change: " << cs.size() << " changes" << Qt::endl;
         for (int i = 0; i < cs.size(); ++i) {
             ChangeType type = cs[i].first;
             Triple triple = cs[i].second;
@@ -172,7 +172,7 @@ public:
 
     void revert(ChangeSet cs) {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::revert: " << cs.size() << " changes" << endl;
+        DEBUG << "BasicStore::revert: " << cs.size() << " changes" << Qt::endl;
         for (int i = cs.size()-1; i >= 0; --i) {
             ChangeType type = cs[i].first;
             Triple triple = cs[i].second;
@@ -193,7 +193,7 @@ public:
 
     bool contains(Triple t) const {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::contains: " << t << endl;
+        DEBUG << "BasicStore::contains: " << t << Qt::endl;
         SordQuad statement;
         tripleToStatement(t, statement);
         if (!checkComplete(statement)) {
@@ -208,7 +208,7 @@ public:
     
     Triples match(Triple t) const {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::match: " << t << endl;
+        DEBUG << "BasicStore::match: " << t << Qt::endl;
         Triples result = doMatch(t);
 #ifndef NDEBUG
         DEBUG << "BasicStore::match result (size " << result.size() << "):" << endl;
@@ -228,7 +228,7 @@ public:
             throw RDFException("Cannot complete triple unless it has only a single wildcard node", t);
         }
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::complete: " << t << endl;
+        DEBUG << "BasicStore::complete: " << t << Qt::endl;
         Triples result = doMatch(t, true);
         if (result.empty()) return Node();
         else switch (match) {
@@ -246,7 +246,7 @@ public:
             else return Triple();
         }
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::matchOnce: " << t << endl;
+        DEBUG << "BasicStore::matchOnce: " << t << Qt::endl;
         Triples result = doMatch(t, true);
 #ifndef NDEBUG
         DEBUG << "BasicStore::matchOnce result:" << endl;
@@ -272,7 +272,7 @@ public:
 
     Uri getUniqueUri(QString prefix) const {
         QMutexLocker locker(&m_backendLock);
-        DEBUG << "BasicStore::getUniqueUri: prefix " << prefix << endl;
+        DEBUG << "BasicStore::getUniqueUri: prefix " << prefix << Qt::endl;
         bool good = false;
         Uri uri;
         while (!good) {
@@ -349,7 +349,7 @@ public:
         QMutexLocker wlocker(&m_backendLock);
         QMutexLocker plocker(&m_prefixLock);
 
-        DEBUG << "BasicStore::save(" << filename << ")" << endl;
+        DEBUG << "BasicStore::save(" << filename << ")" << Qt::endl;
 
         QByteArray bb = m_baseUri.toString().toUtf8();
         SerdURI bu;
@@ -410,7 +410,7 @@ public:
         if (!QFile::remove(filename)) {
             // Not necessarily fatal
             DEBUG << "BasicStore::save: Failed to remove former save file "
-                  << filename << endl;
+                  << filename << Qt::endl;
         }
         if (!QFile::rename(tmpFilename, filename)) {
             throw RDFException("Failed to rename temporary file to save file",
@@ -420,7 +420,7 @@ public:
 
     void addPrefixOnImport(QString pfx, Uri uri) {
 
-        DEBUG << "namespace: " << pfx << " -> " << uri << endl;
+        DEBUG << "namespace: " << pfx << " -> " << uri << Qt::endl;
 
         // don't call addPrefix; it tries to lock the mutex,
         // and anyway we want to add the prefix only if it
@@ -452,7 +452,7 @@ public:
 
     void import(QUrl url, ImportDuplicatesMode idm, QString format) {
 
-        DEBUG << "BasicStoreSord::import: " << url << endl;
+        DEBUG << "BasicStoreSord::import: " << url << Qt::endl;
 
         QMutexLocker wlocker(&m_backendLock);
         QMutexLocker plocker(&m_prefixLock);
@@ -601,9 +601,9 @@ private:
         }
         ~World() {
             QMutexLocker locker(&m_mutex);
-            DEBUG << "~World: About to lower refcount from " << m_refcount << endl;
+            DEBUG << "~World: About to lower refcount from " << m_refcount << Qt::endl;
             if (--m_refcount == 0) {
-                DEBUG << "Freeing world" << endl;
+                DEBUG << "Freeing world" << Qt::endl;
                 sord_world_free(m_world);
                 m_world = 0;
             }

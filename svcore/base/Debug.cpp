@@ -67,7 +67,7 @@ getSVDebug()
             debug = new QDebug(QtDebugMsg);
         }
         debugs.setLocalData(debug);
-        *debug << endl << (const char *)prefix << "Log started at "
+        *debug << Qt::endl << (const char *)prefix << "Log started at "
                << QDateTime::currentDateTime().toString();
     } else {
         debug = debugs.localData();
@@ -76,7 +76,7 @@ getSVDebug()
     mutex.unlock();
 
     QDebug &dref = *debug;
-    dref << endl << (const char *)prefix;
+    dref << Qt::endl << (const char *)prefix;
 
     return dref;
 }

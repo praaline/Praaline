@@ -56,7 +56,7 @@ ObjectMapperForwarder::ObjectMapperForwarder(ObjectMapper *m, QObject *o) :
         }
             
         if (!property.hasNotifySignal()) {
-            DEBUG << "ObjectMapperForwarder: No notify signal for property " << property.name() << endl;
+            DEBUG << "ObjectMapperForwarder: No notify signal for property " << property.name() << Qt::endl;
             continue;
         }
         

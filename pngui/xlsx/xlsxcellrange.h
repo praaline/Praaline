@@ -37,8 +37,13 @@ public:
     CellRange(const CellReference &topLeft, const CellReference &bottomRight);
     CellRange(const QString &range);
     CellRange(const char *range);
-    CellRange(const CellRange &other);
-    ~CellRange();
+    // Use default copy constructor, move constructor, copy assignment operator, move assignment operator and destructor
+    // since the CellRange class is trivially copyable (four integer private members)
+    CellRange(const CellRange&) = default;
+    CellRange(CellRange&&) = default;
+    CellRange& operator=(const CellRange&) = default;
+    CellRange& operator=(CellRange&&) = default;
+    ~CellRange() = default;
 
     QString toString(bool row_abs=false, bool col_abs=false) const;
     bool isValid() const;

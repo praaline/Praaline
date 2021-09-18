@@ -41,7 +41,7 @@ public:
     /**
       * Creates a new generic header with the given @p orientation and @p parent.
       */
-    QAdvancedHeaderView(Qt::Orientation orientation, QWidget* parent = 0);
+    QAdvancedHeaderView(Qt::Orientation orientation, QWidget *parent = nullptr);
     /**
       * Destroys the header.
       */

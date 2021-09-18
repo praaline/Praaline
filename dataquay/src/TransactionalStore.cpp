@@ -79,7 +79,7 @@ public:
 
     Transaction *startTransaction() {
         QMutexLocker locker(&m_mutex);
-        DEBUG << "TransactionalStore::startTransaction" << endl;
+        DEBUG << "TransactionalStore::startTransaction" << Qt::endl;
         if (m_currentTx != NoTransaction) {
             throw RDFTransactionError("ERROR: Attempt to start transaction when another transaction from the same thread is already in train");
         }
@@ -92,7 +92,7 @@ public:
         ChangeSet cs;
         {
             QMutexLocker locker(&m_mutex);
-            DEBUG << "TransactionalStore::commitTransaction" << endl;
+            DEBUG << "TransactionalStore::commitTransaction" << Qt::endl;
             if (tx != m_currentTx) {
                 throw RDFInternalError("Transaction integrity error");
             }
@@ -106,15 +106,15 @@ public:
             m_currentTx = NoTransaction;
             m_context = NonTxContext;
         }
-        DEBUG << "TransactionalStore::commitTransaction: committed " << cs.size() << " change(s)" << endl;
-        m_ts->transactionCommitted(cs);
-        m_ts->transactionCommitted();
-        DEBUG << "TransactionalStore::commitTransaction complete" << endl;
+        DEBUG << "TransactionalStore::commitTransaction: committed " << cs.size() << " change(s)" << Qt::endl;
+        emit m_ts->transactionCommitted(cs);
+        emit m_ts->transactionCommitted();
+        DEBUG << "TransactionalStore::commitTransaction complete" << Qt::endl;
     }
 
     void rollbackTransaction(Transaction *tx) {
         QMutexLocker locker(&m_mutex);
-        DEBUG << "TransactionalStore::rollbackTransaction" << endl;
+        DEBUG << "TransactionalStore::rollbackTransaction" << Qt::endl;
         if (tx != m_currentTx) {
             throw RDFInternalError("Transaction integrity error");
         }
@@ -122,7 +122,7 @@ public:
         // The store is now in non-transaction context, which means
         // the transaction's changes are uncommitted
         m_currentTx = NoTransaction;
-        DEBUG << "TransactionalStore::rollbackTransaction complete" << endl;
+        DEBUG << "TransactionalStore::rollbackTransaction complete" << Qt::endl;
     }
 
     class Operation
@@ -233,8 +233,8 @@ public:
         // Hence, it needs to take a lock and hold it until
         // endNonTransactionalAccess is called
         m_mutex.lock();
-        DEBUG << "TransactionalStore::startNonTransactionalAccess" << endl;
-        if (m_context == NonTxContext) DEBUG << "(note: already in non-tx context)" << endl;
+        DEBUG << "TransactionalStore::startNonTransactionalAccess" << Qt::endl;
+        if (m_context == NonTxContext) DEBUG << "(note: already in non-tx context)" << Qt::endl;
         leaveTransactionContext();
         // return with mutex held
     }
@@ -244,7 +244,7 @@ public:
         // access checks this via enterTransactionContext before doing
         // any work; this way is quicker if we may have multiple
         // non-transactional reads happening together.
-        DEBUG << "TransactionalStore::endNonTransactionalAccess" << endl;
+        DEBUG << "TransactionalStore::endNonTransactionalAccess" << Qt::endl;
         m_mutex.unlock();
     }
 
@@ -294,7 +294,7 @@ private:
         }
         ChangeSet cs = m_currentTx->getChanges();
         if (!cs.empty()) {
-            DEBUG << "TransactionalStore::enterTransactionContext: replaying" << endl;
+            DEBUG << "TransactionalStore::enterTransactionContext: replaying" << Qt::endl;
             try {
                 m_store->change(cs);
             } catch (RDFException &e) {
@@ -349,7 +349,7 @@ public:
 
     void abandon() const {
         if (m_abandoned || m_committed) return;
-        DEBUG << "TransactionalStore::TSTransaction::abandon: Auto-rollback triggered by exception" << endl;
+        DEBUG << "TransactionalStore::TSTransaction::abandon: Auto-rollback triggered by exception" << Qt::endl;
         m_td->rollbackTransaction(m_tx);
         m_abandoned = true;
     }
@@ -577,14 +577,14 @@ public:
 
     void commit() {
         check();
-        DEBUG << "TransactionalStore::TSTransaction::commit: Committing" << endl;
+        DEBUG << "TransactionalStore::TSTransaction::commit: Committing" << Qt::endl;
         m_td->commitTransaction(m_tx);
         m_committed = true;
     }
 
     void rollback() {
         check();
-        DEBUG << "TransactionalStore::TSTransaction::rollback: Abandoning" << endl;
+        DEBUG << "TransactionalStore::TSTransaction::rollback: Abandoning" << Qt::endl;
         m_td->rollbackTransaction(m_tx);
         m_abandoned = true;
     }

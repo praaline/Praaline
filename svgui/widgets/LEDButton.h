@@ -40,9 +40,9 @@ class LEDButton : public QWidget
     Q_PROPERTY(int darkFactor READ darkFactor WRITE setDarkFactor)
 
 public:
-    LEDButton(QWidget *parent = 0);
-    LEDButton(const QColor &col, QWidget *parent = 0);
-    LEDButton(const QColor& col, bool state, QWidget *parent = 0);
+    LEDButton(QWidget *parent = nullptr);
+    LEDButton(const QColor &col, QWidget *parent = nullptr);
+    LEDButton(const QColor& col, bool state, QWidget *parent = nullptr);
     ~LEDButton();
 
     bool state() const;

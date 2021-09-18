@@ -31,7 +31,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginMBROLA(QObject* parent = 0);
+                PluginMBROLA(QObject *parent = nullptr);
                 ~PluginMBROLA();
 
                 // IObjectBase implementation

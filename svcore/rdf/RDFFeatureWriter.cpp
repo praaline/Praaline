@@ -477,9 +477,9 @@ RDFFeatureWriter::writeLocalFeatureTypes(QTextStream *sptr,
     }
 
     if (transform.getIdentifier() != "") {
-        stream << endl
+        stream << Qt::endl
                << RDFTransformFactory::writeTransformToRDF(transform, transformUri)
-               << endl;
+               << Qt::endl;
     }
 
     if (needEventType && m_fixedEventTypeURI == "") {
@@ -494,11 +494,11 @@ RDFFeatureWriter::writeLocalFeatureTypes(QTextStream *sptr,
         }
 
         stream << uri
-               << " rdfs:subClassOf event:Event ;" << endl
-               << "    dc:title \"" << od.name.c_str() << "\" ;" << endl
-               << "    dc:format \"" << od.unit.c_str() << "\" ;" << endl
+               << " rdfs:subClassOf event:Event ;" << Qt::endl
+               << "    dc:title \"" << od.name.c_str() << "\" ;" << Qt::endl
+               << "    dc:format \"" << od.unit.c_str() << "\" ;" << Qt::endl
                << "    dc:description \"" << od.description.c_str() << "\" ."
-               << endl << endl;
+               << Qt::endl << Qt::endl;
     }
 
     if (needSignalType) {
@@ -513,11 +513,11 @@ RDFFeatureWriter::writeLocalFeatureTypes(QTextStream *sptr,
         }
 
         stream << uri
-               << " rdfs:subClassOf af:Signal ;" << endl
-               << "    dc:title \"" << od.name.c_str() << "\" ;" << endl
-               << "    dc:format \"" << od.unit.c_str() << "\" ;" << endl
+               << " rdfs:subClassOf af:Signal ;" << Qt::endl
+               << "    dc:title \"" << od.name.c_str() << "\" ;" << Qt::endl
+               << "    dc:format \"" << od.unit.c_str() << "\" ;" << Qt::endl
                << "    dc:description \"" << od.description.c_str() << "\" ."
-               << endl << endl;
+               << Qt::endl << Qt::endl;
     }
 }
 
@@ -728,7 +728,7 @@ RDFFeatureWriter::writeDenseRDF(QTextStream *sptr,
                << "    tl:hopSize \"" << stepSize << "\"^^xsd:int .\n\n";
 
         stream << signalURI << " af:signal_feature :feature_"
-               << featureNumber << " ." << endl << endl;
+               << featureNumber << " ." << Qt::endl << Qt::endl;
 
         stream << ":feature_" << featureNumber << " a ";
 
@@ -801,7 +801,7 @@ void RDFFeatureWriter::finish()
          i != m_openDenseFeatures.end(); ++i) {
 //        cerr << "closing a stream" << endl;
         StreamBuffer &b = i->second;
-        *(b.first) << b.second << "\" ." << endl;
+        *(b.first) << b.second << "\" ." << Qt::endl;
     }
 
     m_openDenseFeatures.clear();

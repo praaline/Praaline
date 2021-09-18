@@ -31,7 +31,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginDisMo(QObject* parent = 0);
+                PluginDisMo(QObject *parent = nullptr);
                 ~PluginDisMo();
 
                 // IObjectBase implementation

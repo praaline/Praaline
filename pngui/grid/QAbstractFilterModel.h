@@ -59,7 +59,7 @@ public:
     /**
       * Constructs an abstract filter model with the given @p parent.
       */
-    QAbstractFilterModel(QObject* parent = 0);
+    QAbstractFilterModel(QObject *parent = nullptr);
     /**
       * Destroys the abstract filter model.
       */

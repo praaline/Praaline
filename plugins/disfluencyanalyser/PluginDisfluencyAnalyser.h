@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginDisfluencyAnalyser(QObject* parent = 0);
+                PluginDisfluencyAnalyser(QObject *parent = nullptr);
                 ~PluginDisfluencyAnalyser();
 
                 // IObjectBase implementation

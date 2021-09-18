@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginMetronome(QObject* parent = 0);
+                PluginMetronome(QObject *parent = nullptr);
                 ~PluginMetronome();
 
                 // IObjectBase implementation

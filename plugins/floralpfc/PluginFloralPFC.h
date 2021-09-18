@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginFloralPFC(QObject* parent = 0);
+                PluginFloralPFC(QObject *parent = nullptr);
                 virtual ~PluginFloralPFC();
 
                 // IObjectBase implementation

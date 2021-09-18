@@ -30,7 +30,7 @@ namespace Praaline {
                 #endif
 
             public:
-                PluginAnonymiser(QObject* parent = 0);
+                PluginAnonymiser(QObject *parent = nullptr);
                 ~PluginAnonymiser();
 
                 // IObjectBase implementation

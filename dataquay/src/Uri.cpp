@@ -71,7 +71,7 @@ private:
     int type;
 
     UriRegistrar() : name("Dataquay::Uri") {
-        DEBUG << "UriRegistrar: registering Dataquay::Uri" << endl;
+        DEBUG << "UriRegistrar: registering Dataquay::Uri" << Qt::endl;
         QByteArray bname = name.toLatin1();
         type = qRegisterMetaType<Uri>(bname.data());
         qRegisterMetaTypeStreamOperators<Uri>(bname.data());
@@ -89,7 +89,7 @@ Uri::metaTypeId()
 {
     int t = UriRegistrar::instance()->getType();
     if (t <= 0) {
-	DEBUG << "Uri::metaTypeId: No meta type available -- did static registration fail?" << endl;
+    DEBUG << "Uri::metaTypeId: No meta type available -- did static registration fail?" << Qt::endl;
 	return 0;
     }
     return t;

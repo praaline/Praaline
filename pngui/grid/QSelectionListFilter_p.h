@@ -76,7 +76,7 @@ class QSelectionListFilterEditor : public QFilterEditorWidget
 {
     Q_OBJECT
 public:
-    QSelectionListFilterEditor(QWidget* parent = 0);
+    QSelectionListFilterEditor(QWidget *parent = nullptr);
 	~QSelectionListFilterEditor();
 public slots:
 	void modeSelected();

@@ -28,7 +28,7 @@ namespace Praaline {
                 #endif
 
             public:
-                StatisticsPluginDisfluencies(QObject* parent = 0);
+                StatisticsPluginDisfluencies(QObject *parent = nullptr);
                 virtual ~StatisticsPluginDisfluencies();
 
                 // IObjectBase implementation

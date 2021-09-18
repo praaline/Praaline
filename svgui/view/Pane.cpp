@@ -2532,7 +2532,7 @@ Pane::dropEvent(QDropEvent *e)
             emit dropAccepted(QString::fromLocal8Bit
                               (e->mimeData()->data("text/uri-list").data())
                               .split(QRegExp("[\\r\\n]+"), 
-                                     QString::SkipEmptyParts));
+                                     Qt::SkipEmptyParts));
         } else {
             emit dropAccepted(QString::fromLocal8Bit
                               (e->mimeData()->data("text/plain").data()));

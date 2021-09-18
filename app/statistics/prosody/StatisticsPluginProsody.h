@@ -28,7 +28,7 @@ namespace Praaline {
                 #endif
 
             public:
-                StatisticsPluginProsody(QObject* parent = 0);
+                StatisticsPluginProsody(QObject *parent = nullptr);
                 virtual ~StatisticsPluginProsody();
 
                 // IObjectBase implementation

@@ -37,7 +37,7 @@ class DelayedExecutionTimer : public QObject
 {
 Q_OBJECT
 public:
-    DelayedExecutionTimer(int maximumDelay = 1000, int minimumDelay = 250, QObject* parent = 0);
+    DelayedExecutionTimer(int maximumDelay = 1000, int minimumDelay = 250, QObject *parent = nullptr);
     DelayedExecutionTimer(QObject* parent);
 
     /**

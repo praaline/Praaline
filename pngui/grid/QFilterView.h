@@ -47,7 +47,7 @@ public:
     /**
       * Constructs a QFilterView with the given @p parent.
       */
-    QFilterView( QWidget* parent = 0 );
+    QFilterView( QWidget *parent = nullptr );
     /**
       * Destroys the filter view.
       */

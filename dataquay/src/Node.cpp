@@ -262,7 +262,7 @@ Node
 Node::fromVariant(const QVariant &v)
 {
     DEBUG << "Node::fromVariant: QVariant type is " << v.userType()
-          << " (" << int(v.userType()) << "), variant is " << v << endl;
+          << " (" << int(v.userType()) << "), variant is " << v << Qt::endl;
 
     if (Uri::hasUriType(v)) {
         return Node(v.value<Uri>());

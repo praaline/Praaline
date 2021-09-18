@@ -28,7 +28,7 @@ namespace Praaline {
                 #endif
 
             public:
-                StatisticsPluginBasic(QObject* parent = 0);
+                StatisticsPluginBasic(QObject *parent = nullptr);
                 virtual ~StatisticsPluginBasic();
 
                 // IObjectBase implementation

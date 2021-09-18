@@ -76,7 +76,7 @@ class QAutoFilterEditor : public QFilterEditorWidget
 {
     Q_OBJECT
 public:
-    QAutoFilterEditor(QWidget* parent = 0);
+    QAutoFilterEditor(QWidget *parent = nullptr);
 
     QVariantList selectedValues(int role = Qt::DisplayRole) const;
 

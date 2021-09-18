@@ -71,7 +71,7 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
     QList<QString> tierNamesCommonSorted;
 
     if (!d->tierNamesCommon.isEmpty()) tierNamesCommonSorted = d->tierNamesCommon.toList();
-    qSort(tierNamesCommonSorted);
+    std::sort(tierNamesCommonSorted.begin(), tierNamesCommonSorted.end());
 
     // Find all tiers (common and not common)
     QHash<QString, QStringList> tierNamesPresence;
@@ -82,7 +82,7 @@ void ImportCorpusItemsWizardCorrespondancesPage::initializePage()
         QFileInfo finfo(iter.value().filename);
         tierNamesPresence[tierName].append(finfo.baseName());
     }
-    qSort(tierNamesAllSorted);
+    std::sort(tierNamesAllSorted.begin(), tierNamesAllSorted.end());
 
     // Model for tiers
     d->modelTiers = new QStandardItemModel(tierNamesAllSorted.count(), 4, this);

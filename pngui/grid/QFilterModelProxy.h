@@ -37,7 +37,7 @@ public:
 	/**
 	 * Constructs a filter model with the given @p parent.
 	 */
-    QFilterModelProxy(QObject* parent = 0);
+    QFilterModelProxy(QObject *parent = nullptr);
 	/**
 	 * Destroys the filter model.
 	 */

@@ -65,8 +65,8 @@ ImportCorpusItemsWizardAnalysePage::ImportCorpusItemsWizardAnalysePage(
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardAnalysePage),
-    m_candidateAnnotations(candidateAnnotations), m_tierCorrespondances(tierCorrespondances), m_tierNamesCommon(tierNamesCommon),
-    m_modelAnnotations(0), m_stop(false)
+    m_modelAnnotations(nullptr), m_candidateAnnotations(candidateAnnotations), m_tierCorrespondances(tierCorrespondances),
+    m_tierNamesCommon(tierNamesCommon), m_stop(false)
 {
     ui->setupUi(this);
     connect(ui->commandStopFiles, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardAnalysePage::stopProcess);
@@ -178,8 +178,8 @@ bool ImportCorpusItemsWizardAnalysePage::loadTextgrids()
         else
             m_tierNamesCommon = m_tierNamesCommon.intersect(tierNames);
         // update UI
-        QStringList tierNamesList = tierNames.toList();
-        qSort(tierNamesList);
+        QStringList tierNamesList = tierNames.values();
+        std::sort(tierNamesList.begin(), tierNamesList.end());
         m_modelAnnotations->setItem(i - 1, 5, new QStandardItem(QString(tr("%1 tiers: %2")).arg(tiers.count()).arg(tierNamesList.join(", "))));
         ui->progressBarFiles->setValue(i);
         QApplication::processEvents();
@@ -198,7 +198,7 @@ void ImportCorpusItemsWizardAnalysePage::copyAnalysisTable()
     QModelIndexList list = model->selectedIndexes();
     if(list.size() < 1) return;
 
-    qSort(list);
+    std::sort(list.begin(), list.end());
 
     QString copy_table;
     QModelIndex previous = list.first();
