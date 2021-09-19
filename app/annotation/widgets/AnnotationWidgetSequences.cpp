@@ -55,6 +55,8 @@ AnnotationWidgetSequences::~AnnotationWidgetSequences()
 void AnnotationWidgetSequences::setCorpusRepositoryAndModel(Praaline::Core::CorpusRepository *repository, AnnotationMultiTierTableModel *model)
 {
     // Clear previous data
+    d->repository = nullptr;
+    d->model = nullptr;
     d->sequenceLevelsAndNVLs.clear();
     d->parentTierColumnIndexes.clear();
     ui->comboBoxAnnotationLevel->clear();
@@ -105,17 +107,23 @@ void AnnotationWidgetSequences::annotationLevelChanged(int index)
                                                nvl->value(i));
         }
     }
-    if (!d->model) return;
-    SequencesTableModel *newSequencesModel = d->model->sequenceModel(tiernameSequences);
-    ui->gridViewSequences->tableView()->setModel(newSequencesModel);
-    ui->gridViewSequences->tableView()->resizeColumnsToContents();
+    if (!d->model) {
+        // ui->gridViewSequences->tableView()->setModel(nullptr);
+        return;
+    } else {
+        SequencesTableModel *newSequencesModel = d->model->sequenceModel(tiernameSequences);
+        if (newSequencesModel) {
+            ui->gridViewSequences->tableView()->setModel(newSequencesModel);
+            ui->gridViewSequences->tableView()->resizeColumnsToContents();
+        }
+    }
 }
 
 void AnnotationWidgetSequences::setSelection(QList<int> rowsSelected)
 {
     d->rowsSelected = rowsSelected;
     // Enable/Disable annotation
-    if (d->rowsSelected.count() > 1) {
+    if (d->rowsSelected.count() > 0) {
         ui->cmdAddSequence->setEnabled(true);
     }
     else {
@@ -127,7 +135,7 @@ void AnnotationWidgetSequences::setSelection(QList<int> rowsSelected)
         QString tok = d->model->data(d->model->index(d->rowsSelected[i], d->columnIndexParentTier), Qt::EditRole).toString();
         currentSelection = currentSelection.append(tok).append(" ");
     }
-    ui->labelCurrentSelection->setText(QString("Selection %1").arg(currentSelection));
+    ui->lineEditSelection->setText(currentSelection);
 }
 
 // private slot
@@ -154,6 +162,7 @@ void AnnotationWidgetSequences::on_cmdDeleteSequence_clicked()
         rows << index.row();
     QString tiernameSequences = ui->comboBoxAnnotationLevel->currentData().toString();
     if (!d->model->sequenceModel(tiernameSequences)) return;
-    for (int i = rows.count() - 1; i >= 0; --i)
+    for (int i = rows.count() - 1; i >= 0; --i) {
         d->model->sequenceModel(tiernameSequences)->removeRows(rows.at(i), 1, QModelIndex());
+    }
 }

@@ -70,7 +70,7 @@ int SequencesTableModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
         return 0;
-    return d->sequenceAttributes.count() + 5;
+    return d->sequenceAttributes.count() + 7;
 }
 
 QVariant SequencesTableModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -85,11 +85,15 @@ QVariant SequencesTableModel::headerData(int section, Qt::Orientation orientatio
         else if (section == 2)
             return tr("To");
         else if (section == 3)
-            return tr("Label");
+            return tr("tMin");
         else if (section == 4)
+            return tr("tMax");
+        else if (section == 5)
+            return tr("Label");
+        else if (section == 6)
             return tr("Sequence Text");
-        else if ((section - 5) >= 0 && (section - 5) < d->sequenceAttributes.count()) {
-            QString attributeID = d->sequenceAttributes.at(section - 5);
+        else if ((section - 7) >= 0 && (section - 7) < d->sequenceAttributes.count()) {
+            QString attributeID = d->sequenceAttributes.at(section - 7);
             return attributeID;
         }
         else
@@ -131,7 +135,7 @@ QVariant SequencesTableModel::data(const QModelIndex &index, int role) const
     if (!tier) return QVariant();
     Sequence *sequence = tier->sequence(sequenceIndex);
     if (!sequence) return QVariant();
-    int attributeIndex = index.column() - 5;
+    int attributeIndex = index.column() - 7;
     // Return data
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (index.column() == 0) {
@@ -144,10 +148,16 @@ QVariant SequencesTableModel::data(const QModelIndex &index, int role) const
             return sequence->indexTo();
         }
         else if (index.column() == 3) {
-            return sequence->text();
+            return tier->sequenceTimeMin(sequenceIndex).toDouble();
         }
         else if (index.column() == 4) {
-            return tier->baseTierText(sequenceIndex);
+            return tier->sequenceTimeMax(sequenceIndex).toDouble();
+        }
+        else if (index.column() == 5) {
+            return sequence->text();
+        }
+        else if (index.column() == 6) {
+            return tier->sequenceBaseTierText(sequenceIndex);
         }
         else if (attributeIndex >= 0 && attributeIndex < d->sequenceAttributes.count()) {
             QString attributeID = d->sequenceAttributes.at(attributeIndex);
@@ -162,7 +172,7 @@ Qt::ItemFlags SequencesTableModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::ItemIsEnabled;
     // Editable columns: Label and any attributes
-    if ((index.column() == 3) || (index.column() >= 5))
+    if ((index.column() == 5) || (index.column() >= 7))
         return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
     return QAbstractTableModel::flags(index);
 }
@@ -183,13 +193,14 @@ bool SequencesTableModel::setData(const QModelIndex &index, const QVariant &valu
     if (!tier) return false;
     Sequence *sequence = tier->sequence(sequenceIndex);
     if (!sequence) return false;
-    int attributeIndex = index.column() - 5;
+    int attributeIndex = index.column() - 7;
     // Update data
     if (data(index, role) != value) {
-        if ((index.column() == 0) || (index.column() == 1) || (index.column() == 2) || (index.column() == 4)) {
+        if ((index.column() == 0) || (index.column() == 1) || (index.column() == 2) || (index.column() == 3) ||
+            (index.column() == 4) || (index.column() == 6)) {
             return false; // non-editable columns
         }
-        else if (index.column() == 3) {
+        else if (index.column() == 5) {
             sequence->setText(value.toString());
         }
         else if (attributeIndex >= 0 && attributeIndex < d->sequenceAttributes.count()) {

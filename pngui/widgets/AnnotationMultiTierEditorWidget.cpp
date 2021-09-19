@@ -46,15 +46,15 @@ AnnotationMultiTierEditorWidget::AnnotationMultiTierEditorWidget(QWidget *parent
 
 AnnotationMultiTierEditorWidget::~AnnotationMultiTierEditorWidget()
 {
-    clearModel();
-    if (d->model) delete d->model;
     delete d;
 }
 
 // TimelineEditorWidgetBase implementation
 void AnnotationMultiTierEditorWidget::clearModel()
 {
-    if (d->model) { delete d->model; d->model = 0; }
+    if (d->model) {
+        d->model = nullptr;
+    }
 }
 
 void AnnotationMultiTierEditorWidget::initModel()

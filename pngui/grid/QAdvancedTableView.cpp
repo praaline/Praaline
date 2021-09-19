@@ -688,11 +688,15 @@ void QAdvancedTableView::reset()
 void QAdvancedTableView::resizeColumnToContents(int column)
 {
     ui->headerTableView->resizeColumnToContents(column);
+    d->horizontalHeader->resizeSection(column, ui->dataTableView->horizontalHeader()->sectionSize(column));
 }
 
 void QAdvancedTableView::resizeColumnsToContents()
 {
     ui->headerTableView->resizeColumnsToContents();
+    for(int iCol = 0; iCol < d->horizontalHeader->count(); iCol++){
+        d->horizontalHeader->resizeSection(iCol, ui->dataTableView->horizontalHeader()->sectionSize(iCol));
+    }
 }
 
 void QAdvancedTableView::resizeEvent(QResizeEvent *event)

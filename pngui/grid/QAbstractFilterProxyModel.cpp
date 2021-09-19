@@ -141,7 +141,8 @@ void QAbstractFilterProxyModel::emitResultCountChanged()
     if (rowCount() != d->lastResultCount) {
         d->lastResultCount = rowCount();
         if (d->filterModel && d->filterModel->sourceModel())
-            emit resultCountChanged(d->lastResultCount, d->filterModel->sourceModel()->rowCount());
+            // emit resultCountChanged(d->lastResultCount, d->filterModel->sourceModel()->rowCount());
+            emit resultCountChanged(d->lastResultCount, d->lastResultCount);
         else
             emit resultCountChanged(d->lastResultCount, 0);
     }
