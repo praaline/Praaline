@@ -51,7 +51,7 @@ public:
     QAdvancedTableViewPrivate(QAdvancedTableView* tv)
     {
         autoResizeRowsToContents = false;
-        autoResizeColumnsToFitView = true;
+        autoResizeColumnsToFitView = false;
         defaultFilterType = QTextFilter::Type;
         dataViewProxy = new QFilterModelProxy(tv);
         filterModel = nullptr;
@@ -968,6 +968,13 @@ void QAdvancedTableView::setColumnsAutoFitParams(QMap<int, int> colSpareWidthPar
 
 void QAdvancedTableView::autoResizeColumnsToContent()
 {
+    // MODIFICATION for Praaline
+    // This method is way to slow to be used in a grid showing real-time/time-constrained data, such as
+    // the annotations of a MultiTierAnnotationEditor.
+    // TODO A better solution needs to be developped.
+    return;
+
+
     if (model()) {
         int headerFullWidth = viewport()->width();
         if (ui->headerTableView->verticalScrollBar()->isVisible()) {

@@ -106,9 +106,9 @@ void AnnotationWidgetSequences::annotationLevelChanged(int index)
         }
     }
     if (!d->model) return;
-//    SequencesTableModel *newSequencesModel = d->model->sequenceModel(tiernameSequences);
-//    ui->gridViewSequences->tableView()->setModel(newSequencesModel);
-//    ui->gridViewSequences->tableView()->resizeColumnsToContents();
+    SequencesTableModel *newSequencesModel = d->model->sequenceModel(tiernameSequences);
+    ui->gridViewSequences->tableView()->setModel(newSequencesModel);
+    ui->gridViewSequences->tableView()->resizeColumnsToContents();
 }
 
 void AnnotationWidgetSequences::setSelection(QList<int> rowsSelected)
