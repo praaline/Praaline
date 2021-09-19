@@ -363,6 +363,9 @@ void AnnotationMultiTierEditor::updateAnnotationControls()
         d->annotationWidgetForDisfluencies->setModel(d->editor->model());
         if (d->currentCorpus)
             d->annotationWidgetForSequences->setCorpusRepositoryAndModel(d->currentCorpus->repository(), d->editor->model());
+    } else {
+        d->annotationWidgetForDisfluencies->setModel(nullptr);
+        d->annotationWidgetForSequences->setCorpusRepositoryAndModel(nullptr, nullptr);
     }
 }
 

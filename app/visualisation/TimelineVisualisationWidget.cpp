@@ -62,24 +62,24 @@ TimelineVisualisationWidget::TimelineVisualisationWidget(QWidget *parent) :
             this, SLOT(selectedVisualisationChanged(int)));
     d->visualisationNames << "Default" <<
                              "Annotations and Prosogram" <<
-                             "Experiment Boundaries LOCAS" <<
-                             "Experiment TITEUF Boundaries vs Pauses" <<
-                             "Experiment TITEUF Speech rate" <<
-                             "Experiment TITEUF Pitch rate";
+                             "Boundaries" <<
+                             "Boundaries vs Pauses" <<
+                             "Speech rate" <<
+                             "Pitch rate";
     ui->comboBoxVisualisationSelector->addItems(d->visualisationNames);
     readVisualisationIndexFromConfigFile();
 
     // Corpus item selector
     d->corpusItemSelector = new CorpusItemSelectorWidget(this);
     ui->gridLayoutTopTab->addWidget(d->corpusItemSelector);
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)),
-            this, SLOT(selectedCorpusCommunication(QPointer<Corpus>,QPointer<CorpusCommunication>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)),
-            this, SLOT(selectedCorpusRecording(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusRecording>)));
-    connect(d->corpusItemSelector, SIGNAL(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)),
-            this, SLOT(selectedCorpusAnnotation(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>)));
-    connect(d->corpusItemSelector, SIGNAL(moveToAnnotationTime(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>,RealTime)),
-            this, SLOT(moveToAnnotationTime(QPointer<Corpus>,QPointer<CorpusCommunication>,QPointer<CorpusAnnotation>,RealTime)));
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusCommunication,
+            this, &TimelineVisualisationWidget::selectedCorpusCommunication);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusRecording,
+            this, &TimelineVisualisationWidget::selectedCorpusRecording);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::selectedCorpusAnnotation,
+            this, &TimelineVisualisationWidget::selectedCorpusAnnotation);
+    connect(d->corpusItemSelector, &CorpusItemSelectorWidget::moveToAnnotationTime,
+            this, &TimelineVisualisationWidget::moveToAnnotationTime);
 
     // Timeline configuration
     d->timelineConfig = new TimelineEditorConfigWidget(this);

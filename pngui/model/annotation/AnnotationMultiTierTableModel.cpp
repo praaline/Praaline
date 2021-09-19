@@ -144,10 +144,10 @@ QVariant AnnotationMultiTierTableModel::headerData(int section, Qt::Orientation 
 QVariant AnnotationMultiTierTableModel::dataCell(AnnotationTierGroup *spk_tiers, TimelineData &td,
                                                  const QString &levelID, const QString &attributeID) const
 {
-    SequenceTier *tier_seq = spk_tiers->getSequenceTierByName(levelID);
-    if (tier_seq) {
-        return tier_seq->sequenceTextForBaseElement(td.index);
-    }
+//    SequenceTier *tier_seq = spk_tiers->getSequenceTierByName(levelID);
+//    if (tier_seq) {
+//        return tier_seq->sequenceTextForBaseElement(td.index);
+//    }
 
     IntervalTier *tier = spk_tiers->getIntervalTierByName(levelID);
     if (!tier) return QVariant();
