@@ -262,7 +262,7 @@ void CorpusModeWidget::openCorpusRepositoryRecent()
     QObject *obj = sender();
     QAction *action = dynamic_cast<QAction *>(obj);
     if (!action) {
-        qDebug() << "WARNING: openRecentFile: sender is not an action" << endl;
+        qDebug() << "WARNING: openRecentFile: sender is not an action" << Qt::endl;
         return;
     }
     QString filename = action->text();

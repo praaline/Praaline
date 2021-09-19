@@ -30,7 +30,7 @@ void qMimeDataAddCsv(QMimeData* mimeData, QAbstractItemModel* model, QItemSelect
                 l << "\"" + index.data(role).toString() + "\"";
             }
         }
-        stream << l.join(";") << endl;
+        stream << l.join(";") << Qt::endl;
     }
     mimeData->setData("text/csv", d);
 }
@@ -147,7 +147,7 @@ void qMimeDataAddPlainText(QMimeData* mimeData, QAbstractItemModel* model, QItem
                 l << index.data(role).toString();
             }
         }
-        stream << l.join("\t") << endl;
+        stream << l.join("\t") << Qt::endl;
     }
     mimeData->setData("text/plain", d);
 }

@@ -61,9 +61,9 @@ QTILITIES_DEPENDENCIES = $$OUT_PWD/../dependencies
 include(../dependencies/qtilities/src/Qtilities.pri)
 
 # QScintilla
-INCLUDEPATH += $$PWD/../dependencies/qscintilla/Qt4Qt5
-DEPENDPATH  += $$PWD/../dependencies/qscintilla/Qt4Qt5
-LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/Qt4Qt5/$${COMPONENTSPATH}
+INCLUDEPATH += $$PWD/../dependencies/qscintilla/src
+DEPENDPATH  += $$PWD/../dependencies/qscintilla/src
+LIBPATH_QSCINTILLA=$$OUT_PWD/../dependencies/qscintilla/src/$${COMPONENTSPATH}
 CONFIG(debug, debug|release) {
     mac: {
         LIBS += -L$$LIBPATH_QSCINTILLA -lqscintilla2_qt$${QT_MAJOR_VERSION}_debug
