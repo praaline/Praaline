@@ -147,7 +147,7 @@ void AnnotationBrowserWidget::loadAnnotationData()
     QList<AnnotationElement *> elements = repository->annotations()->getAnnotationElements(
                 AnnotationDatastore::Selection("", "", level->ID()));
     // Set data model
-    AnnotationElementTableModel *model = new AnnotationElementTableModel(AnnotationElement::Type_Interval, elements, level->attributeIDs(), this);
+    AnnotationElementTableModel *model = new AnnotationElementTableModel(level, elements, level->attributeIDs(), this);
     d->gridview->tableView()->setModel(model);
     // Update internal state
     if (d->model) delete d->model;

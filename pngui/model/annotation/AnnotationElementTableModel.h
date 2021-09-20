@@ -2,6 +2,7 @@
 #define ANNOTATIONTABLEMODEL_H
 
 #include <QAbstractTableModel>
+#include "PraalineCore/Structure/AnnotationStructureLevel.h"
 #include "PraalineCore/Annotation/AnnotationElement.h"
 
 struct AnnotationTableModelData;
@@ -11,7 +12,7 @@ class AnnotationElementTableModel : public QAbstractTableModel
     Q_OBJECT
 
 public:
-    explicit AnnotationElementTableModel(Praaline::Core::AnnotationElement::ElementType elementType,
+    explicit AnnotationElementTableModel(Praaline::Core::AnnotationStructureLevel *level,
                                          QList<Praaline::Core::AnnotationElement *> elements,
                                          QStringList attributeIDs, QObject *parent = nullptr);
     ~AnnotationElementTableModel();

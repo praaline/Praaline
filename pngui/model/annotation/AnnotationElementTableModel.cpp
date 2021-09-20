@@ -9,15 +9,26 @@ struct AnnotationTableModelData {
     QStringList attributeIDs;
 };
 
-AnnotationElementTableModel::AnnotationElementTableModel(AnnotationElement::ElementType elementType,
-                                           QList<AnnotationElement *> elements,
-                                           QStringList attributeIDs, QObject *parent)
+AnnotationElementTableModel::AnnotationElementTableModel(Praaline::Core::AnnotationStructureLevel *level,
+                                                         QList<AnnotationElement *> elements,
+                                                         QStringList attributeIDs, QObject *parent)
     : QAbstractTableModel(parent), d(new AnnotationTableModelData)
 {
-    d->elementType = elementType;
+    d->elementType = AnnotationElement::Type_Element;
+    if (level) {
+        if (level->levelType() == AnnotationStructureLevel::IndependentPointsLevel)
+            d->elementType = AnnotationElement::Type_Point;
+        else if ((level->levelType() == AnnotationStructureLevel::IndependentIntervalsLevel) ||
+                 (level->levelType() == AnnotationStructureLevel::GroupingLevel))
+            d->elementType = AnnotationElement::Type_Interval;
+        else if (level->levelType() == AnnotationStructureLevel::SequencesLevel)
+            d->elementType = AnnotationElement::Type_Sequence;
+        else if (level->levelType() == AnnotationStructureLevel::RelationsLevel)
+            d->elementType = AnnotationElement::Type_Relation;
+    }
     d->elements = elements;
     d->attributeIDs = attributeIDs;
-    qDebug() << d->elements.count() << d->attributeIDs.count();
+    // qDebug() << d->elements.count() << d->attributeIDs.count();
 }
 
 AnnotationElementTableModel::~AnnotationElementTableModel()
@@ -47,6 +58,11 @@ QVariant AnnotationElementTableModel::headerData(int section, Qt::Orientation or
             offset = 6;
             break;
         case AnnotationElement::Type_Sequence:
+            if      (section == 2) return (tr("indexFrom"));
+            else if (section == 3) return (tr("indexTo"));
+            else if (section == 4) return (tr("text"));
+            offset = 5;
+            break;
         case AnnotationElement::Type_Relation:
             if      (section == 2) return (tr("indexFrom"));
             else if (section == 3) return (tr("indexTo"));
@@ -87,7 +103,7 @@ int AnnotationElementTableModel::columnCount(const QModelIndex &parent) const
     switch (d->elementType) {
     case AnnotationElement::Type_Point:     return d->attributeIDs.count() + 5; break;
     case AnnotationElement::Type_Interval:  return d->attributeIDs.count() + 6; break;
-    case AnnotationElement::Type_Sequence:
+    case AnnotationElement::Type_Sequence:  return d->attributeIDs.count() + 5; break;
     case AnnotationElement::Type_Relation:  return d->attributeIDs.count() + 5; break;
     case AnnotationElement::Type_Element:   return d->attributeIDs.count() + 3; break;
     }
@@ -118,6 +134,11 @@ QVariant AnnotationElementTableModel::data(const QModelIndex &index, int role) c
         offset = 6;
         break;
     case AnnotationElement::Type_Sequence:
+        if      (index.column() == 2) return element->attribute("indexFrom");
+        else if (index.column() == 3) return element->attribute("indexTo");
+        else if (index.column() == 4) return element->attribute("text");
+        offset = 5;
+        break;
     case AnnotationElement::Type_Relation:
         if      (index.column() == 2) return element->attribute("indexFrom");
         else if (index.column() == 3) return element->attribute("indexTo");
@@ -158,6 +179,11 @@ bool AnnotationElementTableModel::setData(const QModelIndex &index, const QVaria
             offset = 6;
             break;
         case AnnotationElement::Type_Sequence:
+            if      (index.column() == 2) return false; // indexFrom
+            else if (index.column() == 3) return false; // indexTo
+            else if (index.column() == 4) attributeID = "text";
+            offset = 5;
+            break;
         case AnnotationElement::Type_Relation:
             if      (index.column() == 2) return false; // indexFrom
             else if (index.column() == 3) return false; // indexTo
@@ -188,6 +214,8 @@ Qt::ItemFlags AnnotationElementTableModel::flags(const QModelIndex &index) const
         if (index.column() >= 3) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
         break;
     case AnnotationElement::Type_Sequence:
+        if (index.column() >= 4) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+        break;
     case AnnotationElement::Type_Relation:
         if (index.column() >= 4) return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
         break;
