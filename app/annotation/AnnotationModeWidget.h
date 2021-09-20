@@ -40,6 +40,9 @@ private slots:
     void showBatchEditor();
     void showCompareAnnotations();
 
+    void wizardImportAnnotations();
+    void wizardExportAnnotations();
+
     void dialogAddCalculatedAnnotation();
     void dialogCreateSequenceAnnotation();
     void dialogComposeTranscription();

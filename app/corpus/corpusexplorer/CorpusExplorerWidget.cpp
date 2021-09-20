@@ -32,8 +32,6 @@ using namespace QtilitiesProjectManagement;
 #include "../importmetadata/ImportMetadataWizard.h"
 #include "../exportmetadata/ExportMetadataWizard.h"
 #include "../importcorpusitems/ImportCorpusItemsWizard.h"
-#include "../importannotations/ImportAnnotationsWizard.h"
-#include "../exportannotations/ExportAnnotationsWizard.h"
 #include "../utilities/CheckMediaFilesDialog.h"
 #include "../utilities/SplitCommunicationsDialog.h"
 #include "../utilities/MergeCommunicationsDialog.h"
@@ -69,8 +67,6 @@ struct CorpusExplorerWidgetData {
     QAction *actionAddItemsFromFolder;
     QAction *actionImportMetadata;
     QAction *actionExportMetadata;
-    QAction *actionImportAnnotations;
-    QAction *actionExportAnnotations;
     // Corpus integrity
     QAction *actionCheckMediaFiles;
     QAction *actionCreateAnnotationsFromRecordings;
@@ -377,22 +373,6 @@ void CorpusExplorerWidget::setupActions()
     command = ACTION_MANAGER->registerAction("Corpus.MergeCorpora", d->actionMergeCorpora, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
     corpus_menu->addAction(command);
-
-    // ------------------------------------------------------------------------------------------------------
-    // ANNOTATION MENU
-    // ------------------------------------------------------------------------------------------------------
-
-    d->actionImportAnnotations = new QAction(tr("Import annotations..."), this);
-    connect(d->actionImportAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::importAnnotations);
-    command = ACTION_MANAGER->registerAction("Corpus.ImportAnnotations", d->actionImportAnnotations, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    annotation_menu->addAction(command);
-
-    d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
-    connect(d->actionExportAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::exportAnnotations);
-    command = ACTION_MANAGER->registerAction("Corpus.ExportAnnotations", d->actionExportAnnotations, context);
-    command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    annotation_menu->addAction(command);
 
     // ------------------------------------------------------------------------------------------------------
     // VIEW MENU
@@ -1097,18 +1077,6 @@ void CorpusExplorerWidget::importMetadata()
 void CorpusExplorerWidget::exportMetadata()
 {
     ExportMetadataWizard *wizard = new ExportMetadataWizard(this);
-    wizard->exec(); // MODAL!
-}
-
-void CorpusExplorerWidget::importAnnotations()
-{
-    ImportAnnotationsWizard *wizard = new ImportAnnotationsWizard(this);
-    wizard->exec(); // MODAL!
-}
-
-void CorpusExplorerWidget::exportAnnotations()
-{
-    ExportAnnotationsWizard *wizard = new ExportAnnotationsWizard(this);
     wizard->exec(); // MODAL!
 }
 

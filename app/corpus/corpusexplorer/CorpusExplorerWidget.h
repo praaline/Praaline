@@ -47,8 +47,6 @@ private slots:
     void addItemsFromFolder();
     void importMetadata();
     void exportMetadata();
-    void importAnnotations();
-    void exportAnnotations();
     // Corpus integrity
     void checkMediaFiles();
     void createAnnotationsFromRecordings();

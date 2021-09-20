@@ -152,8 +152,6 @@ SOURCES += main.cpp \
     corpus/structureeditors/AddAttributeDialog.cpp \
     corpus/structureeditors/AddLevelDialog.cpp \
     corpus/structureeditors/NameValueListEditor.cpp \
-    corpus/exportannotations/ExportAnnotationsWizard.cpp \
-    corpus/exportannotations/ExportAnnotationsWizardPraatPage.cpp \
     corpus/exportmetadata/ExportMetadataWizard.cpp \
     corpus/importcorpusitems/ImportCorpusItemsWizard.cpp \
     corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.cpp \
@@ -165,9 +163,11 @@ SOURCES += main.cpp \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.cpp \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.cpp \
     corpus/importmetadata/ImportMetadataWizardFinalPage.cpp \
-    corpus/importannotations/ImportAnnotationsWizard.cpp \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.cpp \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
+    annotation/importannotations/ImportAnnotationsWizard.cpp \
+    annotation/importannotations/ImportTableDataPreviewWizardPage.cpp \
+    annotation/exportannotations/ExportAnnotationsWizard.cpp \
+    annotation/exportannotations/ExportAnnotationsWizardPraatPage.cpp \
+    annotation/exportannotations/ExportAnnotationsWizardTimelinePage.cpp \
     annotation/AnnotationMode.cpp \
     annotation/AnnotationModeWidget.cpp \
     annotation/AutomaticAnnotationWidget.cpp \
@@ -294,9 +294,6 @@ HEADERS  += \
     corpus/structureeditors/AddAttributeDialog.h \
     corpus/structureeditors/AddLevelDialog.h \
     corpus/structureeditors/NameValueListEditor.h \
-    corpus/exportannotations/ExportAnnotationsWizard.h \
-    corpus/exportannotations/ExportAnnotationsWizardPraatPage.h \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.h \
     corpus/exportmetadata/ExportMetadataWizard.h \
     corpus/importcorpusitems/ImportCorpusItemsWizard.h \
     corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.h \
@@ -308,14 +305,17 @@ HEADERS  += \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.h \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.h \
     corpus/importmetadata/ImportMetadataWizardFinalPage.h \
-    corpus/importannotations/ImportAnnotationsWizard.h \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.h \
     corpus/utilities/MergeCorporaDialog.h \
     corpus/utilities/MergeCommunicationsDialog.h \
     corpus/utilities/CheckMediaFilesDialog.h \
     corpus/utilities/DecodeFilenameToMetadataDialog.h \
     corpus/utilities/SplitCommunicationsDialog.h \
     annotation/asr/LanguageModelBuilderWidget.h \
+    annotation/exportannotations/ExportAnnotationsWizard.h \
+    annotation/exportannotations/ExportAnnotationsWizardPraatPage.h \
+    annotation/exportannotations/ExportAnnotationsWizardTimelinePage.h \
+    annotation/importannotations/ImportAnnotationsWizard.h \
+    annotation/importannotations/ImportTableDataPreviewWizardPage.h \
     annotation/widgets/DisfluencyAnalyser.h \
     annotation/AnnotationMode.h \
     annotation/AnnotationModeWidget.h \
@@ -435,8 +435,6 @@ FORMS    += \
     corpus/structureeditors/AnnotationStructureEditor.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
     corpus/structureeditors/AddLevelDialog.ui \
-    corpus/exportannotations/ExportAnnotationsWizard.ui \
-    corpus/exportannotations/ExportAnnotationsWizardPraatPage.ui \
     corpus/exportmetadata/ExportMetadataWizard.ui \
     corpus/importcorpusitems/ImportCorpusItemsWizard.ui \
     corpus/importcorpusitems/ImportCorpusItemsWizardAnalysePage.ui \
@@ -448,14 +446,16 @@ FORMS    += \
     corpus/importmetadata/ImportMetadataWizardBasicInfoPage.ui \
     corpus/importmetadata/ImportMetadataWizardColumnsPage.ui \
     corpus/importmetadata/ImportMetadataWizardFinalPage.ui \
-    corpus/importannotations/ImportAnnotationsWizard.ui \
-    corpus/importannotations/ImportTableDataPreviewWizardPage.ui \
-    corpus/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
     corpus/utilities/CheckMediaFilesDialog.ui \
     corpus/utilities/MergeCorporaDialog.ui \
     corpus/utilities/SplitCommunicationsDialog.ui \
     corpus/utilities/DecodeFilenameToMetadataDialog.ui \
     corpus/utilities/MergeCommunicationsDialog.ui \
+    annotation/exportannotations/ExportAnnotationsWizard.ui \
+    annotation/exportannotations/ExportAnnotationsWizardPraatPage.ui \
+    annotation/importannotations/ImportAnnotationsWizard.ui \
+    annotation/importannotations/ImportTableDataPreviewWizardPage.ui \
+    annotation/exportannotations/ExportAnnotationsWizardTimelinePage.ui \
     annotation/BatchEditorWidget.ui \
     annotation/AnnotationModeWidget.ui \
     annotation/AutomaticAnnotationWidget.ui \

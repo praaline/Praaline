@@ -1,3 +1,9 @@
+#include <QString>
+#include <QAction>
+
+#include <memory>
+using namespace std;
+
 #include "AnnotationModeWidget.h"
 #include "ui_AnnotationModeWidget.h"
 
@@ -8,6 +14,9 @@
 #include "AnnotationBrowserWidget.h"
 #include "BatchEditorWidget.h"
 #include "CompareAnnotationsWidget.h"
+
+#include "importannotations/ImportAnnotationsWizard.h"
+#include "exportannotations/ExportAnnotationsWizard.h"
 
 #include "calculate/AddCalculatedAnnotationDialog.h"
 #include "calculate/CreateSequenceAnnotationDialog.h"
@@ -25,6 +34,9 @@ struct AnnotationModeWidgetData {
     QAction *actionShowAnnotationBrowser;
     QAction *actionShowBatchEditor;
     QAction *actionShowCompareAnnotations;
+
+    QAction *actionImportAnnotations;
+    QAction *actionExportAnnotations;
 
     QAction *actionAddCalculatedAnnotation;
     QAction *actionCreateSequenceAnnotation;
@@ -115,6 +127,19 @@ void AnnotationModeWidget::setupActions()
     // ------------------------------------------------------------------------------------------------------
     // ANNOTATION MENU
     // ------------------------------------------------------------------------------------------------------
+
+    d->actionImportAnnotations = new QAction(tr("Import annotations..."), this);
+    connect(d->actionImportAnnotations, &QAction::triggered, this, &AnnotationModeWidget::wizardImportAnnotations);
+    command = ACTION_MANAGER->registerAction("Annotation.ImportAnnotations", d->actionImportAnnotations, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
+
+    d->actionExportAnnotations = new QAction(tr("Export annotations..."), this);
+    connect(d->actionExportAnnotations, &QAction::triggered, this, &AnnotationModeWidget::wizardExportAnnotations);
+    command = ACTION_MANAGER->registerAction("Annotation.ExportAnnotations", d->actionExportAnnotations, context);
+    command->setCategory(QtilitiesCategory(tr("Annotation")));
+    menu_annotation->addAction(command);
+
     d->actionAddCalculatedAnnotation = new QAction(tr("Add Annotation from Calculations..."), this);
     connect(d->actionAddCalculatedAnnotation, &QAction::triggered, this, &AnnotationModeWidget::dialogAddCalculatedAnnotation);
     command = ACTION_MANAGER->registerAction("Annotation.AddCalculatedAnnotation", d->actionAddCalculatedAnnotation, context);
@@ -229,30 +254,38 @@ void AnnotationModeWidget::showCompareAnnotations()
     emit activateMode();
 }
 
+void AnnotationModeWidget::wizardImportAnnotations()
+{
+    unique_ptr<ImportAnnotationsWizard> wizard { new ImportAnnotationsWizard() };
+    wizard->exec();
+}
+
+void AnnotationModeWidget::wizardExportAnnotations()
+{
+    unique_ptr<ExportAnnotationsWizard> wizard { new ExportAnnotationsWizard() };
+    wizard->exec();
+}
+
 void AnnotationModeWidget::dialogAddCalculatedAnnotation()
 {
-    AddCalculatedAnnotationDialog *dialog = new AddCalculatedAnnotationDialog(this);
+    unique_ptr<AddCalculatedAnnotationDialog> dialog { new AddCalculatedAnnotationDialog() };
     dialog->exec();
-    delete dialog;
 }
 
 void AnnotationModeWidget::dialogCreateSequenceAnnotation()
 {
-    CreateSequenceAnnotationDialog *dialog = new CreateSequenceAnnotationDialog(this);
+    unique_ptr<CreateSequenceAnnotationDialog> dialog { new CreateSequenceAnnotationDialog() };
     dialog->exec();
-    delete dialog;
 }
 
 void AnnotationModeWidget::dialogComposeTranscription()
 {
-    ComposeTranscriptionDialog *dialog = new ComposeTranscriptionDialog(this);
+    unique_ptr<ComposeTranscriptionDialog> dialog { new ComposeTranscriptionDialog() };
     dialog->exec();
-    delete dialog;
 }
 
 void AnnotationModeWidget::dialogTidyUpAnnotations()
 {
-    TidyUpAnnotationsDialog *dialog = new TidyUpAnnotationsDialog(this);
+    unique_ptr<TidyUpAnnotationsDialog> dialog { new TidyUpAnnotationsDialog() };
     dialog->exec();
-    delete dialog;
 }
