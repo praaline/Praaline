@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     QtilitiesApplication::setOrganizationName("praaline.org");
     QtilitiesApplication::setOrganizationDomain("Praaline");
     QtilitiesApplication::setApplicationName("Praaline");
-    QtilitiesApplication::setApplicationVersion("0.2");
+    QtilitiesApplication::setApplicationVersion("0.9");
 
     // Create a QtilitiesMainWindow. This window will show Praaline's different modes (e.g. Corpus, Annotation...)
     QtilitiesMainWindow mainWindow(QtilitiesMainWindow::ModesLeft);
