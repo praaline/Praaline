@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QTreeView>
+#include <QMainWindow>
 #include <QProgressDialog>
 
 #include "PraalineCore/Corpus/Corpus.h"
@@ -71,7 +72,7 @@ struct CorpusExplorerTreeWidgetData {
 };
 
 CorpusExplorerTreeWidget::CorpusExplorerTreeWidget(QWidget *parent) :
-    QWidget(parent),
+    QMainWindow(parent),
     ui(new Ui::CorpusExplorerTreeWidget)
 {
     ui->setupUi(this);

@@ -431,6 +431,7 @@ FORMS    += \
     corpus/corpusexplorer/CorpusExplorerTableWidget.ui \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.ui \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.ui \
+    corpus/corpusexplorer/CorpusExplorerWidget.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
     corpus/structureeditors/AddAttributeDialog.ui \

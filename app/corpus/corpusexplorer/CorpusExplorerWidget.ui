@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CorpusExplorerTreeWidget</class>
- <widget class="QMainWindow" name="CorpusExplorerTreeWidget">
+ <class>CorpusExplorerWidget</class>
+ <widget class="QMainWindow" name="CorpusExplorerWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

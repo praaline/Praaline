@@ -1,3 +1,7 @@
+#include <memory>
+#include <vector>
+using namespace std;
+
 #include "CorpusModeWidget.h"
 #include "ui_CorpusModeWidget.h"
 
@@ -19,7 +23,6 @@ using namespace QtilitiesCoreGui;
 using namespace Praaline::Core;
 
 #include "svcore/base/RecentFiles.h"
-using std::vector;
 
 #include "CorpusRepositoriesManager.h"
 #include "CorpusRepositoryCreateWizard.h"
@@ -68,7 +71,7 @@ struct CorpusModeWidgetData {
     QAction *actionMergeCorpora;
 
     // Widgets belonging to the Corpus Mode
-    CorpusExplorerWidget *widgetCorpusExplorer;
+    CorpusExplorerWidget *widgetCorpusExplorerTree;
     CorpusExplorerTableWidget *widgetCorpusExplorerTables;
     MetadataStructureEditor *widgetMetadataStructureEditor;
     AnnotationStructureEditor *widgetAnnotationStructureEditor;
@@ -87,12 +90,12 @@ CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    d->widgetCorpusExplorer = new CorpusExplorerWidget(this);
+    d->widgetCorpusExplorerTree = new CorpusExplorerWidget(this);
     d->widgetCorpusExplorerTables = new CorpusExplorerTableWidget(this);
     d->widgetMetadataStructureEditor = new MetadataStructureEditor(this);
     d->widgetAnnotationStructureEditor = new AnnotationStructureEditor(this);
 
-    ui->gridLayoutCorpusExplorer->addWidget(d->widgetCorpusExplorer);
+    ui->gridLayoutCorpusExplorer->addWidget(d->widgetCorpusExplorerTree);
     ui->gridLayoutCorpusExplorerTables->addWidget(d->widgetCorpusExplorerTables);
     ui->gridLayoutMetadataStructureEditor->addWidget(d->widgetMetadataStructureEditor);
     ui->gridLayoutAnnotationStructureEditor->addWidget(d->widgetAnnotationStructureEditor);
@@ -227,80 +230,80 @@ void CorpusModeWidget::setupActions()
     // Import - export functionality
     // --------------------------------------------------------------------------------------------
     d->actionAddItemsFromFolder = new QAction(tr("Add corpus items from folder..."), this);
-    connect(d->actionAddItemsFromFolder, &QAction::triggered, this, &CorpusExplorer::addItemsFromFolder);
+    connect(d->actionAddItemsFromFolder, &QAction::triggered, this, &CorpusModeWidget::addItemsFromFolder);
     command = ACTION_MANAGER->registerAction("Corpus.AddItemsFromFolder", d->actionAddItemsFromFolder, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionImportMetadata = new QAction(tr("Import corpus metadata..."), this);
-    connect(d->actionImportMetadata, &QAction::triggered, this, &CorpusExplorerWidget::importMetadata);
+    connect(d->actionImportMetadata, &QAction::triggered, this, &CorpusModeWidget::importMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.ImportMetadata", d->actionImportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionExportMetadata = new QAction(tr("Export corpus metadata..."), this);
-    connect(d->actionExportMetadata, &QAction::triggered, this, &CorpusExplorerWidget::exportMetadata);
+    connect(d->actionExportMetadata, &QAction::triggered, this, &CorpusModeWidget::exportMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.ExportMetadata", d->actionExportMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
-    corpus_menu->addSeparator();
+    menu_corpus->addSeparator();
 
     // Corpus integrity
     // --------------------------------------------------------------------------------------------
 
     d->actionCheckMediaFiles = new QAction(tr("Check files of Media Recordings..."), this);
-    connect(d->actionCheckMediaFiles, &QAction::triggered, this, &CorpusExplorerWidget::checkMediaFiles);
+    connect(d->actionCheckMediaFiles, &QAction::triggered, this, &CorpusModeWidget::checkMediaFiles);
     command = ACTION_MANAGER->registerAction("Corpus.CheckMediaFiles", d->actionCheckMediaFiles, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionCreateAnnotationsFromRecordings = new QAction(tr("Create Annotations for Recordings not having one..."), this);
-    connect(d->actionCreateAnnotationsFromRecordings, &QAction::triggered, this, &CorpusExplorerWidget::createAnnotationsFromRecordings);
+    connect(d->actionCreateAnnotationsFromRecordings, &QAction::triggered, this, &CorpusModeWidget::createAnnotationsFromRecordings);
     command = ACTION_MANAGER->registerAction("Corpus.AnnotationsFromRecordings", d->actionCreateAnnotationsFromRecordings, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionCreateSpeakersFromAnnotations = new QAction(tr("Create Speakers and Participations from Annotations..."), this);
-    connect(d->actionCreateSpeakersFromAnnotations, &QAction::triggered, this, &CorpusExplorerWidget::createSpeakersFromAnnotations);
+    connect(d->actionCreateSpeakersFromAnnotations, &QAction::triggered, this, &CorpusModeWidget::createSpeakersFromAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.SpeakersParticipationsFromAnnotations", d->actionCreateSpeakersFromAnnotations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionCleanUpParticipations = new QAction(tr("Clean-up Participations based on Annotations..."), this);
-    connect(d->actionCleanUpParticipations, &QAction::triggered, this, &CorpusExplorerWidget::cleanUpParticipationsFromAnnotations);
+    connect(d->actionCleanUpParticipations, &QAction::triggered, this, &CorpusModeWidget::cleanUpParticipationsFromAnnotations);
     command = ACTION_MANAGER->registerAction("Corpus.CleanUpParticipationsFromAnnotations", d->actionCleanUpParticipations, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
-    corpus_menu->addSeparator();
+    menu_corpus->addSeparator();
 
     // Utilities
     // --------------------------------------------------------------------------------------------
 
     d->actionSplitCommunications = new QAction(tr("Split Communications based on annotation..."), this);
-    connect(d->actionSplitCommunications, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesSplitCommunications);
+    connect(d->actionSplitCommunications, &QAction::triggered, this, &CorpusModeWidget::utilitiesSplitCommunications);
     command = ACTION_MANAGER->registerAction("Corpus.SplitCommunications", d->actionSplitCommunications, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionMergeCommunications = new QAction(tr("Merge Communications..."), this);
-    connect(d->actionMergeCommunications, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesMergeCommunications);
+    connect(d->actionMergeCommunications, &QAction::triggered, this, &CorpusModeWidget::utilitiesMergeCommunications);
     command = ACTION_MANAGER->registerAction("Corpus.MergeCommunications", d->actionMergeCommunications, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionDecodeFilenameToMetadata = new QAction(tr("Decode Filename into Metadata..."), this);
-    connect(d->actionDecodeFilenameToMetadata, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesDecodeFilenameToMetadata);
+    connect(d->actionDecodeFilenameToMetadata, &QAction::triggered, this, &CorpusModeWidget::utilitiesDecodeFilenameToMetadata);
     command = ACTION_MANAGER->registerAction("Corpus.DecodeFilenameToMetadata", d->actionDecodeFilenameToMetadata, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 
     d->actionMergeCorpora = new QAction(tr("Merge Corpora..."), this);
-    connect(d->actionMergeCorpora, &QAction::triggered, this, &CorpusExplorerWidget::utilitiesMergeCorpora);
+    connect(d->actionMergeCorpora, &QAction::triggered, this, &CorpusModeWidget::utilitiesMergeCorpora);
     command = ACTION_MANAGER->registerAction("Corpus.MergeCorpora", d->actionMergeCorpora, context);
     command->setCategory(QtilitiesCategory(QApplication::applicationName()));
-    corpus_menu->addAction(command);
+    menu_corpus->addAction(command);
 }
 
 void CorpusModeWidget::setupRecentFilesMenu()
@@ -316,6 +319,10 @@ void CorpusModeWidget::setupRecentFilesMenu()
         d->recentFilesMenu->menu()->addAction(action);
     }
 }
+
+// =========================================================================================================================================
+// Corpus Mode Widgets (private slots)
+// =========================================================================================================================================
 
 void CorpusModeWidget::showCorpusExplorer()
 {
@@ -342,12 +349,22 @@ void CorpusModeWidget::showAnnotationStructureEditor()
 }
 
 // =========================================================================================================================================
-// Corpus repository management
+// Corpus Repository Management (public slots)
 // =========================================================================================================================================
+
+bool CorpusModeWidget::checkForActiveCorpusRepository()
+{
+    if (!d->corpusRepositoriesManager->activeCorpusRepository()) {
+        QMessageBox::warning(this, tr("No Corpus Repository"),
+                             tr("Please create, open or connect to a Praaline Corpus Repository first."), QMessageBox::Ok);
+        return false;
+    }
+    return true;
+}
 
 void CorpusModeWidget::newCorpusRepository()
 {
-    CorpusRepositoryCreateWizard *wizard = new CorpusRepositoryCreateWizard(this);
+    unique_ptr<CorpusRepositoryCreateWizard> wizard(new CorpusRepositoryCreateWizard(this));
     wizard->exec();
     CorpusRepository *repository = wizard->newCorpusRepository();
     if (!repository) return;
@@ -423,9 +440,9 @@ void CorpusModeWidget::openCorpusRepositoryFromDefinition(const QString &filenam
 
 void CorpusModeWidget::editCorpusRepository()
 {
-    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    if (!checkForActiveCorpusRepository()) return;
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    CorpusRepositoryPropertiesDialog *dialog = new CorpusRepositoryPropertiesDialog(repository->definition(), this);
+    unique_ptr<CorpusRepositoryPropertiesDialog> dialog(new CorpusRepositoryPropertiesDialog(repository->definition(), this));
     if (dialog->exec() == QDialog::Accepted) {
         repository->setID(dialog->repositoryDef().repositoryID);
         repository->setDescription(dialog->repositoryDef().repositoryName);
@@ -434,12 +451,11 @@ void CorpusModeWidget::editCorpusRepository()
             repository->definition().save(repository->definition().filenameDefinition);
         }
     }
-    delete dialog;
 }
 
 void CorpusModeWidget::closeCorpusRepository()
 {
-    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    if (!checkForActiveCorpusRepository()) return;
     QString repositoryID = d->corpusRepositoriesManager->activeCorpusRepository()->ID();
     d->corpusRepositoriesManager->activeCorpusRepository()->close();
     // Remove the repository from the manager. It will automatically activate the next one, if available.
@@ -448,7 +464,7 @@ void CorpusModeWidget::closeCorpusRepository()
 
 void CorpusModeWidget::saveCorpusRepository()
 {
-    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    if (!checkForActiveCorpusRepository()) return;
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
     if (!repository->definition().filenameDefinition.isEmpty()) {
         repository->definition().save(repository->definition().filenameDefinition);
@@ -459,7 +475,7 @@ void CorpusModeWidget::saveCorpusRepository()
 
 void CorpusModeWidget::saveCorpusRepositoryAs()
 {
-    if (!d->corpusRepositoriesManager->activeCorpusRepository()) return;
+    if (!checkForActiveCorpusRepository()) return;
     CorpusRepository *repository = d->corpusRepositoriesManager->activeCorpusRepository();
     QFileDialog::Options options;
     QString selectedFilter;
@@ -478,72 +494,64 @@ void CorpusModeWidget::saveCorpusRepositoryAs()
 // Import Corpus Items from other software formats
 // =========================================================================================================================================
 
+void CorpusModeWidget::addItemsFromFolder()
+{
+    if (!checkForActiveCorpusRepository()) return;
+    // d->corporaTopLevelNode->startTreeProcessingCycle();
+    // FIX ME ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
+    // wizard->exec(); // MODAL!
+    // d->corporaTopLevelNode->endTreeProcessingCycle();
+    CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
+    if (obj) obj->refresh();
+    // fix update
+    QString filenameDef = d->corpusRepositoriesManager->activeCorpusRepository()->definition().filenameDefinition;
+    saveCorpusRepository();
+    closeCorpusRepository();
+    openCorpusRepositoryFromDefinition(filenameDef);
+}
 
 // =========================================================================================================================================
 // Import / Export Metadata
 // =========================================================================================================================================
 
-
-// =========================================================================================================================================
-// Corpus Management Utilities
-// =========================================================================================================================================
-
-void CorpusExplorerWidget::addItemsFromFolder()
+void CorpusModeWidget::importMetadata()
 {
-    if (!checkForActiveCorpus()) return;
-    d->corporaTopLevelNode->startTreeProcessingCycle();
-    ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
-    wizard->exec(); // MODAL!
-    d->corporaTopLevelNode->endTreeProcessingCycle();
-    CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
-    if (obj) obj->refresh();
-    // fix update
-    QString filenameDef = d->corpusRepositoriesManager->activeCorpusRepository()->definition().filenameDefinition;
-    d->widgetCorpusMode->saveCorpusRepository();
-    d->widgetCorpusMode->closeCorpusRepository();
-    d->widgetCorpusMode->openCorpusRepositoryFromDefinition(filenameDef);
-}
-
-void CorpusExplorerWidget::importMetadata()
-{
-    QPointer<CorpusRepository> repository = d->corpusRepositoriesManager->activeCorpusRepository();
-    if (!repository) return;
+    if (!checkForActiveCorpusRepository()) return;
     QFileDialog::Options options;
     QString selectedFilter;
     QString filename = QFileDialog::getOpenFileName(this, tr("Import Metadata Wizard - Select text file"), "",
                                                     tr("Text File (*.txt);;All Files (*)"),
                                                     &selectedFilter, options);
     if (filename.isEmpty()) return;
-    d->corporaTopLevelNode->startTreeProcessingCycle();
-    ImportMetadataWizard *wizard = new ImportMetadataWizard(filename, this);
-    wizard->exec(); // MODAL!
+    unique_ptr<ImportMetadataWizard> wizard(new ImportMetadataWizard(filename, this));
+    wizard->exec(); // modal
     CorpusObserver *obj = d->corpusRepositoriesManager->corpusObserverForRepository(d->corpusRepositoriesManager->activeCorpusRepositoryID());
     if (obj) obj->refresh();
-    d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
-void CorpusExplorerWidget::exportMetadata()
+void CorpusModeWidget::exportMetadata()
 {
-    ExportMetadataWizard *wizard = new ExportMetadataWizard(this);
-    wizard->exec(); // MODAL!
+    if (!checkForActiveCorpusRepository()) return;
+    unique_ptr<ExportMetadataWizard> wizard(new ExportMetadataWizard(this));
+    wizard->exec(); // modal
 }
 
 // ==============================================================================================================================
 // Corpus Integrity
 // ==============================================================================================================================
 
-void CorpusExplorerWidget::checkMediaFiles()
+void CorpusModeWidget::checkMediaFiles()
 {
-    if (!checkForActiveCorpus()) return;
-    CheckMediaFilesDialog *dialog = new CheckMediaFilesDialog(d->activeCorpus, this);
-    dialog->exec();
-    delete dialog;
+    if (!checkForActiveCorpusRepository()) return;
+    // unique_ptr<CheckMediaFilesDialog> dialog(new CheckMediaFilesDialog(d->activeCorpus, this));
+    // dialog->exec();
 }
 
-void CorpusExplorerWidget::createAnnotationsFromRecordings()
+void CorpusModeWidget::createAnnotationsFromRecordings()
 {
-    if (!checkForActiveCorpus()) return;
-    d->corporaTopLevelNode->startTreeProcessingCycle();
+    if (!checkForActiveCorpusRepository()) return;
+    // d->corporaTopLevelNode->startTreeProcessingCycle();
+    /*
     foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
         if (!com) continue;
         if (com->hasAnnotations()) continue;
@@ -553,13 +561,16 @@ void CorpusExplorerWidget::createAnnotationsFromRecordings()
             com->addAnnotation(annot);
         }
     }
-    d->corporaTopLevelNode->endTreeProcessingCycle();
+    */
+    // d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
-void CorpusExplorerWidget::createSpeakersFromAnnotations()
+void CorpusModeWidget::createSpeakersFromAnnotations()
 {
-    if (!checkForActiveCorpus()) return;
-    d->corporaTopLevelNode->startTreeProcessingCycle();
+    if (!checkForActiveCorpusRepository()) return;
+    // d->corporaTopLevelNode->startTreeProcessingCycle();
+    // for each corpus
+    /*
     foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
         if (!com) continue;
         foreach (CorpusAnnotation *annot, com->annotations()) {
@@ -573,12 +584,13 @@ void CorpusExplorerWidget::createSpeakersFromAnnotations()
             }
         }
     }
-    d->corporaTopLevelNode->endTreeProcessingCycle();
+    */
+    // d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
-void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
+void CorpusModeWidget::cleanUpParticipationsFromAnnotations()
 {
-    if (!checkForActiveCorpus()) return;
+    if (!checkForActiveCorpusRepository()) return;
     bool deleteSpeakers = false;
     if (QMessageBox::question(this, tr("Clean up Speakers as well?"), tr("When a speaker does not participate in a Communication, based on its Annotations, "
                               "the Participation will be deleted. Should the Speaker metadata also be deleted? (Caution: this operation cannot be undone!)"))
@@ -587,8 +599,9 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
     }
     QSet<QString> allActiveSpeakerIDs;
 
-    d->corporaTopLevelNode->startTreeProcessingCycle();
+    // d->corporaTopLevelNode->startTreeProcessingCycle();
 
+/*
     QProgressDialog progressDialog(this);
     progressDialog.setCancelButtonText(tr("&Cancel"));
     progressDialog.setRange(0, d->activeCorpus->communicationsCount());
@@ -629,40 +642,40 @@ void CorpusExplorerWidget::cleanUpParticipationsFromAnnotations()
             }
         }
     }
-    d->corporaTopLevelNode->endTreeProcessingCycle();
+    // d->corporaTopLevelNode->endTreeProcessingCycle();
+    */
 }
 
-// ==============================================================================================================================
-// Utilities
-// ==============================================================================================================================
+// =========================================================================================================================================
+// Corpus Management Utilities
+// =========================================================================================================================================
 
-void CorpusExplorerWidget::utilitiesSplitCommunications()
+void CorpusModeWidget::utilitiesSplitCommunications()
 {
-    if (!checkForActiveCorpus()) return;
-    SplitCommunicationsDialog *dialog = new SplitCommunicationsDialog(d->activeCorpus, this);
-    dialog->exec();
-    delete dialog;
+    if (!checkForActiveCorpusRepository()) return;
+    // FIX ME: require repository and not corpus
+    // unique_ptr<SplitCommunicationsDialog> dialog(new SplitCommunicationsDialog(d->activeCorpus, this));
+    // dialog->exec();
 }
 
-void CorpusExplorerWidget::utilitiesMergeCommunications()
+void CorpusModeWidget::utilitiesMergeCommunications()
 {
-    if (!checkForActiveCorpus()) return;
-    MergeCommunicationsDialog *dialog = new MergeCommunicationsDialog(d->activeCorpus, this);
-    dialog->exec();
-    delete dialog;
+    if (!checkForActiveCorpusRepository()) return;
+    // FIX ME: require repository and not corpus
+    // unique_ptr<MergeCommunicationsDialog> dialog(new MergeCommunicationsDialog(d->activeCorpus, this));
+    // dialog->exec();
 }
 
-void CorpusExplorerWidget::utilitiesDecodeFilenameToMetadata()
+void CorpusModeWidget::utilitiesDecodeFilenameToMetadata()
 {
-    if (!checkForActiveCorpus()) return;
-    DecodeFilenameToMetadataDialog *dialog = new DecodeFilenameToMetadataDialog(d->activeCorpus, this);
-    dialog->exec();
-    delete dialog;
+    if (!checkForActiveCorpusRepository()) return;
+    // FIX ME: require repository and not corpus
+    // unique_ptr<DecodeFilenameToMetadataDialog> dialog(new DecodeFilenameToMetadataDialog(d->activeCorpus, this));
+    // dialog->exec();
 }
 
-void CorpusExplorerWidget::utilitiesMergeCorpora()
+void CorpusModeWidget::utilitiesMergeCorpora()
 {
-    MergeCorporaDialog *dialog = new MergeCorporaDialog(this);
+    unique_ptr<MergeCorporaDialog> dialog(new MergeCorporaDialog(this));
     dialog->exec();
-    delete dialog;
 }

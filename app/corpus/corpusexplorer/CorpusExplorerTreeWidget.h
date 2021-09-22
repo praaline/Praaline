@@ -2,6 +2,7 @@
 #define CORPUSEXPLORERTREEWIDGET_H
 
 #include <QWidget>
+#include <QMainWindow>
 
 namespace Ui {
 class CorpusExplorerTreeWidget;
@@ -18,7 +19,7 @@ class Corpus;
 }
 }
 
-class CorpusExplorerTreeWidget : public QWidget
+class CorpusExplorerTreeWidget : public QMainWindow
 {
     Q_OBJECT
 

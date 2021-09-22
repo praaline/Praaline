@@ -43,20 +43,6 @@ private slots:
     void addParticipation();
     void removeCorpusItems();
     void relinkCorpusItem();
-    // Import-export
-    void addItemsFromFolder();
-    void importMetadata();
-    void exportMetadata();
-    // Corpus integrity
-    void checkMediaFiles();
-    void createAnnotationsFromRecordings();
-    void createSpeakersFromAnnotations();
-    void cleanUpParticipationsFromAnnotations();
-    // Utilities
-    void utilitiesSplitCommunications();
-    void utilitiesMergeCommunications();
-    void utilitiesDecodeFilenameToMetadata();
-    void utilitiesMergeCorpora();
     // Presentation
     void attributesAndGroupings();
     void metadataEditorPrimaryStyleTree();
