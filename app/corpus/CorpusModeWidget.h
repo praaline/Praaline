@@ -40,6 +40,8 @@ private slots:
     void showAnnotationStructureEditor();
     void setupRecentFilesMenu();
 
+    void addItemsFromFolder();
+
 private:
     Ui::CorpusModeWidget *ui;
     CorpusModeWidgetData *d;

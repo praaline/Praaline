@@ -428,9 +428,9 @@ FORMS    += \
     corpus/corpusexplorer/AddCorpusAnnotationDialog.ui \
     corpus/corpusexplorer/AddCorpusCommunicationDialog.ui \
     corpus/corpusexplorer/AddCorpusRecordingDialog.ui \
-    corpus/corpusexplorer/CorpusExplorerWidget.ui \
     corpus/corpusexplorer/CorpusExplorerTableWidget.ui \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.ui \
+    corpus/corpusexplorer/CorpusExplorerTreeWidget.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
     corpus/structureeditors/AddAttributeDialog.ui \
@@ -499,8 +499,7 @@ FORMS    += \
     statistics/pca/PCAPlotWidget.ui \
     annotation/editors/PFCTranscriptionEditor.ui \
     updater/UpdatePraalineDialog.ui \
-    corpus/corpusexplorer/CreateCorpusCommunicationDialog.ui \
-    corpus/corpusexplorer/CorpusExplorerTreeWidget.ui
+    corpus/corpusexplorer/CreateCorpusCommunicationDialog.ui
 
 RESOURCES += \
     praaline.qrc \

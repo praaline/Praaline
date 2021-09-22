@@ -92,7 +92,7 @@
            <string>Up</string>
           </property>
           <property name="icon">
-           <iconset resource="../praaline.qrc">
+           <iconset resource="../../praaline.qrc">
             <normaloff>:/icons/actions/move_up.png</normaloff>:/icons/actions/move_up.png</iconset>
           </property>
          </widget>
@@ -103,7 +103,7 @@
            <string>Down</string>
           </property>
           <property name="icon">
-           <iconset resource="../praaline.qrc">
+           <iconset resource="../../praaline.qrc">
             <normaloff>:/icons/actions/move_down.png</normaloff>:/icons/actions/move_down.png</iconset>
           </property>
          </widget>
@@ -181,7 +181,7 @@
            <string>Up</string>
           </property>
           <property name="icon">
-           <iconset resource="../praaline.qrc">
+           <iconset resource="../../praaline.qrc">
             <normaloff>:/icons/actions/move_up.png</normaloff>:/icons/actions/move_up.png</iconset>
           </property>
          </widget>
@@ -192,7 +192,7 @@
            <string>Down</string>
           </property>
           <property name="icon">
-           <iconset resource="../praaline.qrc">
+           <iconset resource="../../praaline.qrc">
             <normaloff>:/icons/actions/move_down.png</normaloff>:/icons/actions/move_down.png</iconset>
           </property>
          </widget>
@@ -215,7 +215,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../praaline.qrc"/>
+  <include location="../../praaline.qrc"/>
  </resources>
  <connections>
   <connection>
