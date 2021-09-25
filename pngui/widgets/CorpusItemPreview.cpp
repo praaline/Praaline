@@ -169,7 +169,7 @@ bool CorpusItemPreview::isPlayerAvailable() const
 void CorpusItemPreview::clear()
 {
     // Clear state
-    d->communication = Q_NULLPTR;
+    d->communication = nullptr;
     d->recordingsIDs.clear();
     d->annotationIDs.clear();
     d->recordingsComboBox->clear();
@@ -183,7 +183,7 @@ void CorpusItemPreview::openCommunication(CorpusCommunication *com)
 {
     if (d->communication == com) return;
     // Clear state
-    d->communication = Q_NULLPTR;
+    d->communication = nullptr;
     d->recordingsIDs.clear();
     d->annotationIDs.clear();
     d->recordingsComboBox->clear();
@@ -230,9 +230,9 @@ void CorpusItemPreview::recordingChanged(const QString &recordingID)
 
 void CorpusItemPreview::annotationChanged(const QString &annotationID)
 {
-    if (!d->communication) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
+    if (!d->communication) { d->transcriptionWidget->setAnnotation(nullptr); return; }
     CorpusAnnotation *annot = d->communication->annotation(annotationID);
-    if (!annot) { d->transcriptionWidget->setAnnotation(Q_NULLPTR); return; }
+    if (!annot) { d->transcriptionWidget->setAnnotation(nullptr); return; }
     d->transcriptionWidget->setAnnotation(annot);
 }
 

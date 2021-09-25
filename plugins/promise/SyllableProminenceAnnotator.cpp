@@ -140,12 +140,12 @@ void SyllableProminenceAnnotator::closeFeaturesTableFile()
     if (d->streamFeaturesTable) {
         d->streamFeaturesTable->flush();
         delete d->streamFeaturesTable;
-        d->streamFeaturesTable = Q_NULLPTR;
+        d->streamFeaturesTable = nullptr;
     }
     if (d->fileFeaturesTable) {
         d->fileFeaturesTable->close();
         delete d->fileFeaturesTable;
-        d->fileFeaturesTable = Q_NULLPTR;
+        d->fileFeaturesTable = nullptr;
     }
 }
 
@@ -154,12 +154,12 @@ void SyllableProminenceAnnotator::closeCRFDataFile()
     if (d->streamCRFData) {
         d->streamCRFData->flush();
         delete d->streamCRFData;
-        d->streamCRFData = Q_NULLPTR;
+        d->streamCRFData = nullptr;
     }
     if (d->fileCRFData) {
         d->fileCRFData->close();
         delete d->fileCRFData;
-        d->fileCRFData = Q_NULLPTR;
+        d->fileCRFData = nullptr;
     }
 }
 

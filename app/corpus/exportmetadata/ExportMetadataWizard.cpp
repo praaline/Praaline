@@ -81,9 +81,9 @@ ExportMetadataWizard::~ExportMetadataWizard()
 
 QStandardItemModel *ExportMetadataWizard::createAttributeModel(CorpusObject::Type type, bool checkable)
 {
-    if (d->repositoryID.isEmpty()) return Q_NULLPTR;
-    if (!d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)) return Q_NULLPTR;
-    if (!d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)->metadataStructure()) return Q_NULLPTR;
+    if (d->repositoryID.isEmpty()) return nullptr;
+    if (!d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)) return nullptr;
+    if (!d->corpusRepositoriesManager->corpusRepositoryByID(d->repositoryID)->metadataStructure()) return nullptr;
     QStandardItemModel *model = new QStandardItemModel(this);
     model->setColumnCount(1);
     int i = 0;

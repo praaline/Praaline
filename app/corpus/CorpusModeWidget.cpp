@@ -12,7 +12,7 @@ using namespace QtilitiesCore;
 using namespace QtilitiesCoreGui;
 
 // Contained widgets
-#include "corpusexplorer/CorpusExplorerWidget.h"
+#include "corpusexplorer/CorpusExplorerTreeWidget.h"
 #include "corpusexplorer/CorpusExplorerTableWidget.h"
 #include "structureeditors/MetadataStructureEditor.h"
 #include "structureeditors/AnnotationStructureEditor.h"
@@ -71,7 +71,7 @@ struct CorpusModeWidgetData {
     QAction *actionMergeCorpora;
 
     // Widgets belonging to the Corpus Mode
-    CorpusExplorerWidget *widgetCorpusExplorerTree;
+    CorpusExplorerTreeWidget *widgetCorpusExplorerTree;
     CorpusExplorerTableWidget *widgetCorpusExplorerTables;
     MetadataStructureEditor *widgetMetadataStructureEditor;
     AnnotationStructureEditor *widgetAnnotationStructureEditor;
@@ -90,7 +90,7 @@ CorpusModeWidget::CorpusModeWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    d->widgetCorpusExplorerTree = new CorpusExplorerWidget(this);
+    d->widgetCorpusExplorerTree = new CorpusExplorerTreeWidget(this);
     d->widgetCorpusExplorerTables = new CorpusExplorerTableWidget(this);
     d->widgetMetadataStructureEditor = new MetadataStructureEditor(this);
     d->widgetAnnotationStructureEditor = new AnnotationStructureEditor(this);

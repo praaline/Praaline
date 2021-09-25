@@ -92,8 +92,8 @@ PauseLengthDistributionWidget::~PauseLengthDistributionWidget()
 
 QChart *PauseLengthDistributionWidget::drawHistogram(const QString &title, QMap<QString, QList<double> > aggregates)
 {
-    if (!d->analyser) return Q_NULLPTR;
-    if (!d->analyser->corpus()) return Q_NULLPTR;
+    if (!d->analyser) return nullptr;
+    if (!d->analyser->corpus()) return nullptr;
 
     QBarSeries *series = new QBarSeries();
     QList<QBarSet *> barsets;

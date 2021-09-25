@@ -55,7 +55,7 @@ TreeNode *CorpusObserver::nodeRepository() const
 void CorpusObserver::addCorpus(QPointer<Corpus> corpus)
 {
     if (!corpus) return;
-    CorpusExplorerTreeNodeCorpus *node = d->corpusNodes.value(corpus->ID(), Q_NULLPTR);
+    CorpusExplorerTreeNodeCorpus *node = d->corpusNodes.value(corpus->ID(), nullptr);
     if (!node) {
         node = new CorpusExplorerTreeNodeCorpus(corpus->ID());
         d->corpusNodes.insert(corpus->ID(), node);

@@ -139,7 +139,6 @@ SOURCES += main.cpp \
     corpus/corpusexplorer/AddCorpusAnnotationDialog.cpp \
     corpus/corpusexplorer/AddCorpusCommunicationDialog.cpp \
     corpus/corpusexplorer/AddCorpusRecordingDialog.cpp \
-    corpus/corpusexplorer/CorpusExplorerWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerTableWidget.cpp \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.cpp \
     corpus/utilities/SplitCommunicationsDialog.cpp \
@@ -286,7 +285,6 @@ HEADERS  += \
     corpus/CorpusRepositoryPropertiesDialog.h \
     corpus/CorpusRepositoryCreateWizard.h \
     corpus/CorpusDatabaseConnectionDialog.h \
-    corpus/corpusexplorer/CorpusExplorerWidget.h \
     corpus/corpusexplorer/CorpusExplorerTableWidget.h \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.h \
     corpus/structureeditors/MetadataStructureEditor.h \
@@ -431,7 +429,6 @@ FORMS    += \
     corpus/corpusexplorer/CorpusExplorerTableWidget.ui \
     corpus/corpusexplorer/CorpusExplorerOptionsDialog.ui \
     corpus/corpusexplorer/CorpusExplorerTreeWidget.ui \
-    corpus/corpusexplorer/CorpusExplorerWidget.ui \
     corpus/structureeditors/MetadataStructureEditor.ui \
     corpus/structureeditors/AnnotationStructureEditor.ui \
     corpus/structureeditors/AddAttributeDialog.ui \

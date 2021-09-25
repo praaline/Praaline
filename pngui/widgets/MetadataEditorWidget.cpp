@@ -171,7 +171,7 @@ void MetadataEditorWidget::setEditorStyle(MetadataEditorWidgetStyle style)
     if ((d->style == style) && (d->propertyEditor)) return; // already OK
     createPropertyBrowser(style);
     // Create properties based on saved state
-    QtProperty *group = Q_NULLPTR;
+    QtProperty *group = nullptr;
     foreach (QPointer<CorpusObject> item, d->itemsSorted) {
         if (!group) group = addProperties(d->metadataStructure, item);
         else addProperties(d->metadataStructure, item, group);
@@ -350,7 +350,7 @@ void MetadataEditorWidget::rebind(QPointer<MetadataStructure> mstructure, QList<
         }
     }
     // Create properties
-    QtProperty *group = Q_NULLPTR;
+    QtProperty *group = nullptr;
     foreach (QPointer<CorpusObject> item, d->itemsSorted) {
         if (!group) group = addProperties(mstructure, item);
         else addProperties(mstructure, item, group);

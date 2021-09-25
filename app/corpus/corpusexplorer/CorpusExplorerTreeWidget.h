@@ -8,8 +8,6 @@ namespace Ui {
 class CorpusExplorerTreeWidget;
 }
 
-struct CorpusExplorerTreeWidgetData;
-
 namespace Praaline {
 namespace Core {
 class CorpusObject;
@@ -19,15 +17,29 @@ class Corpus;
 }
 }
 
+#include "pngui/observers/CorpusObserver.h"
+
+class CorpusModeWidget;
+
+struct CorpusExplorerTreeWidgetData;
+
 class CorpusExplorerTreeWidget : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit CorpusExplorerTreeWidget(QWidget *parent = nullptr);
+    explicit CorpusExplorerTreeWidget(CorpusModeWidget *widgetCorpusMode, QWidget *parent = nullptr);
     ~CorpusExplorerTreeWidget();
 
 private slots:
+    // Respond to changes in the corpus repository manager
+    void corpusRepositoryAdded(const QString &repositoryID);
+    void corpusRepositoryRemoved(const QString &repositoryID);
+    // Respond to user interaction with the corpus items tree
+    void corporaObserverWidgetSelectedObjectsChanged(QList<QObject*>);
+    void corporaObserverWidgetDoubleClickRequest(QObject*, Observer*);
+    // Save changes to metadata
+    void saveCorpusMetadata();
     // Corpora
     void createCorpus();
     void openCorpus();
@@ -40,10 +52,8 @@ private slots:
     void addParticipation();
     void removeCorpusItems();
     void relinkCorpusItem();
-    // Metadata
-    void saveMetadata();
-
     // Presentation
+    void attributesAndGroupings();
     void metadataEditorPrimaryStyleTree();
     void metadataEditorPrimaryStyleGroupBox();
     void metadataEditorPrimaryStyleButton();

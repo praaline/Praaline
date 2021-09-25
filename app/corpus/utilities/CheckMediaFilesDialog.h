@@ -10,6 +10,8 @@ namespace Ui {
 class CheckMediaFilesDialog;
 }
 
+struct CheckMediaFilesDialogData;
+
 class CheckMediaFilesDialog : public QDialog
 {
     Q_OBJECT
@@ -20,9 +22,7 @@ public:
 
 private:
     Ui::CheckMediaFilesDialog *ui;
-    Corpus *m_corpus;
-    QStandardItemModel *m_model;
-    bool m_stop;
+    CheckMediaFilesDialogData *d;
 
 private slots:
     void process();

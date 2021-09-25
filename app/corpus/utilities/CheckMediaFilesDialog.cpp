@@ -1,3 +1,6 @@
+#include <memory>
+using namespace std;
+
 #include <QDebug>
 #include <QPointer>
 #include <QFileInfo>
@@ -15,16 +18,25 @@ using namespace Praaline::Core;
 #include "PraalineMedia/SoundInfo.h"
 using namespace Praaline::Media;
 
+struct CheckMediaFilesDialogData {
+    Corpus *corpus;
+    QStandardItemModel *model;
+    bool stop;
+};
+
 CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::CheckMediaFilesDialog),
-    m_corpus(corpus), m_stop(false)
+    QDialog(parent), ui(new Ui::CheckMediaFilesDialog), d(new CheckMediaFilesDialogData)
 {
     ui->setupUi(this);
 
+    d->corpus = corpus;
+    d->stop = false;
+
+    // d->corpus->repository()->metadata()
+
     // Create list
-    m_model = new QStandardItemModel(this);
-    m_model->setColumnCount(4);
+    d->model = new QStandardItemModel(this);
+    d->model->setColumnCount(4);
     int countRecordings = 0;
     foreach (CorpusCommunication *com, corpus->communications()) {
         if (!com) continue;
@@ -35,14 +47,14 @@ CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
             items << new QStandardItem(rec->ID());
             items << new QStandardItem(rec->filename());
             items << new QStandardItem("");
-            m_model->appendRow(items);
+            d->model->appendRow(items);
             countRecordings++;
         }
     }
-    m_model->setRowCount(countRecordings);
+    d->model->setRowCount(countRecordings);
     QStringList headerLabels; headerLabels << tr("Communication ID") << tr("Recording ID") << tr("Filename") << tr("Status");
-    m_model->setHorizontalHeaderLabels(headerLabels);
-    ui->treeviewRecordings->setModel(m_model);
+    d->model->setHorizontalHeaderLabels(headerLabels);
+    ui->treeviewRecordings->setModel(d->model);
     for (int i = 0; i < 3; ++i) ui->treeviewRecordings->resizeColumnToContents(i);
     connect(this, &QDialog::rejected, this, &CheckMediaFilesDialog::stop);
     connect(ui->commandClose, &QAbstractButton::clicked, this, &QDialog::reject);
@@ -52,42 +64,43 @@ CheckMediaFilesDialog::CheckMediaFilesDialog(Corpus *corpus, QWidget *parent) :
 CheckMediaFilesDialog::~CheckMediaFilesDialog()
 {
     delete ui;
+    delete d;
 }
 
 void CheckMediaFilesDialog::stop()
 {
-    m_stop = true;
+    d->stop = true;
 }
 
 void CheckMediaFilesDialog::process()
 {
-    int numberOfRecordings = m_model->rowCount();
+    int numberOfRecordings = d->model->rowCount();
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(numberOfRecordings);
     ui->progressBar->setValue(0);
-    m_stop = false;
+    d->stop = false;
     for (int i = 0; i < numberOfRecordings; ++i) {
         if (i % 10 == 0) QApplication::processEvents();
         // this is used to break the loop when the user closes the dialog
-        if (m_stop) return;
+        if (d->stop) return;
 
-        QString communicationID = m_model->data(m_model->index(i, 0)).toString();
-        QString recordingID = m_model->data(m_model->index(i, 1)).toString();
-        QString filename = m_model->data(m_model->index(i, 2)).toString();
-        CorpusCommunication *com = m_corpus->communication(communicationID);
+        QString communicationID = d->model->data(d->model->index(i, 0)).toString();
+        QString recordingID = d->model->data(d->model->index(i, 1)).toString();
+        QString filename = d->model->data(d->model->index(i, 2)).toString();
+        CorpusCommunication *com = d->corpus->communication(communicationID);
         if (!com) {
-            m_model->setItem(i, 3, new QStandardItem(tr("Communication deleted")));
+            d->model->setItem(i, 3, new QStandardItem(tr("Communication deleted")));
             continue;
         }
         CorpusRecording *rec = com->recording(recordingID);
         if (!rec) {
-            m_model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
+            d->model->setItem(i, 3, new QStandardItem(tr("Recording deleted")));
             continue;
         }
         SoundInfo info;
         bool ok = SoundInfo::getSoundInfo(rec->filePath(), info);
         if (!ok) {
-            m_model->setItem(i, 3, new QStandardItem(tr("File not found!")));
+            d->model->setItem(i, 3, new QStandardItem(tr("File not found!")));
             continue;
         }
         else {
@@ -102,9 +115,9 @@ void CheckMediaFilesDialog::process()
             rec->setFileSize(info.filesize);
             rec->setChecksumMD5(info.checksumMD5);
             qDebug() << rec->duration().toDouble();
-            m_model->setItem(i, 3, new QStandardItem(tr("UPDATED")));
+            d->model->setItem(i, 3, new QStandardItem(tr("UPDATED")));
             if (rec->checksumMD5() == info.checksumMD5) {
-                m_model->setItem(i, 3, new QStandardItem(tr("OK")));
+                d->model->setItem(i, 3, new QStandardItem(tr("OK")));
             }
         }
         ui->progressBar->setValue(i);
