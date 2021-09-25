@@ -3,8 +3,7 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
-#include "PraalineCore/Corpus/Corpus.h"
-using namespace Praaline::Core;
+#include "PraalineCore/Datastore/CorpusRepository.h"
 
 namespace Ui {
 class CheckMediaFilesDialog;
@@ -17,7 +16,7 @@ class CheckMediaFilesDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CheckMediaFilesDialog(Corpus *corpus, QWidget *parent = nullptr);
+    explicit CheckMediaFilesDialog(Praaline::Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~CheckMediaFilesDialog();
 
 private:

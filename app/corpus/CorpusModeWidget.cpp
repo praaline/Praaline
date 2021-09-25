@@ -543,8 +543,8 @@ void CorpusModeWidget::exportMetadata()
 void CorpusModeWidget::checkMediaFiles()
 {
     if (!checkForActiveCorpusRepository()) return;
-    // unique_ptr<CheckMediaFilesDialog> dialog(new CheckMediaFilesDialog(d->activeCorpus, this));
-    // dialog->exec();
+    unique_ptr<CheckMediaFilesDialog> dialog(new CheckMediaFilesDialog(d->corpusRepositoriesManager->activeCorpusRepository(), this));
+    dialog->exec();
 }
 
 void CorpusModeWidget::createAnnotationsFromRecordings()
