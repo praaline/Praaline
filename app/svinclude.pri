@@ -80,5 +80,5 @@ PRE_TARGETDEPS += ../svapp/$${COMPONENTSPATH}/libsvapp.a \
 PRE_TARGETDEPS += ../svapp/$${COMPONENTSPATH}/libsvapp.a \
                   ../svgui/$${COMPONENTSPATH}/libsvgui.a \
                   ../svcore/$${COMPONENTSPATH}/libsvcore.a \
-                  ../dataquay/libdataquay.a
+                  ../dataquay/release/libdataquay.a
 }
