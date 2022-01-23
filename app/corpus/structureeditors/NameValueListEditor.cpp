@@ -13,9 +13,11 @@
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "PraalineCore/Structure/NameValueList.h"
 #include "PraalineCore/Datastore/NameValueListDatastore.h"
+#include "PraalineCore/Serialisers/XML/XMLSerialiserNameValueList.h"
 using namespace Praaline::Core;
 
 #include "pngui/model/NameValueListTableModel.h"
@@ -220,7 +222,7 @@ void NameValueListEditor::newList()
     newList->setDatatype(dt);
     // Update database
     if (!d->datastore->createNameValueList(newList)) {
-        QMessageBox::warning(this, tr("Error deleting"),
+        QMessageBox::warning(this, tr("Error creating name-value list"),
                              tr("The name-value list was not created due to a database error."));
         return;
     }
@@ -260,11 +262,58 @@ void NameValueListEditor::deleteList()
 void NameValueListEditor::importLists()
 {
     if (!d->datastore) return;
+    QFileDialog::Options options;
+    QString selectedFilter;
+    QString filename = QFileDialog::getOpenFileName(this, tr("Import Name-Value Lists"), "",
+                                                    tr("XML File (*.xml);;All Files (*)"),
+                                                    &selectedFilter, options);
+    if (filename.isEmpty()) return;
+    QList<NameValueList *> importedNVLs;
+    /*if (filename.endsWith(".json", Qt::CaseInsensitive)) {
+        structure = JSONSerialiserMetadataStructure::read(filename);
+    } else */ {
+        bool result = XMLSerialiserNameValueList::loadNameValueLists(importedNVLs, filename);
+        if (!result) {
+            QMessageBox::warning(this, tr("Error Reading File"),
+                                 tr("Error while reading name-value lists in file: %1").arg(filename));
+            return;
+        }
+    }
+    // Import the NVLs in the datastore
+    QStringList errors;
+    for (NameValueList *importedNVL : qAsConst(importedNVLs)) {
+        if (!d->datastore->createNameValueList(importedNVL)) {
+            errors << importedNVL->ID();
+            delete importedNVL;
+        }
+    }
+    if (!errors.isEmpty()) {
+        QMessageBox::warning(this, tr("Error creating name-value list"),
+                             tr("The following name-value lists could not be created:\n%1\nMaybe name-value lists with the same name exist already?")
+                             .arg(errors.join(", ")));
+    }
+    // Update combobox and select the first NVL
+    d->comboboxLists->clear();
+    QStringList listIDs = d->datastore->getAllNameValueListIDs();
+    d->comboboxLists->addItems(listIDs);
 }
 
 void NameValueListEditor::exportLists()
 {
     if (!d->datastore) return;
+    if (!d->currentList) return;
+    QFileDialog::Options options;
+    QString selectedFilter;
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export All Name-Value Lists"), "",
+                                                    tr("XML File (*.xml);;All Files (*)"),
+                                                    &selectedFilter, options);
+    if (filename.isEmpty()) return;
+    /* if (filename.endsWith("json", Qt::CaseInsensitive)) {
+        JSONSerialiserMetadataStructure::write(repository->metadataStructure(), filename);
+    } else*/ {
+        if (!filename.endsWith(".xml", Qt::CaseInsensitive)) filename = filename.append(".xml");
+        XMLSerialiserNameValueList::saveNameValueLists(QList<NameValueList *>() << d->currentList, filename);
+    }
 }
 
 void NameValueListEditor::addItem()
