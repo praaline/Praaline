@@ -1,19 +1,23 @@
 #include <QFileDialog>
+
 #include "PraalineCore/Corpus/Corpus.h"
+#include "PraalineCore/Interfaces/ImportAnnotations.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/FileDatastore.h"
+using namespace Praaline::Core;
+
 #include "ImportCorpusItemsWizardSelectionPage.h"
 #include "ui_ImportCorpusItemsWizardSelectionPage.h"
 
 struct ImportCorpusItemsWizardSelectionPageData {
-    ImportCorpusItemsWizardSelectionPageData(QPointer<Corpus> corpus,
+    ImportCorpusItemsWizardSelectionPageData(CorpusRepository *repository,
                                              QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
                                              QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations) :
-        corpus(corpus), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
+        repository(repository), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
         abort(false)
     {}
 
-    QPointer<Corpus> corpus;
+    CorpusRepository *repository;
     QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings;
     QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations;
     QPointer<QStandardItemModel> modelFormatsRecording;
@@ -22,20 +26,20 @@ struct ImportCorpusItemsWizardSelectionPageData {
 };
 
 ImportCorpusItemsWizardSelectionPage::ImportCorpusItemsWizardSelectionPage(
-        QPointer<Corpus> corpus,
+        CorpusRepository *repository,
         QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
         QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardSelectionPage),
-    d(new ImportCorpusItemsWizardSelectionPageData(corpus, candidateRecordings, candidateAnnotations))
+    d(new ImportCorpusItemsWizardSelectionPageData(repository, candidateRecordings, candidateAnnotations))
 {
     ui->setupUi(this);
     connect(ui->commandSelectFolder, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardSelectionPage::selectFolder);
     connect(ui->commandAbort, &QAbstractButton::clicked, this, &ImportCorpusItemsWizardSelectionPage::abortProcess);
 
     // Set path
-    if (corpus && corpus->repository() && corpus->repository()->files())
-        ui->editFolderName->setText(corpus->repository()->files()->basePath());
+    if (repository && repository->files())
+        ui->editFolderName->setText(repository->files()->basePath());
 
     // Check lists for file formats
     d->modelFormatsRecording = new QStandardItemModel(this);
@@ -214,7 +218,7 @@ bool ImportCorpusItemsWizardSelectionPage::processFile(const QFileInfo &info, bo
     if (isRecording) {
         CorpusRecording *rec = new CorpusRecording(baseFilename);
         rec->setName(baseFilename);
-        rec->setFilename(d->corpus->repository()->files()->getRelativeToBasePath(info.canonicalFilePath()));
+        rec->setFilename(d->repository->files()->getRelativeToBasePath(info.canonicalFilePath()));
         d->candidateRecordings.insert(QPair<QString, QString>(communicationID, baseFilename), rec);
         ui->texteditMessages->appendPlainText(QString("MEDIA RECORDING %1 >> Communication ID: %2, Recording ID: %3")
                                               .arg(info.canonicalFilePath(), communicationID, baseFilename));

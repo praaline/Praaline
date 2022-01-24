@@ -19,6 +19,7 @@ using namespace QtilitiesCoreGui;
 
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/CorpusRepositoryDefinition.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
 #include "PraalineCore/Datastore/FileDatastore.h"
 using namespace Praaline::Core;
 
@@ -497,6 +498,9 @@ void CorpusModeWidget::saveCorpusRepositoryAs()
 void CorpusModeWidget::addItemsFromFolder()
 {
     if (!checkForActiveCorpusRepository()) return;
+    unique_ptr<ImportCorpusItemsWizard > wizard(new ImportCorpusItemsWizard (d->corpusRepositoriesManager->activeCorpusRepository(), this));
+    wizard->exec();
+
     // d->corporaTopLevelNode->startTreeProcessingCycle();
     // FIX ME ImportCorpusItemsWizard *wizard = new ImportCorpusItemsWizard(d->activeCorpus, this);
     // wizard->exec(); // MODAL!
@@ -550,9 +554,11 @@ void CorpusModeWidget::checkMediaFiles()
 void CorpusModeWidget::createAnnotationsFromRecordings()
 {
     if (!checkForActiveCorpusRepository()) return;
-    // d->corporaTopLevelNode->startTreeProcessingCycle();
-    /*
-    foreach (CorpusCommunication *com, d->activeCorpus->communications()) {
+    // Check every Communication in the repository. If it contains a Recording without a corresponding Annotation,
+    // create an Annotation (with the same ID as the Recording).
+    QList<CorpusCommunication *> communications = d->corpusRepositoriesManager->activeCorpusRepository()->metadata()
+            ->getCommunications(MetadataDatastore::Selection()); // Get all Communications in the repository
+    foreach (CorpusCommunication *com, communications) {
         if (!com) continue;
         if (com->hasAnnotations()) continue;
         foreach (CorpusRecording *rec, com->recordings()) {
@@ -561,13 +567,15 @@ void CorpusModeWidget::createAnnotationsFromRecordings()
             com->addAnnotation(annot);
         }
     }
-    */
-    // d->corporaTopLevelNode->endTreeProcessingCycle();
 }
 
 void CorpusModeWidget::createSpeakersFromAnnotations()
 {
     if (!checkForActiveCorpusRepository()) return;
+
+    QList<CorpusCommunication *> communications = d->corpusRepositoriesManager->activeCorpusRepository()->metadata()
+            ->getCommunications(MetadataDatastore::Selection()); // Get all Communications in the repository
+
     // d->corporaTopLevelNode->startTreeProcessingCycle();
     // for each corpus
     /*

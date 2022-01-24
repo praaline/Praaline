@@ -624,6 +624,7 @@ void CorpusExplorerTreeWidget::addCommunication()
     }
     if (!d->activeCorpus->repository()) return;
     AddCorpusCommunicationDialog *dialog = new AddCorpusCommunicationDialog(this);
+
     dialog->setCorpusID(d->activeCorpus->corpusID());
     dialog->exec();
     if (dialog->result() == QDialog::Rejected) return;

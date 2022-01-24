@@ -177,9 +177,32 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     // ********************************************************************************************
     // Metadata
     // ********************************************************************************************
+    // ********************************************************************************************
+    // XML structure for metadata should be as follows
+    // <communications>
+    //     <communication>
+    //         <recordings>  <recording />  </recordings>
+    //         <annotations> <annotation /> </annotations>
+    //     </communication>
+    // </communications>
+    // <speakers>
+    //     <speaker />
+    // </speakers>
+    // <participations>
+    //     <participation />
+    // </participations>
+    // <relations>
+    //     <speaker_relations relationID="proximity">
+    //         <speaker_relation />
+    //     </speaker_relations>
+    // </relations>
+    // ********************************************************************************************
+
 
     xml.writeStartElement("metadata");
 
+    // Communications: this script outputs only one communication, but there could have been more
+    xml.writeStartElement("communications");
     // Communication
     xml.writeStartElement("communication");
     xml.writeAttribute("id", com->ID());
@@ -189,7 +212,8 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
             writeAttributeToXML(xml, attribute, com->property(attribute->ID()));
         }
     }
-
+    // Recordings section
+    xml.writeStartElement("recordings");
     // Recording
     xml.writeStartElement("recording");
     xml.writeAttribute("id", rec->ID());
@@ -203,7 +227,10 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
         }
     }
     xml.writeEndElement(); // Recording
-
+    // End Recordings section
+    xml.writeEndElement(); // Recordings
+    // Annotations section
+    xml.writeStartElement("annotations");
     // Annotation
     xml.writeStartElement("annotation");
     xml.writeAttribute("id", annot->ID());
@@ -215,19 +242,25 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
         }
     }
     xml.writeEndElement(); // Annotation
+    // End Annotations section
+    xml.writeEndElement(); // Annotations
+    // End Communication
+    xml.writeEndElement(); // Communication
+    // End Communications section
+    xml.writeEndElement(); // Communications
 
-    // Speakers data + Participation data
-    xml.writeStartElement("speaker_participations");
+    // Speakers Section: this script outputs the data for all speakers participating in this Communication
+    xml.writeStartElement("speakers");
     foreach (QString speakerID, tiersAll.keys()) {
         CorpusSpeaker *spk = com->corpus()->speaker(speakerID);
         if (!spk) {
-            xml.writeStartElement("speaker_participation");
+            xml.writeStartElement("speaker");
             xml.writeAttribute("id", speakerID);
             xml.writeAttribute("name", speakerID);
-            xml.writeEndElement();
+            xml.writeEndElement(); // speaker
             continue;
         }
-        xml.writeStartElement("speaker_participation");
+        xml.writeStartElement("speaker");
         xml.writeAttribute("id", spk->ID());
         xml.writeAttribute("name", spk->name());
         foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Speaker)) {
@@ -235,26 +268,49 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
                 writeAttributeToXML(xml, attribute, spk->property(attribute->ID()));
             }
         }
-        CorpusParticipation *participation = com->corpus()->participation(com->ID(), speakerID);
-        if (participation) {
-            xml.writeAttribute("role", participation->role());
-            foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Participation)) {
-                foreach (MetadataStructureAttribute *attribute, section->attributes()) {
-                    writeAttributeToXML(xml, attribute, participation->property(attribute->ID()));
-                }
-            }
-        }
         xml.writeEndElement(); // speaker
     }
-    xml.writeEndElement(); // Speakers and Participations
+    xml.writeEndElement(); // Speakers section
+
+    // Participations Section: this script outputs the data for all speakers participating in this Communication
+    xml.writeStartElement("participations");
+    foreach (QString speakerID, tiersAll.keys()) {
+        CorpusParticipation *participation = com->corpus()->participation(com->ID(), speakerID);
+        if (!participation) {
+            xml.writeStartElement("participation");
+            xml.writeAttribute("communicationID", com->ID());
+            xml.writeAttribute("speakerID", speakerID);
+            xml.writeEndElement(); // participation
+            continue;
+        }
+        xml.writeStartElement("participation");
+        xml.writeAttribute("communicationID", com->ID());
+        xml.writeAttribute("speakerID", speakerID);
+        xml.writeAttribute("role", participation->role());
+        foreach (MetadataStructureSection *section, com->repository()->metadataStructure()->sections(CorpusObject::Type_Participation)) {
+            foreach (MetadataStructureAttribute *attribute, section->attributes()) {
+                writeAttributeToXML(xml, attribute, participation->property(attribute->ID()));
+            }
+        }
+        xml.writeEndElement(); // participation
+    }
+    xml.writeEndElement(); // Participations section
 
     // Speaker relations
+    xml.writeStartElement("relations");
     xml.writeStartElement("speaker_relations");
-    xml.writeStartElement("proximity");
-    xml.writeEndElement(); // proximity relation
-    xml.writeEndElement(); // Speaker relations
-
-    xml.writeEndElement(); // Communication
+    xml.writeAttribute("relationID", "proximity");
+    // for each
+    xml.writeStartElement("speaker_relation");
+    xml.writeAttribute("communicationID", com->ID());
+    xml.writeAttribute("speakerID_A", "");
+    xml.writeAttribute("speakerID_B", "");
+    xml.writeAttribute("value", "");
+    xml.writeAttribute("notes", "");
+    xml.writeEndElement(); // speaker_relation
+    // end for each
+    xml.writeEndElement(); // speaker relations: proximity
+    xml.writeEndElement(); // relations
 
     // End of metadata
     xml.writeEndElement();

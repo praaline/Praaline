@@ -9,9 +9,13 @@
 #include <QFileInfo>
 #include <QStandardItemModel>
 
-#include "PraalineCore/Corpus/Corpus.h"
-#include "PraalineCore/Interfaces/ImportAnnotations.h"
-using namespace Praaline::Core;
+namespace Praaline {
+namespace Core {
+class CorpusRepository;
+class CorpusRecording;
+class CorpusAnnotation;
+}
+}
 
 namespace Ui {
 class ImportCorpusItemsWizardSelectionPage;
@@ -24,9 +28,9 @@ class ImportCorpusItemsWizardSelectionPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardSelectionPage(QPointer<Corpus> corpus,
-                                                  QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
-                                                  QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
+    explicit ImportCorpusItemsWizardSelectionPage(Praaline::Core::CorpusRepository *repository,
+                                                  QMap<QPair<QString, QString>, Praaline::Core::CorpusRecording *> &candidateRecordings,
+                                                  QMap<QPair<QString, QString>, Praaline::Core::CorpusAnnotation *> &candidateAnnotations,
                                                   QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardSelectionPage();
 

@@ -16,11 +16,9 @@ using namespace Praaline::Core;
 #include "CorpusRepositoriesManager.h"
 
 struct CorpusRepositoriesManagerData {
-    QMap<QString, QPointer<CorpusRepository> > repositories;
+    QMap<QString, QPointer<CorpusRepository>> repositories;
     QString activeCorpusRepositoryID;
-    QMap<QString, QPointer<Corpus> > corpora;
 };
-
 
 
 CorpusRepositoriesManager::CorpusRepositoriesManager(QObject *parent) :
@@ -33,29 +31,23 @@ CorpusRepositoriesManager::~CorpusRepositoriesManager()
     delete d;
 }
 
+// ==========================================================================================================================
 // Corpus Repositories
 // ==========================================================================================================================
 
+// List all the IDs of CorpusRepositories that have been added to the manager.
 QStringList CorpusRepositoriesManager::listCorpusRepositoryIDs() const
 {
     return d->repositories.keys();
 }
 
-QPointer<CorpusRepository> CorpusRepositoriesManager::activeCorpusRepository()
-{
-    return d->repositories.value(d->activeCorpusRepositoryID, nullptr);
-}
-
-QPointer<CorpusRepository> CorpusRepositoriesManager::corpusRepositoryByID(const QString &repositoryID)
+// Find a CorpusRepository in the manager by ID. Returns null if not found.
+QPointer<CorpusRepository> CorpusRepositoriesManager::corpusRepositoryByID(const QString &repositoryID) const
 {
     return d->repositories.value(repositoryID, nullptr);
 }
 
-QString CorpusRepositoriesManager::activeCorpusRepositoryID() const
-{
-    return d->activeCorpusRepositoryID;
-}
-
+// Add a CorpusRepository to the manager. Called when opening/connecting to a repository.
 void CorpusRepositoriesManager::addCorpusRepository(CorpusRepository *repository)
 {
     if (!repository) return;
@@ -63,21 +55,13 @@ void CorpusRepositoriesManager::addCorpusRepository(CorpusRepository *repository
     emit corpusRepositoryAdded(repository->ID());
 }
 
+// Remove a CorpusRepository from the manager. Called when closing/disconnecting from the repository.
 void CorpusRepositoriesManager::removeCorpusRepository(const QString &repositoryID)
 {
     if (d->repositories.contains(repositoryID)) {
         d->repositories.remove(repositoryID);
-        // Delete and remove open corpora
-        foreach (QPointer<Corpus> corpus, d->corpora) {
-            if (!corpus) continue;
-            if (!corpus->repository()) continue;
-            if (corpus->repository()->ID() == repositoryID) {
-                d->corpora.remove(corpus->ID());
-                delete corpus;
-            }
-        }
         emit corpusRepositoryRemoved(repositoryID);
-        // Select next repository
+        // Select the next repository and set it active.
         if (d->activeCorpusRepositoryID == repositoryID) {
             if (d->repositories.isEmpty())
                 d->activeCorpusRepositoryID = "";
@@ -88,6 +72,19 @@ void CorpusRepositoriesManager::removeCorpusRepository(const QString &repository
     }
 }
 
+// Return the active CorpusRepository.
+QPointer<CorpusRepository> CorpusRepositoriesManager::activeCorpusRepository() const
+{
+    return d->repositories.value(d->activeCorpusRepositoryID, nullptr);
+}
+
+// Return the active CorpusRepository's ID.
+QString CorpusRepositoriesManager::activeCorpusRepositoryID() const
+{
+    return d->activeCorpusRepositoryID;
+}
+
+// Change the active CorpusRepository
 void CorpusRepositoriesManager::setActiveCorpusRepository(const QString &repositoryID)
 {
     if (d->activeCorpusRepositoryID == repositoryID) return;
@@ -96,6 +93,18 @@ void CorpusRepositoriesManager::setActiveCorpusRepository(const QString &reposit
     emit activeCorpusRepositoryChanged(repositoryID);
 }
 
+bool CorpusRepositoriesManager::isRepositoryDefinitionAlreadyOpen(const QString &filenameDefinition)
+{
+    foreach (QPointer<CorpusRepository> repository, d->repositories) {
+        if (repository->definition().filenameDefinition == filenameDefinition)
+            return true;
+    }
+    return false;
+}
+
+// ==========================================================================================================================
+// Observers
+// ==========================================================================================================================
 CorpusObserver *CorpusRepositoriesManager::corpusObserverForRepository(const QString &repositoryID)
 {
     QList<QObject *> listCorpusObservers;
@@ -114,97 +123,3 @@ CorpusObserver *CorpusRepositoriesManager::activeCorpusObserver()
     return corpusObserverForRepository(d->activeCorpusRepositoryID);
 }
 
-bool CorpusRepositoriesManager::isRepositoryDefinitionAlreadyOpen(const QString &filenameDefinition)
-{
-    foreach (QPointer<CorpusRepository> repository, d->repositories) {
-        if (repository->definition().filenameDefinition == filenameDefinition)
-            return true;
-    }
-    return false;
-}
-
-QStringList CorpusRepositoriesManager::listAvailableCorpusIDs(const QString repositoryID)
-{
-    QStringList list;
-    foreach (QPointer<CorpusRepository> repository, d->repositories) {
-        if (!repository) continue;
-        if ((!repositoryID.isEmpty()) && (repository->ID() != repositoryID)) continue;
-        foreach (CorpusObjectInfo item, repository->listCorporaInfo()) {
-            list << item.attribute("corpusID").toString();
-        }
-    }
-    return list;
-}
-
-QStringList CorpusRepositoriesManager::listOpenCorpusIDs(const QString &repositoryID)
-{
-    QStringList list;
-    foreach (QPointer<Corpus> corpus, d->corpora) {
-        if (!corpus) continue;
-        if (!corpus->repository()) continue;
-        if (corpus->repository()->ID() == repositoryID || repositoryID.isEmpty())
-            list << corpus->ID();
-    }
-    return list;
-}
-
-QPointer<Corpus> CorpusRepositoriesManager::createCorpus(const QString &corpusID, const QString &repositoryID)
-{
-    QString repID = (repositoryID.isEmpty()) ? activeCorpusRepositoryID() : repositoryID;
-    QPointer<CorpusRepository> repository = corpusRepositoryByID(repID);
-    if (!repository) return nullptr;
-    QPointer<Corpus> corpus = new Corpus(corpusID, repository);
-    CorpusObserver *obs = corpusObserverForRepository(repID);
-    if (obs) obs->addCorpus(corpus);
-    d->corpora.insert(corpusID, corpus);
-    qDebug() << "Created corpus" << corpus;
-    return corpus;
-}
-
-QPointer<Corpus> CorpusRepositoriesManager::openCorpus(const QString &corpusID, const QString &repositoryID)
-{
-    QString repID = (repositoryID.isEmpty()) ? activeCorpusRepositoryID() : repositoryID;
-    QPointer<CorpusRepository> repository = corpusRepositoryByID(repID);
-    if (!repository) return nullptr;
-    if (!repository->metadata()) return nullptr;
-    QPointer<Corpus> corpus = repository->metadata()->getCorpus(corpusID);
-    CorpusObserver *obs = corpusObserverForRepository(repID);
-    if (obs) {
-        obs->addCorpus(corpus);
-    }
-    d->corpora.insert(corpusID, corpus);
-    return corpus;
-}
-
-QPointer<Corpus> CorpusRepositoriesManager::getCorpusAlreadyOpen(const QString &corpusID)
-{
-    return d->corpora.value(corpusID, nullptr);
-}
-
-QList<QPointer<Corpus> > CorpusRepositoriesManager::listOpenCorpora() const
-{
-    return d->corpora.values();
-}
-
-bool CorpusRepositoriesManager::saveCorpusMetadata(const QString &corpusID)
-{
-    bool result(true);
-    foreach (QString id, d->corpora.keys()) {
-        if ((!corpusID.isEmpty()) && (corpusID != id)) continue;
-        QPointer<Corpus> corpus = d->corpora.value(id);
-        if (corpus) result = result && corpus->save();
-    }
-    return result;
-}
-
-bool CorpusRepositoriesManager::removeCorpus(const QString &corpusID)
-{
-    QPointer<Corpus> corpus = d->corpora.value(corpusID, nullptr);
-    if (!corpus) return false;
-    QString repositoryID = (corpus->repository()) ? corpus->repository()->ID() : "";
-    d->corpora.remove(corpusID);
-    delete corpus;
-    CorpusObserver *obs = corpusObserverForRepository(repositoryID);
-    if (obs) obs->removeCorpus(corpusID);
-    return true;
-}

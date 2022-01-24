@@ -24,32 +24,18 @@ public:
 
     // Corpus Repositories
     // ==========================================================================================================================
+    QStringList listCorpusRepositoryIDs() const;
+    QPointer<Praaline::Core::CorpusRepository> corpusRepositoryByID(const QString &repositoryID) const;
     void addCorpusRepository(Praaline::Core::CorpusRepository *repository);
     void removeCorpusRepository(const QString &repositoryID);
 
-    QStringList listCorpusRepositoryIDs() const;
-
+    QPointer<Praaline::Core::CorpusRepository> activeCorpusRepository() const;
     QString activeCorpusRepositoryID() const;
     void setActiveCorpusRepository(const QString &repositoryID);
 
-    QPointer<Praaline::Core::CorpusRepository> activeCorpusRepository();
-    QPointer<Praaline::Core::CorpusRepository> corpusRepositoryByID(const QString &repositoryID);
-
     bool isRepositoryDefinitionAlreadyOpen(const QString &filenameRepositoryDefinition);
 
-    // Corpora
-    // ==========================================================================================================================
-    QStringList listAvailableCorpusIDs(const QString repositoryID = QString());
-    QStringList listOpenCorpusIDs(const QString &repositoryID = QString());
-
-    QPointer<Praaline::Core::Corpus> createCorpus(const QString &corpusID, const QString &repositoryID = QString());
-    QPointer<Praaline::Core::Corpus> openCorpus(const QString &corpusID, const QString &repositoryID = QString());
-    QList<QPointer<Praaline::Core::Corpus> > listOpenCorpora() const;
-    QPointer<Praaline::Core::Corpus> getCorpusAlreadyOpen(const QString &corpusID);
-    bool saveCorpusMetadata(const QString &corpusID = QString());
-    bool removeCorpus(const QString &corpusID);
-
-    // Observer
+    // Observers
     // ==========================================================================================================================
     CorpusObserver *corpusObserverForRepository(const QString &repositoryID);
     CorpusObserver *activeCorpusObserver();

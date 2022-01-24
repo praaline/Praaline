@@ -7,9 +7,11 @@
 #include <QMultiHash>
 #include <QStandardItemModel>
 
-#include "PraalineCore/Corpus/Corpus.h"
-#include "PraalineCore/Interfaces/ImportAnnotations.h"
-using namespace Praaline::Core;
+namespace Praaline {
+namespace Core {
+class CorpusRepository;
+}
+}
 
 #include "ImportCorpusItemsWizardAnalysePage.h"
 
@@ -24,7 +26,7 @@ class ImportCorpusItemsWizardCorrespondancesPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardCorrespondancesPage(QPointer<Corpus> corpus,
+    explicit ImportCorpusItemsWizardCorrespondancesPage(Praaline::Core::CorpusRepository *repository,
                                                         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                                         QSet<QString> &tierNamesCommon,
                                                         QWidget *parent = nullptr);

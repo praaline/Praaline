@@ -5,28 +5,33 @@
 #include "ImportCorpusItemsWizardFinalPage.h"
 #include "ui_ImportCorpusItemsWizardFinalPage.h"
 
+#include "PraalineCore/Corpus/Corpus.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
-#include "PraalineCore/Datastore/FileDatastore.h"
+#include "PraalineCore/Datastore/MetadataDatastore.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
+#include "PraalineCore/Datastore/FileDatastore.h"
 #include "PraalineCore/Structure/AnnotationStructure.h"
+#include "PraalineCore/Interfaces/ImportAnnotations.h"
 
 #include "PraalineCore/Interfaces/Praat/PraatTextGrid.h"
 #include "PraalineCore/Interfaces/Transcriber/TranscriberAnnotationGraph.h"
 #include "PraalineCore/Interfaces/Subtitles/SubtitlesFile.h"
 #include "PraalineCore/Interfaces/Phon/PhonTranscription.h"
 
+using namespace Praaline::Core;
+
 
 struct ImportCorpusItemsWizardFinalPageData {
-    ImportCorpusItemsWizardFinalPageData(QPointer<Corpus> corpus,
+    ImportCorpusItemsWizardFinalPageData(CorpusRepository *repository,
                                          QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
                                          QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
                                          QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
                                          QSet<QString> &tierNamesCommon) :
-        corpus(corpus), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
+        repository(repository), candidateRecordings(candidateRecordings), candidateAnnotations(candidateAnnotations),
         tierCorrespondances(tierCorrespondances), tierNamesCommon(tierNamesCommon)
     {}
 
-    QPointer<Corpus> corpus;
+    CorpusRepository *repository;
     QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings;
     QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations;
     QMultiHash<QString, TierCorrespondance> &tierCorrespondances;
@@ -34,14 +39,14 @@ struct ImportCorpusItemsWizardFinalPageData {
 };
 
 ImportCorpusItemsWizardFinalPage::ImportCorpusItemsWizardFinalPage(
-        QPointer<Corpus> corpus,
+        CorpusRepository *repository,
         QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
         QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
         QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
         QSet<QString> &tierNamesCommon,
         QWidget *parent) :
     QWizardPage(parent), ui(new Ui::ImportCorpusItemsWizardFinalPage),
-    d(new ImportCorpusItemsWizardFinalPageData (corpus, candidateRecordings, candidateAnnotations,
+    d(new ImportCorpusItemsWizardFinalPageData (repository, candidateRecordings, candidateAnnotations,
                                                 tierCorrespondances, tierNamesCommon))
 {
     ui->setupUi(this);
@@ -63,24 +68,27 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
     QMap<QPair<QString, QString>, CorpusRecording *>::iterator i;
     QMap<QPair<QString, QString>, CorpusAnnotation *>::iterator j;
 
-    if (!d->corpus) return false;
-    if (!d->corpus->repository()) return false;
-    if (!d->corpus->repository()->files()) return false;
+    if (!d->repository) return false;
+    if (!d->repository->files()) return false;
+
+    // FIX ME!!!
+    CorpusRepository *repository = d->repository;
+    Corpus *corpus = d->repository->metadata()->getCorpus(d->repository->ID());
 
     ui->texteditMessagesFiles->clear();
     // Corpus media directory to relativise media file paths
-    QDir dirMedia(d->corpus->repository()->files()->basePath());
+    QDir dirMedia(repository->files()->basePath());
     // Add recordings
     int counter = 0;
     for (i = d->candidateRecordings.begin(); i != d->candidateRecordings.end(); ++i) {
         QString communicationID = i.key().first;
         CorpusRecording *rec = i.value();
         if (!rec) continue;
-        CorpusCommunication *com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = corpus->communication(communicationID);
         if (!com) {
             com = new CorpusCommunication(communicationID);
             com->setName(communicationID);
-            d->corpus->addCommunication(com);
+            corpus->addCommunication(com);
             ui->texteditMessagesFiles->appendPlainText(QString(tr("Communication %1 added.")).arg(com->ID()));
         }
         if (com->hasRecording(rec->ID())) {
@@ -99,11 +107,11 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         QString communicationID = j.key().first;
         CorpusAnnotation *annot = j.value();
         if (!annot) continue;
-        CorpusCommunication *com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = corpus->communication(communicationID);
         if (!com) {
             com = new CorpusCommunication(communicationID);
             com->setName(communicationID);
-            d->corpus->addCommunication(com);
+            corpus->addCommunication(com);
         }
         if (com->hasAnnotation(annot->ID())) {
             ui->texteditMessagesFiles->appendPlainText(QString(tr("Annotation %1 already exists, merging annotations but not metadata.")).arg(annot->ID()));
@@ -120,7 +128,7 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         QString communicationID = j.key().first;
         CorpusAnnotation *annot = j.value();
         if (!annot) continue;
-        CorpusCommunication *com = d->corpus->communication(communicationID);
+        CorpusCommunication *com = corpus->communication(communicationID);
         if (!com) continue;
         QList<TierCorrespondance> correspondances;
         // First: level correspondances then attribute correspondances
@@ -147,7 +155,7 @@ bool ImportCorpusItemsWizardFinalPage::validatePage()
         QApplication::processEvents();
     }
     // Save the corpus metadata, as they have been modified (this step is essential to keep coherence with the annotations).
-    return d->corpus->save();
+    return corpus->save();
 }
 
 // ==============================================================================================================================
@@ -158,9 +166,12 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(CorpusCommunication *co
                                                          QList<TierCorrespondance> &correspondances)
 {
     Q_UNUSED(correspondances)
-    if (!d->corpus) return;
-    if (!d->corpus->repository()) return;
-    if (!d->corpus->repository()->annotations()) return;
+    if (!d->repository) return;
+    if (!d->repository->annotations()) return;
+
+    // FIX ME!!!
+    CorpusRepository *repository = d->repository;
+    Corpus *corpus = d->repository->metadata()->getCorpus(d->repository->ID());
 
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
@@ -172,26 +183,29 @@ void ImportCorpusItemsWizardFinalPage::importTranscriber(CorpusCommunication *co
     }
     // Add speakers if necessary
     foreach (QPointer<CorpusSpeaker> spk, speakers) {
-        if (!d->corpus->hasSpeaker(spk->ID())) {
-            d->corpus->addSpeaker(spk);
+        if (!corpus->hasSpeaker(spk->ID())) {
+            corpus->addSpeaker(spk);
         }
     }
     // Add participations of speakers
     foreach (QString spkID, tiersAll.keys()) {
-        if (!d->corpus->hasParticipation(com->ID(), spkID)) {
-            d->corpus->addParticipation(com->ID(), spkID, tr("Participant"));
+        if (!corpus->hasParticipation(com->ID(), spkID)) {
+            corpus->addParticipation(com->ID(), spkID, tr("Participant"));
         }
     }
-    d->corpus->repository()->annotations()->saveTiersAllSpeakers(annot->ID(), tiersAll);
+    repository->annotations()->saveTiersAllSpeakers(annot->ID(), tiersAll);
     qDeleteAll(tiersAll);
 }
 
 void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances)
 {
     Q_UNUSED(correspondances)
-    if (!d->corpus) return;
-    if (!d->corpus->repository()) return;
-    if (!d->corpus->repository()->annotations()) return;
+    if (!d->repository) return;
+    if (!d->repository->annotations()) return;
+
+    // FIX ME!!!
+    CorpusRepository *repository = d->repository;
+    Corpus *corpus = d->repository->metadata()->getCorpus(d->repository->ID());
 
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
@@ -202,11 +216,11 @@ void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunicati
     if (!phonFile.load(annot->filename())) return;
 
     // Create segment level
-    AnnotationStructureLevel *level_segment = d->corpus->repository()->annotationStructure()->level("segment");
+    AnnotationStructureLevel *level_segment = repository->annotationStructure()->level("segment");
     if (!level_segment) {
         level_segment = new AnnotationStructureLevel("segment", AnnotationStructureLevel::IndependentIntervalsLevel, "Segments", "");
-        if (!d->corpus->repository()->annotations()->createAnnotationLevel(level_segment)) return;
-        d->corpus->repository()->annotationStructure()->addLevel(level_segment);
+        if (!repository->annotations()->createAnnotationLevel(level_segment)) return;
+        repository->annotationStructure()->addLevel(level_segment);
     }
 
     QStringList participantIDs = phonFile.participantIDs();
@@ -215,12 +229,12 @@ void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunicati
     foreach (QString speakerID, participantIDs) {
         if (speakerID.isEmpty()) continue;
         // Add speaker if necessary
-        if (!d->corpus->hasSpeaker(speakerID)) {
-            d->corpus->addSpeaker(new CorpusSpeaker(speakerID));
+        if (!corpus->hasSpeaker(speakerID)) {
+            corpus->addSpeaker(new CorpusSpeaker(speakerID));
         }
         // Add participation if necessary
-        if (!d->corpus->hasParticipation(com->ID(), speakerID)) {
-            d->corpus->addParticipation(com->ID(), speakerID, tr("Participant"));
+        if (!corpus->hasParticipation(com->ID(), speakerID)) {
+            corpus->addParticipation(com->ID(), speakerID, tr("Participant"));
         }
     }
 
@@ -239,7 +253,7 @@ void ImportCorpusItemsWizardFinalPage::importPhonTranscription(CorpusCommunicati
     }
     foreach (QString speakerID, speaker_segment_intervals.keys()) {
         IntervalTier *tier_transcription = new IntervalTier("segment", speaker_segment_intervals[speakerID]);
-        d->corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, tier_transcription);
+        repository->annotations()->saveTier(annot->ID(), speakerID, tier_transcription);
         delete tier_transcription;
     }
 }
@@ -248,9 +262,12 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunica
                                                                  QList<TierCorrespondance> &correspondances)
 {
     Q_UNUSED(correspondances)
-    if (!d->corpus) return;
-    if (!d->corpus->repository()) return;
-    if (!d->corpus->repository()->annotations()) return;
+    if (!d->repository) return;
+    if (!d->repository->annotations()) return;
+
+    // FIX ME!!!
+    CorpusRepository *repository = d->repository;
+    Corpus *corpus = d->repository->metadata()->getCorpus(d->repository->ID());
 
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
 
@@ -262,36 +279,43 @@ void ImportCorpusItemsWizardFinalPage::importSubRipTranscription(CorpusCommunica
     }
     // Add speakers if necessary
     QString speakerID = annot->ID();
-    if (!d->corpus->hasSpeaker(speakerID))
-        d->corpus->addSpeaker(new CorpusSpeaker(speakerID));
-    if (!d->corpus->hasParticipation(com->ID(), speakerID))
-        d->corpus->addParticipation(com->ID(), speakerID, tr("Participant"));
-    d->corpus->repository()->annotations()->saveTier(annot->ID(), speakerID, tierTranscription);
+    if (!corpus->hasSpeaker(speakerID))
+        corpus->addSpeaker(new CorpusSpeaker(speakerID));
+    if (!corpus->hasParticipation(com->ID(), speakerID))
+        corpus->addParticipation(com->ID(), speakerID, tr("Participant"));
+    repository->annotations()->saveTier(annot->ID(), speakerID, tierTranscription);
 }
 
 
 void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, CorpusAnnotation *annot,
                                                    QList<TierCorrespondance> &correspondances)
 {
+    // FIX ME!!!
+    CorpusRepository *repository = d->repository;
+    Corpus *corpus = d->repository->metadata()->getCorpus(d->repository->ID());
+
     ui->texteditMessagesFiles->appendPlainText(QString(tr("Importing %1/%2...")).arg(com->ID(), annot->ID()));
     AnnotationTierGroup *inputTiers = new AnnotationTierGroup();
 
-    PraatTextGrid::load(annot->filename(), inputTiers);
+    if (!PraatTextGrid::load(annot->filename(), inputTiers)) {
+        ui->texteditMessagesFiles->appendPlainText("...Error reading TextGrid!");
+        return;
+    }
 
     ImportAnnotations::SpeakerPolicy policy = ImportAnnotations::speakerPolicyFromInt(annot->property("speakerPolicy").toInt());
     QString annotSpeakerID = annot->property("speakerPolicyData").toString();
     if (policy == ImportAnnotations::SpeakerPolicySingle) {
         if (annotSpeakerID.isEmpty()) {
             // no speaker ID given, use the filename
-            ImportAnnotations::importBasic(d->corpus, com, annot, policy, QFile(annot->filename()).fileName().remove(".textgrid"),
+            ImportAnnotations::importBasic(corpus, com, annot, policy, QFile(annot->filename()).fileName().remove(".textgrid"),
                                            inputTiers, correspondances);
         }
         else {
-            ImportAnnotations::importBasic(d->corpus, com, annot, policy, annotSpeakerID, inputTiers, correspondances);
+            ImportAnnotations::importBasic(corpus, com, annot, policy, annotSpeakerID, inputTiers, correspondances);
         }
     }
     else if (policy == ImportAnnotations::SpeakerPolicyTierNames) {
-        ImportAnnotations::importBasic(d->corpus, com, annot, policy, "", inputTiers, correspondances);
+        ImportAnnotations::importBasic(corpus, com, annot, policy, "", inputTiers, correspondances);
     }
     else if ((policy == ImportAnnotations::SpeakerPolicyPrimaryAndSecondary) || (policy == ImportAnnotations::SpeakerPolicyIntervals)) {
         IntervalTier *tierSpeaker = nullptr;
@@ -312,7 +336,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, Cor
             tierSpeaker = inputTiers->getIntervalTierByName(speakerTierName);
         }
         if (!tierSpeaker) {
-            ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
+            ImportAnnotations::importBasic(corpus, com, annot, ImportAnnotations::SpeakerPolicySingle, annot->ID(), inputTiers, correspondances);
             return;
         }
 //      // Rhapsodie hack
@@ -360,7 +384,7 @@ void ImportCorpusItemsWizardFinalPage::importPraat(CorpusCommunication *com, Cor
                     tiersSpk->addTier(tierSpk);
                 }
             }
-            ImportAnnotations::importBasic(d->corpus, com, annot, ImportAnnotations::SpeakerPolicySingle,
+            ImportAnnotations::importBasic(corpus, com, annot, ImportAnnotations::SpeakerPolicySingle,
                                            QString("%1_%2").arg(annot->ID(), speakerID), tiersSpk, correspondances);
             delete tiersSpk;
         }

@@ -3,7 +3,12 @@
 
 #include <QDialog>
 #include <QStandardItemModel>
-#include "PraalineCore/Datastore/CorpusRepository.h"
+
+namespace Praaline {
+namespace Core {
+class CorpusRepository;
+}
+}
 
 namespace Ui {
 class CheckMediaFilesDialog;

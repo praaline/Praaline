@@ -3,8 +3,12 @@
 
 #include <QWizard>
 #include <QPointer>
-#include "PraalineCore/Corpus/Corpus.h"
-using namespace Praaline::Core;
+
+namespace Praaline {
+namespace Core {
+class CorpusRepository;
+}
+}
 
 namespace Ui {
 class ImportCorpusItemsWizard;
@@ -17,7 +21,7 @@ class ImportCorpusItemsWizard : public QWizard
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizard(QPointer<Corpus> corpus, QWidget *parent = nullptr);
+    explicit ImportCorpusItemsWizard(Praaline::Core::CorpusRepository *repository, QWidget *parent = nullptr);
     ~ImportCorpusItemsWizard();
 
 private:

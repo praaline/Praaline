@@ -8,9 +8,16 @@
 #include <QPair>
 #include <QMultiHash>
 
-#include "PraalineCore/Corpus/Corpus.h"
-#include "PraalineCore/Interfaces/ImportAnnotations.h"
-using namespace Praaline::Core;
+namespace Praaline {
+namespace Core {
+class CorpusRepository;
+class CorpusCommunication;
+class CorpusRecording;
+class CorpusAnnotation;
+class TierCorrespondance;
+}
+}
+
 
 namespace Ui {
 class ImportCorpusItemsWizardFinalPage;
@@ -23,10 +30,10 @@ class ImportCorpusItemsWizardFinalPage : public QWizardPage
     Q_OBJECT
 
 public:
-    explicit ImportCorpusItemsWizardFinalPage(QPointer<Corpus> corpus,
-                                              QMap<QPair<QString, QString>, CorpusRecording *> &candidateRecordings,
-                                              QMap<QPair<QString, QString>, CorpusAnnotation *> &candidateAnnotations,
-                                              QMultiHash<QString, TierCorrespondance> &tierCorrespondances,
+    explicit ImportCorpusItemsWizardFinalPage(Praaline::Core::CorpusRepository *repository,
+                                              QMap<QPair<QString, QString>, Praaline::Core::CorpusRecording *> &candidateRecordings,
+                                              QMap<QPair<QString, QString>, Praaline::Core::CorpusAnnotation *> &candidateAnnotations,
+                                              QMultiHash<QString, Praaline::Core::TierCorrespondance> &tierCorrespondances,
                                               QSet<QString> &tierNamesCommon,
                                               QWidget *parent = nullptr);
     ~ImportCorpusItemsWizardFinalPage();
@@ -38,10 +45,10 @@ private:
     Ui::ImportCorpusItemsWizardFinalPage *ui;
     ImportCorpusItemsWizardFinalPageData *d;
 
-    void importPraat(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
-    void importTranscriber(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
-    void importSubRipTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
-    void importPhonTranscription(CorpusCommunication *com, CorpusAnnotation *annot, QList<TierCorrespondance> &correspondances);
+    void importPraat(Praaline::Core::CorpusCommunication *com, Praaline::Core::CorpusAnnotation *annot, QList<Praaline::Core::TierCorrespondance> &correspondances);
+    void importTranscriber(Praaline::Core::CorpusCommunication *com, Praaline::Core::CorpusAnnotation *annot, QList<Praaline::Core::TierCorrespondance> &correspondances);
+    void importSubRipTranscription(Praaline::Core::CorpusCommunication *com, Praaline::Core::CorpusAnnotation *annot, QList<Praaline::Core::TierCorrespondance> &correspondances);
+    void importPhonTranscription(Praaline::Core::CorpusCommunication *com, Praaline::Core::CorpusAnnotation *annot, QList<Praaline::Core::TierCorrespondance> &correspondances);
 };
 
 #endif // IMPORTCORPUSITEMSWIZARDFINALPAGE_H

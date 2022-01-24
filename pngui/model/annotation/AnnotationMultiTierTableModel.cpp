@@ -1,3 +1,5 @@
+#include <memory>
+
 #include <QDebug>
 #include <QPair>
 #include <QMap>
@@ -54,7 +56,8 @@ AnnotationMultiTierTableModel::AnnotationMultiTierTableModel(SpeakerAnnotationTi
                 sequenceAttributes << pairLevelAttribute.second;
         }
         // Create the child model
-        d->sequencesModels.insert(sequenceTierName, new SequencesTableModel(tiers, sequenceTierName, sequenceAttributes, this));
+        d->sequencesModels.insert(sequenceTierName,
+                                  new SequencesTableModel(tiers, sequenceTierName, sequenceAttributes, this));
     }
 }
 
@@ -620,7 +623,4 @@ bool AnnotationMultiTierTableModel::addSequence(const QString &tiernameSequences
     return d->sequencesModels[tiernameSequences]->addSequence(speakerID,
                                                               new Sequence(minimalTierIndexFrom, minimalTierIndexTo, text, attributes));
 }
-
-
-
 
