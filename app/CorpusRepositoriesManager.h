@@ -40,6 +40,13 @@ public:
     CorpusObserver *corpusObserverForRepository(const QString &repositoryID);
     CorpusObserver *activeCorpusObserver();
 
+    // Metadata Cache
+    // ==========================================================================================================================
+    QStringList listAvailableCorpusIDs(const QString &repositoryID) const;
+    QPointer<Praaline::Core::Corpus> createCorpus(const QString &repositoryID, const QString &corpusID);
+    QPointer<Praaline::Core::Corpus> getCorpus(const QString &repositoryID, const QString &corpusID);
+    void removeCorpus(const QString repositoryID, const QString &corpusID);
+
 signals:
     void corpusRepositoryAdded(const QString &repositoryID);
     void corpusRepositoryRemoved(const QString &repositoryID);

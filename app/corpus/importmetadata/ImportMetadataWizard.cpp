@@ -581,17 +581,6 @@ void ImportMetadataWizard::previewImport()
     ui->tableViewResults->setModel(model);
 }
 
-QPointer<Corpus> ImportMetadataWizard::getCorpus(QString &corpusID)
-{
-    QPointer<Corpus> corpus(0);
-    if (corpusID.isEmpty())
-        corpusID = ui->comboBoxCorpusID->currentText();
-    corpus = d->corpusRepositoriesManager->getCorpusAlreadyOpen(corpusID);
-    if (!corpus) corpus = d->corpusRepositoriesManager->openCorpus(corpusID);
-    if (!corpus) corpus = d->corpusRepositoriesManager->createCorpus(corpusID);
-    return corpus;
-}
-
 void ImportMetadataWizard::doImport()
 {
     // Find selected corpus repository
@@ -621,7 +610,7 @@ void ImportMetadataWizard::doImport()
             corpusID = line.section(d->delimiter, corpusIDcolumnNo, corpusIDcolumnNo);
         else
             corpusID = ui->comboBoxCorpusID->currentText();
-        QPointer<Corpus> corpus = getCorpus(corpusID);
+        QPointer<Corpus> corpus = d->corpusRepositoriesManager->getCorpus(repository->ID(), corpusID);
         if (!corpus) continue;
         corpus->blockSignals(true);
         if (d->corpusObjectType == CorpusObject::Type_Corpus) {

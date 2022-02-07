@@ -22,7 +22,7 @@ struct MiniTranscriptionWidgetData {
 
     bool skipPauses;
     QString transcriptionLevelID;
-    CorpusAnnotation *annotation;
+    QPointer<CorpusAnnotation> annotation;
     QTreeWidget *transcriptionView;
     QList<QTreeWidgetItem *> lines;
     QSharedPointer<QFutureWatcher<void> > watcher;
@@ -84,15 +84,15 @@ void MiniTranscriptionWidget::setSkipPauses(bool skip)
 
 void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnotation *annot)
 {
+    static QMutex mutex;
+    QMutexLocker locker(&mutex);
+
     if (!annot) return;
     if (!annot->repository()) return;
     if (!annot->repository()->annotations()) return;
-    static QMutex mutex;
-    mutex.lock();
-    if (!annot) return;
     QList<Interval *> intervals = annot->repository()->annotations()->getIntervals(
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
-    mutex.unlock();
+
     if (intervals.isEmpty()) return;
     QList<QTreeWidgetItem *> lines;
     foreach (Interval *intv, intervals) {
@@ -104,9 +104,8 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
                << intv->text();
         lines.append(new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), fields));
     }
-    mutex.lock();
+
     if (d) d->lines.append(lines);
-    mutex.unlock();
 }
 
 void MiniTranscriptionWidget::clear()

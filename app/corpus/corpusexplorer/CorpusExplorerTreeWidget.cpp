@@ -366,9 +366,9 @@ void CorpusExplorerTreeWidget::corpusRepositoryAdded(const QString &repositoryID
     d->observersForCorpusRepositories.insert(repositoryID, obs);
     d->corporaTopLevelNode->addNode(obs->nodeRepository());
     // If there is only one corpus in one repository, open it
-    if (d->corpusRepositoriesManager->listAvailableCorpusIDs().count() == 1) {
-        QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(
-                    d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID).constFirst(), repositoryID);
+    QStringList corpusIDs = d->corpusRepositoriesManager->listAvailableCorpusIDs(repositoryID);
+    if (corpusIDs.count() == 1) {
+        QPointer<Corpus> corpus = d->corpusRepositoriesManager->getCorpus(repositoryID, corpusIDs.constFirst());
         if (corpus) d->activeCorpus = corpus;
     }
 }
@@ -516,7 +516,7 @@ void CorpusExplorerTreeWidget::corporaObserverWidgetDoubleClickRequest(QObject *
         // It is a corpus but not opened yet.
         QString repositoryID = parent_observer->observerName();
         QString corpusID = nodeCorpus->getName();
-        d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+        d->corpusRepositoriesManager->getCorpus(repositoryID, corpusID);
     }
 }
 
@@ -535,8 +535,7 @@ bool CorpusExplorerTreeWidget::checkForActiveCorpus()
 
 void CorpusExplorerTreeWidget::saveCorpusMetadata()
 {
-    if (!d->corpusRepositoriesManager) return;
-    d->corpusRepositoriesManager->saveCorpusMetadata();
+    if (d->activeCorpus) d->activeCorpus->save();
 }
 
 void CorpusExplorerTreeWidget::createCorpus()
@@ -571,7 +570,7 @@ void CorpusExplorerTreeWidget::openCorpus()
     dialog.setWindowTitle("Select the corpus to open");
     if (dialog.exec()) {
        QString corpusID = dialog.textValue();
-       Corpus *corpus = d->corpusRepositoriesManager->openCorpus(corpusID, repositoryID);
+       Corpus *corpus = d->corpusRepositoriesManager->getCorpus(repositoryID, corpusID);
        if (corpus) d->activeCorpus = corpus;
     }
 }
@@ -606,7 +605,7 @@ void CorpusExplorerTreeWidget::deleteCorpus()
     if (!d->activeCorpus->repository()->metadata()->deleteCorpus(corpusID)) {
         return;
     }
-    d->corpusRepositoriesManager->removeCorpus(corpusID);
+    d->corpusRepositoriesManager->removeCorpus(d->activeCorpus->repository()->ID(), corpusID);
     d->activeCorpus = nullptr;
 }
 

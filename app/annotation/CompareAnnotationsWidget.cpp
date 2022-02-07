@@ -196,7 +196,8 @@ void CompareAnnotationsWidget::caCorpusLeftChanged(const QString &corpusID)
 {
     ui->comboBoxAnnotationLeft->clear();
     ui->comboBoxSpeakerLeft->clear();
-    QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(corpusID, ui->comboBoxCARepositoryLeft->currentText());
+    QString repositoryID = ui->comboBoxCARepositoryLeft->currentText();
+    QPointer<Corpus> corpus = d->corpusRepositoriesManager->getCorpus(repositoryID, corpusID);
     if (!corpus) return;
     QPair<QString, QString> pair;
     foreach (pair, corpus->getCommunicationsAnnotationsIDs()) {
@@ -208,7 +209,8 @@ void CompareAnnotationsWidget::caCorpusRightChanged(const QString &corpusID)
 {
     ui->comboBoxAnnotationRight->clear();
     ui->comboBoxSpeakerRight->clear();
-    QPointer<Corpus> corpus = d->corpusRepositoriesManager->openCorpus(corpusID, ui->comboBoxCARepositoryRight->currentText());
+    QString repositoryID = ui->comboBoxCARepositoryRight->currentText();
+    QPointer<Corpus> corpus = d->corpusRepositoriesManager->getCorpus(repositoryID, corpusID);
     if (!corpus) return;
     QPair<QString, QString> pair;
     foreach (pair, corpus->getCommunicationsAnnotationsIDs()) {
