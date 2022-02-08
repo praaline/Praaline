@@ -13,12 +13,6 @@
 #include "PraalineCore/Datastore/MetadataDatastore.h"
 #include "PraalineCore/Structure/MetadataStructure.h"
 
-#include "pngui/model/corpus/CorpusCommunicationTableModel.h"
-#include "pngui/model/corpus/CorpusSpeakerTableModel.h"
-#include "pngui/model/corpus/CorpusRecordingTableModel.h"
-#include "pngui/model/corpus/CorpusAnnotationTableModel.h"
-#include "pngui/model/corpus/CorpusParticipationTableModel.h"
-
 #include "CorpusRepositoriesManager.h"
 
 struct ImportMetadataWizardData {
@@ -456,7 +450,7 @@ void ImportMetadataWizard::previewImport()
     QPointer<MetadataStructure> mstr = repository->metadataStructure();
     if (!mstr) return;
 
-    QStandardItemModel *model = new QStandardItemModel();
+    QStandardItemModel *model = new QStandardItemModel(this);
     QString line;
     QFile file(d->filename);
     if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) return;
