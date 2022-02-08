@@ -194,7 +194,7 @@ void CorpusRepositoryCreateWizard::createLocalSQLRepository()
     QString errorMessages;
     QString repositoryID = ui->editCorpusRepositoryID->text();
     QDir dir(ui->editBaseFolder->text());
-    QString basePath = dir.absolutePath() + "/";
+    QString basePath = dir.absolutePath();
     QString databaseNameMetadata = ui->editDatabaseNameMetadata->text();
     QString databaseNameAnnotations = ui->editDatabaseNameAnnotations->text();
     if      (databaseNameMetadata.isEmpty())    databaseNameMetadata = databaseNameAnnotations;
@@ -206,14 +206,15 @@ void CorpusRepositoryCreateWizard::createLocalSQLRepository()
     d->newDefinition.repositoryID = repositoryID;
     d->newDefinition.repositoryName = ui->editCorpusRepositoryDescription->text();
     d->newDefinition.basePath = basePath;
-    d->newDefinition.basePathMedia = basePath;
+    // By default, media files stored in the same directory as the Repository Definition file
+    d->newDefinition.basePathMedia = ".";
     d->newDefinition.infoDatastoreMetadata = DatastoreInfo(
                 DatastoreInfo::SQL, "QSQLITE", "",
-                basePath + databaseNameMetadata + ".db", "", "");
+                basePath + "/" + databaseNameMetadata + ".db", "", "");
     d->newDefinition.infoDatastoreAnnotations = DatastoreInfo(
                 DatastoreInfo::SQL, "QSQLITE", "",
-                basePath + databaseNameAnnotations + ".db", "", "");
-    d->newDefinition.filenameDefinition = basePath + repositoryID + ".PraalineRepository";
+                basePath + "/" + databaseNameAnnotations + ".db", "", "");
+    d->newDefinition.filenameDefinition = basePath + "/" + repositoryID + ".PraalineRepository";
     d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
     if (!d->newCorpusRepository) {
         QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")
@@ -231,9 +232,10 @@ void CorpusRepositoryCreateWizard::createRemoteSQLRepository()
     d->newDefinition.repositoryID = repositoryID;
     d->newDefinition.repositoryName = ui->editCorpusRepositoryDescription->text();
     QDir dir(ui->editBaseFolder->text());
-    QString basePath = dir.absolutePath() + "/";
+    QString basePath = dir.absolutePath();
     d->newDefinition.basePath = basePath;
-    d->newDefinition.basePathMedia = basePath;
+    // By default, media files stored in the same directory as the Repository Definition file
+    d->newDefinition.basePathMedia = ".";
     d->newDefinition.infoDatastoreMetadata.type = DatastoreInfo::SQL;
     d->newDefinition.infoDatastoreMetadata.driver = ui->comboBoxDatabaseTypeMetadata->currentData().toString();
     d->newDefinition.infoDatastoreMetadata.hostname = ui->editHostnameMetadata->text();
@@ -259,7 +261,7 @@ void CorpusRepositoryCreateWizard::createRemoteSQLRepository()
         d->newDefinition.infoDatastoreAnnotations.datasource = ui->editDatabaseNameAnnotations->text();
     }
     // Try saving, connecting and creating repository
-    d->newDefinition.filenameDefinition = basePath + repositoryID + ".PraalineRepository";
+    d->newDefinition.filenameDefinition = basePath + "/" + repositoryID + ".PraalineRepository";
     d->newCorpusRepository = CorpusRepository::create(d->newDefinition, errorMessages);
     if (!d->newCorpusRepository) {
         QMessageBox::warning(this, tr("Error creating corpus repository"), QString("%1\n%2")

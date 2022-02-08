@@ -38,6 +38,11 @@ AnnotationWidgetDisfluencies::~AnnotationWidgetDisfluencies()
 void AnnotationWidgetDisfluencies::setModel(AnnotationMultiTierTableModel *model)
 {
     d->model = model;
+    // If the model is set to nullptr, do not set column indices
+    if (!model) {
+        d->columnIndexToken = d->columnIndexDisfluency = d->columnIndexDiscourse = -1;
+        return;
+    }
     // Find the column indices relevant for disfluency editing (tok_min, tok_min/disfluency and tok_mwu/discourse).
     auto displayedAttributes = d->model->displayedAttributes();
     for (int i = 0; i < displayedAttributes.count(); ++i) {
@@ -101,6 +106,7 @@ void AnnotationWidgetDisfluencies::setSelection(QList<int> rowsSelected)
 
 void AnnotationWidgetDisfluencies::annotateSimple(DisfluencyTypesEnum type)
 {
+    if (!d->model) return;
     if (d->rowsSelected.count() != 1) return;
     QModelIndex tok = d->model->index(d->rowsSelected[0], d->columnIndexToken);
     QModelIndex dis = d->model->index(d->rowsSelected[0], d->columnIndexDisfluency);
@@ -141,6 +147,7 @@ void AnnotationWidgetDisfluencies::on_cmdWithinWordPause_clicked()
 
 void AnnotationWidgetDisfluencies::annotateStructured(DisfluencyTypesEnum type)
 {
+    if (!d->model) return;
     QList<DisfluencyAnalyser::Token> tokens;
     if (d->rowsSelected.count() <= 1 && type != DEL) return;
     if (d->rowsSelected.count() < 1 && type == DEL) return;
@@ -199,6 +206,7 @@ void AnnotationWidgetDisfluencies::on_cmdComplex_clicked()
 
 void AnnotationWidgetDisfluencies::on_cmdBoundaryBreak_clicked()
 {
+    if (!d->model) return;
     if (d->rowsSelected.count() != 1) return;
     QModelIndex index = d->model->index(d->rowsSelected[0], d->columnIndexDiscourse);
     d->model->setData(index, "*");
@@ -206,6 +214,7 @@ void AnnotationWidgetDisfluencies::on_cmdBoundaryBreak_clicked()
 
 void AnnotationWidgetDisfluencies::on_cmdBoundaryContinue_clicked()
 {
+    if (!d->model) return;
     if (d->rowsSelected.count() != 1) return;
     QModelIndex index = d->model->index(d->rowsSelected[0], d->columnIndexDiscourse);
     d->model->setData(index, "");
@@ -213,6 +222,7 @@ void AnnotationWidgetDisfluencies::on_cmdBoundaryContinue_clicked()
 
 void AnnotationWidgetDisfluencies::on_cmdDiscourseMarker_clicked()
 {
+    if (!d->model) return;
     if (d->rowsSelected.count() != 1) return;
     QModelIndex index = d->model->index(d->rowsSelected[0], d->columnIndexDiscourse);
     d->model->setData(index, "DM");

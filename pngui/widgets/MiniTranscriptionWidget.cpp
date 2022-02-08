@@ -86,13 +86,11 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
 {
     static QMutex mutex;
     QMutexLocker locker(&mutex);
-
     if (!annot) return;
     if (!annot->repository()) return;
     if (!annot->repository()->annotations()) return;
     QList<Interval *> intervals = annot->repository()->annotations()->getIntervals(
                 AnnotationDatastore::Selection(annot->ID(), "", d->transcriptionLevelID));
-
     if (intervals.isEmpty()) return;
     QList<QTreeWidgetItem *> lines;
     foreach (Interval *intv, intervals) {
@@ -104,7 +102,6 @@ void MiniTranscriptionWidget::asyncCreateTranscript(Praaline::Core::CorpusAnnota
                << intv->text();
         lines.append(new QTreeWidgetItem(static_cast<QTreeWidget *>(nullptr), fields));
     }
-
     if (d) d->lines.append(lines);
 }
 
