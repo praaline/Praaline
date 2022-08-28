@@ -10,7 +10,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/model/CheckableProxyModel.h"
-#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
+#include "pngui/model/structure/AnnotationStructureTreeModel.h"
 #include "pngui/model/annotation/AnnotationMultiTierTableModel.h"
 
 #include "pngui/xlsx/xlsxdocument.h"

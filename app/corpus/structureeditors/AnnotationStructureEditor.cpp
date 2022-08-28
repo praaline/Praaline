@@ -15,7 +15,7 @@
 #include "PraalineCore/Serialisers/XML/XMLSerialiserAnnotationStructure.h"
 using namespace Praaline::Core;
 
-#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
+#include "pngui/model/structure/AnnotationStructureTreeModel.h"
 #include "NameValueListEditor.h"
 #include "CorpusRepositoriesManager.h"
 #include "AddAttributeDialog.h"
