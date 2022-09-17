@@ -7,7 +7,7 @@
 using namespace Praaline::Core;
 
 #include "pngui/model/CheckableProxyModel.h"
-#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
+#include "pngui/model/structure/AnnotationStructureTreeModel.h"
 
 #include "ExportAnnotationsWizardPraatPage.h"
 #include "ui_ExportAnnotationsWizardPraatPage.h"

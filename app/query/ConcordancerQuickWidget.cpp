@@ -19,7 +19,7 @@ using namespace Praaline::Core;
 #include "pngui/model/CheckableProxyModel.h"
 #include "pngui/model/query/QueryOccurrenceTableModel.h"
 #include "pngui/model/query/QueryFilterSequenceTableModel.h"
-#include "pngui/model/corpus/AnnotationStructureTreeModel.h"
+#include "pngui/model/structure/AnnotationStructureTreeModel.h"
 #include "pngui/widgets/GridViewWidget.h"
 
 #include "pngui/PraalineUserInterfaceOptions.h"

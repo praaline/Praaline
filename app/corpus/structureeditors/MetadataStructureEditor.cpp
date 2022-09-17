@@ -15,7 +15,7 @@
 #include "PraalineCore/Serialisers/XML/XMLSerialiserMetadataStructure.h"
 using namespace Praaline::Core;
 
-#include "pngui/model/corpus/MetadataStructureTreeModel.h"
+#include "pngui/model/structure/MetadataStructureTreeModel.h"
 #include "NameValueListEditor.h"
 #include "CorpusRepositoriesManager.h"
 #include "AddAttributeDialog.h"

@@ -20,7 +20,8 @@
 #include "PraalineCore/Serialisers/XML/XMLSerialiserNameValueList.h"
 using namespace Praaline::Core;
 
-#include "pngui/model/NameValueListTableModel.h"
+#include "pngui/model/structure/NameValueListTableModel.h"
+
 #include "NameValueListEditor.h"
 #include "AddAttributeDialog.h"
 

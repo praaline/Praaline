@@ -1,5 +1,5 @@
 # Praaline
-# (c) George Christodoulides 2012-2014
+# (c) George Christodoulides 2012-2022
 
 ! include( ../common.pri ) {
     error( Could not find the common.pri file! )
@@ -54,6 +54,7 @@ HEADERS += \
     grid/QTableModelHtmlWriter_p.h \
     grid/QTableModelWordMLWriter_p.h \
     grid/QTableModelWriter.h \
+    model/UpdateableModel.h \
     model/annotation/SequencesTableModel.h \
     model/visualiser/AnnotationGridPointModel.h \
     model/visualiser/AnnotationGridModel.h \
@@ -112,14 +113,14 @@ HEADERS += \
     xlsx/xlsxabstractooxmlfile.h \
     xlsx/xlsxabstractooxmlfile_p.h \
     model/corpus/CorpusCommunicationTableModel.h \
-    model/corpus/AnnotationStructureTreeModel.h \
+    model/structure/AnnotationStructureTreeModel.h \
     model/corpus/CorpusAnnotationTableModel.h \
     model/corpus/CorpusBookmarkModel.h \
     model/corpus/CorpusExplorerTreeModel.h \
     model/corpus/CorpusParticipationTableModel.h \
     model/corpus/CorpusRecordingTableModel.h \
     model/corpus/CorpusSpeakerTableModel.h \
-    model/corpus/MetadataStructureTreeModel.h \
+    model/structure/MetadataStructureTreeModel.h \
     model/query/QueryOccurrenceTableModel.h \
     widgets/MetadataEditorWidget.h \
     widgets/CheckBoxList.h \
@@ -142,7 +143,7 @@ HEADERS += \
     widgets/MediaPlayerControls.h \
     widgets/MediaPlayerVideoWidget.h \
     widgets/MiniTranscriptionWidget.h \
-    model/NameValueListTableModel.h \
+    model/structure/NameValueListTableModel.h \
     nodeeditor/Compiler.h \
     nodeeditor/Connection.h \
     nodeeditor/ConnectionBlurEffect.h \
@@ -295,14 +296,14 @@ SOURCES += \
     xlsx/xlsxabstractsheet.cpp \
     xlsx/xlsxabstractooxmlfile.cpp \
     model/corpus/CorpusCommunicationTableModel.cpp \
-    model/corpus/AnnotationStructureTreeModel.cpp \
+    model/structure/AnnotationStructureTreeModel.cpp \
     model/corpus/CorpusAnnotationTableModel.cpp \
     model/corpus/CorpusBookmarkModel.cpp \
     model/corpus/CorpusExplorerTreeModel.cpp \
     model/corpus/CorpusParticipationTableModel.cpp \
     model/corpus/CorpusRecordingTableModel.cpp \
     model/corpus/CorpusSpeakerTableModel.cpp \
-    model/corpus/MetadataStructureTreeModel.cpp \
+    model/structure/MetadataStructureTreeModel.cpp \
     model/query/QueryOccurrenceTableModel.cpp \
     widgets/MetadataEditorWidget.cpp \
     widgets/CheckBoxList.cpp \
@@ -325,7 +326,7 @@ SOURCES += \
     widgets/MediaPlayerControls.cpp \
     widgets/MediaPlayerVideoWidget.cpp \
     widgets/MiniTranscriptionWidget.cpp \
-    model/NameValueListTableModel.cpp \
+    model/structure/NameValueListTableModel.cpp \
     nodeeditor/Connection.cpp \
     nodeeditor/ConnectionBlurEffect.cpp \
     nodeeditor/ConnectionGeometry.cpp \
