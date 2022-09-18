@@ -7,13 +7,15 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QMutex>
-#include "MiniTranscriptionWidget.h"
 
 #include "PraalineCore/Corpus/CorpusAnnotation.h"
 #include "PraalineCore/Annotation/IntervalTier.h"
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Datastore/AnnotationDatastore.h"
 using namespace Praaline::Core;
+
+#include "MiniTranscriptionWidget.h"
+
 
 struct MiniTranscriptionWidgetData {
     MiniTranscriptionWidgetData() :

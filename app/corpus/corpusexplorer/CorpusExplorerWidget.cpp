@@ -20,7 +20,8 @@ using namespace QtilitiesProjectManagement;
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/SelectionDialog.h"
 #include "pngui/widgets/MetadataEditorWidget.h"
-#include "pngui/widgets/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusItemPreview/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusCommunicationSpeakerRelationsWidget.h"
 #include "pngui/observers/CorpusObserver.h"
 
 #include "pngui/PraalineUserInterfaceOptions.h"
@@ -46,7 +47,8 @@ struct CorpusExplorerWidgetData {
     CorpusExplorerWidgetData() :
         widgetCorpusMode(nullptr), projectItem(nullptr), corpusRepositoriesManager(nullptr),
         corporaTopLevelNode(nullptr), corporaObserverWidget(nullptr),
-        metadataEditorPrimary(nullptr), metadataEditorSecondary(nullptr), preview(nullptr)
+        metadataEditorPrimary(nullptr), metadataEditorSecondary(nullptr),
+        speakerRelationsWidget(nullptr), preview(nullptr)
     { }
 
     CorpusModeWidget *widgetCorpusMode;
@@ -101,6 +103,7 @@ struct CorpusExplorerWidgetData {
     QToolBar *toolbarCorpusExplorer;
     QMenu *menuMetadataEditorStyles;
 
+    CorpusCommunicationSpeakerRelationsWidget *speakerRelationsWidget;
     CorpusItemPreview *preview;
 };
 
@@ -165,8 +168,11 @@ CorpusExplorerWidget::CorpusExplorerWidget(CorpusModeWidget *widgetCorpusMode, Q
 
     // Set up corpus item preview widget
     d->preview = new CorpusItemPreview(this);
-    d->preview->layout()->setMargin(0);
-    ui->dockCorpusItemPreview->setWidget(d->preview);
+    ui->gridLayoutCorpusItemPreview->addWidget(d->preview);
+
+    // Set up corpus communication speaker relations widget
+    d->speakerRelationsWidget = new CorpusCommunicationSpeakerRelationsWidget(this);
+    ui->gridLayoutSpeakerRelations->addWidget(d->speakerRelationsWidget);
 
     // Create layout of the Corpus Explorer
     ui->gridLayout->setMargin(0);
@@ -484,6 +490,7 @@ void CorpusExplorerWidget::corpusRepositoryRemoved(const QString &repositoryID)
     // Metadata editors
     d->metadataEditorPrimary->clear();
     d->metadataEditorSecondary->clear();
+    d->speakerRelationsWidget->clear();
     d->preview->clear();
 }
 
@@ -544,6 +551,7 @@ void CorpusExplorerWidget::updateMetadataEditorsForCorpus(Corpus *corpus)
 void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QObject*> selected)
 {
     if (selected.isEmpty()) {
+        if (d->speakerRelationsWidget) d->speakerRelationsWidget->openCommunication(nullptr);
         if (d->preview) d->preview->openCommunication(nullptr);
         return;
     }
@@ -558,6 +566,7 @@ void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QOb
     if (nodeCom && nodeCom->communication) {
         d->activeCorpus = nodeCom->communication->corpus();
         updateMetadataEditorsForCom(nodeCom->communication);
+        d->speakerRelationsWidget->openCommunication(nodeCom->communication);
         d->preview->openCommunication(nodeCom->communication);
         return;
     }
@@ -572,6 +581,7 @@ void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QOb
         d->activeCorpus = nodeRec->recording->corpus();
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeRec->recording->parent());
         updateMetadataEditorsForCom(communication);
+        d->speakerRelationsWidget->openCommunication(communication);
         d->preview->openCommunication(communication);
         return;
     }
@@ -580,6 +590,7 @@ void CorpusExplorerWidget::corporaObserverWidgetSelectedObjectsChanged(QList<QOb
         d->activeCorpus = nodeAnnot->annotation->corpus();
         CorpusCommunication *communication = qobject_cast<CorpusCommunication *>(nodeAnnot->annotation->parent());
         updateMetadataEditorsForCom(communication);
+        d->speakerRelationsWidget->openCommunication(communication);
         d->preview->openCommunication(communication);
         return;
     }

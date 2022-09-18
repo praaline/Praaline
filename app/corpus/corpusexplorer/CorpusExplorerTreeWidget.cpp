@@ -19,7 +19,8 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/SelectionDialog.h"
 #include "pngui/widgets/MetadataEditorWidget.h"
-#include "pngui/widgets/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusItemPreview/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusCommunicationSpeakerRelationsWidget.h"
 #include "pngui/observers/CorpusObserver.h"
 
 #include "pngui/PraalineUserInterfaceOptions.h"
@@ -66,6 +67,7 @@ struct CorpusExplorerTreeWidgetData {
     QToolBar *toolbarCorpusExplorer;
     QMenu *menuMetadataEditorStyles;
 
+    CorpusCommunicationSpeakerRelationsWidget *speakerRelationsWidget;
     CorpusItemPreview *preview;
 
 };

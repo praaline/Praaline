@@ -105,6 +105,17 @@ QVariant SequencesTableModel::headerData(int section, Qt::Orientation orientatio
     return QVariant();
 }
 
+Qt::ItemFlags SequencesTableModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+    // Editable columns: Label and any attributes
+    if ((index.column() == 5) || (index.column() >= 7))
+        return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
+    return QAbstractTableModel::flags(index);
+}
+
+// helper function
 QPair<QString, int> SequencesTableModel::modelRowToSpeakerAndSequenceIndex(int row) const
 {
     if (row < 0) return QPair<QString, int>(QString(), -1); // invalid index
@@ -165,16 +176,6 @@ QVariant SequencesTableModel::data(const QModelIndex &index, int role) const
         }
     }
     return QVariant();
-}
-
-Qt::ItemFlags SequencesTableModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return Qt::ItemIsEnabled;
-    // Editable columns: Label and any attributes
-    if ((index.column() == 5) || (index.column() >= 7))
-        return QAbstractTableModel::flags(index) | Qt::ItemIsEditable;
-    return QAbstractTableModel::flags(index);
 }
 
 bool SequencesTableModel::setData(const QModelIndex &index, const QVariant &value, int role)
