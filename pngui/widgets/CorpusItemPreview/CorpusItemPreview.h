@@ -1,16 +1,16 @@
 #ifndef CORPUSITEMPREVIEW_H
 #define CORPUSITEMPREVIEW_H
 
-#include <QPointer>
 #include <QWidget>
 #include <QMediaPlayer>
 
-struct CorpusItemPreviewData;
 namespace Praaline {
 namespace Core {
 class CorpusCommunication;
 }
 }
+
+struct CorpusItemPreviewData;
 
 class CorpusItemPreview : public QWidget
 {

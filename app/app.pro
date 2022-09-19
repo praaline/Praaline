@@ -496,8 +496,7 @@ FORMS    += \
     web/WebDesignerModeWidget.ui \
     statistics/pca/PCAPlotWidget.ui \
     annotation/editors/PFCTranscriptionEditor.ui \
-    updater/UpdatePraalineDialog.ui \
-    corpus/corpusexplorer/CreateCorpusCommunicationDialog.ui
+    updater/UpdatePraalineDialog.ui
 
 RESOURCES += \
     praaline.qrc \

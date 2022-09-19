@@ -36,6 +36,7 @@ DEFINES += NODE_EDITOR_STATIC
 
 FORMS += \
     grid/QSearchBar.ui \
+    widgets/CorpusCommunicationSpeakerRelationsWidget.ui \
     widgets/TimelineEditorConfigWidget.ui \
     widgets/GridViewWidget.ui \
     widgets/GridViewFindDialog.ui \
@@ -56,6 +57,7 @@ HEADERS += \
     grid/QTableModelWriter.h \
     model/UpdateableModel.h \
     model/annotation/SequencesTableModel.h \
+    model/corpus/SpeakerRelationTableModel.h \
     model/visualiser/AnnotationGridPointModel.h \
     model/visualiser/AnnotationGridModel.h \
     model/visualiser/ProsogramTonalSegmentModel.h \
@@ -67,6 +69,7 @@ HEADERS += \
     layer/ProsogramLayer.h \
     layer/AnnotationDiffLayer.h \
     epsengine/EpsEngine.h \
+    widgets/CorpusCommunicationSpeakerRelationsWidget.h \
     xlsx/xlsxzipwriter_p.h \
     xlsx/xlsxzipreader_p.h \
     xlsx/xlsxworksheet.h \
@@ -132,7 +135,7 @@ HEADERS += \
     widgets/SelectionListDataProviderProxy.h \
     widgets/TimelineEditorConfigWidget.h \
     widgets/WaitingSpinnerWidget.h \
-    widgets/CorpusItemPreview.h \
+    widgets/CorpusItemPreview/CorpusItemPreview.h \
     widgets/SelectReorderItemsWidget.h \
     observers/CorpusObserver.h \
     model/DelayedExecutionTimer.h \
@@ -140,9 +143,9 @@ HEADERS += \
     model/diff/DiffSESForIntervalsTableModel.h \
     model/query/QueryDefinitionTreeModel.h \
     model/query/QueryFilterSequenceTableModel.h \
-    widgets/MediaPlayerControls.h \
-    widgets/MediaPlayerVideoWidget.h \
-    widgets/MiniTranscriptionWidget.h \
+    widgets/CorpusItemPreview/MediaPlayerControls.h \
+    widgets/CorpusItemPreview/MediaPlayerVideoWidget.h \
+    widgets/CorpusItemPreview/MiniTranscriptionWidget.h \
     model/structure/NameValueListTableModel.h \
     nodeeditor/Compiler.h \
     nodeeditor/Connection.h \
@@ -254,6 +257,7 @@ SOURCES += \
     grid/QTableModelWordMLWriter.cpp \
     grid/QTableModelWriter.cpp \
     model/annotation/SequencesTableModel.cpp \
+    model/corpus/SpeakerRelationTableModel.cpp \
     model/visualiser/AnnotationGridModel.cpp \
     model/visualiser/ProsogramModel.cpp \
     model/visualiser/MovingAverageModel.cpp \
@@ -264,6 +268,7 @@ SOURCES += \
     layer/MovingAverageLayer.cpp \
     epsengine/EpsPaintEngine.cpp \
     epsengine/EpsPaintDevice.cpp \
+    widgets/CorpusCommunicationSpeakerRelationsWidget.cpp \
     xlsx/xlsxzipwriter.cpp \
     xlsx/xlsxzipreader.cpp \
     xlsx/xlsxworksheet.cpp \
@@ -315,7 +320,7 @@ SOURCES += \
     widgets/SelectionListDataProviderProxy.cpp \
     widgets/TimelineEditorConfigWidget.cpp \
     widgets/WaitingSpinnerWidget.cpp \
-    widgets/CorpusItemPreview.cpp \
+    widgets/CorpusItemPreview/CorpusItemPreview.cpp \
     widgets/SelectReorderItemsWidget.cpp \
     observers/CorpusObserver.cpp \
     model/DelayedExecutionTimer.cpp \
@@ -323,9 +328,9 @@ SOURCES += \
     model/diff/DiffSESForIntervalsTableModel.cpp \
     model/query/QueryFilterSequenceTableModel.cpp \
     model/query/QueryDefinitionTreeModel.cpp \
-    widgets/MediaPlayerControls.cpp \
-    widgets/MediaPlayerVideoWidget.cpp \
-    widgets/MiniTranscriptionWidget.cpp \
+    widgets/CorpusItemPreview/MediaPlayerControls.cpp \
+    widgets/CorpusItemPreview/MediaPlayerVideoWidget.cpp \
+    widgets/CorpusItemPreview/MiniTranscriptionWidget.cpp \
     model/structure/NameValueListTableModel.cpp \
     nodeeditor/Connection.cpp \
     nodeeditor/ConnectionBlurEffect.cpp \

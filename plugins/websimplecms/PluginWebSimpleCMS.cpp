@@ -98,7 +98,7 @@ QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginDescription()
 }
 
 QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginCopyright() const {
-    return QString(tr("Copyright") + " 2014-2021, George Christodoulides");
+    return QString(tr("Copyright") + " 2014-2022, George Christodoulides");
 }
 
 QString Praaline::Plugins::WebSimpleCMS::PluginWebSimpleCMS::pluginLicense() const {
@@ -301,13 +301,16 @@ bool outputXML(CorpusCommunication *com, CorpusRecording *rec, CorpusAnnotation 
     xml.writeStartElement("speaker_relations");
     xml.writeAttribute("relationID", "proximity");
     // for each
-    xml.writeStartElement("speaker_relation");
-    xml.writeAttribute("communicationID", com->ID());
-    xml.writeAttribute("speakerID_A", "");
-    xml.writeAttribute("speakerID_B", "");
-    xml.writeAttribute("value", "");
-    xml.writeAttribute("notes", "");
-    xml.writeEndElement(); // speaker_relation
+    for (const auto &relation : com->speakerRelations()) {
+        // speaker_relation
+        xml.writeStartElement("speaker_relation");
+        xml.writeAttribute("communicationID", com->ID());
+        xml.writeAttribute("speakerID_A", relation.speakerID_1());
+        xml.writeAttribute("speakerID_B", relation.speakerID_2());
+        xml.writeAttribute("value", relation.relation());
+        xml.writeAttribute("notes", relation.notes());
+        xml.writeEndElement();
+    }
     // end for each
     xml.writeEndElement(); // speaker relations: proximity
     xml.writeEndElement(); // relations

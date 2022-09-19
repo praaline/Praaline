@@ -1,10 +1,5 @@
-#include "CorpusItemPreview.h"
-
-#include "MediaPlayerControls.h"
-#include "MediaPlayerVideoWidget.h"
-#include "MiniTranscriptionWidget.h"
-
 #include <QWidget>
+#include <QPointer>
 #include <QMediaPlayer>
 #include <QMediaService>
 #include <QMediaPlaylist>
@@ -18,6 +13,13 @@
 #include "PraalineCore/Datastore/CorpusRepository.h"
 #include "PraalineCore/Structure/AnnotationStructure.h"
 using namespace Praaline::Core;
+
+#include "MediaPlayerControls.h"
+#include "MediaPlayerVideoWidget.h"
+#include "MiniTranscriptionWidget.h"
+
+#include "CorpusItemPreview.h"
+
 
 struct CorpusItemPreviewData {
     CorpusItemPreviewData() :
@@ -43,7 +45,7 @@ struct CorpusItemPreviewData {
     QString statusInfo;
     qint64 duration;
 
-    CorpusCommunication *communication;
+    QPointer<CorpusCommunication> communication;
     QStringList recordingsIDs;
     QStringList annotationIDs;
     QStringList levelIDs;

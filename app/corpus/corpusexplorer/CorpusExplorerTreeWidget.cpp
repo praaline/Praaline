@@ -23,7 +23,8 @@ using namespace Praaline::Core;
 #include "pngui/model/corpus/CorpusExplorerTreeModel.h"
 #include "pngui/widgets/SelectionDialog.h"
 #include "pngui/widgets/MetadataEditorWidget.h"
-#include "pngui/widgets/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusItemPreview/CorpusItemPreview.h"
+#include "pngui/widgets/CorpusCommunicationSpeakerRelationsWidget.h"
 #include "pngui/observers/CorpusObserver.h"
 
 #include "pngui/PraalineUserInterfaceOptions.h"
@@ -78,6 +79,7 @@ struct CorpusExplorerTreeWidgetData {
     ObserverWidget* corporaObserverWidget;
     MetadataEditorWidget *metadataEditorPrimary;
     MetadataEditorWidget *metadataEditorSecondary;
+    CorpusCommunicationSpeakerRelationsWidget *speakerRelationsWidget;
     CorpusItemPreview *preview;
 
     QToolBar *toolbarCorpusExplorer;
@@ -143,29 +145,29 @@ CorpusExplorerTreeWidget::CorpusExplorerTreeWidget(CorpusModeWidget *widgetCorpu
     setupActions();
     this->addToolBar(d->toolbarCorpusExplorer);
 
-    // Set up corpus item preview widget
-    d->preview = new CorpusItemPreview(this);
-    d->preview->layout()->setMargin(0);
-    ui->dockCorpusItemPreview->setWidget(d->preview);
+//    // Set up corpus item preview widget
+//    d->preview = new CorpusItemPreview(this);
+//    d->preview->layout()->setMargin(0);
+//    ui->dockCorpusItemPreview->setWidget(d->preview);
 
-    // Create layout of the Corpus Explorer
-    ui->gridLayout->setMargin(0);
-    ui->dockCorpusExplorer->setWidget(d->corporaObserverWidget);
-    d->metadataEditorPrimary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
-    d->metadataEditorPrimary->layout()->setMargin(0);
-    ui->dockMetadataPrimary->setWidget(d->metadataEditorPrimary);
-    d->metadataEditorSecondary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
-    d->metadataEditorSecondary->layout()->setMargin(0);
-    ui->dockMetadataSecondary->setWidget(d->metadataEditorSecondary);
+//    // Create layout of the Corpus Explorer
+//    ui->gridLayout->setMargin(0);
+//    ui->dockCorpusExplorer->setWidget(d->corporaObserverWidget);
+//    d->metadataEditorPrimary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
+//    d->metadataEditorPrimary->layout()->setMargin(0);
+//    ui->dockMetadataPrimary->setWidget(d->metadataEditorPrimary);
+//    d->metadataEditorSecondary = new MetadataEditorWidget(MetadataEditorWidget::TreeStyle, this);
+//    d->metadataEditorSecondary->layout()->setMargin(0);
+//    ui->dockMetadataSecondary->setWidget(d->metadataEditorSecondary);
 
-    // Layout
-    // Set proportions
-    QList<int> sizes;
-    sizes << static_cast<int>(width() * 0.3) << static_cast<int>(width() * 0.7);
-    ui->splitterMainVertical->setSizes(sizes);
-    sizes.clear();
-    sizes << static_cast<int>(height() * 0.7) << static_cast<int>(height() * 0.3);
-    ui->splitterEditorsPreviewHorizontal->setSizes(sizes);
+//    // Layout
+//    // Set proportions
+//    QList<int> sizes;
+//    sizes << static_cast<int>(width() * 0.3) << static_cast<int>(width() * 0.7);
+//    ui->splitterMainVertical->setSizes(sizes);
+//    sizes.clear();
+//    sizes << static_cast<int>(height() * 0.7) << static_cast<int>(height() * 0.3);
+//    ui->splitterEditorsPreviewHorizontal->setSizes(sizes);
 }
 
 CorpusExplorerTreeWidget::~CorpusExplorerTreeWidget()

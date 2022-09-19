@@ -1,6 +1,7 @@
-#include "MediaPlayerVideoWidget.h"
 #include <QKeyEvent>
 #include <QMouseEvent>
+
+#include "MediaPlayerVideoWidget.h"
 
 MediaPlayerVideoWidget::MediaPlayerVideoWidget(QWidget *parent) :
     QVideoWidget(parent)
