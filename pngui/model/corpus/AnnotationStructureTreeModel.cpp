@@ -155,7 +155,8 @@ QVariant AnnotationStructureTreeModel::data(const QModelIndex &index, int role) 
     if ((role != Qt::DisplayRole) && (role != Qt::EditRole) && (role != Qt::CheckStateRole)) return QVariant();
 
     QObject *item = getItem(index);
-    bool isAttribute = (qobject_cast<AnnotationStructureAttribute *>(item) != 0);
+    // Find whether the edited item is a level or an attribute
+    bool isAttribute = (qobject_cast<AnnotationStructureAttribute *>(item));
 
     // Check boxes (if this model supports them)
     if (role == Qt::CheckStateRole) {
@@ -207,7 +208,7 @@ bool AnnotationStructureTreeModel::setData(const QModelIndex &index, const QVari
     QObject *item = getItem(index);
     if (!item) return false;
     // Find whether the edited item is a level or an attribute
-    bool isAttribute = (!qobject_cast<AnnotationStructureAttribute *>(item));
+    bool isAttribute = (qobject_cast<AnnotationStructureAttribute *>(item));
     // Find the corresponding level ID and attribute ID and store them in a pair
     QPair<QString, QString> pair;
     if (isAttribute) {
