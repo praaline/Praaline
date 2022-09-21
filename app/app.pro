@@ -190,6 +190,8 @@ SOURCES += main.cpp \
     annotation/asr/LanguageModelBuilderWidget.cpp \
     annotation/asr/LongSoundAlignerWidget.cpp \
     annotation/asr/ASRModuleVisualiserWidgetBase.cpp \
+    statistics/StatisticalAnalyserBase.cpp \
+    statistics/StatisticalAnalysisChartsWidget.cpp \
     visualisation/AudioEnabledWidget.cpp \
     visualisation/GlobalVisualisationWidget.cpp \
     visualisation/PitchAnalyser.cpp \
@@ -338,6 +340,8 @@ HEADERS  += \
     annotation/calculate/CreateSequenceAnnotationDialog.h \
     annotation/asr/LongSoundAlignerWidget.h \
     annotation/asr/ASRModuleVisualiserWidgetBase.h \
+    statistics/StatisticalAnalyserBase.h \
+    statistics/StatisticalAnalysisChartsWidget.h \
     visualisation/AudioEnabledWidget.h \
     visualisation/GlobalVisualisationWidget.h \
     visualisation/PitchAnalyser.h \
@@ -470,6 +474,7 @@ FORMS    += \
     annotation/asr/AutomaticTranscriptionWidget.ui \
     annotation/asr/LongSoundAlignerWidget.ui \
     annotation/asr/LanguageModelBuilderWidget.ui \
+    statistics/StatisticalAnalysisChartsWidget.ui \
     visualisation/ExportVisualisationDialog.ui \
     visualisation/GlobalVisualisationWidget.ui \
     visualisation/TimelineVisualisationWidget.ui \

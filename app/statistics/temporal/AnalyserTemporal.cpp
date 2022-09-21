@@ -237,6 +237,30 @@ QMap<QString, QList<double> > AnalyserTemporal::aggregateMeasureSpk(
     return aggregates;
 }
 
+QStringList AnalyserTemporal::measureIDsForCommunication()
+{
+    return AnalyserTemporalItem::measureIDsForCommunication();
+}
+
+QStringList AnalyserTemporal::measureIDsForSpeaker()
+{
+    return AnalyserTemporalItem::measureIDsForSpeaker();
+}
+
+QStringList AnalyserTemporal::vectorMeasureIDsForCommunication()
+{
+    return AnalyserTemporalItem::vectorMeasureIDsForCommunication();
+}
+
+QStringList AnalyserTemporal::vectorMeasureIDsForSpeaker()
+{
+    return AnalyserTemporalItem::vectorMeasureIDsForSpeaker();
+}
+
+Praaline::Core::StatisticalMeasureDefinition AnalyserTemporal::measureDefinition(const QString &measureID)
+{
+    return AnalyserTemporalItem::measureDefinition(measureID);
+}
 
 } // namespace StatisticsPluginTemporal
 } // namespace Plugins

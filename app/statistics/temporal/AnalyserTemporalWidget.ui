@@ -248,7 +248,7 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabResultsTable">
       <attribute name="title">
@@ -260,169 +260,7 @@
       <attribute name="title">
        <string>Charts</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayoutMeasure">
-         <item>
-          <widget class="QLabel" name="labelMeasure">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Measure:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxMeasure"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelGroupByCom">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Group by Metadata: Communication:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxGroupByCom"/>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelGroupBySpk">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Speaker:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="comboBoxGroupBySpk"/>
-         </item>
-         <item>
-          <widget class="QPushButton" name="commandDrawChart">
-           <property name="text">
-            <string>Draw Chart</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="1" column="0">
-        <layout class="QGridLayout" name="gridLayoutYMinMax">
-         <item row="0" column="1">
-          <widget class="QLabel" name="labelMeasureYMin">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Y-Axis Min:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMax">
-           <property name="maximum">
-            <double>1000000000000.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <spacer name="horizontalSpacerChartMinMax">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="6">
-          <widget class="QPushButton" name="commandExportChart">
-           <property name="text">
-            <string>Export...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QDoubleSpinBox" name="doubleSpinBoxYMin">
-           <property name="maximum">
-            <double>1000000000000.000000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QLabel" name="labelMeasureYMax">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Y-Axis Max:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxSetYMinMax">
-           <property name="text">
-            <string>Set:</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <widget class="QScrollArea" name="scrollArea">
-         <property name="widgetResizable">
-          <bool>true</bool>
-         </property>
-         <widget class="QWidget" name="scrollAreaWidgetContents">
-          <property name="geometry">
-           <rect>
-            <x>0</x>
-            <y>0</y>
-            <width>953</width>
-            <height>275</height>
-           </rect>
-          </property>
-          <layout class="QGridLayout" name="gridLayoutChart">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-          </layout>
-         </widget>
-        </widget>
-       </item>
-      </layout>
+      <layout class="QGridLayout" name="gridLayoutCharts"/>
      </widget>
      <widget class="QWidget" name="tabMeasureDefinitions">
       <attribute name="title">
@@ -459,14 +297,6 @@
   <tabstop>optionOrientationHorizontal</tabstop>
   <tabstop>commandAnalyse</tabstop>
   <tabstop>tabWidget</tabstop>
-  <tabstop>comboBoxMeasure</tabstop>
-  <tabstop>comboBoxGroupByCom</tabstop>
-  <tabstop>comboBoxGroupBySpk</tabstop>
-  <tabstop>commandDrawChart</tabstop>
-  <tabstop>doubleSpinBoxYMin</tabstop>
-  <tabstop>doubleSpinBoxYMax</tabstop>
-  <tabstop>commandExportChart</tabstop>
-  <tabstop>scrollArea</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -43,6 +43,9 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
     ui->setupUi(this);
     if (!repository) return;
     d->repository = repository;
+    // ================================================================================================================
+    // MAIN WIDGET AND RESUTLS TAB
+    // ================================================================================================================
     // Corpora combobox
     ui->comboBoxCorpus->addItems(repository->listCorporaIDs());
     // Metadata attributes
@@ -65,6 +68,11 @@ StatisticsPluginBasicWidget::StatisticsPluginBasicWidget(CorpusRepository *repos
     ui->optionOrientationVertical->setChecked(true);
     connect(ui->optionOrientationVertical, &QAbstractButton::clicked, this, &StatisticsPluginBasicWidget::updateTable);
     connect(ui->optionOrientationHorizontal, &QAbstractButton::clicked, this, &StatisticsPluginBasicWidget::updateTable);
+    // ================================================================================================================
+    // CHARTS TAB
+    // ================================================================================================================
+    //d->chartsWidget = new StatisticalAnalysisChartsWidget(d->repository, d->analyser, this);
+    //ui->gridLayoutCharts->addWidget(d->chartsWidget);
 }
 
 StatisticsPluginBasicWidget::~StatisticsPluginBasicWidget()

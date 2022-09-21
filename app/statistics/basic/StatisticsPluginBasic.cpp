@@ -81,7 +81,7 @@ QString StatisticsPluginBasic::pluginDescription() const {
 }
 
 QString StatisticsPluginBasic::pluginCopyright() const {
-    return QString(tr("Copyright") + " 2016-2017, George Christodoulides");
+    return QString(tr("Copyright") + " 2016-2022, George Christodoulides");
 }
 
 QString StatisticsPluginBasic::pluginLicense() const {

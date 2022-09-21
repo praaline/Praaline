@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QMap>
+
+#include "statistics/StatisticalAnalyserBase.h"
+
 #include "AnalyserTemporalItem.h"
 
 namespace Praaline {
@@ -17,7 +20,7 @@ namespace StatisticsPluginTemporal {
 
 struct AnalyserTemporalData;
 
-class AnalyserTemporal : public QObject
+class AnalyserTemporal : public QObject, public StatisticalAnalyserBase
 {
     Q_OBJECT
 public:
@@ -33,11 +36,19 @@ public:
     void setLevelIDTokens(const QString &levelID);
 
     void analyse();
+
     AnalyserTemporalItem *item(const QString communicationID);
     QMap<QString, QList<double> > aggregateMeasureCom(
-            const QString &measureID, const QStringList &groupAttributeIDsCom);
+            const QString &measureID, const QStringList &groupAttributeIDsCom) override;
     QMap<QString, QList<double> > aggregateMeasureSpk(
-            const QString &measureID, const QStringList &groupAttributeIDsCom, const QStringList &groupAttributeIDsSpk);
+            const QString &measureID, const QStringList &groupAttributeIDsCom, const QStringList &groupAttributeIDsSpk) override;
+
+    QStringList measureIDsForCommunication() override;
+    QStringList measureIDsForSpeaker() override;
+    QStringList vectorMeasureIDsForCommunication() override;
+    QStringList vectorMeasureIDsForSpeaker() override;
+    Praaline::Core::StatisticalMeasureDefinition measureDefinition(const QString &measureID) override;
+
 signals:
     void printMessage(const QString &message);
     void madeProgress(int progress);

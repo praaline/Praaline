@@ -19,7 +19,6 @@ QT_CHARTS_USE_NAMESPACE
 #include "PraalineCore/Structure/MetadataStructure.h"
 #include "PraalineCore/Structure/AnnotationStructure.h"
 #include "PraalineCore/Datastore/MetadataDatastore.h"
-#include "PraalineCore/Statistics/StatisticalSummary.h"
 #include "PraalineCore/Annotation/IntervalTier.h"
 using namespace Praaline::Core;
 
@@ -30,6 +29,8 @@ using namespace Praaline::Core;
 #include "AnalyserTemporalWidget.h"
 #include "ui_AnalyserTemporalWidget.h"
 
+#include "statistics/StatisticalAnalysisChartsWidget.h"
+
 namespace Praaline {
 namespace Plugins {
 namespace StatisticsPluginTemporal {
@@ -38,7 +39,7 @@ struct AnalyserTemporalWidgetData {
     AnalyserTemporalWidgetData() :
         repository(nullptr), analyser(nullptr), gridviewResults(nullptr), modelCom(nullptr), modelSpk(nullptr),
         gridviewMeasureDefinitions(nullptr), modelMeasureDefinitionsCom(nullptr), modelMeasureDefinitionsSpk(nullptr),
-        gridviewTimeline(nullptr), modelTimeline(nullptr)
+        gridviewTimeline(nullptr), modelTimeline(nullptr), chartsWidget(nullptr)
     {}
 
     CorpusRepository *repository;
@@ -51,6 +52,7 @@ struct AnalyserTemporalWidgetData {
     QStandardItemModel *modelMeasureDefinitionsSpk;
     GridViewWidget *gridviewTimeline;
     QStandardItemModel *modelTimeline;
+    StatisticalAnalysisChartsWidget *chartsWidget;
 };
 
 AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, AnalyserTemporal *analyser, QWidget *parent) :
@@ -111,29 +113,8 @@ AnalyserTemporalWidget::AnalyserTemporalWidget(CorpusRepository *repository, Ana
     // ================================================================================================================
     // CHARTS TAB
     // ================================================================================================================
-    // Measure combobox (start with measures for Communications by default)
-    foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
-        ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
-    // Group by attributes
-    if (d->repository->metadataStructure()) {
-        ui->comboBoxGroupByCom->addItem("", "");
-        ui->comboBoxGroupByCom->addItem("Communication ID", "ID");
-        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Communication)) {
-            ui->comboBoxGroupByCom->addItem(attr->name(), attr->ID());
-        }
-        ui->comboBoxGroupByCom->setCurrentText("");
-        // speaker
-        ui->comboBoxGroupBySpk->addItem("", "");
-        ui->comboBoxGroupBySpk->addItem("Speaker ID", "ID");
-        foreach (MetadataStructureAttribute *attr, d->repository->metadataStructure()->attributes(CorpusObject::Type_Speaker)) {
-            ui->comboBoxGroupBySpk->addItem(attr->name(), attr->ID());
-        }
-        ui->comboBoxGroupBySpk->setCurrentText("");
-    }
-    // Command Draw Chart
-    connect(ui->commandDrawChart, &QAbstractButton::clicked, this, &AnalyserTemporalWidget::drawChart);
-    // Defaults
-    ui->checkBoxSetYMinMax->setChecked(true);
+    d->chartsWidget = new StatisticalAnalysisChartsWidget(d->repository, d->analyser, this);
+    ui->gridLayoutCharts->addWidget(d->chartsWidget);
     // Go to results tab
     ui->tabWidget->setCurrentIndex(0);
 }
@@ -207,16 +188,12 @@ void AnalyserTemporalWidget::changeDisplayedModel()
     if (ui->optionCommunications->isChecked()) {
         d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitionsCom);
         d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
-        ui->comboBoxMeasure->clear();
-        foreach (QString measureID, AnalyserTemporalItem::measureIDsForCommunication())
-            ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
+        d->chartsWidget->showMeasuresForCom();
         showAnalysisForCom();
     }  else {
         d->gridviewMeasureDefinitions->tableView()->setModel(d->modelMeasureDefinitionsSpk);
         d->gridviewMeasureDefinitions->tableView()->resizeColumnsToContents();
-        ui->comboBoxMeasure->clear();
-        foreach (QString measureID, AnalyserTemporalItem::measureIDsForSpeaker())
-            ui->comboBoxMeasure->addItem(AnalyserTemporalItem::measureDefinition(measureID).displayName(), measureID);
+        d->chartsWidget->showMeasuresForSpk();
         showAnalysisForSpk();
     }
 }
@@ -403,93 +380,6 @@ void AnalyserTemporalWidget::buildModelForSpk()
                 d->modelSpk->appendColumn(itemsSpk);
         }
     }
-}
-
-void AnalyserTemporalWidget::drawChart()
-{
-    if (!d->analyser) return;
-    if (!d->analyser->corpus()) return;
-
-    // Get parameters from user interface
-    QString measureID = ui->comboBoxMeasure->currentData().toString();
-    QStringList groupAttributeIDsCom; groupAttributeIDsCom << ui->comboBoxGroupByCom->currentData().toString();
-    QStringList groupAttributeIDsSpk; groupAttributeIDsSpk << ui->comboBoxGroupBySpk->currentData().toString();
-    double yMin = ui->doubleSpinBoxYMin->value();
-    double yMax = ui->doubleSpinBoxYMax->value();
-    // Aggregate selected measure, over selected metadata attributes
-    QMap<QString, QList<double> > aggregates;
-    QString groupAttributes;
-    if (ui->optionCommunications->isChecked()) {
-        aggregates = d->analyser->aggregateMeasureCom(measureID, groupAttributeIDsCom);
-        groupAttributes = ui->comboBoxGroupByCom->currentText();
-    }
-    else {
-        aggregates = d->analyser->aggregateMeasureSpk(measureID, groupAttributeIDsCom, groupAttributeIDsSpk);
-        QStringList sl; sl << ui->comboBoxGroupByCom->currentText() << ui->comboBoxGroupBySpk->currentText();
-        groupAttributes = sl.join(", ");
-    }
-    if (groupAttributes.endsWith(", ")) groupAttributes.chop(2);
-    // Create chart series
-    QChart *chart = new QChart();
-    double min(0), max(0);
-    if (true) {
-        QBoxPlotSeries *series = new QBoxPlotSeries();
-        series->setName(measureID);
-        foreach (QString groupID, aggregates.keys()) {
-            QBoxSet *set = new QBoxSet(groupID);
-            StatisticalSummary summary;
-            summary.calculate(aggregates.value(groupID));
-    //        set->setValue(QBoxSet::LowerExtreme, summary.firstQuartile() - 1.5 * summary.interQuartileRange());
-    //        set->setValue(QBoxSet::UpperExtreme, summary.thirdQuartile() + 1.5 * summary.interQuartileRange());
-            set->setValue(QBoxSet::LowerExtreme, summary.min());
-            set->setValue(QBoxSet::UpperExtreme, summary.max());
-            set->setValue(QBoxSet::Median, summary.median());
-            set->setValue(QBoxSet::LowerQuartile, summary.firstQuartile());
-            set->setValue(QBoxSet::UpperQuartile, summary.thirdQuartile());
-            series->append(set);
-            if (min > summary.min()) min = summary.min();
-            if (max < summary.max()) max = summary.max();
-        }
-        chart->addSeries(series);
-        chart->createDefaultAxes();
-    } else {
-        QBarSeries *series = new QBarSeries();
-        series->setName(measureID);
-        foreach (QString groupID, aggregates.keys()) {
-            QBarSet *set = new QBarSet(groupID);
-            StatisticalSummary summary;
-            summary.calculate(aggregates.value(groupID));
-            set->append(summary.mean());
-            series->append(set);
-            if (min > summary.min()) min = summary.min();
-            if (max < summary.max()) max = summary.max();
-        }
-        chart->addSeries(series);
-        chart->createDefaultAxes();
-    }
-    // Configure chart
-    chart->setTitle(QString("%1 per %2").arg(ui->comboBoxMeasure->currentText(), groupAttributes));
-    chart->setAnimationOptions(QChart::SeriesAnimations);
-    if (ui->checkBoxSetYMinMax->isChecked()) {
-        chart->axes(Qt::Vertical).at(0)->setMin(yMin);
-        chart->axes(Qt::Vertical).at(0)->setMax(yMax);
-    } else {
-        chart->axes(Qt::Vertical).at(0)->setMin(qRound(min * 0.9));
-        chart->axes(Qt::Vertical).at(0)->setMax(qRound(max * 1.1));
-    }
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
-    // Clear previous chart
-    QLayoutItem *item;
-    while ((item = ui->gridLayoutChart->takeAt(0)) != 0) { delete item; }
-    QList<QChartView *> chartviews;
-    chartviews = findChildren<QChartView *>();
-    qDeleteAll(chartviews);
-    // Create new chart view widget
-    QChartView *chartView = new QChartView(chart, this);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    // Show chart view
-    ui->gridLayoutChart->addWidget(chartView);
 }
 
 } // namespace StatisticsPluginTemporal
